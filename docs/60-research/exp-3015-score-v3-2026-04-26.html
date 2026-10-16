@@ -605,6 +605,8 @@
       
         
       
+        
+      
     
     
     
@@ -3000,7 +3002,7 @@
   <span class="md-ellipsis">
     
   
-    EXP-3012 — Per-patient (T, M) recommendation (2026-04-26)
+    EXP-3012 — Per-patient (T*, M*) recommendation (2026-04-26)
   
 
     
@@ -3673,7 +3675,7 @@
   <span class="md-ellipsis">
     
   
-    EXP-3028 — Per-patient (T, M) refit with carb-aware proxy
+    EXP-3028 — Per-patient (T*, M*) refit with carb-aware proxy
   
 
     
@@ -5652,6 +5654,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -7320,7 +7326,7 @@
 <h2 id="goal">Goal<a class="headerlink" href="#goal" title="Permanent link">&para;</a></h2>
 <p>Wire all three Phase 3 findings into the autoresearch fitness function used by <code>aid-autoresearch</code> to rank candidate controller configurations:</p>
 <ol>
-<li><strong>Per-patient (T<em>, M</em>) recommendations</strong> from EXP-3012 (<code>exp-3012_per_patient.parquet</code>).</li>
+<li><em><em>Per-patient (T</em>, M</em>) recommendations** from EXP-3012 (<code>exp-3012_per_patient.parquet</code>).</li>
 <li><strong>Carb-aware trough proxy</strong> from EXP-3014 as the new default (<code>--proxy carb_aware</code>).</li>
 <li><strong>Braking-ratio phenotype gate</strong> from EXP-3013 — drop patients with <code>braking_ratio &gt;= 0.10</code> (default), since they are already saturated and cf-replay finds no headroom for them.</li>
 </ol>
@@ -7387,7 +7393,7 @@
 <p><strong>Frontier (uniform mult=0.5, T=30) passes</strong> with the largest score, +0.020 over baseline (≈ +2.9 % composite improvement). This is the <strong>deployment-ready cohort recommendation</strong>.</p>
 </li>
 <li>
-<p><strong>Per-patient mode passes</strong> but scores marginally <em>lower</em> than uniform-frontier on the cohort composite. This is by design: per-patient mode applies (T<em>, M</em>) only to the 9 509 events on responsive patients (53 % of cohort). The cohort composite weights all controllers equally, so dropping high-braking AAPS-oref0 events (3336 → 123) hurts the cohort mean even though it improves per-responsive-patient outcomes. The clinically-correct interpretation: per-patient mode is for individualised tuning; uniform-frontier is for population deployment.</p>
+<p><strong>Per-patient mode passes</strong> but scores marginally <em>lower</em> than uniform-frontier on the cohort composite. This is by design: per-patient mode applies (T*, M*) only to the 9 509 events on responsive patients (53 % of cohort). The cohort composite weights all controllers equally, so dropping high-braking AAPS-oref0 events (3336 → 123) hurts the cohort mean even though it improves per-responsive-patient outcomes. The clinically-correct interpretation: per-patient mode is for individualised tuning; uniform-frontier is for population deployment.</p>
 </li>
 <li>
 <p><strong>Braking gate behaves as designed</strong>: drops 8 410 events (47 %), most of which are AAPS-oref0 (high-braking, no SMB) and Loop-AB-OFF. The remaining cohort is the actionable subset.</p>

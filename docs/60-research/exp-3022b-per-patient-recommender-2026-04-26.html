@@ -605,6 +605,8 @@
       
         
       
+        
+      
     
     
     
@@ -3000,7 +3002,7 @@
   <span class="md-ellipsis">
     
   
-    EXP-3012 — Per-patient (T, M) recommendation (2026-04-26)
+    EXP-3012 — Per-patient (T*, M*) recommendation (2026-04-26)
   
 
     
@@ -3684,7 +3686,7 @@
   <span class="md-ellipsis">
     
   
-    EXP-3028 — Per-patient (T, M) refit with carb-aware proxy
+    EXP-3028 — Per-patient (T*, M*) refit with carb-aware proxy
   
 
     
@@ -5663,6 +5665,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -7339,7 +7345,7 @@
 per-patient ISF/CR/basal/correction-threshold recommendations end-to-end
 on the cohort, backed by inferred-meal deconfounding (EXP-3026/3026-EXT),
 the phenotype-imputed safety floor (EXP-3027-FIX), and the carb-aware
-per-patient (T<em>, M</em>) table validated by EXP-3030.</p>
+per-patient (T*, M*) table validated by EXP-3030.</p>
 <p><strong>Verdict</strong>: GREEN for fan-out — every cohort phenotype produced
 4-arm recommendations (ISF, CR, basal, correction threshold) plus 1-4
 auxiliary recs (hypo alert, clinical insight, override schedule,
@@ -7728,7 +7734,7 @@ recommendations</strong>. EXP-3022b establishes:</p>
 <li>Advisor fan-out: <code>tools/cgmencode/production/advisor/_pipeline.py:442</code></li>
 <li>Inferred-meal loader: <code>tools/cgmencode/production/inferred_meals_facts_loader.py</code></li>
 <li>Phenotype table: <code>externals/experiments/exp-3019_phenotype_imputed.parquet</code></li>
-<li>Per-patient (T<em>, M</em>) carb-aware: <code>externals/experiments/exp-3028_per_patient_carb_aware.parquet</code></li>
+<li>Per-patient (T*, M*) carb-aware: <code>externals/experiments/exp-3028_per_patient_carb_aware.parquet</code></li>
 </ul>
 <p>Closes (partially) <code>exp-3022b-isf-cr-basal-recommender</code> SQL todo.
 Outstanding: EGP=0 degenerate, ISF-magnitude review, ISF/CR advisor

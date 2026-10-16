@@ -605,6 +605,8 @@
       
         
       
+        
+      
     
     
     
@@ -4635,6 +4637,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -4816,6 +4822,34 @@
     
   
     ns-evaluator: what a per-tenant evaluation loop actually needs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ory-cookie-variants-2026-10-12.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kratos session cookie scope: two more designs measured (E and H2)
   
 
     
@@ -5394,6 +5428,34 @@
     
   
     What API v1 operators clients actually send — the census behind T2.4's allowlist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="write-contract-null-and-keys-2026-10-12.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WRITE-CONTRACT: explicit nulls, natural keys and identical re-sends, measured
   
 
     
@@ -7058,9 +7120,9 @@ Queue items: <code>T30-RESEARCH</code>, <code>T30-SCHEMA-CRED</code>. Specificat
 <p>Two things were done:</p>
 <ol>
 <li>The §G.3 census script now lives in the queue as a gate:
-   <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1ea5d9384859b5edeeb12ca88f7d04f355357e12/tools/queue/gates/t30-census-differential.js"><code>tools/queue/gates/t30-census-differential.js</code></a>.</li>
+   <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb1b48e76661e7d2458d8be88c7aff3a2b0638a3/tools/queue/gates/t30-census-differential.js"><code>tools/queue/gates/t30-census-differential.js</code></a>.</li>
 <li>The device and data-path credential tables were added to <code>lib/admin/platform.sql</code>, and
-   <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1ea5d9384859b5edeeb12ca88f7d04f355357e12/tools/queue/gates/platform-sql-surface.js"><code>tools/queue/gates/platform-sql-surface.js</code></a>
+   <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb1b48e76661e7d2458d8be88c7aff3a2b0638a3/tools/queue/gates/platform-sql-surface.js"><code>tools/queue/gates/platform-sql-surface.js</code></a>
    was tightened. Before the change it could not tell a column from a comment.</li>
 </ol>
 <p>Environment: Node 24.20.0, the version the seam's <code>engines</code> field (<code>^22.23.2 || ^24.20.0</code>)

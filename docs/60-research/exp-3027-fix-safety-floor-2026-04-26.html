@@ -605,6 +605,8 @@
       
         
       
+        
+      
     
     
     
@@ -3000,7 +3002,7 @@
   <span class="md-ellipsis">
     
   
-    EXP-3012 — Per-patient (T, M) recommendation (2026-04-26)
+    EXP-3012 — Per-patient (T*, M*) recommendation (2026-04-26)
   
 
     
@@ -3656,7 +3658,7 @@
   <span class="md-ellipsis">
     
   
-    EXP-3028 — Per-patient (T, M) refit with carb-aware proxy
+    EXP-3028 — Per-patient (T*, M*) refit with carb-aware proxy
   
 
     
@@ -5635,6 +5637,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -7376,7 +7382,7 @@
 <p>Combined improvements reclaim 60 % of the +0.0173 composite Δ cost of moving the gate from 0.15 → 0.10. Both improvements provide stronger safety guarantees than the gate=0.15 configuration they partly replace.</p>
 <h2 id="why-exp-3027-fix-can-ship-while-exp-3028-cannot-yet">Why EXP-3027-FIX can ship while EXP-3028 cannot (yet)<a class="headerlink" href="#why-exp-3027-fix-can-ship-while-exp-3028-cannot-yet" title="Permanent link">&para;</a></h2>
 <p>EXP-3027-FIX is purely a safety hardening: imputed values move <em>into</em> the high stratum (more conservative). The change cannot make any <em>observed</em> patient more aggressively dosed; the only behavior change is that more <em>unknown</em> patients get their events dropped. Worst-case cost is composite Δ; there is no safety regression possible.</p>
-<p>EXP-3028 is a different category: it changes per-patient (T<em>, M</em>) recommendations. Even though the verification stripe shows a lift, recommendations could move some observed patients more-aggressively (or less-aggressively in unforeseen ways). It deserves a fresh holdout before flipping <code>PER_PATIENT_REC_CLAMPED</code>.</p>
+<p>EXP-3028 is a different category: it changes per-patient (T*, M*) recommendations. Even though the verification stripe shows a lift, recommendations could move some observed patients more-aggressively (or less-aggressively in unforeseen ways). It deserves a fresh holdout before flipping <code>PER_PATIENT_REC_CLAMPED</code>.</p>
 <h2 id="code-change">Code change<a class="headerlink" href="#code-change" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># tools/cgmencode/autoresearch_cf/exp_3019_impute_braking.py</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">SAFETY_FLOOR</span> <span class="o">=</span> <span class="mf">0.10</span>  <span class="c1"># = STRAT_BRAKING_EDGES.upper</span>

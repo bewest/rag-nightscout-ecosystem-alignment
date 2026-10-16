@@ -605,6 +605,8 @@
       
         
       
+        
+      
     
     
     
@@ -2305,6 +2307,8 @@
       
         
       
+        
+      
     
     
     
@@ -2699,6 +2703,34 @@
     
   
     A hub-and-spoke sync model for AID controllers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-intent-workflow-landscape-2026-10-09.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intent, workflow and entity management across the AID controller landscape
   
 
     
@@ -4816,10 +4848,10 @@
 
 
 <h1 id="proposal-let-nightscout-describe-the-controllers-it-already-recognises">Proposal: let Nightscout describe the controllers it already recognises<a class="headerlink" href="#proposal-let-nightscout-describe-the-controllers-it-already-recognises" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-09-27 at <code>35284556</code>.</em></p>
+<p><em>Living document, last changed 2026-10-09 at <code>a6191372</code>.</em></p>
 <p><em>Contributor-facing.</em> <strong>Snapshot, written 2026-09-11. Current: the only statement of the
 controller-description proposal.</strong> A proposal to the named projects, not adopted by any of them.
-Its §5 <code>decomposesTo</code> mechanism is the direction adopted for <code>devicestatus</code> storage by
+§4 is superseded in part by <strong>D18</strong> (two-tier registration, 2026-10-09). Its §5 <code>decomposesTo</code> mechanism is the direction adopted for <code>devicestatus</code> storage by
 <strong>D11</strong> — <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>.
 Measurements are over the 11-site corpus (snapshots 2026-04-01 and 2026-04-26). §2.2 was added
 2026-09-27, checked against Nocturne <code>42275c81</code>. <strong>One page of proposal, then a worked example, then
@@ -4911,7 +4943,7 @@ writes down get silently dropped. Three measured consequences:</p>
 </tr>
 <tr>
 <td>Temporary effects that record what they <em>did</em>, not just why</td>
-<td><strong>2,934 of 3,415</strong> — the other 481 carry a label and no effect at all</td>
+<td><strong>2,466 of 2,865</strong> — the other 399 carry a label and no effect at all</td>
 </tr>
 </tbody>
 </table>
@@ -5136,6 +5168,13 @@ concession to get adoption — it is forced by the evidence: Loop has made 24
 commits in six months, none touching Nightscout, and is 9 of 11 sites in the
 corpus. A proposal Loop must act on is a proposal that does not happen.</p>
 <h2 id="4-what-this-is-not">4. What this is <em>not</em><a class="headerlink" href="#4-what-this-is-not" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>Superseded in part by D18</strong> (<a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan §2.6.1</a>),
+2026-10-09. The table below describes the <strong>well-known</strong> tier, which keeps every property listed.
+D18 adds a <strong>controller-owned</strong> tier: dynamic, typed registrations a controller publishes for its
+own features, from which the hub derives typed API. The "static, not CRD-style" and "no new
+endpoints" rows do not apply to that tier.</p>
+</blockquote>
 <p>"Registration" is easy to misread as a control plane. Concretely:</p>
 <table>
 <thead>
@@ -5316,7 +5355,7 @@ controller publishes, so "it publishes none" stops being invisible.</p>
 <td><code>reports/schema-census/dosing-inputs.json</code></td>
 </tr>
 <tr>
-<td>2,934 of 3,415 effects separable</td>
+<td>2,466 of 2,865 effects separable</td>
 <td><code>make schema-effects</code></td>
 <td><code>reports/schema-census/effects.json</code></td>
 </tr>

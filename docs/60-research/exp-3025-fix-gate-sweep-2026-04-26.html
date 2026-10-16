@@ -605,6 +605,8 @@
       
         
       
+        
+      
     
     
     
@@ -3000,7 +3002,7 @@
   <span class="md-ellipsis">
     
   
-    EXP-3012 — Per-patient (T, M) recommendation (2026-04-26)
+    EXP-3012 — Per-patient (T*, M*) recommendation (2026-04-26)
   
 
     
@@ -3667,7 +3669,7 @@
   <span class="md-ellipsis">
     
   
-    EXP-3028 — Per-patient (T, M) refit with carb-aware proxy
+    EXP-3028 — Per-patient (T*, M*) refit with carb-aware proxy
   
 
     
@@ -5646,6 +5648,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -7432,7 +7438,7 @@
 <h2 id="operational-follow-ups">Operational follow-ups<a class="headerlink" href="#operational-follow-ups" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Bump <code>DEFAULT_BRAKING_GATE</code> from <code>0.15</code> → <code>0.10</code> in <code>cf_replay_score_v3.py</code> once the LOPO confirmation lands. Update <code>cf_replay_v3_ledger.tsv</code> schema documentation accordingly. Not done in this commit to avoid silently changing scorer behavior for in-flight experiments.</li>
-<li>EXP-3028 (event-wise carb-aware re-fit of per-patient T<em>, M</em>) is now unblocked — it can be run on top of the new gate=0.10 baseline. The earlier deferral rationale (waiting on EXP-3025-FIX) is satisfied.</li>
+<li>EXP-3028 (event-wise carb-aware re-fit of per-patient T*, M*) is now unblocked — it can be run on top of the new gate=0.10 baseline. The earlier deferral rationale (waiting on EXP-3025-FIX) is satisfied.</li>
 </ul>
 <h2 id="files">Files<a class="headerlink" href="#files" title="Permanent link">&para;</a></h2>
 <ul>

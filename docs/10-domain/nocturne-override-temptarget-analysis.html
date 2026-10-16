@@ -605,6 +605,8 @@
       
         
       
+        
+      
     
     
     
@@ -4399,17 +4401,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#v4-statespan-approach" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        V4 StateSpan Approach
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#gap-impact" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8161,17 +8152,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#v4-statespan-approach" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        V4 StateSpan Approach
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#gap-impact" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8405,9 +8385,10 @@
 
 
 <h1 id="nocturne-overridetemporary-target-representation">Nocturne Override/Temporary Target Representation<a class="headerlink" href="#nocturne-overridetemporary-target-representation" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-01-29 at <code>1c683045</code>.</em></p>
+<p><em>Living document, last changed 2026-10-09 at <code>a6191372</code>.</em></p>
 <blockquote>
-<p><strong>OQ-010 Item #8</strong>: How Nocturne stores and serves Override vs Temporary Target events.</p>
+<p><strong>OQ-010 Item #8</strong>: How Nocturne stores and serves Override vs Temporary Target events.
+<strong>Corrected 2026-10-09</strong> against Nocturne <code>42275c812</code> and cgm-remote-monitor <code>fade2299</code>; see <a href="../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.html">intent and workflow across the landscape</a> §5 and §11.</p>
 </blockquote>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
 <table>
@@ -8606,7 +8587,7 @@
 <tbody>
 <tr>
 <td><code>PumpMode</code></td>
-<td>Automatic, Manual, Boost, EaseOff, Sleep, Exercise</td>
+<td>Automatic, Limited, Manual, Boost, EaseOff, Sleep, Exercise, Liberty, Suspended, Off</td>
 </tr>
 <tr>
 <td><code>PumpConnectivity</code></td>
@@ -8614,15 +8595,23 @@
 </tr>
 <tr>
 <td><code>Override</code></td>
-<td>Custom (user-defined override)</td>
+<td>None, Custom</td>
 </tr>
 <tr>
 <td><code>Profile</code></td>
-<td>Active profile name</td>
+<td>Active</td>
 </tr>
 <tr>
-<td><code>TempBasal</code></td>
-<td>Active or Cancelled</td>
+<td><code>TemporaryTarget</code></td>
+<td>Active, Cancelled</td>
+</tr>
+<tr>
+<td><code>Exercise</code>, <code>Illness</code>, <code>Travel</code></td>
+<td>from the Activity API</td>
+</tr>
+<tr>
+<td><code>DataExclusion</code></td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -8634,19 +8623,20 @@
 <a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="n">Custom</span><span class="w">  </span><span class="c1">// User-defined override (details in metadata)</span>
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="p">}</span>
 </code></pre></div>
-<p><strong>Note</strong>: The V4 StateSpan abstraction provides a unified view of overrides, but does NOT distinguish between Loop Override and AAPS Temporary Target - both would be represented as <code>OverrideState.Custom</code>.</p>
+<p><strong>Note</strong>: Loop overrides and temporary targets are separate categories (<code>Override</code>, <code>TemporaryTarget</code>). Every override span has state <code>Custom</code>; its name and multiplier are in the untyped <code>Metadata</code> dictionary.</p>
 <h2 id="supersession-tracking">Supersession Tracking<a class="headerlink" href="#supersession-tracking" title="Permanent link">&para;</a></h2>
 <h3 id="current-state">Current State<a class="headerlink" href="#current-state" title="Permanent link">&para;</a></h3>
-<p><strong>No explicit supersession tracking exists in Nocturne for Override or Temporary Target events.</strong></p>
-<p>When a new override is activated:
-1. Old override treatment remains unchanged in database
-2. New override treatment is inserted
-3. No <code>supersededBy</code> or <code>status</code> update on old treatment</p>
-<h3 id="v4-statespan-approach">V4 StateSpan Approach<a class="headerlink" href="#v4-statespan-approach" title="Permanent link">&para;</a></h3>
-<p>StateSpans provide implicit supersession through time ranges:
-- Each span has <code>startMs</code> and <code>endMs</code>
-- Overlapping spans are NOT automatically resolved
-- Client must query active span for current state</p>
+<p>Treatments are stored unchanged. Supersession is tracked on <strong>StateSpans</strong>
+(<code>StateSpanRepository.cs</code>): <code>Override</code>, <code>TemporaryTarget</code> and <code>Profile</code> are exclusive categories,
+and inserting a new span closes any <em>open</em> span in the same category that started earlier,
+setting its <code>EndTimestamp</code> and <code>SupersededById</code>. <code>PumpMode</code> supersedes only a span with the same
+state; <code>Exercise</code>, <code>Illness</code> and <code>Travel</code> may overlap.</p>
+<p>Limits (read-derived):
+- Only open spans are superseded, so a timed span is not shortened by a later one, and a
+  temp-target cancel becomes a separate open span with state <code>Cancelled</code>.
+- <code>Temporary Override Cancel</code> is not classified by <code>TreatmentDecomposer</code> and produces no span.
+- Supersession runs only on insert; amending a span does not re-evaluate its neighbours.
+- No end reason is recorded beyond <code>SupersededById</code>.</p>
 <h3 id="gap-impact">Gap Impact<a class="headerlink" href="#gap-impact" title="Permanent link">&para;</a></h3>
 <p>Without supersession tracking:
 - Cannot determine why an override ended
@@ -8675,8 +8665,8 @@
 </tr>
 <tr>
 <td>Cancel Override</td>
-<td><code>Temporary Override Cancel</code></td>
-<td><code>Temporary Override Cancel</code></td>
+<td>not classified (no span)</td>
+<td>not stored by careportal (APNs request only)</td>
 </tr>
 <tr>
 <td>Cancel TempTarget</td>
@@ -8690,8 +8680,8 @@
 </tr>
 <tr>
 <td>Supersession</td>
-<td>None</td>
-<td>None</td>
+<td>open spans in exclusive categories (<code>SupersededById</code>)</td>
+<td>computed at read time: a later temp target or profile switch truncates the earlier one (<code>ddata.js</code>)</td>
 </tr>
 </tbody>
 </table>
@@ -8751,7 +8741,7 @@
 <p><strong>Impact</strong>: Cannot query "all active target modifications" without checking both eventTypes with different field interpretations.</p>
 <p><strong>Remediation</strong>: Define normalized schema or query helper that abstracts both types.</p>
 <h3 id="gap-ovrd-006-override-supersession-not-tracked">GAP-OVRD-006: Override Supersession Not Tracked<a class="headerlink" href="#gap-ovrd-006-override-supersession-not-tracked" title="Permanent link">&para;</a></h3>
-<p><strong>Description</strong>: Neither Nocturne nor cgm-remote-monitor tracks override supersession. When a new override activates, the old one is not updated.</p>
+<p><strong>Description</strong>: Neither hub records why an override ended. Nocturne links a superseded open span to its successor (<code>SupersededById</code>); cgm-remote-monitor truncates temp targets and profile switches at read time and stores nothing.</p>
 <p><strong>Affected Systems</strong>: All</p>
 <p><strong>Impact</strong>: Cannot determine override history chain or why overrides ended.</p>
 <p><strong>Remediation</strong>: Implement REQ-OVERRIDE-001 through REQ-OVERRIDE-005.</p>
@@ -8828,7 +8818,7 @@
 - <code>eventType: "Temporary Override"</code> for Loop
 - <code>eventType: "Temporary Target"</code> for AAPS</p>
 <h3 id="3-what-supersession-tracking-exists-if-any">3. What supersession tracking exists (if any)?<a class="headerlink" href="#3-what-supersession-tracking-exists-if-any" title="Permanent link">&para;</a></h3>
-<p><strong>None.</strong> Neither Nocturne nor cgm-remote-monitor updates old overrides when new ones are activated. The V4 StateSpan API provides time-range queries but does NOT link superseded overrides.</p>
+<p><strong>Partial.</strong> Nocturne sets <code>SupersededById</code> on an open span in an exclusive category when a later span starts; timed spans and cancels are not linked. cgm-remote-monitor computes truncation at read time and stores nothing. Neither records an end reason.</p>
 <hr />
 <p><em>Analysis Date: 2026-01-30</em>
 <em>OQ-010 Research Queue: Item #8 of 7</em></p>

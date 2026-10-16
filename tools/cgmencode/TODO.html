@@ -605,6 +605,8 @@
       
         
       
+        
+      
     
     
     
@@ -1702,6 +1704,8 @@
       
         
           
+        
+      
         
       
         
@@ -2976,7 +2980,7 @@
 <h2 id="phase-1-data-acquisition-scaling-the-dataset---done">Phase 1: Data Acquisition (Scaling the Dataset) — ✅ DONE<a class="headerlink" href="#phase-1-data-acquisition-scaling-the-dataset---done" title="Permanent link">&para;</a></h2>
 <p><em>Goal: Move from ~1,000 vectors to 10,000+ vectors.</em></p>
 <ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>SIM-* → cgmencode bridge</strong> (<code>sim_adapter.py</code>): Converts physics simulation output to 8-feature training vectors. Handles both SIM-<em> and TV-</em> conformance formats.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> *<em>SIM-</em> → cgmencode bridge** (<code>sim_adapter.py</code>): Converts physics simulation output to 8-feature training vectors. Handles both SIM-* and TV-* conformance formats.</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Latin Hypercube parameter sweep</strong> (<code>generate_training_data.py</code>): Generates diverse patient profiles (ISF 15–80, CR 5–20, basal 0.3–3.0, weight 45–110, DIA 4–8) via LHS sampling.</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Patient parameter CLI</strong> (<code>in-silico-bridge.js</code>): Added <code>--isf</code>, <code>--cr</code>, <code>--basal-rate</code>, <code>--weight</code>, <code>--dia</code>, <code>--patient</code>, <code>--id-prefix</code>, <code>--output-dir</code> flags.</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Multi-engine support</strong>: Both cgmsim and UVA/Padova engines produce training data via <code>--engine</code> flag.</li>

@@ -605,6 +605,8 @@
       
         
       
+        
+      
     
     
     
@@ -3738,7 +3740,7 @@ and a fifth gate now runs <code>TEST=query.operands</code> at 12 passing. The ro
 <li><strong>SKIP</strong> <code>[integration]</code> <em>(cwd: <code>externals/work/crm-bf-reads</code>)</em> <code>TEST=api3.paging npm run test-single</code></li>
 <li>kind <code>integration</code> not enabled (use --integration)</li>
 <li>intent: BF-14, 3 passing. Needs MongoDB.</li>
-<li><strong>NO-GATE</strong> &mdash; THE <code>npm run test:unit</code> GATE WAS REMOVED, not downgraded. It was recorded as "361 passing / 0 failing at GT1's measurement", but not one of the five test files this branch adds is in the 44-file brace list - all five are api<em>/api3</em> and match test:integration's glob - so the suite could have passed in full with every fix reverted.</li>
+<li><strong>NO-GATE</strong> &mdash; THE <code>npm run test:unit</code> GATE WAS REMOVED, not downgraded. It was recorded as "361 passing / 0 failing at GT1's measurement", but not one of the five test files this branch adds is in the 44-file brace list - all five are api*/api3* and match test:integration's glob - so the suite could have passed in full with every fix reverted.</li>
 <li><strong>NO-GATE</strong> &mdash; The ordering constraint inside the branch (BF-05's commit must follow BF-01's) is not machine-checked. After the CHANGELOG strip and the re-cut onto dev the two commits are 3b588098 and 4772b983, so any gate quoting an earlier SHA is stale by construction. A real gate would assert the relative order of the two by subject line, and nobody has written it.</li>
 <li><strong>NO-GATE</strong> &mdash; The CHANGELOG on this branch lists read routes only, while the ?count= validator covers writes too. Nothing checks a release note against the code it describes.</li>
 </ul>
@@ -5270,7 +5272,7 @@ only what somebody remembered was missing.</p>
 <li><strong>P0-C-REMEDIATE gates[0]</strong> &mdash; No gate exists for this property; the manifest records why.</li>
 <li>Nothing written yet. The gate this item needs is a script that reports how many subject rows carry a non-derived accessToken, run against a database with one planted, and a control row that has none - so the script is shown to distinguish the two before anyone trusts a zero.</li>
 <li><strong>P0-E gates[8]</strong> &mdash; No gate exists for this property; the manifest records why.</li>
-<li>THE <code>npm run test:unit</code> GATE WAS REMOVED, not downgraded. It was recorded as "361 passing / 0 failing at GT1's measurement", but not one of the five test files this branch adds is in the 44-file brace list - all five are api<em>/api3</em> and match test:integration's glob - so the suite could have passed in full with every fix reverted.</li>
+<li>THE <code>npm run test:unit</code> GATE WAS REMOVED, not downgraded. It was recorded as "361 passing / 0 failing at GT1's measurement", but not one of the five test files this branch adds is in the 44-file brace list - all five are api*/api3* and match test:integration's glob - so the suite could have passed in full with every fix reverted.</li>
 <li><strong>P0-E gates[9]</strong> &mdash; No gate exists for this property; the manifest records why.</li>
 <li>The ordering constraint inside the branch (BF-05's commit must follow BF-01's) is not machine-checked. After the CHANGELOG strip and the re-cut onto dev the two commits are 3b588098 and 4772b983, so any gate quoting an earlier SHA is stale by construction. A real gate would assert the relative order of the two by subject line, and nobody has written it.</li>
 <li><strong>P0-E gates[10]</strong> &mdash; No gate exists for this property; the manifest records why.</li>

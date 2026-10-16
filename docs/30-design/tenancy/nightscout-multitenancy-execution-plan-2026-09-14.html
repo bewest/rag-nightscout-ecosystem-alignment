@@ -605,6 +605,8 @@
       
         
       
+        
+      
     
     
     
@@ -2303,6 +2305,8 @@
       
         
       
+        
+      
     
     
     
@@ -2805,6 +2809,45 @@
     <span class="md-ellipsis">
       
         2.6 D11 — devicestatus is a decomposition problem, not a column-selection problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#261-d18--two-tier-controller-registration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6.1 D18 — two-tier controller registration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.6.1 D18 — two-tier controller registration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#d18-addendum--an-extensible-grammar-maintainer-2026-10-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D18 addendum — an extensible grammar (maintainer, 2026-10-12)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#262-d19--definitions-and-instances-maintainer-2026-10-14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6.2 D19 — definitions and instances (maintainer, 2026-10-14)
       
     </span>
   </a>
@@ -5051,6 +5094,45 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#261-d18--two-tier-controller-registration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6.1 D18 — two-tier controller registration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.6.1 D18 — two-tier controller registration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#d18-addendum--an-extensible-grammar-maintainer-2026-10-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D18 addendum — an extensible grammar (maintainer, 2026-10-12)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#262-d19--definitions-and-instances-maintainer-2026-10-14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6.2 D19 — definitions and instances (maintainer, 2026-10-14)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#27-d12--what-each-repository-is-for" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5312,13 +5394,14 @@
 
 
 <h1 id="multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs">Multitenancy execution plan: decisions, tasks, and the context each one needs<a class="headerlink" href="#multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-07 at <code>ade273f9</code>.</em></p>
+<p><em>Living document, last changed 2026-10-15 at <code>e9af30a3</code>.</em></p>
 <p><em>Contributor- and maintainer-facing.</em></p>
-<p><strong>Status: living document — the decision record.</strong> Decisions D1–D17 are the maintainer's
-(2026-09-14 to 2026-09-16) and are all <strong>adopted</strong>, except <strong>D17 row 2</strong> (Ory Kratos as one
-cohort-wide human-identity pool), which is <strong>held</strong> pending queue item <code>T30-ORY-PROOF</code>. Each
+<p><strong>Status: living document — the decision record.</strong> Decisions D1–D19 are the maintainer's
+(2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14) and are all <strong>adopted</strong>, except <strong>D17 row 2</strong>
+(Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is <strong>adopted in principle,
+gated</strong> on the edge's production conditions and the compliance question (<code>T30-ORY-PROOF</code> held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. <strong>Item state lives
-in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1ea5d9384859b5edeeb12ca88f7d04f355357e12/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
+in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb1b48e76661e7d2458d8be88c7aff3a2b0638a3/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
 <a href="../../../queue/QUEUE.html"><code>queue/QUEUE.md</code></a>, measured by <code>make queue-status</code>); defect facts live
 in the <a href="../remedial/nightscout-backfix-register.html">backfix register</a>. Measured facts below name
 their date and commit.</p>
@@ -5383,7 +5466,8 @@ their date and commit.</p>
 <li><strong>Open tenancy work:</strong> T3.0 (configuration surface and credential root). <code>T30-SCHEMA-CRED</code> is
   done on local branch <code>seam/t30-schema-cred</code> <code>65ce54b9</code> (2026-10-07). <code>T30-ORY-PROOF</code> is done and
   its condition held (<a href="../../60-research/tenancy/ory-proof-2026-10-07.html">Ory proof</a>); D17 row 2
-  stays held until the maintainer adopts it and picks the cookie scope. <code>T30-SCHEMA-CONFIG</code> waits on
+  was adopted in principle on 2026-10-12, gated, with cookie scope E (apex behind a hardened edge); no real identities until the
+  edge's production conditions are measured over https and the compliance question has an owner. <code>T30-SCHEMA-CONFIG</code> waits on
   <code>T30-RESEARCH</code> (config half) and those two decisions (identity half).</li>
 <li><strong><code>TENANCY_MODE=multi</code> is developer-only</strong>, and under it alarms and live updates are withheld
   (§2.10, §7a).</li>
@@ -5596,8 +5680,18 @@ preference.</p>
 </tr>
 <tr>
 <td><strong>D17</strong></td>
-<td><strong>The auth plane splits by audience, not by build-versus-buy.</strong> Adopted: devices and the data path keep a <strong>native per-tenant credential permanently</strong>; Hydra is <strong>deferred</strong>; D7 is <strong>unchanged</strong>. <strong>Held, not adopted:</strong> human identity via one cohort-wide Ory Kratos pool, hosted-only — conditional on <code>T30-ORY-PROOF</code>. D14 holds either way: Nightscout mints its own per-tenant token after authentication</td>
+<td><strong>The auth plane splits by audience, not by build-versus-buy.</strong> Adopted: devices and the data path keep a <strong>native per-tenant credential permanently</strong>; Hydra is <strong>deferred</strong>; D7 is <strong>unchanged</strong>. <strong>Adopted in principle, gated (2026-10-12):</strong> human identity via one cohort-wide Ory Kratos pool, hosted-only; cookie scope E (apex behind a hardened edge, 2026-10-12); no real identities until the edge's production conditions are measured over https and the compliance question has an owner. D14 holds either way: Nightscout mints its own per-tenant token after authentication</td>
 <td>maintainer, 2026-09-16 — §2.9</td>
+</tr>
+<tr>
+<td><strong>D18</strong></td>
+<td><strong>Controller registration has two tiers.</strong> <em>Well-known</em> declarations ship with the hub, so legacy writers are described with no controller change (backwards compatibility). <em>Controller-owned</em> registrations are dynamic and typed: a controller declares its own definitions — intent kinds, states, transitions, initiators, effect fields, command contract — and the hub offers typed API for them, so controller-unique features have a home other than untyped <code>devicestatus</code>. Adoption follows the WHATWG pattern: specify what happens now, leave room to extend; the controller owns its registration's lifecycle. <strong>Roles:</strong> the hub (Nightscout, Nocturne) is responsible for observability; the controller is responsible for sending data accurately and for syncing and reconciling. The hub records a controller's composition and reconciliation results; it does not compute dosing state. <strong>Addendum (2026-10-12):</strong> every extensible field is typed; the grammar is must-ignore with typed, namespaced extensions, open vocabularies, per-kind versions, declared horizons and hub/controller negotiation, so neither side releases in lockstep</td>
+<td>maintainer, 2026-10-09 and 2026-10-12 — §2.6.1</td>
+</tr>
+<tr>
+<td><strong>D19</strong></td>
+<td><strong>A registration separates the definition from the instance.</strong> A <em>definition</em> says what a controller's data means; it is immutable, identified by the hash of its content, and many coexist under one <code>(vendor, product)</code>. An <em>instance</em> is one connected copy of a controller (phone, simulator, lab rig, agent): it names the definition it runs, holds a lease, declares a provenance (<code>device</code> or <code>simulated</code>) on each channel role it plays, and carries typed labels. Among <code>device</code>-provenance instances each channel role has one source of record, handed off by release, lease lapse or owner transfer; an overlapping writer is flagged, never silently resolved, and a command has one destination. Registered instances write typed records only for accepted elements; older readers get a declared, read-only view in today's shapes. The hub still decides nothing about dosing. <em>(corrected 2026-10-15: reverse-DNS, <code>dev.nightscout/</code> — the well-known label prefix of rule 7; specified 2026-10-15, <code>SPEC-REG-INSTANCE</code>, hub-sync design §3.6)</em></td>
+<td>maintainer, 2026-10-14 — §2.6.2</td>
 </tr>
 </tbody>
 </table>
@@ -5760,6 +5854,245 @@ OpenAPI spec, <code>indexedFields</code>, the nsschema model and the <code>walke
   finding that motivates it ({M} motivation (a)) is a fidelity problem; fixing it in the multitenant
   backend only would leave single-tenant behind, which D4 forbids.</li>
 </ul>
+<h3 id="261-d18--two-tier-controller-registration">2.6.1 D18 — two-tier controller registration<a class="headerlink" href="#261-d18--two-tier-controller-registration" title="Permanent link">&para;</a></h3>
+<p>D11 says <em>what</em> <code>devicestatus</code> decomposes into is declared by a registered controller description.
+D18 says who may declare it and what a declaration may carry.</p>
+<table>
+<thead>
+<tr>
+<th>tier</th>
+<th>who writes it</th>
+<th>purpose</th>
+<th>what changes for the controller</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>well-known</strong></td>
+<td>the hub, generated from measurement (<code>specs/sync/registrations/</code>)</td>
+<td>backwards compatibility: today's writers are described as they are</td>
+<td>nothing</td>
+</tr>
+<tr>
+<td><strong>controller-owned</strong></td>
+<td>the controller, per release</td>
+<td>extensibility: typed definitions for features unique to that controller, and the hub API derived from them</td>
+<td>publishes a registration when it wants typed support for a feature</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What a registration has to be able to declare</strong> is measured across Loop, Trio, iAPS, AAPS and
+both hubs in <a href="../platform/nightscout-intent-workflow-landscape-2026-10-09.html">intent and workflow across the landscape</a>
+§9: definitions with stable ids, intent slots and which coexist, states and end reasons, the wire
+carrier for today's documents, requested vs applied, the controller's composition result, its
+initiator vocabulary, its command contract, and which hub-originated intent it accepts.</p>
+<p><strong>The role split decides one open design question.</strong> Overlapping intents are combined by a
+controller-specific rule (Loop, Trio/iAPS and AAPS each differ, and the rule depends on algorithm
+settings), so the hub records the result the controller reports and never derives it. A hub-side
+composition rule, such as the upstream RFC's <code>conflict-resolution.md</code> override composition, is
+outside the hub's role.</p>
+<p><strong>What D18 supersedes:</strong> <a href="../platform/PROPOSAL-controller-descriptions-2026-09-11.html">controller descriptions</a>
+§4 ("static descriptions, not CRD-style, no new endpoints"). The well-known tier keeps every
+property §4 lists; the controller-owned tier is the addition.</p>
+<h4 id="d18-addendum--an-extensible-grammar-maintainer-2026-10-12">D18 addendum — an extensible grammar (maintainer, 2026-10-12)<a class="headerlink" href="#d18-addendum--an-extensible-grammar-maintainer-2026-10-12" title="Permanent link">&para;</a></h4>
+<p><strong>Goal.</strong> A controller adds a setting, an algorithm input, an intent kind or a new version of a
+data model without the hub shipping a release first, and an older or newer hub and controller
+still interoperate. <strong>Every extensible field is typed:</strong> the hub accepts controller-specific data
+only together with a declaration of its type, never as an untyped bag.</p>
+<p><strong>Where the grammar stands</strong> (<code>specs/sync/controller-state-model.schema.json</code>, <code>e9634479</code>). A new
+intent kind needs no hub change: <code>stateSpans[].category</code> is open and <code>endReasons</code> maps a
+controller's own term onto a shared value. Everything else is closed: every object sets
+<code>additionalProperties: false</code>, <code>apiVersion</code> is the constant <code>nightscout.dev/sync/v1</code>, <code>x-</code> fields
+are stripped before validation, <code>settings.fields</code> and <code>replayInputs</code> name a field without typing
+it, <code>endedEncoding</code>, command <code>transport</code> and <code>replayInputs[].status</code> are fixed lists, versioning is
+per registration (<code>metadata.versionRange</code>), and <code>cadence</code> is one value per controller. The settings
+document (<code>controller-settings.schema.json</code>) is already open and partly typed (<code>x-source</code>,
+<code>x-algorithm</code>, <code>x-status-today</code>); the registration does not reference it.</p>
+<p><strong>Rules.</strong></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>rule</th>
+<th>what it removes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Must-ignore, plus typed extensions.</strong> Within a major grammar version a hub ignores grammar fields it does not know (kept, not interpreted, not served as data). Controller-specific data goes under <code>extensions</code>, keyed by a reverse-DNS namespace the controller owns; each extension carries a type declaration (rule 2) and is stored, validated and served as declared. An extension without a type declaration is rejected.</td>
+<td>lockstep on new declarations</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Typed field declarations.</strong> <code>settings.fields[]</code>, <code>replayInputs[]</code> and extension fields are objects: a type as a restricted JSON Schema fragment, unit, range, horizon (rule 5), sensitivity label and evidence. The hub derives validation, indexing and query from the declaration. A field with no sensitivity label falls under the existing <code>unlabelledPolicy: withhold</code>.</td>
+<td>untyped settings and inputs</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Open vocabularies.</strong> Every closed list a controller may need to extend takes a shared value, or <code>other</code> with the controller's own term, as <code>endReasons</code> does now. A hub renders an unknown term as "other: <em>term</em>" instead of rejecting the registration.</td>
+<td>lockstep on new encodings</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Per-kind versions.</strong> Each intent kind and each extension has its own version. A registration may declare several served versions and one stored version, and optionally a lossless mapping between two versions. Without a declared mapping the hub serves each version as written and never converts.</td>
+<td>lockstep on model changes; side-by-side migration</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Horizons.</strong> Each document, kind and field declares its horizon — <code>cycle</code>, <code>span</code>, <code>effective-dated</code>, <code>definition</code> or <code>aggregate</code> — with its own cadence and retention. <code>availability</code> gains <code>experimental</code>: the hub stores it as declared, gives it no well-known mapping and makes no long-term promise.</td>
+<td>one cadence per controller; no place for derived or trial models</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Negotiation.</strong> The hub publishes the grammar versions and capabilities it supports at a <code>.well-known</code> address; the controller submits its registration; anything the hub does not accept, the controller writes as its well-known carrier (<code>stateSpans[].wire</code>).</td>
+<td>lockstep in both directions</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The roles do not change.</strong> Typing tells the hub how to store, validate, index and render a value,
+not what it means for dosing. The hub still records what the controller reports (D18).</p>
+<p><strong>Compatibility.</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>older hub</th>
+<th>newer hub</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>older controller</strong></td>
+<td>today's documents</td>
+<td>the well-known tier describes them</td>
+</tr>
+<tr>
+<td><strong>newer controller</strong></td>
+<td>falls back to its well-known carriers (rule 6)</td>
+<td>typed registration, extensions and versions</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Status.</strong> Rules 1–5 are schema and generator work in this repository, queued as <code>SCHEMA-REG-EXT</code>;
+its proof is the three generated registrations still validating plus an unfamiliar test
+registration that uses every rule. Rule 6 is specified as <code>SPEC-REG-NEGOTIATE</code> (capability
+document, submit and fallback contract, conformance fixtures); the API a hub derives from a
+registration is <code>HUB-REG-CRM</code> for cgm-remote-monitor and <code>HUB-REG-NOCTURNE</code>, a shared-contract
+proposal to Nocturne. All three follow <code>SCHEMA-REG-EXT</code>. <em>(2026-10-12: rules 1–5 are in the
+schema and generator; "where the grammar stands" above describes the grammar before them, and
+the hub-sync design §3.1 lists the result.)</em> <em>(2026-10-12: rule 6 is specified —
+<a href="../platform/nightscout-hub-sync-architecture-2026-09-11.html#35-negotiation">hub-sync design §3.5</a>,
+<code>specs/sync/hub-capabilities.schema.json</code> (served at <code>/.well-known/nightscout/sync</code>),
+<code>specs/sync/registration-submit.schema.json</code> and 21 conformance cases under
+<code>specs/sync/conformance/</code>, checked by <code>tools/nsschema/test_registration_negotiation.py</code>.
+Authorisation follows D13–D17 where they settle it; ten points they do not settle are listed
+there as open questions.)</em> <em>(2026-10-14: the ten questions are decided — hub-sync design §3.5, "Decisions" — and question 6
+became D19, §2.6.2; the spec and cases are amended under <code>SPEC-REG-DECISIONS</code>.)</em> <em>(2026-10-15:
+<code>SPEC-REG-DECISIONS</code> is done — the hub-sync design §3.5, the submit schema (the capability
+document is unchanged), the grammar's
+<code>dualWriteLink</code> and 53 conformance cases now carry first-to-claim namespaces, binding to the
+creating subject, the owner's actions on <code>ns-tenant-admin</code> and the <code>blocked</code> state, the recorded
+credential kind, carrier views, and the load-versus-definite rule for refused typed writes. The
+D19 parts of questions 7 and 9 remain <code>SPEC-REG-INSTANCE</code>'s.)</em></p>
+<h3 id="262-d19--definitions-and-instances-maintainer-2026-10-14">2.6.2 D19 — definitions and instances (maintainer, 2026-10-14)<a class="headerlink" href="#262-d19--definitions-and-instances-maintainer-2026-10-14" title="Permanent link">&para;</a></h3>
+<p>D18 registers what a controller's data means. It does not say which copy of a controller is
+connected. Several copies on one site are expected, not exceptional: a development build or
+simulator beside the phone that doses, a lab rig, a phone migration with old and new phones both
+running, and later cooperating agents acting as controllers of different kinds. Keying one
+registration per <code>(vendor, product)</code> per tenant makes those copies overwrite one another. D19
+separates the two.</p>
+<table>
+<thead>
+<tr>
+<th>layer</th>
+<th>what it says</th>
+<th>identity</th>
+<th>lifecycle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>definition</strong></td>
+<td>what the data means: kinds, settings, inputs, extensions, versions, carriers (D18 and its addendum)</td>
+<td>the hash of its content; many per <code>(vendor, product)</code></td>
+<td>immutable; written by the controller</td>
+</tr>
+<tr>
+<td><strong>instance</strong></td>
+<td>which copy is connected, which definition it runs, which channel roles it plays</td>
+<td>opaque, issued by the hub or supplied by the controller</td>
+<td>a lease the instance renews; it lapses without housekeeping</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Prior art.</strong> cgm-remote-monitor's agent control plane RFC (<code>docs/proposals/agent-control-plane-rfc.md</code>,
+2026-01-01; read at official <code>b5ddd662</code>) already splits <code>ControllerKindDefinition</code> from
+<code>ControllerInstanceRegistration</code>, with <code>lastSeenAt</code> as liveness, and plans agents as a later
+phase. The <a href="../platform/nightscout-hub-sync-architecture-2026-09-11.html#52-liveness-and-channel-ownership--open-here-already-drafted-upstream">hub-sync design §5.2</a>
+maps it and the <a href="nightscout-control-plane-reconciliation-2026-09-11.html">control-plane reconciliation</a>
+§3.3 corrects it: instance identity must not come from the free-text <code>devicestatus.device</code>,
+which is recorded only as an observed alias. D19 adopts that split and correction, and fills the
+gap the reconciliation (§5) finds in both trees: what happens when two instances write to one
+site.</p>
+<p><strong>Rules.</strong></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Definitions are content-addressed.</strong> A definition's id is <code>sha256:</code> and the hex SHA-256 of its RFC 8785 canonical JSON. Any number coexist under one <code>(vendor, product)</code>; ten simulators on one build share one definition. Namespaces (§3.5) belong to <code>(vendor, product)</code>, so releases of one product never clash. A definition whose kind is exactly a well-known kind references the catalogue kind and version instead of copying it, and gets the hub's native storage and the catalogue's carrier mapping.</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Meaning conflicts are rejected.</strong> One kind at one version has one meaning (addendum rule 4). A definition that types an existing kind and version differently is rejected as <code>version-conflict</code>; a different meaning is a new version. Definitions that agree but cover different versions coexist.</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Read selection.</strong> Writes need no selection: each instance names its definition. A view chooses a version per kind by this order: the operator's capability document limits what is accepted at all; the tenant owner may pin a version for the site's default views, or block (§3.5 question 5); otherwise the newest version a live <code>device</code>-provenance instance uses; a lab or development view selects its own instances by label.</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Instances.</strong> An instance names its definition, renews a lease whose length the hub states in its capability document, and lapses when it stops renewing. It carries no hardware identifiers; anything identifying is a typed, sensitivity-labelled field (addendum rule 2).</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Roles with provenance.</strong> An instance declares the channel roles it plays: <em>source</em> of a channel (a kind, slot or document it writes) or <em>command sink</em> (hub-originated intent it accepts, <code>acceptsFromHub</code>). Each role carries a required provenance, <code>device</code> or <code>simulated</code>, because one instance can mix them (a development build with a real CGM and a simulated pump). Only <code>device</code>-provenance data is therapy data in default views and exports. Role types are an open vocabulary (addendum rule 3), so roles such as proposing versus acting can be added for agents.</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>One source of record per role.</strong> Among <code>device</code>-provenance instances each channel role has one holder. A second claimant is refused that role (<code>role-held</code>) and writes the well-known carrier, and the hub flags the overlap on the owner's views (the warning GAP-SYNC-030 records as missing). The role passes by release, lease lapse or owner transfer. <code>simulated</code> roles never compete with <code>device</code> roles. A command channel therefore has one destination. The hub decides only which instance is the typed source of record; it never stops, directs or composes dosing.</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Labels.</strong> An instance carries labels: string keys and string values, keys in reverse-DNS form as extensions are, with a few well-known keys under <code>dev.nightscout/</code> (purpose, build, migration group; the values are set by the spec). Labels distinguish, select and filter instances. Provenance, not a label, decides what is therapy data. <em>(corrected 2026-10-15: reverse-DNS, <code>dev.nightscout/</code>; it read <code>nightscout.dev/</code>, which is not reverse-DNS form. The keys are <code>dev.nightscout/purpose</code> — therapy, development, lab, research —, <code>dev.nightscout/build</code> — release, dev — and <code>dev.nightscout/migration-group</code>, an opaque string; hub-sync design §3.6.)</em></td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>Older readers.</strong> A registered instance writes typed records only for accepted elements. The hub serves older readers (v1, v3 and their consumers) a declared, read-only view in today's shapes, from the catalogue's mapping for well-known kinds or the definition's <code>wire</code> carrier; each projected document is labelled as projected, is never stored as a source, and carries the ids of the entities decomposition already assigns. A view for older readers is not a conversion between typed versions under addendum rule 4. Writing both typed record and carrier, linked by (instance, the controller's record id), is for an element with no declared carrier mapping, or while an app moves over. Prior art: Nocturne's <code>V4ToLegacyProjectionService</code> (read at <code>42275c812</code>) already serves its v1–v3 reads from V4 records — glucose to entries; boluses, carbs and device events to treatments.</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>Retention.</strong> A definition is kept while any stored record references it; each record's declared horizon retention decides when the record goes. Ageing out means a definition is no longer current, never that it is deleted while data depends on it.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The roles do not change.</strong> The hub records which instance wrote what and in which role; the
+controller still owns what it declares and how it doses (D18).</p>
+<p><strong>Status.</strong> Specified as <code>SPEC-REG-INSTANCE</code>; the hub work (<code>HUB-REG-CRM</code>, <code>HUB-REG-NOCTURNE</code>)
+follows it. <em>(2026-10-15: <code>SPEC-REG-INSTANCE</code> is done — <a href="../platform/nightscout-hub-sync-architecture-2026-09-11.html#36-definitions-and-instances">hub-sync design §3.6</a>,
+<code>specs/sync/controller-instance.schema.json</code>, the capability document's <code>instances</code>, the grammar's
+<code>wellKnownRef</code>, and 86 cases under <code>specs/sync/conformance/instances/</code>, checked by
+<code>tools/nsschema/test_registration_instances.py</code>. Rules 1–9 are specified as written, with the label
+prefix of rule 7 corrected; the choices the item made beyond them are listed in §3.6 for
+confirmation. The generated well-known registrations declare no kind versions, so their kinds
+cannot yet be referenced by <code>wellKnownRef</code>; slot names, which become shared channels, are free
+strings in the grammar with no shared list.)</em></p>
 <h3 id="27-d12--what-each-repository-is-for">2.7 D12 — what each repository is for<a class="headerlink" href="#27-d12--what-each-repository-is-for" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -5998,7 +6331,7 @@ lands on <code>T30-WIRING</code>.</p>
 <tr>
 <td>tenant owners and caregivers</td>
 <td>Ory Kratos, one cohort-wide pool, hosted-only</td>
-<td><strong>HELD — direction of travel, not adopted.</strong> Conditional on <code>T30-ORY-PROOF</code></td>
+<td><strong>ADOPTED IN PRINCIPLE, GATED</strong> (maintainer, 2026-10-12): <code>T30-ORY-PROOF</code> held 23/23. <strong>Cookie scope: E, the apex cookie behind a hardened edge</strong> (<a href="../../60-research/tenancy/ory-cookie-variants-2026-10-12.html">cookie variants</a>, 21/21 measured). Four production conditions: the edge strips the Kratos and CSRF cookies before any tenant backend; it refuses cross-origin writes, WebSocket upgrades included; every path to a tenant backend (API, socket.io) goes through it; and it is measured over https. No real identities until those hold and the compliance question has an owner. Host-only with a hand-off (H2) needed an origin check in every tenant and logout propagation, because tenants under one domain are same-site</td>
 </tr>
 <tr>
 <td>third-party apps</td>
@@ -6440,7 +6773,8 @@ with 19 conflicting paths (<code>git merge-tree --write-tree --name-only officia
 conflicts across the v1 API and server storage modules, cost unmeasured. Against <code>official/dev</code>
 <code>295f1177</code> the seam is 271 behind / 545 ahead with 49 conflicting paths (the same two commands with
 <code>official/dev</code>). Whether the seam refreshes onto the modernization branch or onto <code>dev</code> depends on
-how the release train reaches <code>dev</code>, which is open (§5.1, queue <code>RT-PROPAGATION</code>). D9 stands.</p>
+how the release train reaches <code>dev</code>: by merge, decided 2026-10-12 (§5.1, queue <code>RT-PROPAGATION</code>), so
+the seam refreshes onto the modernization branch. D9 stands.</p>
 <p><strong>Caveat:</strong> #8605 (the modernization integration PR) has zero human reviews across its production
 lines, all by one author. That blocks <em>shipping</em> the stack, not <em>developing</em> against it. This plan
 does not constitute a review of it.</p>
@@ -6484,7 +6818,8 @@ modernization branch next takes <code>dev</code>.</p>
 staleness costs no one until tenancy work resumes. The refresh waits for the 15.0.9 freeze (<code>RT-0</code>)
 and for the release train's next propagation, and is done as the first step of <code>WRITE-CONTRACT</code>.
 Modernization work proceeds in parallel meanwhile. It converges with <code>dev</code>, not with the seam.</p>
-<p><strong>Open: how the release train reaches <code>dev</code></strong> (queue <code>RT-PROPAGATION</code>, maintainer). So far every
+<p><strong>Decided 2026-10-12: the release train reaches <code>dev</code> by merge</strong> (queue <code>RT-PROPAGATION</code>, maintainer),
+so the seam takes the merge row below. Before the decision, every
 propagation has been a merge: <code>e3b22034</code> on the modernization branch, and both local rehearsals
 (<code>rt/cut1</code> <code>ed21961f</code> and <code>rh/cut1</code> <code>c77797e0</code> each contain every commit of
 <code>chore/retire-jsdom</code>: <code>git rev-list --count official/chore/retire-jsdom ^rt/cut1</code> is 0). Queue

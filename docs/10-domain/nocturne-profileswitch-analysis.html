@@ -605,6 +605,8 @@
       
         
       
+        
+      
     
     
     
@@ -8215,12 +8217,13 @@
 
 
 <h1 id="nocturne-profileswitch-treatment-model-analysis">Nocturne ProfileSwitch Treatment Model Analysis<a class="headerlink" href="#nocturne-profileswitch-treatment-model-analysis" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-09-30 at <code>f9da652b</code>.</em></p>
+<p><em>Living document, last changed 2026-10-09 at <code>a6191372</code>.</em></p>
 <blockquote>
 <p><strong>Date</strong>: 2026-01-30<br />
 <strong>Status</strong>: Complete<br />
 <strong>Domain</strong>: Sync &amp; Identity / Profile<br />
-<strong>OQ Reference</strong>: <a href="../OPEN-QUESTIONS.html#oq-010-profileswitch--override-mapping--resolved--extended">OQ-010</a></p>
+<strong>OQ Reference</strong>: <a href="../OPEN-QUESTIONS.html#oq-010-profileswitch--override-mapping--resolved--extended">OQ-010</a><br />
+<strong>Corrected 2026-10-09</strong> (§8 comparison, GAP-NOCTURNE-004) against cgm-remote-monitor <code>fade2299</code> and the backfix register's BF-123; see <a href="../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.html">intent and workflow across the landscape</a> §5.</p>
 </blockquote>
 <hr />
 <h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
@@ -8551,12 +8554,12 @@
 <tr>
 <td>percentage application</td>
 <td>✅ Applied in ProfileService</td>
-<td>❌ Display only</td>
+<td>✅ with <code>CircadianPercentageProfile: true</code> (15.0.8 and dev); AAPS 3.x switches without that flag: basal × p/100, ISF and IC × 100/p on dev (BF-123, merged, not released)</td>
 </tr>
 <tr>
 <td>timeshift application</td>
-<td>✅ Applied in ProfileService</td>
-<td>❌ Display only</td>
+<td>✅ Applied, read as <strong>hours</strong> (<code>% 24</code>)</td>
+<td>✅ CircadianPercentageProfile path; AAPS 3.x <code>timeshift</code> read as <strong>milliseconds</strong> on dev (BF-123)</td>
 </tr>
 <tr>
 <td>oref integration</td>
@@ -8565,7 +8568,7 @@
 </tr>
 </tbody>
 </table>
-<p><strong>Key Difference</strong>: Nocturne <strong>actually applies</strong> percentage/timeshift to algorithm calculations, while cgm-remote-monitor only displays them.</p>
+<p><strong>Key Difference</strong>: both hubs apply percentage. They differ on the AAPS 3.x <code>timeshift</code> unit: AAPS sends milliseconds (<code>ProfileSwitchExtension.kt</code>), which cgm-remote-monitor dev reads as milliseconds and Nocturne reads as hours, so a whole-hour shift becomes 0 modulo 24 in Nocturne (read-derived).</p>
 <hr />
 <h2 id="9-gap-analysis-updates">9. Gap Analysis Updates<a class="headerlink" href="#9-gap-analysis-updates" title="Permanent link">&para;</a></h2>
 <h3 id="gap-sync-037-update-percentagetimeshift-portability">GAP-SYNC-037 Update: Percentage/Timeshift Portability<a class="headerlink" href="#gap-sync-037-update-percentagetimeshift-portability" title="Permanent link">&para;</a></h3>
@@ -8577,7 +8580,7 @@
 <p><strong>Remediation</strong>: Nocturne provides a path for percentage/timeshift interoperability.</p>
 <hr />
 <h3 id="new-finding-gap-nocturne-004">New Finding: GAP-NOCTURNE-004<a class="headerlink" href="#new-finding-gap-nocturne-004" title="Permanent link">&para;</a></h3>
-<p><strong>Description</strong>: Nocturne applies percentage/timeshift in calculations, but cgm-remote-monitor does not. This creates behavioral divergence when the same ProfileSwitch treatment is stored in both systems.</p>
+<p><strong>Description</strong>: The two hubs resolve the same AAPS 3.x ProfileSwitch differently: <code>timeshift</code> units differ (milliseconds vs hours), and after a timed switch expires cgm-remote-monitor falls back to the earlier permanent profile while Nocturne's spans leave no profile covering that time (read-derived).</p>
 <p><strong>Impact</strong>: 
 - Users migrating from cgm-remote-monitor to Nocturne may see different IOB/COB/predictions
 - Algorithm recommendations differ based on server platform</p>

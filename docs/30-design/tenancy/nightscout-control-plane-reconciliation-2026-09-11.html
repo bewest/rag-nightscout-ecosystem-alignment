@@ -605,6 +605,8 @@
       
         
       
+        
+      
     
     
     
@@ -2303,6 +2305,8 @@
       
         
       
+        
+      
     
     
     
@@ -2678,10 +2682,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#34-overrideinstanceeffectiveeffects-will-be-empty-19-of-the-time" class="md-nav__link">
+  <a href="#34-overrideinstanceeffectiveeffects-will-be-empty-20-of-the-time" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.4 OverrideInstance.effectiveEffects will be empty 19% of the time
+        3.4 OverrideInstance.effectiveEffects will be empty 20% of the time
       
     </span>
   </a>
@@ -4850,10 +4854,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#34-overrideinstanceeffectiveeffects-will-be-empty-19-of-the-time" class="md-nav__link">
+  <a href="#34-overrideinstanceeffectiveeffects-will-be-empty-20-of-the-time" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.4 OverrideInstance.effectiveEffects will be empty 19% of the time
+        3.4 OverrideInstance.effectiveEffects will be empty 20% of the time
       
     </span>
   </a>
@@ -5014,7 +5018,7 @@
 <p class="admonition-title">Record</p>
 <p>Record as of 2026-09-11. A point-in-time document; it is not kept up to date.</p>
 </div>
-<p><em>Contributor-facing.</em> <strong>Snapshot — describes 2026-09-11. Status: current as analysis of the RFC; no decision rests on it.</strong> Current decisions: <a href="nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>.</p>
+<p><em>Contributor-facing.</em> <strong>Snapshot — describes 2026-09-11. Status: current as analysis of the RFC; no decision rests on it.</strong> Current decisions: <a href="nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>. <strong>Corrected in place 2026-10-09:</strong> §3.4 counts are distinct documents across the corpus's two overlapping snapshots. The RFC's hub-side override composition (<code>conflict-resolution.md</code>) is outside the hub's role under D18.</p>
 <p>Date: 2026-09-11. Tenth in the series, and the
 first one addressed <strong>to cgm-remote-monitor's own <code>docs/proposals/</code> set</strong>
 rather than to a controller.</p>
@@ -5042,7 +5046,7 @@ it.</p>
 </tr>
 <tr>
 <td><strong>Five things the corpus corrects</strong></td>
-<td>The Trio discriminator never fires; instance identity is taken from the least reliable field; <code>OverrideInstance.effectiveEffects</code> would be empty for 19% of observed active overrides; the suggested/enacted split already exists under three different key names</td>
+<td>The Trio discriminator never fires; instance identity is taken from the least reliable field; <code>OverrideInstance.effectiveEffects</code> would be empty for 20% of observed active overrides; the suggested/enacted split already exists under three different key names</td>
 </tr>
 <tr>
 <td><strong>Two simplifications with arithmetic behind them</strong></td>
@@ -5200,9 +5204,9 @@ supplied by the controller. <code>device</code> may be <em>recorded</em> on the 
 observed alias; it must not <em>be</em> the identity. Bridge-synthesized events for
 an unregistered controller get a synthetic instance id, not the device
 string.</p>
-<h3 id="34-overrideinstanceeffectiveeffects-will-be-empty-19-of-the-time">3.4 <code>OverrideInstance.effectiveEffects</code> will be empty 19% of the time<a class="headerlink" href="#34-overrideinstanceeffectiveeffects-will-be-empty-19-of-the-time" title="Permanent link">&para;</a></h3>
+<h3 id="34-overrideinstanceeffectiveeffects-will-be-empty-20-of-the-time">3.4 <code>OverrideInstance.effectiveEffects</code> will be empty 20% of the time<a class="headerlink" href="#34-overrideinstanceeffectiveeffects-will-be-empty-20-of-the-time" title="Permanent link">&para;</a></h3>
 <p>Bridge mode synthesizes <code>OverrideInstance</code> from devicestatus. Measured over
-the <strong>64,674</strong> devicestatus snapshots with an active override:</p>
+the <strong>55,938</strong> distinct devicestatus documents with an active override (counted once across the corpus's two overlapping snapshots; corrected 2026-10-09):</p>
 <table>
 <thead>
 <tr>
@@ -5214,18 +5218,18 @@ the <strong>64,674</strong> devicestatus snapshots with an active override:</p>
 <tbody>
 <tr>
 <td>Effect and motivation both present</td>
-<td>49,990</td>
-<td>77.3%</td>
+<td>42,799</td>
+<td>76.5%</td>
 </tr>
 <tr>
 <td>Effect only (no label)</td>
-<td>2,411</td>
-<td>3.7%</td>
+<td>2,176</td>
+<td>3.9%</td>
 </tr>
 <tr>
 <td><strong>Motivation only — a name, no effect</strong></td>
-<td><strong>12,202</strong></td>
-<td><strong>18.9%</strong></td>
+<td><strong>10,892</strong></td>
+<td><strong>19.5%</strong></td>
 </tr>
 <tr>
 <td>Neither</td>
@@ -5234,7 +5238,7 @@ the <strong>64,674</strong> devicestatus snapshots with an active override:</p>
 </tr>
 </tbody>
 </table>
-<p>The same shape appears on treatments: of 3,415 temporary effects, <strong>481
+<p>The same shape appears on treatments: of 2,865 temporary effects, <strong>399
 carry a label and no effect at all</strong>.</p>
 <p>So a bridged <code>OverrideInstance</code> will carry a <code>reason</code> and an empty
 <code>effectiveEffects</code> for roughly one in five active overrides. That is not a

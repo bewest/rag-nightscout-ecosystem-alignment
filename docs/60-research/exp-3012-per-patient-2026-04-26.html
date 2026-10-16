@@ -27,7 +27,7 @@
     
     
       
-        <title>EXP-3012 — Per-patient (T, M) recommendation (2026-04-26) - Nightscout ecosystem alignment</title>
+        <title>EXP-3012 — Per-patient (T*, M*) recommendation (2026-04-26) - Nightscout ecosystem alignment</title>
       
     
     
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              EXP-3012 — Per-patient (T, M) recommendation (2026-04-26)
+              EXP-3012 — Per-patient (T*, M*) recommendation (2026-04-26)
             
           </span>
         </div>
@@ -577,6 +577,8 @@
       
         
           
+        
+      
         
       
         
@@ -3009,7 +3011,7 @@
   <span class="md-ellipsis">
     
   
-    EXP-3012 — Per-patient (T, M) recommendation (2026-04-26)
+    EXP-3012 — Per-patient (T*, M*) recommendation (2026-04-26)
   
 
     
@@ -3027,7 +3029,7 @@
   <span class="md-ellipsis">
     
   
-    EXP-3012 — Per-patient (T, M) recommendation (2026-04-26)
+    EXP-3012 — Per-patient (T*, M*) recommendation (2026-04-26)
   
 
     
@@ -3695,7 +3697,7 @@
   <span class="md-ellipsis">
     
   
-    EXP-3028 — Per-patient (T, M) refit with carb-aware proxy
+    EXP-3028 — Per-patient (T*, M*) refit with carb-aware proxy
   
 
     
@@ -5674,6 +5676,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -7352,7 +7358,7 @@
 
 
 
-<h1 id="exp-3012--per-patient-t-m-recommendation-2026-04-26">EXP-3012 — Per-patient (T<em>, M</em>) recommendation (2026-04-26)<a class="headerlink" href="#exp-3012--per-patient-t-m-recommendation-2026-04-26" title="Permanent link">&para;</a></h1>
+<h1 id="exp-3012--per-patient-t-m-recommendation-2026-04-26">EXP-3012 — Per-patient (T*, M*) recommendation (2026-04-26)<a class="headerlink" href="#exp-3012--per-patient-t-m-recommendation-2026-04-26" title="Permanent link">&para;</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Record</p>
 <p>Record as of 2026-04-26. A point-in-time document; it is not kept up to date.</p>
@@ -7395,7 +7401,7 @@
 <table>
 <thead>
 <tr>
-<th>Recommended (T<em>, M</em>)</th>
+<th>Recommended (T*, M*)</th>
 <th style="text-align: right;">n patients</th>
 <th>Interpretation</th>
 </tr>
@@ -7539,7 +7545,7 @@
 <p>Patient <code>d</code> is interesting — the only top-5 patient with <code>M*=1.0</code> (don't shrink magnitude). This says <code>d</code>'s overshoot is timing-bound more than magnitude-bound; firing earlier alone fixes it. Stored memory notes Patient <code>g</code> (Loop_AB_ON, mid-conservatism) is a <em>sweet-spot</em>; <code>d</code> shares Loop_AB_ON membership but is in the <em>largest-headroom</em> group, not the sweet-spot.</p>
 <h2 id="implications-for-autoresearch-fitness">Implications for autoresearch fitness<a class="headerlink" href="#implications-for-autoresearch-fitness" title="Permanent link">&para;</a></h2>
 <p>The v2 score function in <code>cf_replay_score_v2.py</code> currently uses a single <code>--smb-multiplier</code> knob applied uniformly. This experiment shows that <strong>a single knob is wrong</strong>: 28 % of patients want a different shape (T=0, M=0.5) than the cohort modal (T=30, M=0.5). For meaningful per-patient tuning, the score function should accept (T, M) jointly <em>and</em> operate on the per-patient sub-cohort.</p>
-<p>Action item logged for follow-up: extend <code>cf_replay_score_v2.py</code> to accept <code>--per-patient</code> mode that applies (T<em>, M</em>) from the EXP-3012 parquet rather than uniform.</p>
+<p>Action item logged for follow-up: extend <code>cf_replay_score_v2.py</code> to accept <code>--per-patient</code> mode that applies (T*, M*) from the EXP-3012 parquet rather than uniform.</p>
 <h2 id="verdict">Verdict<a class="headerlink" href="#verdict" title="Permanent link">&para;</a></h2>
 <p><strong><code>per_patient_heterogeneity_substantial</code></strong> — Phase 2 controller-level recommendation is correct directionally (cohort gain ≈ −2.5 pp overshoot, −3 pp hypo) but lossy at patient resolution. 28 % of patients are mis-served by the controller-level recommendation; per-patient mode is needed for clinical/individual deployment.</p>
 <h2 id="deliverables">Deliverables<a class="headerlink" href="#deliverables" title="Permanent link">&para;</a></h2>

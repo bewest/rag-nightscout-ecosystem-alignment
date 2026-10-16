@@ -605,6 +605,8 @@
       
         
       
+        
+      
     
     
     
@@ -8415,8 +8417,12 @@
 
 
 <h1 id="remote-commands-cross-system-comparison">Remote Commands Cross-System Comparison<a class="headerlink" href="#remote-commands-cross-system-comparison" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-09-30 at <code>db96e7fb</code>.</em></p>
+<p><em>Living document, last changed 2026-10-09 at <code>a6191372</code>.</em></p>
 <p>This document analyzes how caregivers remotely control AID systems across Trio, Loop, and AAPS, focusing on security models, command types, and safety limits.</p>
+<blockquote>
+<p><strong>Corrected 2026-10-09</strong> against source; see <a href="../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.html">intent and workflow across the landscape</a> §11.<br />
+AAPS paths and the SMS command list below are from the 3.4.2.6 release line; AAPS dev (<code>7e1d537d49</code>) moved the plugin under <code>plugins/sync</code>, dropped <code>AAPSCLIENT RESTART</code>, and added signed client control.</p>
+</blockquote>
 <hr />
 <h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
 <table>
@@ -9275,7 +9281,7 @@
 <p><strong>Reference</strong>: See <a href="../../traceability/treatments-gaps.html#gap-remote-001-remote-command-authorization-unverified">GAP-REMOTE-001 in gaps.md</a> for full gap documentation.</p>
 <h3 id="gap-remote-002-no-command-signing-across-systems">GAP-REMOTE-002: No Command Signing Across Systems<a class="headerlink" href="#gap-remote-002-no-command-signing-across-systems" title="Permanent link">&para;</a></h3>
 <p><strong>Severity</strong>: Medium</p>
-<p><strong>Description</strong>: None of the systems use cryptographic signatures to verify command origin. Trio uses symmetric encryption (provides integrity via GCM), but Loop and AAPS send commands in plaintext.</p>
+<p><strong>Description</strong>: In released versions none of the systems use cryptographic signatures to verify command origin. Trio uses symmetric encryption (provides integrity via GCM), but Loop and AAPS 3.4.2.6 send commands in plaintext. AAPS dev (not released) adds per-client HMAC-signed command envelopes and signed acknowledgements carried on the Nightscout <code>settings</code> collection (<code>SignedEnvelope.kt</code>, <code>AckEnvelope.kt</code>).</p>
 <p><strong>Impact</strong>: 
 - Loop: Anyone with Nightscout access can forge commands
 - AAPS: Phone number spoofing could bypass whitelist (though OTP still required)</p>

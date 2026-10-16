@@ -605,6 +605,8 @@
       
         
       
+        
+      
     
     
     
@@ -8723,10 +8725,11 @@
 
 
 <h1 id="remote-bolus-command-comparison">Remote Bolus Command Comparison<a class="headerlink" href="#remote-bolus-command-comparison" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-01-28 at <code>b9908d2a</code>.</em></p>
+<p><em>Living document, last changed 2026-10-09 at <code>a6191372</code>.</em></p>
 <blockquote>
 <p><strong>Sources</strong>: Loop, AAPS, Trio, Nightscout<br />
-<strong>Last Updated</strong>: 2026-01-28</p>
+<strong>Last Updated</strong>: 2026-01-28<br />
+<strong>Corrected 2026-10-09</strong> against source; see <a href="../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.html">intent and workflow across the landscape</a> §11.  </p>
 </blockquote>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>Remote bolus commands allow caregivers to trigger insulin delivery from outside the AID app. This document compares how Loop, AAPS, Trio, and Nightscout handle these safety-critical commands.</p>
@@ -8747,7 +8750,7 @@
 <td>APNs push</td>
 <td>OTP</td>
 <td>TLS (APNs)</td>
-<td>5 minutes</td>
+<td>set by the sender (Nightscout: 5 minutes); Loop checks it only when present</td>
 </tr>
 <tr>
 <td><strong>AAPS</strong></td>
@@ -9277,7 +9280,7 @@
 <p><strong>Impact</strong>: Caregivers need different tools for different AID systems.</p>
 <p><strong>Remediation</strong>: Define common <code>RemoteCommand</code> schema in Nightscout API v4.</p>
 <h3 id="gap-remote-004-response-notification-inconsistency">GAP-REMOTE-004: Response notification inconsistency<a class="headerlink" href="#gap-remote-004-response-notification-inconsistency" title="Permanent link">&para;</a></h3>
-<p><strong>Description</strong>: Only Trio sends structured response notifications; Loop/AAPS rely on polling devicestatus.</p>
+<p><strong>Description</strong>: Loop (NightscoutService <code>RemoteNotificationResponseManager</code>, optional, only when the sender supplies a return channel) and Trio send structured response notifications directly to the sender over APNs; neither carries a command id, and Nightscout sees only failures, as <code>Note</code> treatments. AAPS 3.4.2.6 replies by SMS; AAPS dev adds signed acknowledgements on the NS <code>settings</code> collection.</p>
 <p><strong>Impact</strong>: Caregivers may not know if remote command succeeded.</p>
 <p><strong>Remediation</strong>: Standardize response notification format.</p>
 <hr />

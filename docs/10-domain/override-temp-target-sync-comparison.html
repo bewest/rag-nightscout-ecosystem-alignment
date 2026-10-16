@@ -605,6 +605,8 @@
       
         
       
+        
+      
     
     
     
@@ -8359,9 +8361,10 @@
 
 
 <h1 id="override-and-temporary-target-sync-comparison">Override and Temporary Target Sync Comparison<a class="headerlink" href="#override-and-temporary-target-sync-comparison" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-01-29 at <code>3557e9f9</code>.</em></p>
+<p><em>Living document, last changed 2026-10-09 at <code>a6191372</code>.</em></p>
 <blockquote>
 <p><strong>Status</strong>: Complete<br />
+<strong>Corrected 2026-10-09</strong> against source; see <a href="../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.html">intent and workflow across the landscape</a> §11.<br />
 <strong>Last Updated</strong>: 2026-01-30<br />
 <strong>Task</strong>: Compare how overrides/temp targets sync to Nightscout</p>
 </blockquote>
@@ -8381,7 +8384,7 @@
 <td><strong>Override</strong></td>
 <td><code>TemporaryScheduleOverride</code></td>
 <td>N/A</td>
-<td><code>Override</code> (custom)</td>
+<td><code>Temporary Override</code></td>
 </tr>
 <tr>
 <td><strong>Temp Target</strong></td>
@@ -8391,7 +8394,7 @@
 </tr>
 </tbody>
 </table>
-<p>Key difference: Loop's override modifies <strong>both</strong> target range AND insulin needs (sensitivity); AAPS temp target modifies <strong>only</strong> target range.</p>
+<p>Key difference: Loop's override modifies <strong>both</strong> target range AND insulin needs (sensitivity); an AAPS temp target modifies <strong>only</strong> the target range under OpenAPS SMB. Under AutoISF a preference lets a high temp target raise sensitivity (<code>OpenAPSAutoISFPlugin.kt</code>).</p>
 <h2 id="loop-override-sync">Loop Override Sync<a class="headerlink" href="#loop-override-sync" title="Permanent link">&para;</a></h2>
 <h3 id="source-files">Source Files<a class="headerlink" href="#source-files" title="Permanent link">&para;</a></h3>
 <ul>
@@ -8668,9 +8671,9 @@
 </table>
 <h2 id="interoperability-gaps">Interoperability Gaps<a class="headerlink" href="#interoperability-gaps" title="Permanent link">&para;</a></h2>
 <h3 id="gap-ovrd-001-different-eventtypes">GAP-OVRD-001: Different eventTypes<a class="headerlink" href="#gap-ovrd-001-different-eventtypes" title="Permanent link">&para;</a></h3>
-<p><strong>Description</strong>: Loop uses <code>Override</code>, AAPS uses <code>Temporary Target</code> - they don't map to each other.</p>
+<p><strong>Description</strong>: Loop uses <code>Temporary Override</code>, AAPS uses <code>Temporary Target</code> - they don't map to each other.</p>
 <p><strong>Evidence</strong>:
-- Loop: <code>OverrideTreament.swift</code> creates eventType <code>Override</code>
+- Loop: <code>OverrideTreament.swift</code> creates eventType <code>Temporary Override</code> (NightscoutKit <code>NightscoutTreatment.swift</code>)
 - AAPS: <code>NSTemporaryTarget.kt:29</code> uses <code>EventType.TEMPORARY_TARGET</code></p>
 <p><strong>Impact</strong>: A Loop override is not recognized as a temp target by AAPS and vice versa.</p>
 <p><strong>Remediation</strong>: Nightscout could map between them, or each app could recognize both types.</p>
@@ -8718,8 +8721,8 @@
 <tbody>
 <tr>
 <td>Loop</td>
-<td><code>syncIdentifier</code> (UUID)</td>
-<td>None</td>
+<td><code>_id</code> = the override's <code>syncIdentifier</code> UUID; no <code>syncIdentifier</code> field is sent, and whether the UUID <code>_id</code> is kept depends on the server's <code>UUID_HANDLING</code></td>
+<td><code>created_at</code> + <code>eventType</code> (server fallback)</td>
 </tr>
 <tr>
 <td>AAPS</td>

@@ -605,6 +605,8 @@
       
         
       
+        
+      
     
     
     
@@ -8581,11 +8583,12 @@
 
 
 <h1 id="override-and-profile-switch-comparison">Override and Profile Switch Comparison<a class="headerlink" href="#override-and-profile-switch-comparison" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-01-28 at <code>75783f0d</code>.</em></p>
+<p><em>Living document, last changed 2026-10-09 at <code>a6191372</code>.</em></p>
 <blockquote>
 <p><strong>Sources</strong>: Loop, AAPS, Trio, Nightscout<br />
 <strong>Last Updated</strong>: 2026-01-29<br />
-<strong>Analysis Depth</strong>: Deep (source code analysis)</p>
+<strong>Analysis Depth</strong>: Deep (source code analysis)<br />
+<strong>Corrected 2026-10-09</strong> against source; see <a href="../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.html">intent and workflow across the landscape</a> §11.  </p>
 </blockquote>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>This document compares how Loop, AAPS, and Trio handle temporary therapy adjustments (overrides, profile switches, temp targets) and how these sync to Nightscout.</p>
@@ -8644,7 +8647,7 @@
 <tbody>
 <tr>
 <td><strong>Separate Target</strong></td>
-<td>No (target in override)</td>
+<td>Yes: a pre-meal target slot, concurrent with an override, not uploaded</td>
 <td>Yes (TempTarget entity)</td>
 <td>Yes (TempTarget entity)</td>
 </tr>
@@ -9146,10 +9149,10 @@
 <tbody>
 <tr>
 <td>Loop</td>
-<td><code>syncIdentifier</code></td>
+<td><code>syncIdentifier</code>, sent as <code>_id</code> (no <code>syncIdentifier</code> field on the wire)</td>
 <td>UUID</td>
 <td>Memory + NS</td>
-<td>Client-side</td>
+<td>Server-dependent (<code>UUID_HANDLING</code>)</td>
 </tr>
 <tr>
 <td>AAPS</td>
@@ -9160,10 +9163,10 @@
 </tr>
 <tr>
 <td>Trio</td>
-<td><code>id</code></td>
-<td>UUID string</td>
+<td><code>created_at</code> + <code>eventType</code> on the wire; <code>id</code> is local only (excluded from <code>NightscoutExercise</code> coding keys)</td>
+<td>—</td>
 <td>CoreData</td>
-<td>Client-side</td>
+<td>Server upsert by time + eventType</td>
 </tr>
 </tbody>
 </table>
@@ -9189,6 +9192,10 @@
 <a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1">// OverrideStorage.swift:127-128</span>
 <a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="n">newOverride</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">UUID</span><span class="p">().</span><span class="n">uuidString</span>
 </code></pre></div>
+<p>The <code>id</code> stays local: <code>NightscoutExercise</code> omits it from its <code>CodingKeys</code>, deletes use
+<code>find[created_at][$eq]</code> + <code>find[eventType][$eq]=Exercise</code> (<code>NightscoutAPI.swift</code>), and the end of an
+override is uploaded by deleting the original and re-posting it with the actual duration
+(<code>NightscoutManager.swift</code>).</p>
 <hr />
 <h2 id="summary-table">Summary Table<a class="headerlink" href="#summary-table" title="Permanent link">&para;</a></h2>
 <table>
@@ -9225,10 +9232,10 @@
 </tr>
 <tr>
 <td><strong>End Tracking</strong></td>
-<td>✅</td>
-<td>❌</td>
-<td>❌</td>
-<td>Add to AAPS/Trio</td>
+<td>✅ amended <code>duration</code></td>
+<td>✅ shortened <code>duration</code>, same <code>identifier</code></td>
+<td>✅ delete + re-post with actual duration</td>
+<td>Declare the encoding per controller</td>
 </tr>
 <tr>
 <td><strong>NS eventType</strong></td>
@@ -9239,10 +9246,10 @@
 </tr>
 <tr>
 <td><strong>Sync Identity</strong></td>
-<td>syncIdentifier (UUID)</td>
-<td>interfaceIDs</td>
-<td>id (UUID string)</td>
-<td>All use UUID pattern</td>
+<td>UUID as <code>_id</code></td>
+<td><code>identifier</code> (v3)</td>
+<td><code>created_at</code> + <code>eventType</code></td>
+<td>Trio to send its <code>id</code></td>
 </tr>
 </tbody>
 </table>

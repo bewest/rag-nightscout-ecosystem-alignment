@@ -605,6 +605,8 @@
       
         
       
+        
+      
     
     
     
@@ -2305,6 +2307,8 @@
       
         
       
+        
+      
     
     
     
@@ -2727,6 +2731,34 @@
     
   
     A hub-and-spoke sync model for AID controllers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-intent-workflow-landscape-2026-10-09.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intent, workflow and entity management across the AID controller landscape
   
 
     
@@ -4876,7 +4908,7 @@
 <p class="admonition-title">Record</p>
 <p>Record as of 2026-09-11. A point-in-time document; it is not kept up to date.</p>
 </div>
-<p><em>Contributor-facing.</em> <strong>Snapshot — describes 2026-09-11. Status: current as analysis; not adopted as a decision.</strong> Current decisions: <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>.</p>
+<p><em>Contributor-facing.</em> <strong>Snapshot — describes 2026-09-11. Status: current as analysis; not adopted as a decision.</strong> Current decisions: <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>. <strong>Corrected in place 2026-10-09</strong> to distinct-document counts (§2.1), and against source (<a href="nightscout-intent-workflow-landscape-2026-10-09.html">intent and workflow across the landscape</a> §11): the AAPS <code>percentage</code> semantics (§2.2, §3.3, §6), the Trio document count and the meaning of its <code>notes</code> (TL;DR, §2.2, §3.3), and the Trio recoverability question (§6).</p>
 <p>Date: 2026-09-11. Companion to
 <a href="nightscout-hub-sync-architecture-2026-09-11.html">the hub-and-spoke sync design</a>.</p>
 <p><strong>Nothing here is a proposal to merge. The privacy argument in §3 is a
@@ -4902,11 +4934,11 @@ review by someone qualified for the jurisdictions involved.</strong></p>
 </tr>
 <tr>
 <td>Can effects be represented only as their impact on dosing, not their motivation?</td>
-<td><strong>Yes, and the corpus is already 86% of the way there.</strong> 85.9% of temporary-effect treatments carry both halves separably</td>
+<td><strong>Yes, and the corpus is already 86% of the way there.</strong> 86.1% of temporary-effect treatments carry both halves separably</td>
 </tr>
 <tr>
 <td>Can AAPS, Trio and Loop concepts be remapped?</td>
-<td><strong>Yes, with two documented lossy cases</strong> — and one of them is the finding: Trio publishes the motivation and no effect at all</td>
+<td><strong>Yes, with one documented lossy case</strong> — and it is the finding: Trio publishes a preset name and no effect at all</td>
 </tr>
 <tr>
 <td>Does Nocturne already implement this?</td>
@@ -4919,10 +4951,11 @@ review by someone qualified for the jurisdictions involved.</strong></p>
 </tbody>
 </table>
 <p><strong>The sharpest finding.</strong> Trio uploads an override as
-<code>{eventType: "Exercise", duration, notes}</code> — 481 documents in the corpus,
-and its <code>NightscoutExercise</code> model carries no percentage, no target, no
-multiplier. The record keeps the user's own note and discards what the loop
-actually did. <strong>It can be neither replayed nor usefully anonymised</strong>:
+<code>{eventType: "Exercise", duration, notes}</code> — 399 distinct documents in the
+corpus, one site — and its <code>NightscoutExercise</code> model carries no percentage, no
+target, no multiplier. <code>eventType: "Exercise"</code> is a fixed carrier for every
+override whatever its purpose, and <code>notes</code> is the preset name the user chose.
+The record keeps that name and discards what the loop actually did. <strong>It can be neither replayed nor usefully anonymised</strong>:
 redacting it leaves nothing, and keeping it reveals only the sensitive half.</p>
 <hr />
 <h2 id="1-why-the-registration-answers-the-protobuf-question">1. Why the registration answers the protobuf question<a class="headerlink" href="#1-why-the-registration-answers-the-protobuf-question" title="Permanent link">&para;</a></h2>
@@ -4966,21 +4999,22 @@ and the <strong>motivation</strong> (preset name, reason, note — why it was as
 <tbody>
 <tr>
 <td>Temporary-effect treatments</td>
-<td>3,415</td>
-<td><strong>85.9%</strong></td>
-<td>14.1%</td>
+<td>2,865</td>
+<td><strong>86.1%</strong></td>
+<td>13.9%</td>
 <td>—</td>
 </tr>
 <tr>
 <td>Active overrides in devicestatus</td>
-<td>64,674</td>
-<td><strong>77.3%</strong></td>
-<td>18.9%</td>
-<td>3.7%</td>
+<td>55,938</td>
+<td><strong>76.5%</strong></td>
+<td>19.5%</td>
+<td>3.9%</td>
 </tr>
 </tbody>
 </table>
-<p><strong>85.9% are already separable</strong>, because Loop writes
+<p>Counts are distinct documents across the corpus's two overlapping snapshots (<code>make schema-effects</code>, corrected 2026-10-09).</p>
+<p><strong>86.1% are already separable</strong>, because Loop writes
 <code>insulinNeedsScaleFactor</code> and <code>correctionRange</code> alongside <code>reason</code>. A
 privacy-preserving projection of those records is a field selection, not a
 redaction pass — which matters, because a field selection can be enforced in
@@ -4990,7 +5024,7 @@ needs the effect, privacy needs the effect without the motivation</strong>, and 
 representation that separates them serves both.</p>
 <h3 id="22-the-remapping-and-where-it-is-lossy">2.2 The remapping, and where it is lossy<a class="headerlink" href="#22-the-remapping-and-where-it-is-lossy" title="Permanent link">&para;</a></h3>
 <p><code>specs/sync/effect-remapping.yaml</code> maps each controller's concept onto
-<code>TherapyEffect</code>. Five rules, two lossy:</p>
+<code>TherapyEffect</code>. Five rules, one lossy:</p>
 <table>
 <thead>
 <tr>
@@ -5005,13 +5039,13 @@ representation that separates them serves both.</p>
 <td><code>MAP-LOOP-OVERRIDE</code></td>
 <td>Loop</td>
 <td>no</td>
-<td>2,892 documents, 9 sites, both halves present</td>
+<td>2,428 documents, 9 sites, both halves present</td>
 </tr>
 <tr>
 <td><code>MAP-LOOP-DEVICESTATUS-OVERRIDE</code></td>
 <td>Loop</td>
 <td>no</td>
-<td>64,674 active overrides</td>
+<td>55,938 active overrides</td>
 </tr>
 <tr>
 <td><code>MAP-AAPS-TEMPTARGET</code></td>
@@ -5022,24 +5056,27 @@ representation that separates them serves both.</p>
 <tr>
 <td><code>MAP-AAPS-PROFILESWITCH</code></td>
 <td>AAPS</td>
-<td><strong>yes</strong></td>
-<td><code>percentage</code> is a <em>basal</em> scale, not an insulin-needs scale</td>
+<td>no</td>
+<td><code>percentage</code> is an insulin-needs scale: basal × p/100, ISF and IC × 100/p (<code>ProfileSealed.convertToNonCustomizedProfile</code>, pinned by <code>ProfileSealedTest</code>); under Dynamic ISF it enters the ISF formula instead</td>
 </tr>
 <tr>
 <td><code>MAP-TRIO-EXERCISE</code></td>
 <td>Trio</td>
 <td><strong>yes</strong></td>
-<td>no effect on the wire at all</td>
+<td>no effect on the wire at all; <code>notes</code> is the preset name</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Two things that must not be merged.</strong> An AAPS profile-switch <code>percentage</code>
-scales the profile's basal rates. A Loop override multiplier scales overall
-insulin needs, moving ISF and carb ratio inversely as well. They have
-similar names and are different quantities, so <code>TherapyEffect</code> carries
-<code>basalScaleFactor</code> <em>and</em> <code>insulinNeedsScaleFactor</code> rather than one
-normalised factor. Collapsing them would silently misprice every replayed
-dose — the kind of error that validates cleanly and is wrong.</p>
+<p><strong>Why the factors stay per component.</strong> An AAPS profile-switch <code>percentage</code>
+and a Loop override multiplier are the same kind of quantity: both scale basal
+by the factor and ISF and carb ratio by its inverse. Trio is the case that
+needs separate components — its override applies the percentage to basal and,
+by its <code>isfAndCr</code>, <code>isf</code> and <code>cr</code> flags, to ISF and CR together, to one of
+them, or to neither. So <code>TherapyEffect</code> carries <code>basalScaleFactor</code> <em>and</em>
+<code>insulinNeedsScaleFactor</code> rather than one normalised factor, and a mapping
+states which components a controller scaled. Collapsing them would silently
+misprice a replayed dose — the kind of error that validates cleanly and is
+wrong.</p>
 <p><strong>AAPS already does the right thing on motivation.</strong> <code>NSTemporaryTarget.reason</code>
 is a closed enum — <code>Custom</code>, <code>Hypo</code>, <code>Activity</code>, <code>Eating Soon</code>,
 <code>Automation</code>, <code>Wear</code>. That maps straight onto a <code>classification</code> with no
@@ -5135,8 +5172,8 @@ participate:</p>
 <tbody>
 <tr>
 <td><strong>Trio</strong></td>
-<td>publish the effect, not only the note</td>
-<td><strong>highest in this document.</strong> 481 records today carry the sensitive half and nothing else</td>
+<td>publish the effect, not only the preset name</td>
+<td><strong>highest in this document.</strong> 399 records in the corpus carry the name and nothing else</td>
 </tr>
 <tr>
 <td><strong>Loop</strong></td>
@@ -5145,8 +5182,8 @@ participate:</p>
 </tr>
 <tr>
 <td><strong>AAPS</strong></td>
-<td>publish the profile-switch percentage as a <em>basal</em> scale explicitly</td>
-<td>prevents the merge error in §2.2</td>
+<td>publish the effective scale per component with the profile switch</td>
+<td>removes the need for a consumer to know the <code>percentage</code> and Dynamic ISF rules</td>
 </tr>
 <tr>
 <td><strong>All three</strong></td>
@@ -5208,13 +5245,16 @@ resources is what lets the second be shared when the first cannot.</p>
 </ul>
 <h2 id="6-what-is-not-measured">6. What is not measured<a class="headerlink" href="#6-what-is-not-measured" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>The scale-factor semantics.</strong> §2.2's claim that an AAPS percentage and a
-  Loop multiplier are different quantities is read from source and is the
-  kind of thing a maintainer should confirm before anyone builds on it.</li>
-<li><strong>Whether Trio's override effect is recoverable from elsewhere.</strong> Trio may
-  express the effect through a profile switch or a temp target it uploads
-  separately; this was not traced, and if so the mapping is a join rather
-  than a controller change.</li>
+<li><strong>The scale-factor semantics under Dynamic ISF and AutoISF.</strong> The plain
+  AAPS <code>percentage</code> maths is pinned by an AAPS unit test; how it combines with
+  Dynamic ISF and AutoISF is read from source only.</li>
+<li><strong>Trio's override effect is partly recoverable, by join only.</strong> Trio does not
+  express an override through a profile switch or temp target. The applied
+  ISF, CR, target and <code>sensitivityRatio</code> are in
+  <code>devicestatus.openaps.suggested/enacted</code> on every cycle, after every
+  adjustment and unattributed; preset percentage and target are in the
+  <code>profile</code> document's <code>overridePresets</code>, joinable by name, with no Trio
+  <code>profile</code> document in the corpus to test the join.</li>
 <li><strong><code>disclosure</code> enforcement.</strong> Nothing implements it. RLS was measured for
   tenant isolation, not for field-level projection, and the two are not the
   same query.</li>

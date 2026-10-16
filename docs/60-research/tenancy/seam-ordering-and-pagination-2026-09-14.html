@@ -605,6 +605,8 @@
       
         
       
+        
+      
     
     
     
@@ -4635,6 +4637,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -4816,6 +4822,34 @@
     
   
     ns-evaluator: what a per-tenant evaluation loop actually needs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ory-cookie-variants-2026-10-12.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kratos session cookie scope: two more designs measured (E and H2)
   
 
     
@@ -5366,6 +5400,34 @@
     
   
     What API v1 operators clients actually send — the census behind T2.4's allowlist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="write-contract-null-and-keys-2026-10-12.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WRITE-CONTRACT: explicit nulls, natural keys and identical re-sends, measured
   
 
     
@@ -7034,7 +7096,7 @@ the only backend, and it is the kind of defect that is only found once a second 
 <blockquote>
 <p><strong>Update 2026-09-15.</strong> T2.5 shipped a <strong>fifth</strong> strategy not in this table — a typed generated
 column guarded by <code>jsonb_typeof</code>, plus explicit <code>NULLS FIRST/LAST</code>. Measured in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1ea5d9384859b5edeeb12ca88f7d04f355357e12/tools/qc/typeguard-arm.js"><code>tools/qc/typeguard-arm.js</code></a>: it <strong>matches <code>mongod</code> exactly on
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb1b48e76661e7d2458d8be88c7aff3a2b0638a3/tools/qc/typeguard-arm.js"><code>tools/qc/typeguard-arm.js</code></a>: it <strong>matches <code>mongod</code> exactly on
 single-typed data</strong>, the only one of the five that does. On mixed-typed data the guard rejects
 the wrong-typed value to SQL <code>NULL</code>, so it sorts to the front where MongoDB sorts it last. See
 <a href="../../30-design/tenancy/nightscout-seam-ordering-translation.html">the ordering design</a> §3.1b.</p>

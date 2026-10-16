@@ -605,6 +605,8 @@
       
         
       
+        
+      
     
     
     
@@ -5342,7 +5344,7 @@ numbers before any of this is published.</p>
 newer.</p>
 <p><em>(Measured: <code>git show origin/master:package.json</code>; <code>git show origin/dev:lib/server/bootevent.js</code>
 function <code>checkNodeVersion</code>, which calls <code>semver.satisfies(nodeVersion, '&gt;=16.x')</code> and only exits
-below that. So the </em><em>declared</em><em> floor and the </em><em>enforced</em><em> floor are different today. Confirmed
+below that. So the <strong>declared</strong> floor and the <strong>enforced</strong> floor are different today. Confirmed
 independently by the GT4 pass.)</em></p>
 <p><strong>Why that matters.</strong> It means that today Nightscout will happily start on Node 16, 18 or 20 even
 though the manifest says 20+. A lot of long-running sites are on Node 16 or 18 and nobody has ever
@@ -5363,7 +5365,7 @@ pass; re-confirmed here.)</em></p>
 <ul>
 <li>A set of bug fixes: unnamed profiles, embedded profile-switch schedules, a "low and falling"
   warning on the clock view, and some treatment queries that could fail.
-  <em>(Measured: <code>git log --oneline --no-merges 9205ea30..origin/dev</code> returns </em><em>46</em><em> commits,
+  <em>(Measured: <code>git log --oneline --no-merges 9205ea30..origin/dev</code> returns <strong>46</strong> commits,
   including <code>e46fdd2a</code>, <code>8f86cee0</code>, <code>06372e1d</code>, <code>02161b93</code>; 40 of the other 42 are translation
   updates, and the remaining two are the quiet-logging change <code>c2ac743c</code> and a docs tidy-up. The
   full range <code>9205ea30..origin/dev</code> is 59 commits counting merges. An earlier draft said "the
@@ -5395,7 +5397,7 @@ moment credentials can land in your log files.</p>
 <p><em>(Measured in <code>externals/nightscout-connect</code>: <code>git merge-base --is-ancestor</code> shows commits
 <code>9fa2c3c</code> "Prevent Dexcom credentials and sessions from reaching runtime logs", <code>5349d47</code> "Keep
 MiniMed credentials and patient data out of runtime logs" and <code>77e2396</code> "Keep internal output
-payloads out of runtime logs" are each </em><em>not</em><em> ancestors of the commit <code>234d47c8</code> that 15.0.9 pins.
+payloads out of runtime logs" are each <strong>not</strong> ancestors of the commit <code>234d47c8</code> that 15.0.9 pins.
 Six for six on the wider commit set. Independently established by GT3 and GT4.)</em></p>
 <p><strong>Practical advice:</strong> turn <code>DEBUG_LOGGING</code> on only while you are actively looking at a problem,
 turn it off again afterwards, and do not paste raw logs into a public Facebook group or Discord
@@ -5526,7 +5528,7 @@ before it, not after.</strong></p>
   <em>(Measured directly from the two installed drivers' own constants. Driver 5.9.2:
   <code>MIN_SUPPORTED_SERVER_VERSION = "3.6"</code>, <code>MIN_SUPPORTED_WIRE_VERSION = 6</code>. Driver 7.6.0 (installed
   at <code>externals/work/crm-seam/node_modules/mongodb</code>): <code>MIN_SUPPORTED_SERVER_VERSION = "4.4"</code>,
-  <code>MIN_SUPPORTED_WIRE_VERSION = 9</code>. </em><em>One caveat on that provenance:</em><em> cut 3 declares <code>^7.6.0</code>, a
+  <code>MIN_SUPPORTED_WIRE_VERSION = 9</code>. <strong>One caveat on that provenance:</strong> cut 3 declares <code>^7.6.0</code>, a
   range, and the 7.6.0 read here was installed in a different worktree. A future 7.x that raised
   its own minimum would change this answer, so a reviewer should re-read the constant from the
   install the release actually produces, not from this one.)</em></li>
@@ -5674,13 +5676,13 @@ security updates for four and a half months already. Framing Release 2 as "Night
 something away from you" is both unkind and inaccurate; it is Nightscout noticing something that
 was already true. <strong>I would lead the operator-facing release note with that</strong>, because it converts
 the message from a demand into a warning the operator will be glad of.</p>
-<p><em>(Provenance, corrected on review: the Node 20 EOL date comes from </em><em>one</em><em> place in the repo,
-<code>docs/10-domain/node-lts-upgrade-analysis.md</code>, which flags "Node 20 EOL: </em><em>2026-04-30</em><em>" at lines
+<p><em>(Provenance, corrected on review: the Node 20 EOL date comes from <strong>one</strong> place in the repo,
+<code>docs/10-domain/node-lts-upgrade-analysis.md</code>, which flags "Node 20 EOL: <strong>2026-04-30</strong>" at lines
 18, 44 and 211. An earlier draft said it was in cut 1's <code>docs/runtime-upgrade.md</code> as well; measured,
-</em><em>it is not</em><em> — that file gives only the Node 22 (2027-04-30) and Node 24 (2028-04-30) dates and
+<strong>it is not</strong> — that file gives only the Node 22 (2027-04-30) and Node 24 (2028-04-30) dates and
 says "Node 20 is retired" without a date. The claim rests on a single in-repo source and has not
-been checked against nodejs.org from this session. </em><em>A reviewer must confirm the date upstream
-before it is published to operators</em><em>, because this document leans on it as the main argument for
+been checked against nodejs.org from this session. <strong>A reviewer must confirm the date upstream
+before it is published to operators</strong>, because this document leans on it as the main argument for
 taking Release 2.)</em></p>
 <p><strong>The one thing about the ordering I would push back on.</strong> Cut 1 is <em>not</em> a pure runtime change as
 currently constituted. Because it has never been updated against 15.0.9, it carries an older
@@ -5748,10 +5750,10 @@ lines.</p>
 <li><strong>Future Node versions are rejected too.</strong> Node 26, when it arrives, will not start Nightscout
    until somebody edits <code>package.json</code>. This is a deliberate whitelist, not a floor.
    <em>(Partly answered on review: cut 1's own <code>docs/runtime-upgrade.md</code> line 3 says "Earlier patches,
-   odd-numbered releases, prereleases, and </em><em>Node 26 Current</em><em> are not supported", and line 5 adds
+   odd-numbered releases, prereleases, and <strong>Node 26 Current</strong> are not supported", and line 5 adds
    that "these minimum patches reflect the supported release baseline at the time of this change".
    So the exclusion is deliberate for Node 26 in its pre-LTS "Current" phase. What the project has
-   </em><em>not</em><em> written down is what happens when Node 26 becomes LTS — there is no documented process
+   <strong>not</strong> written down is what happens when Node 26 becomes LTS — there is no documented process
    for widening the range, and no scheduled owner for doing it.)</em> A reviewer should record that
    process, because otherwise Nightscout will refuse to start after a <em>future</em> Node upgrade that an
    operator has every reason to think is safe, and it will look like a Nightscout bug.</li>
@@ -5791,7 +5793,7 @@ builder and runtime stages. Unchanged from dev and from every other cut.)</em></
 <p>If that prints anything below v22.23.2, <strong>do not deploy it</strong> — report it instead, because it means
 the published image cannot start.</p>
 <p><em>(Correction made on review: an earlier draft of this document said nothing in the build checks
-this. </em><em>It does.</em><em> From cut 1 onward the <code>docker-build-pr</code> CI job builds the image on amd64 and
+this. <strong>It does.</strong> From cut 1 onward the <code>docker-build-pr</code> CI job builds the image on amd64 and
 arm64 and then runs, against the built image itself:</em></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>docker run --rm "$IMAGE" node -e "require('./lib/server/runtime-policy')(); console.log(process.version)"
 </code></pre></div>
@@ -5828,7 +5830,7 @@ changes its default from <code>16.16.0</code> to <code>~24</code>), but <strong>
 template</strong>, while the application settings block hard-codes <code>WEBSITE_NODE_DEFAULT_VERSION</code> to the
 literal string <code>"8.11.1"</code>.</p>
 <p><em>(Measured: <code>git show &lt;ref&gt;:azuredeploy.json</code> parsed as JSON. Count of
-<code>parameters('WEBSITE_NODE_DEFAULT_VERSION')</code> references in the whole template: </em><em>0</em><em>, on both dev
+<code>parameters('WEBSITE_NODE_DEFAULT_VERSION')</code> references in the whole template: <strong>0</strong>, on both dev
 and cut 1. Literal value in <code>appSettings</code>: <code>8.11.1</code>, on both.)</em></p>
 <p>So cut 1's Azure "fix" changes a default that nothing reads, while the setting that Azure actually
 applies still asks for Node 8.11.1. Node 8 is rejected by Nightscout's floor today and rejected far
@@ -5913,10 +5915,10 @@ day cut 1 ships. You should still plan to move off it, because it reached end of
   <em>(One honest qualification, because "6.0 is fine" is the kind of reassurance that ages badly:
   MongoDB 6.0 itself reached end of life on 31 July 2025, and 5.0 on 31 October 2024. Both are
   above Nightscout's floor and both are still in the project's CI, so neither stops you upgrading
-  Nightscout — but if you are running your </em><em>own</em><em> server on 5.0 or 6.0, you are on an unmaintained
+  Nightscout — but if you are running your <strong>own</strong> server on 5.0 or 6.0, you are on an unmaintained
   database, the same way Node 20 is an unmaintained runtime. The dates are measured, from the
   project's own <code>docs/runtime-upgrade.md</code> line 33 on cut 1, which cites MongoDB's published
-  lifecycle schedule. </em><em>What Atlas does about it is not measured</em><em> — this document has no Atlas
+  lifecycle schedule. <strong>What Atlas does about it is not measured</strong> — this document has no Atlas
   account and made no network request. The common understanding is that Atlas keeps its managed
   clusters patched and moves them off end-of-life versions for you, but treat that as an
   assumption, not a promise: if you are on Atlas, check your cluster's version yourself and read
@@ -6037,7 +6039,7 @@ the same time.</p>
   low — so this is a widening of the tested range rather than a fix for a breakage.
   <em>(Measured by reading <code>checkSupportedServer</code> in
   <code>.../mongodb/lib/cmap/connect.js</code>: the upper check is <code>minWireVersion &lt;= MAX_SUPPORTED_WIRE_VERSION</code>,
-  not <code>maxWireVersion &lt;= ...</code>. Marked as </em><em>inference</em><em> for the practical claim about MongoDB 8,
+  not <code>maxWireVersion &lt;= ...</code>. Marked as <strong>inference</strong> for the practical claim about MongoDB 8,
   since I did not connect a driver-5 client to a live MongoDB 8 server.)</em></li>
 </ul>
 <p><strong>⚠️ If you run your own MongoDB from the bundled <code>docker-compose.yml</code>, do not simply pull the new

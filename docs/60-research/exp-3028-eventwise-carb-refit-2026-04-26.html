@@ -27,7 +27,7 @@
     
     
       
-        <title>EXP-3028 — Per-patient (T, M) refit with carb-aware proxy - Nightscout ecosystem alignment</title>
+        <title>EXP-3028 — Per-patient (T*, M*) refit with carb-aware proxy - Nightscout ecosystem alignment</title>
       
     
     
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              EXP-3028 — Per-patient (T, M) refit with carb-aware proxy
+              EXP-3028 — Per-patient (T*, M*) refit with carb-aware proxy
             
           </span>
         </div>
@@ -577,6 +577,8 @@
       
         
           
+        
+      
         
       
         
@@ -3000,7 +3002,7 @@
   <span class="md-ellipsis">
     
   
-    EXP-3012 — Per-patient (T, M) recommendation (2026-04-26)
+    EXP-3012 — Per-patient (T*, M*) recommendation (2026-04-26)
   
 
     
@@ -3541,7 +3543,7 @@
   <span class="md-ellipsis">
     
   
-    EXP-3028 — Per-patient (T, M) refit with carb-aware proxy
+    EXP-3028 — Per-patient (T*, M*) refit with carb-aware proxy
   
 
     
@@ -3559,7 +3561,7 @@
   <span class="md-ellipsis">
     
   
-    EXP-3028 — Per-patient (T, M) refit with carb-aware proxy
+    EXP-3028 — Per-patient (T*, M*) refit with carb-aware proxy
   
 
     
@@ -5635,6 +5637,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -7274,7 +7280,7 @@
 
 
 
-<h1 id="exp-3028--per-patient-t-m-refit-with-carb-aware-proxy">EXP-3028 — Per-patient (T<em>, M</em>) refit with carb-aware proxy<a class="headerlink" href="#exp-3028--per-patient-t-m-refit-with-carb-aware-proxy" title="Permanent link">&para;</a></h1>
+<h1 id="exp-3028--per-patient-t-m-refit-with-carb-aware-proxy">EXP-3028 — Per-patient (T*, M*) refit with carb-aware proxy<a class="headerlink" href="#exp-3028--per-patient-t-m-refit-with-carb-aware-proxy" title="Permanent link">&para;</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Record</p>
 <p>Record as of 2026-04-26. A point-in-time document; it is not kept up to date.</p>
@@ -7283,9 +7289,9 @@
 <strong>Predecessors:</strong> EXP-3017 (clamped per-patient table), EXP-3025-FIX/LOPO (gate=0.10 ship-candidate)
 <strong>Verdict:</strong> ✅ <strong>PASS</strong> — verification Δ +0.0327 (lift +0.0082 vs current default), safety_ok=True</p>
 <h2 id="hypothesis">Hypothesis<a class="headerlink" href="#hypothesis" title="Permanent link">&para;</a></h2>
-<p>EXP-3012 fitted per-patient (T<em>, M</em>) using a <strong>naive</strong> trough proxy (no carb absorption). EXP-3014 introduced a carb-aware proxy at the controller level. EXP-3017 then clamped M<em> to 1.0 for high-braking phenotypes. The current production scorer (<code>cf_replay_score_v3</code>) evaluates events using the </em><em>carb-aware</em>* proxy.</p>
+<p>EXP-3012 fitted per-patient (T*, M*) using a <strong>naive</strong> trough proxy (no carb absorption). EXP-3014 introduced a carb-aware proxy at the controller level. EXP-3017 then clamped M* to 1.0 for high-braking phenotypes. The current production scorer (<code>cf_replay_score_v3</code>) evaluates events using the <strong>carb-aware</strong> proxy.</p>
 <p>→ <strong>Model/scorer mismatch</strong>: the per-patient table was fitted under one proxy, evaluated under another.</p>
-<p>EXP-3028 closes that mismatch by refitting per-patient (T<em>, M</em>) on the training stripe using the <em>same</em> carb-aware proxy used by the scorer, then applying the EXP-3017 clamp (M=1.0 for high-braking patients), and evaluating on the verification stripe at the new default gate=0.10.</p>
+<p>EXP-3028 closes that mismatch by refitting per-patient (T*, M*) on the training stripe using the <em>same</em> carb-aware proxy used by the scorer, then applying the EXP-3017 clamp (M=1.0 for high-braking patients), and evaluating on the verification stripe at the new default gate=0.10.</p>
 <h2 id="method">Method<a class="headerlink" href="#method" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
