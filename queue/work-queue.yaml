@@ -14200,6 +14200,9 @@ items:
       channel. Catalogue mappings (wellKnown.mappings) need a known writer
       version in range. legacyIdForm: crm single-tenant on MongoDB declares
       objectId; single-tenant on PostgreSQL is left open for SPEC-REG-MODES
+      (superseded 2026-10-16 by the walk-through, rows 1, 2 and 5, applied
+      by SPEC-REG-AMEND: legacyIdForm and opaque dropped, 24-hex everywhere,
+      and unlisted equal slot names no longer contend)
       (the server mints a 24-hex text _id and keeps a client _id as sent,
       read on the seam chain at 81a1f6ce). Write replies return ids
       {identifier, _id} and matchedBy; re-sends match identifier first.
@@ -14358,8 +14361,9 @@ items:
       tenant-scope.js exist only on the local seam chain
       (seam/t1-2-storage-interface 81a1f6ce). Expected, behind a feature
       flag that is off by default: GET /.well-known/nightscout/sync (hub-sync
-      design §3.5) advertising `submit`, `instances` and the legacy id form
-      `objectId` (D20 rule 6); the product, definition and instance
+      design §3.5) advertising `submit` and `instances`, serving 24-hex
+      hub-assigned `_id` values on v1 and v3 (walk-through row 2,
+      2026-10-16; the capability member `legacyIdForm` was dropped); the product, definition and instance
       resources of §3.5 and §3.6 on the `single` listener, for a subject's
       token or API_SECRET; the owner's actions (retire, block, unblock,
       release, transfer, free-namespaces, transfer-role, pin-version,
@@ -14388,9 +14392,9 @@ items:
           specified (SPEC-REG-DECISIONS and SPEC-REG-INSTANCE, 2026-10-15);
           SPEC-REG-QUIRKS is not. The behaviour gate will be the conformance
           cases of SPEC-REG-NEGOTIATE and SPEC-REG-DECISIONS
-          (specs/sync/conformance/, 55 cases at main 18397441),
-          SPEC-REG-INSTANCE (specs/sync/conformance/instances/, 86) and
-          SPEC-REG-QUIRKS, run by the harness against a booted single-tenant
+          (specs/sync/conformance/, 54 cases after SPEC-REG-AMEND),
+          SPEC-REG-INSTANCE (specs/sync/conformance/instances/, 90) and
+          SPEC-REG-QUIRKS (specs/sync/conformance/quirks/, 29), run by the harness against a booted single-tenant
           server (TENANCY_MODE unset, MongoDB), comparing each expected
           response and stored state. It is red when any case's response or
           stored state differs. 22 cases name a listener a single-tenant
@@ -14444,8 +14448,9 @@ items:
       capability document and the flag come from the process environment;
       under D15 a hosted entrypoint reads per-tenant configuration from the
       database, and whether the flag, limits and lease length are per
-      deployment or per tenant is SPEC-REG-MODES. (5) The legacy id form is
-      `objectId`; what multi declares is SPEC-REG-MODES. (6) Namespace
+      deployment or per tenant is SPEC-REG-MODES. (5) Legacy `_id` values
+      are 24-hex and hub-assigned in every mode and on either store
+      (walk-through rows 1-2, 2026-10-16). (6) Namespace
       claims, role exclusivity and the etag preconditions hold across the
       whole database, which is the one site here. Build each as a single-
       document conditional write or a unique index, never a multi-document

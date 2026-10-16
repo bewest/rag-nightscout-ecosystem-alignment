@@ -466,7 +466,9 @@ without duplicating. Those are two jobs. Today's controllers, read-derived from 
 [UUID identifier backlog](../../backlogs/uuid-identifier-lookup.md), not re-checked against
 source: Loop sends no `_id` and caches the ObjectId the server returns, so a lost cache
 duplicates on re-send; Trio sends a UUID it generated in `_id`, which `UUID_HANDLING` moves to
-`identifier`; AAPS keeps the server's `_id` as its `nightscoutId` and reads `_id` with
+`identifier`; *(corrected 2026-10-16: Trio does so for carbs and temporary targets; its general treatment
+model sends the UUID as `id`, and Loop sends a UUID `_id` for overrides — read at Trio `e41c9db37` and
+LoopWorkspace `f8412858`; QUIRK-TREATMENTS-006 and -007)* AAPS keeps the server's `_id` as its `nightscoutId` and reads `_id` with
 `identifier` as a fallback.
 
 **Rules.**
