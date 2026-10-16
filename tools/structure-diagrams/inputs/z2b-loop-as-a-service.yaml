@@ -3,7 +3,8 @@
 # Sources: the special controls of 21 CFR 862.1356 (iAGC), 862.1355 (iCGM) and 880.5730 (ACE pump)
 # as summarised in 60-research/programme/stack-census-2026-09-30/cloud-layer.md; HISTORY.md and
 # PRECEDENTS (Tidepool Loop, K203689, cleared 2023-01-23 as an iAGC; twiist 2024-03-18);
-# PARTNER-READINESS §2 (tier C) and §7. Generic: no operator or device is named.
+# PARTNER-READINESS §2 (tier C) and §7; ECOSYSTEM-PROGRAMME "One codebase, two uses" (no separate
+# commercial edition, SQLite's and CNCF's models). Generic: no operator or device is named.
 title: "Z2b · One regulated controller · Loop-as-a-service"
 nodes:
   - {id: reg, label: "Regulatory authority", kind: authority, level: 0, column: 1}
@@ -25,7 +26,8 @@ edges:
   - {from: op, to: pumpmfr, kind: feedback, label: "validation of\nthe implementation"}
   - {from: cgmmfr, to: op, kind: control, label: "CGM interface spec", status: proposed}
   - {from: op, to: cgmmfr, kind: feedback, label: "validation of\nthe implementation"}
-  - {from: project, to: op, kind: data, label: "upstream source"}
+  - {from: project, to: op, kind: data, label: "releases\n(one codebase)"}
+  - {from: op, to: project, kind: data, label: "fixes and validation\nevidence returned", status: proposed}
   - {from: op, to: app, kind: control, label: "validated release,\nlabelling, updates"}
   - {from: app, to: op, kind: feedback, label: "critical-events record,\ncomplaints"}
   - {from: person, to: app, kind: control, label: "settings, boluses"}

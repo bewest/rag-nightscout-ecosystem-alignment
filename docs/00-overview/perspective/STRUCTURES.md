@@ -7,6 +7,11 @@ whom, what comes back, and where money flows. Every node and edge comes from a p
 the drawing; nothing here is a new finding. The drawings marked **proposed** show a proposal for
 discussion, not a decision.*
 
+*Author's interests: the author maintains cgm-remote-monitor, founded a company that hosts
+Nightscout commercially, and could be a candidate for paid work under the related proposals. The
+[collaboration rules](../COLLABORATION-MODEL.md) §5 would apply to that company and to the author
+like anyone else. Operators in the drawings are roles, not named companies.*
+
 ## How to read the drawings
 
 The drawings follow the convention of STPA (system-theoretic process analysis) control structures.
@@ -105,7 +110,7 @@ already makes.
 
 ## Z2b · One regulated controller: Loop-as-a-service
 
-![Z2b: a regulator classifies the pump and CGM and clears the controller operator; the pump and CGM manufacturers give the operator interface specifications and pairing; the operator releases one validated controller app, which commands only ACE pumps, reads only iCGMs and uploads to a Nightscout hub; the open-source project supplies the upstream source](diagrams/z2b-loop-as-a-service.svg)
+![Z2b: a regulator classifies the pump and CGM and clears the controller operator; the pump and CGM manufacturers give the operator interface specifications and pairing; the operator releases one validated controller app, which commands only ACE pumps, reads only iCGMs and uploads to a Nightscout hub; the open-source project supplies its releases and the operator returns fixes and validation evidence to them](diagrams/z2b-loop-as-a-service.svg)
 
 A proposal for discussion. Sources: the special controls for interoperable automated glycemic
 controllers (iAGC, 21 CFR 862.1356), integrated CGMs (iCGM, 862.1355) and alternate controller
@@ -118,8 +123,14 @@ Tidepool Loop, cleared as an iAGC on 2023-01-23 (K203689); [partner readiness](.
 What makes this a different drawing from Z2:
 
 - **The operator is the legal manufacturer of the controller.** It answers to the regulator for
-  one validated release and its updates. An open-source project supplies the source, and the DIY
-  track continues beside it, as DIY Loop did beside Tidepool Loop.
+  one validated release and its updates. The DIY track continues beside it, as DIY Loop did beside
+  Tidepool Loop.
+- **One codebase.** The cleared release is a validated build of the same open-source releases, not
+  a separate edition ([programme, "One codebase, two uses"](../ECOSYSTEM-PROGRAMME.md): SQLite sells
+  assurance on the releases free users get; CNCF certifies vendors against one upstream). Fixes and
+  validation evidence from the regulated track return to the shared codebase, drawn as a proposed
+  edge. The reason for the edge: without it the regulated track becomes a second upstream, and the
+  open project and the operator compete for the same fixes and the same maintainers' time.
 - **The interfaces are regulated on both sides.** The iAGC controls ask for validated interface
   specifications, secure authentication (pairing) and a process for sharing and validating the
   interface with connected devices. The ACE pump and iCGM controls ask the device side for the
@@ -134,7 +145,8 @@ What makes this a different drawing from Z2:
 
 The drawing does not settle who operates such an entity, whether the foundation sponsors it
 ([programme §2b](../ECOSYSTEM-PROGRAMME.md#2b-sponsoring-and-operating): sponsoring does not make
-the foundation the operator), or how fixes return to the open-source project. The regulatory
+the foundation the operator), or how the return edge works when a fix to the open codebase has
+not yet been validated for the cleared release. The regulatory
 summary above paraphrases the regulations; it is for regulatory counsel to confirm against the
 current text and any device-specific clearance.
 
