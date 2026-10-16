@@ -381,7 +381,18 @@ document is unchanged), the grammar's
 `dualWriteLink` and 53 conformance cases now carry first-to-claim namespaces, binding to the
 creating subject, the owner's actions on `ns-tenant-admin` and the `blocked` state, the recorded
 credential kind, carrier views, and the load-versus-definite rule for refused typed writes. The
-D19 parts of questions 7 and 9 remain `SPEC-REG-INSTANCE`'s.)*
+D19 parts of questions 7 and 9 remain `SPEC-REG-INSTANCE`'s.)* *(2026-10-16, maintainer, on
+`HUB-REG-CRM`'s scope: "HUB-REG-CRM should start in single-tenant and create a sufficient backlog
+to help ensure multitenant and singletenant remain compatible with a future roadmap." So
+`HUB-REG-CRM` is built on `origin/dev`, which has no `TENANCY_MODE`, storage interface or tenant
+scope (measured at official `dev` `fade2299`; those exist only on the local seam chain, "Where things stand"), with MongoDB
+and the owner's actions by `API_SECRET` on the one `single` listener. The backlog that keeps the
+two modes compatible is `SPEC-REG-MODES` (what the contract says per mode: storage key, credential
+kinds, owner listener, capability document scope, legacy id form), `HUB-REG-CRM-SEAM` (the store
+on the seam, checked in single on MongoDB and PostgreSQL and in multi by one harness),
+`HUB-REG-CRM-ADMIN` (owner actions on `ns-tenant-admin`), `SPEC-REG-COMMANDS` (command delivery in
+both modes) and `SPEC-REG-MIGRATE` (registration state across a site's move into a tenant, and
+back).)*
 
 ### 2.6.2 D19 — definitions and instances (maintainer, 2026-10-14)
 
