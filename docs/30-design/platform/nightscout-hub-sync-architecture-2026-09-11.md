@@ -875,6 +875,9 @@ from the mapping, and nothing the mapping does not declare. The projected docume
   returns `Id`), project a meal bolus from a bolus and a carb intake under the bolus's id, and tell
   records that mirror a legacy write (`LegacyId` set) from V4-native ones with a `NativeOnly`
   filter; the projected `Treatment` carries no projection marker of its own.
+  *(2026-10-16: for hubs whose legacy id form is `objectId`, cgm-remote-monitor in single-tenant
+  mode among them, D20 rule 8 replaces this: v1 `_id` is an ObjectId the hub assigns at the typed
+  write and stores, and `identifier` is the typed id; execution plan §2.6.3, `SPEC-REG-QUIRKS`.)*
 
 A view for older readers is not a conversion between typed versions (D18 addendum rule 4).
 

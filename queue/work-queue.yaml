@@ -14012,6 +14012,55 @@ items:
       schema's etag description still excluded the binding after the
       2026-10-15 amendment, and §3.5's file table said 53 cases.
 
+  - id: SPEC-REG-QUIRKS
+    title: "Version-scoped quirks, the shared slot list and the two-id rule (D20)"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main@faafc57c
+    state: not-started
+    pr: []
+    blast_radius: >
+      Expected: an additive `affects` member and the lifecycle states in
+      the quirks registry (specs/quirks/README.md, tools/nsschema/quirks.py)
+      covering declarations as well as documents; an optional `sameAs` on
+      a definition's slots and an optional shared slot list in the
+      well-known catalogue; the capability document's legacy id form
+      (objectId or opaque); the write reply returning both ids; the
+      UUID_HANDLING move recorded as a version-scoped entry; D20 rule 8 in
+      the projected view (hub-sync §3.6 and its cases). Ships nothing.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: specification in this repository; ships nothing
+    register: []
+    gates:
+      - no-gate: >
+          Not started. The gate will be conformance cases for rules 1-8 of
+          the execution plan §2.6.3, each refusal or mapping with a passing
+          control, the existing registry and instance suites unchanged in
+          meaning, and a weakening of each rule shown red for the right
+          reason. Version ranges in `affects` are stated only where the
+          corpus or source shows the version; otherwise the entry says the
+          versions are unmeasured.
+    blocks_on: [SPEC-REG-INSTANCE]
+    evidence:
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
+      - specs/quirks/README.md
+      - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
+      - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
+    notes: >
+      D20 (maintainer, 2026-10-16): pave the cowpaths by scoping quirks to
+      the vendor versions that produce them, with a measured path to
+      historical and retired as AID and monitoring systems converge;
+      catalogue entries for versions released before registration,
+      self-declared mappings for newer ones. In single-tenant legacy mode
+      `_id` must be an ObjectId (the maintainer: the one hard rule,
+      historically unwritten, which many apps violated); `identifier` is
+      the sync identity the client assigns. Which slots share a meaning
+      (for example runningMode and loopMode) is not decided by this item:
+      it lists candidates with evidence for PROPOSAL-REG-CONTROLLERS.
+
   - id: HUB-REG-CRM
     title: "cgm-remote-monitor: accept registrations and derive typed storage, validation and query from them"
     parcel: platform
@@ -14042,7 +14091,7 @@ items:
           SPEC-REG-NEGOTIATE and SPEC-REG-INSTANCE (specs/sync/conformance/
           and its instances/) run against a booted server, plus a control showing an
           unregistered controller's writes are byte-identical to before.
-    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE]
+    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS]
     evidence:
       - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
       - specs/sync/registration-submit.schema.json
@@ -14080,7 +14129,7 @@ items:
           Not started. The amended contract and D19 are specified
           (SPEC-REG-DECISIONS and SPEC-REG-INSTANCE, 2026-10-15). Done when the
           maintainer has sent the packet; that cannot be checked from here.
-    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE]
+    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS]
     evidence:
       - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
       - specs/sync/registration-submit.schema.json
@@ -14127,7 +14176,7 @@ items:
           Not started. The amended contract and D19 are specified
           (SPEC-REG-DECISIONS and SPEC-REG-INSTANCE, 2026-10-15). Done when the
           maintainer has sent the packet; that cannot be checked from here.
-    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE]
+    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS]
     evidence:
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
       - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md

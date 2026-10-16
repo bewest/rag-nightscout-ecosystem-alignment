@@ -2,8 +2,8 @@
 
 *Contributor- and maintainer-facing.*
 
-**Status: living document — the decision record.** Decisions D1–D19 are the maintainer's
-(2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14) and are all **adopted**, except **D17 row 2**
+**Status: living document — the decision record.** Decisions D1–D20 are the maintainer's
+(2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16) and are all **adopted**, except **D17 row 2**
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is **adopted in principle,
 gated** on the edge's production conditions and the compliance question (`T30-ORY-PROOF` held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. **Item state lives
@@ -145,6 +145,7 @@ preference.
 | **D17** | **The auth plane splits by audience, not by build-versus-buy.** Adopted: devices and the data path keep a **native per-tenant credential permanently**; Hydra is **deferred**; D7 is **unchanged**. **Adopted in principle, gated (2026-10-12):** human identity via one cohort-wide Ory Kratos pool, hosted-only; cookie scope E (apex behind a hardened edge, 2026-10-12); no real identities until the edge's production conditions are measured over https and the compliance question has an owner. D14 holds either way: Nightscout mints its own per-tenant token after authentication | maintainer, 2026-09-16 — §2.9 |
 | **D18** | **Controller registration has two tiers.** *Well-known* declarations ship with the hub, so legacy writers are described with no controller change (backwards compatibility). *Controller-owned* registrations are dynamic and typed: a controller declares its own definitions — intent kinds, states, transitions, initiators, effect fields, command contract — and the hub offers typed API for them, so controller-unique features have a home other than untyped `devicestatus`. Adoption follows the WHATWG pattern: specify what happens now, leave room to extend; the controller owns its registration's lifecycle. **Roles:** the hub (Nightscout, Nocturne) is responsible for observability; the controller is responsible for sending data accurately and for syncing and reconciling. The hub records a controller's composition and reconciliation results; it does not compute dosing state. **Addendum (2026-10-12):** every extensible field is typed; the grammar is must-ignore with typed, namespaced extensions, open vocabularies, per-kind versions, declared horizons and hub/controller negotiation, so neither side releases in lockstep | maintainer, 2026-10-09 and 2026-10-12 — §2.6.1 |
 | **D19** | **A registration separates the definition from the instance.** A *definition* says what a controller's data means; it is immutable, identified by the hash of its content, and many coexist under one `(vendor, product)`. An *instance* is one connected copy of a controller (phone, simulator, lab rig, agent): it names the definition it runs, holds a lease, declares a provenance (`device` or `simulated`) on each channel role it plays, and carries typed labels. Among `device`-provenance instances each channel role has one source of record, handed off by release, lease lapse or owner transfer; an overlapping writer is flagged, never silently resolved, and a command has one destination. Registered instances write typed records only for accepted elements; older readers get a declared, read-only view in today's shapes. The hub still decides nothing about dosing. *(corrected 2026-10-15: reverse-DNS, `dev.nightscout/` — the well-known label prefix of rule 7; specified 2026-10-15, `SPEC-REG-INSTANCE`, hub-sync design §3.6)* | maintainer, 2026-10-14 — §2.6.2 |
+| **D20** | **Quirks are scoped to the versions that produce them, and identity has two fields under one rule.** A quirk names the `(vendor, product, versions)` it affects, for stored documents and for declarations alike; versions released before registration get their mapping from the catalogue, newer versions declare it themselves, the hub records each mapping it applies, and a quirk moves to historical and then retired as measurement shows the affected versions gone. `identifier` is the sync identity the client assigns; `_id` is the storage key the hub assigns and returns; in single-tenant legacy mode `_id` is an ObjectId. | maintainer, 2026-10-16 — §2.6.3 |
 
 **Amendment carried with D13, true however D17 row 2 lands:** *credentials are per-tenant,
 identity is per-cohort, authorization is per-tenant.* Isolation rests on the authorization layer
@@ -432,6 +433,53 @@ prefix of rule 7 corrected; the choices the item made beyond them are listed in 
 confirmation. The generated well-known registrations declare no kind versions, so their kinds
 cannot yet be referenced by `wellKnownRef`; slot names, which become shared channels, are free
 strings in the grammar with no shared list.)*
+
+### 2.6.3 D20 — version-scoped quirks and the two-id rule (maintainer, 2026-10-16)
+
+D18 paves the cowpaths: the hub specifies what controllers do today and leaves room to grow. The
+cowpaths include quirks — behaviour particular to some releases of some apps — and a reader has
+to handle them for as long as those releases are in use. The [quirks registry](../../../specs/quirks/README.md)
+records them per collection and per project, with prevalence measured over the corpus, but not
+which versions produce them or how an entry is retired once those versions are gone. D20 adds
+both, and applies them to the two places they are needed now: slot names, which become shared
+channels under D19 rule 5, and the document `_id`.
+
+**Why `_id`.** In single-tenant Nightscout, where the API is coupled to a thin MongoDB driver,
+`_id` must be an ObjectId. That was the one hard rule, and it was unwritten; many apps sent
+other values, which produced undefined behaviour and the quirk handling that followed
+(write contract §2.3 rule 1, `UUID_HANDLING`, and the twin records BF-117 resolves). The
+intent was always that the data store assigns it. Separately, controllers gain from assigning a
+record's identity on the phone, so a record created offline or re-sent after a lost reply syncs
+without duplicating. Those are two jobs. Today's controllers, read-derived from the
+[client id analyses](../../10-domain/client-id-analysis/) and the
+[UUID identifier backlog](../../backlogs/uuid-identifier-lookup.md), not re-checked against
+source: Loop sends no `_id` and caches the ObjectId the server returns, so a lost cache
+duplicates on re-send; Trio sends a UUID it generated in `_id`, which `UUID_HANDLING` moves to
+`identifier`; AAPS keeps the server's `_id` as its `nightscoutId` and reads `_id` with
+`identifier` as a fallback.
+
+**Rules.**
+
+| # | rule |
+|---|---|
+| 1 | **Quirks name the versions they affect.** A registry entry may carry `affects: [{vendor, product, versions}]`, a range over the vendor's own version strings. It applies to stored documents (today's registry) and to declarations (a registration's slot names, units, vocabulary). Entries without it keep their project-level attribution; the member is additive. |
+| 2 | **Catalogue for older versions, self-declared for newer.** Versions released before registration existed get their mapping from a catalogue entry scoped to them, so they need no change. A newer definition declares the mapping itself — for a slot, `sameAs` naming a slot in an optional shared slot list in the well-known catalogue. Equal shared slots contend for roles (D19 rule 6). Two slots are never treated as one because their names look alike. |
+| 3 | **Mappings are observed, not silent.** The hub records which quirk mapping it applied to each record or declaration, so a reader can tell a mapped value from a declared one. |
+| 4 | **A quirk has a lifecycle.** `proposed` → `active` → `historical` → `retired`. An entry becomes historical when measurement shows no live instance and no recent write from an affected version, and retired when no stored record depends on its mapping. Each move is measured (`make schema-quirks`), never asserted. |
+| 5 | **Two ids, one rule.** `identifier` is the sync identity the client assigns, stable across retries and devices; in the typed API it is the controller's record id. `_id` is the storage key the hub assigns. Every write reply returns both. Re-sends match on `identifier` first, as the write contract's keys already order it, so a client needs no cache of server ids. |
+| 6 | **`_id` is an ObjectId in single-tenant legacy mode.** A hub declares its legacy id form in the capability document, `objectId` or `opaque`. cgm-remote-monitor in single-tenant mode declares `objectId`. |
+| 7 | **Today's `_id` handling becomes a version-scoped quirk.** A non-ObjectId `_id` moved to `identifier` (`UUID_HANDLING`) is recorded as a registry entry with the versions that send it; it becomes historical as those apps send `identifier` instead. Its behaviour does not change. |
+| 8 | **Projected records follow rule 5.** On an `objectId` hub, each projected document (D19 rule 8) gets an ObjectId the hub assigns when the typed record is written and stores with it, so it is the same on every read; its `identifier` is the typed id. An `opaque` hub may use the typed id for both. |
+
+**The roles do not change.** The hub records which mapping it applied and which ids it assigned;
+the controller still owns its declarations and its records (D18).
+
+**Status.** To be specified as `SPEC-REG-QUIRKS`; `HUB-REG-CRM`, `HUB-REG-NOCTURNE` and
+`PROPOSAL-REG-CONTROLLERS` follow it. Rule 8 replaces the
+[hub-sync design §3.6](../platform/nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances)
+choice of the typed id verbatim in v1 `_id`, for `objectId` hubs. The contents of the shared slot
+list are not decided here: which slots mean the same thing is evidence for the controller authors
+to confirm (`PROPOSAL-REG-CONTROLLERS`).
 
 ### 2.7 D12 — what each repository is for
 
