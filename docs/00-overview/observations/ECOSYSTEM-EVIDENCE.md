@@ -217,7 +217,7 @@ describes what was replicated and the aggregate-only exchange proposed.
 | `tools/nsprobe` | aggregate-only probes a data holder runs on their own data to check this repository's schema claims, returning counts and shares | yes |
 | `tools/nsschema` | turns real Nightscout documents into evidence about the document model, reconciles it with `specs/openapi/`, and generates typed schemas, the registration grammar and negotiation | yes |
 | `tools/cgmencode` | the research pipeline of the experiments in §7.3: features, models and a supply-and-demand decomposition of glucose | 43 |
-| `tools/cgmencode/production` | the advisory pipeline: settings analysis and a clinical decision support report (`clinical_decision_report.py`, rendered by `clinical_decision_render.py`) comparable across AID and injection therapy | 38 |
+| `tools/cgmencode/production` | the advisory pipeline: settings analysis and a clinical decision support report (`clinical_decision_report.py`, rendered by `clinical_decision_render.py`) comparable across AID and injection therapy; a [demonstration on synthetic data](../../../reports/synthetic-demo-analysis/clinical-decision-report.md) | 38 |
 | `tools/report` | therapy-settings analysis that accounts for loop compensation, and an HTML report generator | yes |
 | `tools/oref_inv_003_replication` | replication of OREF-INV-003 on an independent cohort, and the 18-feature algorithm-neutral set | yes |
 | `tools/test-harness`, `tools/aid-autoresearch` | algorithm equivalence testing across JavaScript, Swift and Kotlin, and a composite algorithm score in which a safety violation scores zero | partly |
