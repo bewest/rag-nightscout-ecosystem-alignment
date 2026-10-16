@@ -35,7 +35,7 @@ those interests and offers options, including no change. Nothing in them is deci
 
 | page | what it proposes |
 |---|---|
-| [Ecosystem programme](ECOSYSTEM-PROGRAMME.md) | the work as five layers, and which the foundation might steward |
+| [Ecosystem programme](ECOSYSTEM-PROGRAMME.md) | the work as a six-row stack and four shared commons, and which the foundation might steward |
 | [Sponsored maintenance team](SPONSORED-TEAM-PROPOSAL.md) | a small paid team for review, release, compatibility and security work |
 | [Working together](COLLABORATION-MODEL.md) | rules for volunteers, app projects, servers, hosts and researchers working together |
 | [Quality system](QUALITY-SYSTEM.md) | a shared quality kit for every layer of the stack, and how its requirements would be agreed |

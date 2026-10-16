@@ -15,7 +15,7 @@ pages:
   nightscout-ecosystem-programme.html:
     kind: living
     sources: [docs/00-overview/ECOSYSTEM-PROGRAMME.md]
-    source_commit: d7f908c1
+    source_commit: db9538dd
     render: tools/site/render_programme.py
   cgm-remote-monitor-15.0.9-release-readiness-2026-09-27.html:
     kind: snapshot
@@ -28,3 +28,6 @@ pages:
     sources: [releases/cgm-remote-monitor-15.0.9/colophon.md, releases/cgm-remote-monitor-15.0.9/colophon-data.json]
     source_commit: 12ea387c
     render: tools/site/render_colophon.py
+  clinical-decision-support-synthetic-demo-2026-10-16.html:
+    kind: snapshot
+    as_of: 2026-10-16

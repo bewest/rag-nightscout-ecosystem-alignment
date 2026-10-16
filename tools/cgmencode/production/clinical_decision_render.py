@@ -12,12 +12,20 @@ Produces audience-ready deliverables from a :class:`ClinicalDecisionReport`:
 
 JSON is always emitted (``report.json``) as the canonical machine-readable
 source of truth.
+
+Every renderer takes two optional, presentation-only arguments:
+
+  * ``banner`` — a notice shown directly under the document title (for
+    example, that a report was produced from synthetic demonstration
+    data). It is escaped and is never written into ``report.json``.
+  * ``title_prefix`` — text prepended to the document titles (``<title>``,
+    the HTML ``<h1>`` and the markdown ``#`` heading).
 """
 from __future__ import annotations
 
 import html as _html
 import json
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from .clinical_decision_report import (
     ClinicalDecisionReport, DomainRecommendation, DecisionMode, ReportFigure,
@@ -142,12 +150,24 @@ def _reimbursement_lines(rep: ClinicalDecisionReport,
     return lines
 
 
-def _core_lines(rep: ClinicalDecisionReport) -> List[str]:
+def _title(base: str, title_prefix: Optional[str]) -> str:
+    return f"{title_prefix} — {base}" if title_prefix else base
+
+
+def _banner_md(banner: Optional[str]) -> List[str]:
+    return [f"> **{banner}**", ""] if banner else []
+
+
+def _core_lines(rep: ClinicalDecisionReport,
+                banner: Optional[str] = None,
+                title_prefix: Optional[str] = None) -> List[str]:
     g = rep.glycemic_summary
     ins = rep.insulin_sufficiency
     lines = [
-        f"# Clinical Decision Support — patient `{rep.patient_id}`",
+        "# " + _title(f"Clinical Decision Support — patient "
+                      f"`{rep.patient_id}`", title_prefix),
         "",
+        *_banner_md(banner),
         f"_Generated: {rep.generated_at_utc}_",
         "",
         "## Insulin sufficiency",
@@ -188,22 +208,28 @@ def _core_lines(rep: ClinicalDecisionReport) -> List[str]:
     return lines
 
 
-def render_markdown(rep: ClinicalDecisionReport) -> str:
+def render_markdown(rep: ClinicalDecisionReport,
+                    banner: Optional[str] = None,
+                    title_prefix: Optional[str] = None) -> str:
     """Render the consolidated clinician-facing markdown document.
 
     Reimbursement evidence (when enabled) is appended in-line so the
     consolidated deliverable is self-contained.
     """
-    lines = _core_lines(rep)
+    lines = _core_lines(rep, banner=banner, title_prefix=title_prefix)
     lines += _reimbursement_lines(rep, heading_level="##")
     return "\n".join(lines).rstrip() + "\n"
 
 
-def render_reimbursement_markdown(rep: ClinicalDecisionReport) -> str:
+def render_reimbursement_markdown(rep: ClinicalDecisionReport,
+                                  banner: Optional[str] = None,
+                                  title_prefix: Optional[str] = None) -> str:
     """Render a standalone reimbursement-evidence document."""
     header = [
-        f"# Reimbursement Evidence — patient `{rep.patient_id}`",
+        "# " + _title(f"Reimbursement Evidence — patient "
+                      f"`{rep.patient_id}`", title_prefix),
         "",
+        *_banner_md(banner),
         f"_Generated: {rep.generated_at_utc}_",
         "",
     ]
@@ -211,7 +237,9 @@ def render_reimbursement_markdown(rep: ClinicalDecisionReport) -> str:
                      ).rstrip() + "\n"
 
 
-def render_deliverables(rep: ClinicalDecisionReport) -> Dict[str, str]:
+def render_deliverables(rep: ClinicalDecisionReport,
+                        banner: Optional[str] = None,
+                        title_prefix: Optional[str] = None) -> Dict[str, str]:
     """Package deliverables according to the report's output policy.
 
     Returns a mapping of filename -> content. JSON is always present.
@@ -223,23 +251,25 @@ def render_deliverables(rep: ClinicalDecisionReport) -> Dict[str, str]:
         "report.json": json.dumps(rep.to_dict(), indent=2),
     }
 
+    deco = {"banner": banner, "title_prefix": title_prefix}
     output_mode = rep.policy.get("output_mode", OutputMode.CONSOLIDATED.value)
     has_reimbursement = rep.reimbursement is not None
 
     if output_mode == OutputMode.SPLIT.value:
         # Clinician doc without the inline reimbursement block.
         out["clinical-decision-report.md"] = (
-            "\n".join(_core_lines(rep)).rstrip() + "\n")
+            "\n".join(_core_lines(rep, **deco)).rstrip() + "\n")
         out["clinical-decision-report.html"] = render_html(
-            rep, include_reimbursement=False)
+            rep, include_reimbursement=False, **deco)
         if has_reimbursement:
             out["reimbursement-evidence.md"] = render_reimbursement_markdown(
-                rep)
-            out["reimbursement-evidence.html"] = render_reimbursement_html(rep)
+                rep, **deco)
+            out["reimbursement-evidence.html"] = render_reimbursement_html(
+                rep, **deco)
     else:
-        out["clinical-decision-report.md"] = render_markdown(rep)
+        out["clinical-decision-report.md"] = render_markdown(rep, **deco)
         out["clinical-decision-report.html"] = render_html(
-            rep, include_reimbursement=True)
+            rep, include_reimbursement=True, **deco)
 
     return out
 
@@ -322,6 +352,11 @@ ul.crit li { margin: 3px 0; }
   border-radius: 8px; padding: 14px 16px; margin: 14px 0;
 }
 .callout h3 { color: var(--warn); }
+.banner {
+  background: var(--warn-bg); color: var(--ink);
+  border: 2px solid var(--warn); border-radius: 8px;
+  padding: 12px 16px; margin: 16px 0 0; font-weight: 600;
+}
 .muted { color: var(--muted); }
 .justify { margin: 8px 0 0; }
 figure.viz { margin: 14px 0 4px; }
@@ -499,8 +534,16 @@ def _html_document(title: str, body: str) -> str:
         "</footer></body></html>\n")
 
 
+def _banner_html(banner: Optional[str]) -> str:
+    if not banner:
+        return ""
+    return f'<div class="banner" role="note">{_e(banner)}</div>'
+
+
 def render_html(rep: ClinicalDecisionReport,
-                include_reimbursement: bool = True) -> str:
+                include_reimbursement: bool = True,
+                banner: Optional[str] = None,
+                title_prefix: Optional[str] = None) -> str:
     """Render a clinical-look HTML document for the decision report.
 
     Uses a calm clinical palette (teal/slate ink, restrained accents),
@@ -534,10 +577,12 @@ def render_html(rep: ClinicalDecisionReport,
 
     body = (
         '<header class="report"><div class="wrap">'
-        f'<h1>Clinical Decision Support — patient {_e(rep.patient_id)}</h1>'
+        '<h1>' + _e(_title(f"Clinical Decision Support — patient "
+                           f"{rep.patient_id}", title_prefix)) + '</h1>'
         f'<div class="meta">Generated {_e(rep.generated_at_utc)}</div>'
         '</div></header>'
         '<div class="wrap">'
+        f'{_banner_html(banner)}'
         '<h2>Insulin sufficiency</h2>'
         f'<div class="card summary-card"><p>{_e(ins.summary)}</p>'
         f'<div class="cols">{risk_panel}{working_panel}</div></div>'
@@ -555,17 +600,23 @@ def render_html(rep: ClinicalDecisionReport,
         '</div>')
 
     return _html_document(
-        f"Clinical Decision Support — {rep.patient_id}", body)
+        _title(f"Clinical Decision Support — {rep.patient_id}",
+               title_prefix), body)
 
 
-def render_reimbursement_html(rep: ClinicalDecisionReport) -> str:
+def render_reimbursement_html(rep: ClinicalDecisionReport,
+                              banner: Optional[str] = None,
+                              title_prefix: Optional[str] = None) -> str:
     """Render a standalone reimbursement-evidence HTML document."""
     body = (
         '<header class="report"><div class="wrap">'
-        f'<h1>Reimbursement Evidence — patient {_e(rep.patient_id)}</h1>'
+        '<h1>' + _e(_title(f"Reimbursement Evidence — patient "
+                           f"{rep.patient_id}", title_prefix)) + '</h1>'
         f'<div class="meta">Generated {_e(rep.generated_at_utc)}</div>'
         '</div></header>'
-        f'<div class="wrap">{_reimbursement_html_section(rep)}</div>')
+        f'<div class="wrap">{_banner_html(banner)}'
+        f'{_reimbursement_html_section(rep)}</div>')
     return _html_document(
-        f"Reimbursement Evidence — {rep.patient_id}", body)
+        _title(f"Reimbursement Evidence — {rep.patient_id}", title_prefix),
+        body)
 

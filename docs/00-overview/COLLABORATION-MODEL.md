@@ -13,7 +13,7 @@ The rules in §5 would apply to that company and to the author like anyone else.
 
 ## 1. The request
 
-The [ecosystem programme](ECOSYSTEM-PROGRAMME.md) says what the shared layers are. The
+The [ecosystem programme](ECOSYSTEM-PROGRAMME.md) says what the shared commons are. The
 [sponsored-team proposal](SPONSORED-TEAM-PROPOSAL.md) says who would do the work nobody is paid
 for. This page proposes **the rules for working together** that both depend on, so that
 volunteers, app projects, second servers, commercial hosts and researchers can each contribute
