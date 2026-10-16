@@ -46,7 +46,7 @@
   "channel": {
    "type": "string",
    "minLength": 1,
-   "description": "Rule 5. A channel is what a role is played on. For a stateSpans kind that declares a `slot` (with no `/`), the channel is that slot name, shared across products on the tenant, so two controllers that name the same slot contend for its roles; for every other element it is `<vendor>/<product>/<element id>` (element ids as in the submit contract, e.g. `Example/Controller/extensions/com.example.feature`). A channel the instance's definition does not derive is refused `unknown-channel`."
+   "description": "Rule 5. A channel is what a role is played on. For a stateSpans kind that declares a `slot` (with no `/`), the channel is that slot name; for every other element it is `<vendor>/<product>/<element id>` (element ids as in the submit contract, e.g. `Example/Controller/extensions/com.example.feature`). A channel the instance's definition does not derive is refused `unknown-channel`. A slot channel is shared across products on the tenant only when the hub's shared slot list holds it, by name or through a declared `sameAs`; any other slot channel is the product's own, so equal unlisted names from different products do not contend (maintainer, 2026-10-16, walk-through row 5; it read 'shared across products on the tenant, so two controllers that name the same slot contend for its roles'). A `command-sink` role goes only to an instance created by the product's bound subject, or one the owner transfers it to; otherwise it is refused `not-registration-owner` (row 7)."
   },
   "otherTerm": {
    "type": "object",

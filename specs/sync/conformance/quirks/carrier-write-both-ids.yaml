@@ -3,6 +3,9 @@
 # Schema: specs/sync/registration-submit.schema.json#/$defs/instanceCase.
 # Checked by tools/nsschema/test_registration_quirks.py; `detail` strings are
 # not compared.
+# CHANGED 2026-10-16 (SPEC-REG-AMEND, walk-through row 2): INPUT CHANGED. The capability
+#   document's `legacyIdForm: objectId` is removed with the member: every hub's legacy
+#   surface serves 24-hex `_id` values the hub assigns. Expectations unchanged.
 id: carrier-write-both-ids
 title: Every write reply returns both ids
 description: 'Rule 5. A client sends its sync identity as `identifier` and no `_id`; the objectId hub
@@ -86,7 +89,6 @@ capabilities:
       maxLabels: 8
       maxKeyLength: 96
       maxValueLength: 64
-  legacyIdForm: objectId
 wellKnownRegistrations:
   /.well-known/nightscout/controllers/example-legacy:
     apiVersion: nightscout.dev/sync/v1

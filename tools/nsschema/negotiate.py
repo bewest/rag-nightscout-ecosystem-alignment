@@ -696,7 +696,7 @@ def _summary(stored, identity):
     if "versionRange" in meta:
         summary["versionRange"] = meta["versionRange"]
     summary.update({"state": stored["state"], "etag": stored["etag"]})
-    for key in ("blockedFrom", "boundTo", "credentialKind"):
+    for key in ("blockedFrom", "boundTo", "credentialKind", "bindingEvent"):
         if key in stored:
             summary[key] = stored[key]
     if stored.get("freedNamespaces"):
@@ -720,9 +720,13 @@ def _registered(stored):
 
 
 def _stored(identity, registration, state, *, boundTo=None, credentialKind=None,
-            blockedFrom=None, freedNamespaces=None):
+            blockedFrom=None, freedNamespaces=None, bindingEvent=None):
     """A stored registration, members in a fixed order. The etag covers the
-    binding; credential kind and freed namespaces are not in it."""
+    binding; credential kind, the binding event and freed namespaces are not
+    in it. `bindingEvent` (walk-through row 9, 2026-10-16) records how the
+    current binding was made when it was not made by the create:
+    `next-writer`, a released registration bound by the next permitted
+    writer's update. A release or a transfer clears it."""
     out = {"identity": {"vendor": identity[0], "product": identity[1]},
            "state": state, "etag": etag(registration, state,
                                         boundTo if registration is not None else None)}
@@ -731,6 +735,8 @@ def _stored(identity, registration, state, *, boundTo=None, credentialKind=None,
     if registration is not None:
         out["boundTo"] = boundTo
         out["credentialKind"] = credentialKind
+        if bindingEvent is not None and boundTo is not None:
+            out["bindingEvent"] = bindingEvent
     if freedNamespaces:
         out["freedNamespaces"] = list(freedNamespaces)
     out["registration"] = registration
@@ -739,7 +745,7 @@ def _stored(identity, registration, state, *, boundTo=None, credentialKind=None,
 
 def _restate(stored, state=None, **changes):
     members = {k: stored.get(k) for k in ("boundTo", "credentialKind", "blockedFrom",
-                                          "freedNamespaces")}
+                                          "freedNamespaces", "bindingEvent")}
     members.update(changes)
     identity = (stored["identity"]["vendor"], stored["identity"]["product"])
     return _stored(identity, stored["registration"], state or stored["state"], **members)
@@ -845,8 +851,18 @@ def _controller(caps, hub_state, submitter, registration, request, grammar, view
     freed = [ns for ns in (stored or {}).get("freedNamespaces") or []
              if ns in _declared_namespaces(registration)
              and _claimed_elsewhere(hub_state, identity, ns)]
+    # Row 9 (2026-10-16): a released registration is bound by its next
+    # permitted writer, and the listing shows that binding event; an update
+    # by the same binding keeps the event that made it.
+    if registered and stored.get("boundTo") is None:
+        event = "next-writer"
+    elif registered:
+        event = stored.get("bindingEvent")
+    else:
+        event = None
     after = _stored(identity, registration, "active", boundTo=binding_of(submitter),
-                    credentialKind=submitter.get("credentialKind"), freedNamespaces=freed)
+                    credentialKind=submitter.get("credentialKind"), freedNamespaces=freed,
+                    bindingEvent=event)
     return _accepted(caps, hub_state, submitter, registration, grammar, after,
                      201 if not registered else 200, False, views, well_known)
 
@@ -957,12 +973,12 @@ def _owner(submitter, request, identity, stored, hub_state=None):
     if action == "release":
         if stored.get("boundTo") is None:
             return applied(200, stored, True)
-        return applied(200, _restate(stored, boundTo=None), False)
+        return applied(200, _restate(stored, boundTo=None, bindingEvent=None), False)
     if action == "transfer":
         target = request["transferTo"]
         if canonical_json(stored.get("boundTo")) == canonical_json(target):
             return applied(200, stored, True)
-        return applied(200, _restate(stored, boundTo=target), False)
+        return applied(200, _restate(stored, boundTo=target, bindingEvent=None), False)
     # free-namespaces
     if stored["state"] != "retired":
         return reject(409, "not-retired", None, "only a retired registration's namespaces are freed")
@@ -1036,19 +1052,21 @@ def fallback(registration, response, caps=None, well_known=None):
     return plan
 
 
-# Decision 8 (amended 2026-10-15). A typed write refused for load — 429 or
+# Decision 8 (amended 2026-10-15; delivery deadline removed 2026-10-16,
+# maintainer walk-through row 8). A typed write refused for load — 429 or
 # any 5xx, since a server or gateway error says nothing about whether the
 # element is accepted — is retried with backoff (after Retry-After when
-# sent); the record is not dropped and the write plan does not change. A
-# record still unwritten when its delivery deadline passes is sent as its
-# carrier, so a typed route failing persistently never holds data back from
-# older readers; the element stays accepted for the next record. Any other
-# refusal is definite — blocked-by-owner, a retired or missing registration,
-# a typed route answering 404 after a hub rollback, or a 4xx the controller
-# does not know (rule 3) — and sends that record as its carrier; the element
-# is not accepted until the next re-check. A refusal never triggers a
-# re-check: the controller re-reads the capability document and its
-# registration at launch and after a controller release.
+# sent) until it succeeds; the record is not dropped, the write plan does
+# not change, and the record is never re-sent as its carrier, so a write
+# the hub stored before failing cannot appear twice. *(Removed 2026-10-16:
+# a record still unwritten when its delivery deadline passed was sent as
+# its carrier; the deadline was added 2026-10-15 without being asked for.)*
+# Any other refusal is definite — blocked-by-owner, a retired or missing
+# registration, a typed route answering 404 after a hub rollback, or a 4xx
+# the controller does not know (rule 3) — and sends that record as its
+# carrier at once; the element is not accepted until the next re-check. A
+# refusal never triggers a re-check: the controller re-reads the capability
+# document and its registration at launch and after a controller release.
 def is_load_refusal(status):
     return status == 429 or 500 <= status <= 599
 
@@ -1061,12 +1079,9 @@ def typed_write_refused(registration, plan, refusal, caps=None, well_known=None)
         raise ValueError(f"{eid} is not written typed; no typed write was refused")
     after = copy.deepcopy(plan)
     if is_load_refusal(refusal["status"]):
-        if refusal.get("deadlinePassed"):
-            outcome = {"action": "carrier-this-record", "recheck": False}
-        else:
-            outcome = {"action": "retry-backoff", "recheck": False}
-            if "retryAfter" in refusal:
-                outcome["retryAfterSeconds"] = refusal["retryAfter"]
+        outcome = {"action": "retry-backoff", "recheck": False}
+        if "retryAfter" in refusal:
+            outcome["retryAfterSeconds"] = refusal["retryAfter"]
     else:
         outcome = {"action": "carrier-this-record", "recheck": False}
         node, kind = next((e[3], e[4]) for e in elements(registration) if e[0] == eid)

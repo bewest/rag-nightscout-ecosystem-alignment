@@ -11,6 +11,9 @@
 #   is still the typed id. The ObjectId's timestamp is the hub's receipt time of the typed write,
 #   2026-10-15T11:00:05Z, not the record's own start time (an assumption for the maintainer).
 #   An `opaque` hub keeps the typed id for both: quirks/project-served-opaque.
+# CHANGED 2026-10-16 (SPEC-REG-AMEND, walk-through rows 1 and 2): COMMENT ONLY. There is no
+#   `legacyIdForm` and no `opaque` hub any more: every hub serves the stored ObjectId, and
+#   quirks/project-served-opaque is removed. This case's inputs and expectations are unchanged.
 id: project-served
 title: An older reader is served a labelled, read-only projection
 description: 'Rule 8. A typed override record (one hour) projects to a treatments document in the carrier''s

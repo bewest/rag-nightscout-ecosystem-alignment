@@ -3,6 +3,9 @@
 # Schema: specs/sync/registration-submit.schema.json#/$defs/instanceCase.
 # Checked by tools/nsschema/test_registration_quirks.py; `detail` strings are
 # not compared.
+# CHANGED 2026-10-16 (SPEC-REG-AMEND, walk-through row 2): INPUT CHANGED. The capability
+#   document's `legacyIdForm: objectId` is removed with the member: every hub's legacy
+#   surface serves 24-hex `_id` values the hub assigns. Expectations unchanged.
 id: write-stored-carrier-by-objectid
 title: A write aimed at a stored document's _id is accepted
 description: Rule 8, the control. The same update aimed at an ObjectId no projection carries is written
@@ -84,7 +87,6 @@ capabilities:
       maxLabels: 8
       maxKeyLength: 96
       maxValueLength: 64
-  legacyIdForm: objectId
 wellKnownRegistrations:
   /.well-known/nightscout/controllers/example-legacy:
     apiVersion: nightscout.dev/sync/v1

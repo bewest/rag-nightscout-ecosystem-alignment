@@ -13842,6 +13842,13 @@ items:
           etag without the binding (81 tests red); load as 429/503 only
           (3 red, incl. typed-write-load-502); the deadline ignored
           (typed-write-load-deadline-passed red).
+          Amended 2026-10-16 (maintainer walk-through row 8, applied by
+          SPEC-REG-AMEND): the delivery deadline is removed. A typed write
+          answered 5xx is retried with backoff and never re-sent as its
+          carrier; the case typed-write-load-deadline-passed and the
+          deadlinePassed branch are gone (54 cases). Every 5xx still counts
+          as load (typed-write-load-502 kept), the 418 unknown-status test
+          and the etag covering the binding are unchanged.
     blocks_on: [SPEC-REG-NEGOTIATE]
     evidence:
       - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
@@ -14213,28 +14220,98 @@ items:
     parcel: platform
     repo: rag-nightscout-ecosystem-alignment
     branch: main
-    base: main@e9b72966
-    state: not-started
+    base: main@66403e0f
+    state: done
     pr: []
     blast_radius: >
-      Expected: the capability document loses legacyIdForm and the opaque
-      cases go; the slot rule becomes list-or-sameAs only with an
-      equal-name observation; command-sink roles need the binding or an
-      owner transfer; the delivery deadline and its case are removed from
-      negotiate.py, the schemas and §3.5; a Trio `id` registry entry with
-      no mapping; the Trio client-id analysis corrected. Ships nothing.
+      The capability document loses legacyIdForm (schema, quirks_registration.py,
+      the 27 quirks cases that declared objectId) and the cases
+      project-served-opaque and typed-write-opaque-hub go. The slot rule is
+      list-or-sameAs only: instances.py derives a product's own channel for
+      an unlisted slot, 20 instance cases that test cross-product contention
+      list `override`, and the owner's listing gains slotNameObservations
+      and registrations (four listing cases' expectations gain them).
+      Command-sink roles need the product's binding or an owner transfer
+      (instance-create-other-subject now partial). The delivery deadline,
+      its schema member and typed-write-load-deadline-passed are removed.
+      The stored registration gains bindingEvent (released-update-binds
+      gains it). QUIRK-TREATMENTS-007 for Trio's `id` with no mapping, and
+      reports/schema-census/quirks.json regenerated with it; the Trio
+      client-id analyses corrected with dated notes; hub-sync design
+      §3.5-§3.7, the execution plan §2.6.3 status, the schema descriptions
+      and specs/sync/shared-slots.yaml amended with dated notes; the
+      SPEC-REG-DECISIONS gate describe gains a dated note. Ships nothing.
     review: maintainer
     operator_visible: ""
     semver: n/a
     semver_reason: specification in this repository; ships nothing
     register: []
     gates:
-      - no-gate: >
-          Not started. The gate will be the tools/nsschema suites with each
-          amended rule tested against a control and weakened to red for
-          the right reason, every changed or removed case called out in
-          its file and listed, and the cases not named by the walk-through
-          unchanged in meaning.
+      - run: python -m pytest -q tools/nsschema/test_registration_negotiation.py tools/nsschema/test_registration_instances.py tools/nsschema/test_registration_quirks.py
+        kind: unit
+        describe: >
+          Baseline at main 66403e0f in the item's worktree: negotiation 460,
+          instances 545, quirks 185 passed; tools/nsschema 1554 passed, 1
+          failed, 15 skipped (the failure and skips need the gitignored
+          externals/ checkout). GREEN on 2026-10-16: negotiation 453 (54
+          cases), instances 569 (90 cases), quirks 185 (29 cases), grammar
+          46; tools/nsschema 1571 passed, the same 1 failed and 15 skipped;
+          sync_model --check green. Rows 1-2: no legacyIdForm in the
+          capability schema or any case, a stale `opaque` declaration
+          changing nothing, no hub keeping a string _id, every write
+          reply's _id 24-hex. Row 5: equal-names-unlisted-do-not-contend
+          (granted) against instance-role-held (the same case with override
+          listed, refused role-held); slot-name-observation-recorded against
+          instance-overlap-listed; the one-holder check scoped per product
+          for unlisted channels. Row 7:
+          instance-command-sink-not-registration-owner (refused) against
+          instance-create (granted), differing only in the submitter;
+          owner-transfer-role-other-subject (applied);
+          instance-renew-transferred-command-sink (kept); command-routed and
+          the transfer cases unchanged, each command-sink holder there its
+          product's bound subject's instance. Row 8: a load refusal with any
+          5xx or 429 retried and never carried, a 403 carried at once,
+          typed-write-load-502 and the 418 test kept. Row 9:
+          listing-shows-binding-event; released-update-binds stores
+          bindingEvent next-writer. Rows 3-4 stated as decided in the tests
+          that already pinned them (receipt-time ObjectIds; RECENT_DAYS
+          365). Changed or removed existing cases and tests, each called
+          out in its file: removed typed-write-load-deadline-passed,
+          project-served-opaque, typed-write-opaque-hub; inputs changed
+          with expectations unchanged in 20 instance cases (shared list
+          added) and 27 quirks cases (legacyIdForm removed); expectations
+          changed in instance-create-other-subject (accepted to partial,
+          control instance-create), instance-overlap-listed,
+          instance-overlap-holder-lapsed, listing-includes-withheld and
+          listing-withholds-alias (registrations added; the last two also
+          slotNameObservations) and released-update-binds (bindingEvent);
+          tests changed: the stored-state consistency check (scoped), the
+          channels test, the instance-binding test, the legacy id form test
+          (replaced), the opaque string-id test (replaced), the projection
+          stored-id test, the id-handling test's signature, both-ids,
+          registry count 19 to 20, case counts 55/86 to 54/90, and the
+          negotiation typed-write and coverage tests. Non-vacuity: 13
+          weakenings, one at a time, each red by assertion and reverted
+          (red counts): the opaque typed-id re-added (1); a string _id kept
+          (7); legacyIdForm re-added to the schema (1); the deadline branch
+          re-added (1); deadlinePassed re-added to the schema (1); load as
+          429/503 only (4, incl. typed-write-load-502); every slot shared
+          (6); the shared list ignored (8); no observation (4); no
+          command-sink binding check (3); a transferred command-sink not
+          kept on renewal (1); no binding event (1); no registrations on the
+          listing (6). Restored: 1207 passed.
+      - run: make schema-quirks-check
+        kind: static
+        describe: >
+          With NSSCHEMA_CORPUS pointed at the main checkout's 2026-04-01
+          and 2026-04-26 snapshots: every registry claim holds.
+          QUIRK-TREATMENTS-007 measured: 55,939 of 369,419 treatments
+          (15.14%) on one site (b, 90.4% of its treatments), newest document
+          2026-03-29, each with enteredBy Trio, a server-assigned 24-hex _id
+          and no identifier (Temp Basal 32,706, SMB 11,837, Carb Correction
+          8,703, Bolus 2,693); devicestatus openaps.version by co-occurrence
+          0.6.0 54,688, 0.5.1 1,185, unattributed 66. The other 19 rows of
+          reports/schema-census/quirks.json are unchanged.
     blocks_on: [SPEC-REG-QUIRKS]
     evidence:
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
@@ -14243,6 +14320,26 @@ items:
       The decisions are the table "Decided in the 2026-10-16 walk-through"
       in the execution plan §2.6.3, rows 1-9; rows 10-12 need no contract
       change here (12 belongs to SPEC-REG-MODES and SPEC-REG-MIGRATE).
+
+      Done 2026-10-16; hub-sync design §3.5-§3.7. Choices made beyond the
+      table, for the maintainer to confirm: an unlisted slot is the
+      product's own channel under its slot name (instances of one product
+      still contend on it), not an element-path channel; a command for a
+      channel that is not shared names its product (request.identity);
+      the observation is computed on the listing from stored definitions
+      (current registrations and stored definitions, any state), member
+      slotNameObservations [{slot, products}], absent when empty; the
+      command-sink binding check applies to simulated claims too, runs
+      after the channel checks and before role-held, compares the
+      instance's binding with the product's boundTo (so a released
+      product grants no new command-sink role), and keeps a command-sink
+      role the instance already holds on renewal (so a transfer survives
+      and a product transfer does not strip existing holders); the binding
+      event is a stored member bindingEvent (only next-writer for now,
+      kept by updates under the same binding, cleared by release and
+      transfer, not in the etag), and the owner's listing gains
+      registrations, every stored product's summary; normalise_sent_id and
+      projected_ids lost their capability argument.
 
   - id: HUB-REG-CRM
     title: "cgm-remote-monitor: accept registrations and derive typed storage, validation and query from them, single-tenant first"

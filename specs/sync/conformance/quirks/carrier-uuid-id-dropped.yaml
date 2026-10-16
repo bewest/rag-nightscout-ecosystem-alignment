@@ -3,6 +3,9 @@
 # Schema: specs/sync/registration-submit.schema.json#/$defs/instanceCase.
 # Checked by tools/nsschema/test_registration_quirks.py; `detail` strings are
 # not compared.
+# CHANGED 2026-10-16 (SPEC-REG-AMEND, walk-through row 2): INPUT CHANGED. The capability
+#   document's `legacyIdForm: objectId` is removed with the member: every hub's legacy
+#   surface serves 24-hex `_id` values the hub assigns. Expectations unchanged.
 id: carrier-uuid-id-dropped
 title: A non-ObjectId _id beside an identifier is dropped, recorded
 description: Rule 7. With `identifier` present the UUID `_id` is dropped, as cgm-remote-monitor does today.
@@ -85,7 +88,6 @@ capabilities:
       maxLabels: 8
       maxKeyLength: 96
       maxValueLength: 64
-  legacyIdForm: objectId
 wellKnownRegistrations:
   /.well-known/nightscout/controllers/example-legacy:
     apiVersion: nightscout.dev/sync/v1

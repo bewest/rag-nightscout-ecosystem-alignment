@@ -517,6 +517,9 @@
        "$ref": "#/$defs/credentialKind",
        "description": "The kind of credential that last created or updated the registration; the owner's view shows registrations made with the shared secret (decision 3). Owner actions do not change it."
       },
+      "bindingEvent": {
+       "$ref": "#/$defs/bindingEvent"
+      },
       "freedNamespaces": {
        "type": "array",
        "items": {
@@ -715,6 +718,11 @@
     "$ref": "#/$defs/fallbackEntry"
    }
   },
+  "bindingEvent": {
+   "description": "Walk-through row 9 (maintainer, 2026-10-16): how the registration's current binding was made, when not by its create. `next-writer`: a released registration was bound by the next permitted writer's update (decision 4). Cleared by a release or a transfer; kept by later updates under the same binding; not in the etag. Stored and returned with the registration, and shown on the owner's listing. An open vocabulary: a value a reader does not know is shown as written.",
+   "type": "string",
+   "minLength": 1
+  },
   "storedRegistration": {
    "type": "object",
    "required": [
@@ -753,6 +761,9 @@
     },
     "credentialKind": {
      "$ref": "#/$defs/credentialKind"
+    },
+    "bindingEvent": {
+     "$ref": "#/$defs/bindingEvent"
     },
     "freedNamespaces": {
      "type": "array",
@@ -996,7 +1007,7 @@
     },
     "typedWrite": {
      "type": "object",
-     "description": "A later typed write for one element that the hub refuses (decision 8), after the request's response set the write plan. `status` is the HTTP status of the refusal: 429 or any 5xx is a load refusal, retried with backoff; any other is definite. `retryAfter` the Retry-After seconds, when sent; `reason` the refusal's reason, when given; `deadlinePassed` true when the record's delivery deadline (the controller's) has passed under load refusals, so the record is sent as its carrier and the element stays accepted.",
+     "description": "A later typed write for one element that the hub refuses (decision 8), after the request's response set the write plan. `status` is the HTTP status of the refusal: 429 or any 5xx is a load refusal, retried with backoff; any other is definite. `retryAfter` the Retry-After seconds, when sent; `reason` the refusal's reason, when given. A load refusal is retried until it succeeds and the record is never re-sent as its carrier. *(Removed 2026-10-16, walk-through row 8: `deadlinePassed`, a delivery deadline after which a load-refused record was sent as its carrier.)*",
      "required": [
       "element",
       "status"
@@ -1014,9 +1025,6 @@
       "retryAfter": {
        "type": "integer",
        "minimum": 0
-      },
-      "deadlinePassed": {
-       "type": "boolean"
       },
       "reason": {
        "$ref": "#/$defs/reason"
@@ -1113,7 +1121,7 @@
       },
       "typedWrite": {
        "type": "object",
-       "description": "What the controller does about the refused typed write. `retry-backoff`: a load refusal (429 or any 5xx, with or without Retry-After); the record is retried, not written as its carrier and not dropped. `carrier-this-record`: a definite refusal, after which the element is not accepted until the next re-check; or a load refusal past the record's delivery deadline, after which the element stays accepted. `recheck` is always false: a refusal never makes the controller re-read the capability document or its registration. `fallback`: the write plan afterwards.",
+       "description": "What the controller does about the refused typed write. `retry-backoff`: a load refusal (429 or any 5xx, with or without Retry-After); the record is retried with backoff until it succeeds, never written as its carrier and not dropped. `carrier-this-record`: a definite refusal, after which the element is not accepted until the next re-check. *(Removed 2026-10-16, walk-through row 8: `carrier-this-record` for a load refusal past the record's delivery deadline.)* `recheck` is always false: a refusal never makes the controller re-read the capability document or its registration. `fallback`: the write plan afterwards.",
        "required": [
         "action",
         "recheck",
@@ -1546,7 +1554,7 @@
     "_id": {
      "type": "string",
      "minLength": 1,
-     "description": "D20 rules 5 and 8: the storage key the hub assigned when the typed record was written, stored with it so it is the same on every read: an ObjectId on an `objectId` hub, the typed id on an `opaque` one. `id` is the record's `identifier`."
+     "description": "D20 rules 5 and 8: the storage key the hub assigned when the typed record was written, stored with it so it is the same on every read: a 24-hex ObjectId on every hub (walk-through row 2, 2026-10-16; it read 'an ObjectId on an `objectId` hub, the typed id on an `opaque` one'). `id` is the record's `identifier`."
     },
     "quirksApplied": {
      "$ref": "#/$defs/quirksApplied"
@@ -2000,6 +2008,63 @@
      "type": "array",
      "items": {
       "$ref": "#/$defs/overlap"
+     }
+    },
+    "registrations": {
+     "type": "array",
+     "description": "On the owner's listing (walk-through row 9, maintainer 2026-10-16): every stored product of the tenant, as a product response's `registration` summarises it, with its binding (`boundTo`), credential kind and binding event, so the owner sees which credential a released registration was bound to and how.",
+     "items": {
+      "type": "object",
+      "required": [
+       "vendor",
+       "product",
+       "state",
+       "etag"
+      ],
+      "properties": {
+       "vendor": {
+        "type": "string"
+       },
+       "product": {
+        "type": "string"
+       },
+       "state": {
+        "$ref": "#/$defs/state"
+       },
+       "etag": {
+        "$ref": "#/$defs/etag"
+       },
+       "credentialKind": {
+        "$ref": "#/$defs/credentialKind"
+       },
+       "bindingEvent": {
+        "$ref": "#/$defs/bindingEvent"
+       }
+      }
+     }
+    },
+    "slotNameObservations": {
+     "type": "array",
+     "description": "On the owner's listing (walk-through row 5, maintainer 2026-10-16): each slot name that two or more products' stored definitions use and that is not shared (not in the hub's shared slot list, not mapped by `sameAs`), with those products. Equal unlisted names are separate channels and never contend; the observation is for the catalogue to act on. Absent when there is none.",
+     "items": {
+      "type": "object",
+      "required": [
+       "slot",
+       "products"
+      ],
+      "properties": {
+       "slot": {
+        "type": "string",
+        "minLength": 1
+       },
+       "products": {
+        "type": "array",
+        "minItems": 2,
+        "items": {
+         "$ref": "#/$defs/identity"
+        }
+       }
+      }
      }
     },
     "pins": {

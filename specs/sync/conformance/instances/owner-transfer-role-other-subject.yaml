@@ -1,11 +1,15 @@
 # SYNTHETIC CONFORMANCE CASE. Describes no real controller, product, device or person.
-# Contract: docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md §3.7 (D20).
+# Contract: docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md §3.6.
 # Schema: specs/sync/registration-submit.schema.json#/$defs/instanceCase.
-# Checked by tools/nsschema/test_registration_quirks.py; `detail` strings are
+# Checked by tools/nsschema/test_registration_instances.py; `detail` strings are
 # not compared.
-id: typed-write-opaque-hub
-title: An opaque hub may use the typed id for both
-description: Rule 8. A hub whose legacy id form is `opaque` stores the typed id as `_id` too.
+# ADDED 2026-10-16 (SPEC-REG-AMEND; the maintainer's walk-through, execution plan §2.6.3, row 7).
+id: owner-transfer-role-other-subject
+title: The owner transfers a command-sink role to another subject's instance
+description: Walk-through row 7. The `to` instance of ControllerA was created by a development build's
+  subject, so its command-sink claim was refused `not-registration-owner`. The owner transfers the role
+  to it, which is the one way such an instance gets a command-sink role. Otherwise as owner-transfer-role,
+  whose `to` instance is the bound subject's.
 cell: newer-controller/newer-hub
 now: '2026-10-15T12:00:00Z'
 capabilities:
@@ -61,8 +65,6 @@ capabilities:
       href: /.well-known/nightscout/controllers/example-legacy
     slots:
     - name: override
-    - name: loopMode
-    - name: temporaryTarget
   submit:
     href: /api/v4/registrations
     tiers:
@@ -83,7 +85,6 @@ capabilities:
       maxLabels: 8
       maxKeyLength: 96
       maxValueLength: 64
-  legacyIdForm: opaque
 wellKnownRegistrations:
   /.well-known/nightscout/controllers/example-legacy:
     apiVersion: nightscout.dev/sync/v1
@@ -109,21 +110,9 @@ wellKnownRegistrations:
           eventType: Temporary Override
           durationField: duration
           durationUnit: minutes
-      - category: LoopMode
-        kind: LegacyRunningMode
-        slot: runningMode
-        version: '1'
-        states:
-        - active
-        - ended
-        wire:
-          collection: treatments
-          eventType: Example Offline
-          durationField: duration
-          durationUnit: minutes
 hubState:
   registrations:
-  - identity: &id001
+  - identity:
       vendor: Example
       product: ControllerA
     state: active
@@ -144,14 +133,14 @@ hubState:
       spec:
         cadence:
           nominalSeconds: 300
-        documents:
+        documents: &id001
         - collection: devicestatus
           discriminator:
             path: example
             test: is-object
           decomposesTo:
           - ApsSnapshot
-        stateSpans:
+        stateSpans: &id003
         - category: Override
           kind: ExampleOverride
           slot: override
@@ -172,13 +161,14 @@ hubState:
         sensitivity:
           unlabelledPolicy: withhold
         extensions:
-          com.example.controllera.targets:
+          com.example.controllera.targets: &id002
             version: '1'
             carrier:
               collection: settings
               documentIdentifier: example-targets
             fields:
-            - name: target
+            - &id004
+              name: target
               type:
                 type: number
                 minimum: 70
@@ -191,7 +181,7 @@ hubState:
       vendor: Example
       product: ControllerB
     state: active
-    etag: sha256:7b2d494632046f3faae6c5360406fecb2eb15cbbe780e1c821f42b43c4902e4f
+    etag: sha256:231e5850e19dfcab06fc17d7488897e1ea30fb43d0082e6bf38e7c00157d81bb
     boundTo:
       kind: subject
       subject: subject-test-controller-b
@@ -208,13 +198,7 @@ hubState:
       spec:
         cadence:
           nominalSeconds: 300
-        documents:
-        - collection: devicestatus
-          discriminator:
-            path: example
-            test: is-object
-          decomposesTo:
-          - ApsSnapshot
+        documents: *id001
         stateSpans:
         - category: Override
           kind: OtherOverride
@@ -233,43 +217,76 @@ hubState:
             channels:
             - command
             default: false
-        - category: LoopMode
-          kind: OtherLoopMode
-          slot: loopMode
-          version: '1'
-          states:
-          - active
-          - ended
         sensitivity:
           unlabelledPolicy: withhold
         extensions:
-          com.example.controllerb.targets:
-            version: '1'
+          com.example.controllerb.targets: *id002
+  definitions:
+  - identity:
+      vendor: Example
+      product: ControllerA
+    definitionId: sha256:c792772f18009a5c9cc884f0da9efa1c8040c183ba8bd3790049e47fe08d2944
+    definition:
+      apiVersion: nightscout.dev/sync/v1
+      kind: ControllerStateModel
+      metadata:
+        vendor: Example
+        product: ControllerA
+        algorithmFamily: other
+        tier: controller-owned
+        versionRange: 1.1.0-test
+      spec:
+        cadence:
+          nominalSeconds: 300
+        documents: *id001
+        stateSpans: *id003
+        sensitivity:
+          unlabelledPolicy: withhold
+        extensions:
+          com.example.controllera.targets:
+            version: '2'
             carrier:
               collection: settings
               documentIdentifier: example-targets
             fields:
-            - name: target
+            - *id004
+            - name: targetHigh
               type:
                 type: number
                 minimum: 70
-                maximum: 180
+                maximum: 250
               unit: mg/dL
               sensitivity:
                 level: descriptive
                 category: therapy-setting
-  definitions: []
   instances:
-  - identity: *id001
+  - identity:
+      vendor: Example
+      product: ControllerA
     instanceId: 00000000-0000-4000-8000-00000000000a
-    etag: sha256:bb6738c62fe7440903608117609efc2f6164f05497f3739b933776fe52cd2971
+    etag: sha256:996d54228dc847636750b1b5b0abf60b1441fc84aaf1ebb9d17af69a738d2353
     boundTo:
       kind: subject
-      subject: subject-test-controller-a
+      subject: subject-test-dev-build
     credentialKind: subject
     leaseExpiresAt: '2026-10-15T12:10:00Z'
     roles:
     - channel: override
+      role: source
+      provenance: device
+      result: refused
+      reasons:
+      - code: role-held
+        path: roles.0
+        detail: another live device instance holds this role
+    - channel: override
+      role: command-sink
+      provenance: device
+      result: refused
+      reasons:
+      - code: not-registration-owner
+        path: roles.1
+    - channel: Example/ControllerA/extensions/com.example.controllera.targets
       role: source
       provenance: device
       result: granted
@@ -281,26 +298,74 @@ hubState:
       - channel: override
         role: source
         provenance: device
+      - channel: override
+        role: command-sink
+        provenance: device
+      - channel: Example/ControllerA/extensions/com.example.controllera.targets
+        role: source
+        provenance: device
       labels:
         dev.nightscout/purpose: therapy
         dev.nightscout/build: release
+  - identity:
+      vendor: Example
+      product: ControllerB
+    instanceId: 00000000-0000-4000-8000-00000000000c
+    etag: sha256:07bdd95c5c87b10ce76bbb3169705040ca6512d3e019280bf50001d9351bd186
+    boundTo:
+      kind: subject
+      subject: subject-test-controller-b
+    credentialKind: subject
+    leaseExpiresAt: '2026-10-15T12:10:00Z'
+    roles:
+    - channel: override
+      role: source
+      provenance: device
+      result: granted
+    - channel: override
+      role: command-sink
+      provenance: device
+      result: granted
+    - channel: Example/ControllerB/extensions/com.example.controllerb.targets
+      role: source
+      provenance: device
+      result: granted
+    instance:
+      apiVersion: nightscout.dev/sync/v1
+      kind: ControllerInstance
+      definitionId: sha256:3f5dd80780c4f948aa50613ee1fb953adddae07c0f02762718ac7fe2790e8ffa
+      roles:
+      - channel: override
+        role: source
+        provenance: device
+      - channel: override
+        role: command-sink
+        provenance: device
+      - channel: Example/ControllerB/extensions/com.example.controllerb.targets
+        role: source
+        provenance: device
+      labels:
+        dev.nightscout/purpose: therapy
   pins: []
   records: []
 submitter:
   credentialKind: subject
-  subject: subject-test-controller-a
-  token: token-test-a-1
-  permissions:
-  - api:registrations:create
-  - api:registrations:delete
+  subject: subject-test-tenant-owner
+  permissions: []
 request:
-  action: write
-  identity: *id001
-  write:
-    as: typed
-    element: stateSpans/ExampleOverride
-    instanceId: 00000000-0000-4000-8000-00000000000a
-    recordId: 00000000-0000-7000-8000-0000000000b2
+  action: transfer-role
+  actor: owner
+  listener: ns-tenant-admin
+  identity:
+    vendor: Example
+    product: ControllerB
+  transferRole:
+    channel: override
+    role: command-sink
+    from: 00000000-0000-4000-8000-00000000000c
+    to: 00000000-0000-4000-8000-00000000000a
+  preconditions:
+    ifMatch: sha256:07bdd95c5c87b10ce76bbb3169705040ca6512d3e019280bf50001d9351bd186
 body: null
 expected:
   controllerWouldRegister: true
@@ -308,20 +373,31 @@ expected:
     apiVersion: nightscout.dev/sync/v1
     kind: InstanceResponse
     status: 200
-    outcome: written
-    write:
-      accepted: true
-      as: typed
-      attributedTo:
-        vendor: Example
-        product: ControllerA
-        instanceId: 00000000-0000-4000-8000-00000000000a
+    outcome: applied
+    noop: false
+    instances:
+    - vendor: Example
+      product: ControllerB
+      instanceId: 00000000-0000-4000-8000-00000000000c
+      definitionId: sha256:3f5dd80780c4f948aa50613ee1fb953adddae07c0f02762718ac7fe2790e8ffa
+      etag: sha256:e01c05eb2e8b10f8c95120c486fba49703949aace2445a49d7943b304aa56a63
+      leaseExpiresAt: '2026-10-15T12:10:00Z'
+      live: true
+      boundTo:
+        kind: subject
+        subject: subject-test-controller-b
+      credentialKind: subject
+    - vendor: Example
+      product: ControllerA
+      instanceId: 00000000-0000-4000-8000-00000000000a
       definitionId: sha256:ee552930b207551ed46bbbe4e1065e3c67773415193f3a067ef46816201da2ab
-      provenance: device
-      ids:
-        identifier: 00000000-0000-7000-8000-0000000000b2
-        _id: 00000000-0000-7000-8000-0000000000b2
-      matchedBy: null
+      etag: sha256:945e0a64dc751c6bf86bac4bf22f56cb85965984e6c3047f67324104a08361e3
+      leaseExpiresAt: '2026-10-15T12:10:00Z'
+      live: true
+      boundTo:
+        kind: subject
+        subject: subject-test-dev-build
+      credentialKind: subject
   stateAfter:
     registrations:
     - identity:
@@ -392,7 +468,7 @@ expected:
         vendor: Example
         product: ControllerB
       state: active
-      etag: sha256:7b2d494632046f3faae6c5360406fecb2eb15cbbe780e1c821f42b43c4902e4f
+      etag: sha256:231e5850e19dfcab06fc17d7488897e1ea30fb43d0082e6bf38e7c00157d81bb
       boundTo:
         kind: subject
         subject: subject-test-controller-b
@@ -434,13 +510,6 @@ expected:
               channels:
               - command
               default: false
-          - category: LoopMode
-            kind: OtherLoopMode
-            slot: loopMode
-            version: '1'
-            states:
-            - active
-            - ended
           sensitivity:
             unlabelledPolicy: withhold
           extensions:
@@ -459,20 +528,99 @@ expected:
                 sensitivity:
                   level: descriptive
                   category: therapy-setting
-    definitions: []
+    definitions:
+    - identity:
+        vendor: Example
+        product: ControllerA
+      definitionId: sha256:c792772f18009a5c9cc884f0da9efa1c8040c183ba8bd3790049e47fe08d2944
+      definition:
+        apiVersion: nightscout.dev/sync/v1
+        kind: ControllerStateModel
+        metadata:
+          vendor: Example
+          product: ControllerA
+          algorithmFamily: other
+          tier: controller-owned
+          versionRange: 1.1.0-test
+        spec:
+          cadence:
+            nominalSeconds: 300
+          documents:
+          - collection: devicestatus
+            discriminator:
+              path: example
+              test: is-object
+            decomposesTo:
+            - ApsSnapshot
+          stateSpans:
+          - category: Override
+            kind: ExampleOverride
+            slot: override
+            states:
+            - scheduled
+            - active
+            - ended
+            version: '1'
+            wire:
+              collection: treatments
+              eventType: Temporary Override
+              durationField: duration
+              durationUnit: minutes
+            acceptsFromHub:
+              channels:
+              - command
+              default: false
+          sensitivity:
+            unlabelledPolicy: withhold
+          extensions:
+            com.example.controllera.targets:
+              version: '2'
+              carrier:
+                collection: settings
+                documentIdentifier: example-targets
+              fields:
+              - name: target
+                type:
+                  type: number
+                  minimum: 70
+                  maximum: 180
+                unit: mg/dL
+                sensitivity:
+                  level: descriptive
+                  category: therapy-setting
+              - name: targetHigh
+                type:
+                  type: number
+                  minimum: 70
+                  maximum: 250
+                unit: mg/dL
+                sensitivity:
+                  level: descriptive
+                  category: therapy-setting
     instances:
     - identity:
         vendor: Example
         product: ControllerA
       instanceId: 00000000-0000-4000-8000-00000000000a
-      etag: sha256:bb6738c62fe7440903608117609efc2f6164f05497f3739b933776fe52cd2971
+      etag: sha256:945e0a64dc751c6bf86bac4bf22f56cb85965984e6c3047f67324104a08361e3
       boundTo:
         kind: subject
-        subject: subject-test-controller-a
+        subject: subject-test-dev-build
       credentialKind: subject
       leaseExpiresAt: '2026-10-15T12:10:00Z'
       roles:
       - channel: override
+        role: source
+        provenance: device
+        result: refused
+        reasons:
+        - code: role-held
+          path: roles.0
+      - channel: override
+        role: command-sink
+        provenance: device
+        result: granted
+      - channel: Example/ControllerA/extensions/com.example.controllera.targets
         role: source
         provenance: device
         result: granted
@@ -484,17 +632,55 @@ expected:
         - channel: override
           role: source
           provenance: device
+        - channel: override
+          role: command-sink
+          provenance: device
+        - channel: Example/ControllerA/extensions/com.example.controllera.targets
+          role: source
+          provenance: device
         labels:
           dev.nightscout/purpose: therapy
           dev.nightscout/build: release
-    pins: []
-    records:
-    - id: 00000000-0000-7000-8000-0000000000b2
-      _id: 00000000-0000-7000-8000-0000000000b2
-      as: typed
-      identity:
+    - identity:
         vendor: Example
-        product: ControllerA
-      instanceId: 00000000-0000-4000-8000-00000000000a
-      definitionId: sha256:ee552930b207551ed46bbbe4e1065e3c67773415193f3a067ef46816201da2ab
-      element: stateSpans/ExampleOverride
+        product: ControllerB
+      instanceId: 00000000-0000-4000-8000-00000000000c
+      etag: sha256:e01c05eb2e8b10f8c95120c486fba49703949aace2445a49d7943b304aa56a63
+      boundTo:
+        kind: subject
+        subject: subject-test-controller-b
+      credentialKind: subject
+      leaseExpiresAt: '2026-10-15T12:10:00Z'
+      roles:
+      - channel: override
+        role: source
+        provenance: device
+        result: granted
+      - channel: override
+        role: command-sink
+        provenance: device
+        result: refused
+        reasons:
+        - code: role-held
+      - channel: Example/ControllerB/extensions/com.example.controllerb.targets
+        role: source
+        provenance: device
+        result: granted
+      instance:
+        apiVersion: nightscout.dev/sync/v1
+        kind: ControllerInstance
+        definitionId: sha256:3f5dd80780c4f948aa50613ee1fb953adddae07c0f02762718ac7fe2790e8ffa
+        roles:
+        - channel: override
+          role: source
+          provenance: device
+        - channel: override
+          role: command-sink
+          provenance: device
+        - channel: Example/ControllerB/extensions/com.example.controllerb.targets
+          role: source
+          provenance: device
+        labels:
+          dev.nightscout/purpose: therapy
+    pins: []
+    records: []

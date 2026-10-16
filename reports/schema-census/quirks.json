@@ -1,7 +1,7 @@
 {
  "generated_by": "tools/nsschema/quirks.py",
  "registry": "specs/quirks",
- "quirks": 19,
+ "quirks": 20,
  "results": [
   {
    "id": "QUIRK-DEVICESTATUS-001",
@@ -620,6 +620,54 @@
     "why_not": {
      "historical": "the hub's mapping rewrites the stored form, so recent writes are measured only by its recorded mappings (rule 3)",
      "retired": "the hub's mapping rewrites the stored form, so recent writes are measured only by its recorded mappings (rule 3)"
+    }
+   }
+  },
+  {
+   "id": "QUIRK-TREATMENTS-007",
+   "title": "the client's record id is sent as `id`, a member Nightscout does not read",
+   "collection": "treatments",
+   "kind": "id-form",
+   "status": "active",
+   "path": "id",
+   "documents": 55939,
+   "collection_documents": 369419,
+   "share": 0.151424,
+   "sites": 1,
+   "site_share": {
+    "b": 0.904123
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "expect": {
+    "min_share": 0.0,
+    "min_sites": 1
+   },
+   "applies_to": "documents",
+   "recent_documents": 55939,
+   "untimed_documents": 0,
+   "newest": "2026-03-29",
+   "versions": {
+    "Nightscout Foundation/Trio": {
+     "by": "co-occurrence",
+     "counts": {
+      "0.5.1": 1185,
+      "0.6.0": 54688,
+      "unattributed": 66
+     }
+    }
+   },
+   "lifecycle": {
+    "supported": [
+     "proposed",
+     "active"
+    ],
+    "live_instances": null,
+    "why_not": {
+     "historical": "55939 recent document(s)",
+     "retired": "55939 recent document(s)"
     }
    }
   }

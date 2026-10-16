@@ -3,6 +3,11 @@
 # Schema: specs/sync/registration-submit.schema.json#/$defs/conformanceCase.
 # Checked by tools/nsschema/test_registration_negotiation.py; `detail` strings are
 # not compared.
+# CHANGED 2026-10-16 (SPEC-REG-AMEND, walk-through row 9; execution plan §2.6.3):
+#   EXPECTATION ADDED TO. The response's registration and `storedAfter` gain
+#   `bindingEvent: next-writer`, the record that this binding was made by the next
+#   permitted writer after a release, which the owner's listing shows
+#   (instances/listing-shows-binding-event). Every other member is unchanged.
 id: released-update-binds
 title: After a release, the next subject that updates the registration is bound to it
 description: Decision 4. The registration is unbound; a different subject with api:registrations:create
@@ -206,6 +211,7 @@ expected:
         kind: subject
         subject: subject-test-controller-b
       credentialKind: subject
+      bindingEvent: next-writer
     ignored: []
     elements:
     - element: stateSpans/ExampleOverride
@@ -225,4 +231,5 @@ expected:
     etag: sha256:c4cb779610fc0daf9648db6b1849eedf5d69ff1c162a916681b390eedaed1713
     boundTo: *id001
     credentialKind: subject
+    bindingEvent: next-writer
     registration: *id002

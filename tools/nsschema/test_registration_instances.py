@@ -6,6 +6,13 @@ and the reference (tools/nsschema/instances.py, which extends negotiate.py; a
 reference and not a hub) reproduces its expected outcome. Each refusal names
 a passing control, and each rule below is tested against a control that
 differs from it only in the aspect under test.
+
+Amended 2026-10-16 (SPEC-REG-AMEND; the maintainer's walk-through, execution
+plan §2.6.3, rows 5, 7 and 9): a slot is shared across products only through
+the shared slot list or `sameAs`, so the cases whose instances of two products
+contend on `override` list that slot; a command-sink role needs the product's
+binding or the owner's transfer; the owner's listing shows each product's
+binding event and credential kind. Each changed test says so.
 """
 
 import copy
@@ -46,6 +53,11 @@ REQUIRED = {
     # handoff by release, lapse and owner transfer
     "instance-handoff-release", "instance-delete", "owner-transfer-role",
     "lapsed-role-not-auto-assigned",
+    # command-sink roles need the binding or the owner's transfer (row 7, 2026-10-16)
+    "instance-command-sink-not-registration-owner", "owner-transfer-role-other-subject",
+    "instance-renew-transferred-command-sink",
+    # the binding event on the owner's listing (row 9, 2026-10-16)
+    "listing-shows-binding-event",
     # one destination per command channel
     "command-routed", "command-no-destination-simulated",
     # labels
@@ -157,10 +169,15 @@ def test_stored_state_is_consistent(cid):
             assert not _errors(instance_schema, stored["instance"])
             assert stored["etag"] == instances.instance_etag(
                 stored["instance"], stored["boundTo"], instances.granted(stored))
-        for channel in {g["channel"] for s in state.get("instances") or []
-                        for g in instances.granted(s)}:
-            for role in ("source", "command-sink"):
-                instances.holder(state, channel, role, case["now"])  # raises on two
+        # CHANGED 2026-10-16 (SPEC-REG-AMEND, row 5): the one-holder invariant
+        # is per channel scope — the tenant for a shared slot, else the
+        # product — so it is checked with each holder's scope.
+        caps = case["capabilities"]
+        for stored in state.get("instances") or []:
+            identity = instances._ident(stored["identity"])
+            for g in instances.granted(stored):
+                instances.holder(state, g["channel"], g["role"], case["now"],  # raises on two
+                                 scope=instances.scope_of(caps, g["channel"], identity))
 
 
 @pytest.mark.parametrize("cid", IDS)
@@ -477,6 +494,87 @@ def test_an_instance_is_bound_to_its_creator_not_to_the_product():
     dev = [s for s in stored if s["instanceId"].endswith("0d")][0]
     assert dev["boundTo"] == {"kind": "subject", "subject": "subject-test-dev-build"}
     assert _codes(_response("instance-not-registration-owner")) == ["not-registration-owner"]
+    # ADDED 2026-10-16 (SPEC-REG-AMEND, row 7): the case's outcome is now
+    # `partial`; its source roles are granted to another subject's instance,
+    # its command-sink claim is not.
+    roles = _role_results("instance-create-other-subject")
+    assert roles[("override", '"command-sink"')] == ("refused", ["not-registration-owner"])
+    assert all(v == ("granted", []) for k, v in roles.items() if k[1] == '"source"')
+
+
+def test_a_command_sink_role_needs_the_product_binding_or_the_owners_transfer():
+    # Walk-through row 7 (maintainer, 2026-10-16). Refused: another subject's
+    # device instance; control: the bound subject's, differing only in the
+    # submitter.
+    refused = CASES["instance-command-sink-not-registration-owner"]
+    control = CASES[refused["control"]]
+    assert {k: v for k, v in refused.items() if k not in ("id", "title", "description", "control",
+                                                          "submitter", "expected")} == \
+        {k: v for k, v in control.items() if k not in ("id", "title", "description", "control",
+                                                       "submitter", "expected")}
+    assert refused["submitter"]["subject"] != control["submitter"]["subject"]
+    assert _role_results(refused["id"])[("override", '"command-sink"')] == \
+        ("refused", ["not-registration-owner"])
+    assert _role_results(control["id"])[("override", '"command-sink"')] == ("granted", [])
+    # Source roles stay open to any permitted subject.
+    assert all(v == ("granted", []) for k, v in _role_results(refused["id"]).items()
+               if k[1] == '"source"')
+    # The owner's transfer is the other way in, and the role survives renewal.
+    transfer = CASES["owner-transfer-role-other-subject"]
+    move = transfer["request"]["transferRole"]
+    target = instances.find_instance(transfer["hubState"], move["to"])
+    product = negotiate._find(transfer["hubState"], instances._ident(target["identity"]))
+    assert target["boundTo"] != product["boundTo"]
+    assert _response(transfer["id"])["outcome"] == "applied"
+    assert instances.holder(transfer["expected"]["stateAfter"], move["channel"], move["role"],
+                            transfer["now"]) == move["to"]
+    renew = _role_results("instance-renew-transferred-command-sink")
+    assert renew[(move["channel"], '"command-sink"')] == ("granted", [])
+    # Without the transferred grant the same renewal is refused, against the
+    # control above.
+    case = copy.deepcopy(CASES["instance-renew-transferred-command-sink"])
+    mine = instances.find_instance(case["hubState"], move["to"])
+    for r in mine["roles"]:
+        if r["role"] == "command-sink":
+            r.update(result="refused", reasons=[{"code": "role-held"}])
+    mine["etag"] = instances.instance_etag(mine["instance"], mine["boundTo"], instances.granted(mine))
+    case["request"]["preconditions"]["ifMatch"] = mine["etag"]
+    response = instances.run_case(case, GRAMMAR)["response"]
+    assert [(r["role"], r["result"], _codes(r)) for r in response["roles"]
+            if r["role"] == "command-sink"] == \
+        [("command-sink", "refused", ["not-registration-owner"])]
+    # command-routed and the existing transfer cases keep their meaning: every
+    # command-sink holder there is its product's bound subject's instance.
+    for cid in ("command-routed", "owner-transfer-role", "instance-renew-after-transfer"):
+        state = CASES[cid]["hubState"]
+        for stored in state["instances"]:
+            if any(g["role"] == "command-sink" for g in instances.granted(stored)):
+                bound = negotiate._find(state, instances._ident(stored["identity"]))["boundTo"]
+                assert stored["boundTo"] == bound, (cid, stored["instanceId"])
+
+
+def test_the_owners_listing_shows_each_binding_event_and_credential_kind():
+    # Walk-through row 9 (maintainer, 2026-10-16): a released registration
+    # binds to its next permitted writer, and the owner's listing shows the
+    # binding event and credential kind.
+    listed = {(r["vendor"], r["product"]): r
+              for r in _response("listing-shows-binding-event")["registrations"]}
+    a = listed[("Example", "ControllerA")]
+    assert (a["bindingEvent"], a["credentialKind"]) == ("next-writer", "subject")
+    assert a["boundTo"] == {"kind": "subject", "subject": "subject-test-controller-a"}
+    assert "bindingEvent" not in listed[("Example", "ControllerB")]
+    # The negotiation case that binds after a release stores the event.
+    path = ROOT / negotiate.CONFORMANCE_DIR / "released-update-binds.yaml"
+    binds = yaml.safe_load(path.read_text())
+    assert binds["hubState"]["registrations"][0]["boundTo"] is None
+    assert binds["expected"]["storedAfter"]["bindingEvent"] == "next-writer"
+    # Every listing shows every stored product.
+    for cid in IDS:
+        if CASES[cid]["request"]["action"] == "list-instances":
+            response = _response(cid)
+            if response["outcome"] == "listed":
+                stored = CASES[cid]["hubState"].get("registrations") or []
+                assert len(response["registrations"]) == len(stored), cid
 
 
 def test_an_instance_names_a_stored_definition_of_its_product():
@@ -560,10 +658,20 @@ def test_channels_are_slots_shared_across_products_or_element_paths():
     assert chans["override"]["commands"] is True
     assert chans["Example/ControllerA/extensions/com.example.controllera.targets"]["commands"] is False
     # A slot name with `/` derives no shared channel.
+    # CHANGED 2026-10-16 (SPEC-REG-AMEND, row 5): instance-create's hub lists
+    # no shared slots, so its `override` is ControllerA's own channel
+    # (`shared` false); the shared-channel half of this test is now run with
+    # `override` listed, and `a/b` still derives the element channel on that
+    # hub (the list cannot hold a name with `/`).
+    assert chans["override"]["shared"] is False
+    caps = copy.deepcopy(case["capabilities"])
+    caps["wellKnown"]["slots"] = [{"name": "override"}]
+    assert instances.channels(caps, case["wellKnownRegistrations"], definition)[
+        "override"]["shared"] is True
     odd = copy.deepcopy(definition)
     odd["spec"]["stateSpans"][0]["slot"] = "a/b"
-    assert "Example/ControllerA/stateSpans/ExampleOverride" in \
-        instances.channels(case["capabilities"], {}, odd)
+    derived = instances.channels(caps, {}, odd)
+    assert "Example/ControllerA/stateSpans/ExampleOverride" in derived and "a/b" not in derived
     assert _role_results("instance-unknown-channel")[("temporaryTarget", '"source"')] == \
         ("refused", ["unknown-channel"])
     assert _role_results("instance-not-a-command-channel")[

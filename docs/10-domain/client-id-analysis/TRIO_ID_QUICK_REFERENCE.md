@@ -1,5 +1,18 @@
 # Trio iOS App: `_id` Field Quick Reference
 
+> **Correction (2026-10-16, `SPEC-REG-AMEND`; source read at Trio `e41c9db37`, corpus measured
+> with `make schema-quirks`).** The statement that Trio's `id` maps to `_id` holds for the carbs
+> and temporary-target models, not for `NightscoutTreatment`: `CarbsEntry.swift:29` and
+> `TempTarget.swift:50` encode `case id = "_id"`, while `NightscoutTreatment.swift:62` encodes
+> `case id` with no key, so a treatment built as `NightscoutTreatment` is sent with its UUID in the
+> member `id`, not `_id`. cgm-remote-monitor does not read `id`: it matches such a treatment by
+> `created_at` + `eventType` (write contract `treatment-fallback-key`; `lib/server/treatments.js:383-405`
+> at `crm-write` `239f8c25`). Measured over the 2026-04-01 and 2026-04-26 snapshots: 55,939 stored
+> treatments on one site carry a UUID `id`, each with `enteredBy: Trio`, a server-assigned 24-hex
+> `_id` and no `identifier` (registry entry `QUIRK-TREATMENTS-007`). At the same commit
+> `BloodGlucose`'s coding keys hold both `_id` (`legacyId`) and `id` (`BloodGlucose.swift:60-62`);
+> the glucose statements were not re-checked. The text below is kept as written.
+
 ## TL;DR
 
 | Question | Answer |
@@ -24,12 +37,16 @@ CarbsStorage.swift:383     → id: result.id?.uuidString
 NightscoutTreatment.swift  → var id: String?  [maps to "_id" in JSON]
 ```
 
+*Corrected 2026-10-16: `NightscoutTreatment`'s `id` is encoded as `id`, not `_id` (`NightscoutTreatment.swift:62` at `e41c9db37`); see the note at the top.*
+
 ### Upload Endpoints
 ```
 POST /api/v1/entries.json         ← Glucose (with _id)
 POST /api/v1/treatments.json      ← Treatments (with _id via id)
 POST /api/v1/devicestatus.json    ← Device status (no _id)
 ```
+
+*Corrected 2026-10-16: treatments built as `NightscoutTreatment` carry the UUID as `id`, with no `_id`; carbs and temporary targets carry `_id`.*
 
 ### CoreData Models
 ```

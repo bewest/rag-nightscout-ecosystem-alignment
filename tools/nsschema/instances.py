@@ -194,14 +194,32 @@ def _summary(stored, now):
 
 # ── channels ──────────────────────────────────────────────────────────
 
+def is_shared(caps, channel):
+    """Walk-through row 5 (maintainer, 2026-10-16): a channel is shared
+    across products only when it is a slot of the hub's shared slot list
+    (`wellKnown.slots`), named directly or by a declared `sameAs`."""
+    return channel in negotiate.shared_slots(caps)
+
+
+def scope_of(caps, channel, identity):
+    """The products a channel's roles contend among: the whole tenant for a
+    shared slot (None), else the one product `identity`."""
+    return None if is_shared(caps, channel) else tuple(identity)
+
+
 def channels(caps, well_known, definition):
     """The channels a definition's roles may name, each with the elements it
-    covers and whether one of them accepts hub commands. A stateSpans kind
-    that declares a slot (a slot name with no `/`) is the channel named by
-    that slot, shared across products on the tenant, so two controllers that
-    name the same slot contend for its roles; every other element is the
-    channel `<vendor>/<product>/<element id>`. A kind that references a
-    well-known kind takes the catalogue kind's slot and acceptsFromHub."""
+    covers, whether one of them accepts hub commands, and whether it is
+    shared. A stateSpans kind that declares a slot (a slot name with no `/`)
+    is the channel named by that slot; every other element is the channel
+    `<vendor>/<product>/<element id>`. A kind that references a well-known
+    kind takes the catalogue kind's slot and acceptsFromHub.
+    *(Amended 2026-10-16, walk-through row 5: a slot channel is shared
+    across products only when the hub's shared slot list holds it, by its
+    own name or by a declared `sameAs`; any other slot channel is the
+    product's own, so equal unlisted names from different products never
+    contend. It read: "shared across products on the tenant, so two
+    controllers that name the same slot contend for its roles".)*"""
     meta = definition["metadata"]
     out = {}
     for eid, _path, _defining, node, kind in negotiate.elements(definition):
@@ -214,7 +232,8 @@ def channels(caps, well_known, definition):
             name = quirks_registration.slot_channel(caps, source, element_channel)
         else:
             name = element_channel
-        entry = out.setdefault(name, {"elements": [], "commands": False})
+        entry = out.setdefault(name, {"elements": [], "commands": False,
+                                      "shared": is_shared(caps, name)})
         entry["elements"].append(eid)
         accepts = (source.get("acceptsFromHub") or {}).get("channels") or []
         if kind == "stateSpans" and "command" in accepts:
@@ -229,12 +248,15 @@ def channel_of(caps, well_known, definition, element):
     return None
 
 
-def holder(hub_state, channel, role, now, exclude=None):
+def holder(hub_state, channel, role, now, exclude=None, scope=None):
     """Rule 6: the one live `device`-provenance instance of an active product
     holding (channel, role) on the tenant, or None. `simulated` roles never
-    hold against `device` ones or each other."""
+    hold against `device` ones or each other. `scope` (row 5, 2026-10-16)
+    limits the search to one product's instances, for a channel that is not
+    a shared slot (`scope_of`); None searches the tenant."""
     found = [s["instanceId"] for s in _instances(hub_state)
              if s["instanceId"] != exclude and live(s, now)
+             and (scope is None or _ident(s["identity"]) == tuple(scope))
              and product_state(hub_state, _ident(s["identity"])) == "active"
              and any(g["channel"] == channel and g["role"] == role and g["provenance"] == "device"
                      for g in granted(s))]
@@ -251,8 +273,25 @@ def _supported_roles(caps):
     return [negotiate.canonical_json(r) for r in caps["instances"].get("roles") or []]
 
 
-def evaluate_roles(caps, hub_state, well_known, instance_id, body, definition, now):
-    """Per-role results for an instance's claimed roles (rules 5 and 6)."""
+def command_sink_permitted(hub_state, identity, binding, stored_before, claim):
+    """Walk-through row 7 (maintainer, 2026-10-16): a command-sink role goes
+    only to an instance created by the subject the product is bound to (the
+    instance's binding equals the product's), or to one the owner transferred
+    it to (`transfer-role`). A role the instance already holds is kept on
+    renewal, so a transferred role survives the next renewal. Source roles
+    stay open to any permitted subject."""
+    product = negotiate._find(hub_state, identity) or {}
+    bound = product.get("boundTo")
+    if bound is not None and negotiate.canonical_json(bound) == negotiate.canonical_json(binding):
+        return True
+    held = {k: claim[k] for k in ("channel", "role", "provenance")}
+    return stored_before is not None and held in granted(stored_before)
+
+
+def evaluate_roles(caps, hub_state, well_known, instance_id, body, definition, now,
+                   identity=None, binding=None, stored_before=None):
+    """Per-role results for an instance's claimed roles (rules 5 and 6, and
+    the command-sink binding of row 7)."""
     chans = channels(caps, well_known, definition)
     supported = _supported_roles(caps)
     results = []
@@ -271,8 +310,14 @@ def evaluate_roles(caps, hub_state, well_known, instance_id, body, definition, n
         elif claim["role"] == "command-sink" and not chans[claim["channel"]]["commands"]:
             reasons.append(_reason("not-a-command-channel", f"{path}.channel",
                                    "no kind on this channel accepts hub commands"))
+        if not reasons and claim["role"] == "command-sink" and \
+                not command_sink_permitted(hub_state, identity, binding, stored_before, claim):
+            reasons.append(_reason("not-registration-owner", path,
+                                   "a command-sink role goes to an instance of the product's "
+                                   "bound subject, or by the owner's transfer"))
         if not reasons and claim["provenance"] == "device" and \
-                holder(hub_state, claim["channel"], claim["role"], now, exclude=instance_id):
+                holder(hub_state, claim["channel"], claim["role"], now, exclude=instance_id,
+                       scope=scope_of(caps, claim["channel"], identity)):
             reasons.append(_reason("role-held", path,
                                    "another live device instance holds this role"))
         result = {"channel": claim["channel"], "role": claim["role"],
@@ -431,7 +476,8 @@ def put_instance(caps, hub_state, submitter, request, body, now, well_known):
                         "not a stored definition of this product"), hub_state
     # 4. Roles. A renewal re-evaluates every claim: a role whose holder has
     # lapsed or dropped it is granted now, never before (no auto-assignment).
-    roles = evaluate_roles(caps, hub_state, well_known, instance_id, body, definition, now)
+    roles = evaluate_roles(caps, hub_state, well_known, instance_id, body, definition, now,
+                           identity, negotiate.binding_of(submitter), stored)
     lease = _text(_time(now) + datetime.timedelta(seconds=caps["instances"]["leaseSeconds"]))
     after = _stored_instance(identity, instance_id, body, negotiate.binding_of(submitter),
                              submitter.get("credentialKind"), roles, lease,
@@ -592,7 +638,7 @@ def pin_version(caps, hub_state, submitter, request, well_known):
     return _response(201 if entry is None else 200, "applied", noop=noop, pins=after), state
 
 
-def overlaps(hub_state, now):
+def overlaps(caps, hub_state, now):
     """Rule 6: each live claimant refused `role-held`, with the role's
     current holder (None when the holder has since lapsed or dropped it: the
     claimant gets the role on its next renewal). Listed until the claimant
@@ -607,16 +653,39 @@ def overlaps(hub_state, now):
                 out.append({"channel": r["channel"], "role": r["role"],
                             "claimant": stored["instanceId"],
                             "holder": holder(hub_state, r["channel"], r["role"], now,
-                                             exclude=stored["instanceId"])})
+                                             exclude=stored["instanceId"],
+                                             scope=scope_of(caps, r["channel"],
+                                                            _ident(stored["identity"])))})
     return sorted(out, key=negotiate.canonical_json)
 
 
-def list_instances(caps, hub_state, submitter, request, now):
+def slot_name_observations(caps, hub_state, well_known):
+    """Walk-through row 5 (maintainer, 2026-10-16): a slot name that two or
+    more products' stored definitions use, and that is not shared (no listed
+    slot and no `sameAs`), is not one channel; the hub records the
+    observation for the catalogue to act on. Returns [{slot, products}]."""
+    seen = {}
+    pairs = [(r["identity"], r["registration"])
+             for r in (hub_state or {}).get("registrations") or []
+             if r.get("registration") is not None]
+    pairs += [(d["identity"], d["definition"]) for d in (hub_state or {}).get("definitions") or []]
+    for identity, definition in pairs:
+        for name, entry in channels(caps, well_known, definition).items():
+            if "/" not in name and not entry["shared"]:
+                seen.setdefault(name, set()).add(_ident(identity))
+    return [{"slot": name, "products": [_identity(p) for p in sorted(products)]}
+            for name, products in sorted(seen.items()) if len(products) > 1]
+
+
+def list_instances(caps, hub_state, submitter, request, now, well_known=None):
     """The owner's listing: every stored instance with its roles and labels,
     and the overlaps. An observed alias is identifying and withheld unless
     the owner asks for withheld members (D18 addendum `unlabelledPolicy:
     withhold` style); it is never in the capability document or a default
-    export."""
+    export. *(Added 2026-10-16, walk-through rows 5 and 9:)* every stored
+    product with its binding, credential kind and binding event
+    (`registrations`), and `slotNameObservations` when two products use one
+    unshared slot name."""
     refusal = _owner_refusal(request, submitter)
     if refusal:
         return refusal, hub_state
@@ -628,7 +697,13 @@ def list_instances(caps, hub_state, submitter, request, now):
         if request.get("includeWithheld") and stored.get("observedAliases"):
             entry["observedAliases"] = stored["observedAliases"]
         listed.append(entry)
-    return _response(200, "listed", instances=listed, overlaps=overlaps(hub_state, now)), hub_state
+    registrations = [negotiate._summary(r, _ident(r["identity"]))
+                     for r in sorted((hub_state or {}).get("registrations") or [],
+                                     key=lambda r: _ident(r["identity"]))]
+    return _response(200, "listed", registrations=registrations, instances=listed,
+                     overlaps=overlaps(caps, hub_state, now),
+                     slotNameObservations=slot_name_observations(caps, hub_state, well_known)
+                     or None), hub_state
 
 
 # ── commands, read selection, projection, writes, retention ───────────
@@ -638,8 +713,12 @@ def route_command(caps, hub_state, request, now):
     holding `command-sink` on it. With no holder the hub refuses the command
     and never routes it to a guess — not to a lapsed former holder, not to a
     `simulated` command sink, not to the product's most recent instance.
-    The command API itself is not specified here."""
-    destination = holder(hub_state, request["channel"], "command-sink", now)
+    The command API itself is not specified here. *(2026-10-16, row 5:)* a
+    command for a channel that is not a shared slot names its product
+    (`request.identity`), whose own channel it is."""
+    scope = None if is_shared(caps, request["channel"]) or not request.get("identity") \
+        else _ident(request["identity"])
+    destination = holder(hub_state, request["channel"], "command-sink", now, scope=scope)
     if destination is None:
         return _refused(409, "no-command-destination", "channel",
                         "no live device instance holds command-sink on this channel"), hub_state
@@ -732,10 +811,10 @@ def project(caps, hub_state, record, well_known):
     one typed record, or None when the element has no declared mapping. The
     document is labelled with the marker `projectedFrom`, is never stored as
     a source and is read-only; its `identifier` is the typed entity's id.
-    *(Changed 2026-10-16, D20 rule 8: on an `objectId` hub its `_id` is the
-    ObjectId the hub assigned at the typed write and stored with the
-    record; an `opaque` hub may use the typed id for both, as this read
-    before.)* Only the wire members the mapping declares are
+    *(Changed 2026-10-16, D20 rule 8: its `_id` is the ObjectId the hub
+    assigned at the typed write and stored with the record. Amended the same
+    day, walk-through row 2: every hub, with no `opaque` exception.)* Only
+    the wire members the mapping declares are
     filled: the collection, eventType, the start time and the duration in
     the wire's unit (or its indefinite sentinel)."""
     identity = _ident(record["identity"])
@@ -746,7 +825,7 @@ def project(caps, hub_state, record, well_known):
     wire = (resolved or {}).get("wire")
     if not wire:
         return None
-    identifier, _id = quirks_registration.projected_ids(caps, record)
+    identifier, _id = quirks_registration.projected_ids(record)
     document = {"identifier": identifier, "_id": _id, "created_at": record["startedAt"]}
     if wire.get("eventType"):
         document["eventType"] = wire["eventType"]
@@ -844,7 +923,8 @@ def write(caps, hub_state, request, now, well_known, assigner=None):
     role = next((g for g in granted(stored) if g["channel"] == channel and g["role"] == "source"),
                 None)
     if role is None:
-        if holder(hub_state, channel, "source", now, exclude=instance_id):
+        if holder(hub_state, channel, "source", now, exclude=instance_id,
+                  scope=scope_of(caps, channel, identity)):
             return _refused(409, "role-held", None,
                             "another instance is the source of record; write the carrier"), hub_state
         return _refused(409, "role-not-granted", None,
@@ -964,7 +1044,7 @@ def run_case(case, grammar=None):
     elif action in ("pin-version", "unpin-version"):
         response, after = pin_version(caps, state, submitter, request, well_known)
     elif action == "list-instances":
-        response, after = list_instances(caps, state, submitter, request, now)
+        response, after = list_instances(caps, state, submitter, request, now, well_known)
     elif action == "route-command":
         response, after = route_command(caps, state, request, now)
     elif action == "select-versions":

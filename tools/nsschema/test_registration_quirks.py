@@ -6,6 +6,13 @@ the reference (tools/nsschema/instances.py with quirks_registration.py; a
 reference and not a hub) reproduces its expected outcome. The registry half
 (rules 1 and 4) is tools/nsschema/quirks.py, tested here on synthetic
 documents. Each refusal names a passing control.
+
+Amended 2026-10-16 (SPEC-REG-AMEND; the maintainer's walk-through, execution
+plan §2.6.3, rows 1-9): every hub serves 24-hex `_id` values on its legacy
+surface (the `legacyIdForm` member, its `opaque` option and their two cases
+are removed); a slot is shared only through the shared slot list or
+`sameAs`, and the owner's listing records equal unlisted names; Trio's `id`
+member is QUIRK-TREATMENTS-007. Each changed test says so.
 """
 
 import copy
@@ -38,6 +45,8 @@ REQUIRED = {
     "same-as-own-shared-name", "same-as-without-slot", "same-as-role-granted",
     "same-as-role-held", "names-alike-do-not-contend", "same-as-own-name-not-a-channel",
     "same-as-unlisted-not-own-name",
+    # row 5 (2026-10-16): equal unlisted names do not contend; the observation
+    "equal-names-unlisted-do-not-contend", "slot-name-observation-recorded",
     "catalogue-mapping-applied", "catalogue-mapping-version-outside",
     "catalogue-mapping-version-unknown",
     # rule 3: mappings are recorded
@@ -47,9 +56,11 @@ REQUIRED = {
     "carrier-resend-identifier-first", "carrier-resend-matches-objectid", "carrier-hex-id-kept",
     # rule 7: today's handling, unchanged
     "carrier-uuid-id-dropped", "carrier-uuid-entries-moved", "carrier-uuid-resend-matches",
-    # rule 8: projected and typed records
-    "typed-write-assigns-objectid", "typed-write-resend-same-ids", "typed-write-opaque-hub",
-    "project-served-opaque", "write-projected-read-only-by-objectid",
+    # rule 8: projected and typed records. REMOVED 2026-10-16 (SPEC-REG-AMEND,
+    # row 2): typed-write-opaque-hub and project-served-opaque, with the
+    # `opaque` legacy id form they tested.
+    "typed-write-assigns-objectid", "typed-write-resend-same-ids",
+    "write-projected-read-only-by-objectid",
 }
 SUCCESS = {"accepted", "partial", "written", "projected"}
 SYNTHETIC_UUID = re.compile(r"^00000000-0000-[47]000-8000-0000000000[0-9a-fA-F]{2}$")
@@ -139,9 +150,9 @@ def test_cases_are_synthetic():
 
 
 def test_assigned_object_ids_carry_the_hub_receipt_time():
-    # The assumption this item states for the maintainer: an assigned
-    # ObjectId's timestamp is the hub's receipt time (`now`), not the
-    # record's own time.
+    # Decided (maintainer, 2026-10-16, walk-through row 3; it was an
+    # assumption of SPEC-REG-QUIRKS): an assigned ObjectId's timestamp is the
+    # hub's receipt time (`now`), not the record's own time.
     seen = 0
     for cid, case in CASES.items():
         now = int(datetime.datetime.fromisoformat(case["now"].replace("Z", "+00:00")).timestamp())
@@ -187,10 +198,13 @@ def test_affected_distinguishes_unmeasured_from_outside():
 
 
 def test_the_registry_validates_and_affects_is_additive():
-    assert len(REGISTRY) == 19
+    # CHANGED 2026-10-16 (SPEC-REG-AMEND, row 6): 19 entries became 20 with
+    # QUIRK-TREATMENTS-007 (Trio's `id`), a D20 entry like the two below.
+    assert len(REGISTRY) == 20
     validator = jsonschema.Draft202012Validator(QUIRK_SCHEMA)
     jsonschema.Draft202012Validator.check_schema(QUIRK_SCHEMA)
-    pre_d20 = [q for q in REGISTRY if not q["id"].endswith(("TREATMENTS-006", "ENTRIES-004"))]
+    pre_d20 = [q for q in REGISTRY
+               if not q["id"].endswith(("TREATMENTS-006", "TREATMENTS-007", "ENTRIES-004"))]
     assert len(pre_d20) == 17
     for quirk in REGISTRY:
         assert not list(validator.iter_errors({k: v for k, v in quirk.items()
@@ -316,6 +330,7 @@ def test_check_fails_an_unsupported_historical_claim_and_never_a_proposed_one():
 
 
 def test_recent_is_a_declared_parameter():
+    # Decided (maintainer, 2026-10-16, walk-through row 4): 365 days.
     assert quirks.RECENT_DAYS == 365
 
 
@@ -424,6 +439,36 @@ def test_names_that_look_alike_never_share_a_channel():
         ("loopMode", "refused", "role-held")
 
 
+def test_a_slot_is_shared_only_through_the_list_or_same_as():
+    # Walk-through row 5 (maintainer, 2026-10-16). Equal names the shared list
+    # does not hold, from different products, do not contend; the control,
+    # the same case with `override` listed, is refused role-held.
+    case = CASES["equal-names-unlisted-do-not-contend"]
+    control = yaml.safe_load((ROOT / instances.CASES_DIR / "instance-role-held.yaml").read_text())
+    assert "slots" not in case["capabilities"]["wellKnown"]
+    assert control["capabilities"]["wellKnown"]["slots"] == [{"name": "override"}]
+    listed = copy.deepcopy(case["capabilities"])
+    listed["wellKnown"]["slots"] = [{"name": "override"}]
+    assert listed == control["capabilities"]
+    assert {k: v for k, v in case.items() if k not in ("id", "title", "description", "control",
+                                                       "capabilities", "expected")} == \
+        {k: v for k, v in control.items() if k not in ("id", "title", "description", "control",
+                                                       "capabilities", "expected")}
+    assert all(r["result"] == "granted" for r in _response(case["id"])["roles"])
+    held = [r for r in control["expected"]["response"]["roles"] if r["channel"] == "override"]
+    assert held and all(r["reasons"][0]["code"] == "role-held" for r in held)
+    # The observation: on the owner's listing, never an overlap.
+    observed = _response("slot-name-observation-recorded")
+    assert observed["slotNameObservations"] == [
+        {"slot": "override", "products": [{"vendor": "Example", "product": "ControllerA"},
+                                          {"vendor": "Example", "product": "ControllerB"}]}]
+    assert observed["overlaps"] == []
+    listing = yaml.safe_load((ROOT / instances.CASES_DIR / "instance-overlap-listed.yaml")
+                             .read_text())
+    assert listing["expected"]["response"]["overlaps"]
+    assert "slotNameObservations" not in listing["expected"]["response"]
+
+
 def test_a_catalogue_mapping_is_scoped_to_the_versions_it_affects():
     applied = _response("catalogue-mapping-applied")["write"]
     assert applied["slotMapping"] == {"slot": "runningMode", "channel": "loopMode",
@@ -441,14 +486,16 @@ def test_every_write_reply_returns_both_ids(cid):
     case = CASES[cid]
     ids = _response(cid)["write"]["ids"]
     assert set(ids) == {"identifier", "_id"}
-    if quirks_registration.legacy_id_form(case["capabilities"]) == "objectId":
-        assert quirks_registration.is_object_id(ids["_id"]) and ids["_id"] == ids["_id"].lower()
+    # CHANGED 2026-10-16 (SPEC-REG-AMEND, row 2): asserted only on an
+    # `objectId` hub; every hub's `_id` is now a 24-hex ObjectId.
+    assert quirks_registration.is_object_id(ids["_id"]) and ids["_id"] == ids["_id"].lower()
     stored = [d["_id"] for d in case["hubState"].get("documents") or []] + \
         [r.get("_id") for r in case["hubState"].get("records") or []]
     sent = (case["request"]["write"].get("sent") or {}).get("_id")
     kept = [sent.lower()] if quirks_registration.is_object_id(sent) else []
-    # The hub's key: stored, assigned now, a client ObjectId kept, or (opaque) the typed id.
-    assert ids["_id"] in stored + (case.get("assignedIds") or []) + kept + [ids["identifier"]], cid
+    # The hub's key: stored, assigned now, or a client ObjectId kept. CHANGED
+    # 2026-10-16 (row 2): "or (opaque) the typed id" is removed.
+    assert ids["_id"] in stored + (case.get("assignedIds") or []) + kept, cid
 
 
 def test_a_resend_matches_on_identifier_first_and_stores_no_second_copy():
@@ -462,17 +509,27 @@ def test_a_resend_matches_on_identifier_first_and_stores_no_second_copy():
     assert _response("carrier-resend-matches-objectid")["write"]["matchedBy"] == "_id"
 
 
-def test_the_legacy_id_form_is_declared_and_defaults_to_object_id():
-    validator = jsonschema.Draft202012Validator(CAPS_SCHEMA)
-    caps = copy.deepcopy(CASES["carrier-write-both-ids"]["capabilities"])
-    for form in quirks_registration.LEGACY_ID_FORMS:
-        caps["legacyIdForm"] = form
-        assert not list(validator.iter_errors(caps)), form
-    caps["legacyIdForm"] = "uuid"
-    assert list(validator.iter_errors(caps))
-    del caps["legacyIdForm"]
-    assert quirks_registration.legacy_id_form(caps) == "objectId"
-    assert quirks_registration.legacy_id_form(None) == "objectId"
+def test_every_hub_serves_24_hex_ids_and_declares_no_legacy_id_form():
+    # REPLACES test_the_legacy_id_form_is_declared_and_defaults_to_object_id
+    # (SPEC-REG-AMEND, walk-through rows 1 and 2, maintainer 2026-10-16):
+    # `objectId` names the shape, a 24-hex value the hub assigns, on either
+    # store, and every hub's legacy surface serves it. The capability member
+    # `legacyIdForm` and its `opaque` option are removed: a document that
+    # still sends one is read as if it did not (must-ignore), never as a
+    # licence to keep a client's string `_id` or to serve the typed id.
+    assert "legacyIdForm" not in CAPS_SCHEMA["properties"]
+    assert '"opaque"' not in json.dumps(CAPS_SCHEMA)
+    assert not hasattr(quirks_registration, "LEGACY_ID_FORMS")
+    assert not any("legacyIdForm" in c["capabilities"] for c in CASES.values())
+    for cid in ("project-served-opaque", "typed-write-opaque-hub"):
+        assert cid not in IDS, cid
+    # A stale `opaque` declaration changes nothing: the typed write still
+    # gets an ObjectId the hub assigns, and its projection carries it.
+    case = copy.deepcopy(CASES["typed-write-assigns-objectid"])
+    case["capabilities"]["legacyIdForm"] = "opaque"
+    assert _run(case) == case["expected"]
+    ids = _run(case)["response"]["write"]["ids"]
+    assert quirks_registration.is_object_id(ids["_id"]) and ids["_id"] != ids["identifier"]
 
 
 # ── rule 7: behaviour unchanged ───────────────────────────────────────
@@ -488,14 +545,19 @@ def test_the_legacy_id_form_is_declared_and_defaults_to_object_id():
 def test_the_id_handling_matches_cgm_remote_monitor(sent, expected):
     # normalizeTreatmentId, lib/server/treatments.js:394-411 at official a8888f0d
     # (read-derived), with UUID_HANDLING at its default (true).
-    _id, identifier, applied = quirks_registration.normalise_sent_id(
-        {"legacyIdForm": "objectId"}, "treatments", sent)
+    # CHANGED 2026-10-16 (SPEC-REG-AMEND, row 2): the capability argument is
+    # gone with `legacyIdForm`; the handling is the same on every hub.
+    _id, identifier, applied = quirks_registration.normalise_sent_id("treatments", sent)
     assert (_id, identifier, applied[0]["action"] if applied else None) == expected
 
 
-def test_an_opaque_hub_keeps_a_string_id():
-    assert quirks_registration.normalise_sent_id({"legacyIdForm": "opaque"}, "treatments",
-                                                 {"_id": "k"}) == ("k", None, [])
+def test_no_hub_keeps_a_string_id():
+    # REPLACES test_an_opaque_hub_keeps_a_string_id (SPEC-REG-AMEND, row 2):
+    # a client's non-ObjectId string `_id` is never stored, on any hub.
+    _id, identifier, applied = quirks_registration.normalise_sent_id("treatments", {"_id": "k"})
+    assert (_id, identifier) == (None, "k")
+    assert applied == [{"quirk": "QUIRK-TREATMENTS-006", "member": "_id",
+                        "action": "moved-to-identifier"}]
 
 
 # ── rule 8: the projected record's ObjectId is stored ─────────────────
@@ -513,19 +575,28 @@ def test_the_object_id_assigned_at_the_typed_write_is_the_projected_id():
     assert first["identifier"] == record["id"]
 
 
-def test_an_object_id_hub_never_projects_a_record_without_its_stored_id():
-    case = CASES["project-served-opaque"]
-    caps = dict(case["capabilities"], legacyIdForm="objectId")
+def test_a_hub_never_projects_a_record_without_its_stored_id():
+    # CHANGED 2026-10-16 (SPEC-REG-AMEND, row 2): this used the removed case
+    # project-served-opaque, and its control asserted the opaque hub's typed
+    # id for both. The record is now typed-write-assigns-objectid's, with its
+    # stored `_id` removed; no hub falls back to the typed id.
+    case = CASES["typed-write-assigns-objectid"]
+    [record] = case["expected"]["stateAfter"]["records"]
+    record = dict(record, startedAt="2026-10-15T11:00:00Z", durationSeconds=600)
+    state, wk = case["expected"]["stateAfter"], case["wellKnownRegistrations"]
+    assert instances.project(case["capabilities"], state, record, wk)["document"]["_id"] == \
+        record["_id"]
+    bare = {k: v for k, v in record.items() if k != "_id"}
     with pytest.raises(ValueError, match="assigned at the typed write"):
-        instances.project(caps, case["hubState"], case["request"]["record"],
-                          case["wellKnownRegistrations"])
-    opaque = _response("project-served-opaque")["projected"]["document"]
-    assert opaque["_id"] == opaque["identifier"] == case["request"]["record"]["id"]
+        instances.project(case["capabilities"], state, bare, wk)
 
 
 def test_the_existing_case_sets_keep_their_counts():
-    assert len(list((ROOT / negotiate.CONFORMANCE_DIR).glob("*.yaml"))) == 55
-    assert len(list((ROOT / instances.CASES_DIR).glob("*.yaml"))) == 86
+    # CHANGED 2026-10-16 (SPEC-REG-AMEND): 55 negotiation cases became 54
+    # (typed-write-load-deadline-passed removed, row 8) and 86 instance cases
+    # became 90 (rows 7 and 9 added four).
+    assert len(list((ROOT / negotiate.CONFORMANCE_DIR).glob("*.yaml"))) == 54
+    assert len(list((ROOT / instances.CASES_DIR).glob("*.yaml"))) == 90
 
 
 def test_the_new_reason_code_is_a_shared_value():

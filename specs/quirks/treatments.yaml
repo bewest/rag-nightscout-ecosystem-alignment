@@ -185,3 +185,78 @@ quirks:
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md#23-order-of-the-rules
       - docs/backlogs/uuid-identifier-lookup.md
       - externals/cgm-remote-monitor-official/lib/server/treatments.js:394-411 @a8888f0d (normalizeTreatmentId)
+
+  - id: QUIRK-TREATMENTS-007
+    title: the client's record id is sent as `id`, a member Nightscout does not read
+    status: active
+    path: id
+    kind: id-form
+    description: >-
+      Trio's treatment model encodes its UUID record id under the member
+      `id` (NightscoutTreatment.swift:62, Trio e41c9db37), while its carbs
+      and temporary-target models encode theirs as `_id` (CarbsEntry.swift:29,
+      TempTarget.swift:50). cgm-remote-monitor neither reads nor moves `id`:
+      `normalizeTreatmentId` handles only `_id`, and the upsert matches
+      `identifier`, then `_id`, then `created_at` + `eventType`
+      (lib/server/treatments.js:383-405 at crm-write 239f8c25), so a
+      treatment that carries only `id` is matched by the write contract's
+      `treatment-fallback-key`. Recorded with no new mapping (maintainer,
+      2026-10-16, walk-through row 6); whether Trio should send `identifier`
+      is for PROPOSAL-REG-CONTROLLERS.
+    detect:
+      path: id
+      test: matches
+      pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+    expect:
+      min_share: 0.0
+      min_sites: 1
+    affects:
+      - vendor: Nightscout Foundation
+        product: Trio
+        versions:
+          unmeasured: >-
+            Treatments carry no version. The stored documents name their
+            writer (`enteredBy: Trio`) but not its version. The source shows
+            one version; the corpus shows the `openaps.version` that
+            devicestatus reports on the same site, by co-occurrence, not
+            attribution.
+          seen:
+            - version: 1.0.1
+              claim: read-derived
+              ref: >-
+                externals/Trio Trio/Sources/Models/NightscoutTreatment.swift:62
+                (`case id`, encoded as `id`); CarbsEntry.swift:29 and
+                TempTarget.swift:50 encode `case id = "_id"`; APP_VERSION in
+                Config.xcconfig:21
+              commit: e41c9db37
+        versionSource:
+          collection: devicestatus
+          path: openaps.version
+          window_minutes: 60
+        evidence:
+          - claim: read-derived
+            ref: >-
+              externals/Trio Trio/Sources/Services/Network/Nightscout/NightscoutManager.swift:658
+              (devicestatus `openaps.version` is the app's release version)
+            commit: e41c9db37
+          - claim: measured
+            ref: >-
+              make schema-quirks over the 2026-04-01 and 2026-04-26 snapshots,
+              2026-10-16: 55,939 stored treatments on one site carry a UUID
+              `id`, every one with `enteredBy: Trio`, a server-assigned 24-hex
+              `_id` and no `identifier`; eventTypes Temp Basal, SMB, Carb
+              Correction and Bolus
+    reader_guidance: >-
+      Do not read `id` as Nightscout's `_id` or as `identifier`. A treatment
+      that carries only `id` is matched on a re-send by `created_at` +
+      `eventType` (write contract `treatment-fallback-key`), so two records
+      of one type at one time are one record to the server. A reader that
+      wants the client's record id may read `id` as written.
+    writer_guidance: >-
+      Send the record's own id as `identifier` and no `_id`; the hub assigns
+      `_id` and returns both (D20 rule 5).
+    references:
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16
+      - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
+      - docs/10-domain/client-id-analysis/TRIO_ID_ANALYSIS.md
+      - externals/work/crm-write/lib/server/treatments.js:383-405 @239f8c25 (upsertQueryFor)

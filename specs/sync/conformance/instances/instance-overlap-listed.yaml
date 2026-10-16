@@ -3,6 +3,17 @@
 # Schema: specs/sync/registration-submit.schema.json#/$defs/instanceCase.
 # Checked by tools/nsschema/test_registration_instances.py; `detail` strings are
 # not compared.
+# CHANGED 2026-10-16 (SPEC-REG-AMEND, walk-through row 5; execution plan §2.6.3):
+#   INPUT CHANGED. The capability document gains `wellKnown.slots: [override]`. A slot is
+#   now shared across products only through the shared slot list or `sameAs`; this case's
+#   instances of ControllerA and ControllerB contend on `override`, so its hub lists that slot
+#   to keep testing that contention. Without the list each product's `override` is its own
+#   channel (quirks/equal-names-unlisted-do-not-contend).
+# CHANGED 2026-10-16 (SPEC-REG-AMEND, walk-through rows 5 and 9):
+#   EXPECTATION ADDED TO. The owner's listing gains `registrations`, each stored product with
+#   its binding, credential kind and binding event (row 9). It records `slotNameObservations`
+#   only when two products use one unshared slot name (row 5); here there is none. The
+#   instances, roles, labels and overlaps listed are unchanged.
 id: instance-overlap-listed
 title: The owner's listing shows the overlap
 description: 'Rule 6. After instance-role-held, the owner lists instances on ns-tenant-admin: the overlap
@@ -60,6 +71,8 @@ capabilities:
       product: LegacyController
       versionRange: 0.x-test
       href: /.well-known/nightscout/controllers/example-legacy
+    slots:
+    - name: override
   submit:
     href: /api/v4/registrations
     tiers:
@@ -282,8 +295,7 @@ hubState:
       - code: role-held
         path: roles.1
         detail: another live device instance holds this role
-    - &id005
-      channel: Example/ControllerA/extensions/com.example.controllera.targets
+    - channel: Example/ControllerA/extensions/com.example.controllera.targets
       role: source
       provenance: device
       result: granted
@@ -314,7 +326,7 @@ hubState:
       subject: subject-test-controller-b
     credentialKind: subject
     leaseExpiresAt: '2026-10-15T12:10:00Z'
-    roles: &id006
+    roles:
     - channel: override
       role: source
       provenance: device
@@ -361,6 +373,25 @@ expected:
     kind: InstanceResponse
     status: 200
     outcome: listed
+    registrations:
+    - vendor: Example
+      product: ControllerA
+      versionRange: 1.0.0-test
+      state: active
+      etag: sha256:aaeb0511e519dd695cc7ef87b6f80cd9f41d8cc0ec5955218fde5528d88e27e0
+      boundTo:
+        kind: subject
+        subject: subject-test-controller-a
+      credentialKind: subject
+    - vendor: Example
+      product: ControllerB
+      versionRange: 1.0.0-test
+      state: active
+      etag: sha256:231e5850e19dfcab06fc17d7488897e1ea30fb43d0082e6bf38e7c00157d81bb
+      boundTo:
+        kind: subject
+        subject: subject-test-controller-b
+      credentialKind: subject
     instances:
     - vendor: Example
       product: ControllerA
@@ -388,7 +419,10 @@ expected:
         reasons:
         - code: role-held
           path: roles.1
-      - *id005
+      - channel: Example/ControllerA/extensions/com.example.controllera.targets
+        role: source
+        provenance: device
+        result: granted
       labels:
         dev.nightscout/purpose: therapy
         dev.nightscout/build: release
@@ -403,7 +437,19 @@ expected:
         kind: subject
         subject: subject-test-controller-b
       credentialKind: subject
-      roles: *id006
+      roles:
+      - channel: override
+        role: source
+        provenance: device
+        result: granted
+      - channel: override
+        role: command-sink
+        provenance: device
+        result: granted
+      - channel: Example/ControllerB/extensions/com.example.controllerb.targets
+        role: source
+        provenance: device
+        result: granted
       labels:
         dev.nightscout/purpose: therapy
     overlaps:

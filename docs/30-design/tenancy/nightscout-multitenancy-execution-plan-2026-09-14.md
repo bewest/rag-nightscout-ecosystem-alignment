@@ -478,9 +478,9 @@ duplicates on re-send; Trio sends a UUID it generated in `_id`, which `UUID_HAND
 | 3 | **Mappings are observed, not silent.** The hub records which quirk mapping it applied to each record or declaration, so a reader can tell a mapped value from a declared one. |
 | 4 | **A quirk has a lifecycle.** `proposed` → `active` → `historical` → `retired`. An entry becomes historical when measurement shows no live instance and no recent write from an affected version, and retired when no stored record depends on its mapping. Each move is measured (`make schema-quirks`), never asserted. |
 | 5 | **Two ids, one rule.** `identifier` is the sync identity the client assigns, stable across retries and devices; in the typed API it is the controller's record id. `_id` is the storage key the hub assigns. Every write reply returns both. Re-sends match on `identifier` first, as the write contract's keys already order it, so a client needs no cache of server ids. |
-| 6 | **`_id` is an ObjectId in single-tenant legacy mode.** A hub declares its legacy id form in the capability document, `objectId` or `opaque`. cgm-remote-monitor in single-tenant mode declares `objectId`. |
+| 6 | **`_id` is an ObjectId in single-tenant legacy mode.** A hub declares its legacy id form in the capability document, `objectId` or `opaque`. cgm-remote-monitor in single-tenant mode declares `objectId`. *(amended 2026-10-16, walk-through rows 1 and 2: every hub's legacy surface serves 24-hex `_id` values the hub assigns, on either store; nothing is declared and there is no `opaque` form)* |
 | 7 | **Today's `_id` handling becomes a version-scoped quirk.** A non-ObjectId `_id` moved to `identifier` (`UUID_HANDLING`) is recorded as a registry entry with the versions that send it; it becomes historical as those apps send `identifier` instead. Its behaviour does not change. |
-| 8 | **Projected records follow rule 5.** On an `objectId` hub, each projected document (D19 rule 8) gets an ObjectId the hub assigns when the typed record is written and stores with it, so it is the same on every read; its `identifier` is the typed id. An `opaque` hub may use the typed id for both. |
+| 8 | **Projected records follow rule 5.** On an `objectId` hub, each projected document (D19 rule 8) gets an ObjectId the hub assigns when the typed record is written and stores with it, so it is the same on every read; its `identifier` is the typed id. An `opaque` hub may use the typed id for both. *(that sentence withdrawn 2026-10-16, walk-through row 2)* |
 
 **The roles do not change.** The hub records which mapping it applied and which ids it assigned;
 the controller still owns its declarations and its records (D18).
@@ -497,7 +497,8 @@ the grammar's `sameAs`, the capability document's `legacyIdForm`, `wellKnown.slo
 `wellKnown.mappings`, the write reply's `ids`, and 29 cases under `specs/sync/conformance/quirks/`,
 checked by `tools/nsschema/test_registration_quirks.py`. Rules 1–8 are specified as written. Rule
 6's `objectId` declaration is scoped to single-tenant mode on MongoDB; single-tenant on PostgreSQL
-is open (`SPEC-REG-MODES`). Rule 8 changed the instance case `project-served`. "Recent" in rule 4
+is open (`SPEC-REG-MODES`) *(no longer open: decided 2026-10-16 in the walk-through below, rows 1
+and 2 — the shape is 24-hex on either store and the declaration is removed)*. Rule 8 changed the instance case `project-served`. "Recent" in rule 4
 is 365 days before the newest snapshot. The shared slot list ships `override`, `loopMode` and
 `temporaryTarget`, the names already used identically; the candidates are in §3.7. Two statements
 of the "Why `_id`" paragraph differ from source read for this item: Loop sends a UUID `_id` for
@@ -522,6 +523,17 @@ of the compatibility backlog; `SPEC-REG-AMEND` applies them to the contract and 
 | 10 | loop-status exclusivity | **left unspecified**: `devicestatus` is not a channel until its decomposition is typed |
 | 11 | `HUB-REG-CRM` | stays **one item** |
 | 12 | migrating an `api-secret` binding | binds to the **tenant's root credential**, a new credential kind (`SPEC-REG-MODES`, `SPEC-REG-MIGRATE`); the etag changes with `boundTo` |
+
+*(2026-10-16: `SPEC-REG-AMEND` is done — rows 1–9 applied to the
+[hub-sync design §3.5–§3.7](../platform/nightscout-hub-sync-architecture-2026-09-11.md#37-version-scoped-quirks-and-the-two-ids),
+the schemas, the reference and the cases: `legacyIdForm` and the two `opaque` cases removed; a
+slot shared only through the list or `sameAs`, with `slotNameObservations` on the owner's
+listing and two new cases; QUIRK-TREATMENTS-007 for Trio's `id`, re-measured at 55,939
+treatments on one site, and the Trio client-id analyses corrected; command-sink roles refused
+`not-registration-owner` without the binding or a transfer, with three new cases; the delivery
+deadline and its case removed; `bindingEvent` on the stored registration and `registrations` on
+the owner's listing, with one new case. The choices made beyond the rows are listed in the queue
+item.)*
 
 ### 2.7 D12 — what each repository is for
 

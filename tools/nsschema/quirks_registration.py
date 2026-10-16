@@ -9,8 +9,9 @@ SPEC-REG-QUIRKS; contract in the hub-sync design §3.7. Cases:
 - rule 2: the shared slot list, a definition's `sameAs`, and the catalogue
   mappings for versions released before registration (`wellKnown.mappings`);
 - rule 3: `quirksApplied`, the record of each mapping applied;
-- rules 5 and 6: the legacy id form, the two ids every write reply returns,
-  and re-sends matched on `identifier` first;
+- rules 5 and 6: the 24-hex `_id` every hub's legacy surface serves, the
+  two ids every write reply returns, and re-sends matched on `identifier`
+  first;
 - rule 7: today's `_id` handling (`UUID_HANDLING`) as the registry entries
   QUIRK-TREATMENTS-006 and QUIRK-ENTRIES-004, behaviour unchanged;
 - rule 8: the stored ObjectId of a projected record.
@@ -18,6 +19,13 @@ SPEC-REG-QUIRKS; contract in the hub-sync design §3.7. Cases:
 The registry half of rules 1 and 4 (`affects`, version ranges, the
 lifecycle) is `quirks.py`. **This is a reference, not a hub**: it stores
 nothing and serves nothing.
+
+*Amended 2026-10-16 (SPEC-REG-AMEND, maintainer walk-through rows 1 and 2,
+execution plan §2.6.3):* every hub's legacy surface (v1, v3) serves 24-hex
+`_id` values the hub assigns, on either store. The capability member
+`legacyIdForm` and its `opaque` option are removed, and with them the
+branches that kept a client's string `_id` and that used the typed id as the
+projected `_id`. The typed API's own ids are unaffected.
 """
 
 import copy
@@ -26,7 +34,6 @@ import re
 from . import negotiate, quirks
 
 OBJECT_ID = re.compile(r"^[0-9a-fA-F]{24}$")
-LEGACY_ID_FORMS = ("objectId", "opaque")
 
 # Rule 7: the registry entry that describes today's `_id` handling, per
 # collection. cgm-remote-monitor moves a non-ObjectId string `_id` to
@@ -36,20 +43,14 @@ LEGACY_ID_FORMS = ("objectId", "opaque")
 ID_QUIRKS = {"treatments": "QUIRK-TREATMENTS-006", "entries": "QUIRK-ENTRIES-004"}
 
 
-def legacy_id_form(caps):
-    """Rule 6: the hub's declared legacy id form. A capability document
-    without `legacyIdForm` is read as `objectId`, the legacy API's rule (a
-    choice of this item, §3.7)."""
-    return (caps or {}).get("legacyIdForm") or "objectId"
-
-
 def is_object_id(value):
     return isinstance(value, str) and bool(OBJECT_ID.match(value))
 
 
 class Assigner:
     """The ObjectIds a case says the hub assigns, in order (`assignedIds`).
-    A real hub mints them; the first four bytes are its receipt time."""
+    A real hub mints them; the first four bytes are its receipt time
+    (decided, walk-through row 3, 2026-10-16)."""
 
     def __init__(self, ids):
         self._ids = list(ids or [])
@@ -112,14 +113,14 @@ def catalogue_mapping(caps, well_known, writer, element):
 
 # ── rules 5 to 7: the two ids ─────────────────────────────────────────
 
-def normalise_sent_id(caps, collection, sent):
-    """Rule 1 of the write contract §2.3 on an `objectId` hub, and rule 7:
-    returns (_id or None, identifier or None, quirksApplied). `{"$oid": …}`
-    and a 24-hex string, either case, are the ObjectId (lower-case hex); an
-    empty `_id` is dropped; any other string on treatments or entries moves
-    to `identifier` when the client sent none, else it is dropped, and the
-    hub assigns `_id` (UUID_HANDLING's default, unchanged). On an `opaque`
-    hub a string `_id` is kept as sent."""
+def normalise_sent_id(collection, sent):
+    """Rule 1 of the write contract §2.3, and rule 7: returns (_id or None,
+    identifier or None, quirksApplied). `{"$oid": …}` and a 24-hex string,
+    either case, are the ObjectId (lower-case hex); an empty `_id` is
+    dropped; any other string on treatments or entries moves to `identifier`
+    when the client sent none, else it is dropped, and the hub assigns `_id`
+    (UUID_HANDLING's default, unchanged). *(Removed 2026-10-16, row 2: the
+    `opaque` hub, which kept a string `_id` as sent.)*"""
     _id = sent.get("_id")
     identifier = sent.get("identifier")
     applied = []
@@ -127,8 +128,6 @@ def normalise_sent_id(caps, collection, sent):
         _id = _id["$oid"]
     if _id == "" or _id is None:
         return None, identifier, applied
-    if legacy_id_form(caps) == "opaque":
-        return _id, identifier, applied
     if is_object_id(_id):
         return _id.lower(), identifier, applied
     if isinstance(_id, str) and collection in ID_QUIRKS:
@@ -164,7 +163,7 @@ def carrier_write(caps, hub_state, w, assigner):
     (`write.sent`): the two ids the reply returns, the key a re-send
     matched by, the mappings applied, and the stored documents after."""
     collection = w["collection"]
-    _id, identifier, applied = normalise_sent_id(caps, collection, w.get("sent") or {})
+    _id, identifier, applied = normalise_sent_id(collection, w.get("sent") or {})
     stored, key = resolve((hub_state or {}).get("documents"), collection, identifier, _id)
     after = hub_state
     if stored is not None:
@@ -187,17 +186,18 @@ def carrier_write(caps, hub_state, w, assigner):
 def typed_write(caps, hub_state, w, stored_instance, assigner):
     """Rules 5 and 8 for a typed write that carries the controller's record
     id (`write.recordId`): `identifier` is that id; `_id` is the storage key
-    the hub assigns now and stores with the record (an ObjectId on an
-    `objectId` hub, the typed id on an `opaque` one). A re-send with the
+    the hub assigns now and stores with the record, a 24-hex ObjectId on
+    every hub (row 2, 2026-10-16; the `opaque` hub's typed id is removed).
+    A re-send with the
     same identifier for the same product matches the stored record and
     answers with its ids, so the controller needs no cache of server ids."""
     identity = stored_instance["identity"]
     rid = w["recordId"]
     for record in (hub_state or {}).get("records") or []:
         if record.get("as") == "typed" and record["identity"] == identity and record["id"] == rid:
-            return {"ids": {"identifier": rid, "_id": record.get("_id", rid)},
+            return {"ids": {"identifier": rid, "_id": record["_id"]},
                     "matchedBy": "identifier"}, hub_state
-    _id = assigner.next() if legacy_id_form(caps) == "objectId" else rid
+    _id = assigner.next()
     after = copy.deepcopy(hub_state or {})
     after.setdefault("records", []).append({
         "id": rid, "_id": _id, "as": "typed", "identity": copy.deepcopy(identity),
@@ -207,15 +207,13 @@ def typed_write(caps, hub_state, w, stored_instance, assigner):
     return {"ids": {"identifier": rid, "_id": _id}, "matchedBy": None}, after
 
 
-def projected_ids(caps, record):
+def projected_ids(record):
     """Rule 8: (identifier, _id) of the projected document for one typed
-    record. On an `objectId` hub `_id` is the ObjectId the hub stored with
-    the record at the typed write, so it is the same on every read; a
-    record without one is a reference error. An `opaque` hub uses the
-    stored key, else the typed id, for both."""
-    if legacy_id_form(caps) == "objectId":
-        if not is_object_id(record.get("_id")):
-            raise ValueError(f"record {record['id']}: an objectId hub stores the ObjectId it "
-                             "assigned at the typed write")
-        return record["id"], record["_id"]
-    return record["id"], record.get("_id", record["id"])
+    record. `_id` is the ObjectId the hub stored with the record at the
+    typed write, so it is the same on every read; a record without one is a
+    reference error. *(Removed 2026-10-16, row 2: the `opaque` hub, which
+    used the typed id for both.)*"""
+    if not is_object_id(record.get("_id")):
+        raise ValueError(f"record {record['id']}: the hub stores the ObjectId it "
+                         "assigned at the typed write")
+    return record["id"], record["_id"]

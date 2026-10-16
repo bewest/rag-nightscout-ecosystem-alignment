@@ -3,9 +3,14 @@
 # document as `wellKnown.slots`; a definition's `stateSpans[].sameAs` names one of these.
 #
 # What is listed: only slot names that more than one generated well-known registration
-# (specs/sync/registrations/*.yaml) already uses with the same spelling. Equal slot names
-# already share a channel and contend for its roles (D19 rule 6, §3.6), so listing them
-# adds no contention; it makes them names a later definition can declare `sameAs`.
+# (specs/sync/registrations/*.yaml) already uses with the same spelling. A slot is shared
+# across products only through this list or a declared `sameAs` (maintainer, 2026-10-16,
+# walk-through row 5): a listed slot is one channel whose roles every product's entries
+# naming or meaning it contend for (D19 rule 6, §3.6); equal names not listed here are each
+# product's own channel, and the owner's listing records them as `slotNameObservations`.
+# *(It read, 2026-10-16: "Equal slot names already share a channel and contend for its roles
+# (D19 rule 6, §3.6), so listing them adds no contention; it makes them names a later
+# definition can declare `sameAs`.")*
 # Listing a name does not confirm that its users mean the same thing: that, and whether any
 # other slot means one of these, is evidence for the controller authors to confirm
 # (PROPOSAL-REG-CONTROLLERS; candidates in §3.7). `usedBy` is checked against the

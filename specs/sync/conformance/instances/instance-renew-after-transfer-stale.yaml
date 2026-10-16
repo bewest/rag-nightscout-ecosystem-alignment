@@ -3,6 +3,12 @@
 # Schema: specs/sync/registration-submit.schema.json#/$defs/instanceCase.
 # Checked by tools/nsschema/test_registration_instances.py; `detail` strings are
 # not compared.
+# CHANGED 2026-10-16 (SPEC-REG-AMEND, walk-through row 5; execution plan §2.6.3):
+#   INPUT CHANGED. The capability document gains `wellKnown.slots: [override]`. A slot is
+#   now shared across products only through the shared slot list or `sameAs`; this case's
+#   instances of ControllerA and ControllerB contend on `override`, so its hub lists that slot
+#   to keep testing that contention. Without the list each product's `override` is its own
+#   channel (quirks/equal-names-unlisted-do-not-contend).
 id: instance-renew-after-transfer-stale
 title: After a transfer the former holder's renewal meets 412
 description: 'ControllerB''s phone renews with the etag it had before the owner moved its role: 412 with
@@ -61,6 +67,8 @@ capabilities:
       product: LegacyController
       versionRange: 0.x-test
       href: /.well-known/nightscout/controllers/example-legacy
+    slots:
+    - name: override
   submit:
     href: /api/v4/registrations
     tiers:

@@ -2,7 +2,7 @@
  "$schema": "https://json-schema.org/draft/2020-12/schema",
  "$id": "https://nightscout.dev/schemas/sync/hub-capabilities.json",
  "title": "Hub capability document",
- "description": "What a hub (Nightscout, Nocturne) supports for controller registrations, published unauthenticated at `/.well-known/nightscout/sync` on every host the hub serves (D18 addendum rule 6, execution plan §2.6.1; specified by queue item SPEC-REG-NEGOTIATE). A controller reads it before submitting a registration and can compute from it which elements the hub would accept (tools/nsschema/negotiate.py is the reference for that computation); the submit response is authoritative. The document describes the hub software and the deployment, never a person: it lists the hub-shipped well-known kinds and none of the registrations a tenant's controllers have submitted, because which controller a person uses is not public. Must-ignore applies here as in the grammar: no object is closed, and a reader ignores members it does not know. An unknown value of a closed list is invalid; `grammar.versions[].apiVersion` and the vocabularies below are closed so a controller can rely on them.",
+ "description": "What a hub (Nightscout, Nocturne) supports for controller registrations, published unauthenticated at `/.well-known/nightscout/sync` on every host the hub serves (D18 addendum rule 6, execution plan §2.6.1; specified by queue item SPEC-REG-NEGOTIATE). A controller reads it before submitting a registration and can compute from it which elements the hub would accept (tools/nsschema/negotiate.py is the reference for that computation); the submit response is authoritative. The document describes the hub software and the deployment, never a person: it lists the hub-shipped well-known kinds and none of the registrations a tenant's controllers have submitted, because which controller a person uses is not public. Must-ignore applies here as in the grammar: no object is closed, and a reader ignores members it does not know. An unknown value of a closed list is invalid; `grammar.versions[].apiVersion` and the vocabularies below are closed so a controller can rely on them. *(Amended 2026-10-16, SPEC-REG-AMEND, the maintainer's walk-through rows 1 and 2, execution plan §2.6.3: the member that declared a legacy id form, `objectId` or `opaque`, added the same day by SPEC-REG-QUIRKS, is removed. Every hub's legacy surface (v1, v3) serves 24-hex `_id` values the hub assigns, on either store, so there is nothing to declare; a hub's own newer APIs may use other ids, and the sync identity is `identifier`.)*",
  "type": "object",
  "required": [
   "apiVersion",
@@ -211,7 +211,7 @@
     },
     "slots": {
      "type": "array",
-     "description": "D20 rule 2 (SPEC-REG-QUIRKS, hub-sync design §3.7): the optional shared slot list. A definition's `stateSpans[].sameAs` names one of these, and the entry's channel is then that slot. Listing a slot adds no contention: equal slot names already share a channel (D19, §3.6); the list is what `sameAs` and a catalogue mapping may name. Which slots share a meaning is for the controller authors to confirm (PROPOSAL-REG-CONTROLLERS).",
+     "description": "D20 rule 2 (SPEC-REG-QUIRKS, hub-sync design §3.7): the optional shared slot list. A definition's `stateSpans[].sameAs` names one of these, and the entry's channel is then that slot. A slot is shared across products only through this list or `sameAs` (maintainer, 2026-10-16, walk-through row 5): a slot named here by its own name is one channel for every product, and equal names this list does not hold are each product's own channel, which the owner's listing records as `slotNameObservations`. *(It read, 2026-10-16 SPEC-REG-QUIRKS: 'Listing a slot adds no contention: equal slot names already share a channel'.)* The list is also what a catalogue mapping may name. Which slots share a meaning is for the controller authors to confirm (PROPOSAL-REG-CONTROLLERS).",
      "items": {
       "type": "object",
       "required": [
@@ -357,7 +357,7 @@
      "type": "array",
      "minItems": 1,
      "uniqueItems": true,
-     "description": "Rule 5. The channel forms the hub derives from a definition: `slot`, the slot name a stateSpans kind declares (shared across products on the tenant); `element`, `<vendor>/<product>/<element id>` for every other element. Closed: a form outside the list is invalid.",
+     "description": "Rule 5. The channel forms the hub derives from a definition: `slot`, the slot name a stateSpans kind declares (shared across products on the tenant when `wellKnown.slots` holds it or a `sameAs` names it, else the product's own: walk-through row 5, 2026-10-16); `element`, `<vendor>/<product>/<element id>` for every other element. Closed: a form outside the list is invalid.",
      "items": {
       "enum": [
        "slot",
@@ -384,13 +384,6 @@
      }
     }
    }
-  },
-  "legacyIdForm": {
-   "enum": [
-    "objectId",
-    "opaque"
-   ],
-   "description": "D20 rule 6 (SPEC-REG-QUIRKS, hub-sync design §3.7): the form of `_id` this hub stores and serves to v1 and v3 readers. `objectId`: `_id` is always an ObjectId the hub assigns (or a client ObjectId it keeps); a client `_id` that is not one is handled as the quirks registry says (QUIRK-TREATMENTS-006, QUIRK-ENTRIES-004) and never stored. `opaque`: `_id` is a string key the hub chooses. cgm-remote-monitor in single-tenant mode on MongoDB declares `objectId`; single-tenant mode on PostgreSQL is not decided (SPEC-REG-MODES). A reader of a document without this member assumes `objectId`, the legacy API's rule."
   }
  }
 }

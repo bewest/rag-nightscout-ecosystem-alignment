@@ -270,7 +270,9 @@ only the shapes a registration declared does not.
 ### 3.5 Negotiation
 
 *Added 2026-10-12 (`SPEC-REG-NEGOTIATE`; D18 addendum rule 6, execution plan §2.6.1).
-Amended 2026-10-15 for the decisions of 2026-10-14 below (`SPEC-REG-DECISIONS`).
+Amended 2026-10-15 for the decisions of 2026-10-14 below (`SPEC-REG-DECISIONS`), and 2026-10-16
+for the maintainer's walk-through of that day ([execution plan §2.6.3](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16),
+`SPEC-REG-AMEND`): no delivery deadline (row 8) and the binding event on the owner's listing (row 9).
 Specified, not implemented: no hub serves any of this.* The hub publishes what it supports;
 the controller submits its controller-owned registration and reads back, per element, what
 was accepted; for anything not accepted it writes the element's well-known carrier.
@@ -279,7 +281,7 @@ was accepted; for anything not accepted it writes the element's well-known carri
 |---|---|
 | `specs/sync/hub-capabilities.schema.json` | the capability document |
 | `specs/sync/registration-submit.schema.json` | request, response, stored registration, fallback, refused-typed-write and conformance-case shapes |
-| `specs/sync/conformance/*.yaml` | 55 synthetic conformance cases (53 until the 2026-10-15 amendment; corrected 2026-10-15); both hubs implement against them. D19's are under `instances/` (§3.6) |
+| `specs/sync/conformance/*.yaml` | 54 synthetic conformance cases (53 until the 2026-10-15 amendment, 55 until 2026-10-16, when `SPEC-REG-AMEND` removed the delivery-deadline case); both hubs implement against them. D19's are under `instances/` (§3.6) |
 | `tools/nsschema/negotiate.py` | a reference decision function that computes each case's expected response, stored registration, fallback and handling of a refused typed write. It checks that the cases are self-consistent; it is not a hub |
 | `tools/nsschema/test_registration_negotiation.py` | the queue gate |
 
@@ -386,7 +388,12 @@ also records `credentialKind` (`subject`, `api-secret`, or `other` with the hub'
 kind of credential that last created or updated it; both are returned with the registration.
 `API_SECRET` against a subject-bound registration is `not-registration-owner` on the data path.
 A released registration (`boundTo: null`) is bound by the next credential with the permission
-that updates it, even with identical content (200, not a no-op). Readers attribute typed
+that updates it, even with identical content (200, not a no-op). **Decided 2026-10-16 (maintainer
+walk-through row 9):** it binds to its next permitted writer, as specified, and the binding event
+and credential kind are shown on the owner's listing: the stored registration records
+`bindingEvent: next-writer` (kept by later updates under the same binding, cleared by a release or
+transfer, not in the etag), and the owner's instance listing (§3.6) lists every stored product
+with its `boundTo`, `credentialKind` and `bindingEvent` (`listing-shows-binding-event`). Readers attribute typed
 records to the registration and its bound credential: a namespace string proves nothing about
 authorship. `SPEC-REG-INSTANCE` binds instances; this binding leaves room for that (§3.6: an instance is bound to the subject that created it).
 
@@ -460,16 +467,18 @@ document and its registration at launch and after a controller release; never on
 never because a request was refused, so an overloaded hub is not met with a surge of reads. A
 typed write refused for load — 429 or any 5xx, with or without `Retry-After` (maintainer,
 2026-10-15: a server or gateway error says nothing about whether the element is accepted) — is
-retried with backoff (no sooner than `Retry-After` when sent); it is not written as its carrier,
-the record is not dropped and the write plan does not change. A record still refused when its
-delivery deadline passes is sent as its carrier, so a typed route failing persistently never
-holds data back from older readers; the element stays accepted for the next record. The deadline
-is the controller's. Any other refusal of a typed write is definite: `blocked-by-owner`, a
-retired or missing registration, a typed route answering 404 after a hub rollback, or a 4xx
-the controller does not know. The controller sends that record as its carrier and treats the
-element as not accepted until its next re-check. The cases model this as `typedWrite` (the
-refusal) and `expected.typedWrite` (`retry-backoff` or `carrier-this-record`, `recheck: false`,
-and the write plan afterwards).
+retried with backoff (no sooner than `Retry-After` when sent) until it succeeds; it is never
+written as its carrier, the record is not dropped and the write plan does not change, so a write
+the hub stored before failing cannot appear twice. *(Changed 2026-10-16, maintainer walk-through
+row 8, `SPEC-REG-AMEND`: the delivery deadline added on 2026-10-15 is removed. It read: "A record
+still refused when its delivery deadline passes is sent as its carrier, so a typed route failing
+persistently never holds data back from older readers; the element stays accepted for the next
+record. The deadline is the controller's.")* Any other refusal of a typed write is definite:
+`blocked-by-owner`, a retired or missing registration, a typed route answering 404 after a hub
+rollback, or a 4xx the controller does not know. The controller sends that record as its carrier
+at once and treats the element as not accepted until its next re-check. The cases model this as
+`typedWrite` (the refusal) and `expected.typedWrite` (`retry-backoff` or `carrier-this-record`,
+`recheck: false`, and the write plan afterwards).
 
 | | older hub | newer hub |
 |---|---|---|
@@ -550,7 +559,9 @@ schemas and the cases on 2026-10-15 (`SPEC-REG-DECISIONS`). Question 6 became D1
    the capability document. A refusal does not trigger a re-check, so an overloaded hub is not
    met with a surge of reads: a 429 or 503 is retried with backoff and is not a fallback
    (2026-10-15: every 5xx counts as load, and a record past its delivery deadline goes as its
-   carrier without changing the plan); a
+   carrier without changing the plan; **decided 2026-10-16, maintainer walk-through row 8: the
+   delivery deadline is removed — a load-refused typed write is retried until it succeeds and is
+   never re-sent as its carrier; every 5xx still counts as load**); a
    definite refusal (`blocked-by-owner`, a retired or missing registration, a typed route
    answering 404 after a hub rollback) sends that record as its carrier, and the element is
    treated as not accepted until the next re-check. *Change:* the fallback rule distinguishes
@@ -618,7 +629,6 @@ schemas and the cases on 2026-10-15 (`SPEC-REG-DECISIONS`). Question 6 became D1
 | `typed-write-load-503` | newer/newer | typed write 503, no `Retry-After`; retry with backoff, no carrier, no re-check (decision 8) |
 | `typed-write-load-429-retry-after` | newer/newer | typed write 429 with `Retry-After: 30`; retry after it |
 | `typed-write-load-502` | newer/newer | typed write 502; load, like 503: retry with backoff |
-| `typed-write-load-deadline-passed` | newer/newer | 503 past the record's delivery deadline; that record as its carrier, element stays typed |
 | `typed-write-blocked-by-owner` | newer/newer | typed write 403 `blocked-by-owner`; that record as its carrier, no re-check |
 | `typed-write-route-404` | newer/newer | typed route 404 after a rollback; that record as its carrier, no re-check |
 
@@ -626,6 +636,11 @@ The 21 cases that predate the decisions keep their outcomes; each now states the
 subject and credential kind, and each stored registration its identity, binding and credential
 kind (measured 2026-10-15: the reference reproduces every earlier expected outcome with only
 those members added).
+
+*(2026-10-16, `SPEC-REG-AMEND`, the maintainer's walk-through rows 8 and 9: the case
+`typed-write-load-deadline-passed` is removed with the delivery deadline, so 54 cases remain;
+`released-update-binds` gains `bindingEvent: next-writer` on its response and stored
+registration, its only change, which the case says in-file.)*
 
 ### 3.6 Definitions and instances
 
@@ -643,7 +658,7 @@ added under it.
 | `specs/sync/hub-capabilities.schema.json` | gains `instances` (lease length, role and channel vocabularies, label bounds) |
 | `specs/sync/registration-submit.schema.json` | gains the D19 reason codes, `definitionId` on product responses, and the stored-definition, stored-instance, request, response and case shapes (`instanceCase`) |
 | `specs/sync/controller-state-model.schema.json` | gains `stateSpans[].wellKnownRef`; `dualWriteLink` and `slotName` descriptions updated |
-| `specs/sync/conformance/instances/*.yaml` | 86 synthetic cases; the 55 of §3.5 are unchanged in meaning |
+| `specs/sync/conformance/instances/*.yaml` | 90 synthetic cases (86 until `SPEC-REG-AMEND` added four on 2026-10-16); the §3.5 cases are unchanged in meaning |
 | `tools/nsschema/instances.py` | a reference for this section, extending `negotiate.py` (which gained the definition id, the meaning comparison, well-known references and namespace claims across a product's definitions); it checks the cases, it is not a hub |
 | `tools/nsschema/test_registration_instances.py` | the queue gate |
 
@@ -777,6 +792,17 @@ one that does not serves neither, and §3.5 applies unchanged. Paths are proposa
   `provenance` is required and closed: `device` or `simulated`. One instance may mix them (a
   development build with a real CGM and a simulated pump). An unknown provenance refuses that
   role (`unknown-provenance`), never the instance, and is never accepted.
+- *Command-sink roles need the binding* (decided 2026-10-16, maintainer walk-through row 7,
+  `SPEC-REG-AMEND`). A `command-sink` role goes only to an instance created by the subject the
+  product is bound to (the instance's binding equals the product's `boundTo`), or to one the owner
+  transfers it to with `transfer-role`; any other claim of it is refused `not-registration-owner`
+  for that role, after the channel checks and before exclusivity. Source roles stay open to any
+  permitted subject, so a development build with its own subject keeps writing its typed records.
+  A command-sink role an instance already holds is kept on its renewal, so a transferred role
+  survives the next renewal (`instance-command-sink-not-registration-owner`, control
+  `instance-create`; `owner-transfer-role-other-subject`; `instance-renew-transferred-command-sink`).
+  `instance-create-other-subject` now answers `partial`: its simulated command-sink claim is
+  refused, its source roles are granted.
 - *Channels.* For a stateSpans kind that declares a `slot`, the channel is that slot name; for
   every other element it is `<vendor>/<product>/<element id>`. A slot channel is shared across
   products on the tenant, so two controllers that name the same slot contend for its roles. A
@@ -791,6 +817,17 @@ one that does not serves neither, and §3.5 applies unchanged. Paths are proposa
   *(2026-10-16, D20 rule 2: a definition may declare `sameAs` naming a slot of the hub's optional
   shared slot list, and its channel is then that slot; the list ships `override`, `loopMode` and
   `temporaryTarget`; §3.7.)*
+  **Decided 2026-10-16 (maintainer walk-through row 5, `SPEC-REG-AMEND`), replacing "A slot channel
+  is shared across products on the tenant, so two controllers that name the same slot contend for
+  its roles" and "Equal names contend" above:** a slot is shared across products only through the
+  hub's shared slot list (`wellKnown.slots`) or a declared `sameAs`. A slot name the list does not
+  hold is the product's own channel: instances of one product still contend on it, and equal
+  unlisted names from different products do not (`equal-names-unlisted-do-not-contend`, §3.7). The
+  owner's listing records each such name used by two or more products as `slotNameObservations`
+  (`slot-name-observation-recorded`), for the catalogue to act on. The 20 cases here whose
+  instances of ControllerA and ControllerB contend on `override` now list `override` in their
+  capability documents, with their expectations unchanged; each says so in-file. A command for a
+  channel that is not shared names its product (`request.identity`).
 - *Exclusivity.* Among live `device`-provenance instances of active products on the tenant, each
   (channel, role) has one holder. A second claimant is refused that role `role-held`; its other
   roles are still granted, and it writes the elements on that channel as their carriers. The hub
@@ -883,7 +920,10 @@ from the mapping, and nothing the mapping does not declare. The projected docume
   write and stores, and `identifier` is the typed id; execution plan §2.6.3, `SPEC-REG-QUIRKS`.
   Specified in §3.7, rule 8: the case `project-served` changed its expected `_id`. The
   `objectId` declaration is scoped there to single-tenant mode on MongoDB; single-tenant on
-  PostgreSQL is open (`SPEC-REG-MODES`). The prior art above is in-memory: on the wire Nocturne
+  PostgreSQL is open (`SPEC-REG-MODES`). *(Decided 2026-10-16, maintainer walk-through rows 1
+  and 2: every hub's legacy surface serves 24-hex `_id` values the hub assigns, on either store;
+  there is no `opaque` form and nothing to declare, so this applies to every hub and the
+  PostgreSQL question is closed.)* The prior art above is in-memory: on the wire Nocturne
   writes `Id` and `Identifier` through `ObjectIdJsonConverter` as the UUID's first 24 hex digits
   (read-derived at `42275c812`, §3.7).)*
 
@@ -900,10 +940,19 @@ retention decides when the record goes.
 to a live instance that claims it with `device` provenance, else 409 `role-not-granted`,
 `role-not-claimed` or `not-live`; precondition `If-Match` the etag of the instance it is moved
 from; both instances' etags change), `pin-version`, `unpin-version`, and the instance listing
-(every instance with its roles, labels and liveness, and the overlaps).
+(every instance with its roles, labels and liveness, and the overlaps). *(2026-10-16,
+walk-through rows 5 and 9:)* the listing also carries `registrations`, every stored product with
+its binding, credential kind and binding event, and `slotNameObservations` when two products use
+one unshared slot name; `instance-overlap-listed`, `instance-overlap-holder-lapsed`,
+`listing-includes-withheld` and `listing-withholds-alias` gained `registrations` in their
+expectations, and the last two also `slotNameObservations` (their hub lists no slots and both
+products declare `override`), with nothing else changed. `transfer-role` is the one way an instance of another
+subject gets a command-sink role (row 7).
 
 **Choices made here for the maintainer to confirm.** Creating an instance needs the permission,
-not the product's binding (a second subject may run a copy); a definition PUT never binds a
+not the product's binding (a second subject may run a copy) *(decided 2026-10-16, maintainer
+walk-through row 7: yes for the instance and its source roles; a command-sink role needs the
+product's binding or the owner's transfer, above)*; a definition PUT never binds a
 released product; definitions and instances are refused for a retired product (409
 `product-retired`); the instance etag covers granted roles, so a transfer reaches each instance as
 a 412 on its next renewal; every listed role, including an `other` role a hub lists, is exclusive
@@ -912,15 +961,21 @@ transfers only to a live instance that already claims the role with `device` pro
 their own resource; "newest" is numeric by part; a label selector ignores provenance and pins;
 the product's current registration also keeps its definition from removal; typed settings fields
 and replay inputs are outside `version-conflict`; `devicestatus` and other documents are not
-channels (writes to them are attributed by instance, and their exclusivity is not specified);
+channels (writes to them are attributed by instance, and their exclusivity is not specified)
+*(decided 2026-10-16, row 10: loop-status exclusivity is left unspecified; `devicestatus` is not
+a channel until its decomposition is typed)*;
 `wellKnownRef` needs a versioned catalogue kind; the permission names reuse
 `api:registrations:create`/`delete`. The label prefix correction above was set with this item.
 
-**The cases.** 86, under `specs/sync/conformance/instances/`, each with its time `now`, the hub's
-stored registrations, definitions, instances, pins and records, and the expected response and
-stored state. A refusal names the passing case that differs from it in the aspect under test.
-The 26 §3.5 cases whose response is `accepted` or `partial` gained only `definitionId` (measured
-2026-10-15: the reference reproduces every other member unchanged); the other 29 are unchanged.
+**The cases.** 90 (86 until 2026-10-16), under `specs/sync/conformance/instances/`, each with its
+time `now`, the hub's stored registrations, definitions, instances, pins and records, and the
+expected response and stored state. A refusal names the passing case that differs from it in the
+aspect under test. The 26 §3.5 cases whose response is `accepted` or `partial` gained only
+`definitionId` (measured 2026-10-15: the reference reproduces every other member unchanged); the
+other 29 are unchanged. *(2026-10-16, `SPEC-REG-AMEND`: four cases added for rows 7 and 9; 20
+cases gained `wellKnown.slots: [override]` for row 5 with their expectations unchanged; four
+listing cases gained `registrations`, two of them also `slotNameObservations`; `instance-create-other-subject` changed its outcome for row
+7. Each says so in-file.)*
 
 | case | what it shows | outcome | control |
 |---|---|---|---|
@@ -949,7 +1004,8 @@ The 26 §3.5 cases whose response is `accepted` or `partial` gained only `defini
 | `dual-write-linked` | A dual-write carrier links to its typed record by (instance, record id) | 200 written; carrier, attributed to the instance, linkedTo the typed record |  |
 | `dual-write-not-linked-across-instances` | Equal record ids from two instances never link | 200 written; carrier, attributed to the instance, linkedTo null | `dual-write-linked` |
 | `instance-blocked-product` | No instance for a blocked product | 403 rejected; blocked-by-owner | `instance-create` |
-| `instance-create-other-subject` | A second credential runs another copy of a registered product | 201 accepted |  |
+| `instance-command-sink-not-registration-owner` | A command-sink role goes only to an instance of the product's bound subject (added 2026-10-16) | 201 partial; override command-sink: not-registration-owner | `instance-create` |
+| `instance-create-other-subject` | A second credential runs another copy of a registered product | 201 partial; override command-sink: not-registration-owner (was 201 accepted until 2026-10-16, row 7) | `instance-create` |
 | `instance-create-retry-noop` | An identical instance create retried is a renewal | 200 accepted |  |
 | `instance-create` | An instance is created with a lease and its roles | 201 accepted |  |
 | `instance-delete-stale` | DELETE needs the current etag | 412 precondition-failed; stale-etag | `instance-delete` |
@@ -970,6 +1026,7 @@ The 26 §3.5 cases whose response is `accepted` or `partial` gained only `defini
 | `instance-renew-after-transfer-stale` | After a transfer the former holder's renewal meets 412 | 412 precondition-failed; stale-etag | `instance-renew-after-transfer` |
 | `instance-renew-after-transfer` | The former holder renews with its current etag | 200 partial; override command-sink: role-held | `owner-transfer-role` |
 | `instance-renew-holder-live` | A claimant's renewal stays refused while the holder is live | 200 partial; override source: role-held; override command-sink: role-held | `instance-handoff-lapse` |
+| `instance-renew-transferred-command-sink` | A command-sink role the owner transferred is kept on renewal (added 2026-10-16) | 200 accepted |  |
 | `instance-renew` | An instance renews its lease with If-Match | 200 accepted |  |
 | `instance-retired-product` | No instance for a retired product | 409 rejected; product-retired | `instance-create` |
 | `instance-role-held` | A second device source for a slot is refused role-held | 201 partial; override source: role-held; override command-sink: role-held | `instance-role-simulated` |
@@ -980,12 +1037,14 @@ The 26 §3.5 cases whose response is `accepted` or `partial` gained only `defini
 | `instance-unsupported-role` | A role term the hub does not list is refused | 201 partial; override other: unsupported-role | `instance-create` |
 | `lapsed-role-not-auto-assigned` | A lapsed holder's role is not given to anyone until asked | 409 rejected; no-command-destination | `command-routed` |
 | `listing-includes-withheld` | The owner may ask for withheld members | 200 listed |  |
+| `listing-shows-binding-event` | The owner's listing shows how a released registration was bound, and with what credential kind (added 2026-10-16) | 200 listed |  |
 | `listing-withholds-alias` | The owner's default listing withholds observed aliases | 200 listed |  |
 | `observed-alias-recorded` | The free-text devicestatus.device is an observed alias | 200 written; carrier, attributed to the instance |  |
 | `owner-pin-stale` | A pin change needs the current pins etag | 412 precondition-failed; stale-etag | `owner-unpin-version` |
 | `owner-pin-unknown-version` | A pin names a stored version | 422 rejected; unknown-version | `owner-pin-version` |
 | `owner-pin-version` | The owner pins a version for the site's default views | 201 applied |  |
 | `owner-transfer-role-data-listener` | A transfer on the data listener is refused | 403 rejected; not-authorised | `owner-transfer-role` |
+| `owner-transfer-role-other-subject` | The owner transfers a command-sink role to another subject's instance (added 2026-10-16) | 200 applied |  |
 | `owner-transfer-role-not-claimed` | A role is transferred only to an instance that claims it | 409 rejected; role-not-claimed | `owner-transfer-role` |
 | `owner-transfer-role-stale` | A transfer with a stale etag fails its precondition | 412 precondition-failed; stale-etag | `owner-transfer-role` |
 | `owner-transfer-role` | The owner transfers a role from its holder to a claimant | 200 applied |  |
@@ -1014,7 +1073,10 @@ The 26 §3.5 cases whose response is `accepted` or `partial` gained only `defini
 ### 3.7 Version-scoped quirks and the two ids
 
 *Added 2026-10-16 (`SPEC-REG-QUIRKS`; D20, [execution plan §2.6.3](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16)).
-Specified, not implemented: no hub serves any of this.* The [quirks registry](../../../specs/quirks/README.md)
+Specified, not implemented: no hub serves any of this. Amended the same day for the maintainer's
+walk-through (execution plan §2.6.3, rows 1–6, `SPEC-REG-AMEND`): the legacy id form is no longer
+declared, a slot is shared only through the list or `sameAs`, and Trio's `id` is a registry
+entry.* The [quirks registry](../../../specs/quirks/README.md)
 recorded how stored documents deviate, per collection and project, with measured prevalence. D20
 adds the versions an entry affects and a measured lifecycle, applies them to slot names (which
 are shared channels under D19 rule 5) and to `_id`, and separates the two jobs an id does: the
@@ -1023,13 +1085,13 @@ sync identity the client assigns and the storage key the hub assigns.
 | file | what it is |
 |---|---|
 | `specs/quirks/quirk.schema.json` | the registry entry, validated at load: `affects`, `retired`, `mapping`, declaration entries (new) |
-| `specs/quirks/{treatments,entries}.yaml` | QUIRK-TREATMENTS-006 and QUIRK-ENTRIES-004, today's `_id` handling (new entries) |
+| `specs/quirks/{treatments,entries}.yaml` | QUIRK-TREATMENTS-006 and QUIRK-ENTRIES-004, today's `_id` handling (new entries); QUIRK-TREATMENTS-007, Trio's `id` (added 2026-10-16, row 6) |
 | `tools/nsschema/quirks.py` | version ranges, recent writes, versions seen (same document or co-occurrence), the lifecycle check |
 | `specs/sync/shared-slots.yaml` | the shared slot list the well-known catalogue ships (new) |
 | `specs/sync/controller-state-model.schema.json` | gains `stateSpans[].sameAs` |
-| `specs/sync/hub-capabilities.schema.json` | gains `legacyIdForm`, `wellKnown.slots` and `wellKnown.mappings` |
+| `specs/sync/hub-capabilities.schema.json` | gains `wellKnown.slots` and `wellKnown.mappings` (and gained `legacyIdForm`, removed 2026-10-16, row 2) |
 | `specs/sync/registration-submit.schema.json` | gains `unknown-shared-slot`, the write reply's `ids`, `matchedBy`, `quirksApplied` and `slotMapping`, a record's `_id`, `write.sent`, `write.writer`, a target by `_id`, and the cases' `assignedIds` and `hubState.documents` |
-| `specs/sync/conformance/quirks/*.yaml` | 29 synthetic cases, in the instance case format |
+| `specs/sync/conformance/quirks/*.yaml` | 29 synthetic cases, in the instance case format (2026-10-16: two `opaque` cases removed, two row 5 cases added) |
 | `tools/nsschema/quirks_registration.py` | a reference for this section, called by `instances.py` (which gained the `sameAs` channel, the stored projected `_id` and the write reply's ids) and `negotiate.py` (the `sameAs` checks); it is not a hub |
 | `tools/nsschema/test_registration_quirks.py` | the queue gate |
 
@@ -1053,8 +1115,12 @@ attribution, and their measured rows are unchanged (measured 2026-10-16: the 17 
   `temporaryTarget` (Trio, AndroidAPS): the slot names more than one generated registration already
   uses with the same spelling, checked against `specs/sync/registrations/*.yaml` by the gate.
   Equal slot names already contend under §3.6, so listing them adds no contention; it makes them
-  names a definition can declare `sameAs`. It does not confirm that their users mean the same
-  thing: Loop's override is written as treatments `Temporary Override` and Trio's as `Exercise`.
+  names a definition can declare `sameAs`. **Decided otherwise 2026-10-16 (maintainer walk-through
+  row 5): a slot is shared only through this list or `sameAs`, so listing a name is what makes
+  equal names from different products one channel that contends; equal unlisted names do not
+  contend, and the owner's listing records them as `slotNameObservations`** (§3.6). It does not
+  confirm that their users mean the same thing: Loop's override is written as treatments
+  `Temporary Override` and Trio's as `Exercise`.
 - *`sameAs`.* A stateSpans entry may declare `sameAs: <shared slot>` beside its `slot`. On a hub
   that interprets it and lists that slot, the entry's channel is the shared slot, so it contends
   with every entry that names or means the slot (D19 rule 6). Checks, at a product or definition
@@ -1066,6 +1132,8 @@ attribution, and their measured rows are unchanged (measured 2026-10-16: the 17 
   (§3.6's table): changing it at the same version is `version-conflict`. A `wellKnownRef` entry
   takes the catalogue kind's `sameAs` and restates none.
 - *Never by likeness.* Only an equal name or a declared `sameAs` puts two slots on one channel.
+  *(Amended 2026-10-16, row 5: across products, only a listed name or a declared `sameAs`; an
+  equal unlisted name is each product's own channel.)*
   AndroidAPS's `runningMode` and Loop's and Trio's `loopMode` stay separate channels until a
   definition or a catalogue mapping says otherwise; so do names that differ only in case.
 - *Catalogue mappings* cover versions released before registration, which change nothing on their
@@ -1111,16 +1179,26 @@ Declaration entries are measured by a hub's recorded mappings, which the corpus 
   re-send that matches answers with the stored ids and stores no second copy, so a client needs
   no cache of server ids. A typed re-send matches a stored typed record of the same product with
   the same identifier, whichever instance sent it (stable across devices).
-- *The cases model writes abstractly.* The 86 instance cases and the 55 negotiation cases send no
+- *The cases model writes abstractly.* The 86 instance cases and the 55 negotiation cases (90 and
+  54 since 2026-10-16) send no
   record ids, and their replies are unchanged; the cases here send `write.sent` (the id members of
   a v1/v3 document) or `write.recordId` (a typed record's id) and get the ids.
 
-**Rule 6: the legacy id form.** The capability document's `legacyIdForm` is `objectId` or
+**Rule 6: the legacy id form.** *Decided 2026-10-16 (maintainer walk-through rows 1 and 2,
+`SPEC-REG-AMEND`): `objectId` names the shape — a 24-hex value the hub assigns — not MongoDB's
+native type, on either store, and every hub's legacy surface (v1, v3) serves it. The capability
+member `legacyIdForm` and its `opaque` option are removed, with the cases `project-served-opaque`
+and `typed-write-opaque-hub`; a hub's own newer APIs may use other ids, and the sync identity is
+`identifier`. `UUID_HANDLING` already runs above the storage seam (`lib/server/treatments.js`,
+read at `crm-write` `239f8c25`), so a site keeps its ids across stores. The paragraph below is as
+written on 2026-10-16 before the walk-through; its `opaque` form and its PostgreSQL question no
+longer apply.* The capability document's `legacyIdForm` is `objectId` or
 `opaque`. On an `objectId` hub `_id` is always an ObjectId: one the hub assigns, or a client's
 24-hex or `{"$oid": …}` value kept as that ObjectId in lower case; a client `_id` that is not one
 is handled as the quirks registry says and never stored. cgm-remote-monitor in single-tenant mode
 on MongoDB declares `objectId`. A reader of a capability document without `legacyIdForm` assumes
-`objectId`, the legacy API's rule. **Single-tenant mode on PostgreSQL is not decided here**: the
+`objectId`, the legacy API's rule. **Single-tenant mode on PostgreSQL is not decided here** *(decided
+2026-10-16, row 1: the same 24-hex shape; no longer open)*: the
 backend follows the URI scheme there, the server mints a 24-hex text `_id`, and a client-supplied
 `_id` is stored as sent (read-derived on the seam chain at `81a1f6ce`:
 `lib/server/storage-backends.js:41-46`, `lib/storage/pgCollection/sql.js:64-78`,
@@ -1147,12 +1225,26 @@ so they become `historical` only through the hub's rule 3 records. Measured 2026
 Two read-derived statements of D20's own context differ from this source reading: Loop does send
 `_id` (a UUID) for overrides, though not for carbs and doses; and Trio 1.0.1 sends `id`, not `_id`
 (55,939 corpus treatments carry a UUID `id` member, measured; their writer is not attributed). Neither changes a rule.
+*(2026-10-16, walk-through row 6: recorded as QUIRK-TREATMENTS-007 with no new mapping. Trio's
+treatment model sends its UUID as `id` (`NightscoutTreatment.swift:62`, Trio `e41c9db37`); its
+carbs and temporary-target models send `_id` (`CarbsEntry.swift:29`, `TempTarget.swift:50`).
+cgm-remote-monitor does not read `id` and matches such treatments by `created_at` + `eventType`
+(`treatment-fallback-key`; `lib/server/treatments.js:383-405` at `crm-write` `239f8c25`).
+Re-measured with `make schema-quirks` over the same two snapshots: 55,939 treatments on one site
+(site `b`, 90.4% of its treatments), the newest
+document dated 2026-03-29, each with `enteredBy: Trio`, a server-assigned 24-hex `_id`
+and no `identifier`; eventTypes Temp Basal 32,706, SMB 11,837, Carb Correction 8,703, Bolus
+2,693. By co-occurrence (devicestatus `openaps.version`, same site, within 60 minutes): 0.6.0
+54,688, 0.5.1 1,185, unattributed 66. The writer is attributed by `enteredBy`, correcting "their
+writer is not attributed" above. Whether Trio should send `identifier` goes to
+`PROPOSAL-REG-CONTROLLERS`.)*
 
 **Rule 8: projected records.** On an `objectId` hub the typed write assigns an ObjectId and stores
 it with the typed record (`records[]._id`), one per projected document, so every projection of the
 record carries the same `_id`; its `identifier` is the typed id. A write aimed at the projected
 `_id` is refused `projected-read-only`, as one aimed at its identifier is. An `opaque` hub may use
-the typed id for both, which is what §3.6 specified before. **This replaces §3.6's "typed id
+the typed id for both, which is what §3.6 specified before. *(Withdrawn 2026-10-16, walk-through
+row 2: there is no `opaque` hub; every hub stores and serves the assigned ObjectId.)* **This replaces §3.6's "typed id
 verbatim in v1 `_id`" for `objectId` hubs**: the instance case `project-served` changed its
 expected `_id` (and its record gained the stored `_id`), and `write-projected-read-only` and
 `write-stored-carrier` gained the stored `_id` in their hub state with their expectations
@@ -1165,7 +1257,9 @@ range. Its comment gives the reason as AndroidAPS's strict 24-hex id check; no s
 found in AndroidAPS at `7e1d537d49`. A derived id is a different mechanism from a stored one: it
 needs no storage, and its first four bytes are the UUID v7's time bits, not an ObjectId timestamp.
 
-**The ObjectId's timestamp is the hub's receipt time** (an assumption of this item): the first four
+**The ObjectId's timestamp is the hub's receipt time** (an assumption of this item; **decided
+2026-10-16, maintainer walk-through row 3**, as for every id the server generates today; readers
+take a record's time from `created_at`/`date`): the first four
 bytes of an assigned ObjectId are the time the hub received the write, as any MongoDB server
 assigns it, not the record's own time. A reader must not take an `_id`'s time as the record's.
 The cases pin it: every `assignedIds` value starts with the case's `now`.
@@ -1176,21 +1270,28 @@ The cases pin it: every `assignedIds` value starts with the case's `now`.
    their names look alike" is read as: never by likeness (case, similar words, a shared category);
    equal names keep §3.6's contention, and the list is the vocabulary `sameAs` may name. The other
    reading — only listed slots are shared — would change the instance cases `instance-role-held`
-   and the overlaps cases, whose capability documents list no slots.
+   and the overlaps cases, whose capability documents list no slots. *(Decided otherwise
+   2026-10-16, maintainer walk-through row 5: only listed slots and `sameAs` are shared, and equal
+   unlisted names are recorded as an observation; the 20 instance cases that test cross-product
+   contention now list `override`.)*
 2. *The shipped list* holds the three names already used identically, not an empty list.
 3. *`unknown-shared-slot` refuses the element*, rather than falling back to the slot's own name.
 4. *Catalogue mappings need a known writer version*; with none the hub applies no mapping.
-5. *`legacyIdForm` absent is read as `objectId`.*
+5. *`legacyIdForm` absent is read as `objectId`.* *(Withdrawn 2026-10-16, row 2: the member is
+   removed and every hub serves 24-hex ids.)*
 6. *`identifier` is null in the reply* when the client sent none and the path assigns none.
 7. *A typed re-send matches across instances of one product* (D20's "stable across devices"),
    unlike §3.6's dual-write link, which is scoped by instance.
-8. *Recent is 365 days* before the newest snapshot's collection date.
+8. *Recent is 365 days* before the newest snapshot's collection date. *(Decided 2026-10-16,
+   row 4: 365 days, a declared measurement parameter.)*
 9. *`historical` needs a hub's instance listing*; without one the corpus alone never supports it.
 10. *A mapping that erases its evidence* (`UUID_HANDLING`) makes `historical` depend on the hub's
     rule 3 records.
 11. *A `proposed` entry never fails the check*; before, it was checked like an active one.
 12. *Declaration entries are measured only by hub records*, and none is listed.
-13. *The ObjectId timestamp is receipt time*, above.
+13. *The ObjectId timestamp is receipt time*, above. *(Decided 2026-10-16, row 3.)*
+
+Still open after the walk-through: 2, 3, 4, 6, 7, 9, 10, 11 and 12.
 
 **Slot candidates for `PROPOSAL-REG-CONTROLLERS`** (read 2026-10-16 from the generated
 registrations, `tools/nsschema/sync_model.py`; meaning not confirmed by any controller author):
@@ -1206,7 +1307,11 @@ registrations, `tools/nsschema/sync_model.py`; meaning not confirmed by any cont
 
 **The cases.** 29, under `specs/sync/conformance/quirks/`, in the instance case format; each
 refusal names a passing control. The 55 §3.5 cases and 86 §3.6 cases keep their meaning; the
-three §3.6 cases above changed for rule 8.
+three §3.6 cases above changed for rule 8. *(2026-10-16, `SPEC-REG-AMEND`: `project-served-opaque`
+and `typed-write-opaque-hub` are removed with the `opaque` form (row 2);
+`equal-names-unlisted-do-not-contend` and `slot-name-observation-recorded` are added (row 5); the
+other 27 cases lost `legacyIdForm: objectId` from their capability documents with their
+expectations unchanged, each saying so in-file.)*
 
 | case | what it shows | outcome | control |
 |---|---|---|---|
@@ -1222,8 +1327,8 @@ three §3.6 cases above changed for rule 8.
 | `catalogue-mapping-applied` | An older version gets its slot mapping from the catalogue | 200 written; QUIRK-DECLARATION-901 same-as; channel loopMode by catalogue |  |
 | `catalogue-mapping-version-outside` | A catalogue mapping applies only to the versions it affects | 200 written; channel runningMode by name |  |
 | `catalogue-mapping-version-unknown` | No mapping when the hub does not know the version | 200 written; channel runningMode by name |  |
+| `equal-names-unlisted-do-not-contend` | Equal slot names that the shared list does not hold do not contend (added 2026-10-16) | 201 accepted; override source and command-sink: granted | refused counterpart: `instance-role-held` |
 | `names-alike-do-not-contend` | Slots are never one because their names look alike | 201 accepted; runningMode source: granted |  |
-| `project-served-opaque` | An opaque hub projects the typed id as both ids | 200 projected; `_id` = identifier |  |
 | `same-as-definition-accepted` | A slot declares the shared slot it means | 201 accepted |  |
 | `same-as-no-shared-list` | A hub without a shared slot list honours no sameAs | 201 partial; `stateSpans/ExampleRunningMode` unknown-shared-slot | `same-as-definition-accepted` |
 | `same-as-own-name-not-a-channel` | A slot that means a shared slot is not also its own channel | 201 partial; runningMode source: unknown-channel | `same-as-role-granted` |
@@ -1234,8 +1339,8 @@ three §3.6 cases above changed for rule 8.
 | `same-as-unknown-shared-slot` | sameAs must name a slot the hub lists | 201 partial; `stateSpans/ExampleRunningMode` unknown-shared-slot | `same-as-definition-accepted` |
 | `same-as-unlisted-not-own-name` | An unlisted sameAs never falls back to the slot name | 201 partial; runningMode source: unknown-channel | `same-as-role-granted` |
 | `same-as-without-slot` | sameAs needs a slot | 201 partial; `stateSpans/ExampleRunningMode` invalid-element | `same-as-definition-accepted` |
+| `slot-name-observation-recorded` | The owner's listing records an equal slot name from another product (added 2026-10-16) | 200 listed; slotNameObservations override, no overlap | counterpart: `instance-overlap-listed` |
 | `typed-write-assigns-objectid` | A typed write gets an ObjectId the hub assigns and stores | 200 written; ids new |  |
-| `typed-write-opaque-hub` | An opaque hub may use the typed id for both | 200 written; ids new |  |
 | `typed-write-resend-same-ids` | A typed re-send answers with the stored ids | 200 written; ids matched by identifier |  |
 | `write-projected-read-only-by-objectid` | A write aimed at a projected _id is refused | 409 rejected; projected-read-only | `write-stored-carrier-by-objectid` |
 | `write-stored-carrier-by-objectid` | A write aimed at a stored document's _id is accepted | 200 written |  |

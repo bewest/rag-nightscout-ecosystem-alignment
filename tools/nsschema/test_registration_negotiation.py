@@ -47,7 +47,9 @@ REQUIRED = {
     "accepted-dual-write-view-not-served", "accepted-dual-write-view-served",
     "typed-write-load-503", "typed-write-load-429-retry-after",
     "typed-write-blocked-by-owner", "typed-write-route-404",
-    "typed-write-load-502", "typed-write-load-deadline-passed",
+    "typed-write-load-502",
+    # REMOVED 2026-10-16 (SPEC-REG-AMEND, walk-through row 8): the case
+    # typed-write-load-deadline-passed, with the delivery deadline it tested.
 }
 CELLS = {"older-controller/older-hub", "older-controller/newer-hub",
          "newer-controller/older-hub", "newer-controller/newer-hub"}
@@ -671,15 +673,10 @@ def test_a_refused_typed_write_is_retried_for_load_and_carried_when_definite(cid
     others = {k: v for k, v in outcome["fallback"].items() if k != refusal["element"]}
     assert others == {k: v for k, v in before.items() if k != refusal["element"]}
     load = refusal["status"] == 429 or 500 <= refusal["status"] <= 599
-    if load and refusal.get("deadlinePassed"):
-        # Only this record goes as its carrier; the element stays typed.
-        assert outcome["action"] == "carrier-this-record"
-        assert outcome["fallback"] == before
-        control = CASES[case["control"]]
-        assert control["expected"]["typedWrite"]["action"] == "retry-backoff"
-        assert {k: v for k, v in case["typedWrite"].items() if k != "deadlinePassed"} == \
-            control["typedWrite"]
-    elif load:
+    # CHANGED 2026-10-16 (SPEC-REG-AMEND, walk-through row 8): the branch for
+    # a load refusal past its delivery deadline (that record as its carrier)
+    # is removed with the deadline. A load refusal is only ever retried.
+    if load:
         assert outcome["action"] == "retry-backoff"
         assert outcome["fallback"] == before
     else:
@@ -697,14 +694,39 @@ def test_a_refused_typed_write_is_retried_for_load_and_carried_when_definite(cid
 def test_both_kinds_of_typed_write_refusal_are_covered():
     statuses = {CASES[c]["typedWrite"]["status"] for c in TYPED_WRITE}
     assert {429, 503} <= statuses and statuses - {429, 503}
-    # A 5xx other than 503 is load too, and a passed deadline is covered.
+    # A 5xx other than 503 is load too. CHANGED 2026-10-16 (SPEC-REG-AMEND,
+    # walk-through row 8): this asserted a case with a passed delivery
+    # deadline; the deadline is removed, and
+    # test_a_load_refusal_is_never_sent_as_its_carrier asserts its absence.
     assert any(500 <= s <= 599 and s != 503 for s in statuses)
-    assert any(CASES[c]["typedWrite"].get("deadlinePassed") for c in TYPED_WRITE)
     assert all(negotiate.is_load_refusal(s) == (s == 429 or 500 <= s <= 599)
                for s in (400, 403, 404, 409, 410, 429, 500, 502, 503, 504))
     assert any("retryAfter" in CASES[c]["typedWrite"] for c in TYPED_WRITE)
     assert any("retryAfter" not in CASES[c]["typedWrite"] and
                CASES[c]["typedWrite"]["status"] in (429, 503) for c in TYPED_WRITE)
+
+
+def test_a_load_refusal_is_never_sent_as_its_carrier():
+    # Walk-through row 8 (maintainer, 2026-10-16): no delivery deadline. A
+    # typed write answered 429 or any 5xx is retried with backoff until it
+    # succeeds and is never re-sent as its carrier, however long it has been
+    # refused, so a write the hub stored before failing cannot appear twice.
+    assert "deadlinePassed" not in SUBMIT_SCHEMA["$defs"]["conformanceCase"]["properties"][
+        "typedWrite"]["properties"]
+    assert not any("deadlinePassed" in CASES[c]["typedWrite"] for c in TYPED_WRITE)
+    assert "typed-write-load-deadline-passed" not in IDS
+    case = CASES["typed-write-load-503"]
+    for status in (429, 500, 502, 503, 504):
+        refusal = dict(case["typedWrite"], status=status, deadlinePassed=True)
+        outcome = negotiate.typed_write_refused(case["registration"], case["expected"]["fallback"],
+                                                refusal)
+        assert outcome["action"] == "retry-backoff", (status, outcome["action"])
+        assert outcome["fallback"] == case["expected"]["fallback"], status
+    # Control: a definite 4xx still sends that record as its carrier at once.
+    definite = dict(case["typedWrite"], status=403)
+    outcome = negotiate.typed_write_refused(case["registration"], case["expected"]["fallback"],
+                                            definite)
+    assert outcome["action"] == "carrier-this-record"
 
 
 def test_a_typed_write_refused_with_an_unknown_status_is_definite():

@@ -1,5 +1,18 @@
 # Trio iOS App: Nightscout API `_id` Field Analysis
 
+> **Correction (2026-10-16, `SPEC-REG-AMEND`; source read at Trio `e41c9db37`, corpus measured
+> with `make schema-quirks`).** The statement that Trio's `id` maps to `_id` holds for the carbs
+> and temporary-target models, not for `NightscoutTreatment`: `CarbsEntry.swift:29` and
+> `TempTarget.swift:50` encode `case id = "_id"`, while `NightscoutTreatment.swift:62` encodes
+> `case id` with no key, so a treatment built as `NightscoutTreatment` is sent with its UUID in the
+> member `id`, not `_id`. cgm-remote-monitor does not read `id`: it matches such a treatment by
+> `created_at` + `eventType` (write contract `treatment-fallback-key`; `lib/server/treatments.js:383-405`
+> at `crm-write` `239f8c25`). Measured over the 2026-04-01 and 2026-04-26 snapshots: 55,939 stored
+> treatments on one site carry a UUID `id`, each with `enteredBy: Trio`, a server-assigned 24-hex
+> `_id` and no `identifier` (registry entry `QUIRK-TREATMENTS-007`). At the same commit
+> `BloodGlucose`'s coding keys hold both `_id` (`legacyId`) and `id` (`BloodGlucose.swift:60-62`);
+> the glucose statements were not re-checked. The text below is kept as written.
+
 ## Executive Summary
 
 Trio iOS app uses **UUID strings** for the `_id` field across all Nightscout collections. Unlike some systems that omit the field or send MongoDB ObjectIds, Trio explicitly generates and sends `_id` values using Swift's UUID type. The app maintains separate `id` and `syncIdentifier` fields for internal tracking and cross-system synchronization.
@@ -58,7 +71,7 @@ Trio sends UUID strings (format: `"550e8400-e29b-41d4-a716-446655440000"`) to th
 Trio uses these fields for different purposes:
 
 - **`_id`**: Nightscout's document identifier (UUID string)
-- **`id`**: The Swift property that maps to `_id` during JSON encoding (same value)
+- **`id`**: The Swift property that maps to `_id` during JSON encoding (same value) *(corrected 2026-10-16: not for `NightscoutTreatment`, which sends `id`; see the note at the top)*
 - **`syncIdentifier`**: LoopKit sync identifier for cross-system deduplication
 
 **Evidence:**
