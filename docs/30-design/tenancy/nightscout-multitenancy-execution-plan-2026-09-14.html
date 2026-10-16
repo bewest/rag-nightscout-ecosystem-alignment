@@ -2855,6 +2855,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6.3 D20 — version-scoped quirks and the two-id rule (maintainer, 2026-10-16)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#27-d12--what-each-repository-is-for" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5133,6 +5144,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6.3 D20 — version-scoped quirks and the two-id rule (maintainer, 2026-10-16)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#27-d12--what-each-repository-is-for" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5394,14 +5416,14 @@
 
 
 <h1 id="multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs">Multitenancy execution plan: decisions, tasks, and the context each one needs<a class="headerlink" href="#multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-15 at <code>e9af30a3</code>.</em></p>
+<p><em>Living document, last changed 2026-10-16 at <code>66403e0f</code>.</em></p>
 <p><em>Contributor- and maintainer-facing.</em></p>
-<p><strong>Status: living document — the decision record.</strong> Decisions D1–D19 are the maintainer's
-(2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14) and are all <strong>adopted</strong>, except <strong>D17 row 2</strong>
+<p><strong>Status: living document — the decision record.</strong> Decisions D1–D20 are the maintainer's
+(2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16) and are all <strong>adopted</strong>, except <strong>D17 row 2</strong>
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is <strong>adopted in principle,
 gated</strong> on the edge's production conditions and the compliance question (<code>T30-ORY-PROOF</code> held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. <strong>Item state lives
-in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb1b48e76661e7d2458d8be88c7aff3a2b0638a3/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
+in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66403e0f60af5d31fbf774106b0399dbcaa1244f/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
 <a href="../../../queue/QUEUE.html"><code>queue/QUEUE.md</code></a>, measured by <code>make queue-status</code>); defect facts live
 in the <a href="../remedial/nightscout-backfix-register.html">backfix register</a>. Measured facts below name
 their date and commit.</p>
@@ -5692,6 +5714,11 @@ preference.</p>
 <td><strong>D19</strong></td>
 <td><strong>A registration separates the definition from the instance.</strong> A <em>definition</em> says what a controller's data means; it is immutable, identified by the hash of its content, and many coexist under one <code>(vendor, product)</code>. An <em>instance</em> is one connected copy of a controller (phone, simulator, lab rig, agent): it names the definition it runs, holds a lease, declares a provenance (<code>device</code> or <code>simulated</code>) on each channel role it plays, and carries typed labels. Among <code>device</code>-provenance instances each channel role has one source of record, handed off by release, lease lapse or owner transfer; an overlapping writer is flagged, never silently resolved, and a command has one destination. Registered instances write typed records only for accepted elements; older readers get a declared, read-only view in today's shapes. The hub still decides nothing about dosing. <em>(corrected 2026-10-15: reverse-DNS, <code>dev.nightscout/</code> — the well-known label prefix of rule 7; specified 2026-10-15, <code>SPEC-REG-INSTANCE</code>, hub-sync design §3.6)</em></td>
 <td>maintainer, 2026-10-14 — §2.6.2</td>
+</tr>
+<tr>
+<td><strong>D20</strong></td>
+<td><strong>Quirks are scoped to the versions that produce them, and identity has two fields under one rule.</strong> A quirk names the <code>(vendor, product, versions)</code> it affects, for stored documents and for declarations alike; versions released before registration get their mapping from the catalogue, newer versions declare it themselves, the hub records each mapping it applies, and a quirk moves to historical and then retired as measurement shows the affected versions gone. <code>identifier</code> is the sync identity the client assigns; <code>_id</code> is the storage key the hub assigns and returns; in single-tenant legacy mode <code>_id</code> is an ObjectId. <em>(amended 2026-10-16: every legacy surface serves 24-hex <code>_id</code> values; the opaque option is dropped — §2.6.3 walk-through)</em></td>
+<td>maintainer, 2026-10-16 — §2.6.3</td>
 </tr>
 </tbody>
 </table>
@@ -5994,7 +6021,18 @@ document is unchanged), the grammar's
 <code>dualWriteLink</code> and 53 conformance cases now carry first-to-claim namespaces, binding to the
 creating subject, the owner's actions on <code>ns-tenant-admin</code> and the <code>blocked</code> state, the recorded
 credential kind, carrier views, and the load-versus-definite rule for refused typed writes. The
-D19 parts of questions 7 and 9 remain <code>SPEC-REG-INSTANCE</code>'s.)</em></p>
+D19 parts of questions 7 and 9 remain <code>SPEC-REG-INSTANCE</code>'s.)</em> <em>(2026-10-16, maintainer, on
+<code>HUB-REG-CRM</code>'s scope: "HUB-REG-CRM should start in single-tenant and create a sufficient backlog
+to help ensure multitenant and singletenant remain compatible with a future roadmap." So
+<code>HUB-REG-CRM</code> is built on <code>origin/dev</code>, which has no <code>TENANCY_MODE</code>, storage interface or tenant
+scope (measured at official <code>dev</code> <code>fade2299</code>; those exist only on the local seam chain, "Where things stand"), with MongoDB
+and the owner's actions by <code>API_SECRET</code> on the one <code>single</code> listener. The backlog that keeps the
+two modes compatible is <code>SPEC-REG-MODES</code> (what the contract says per mode: storage key, credential
+kinds, owner listener, capability document scope, legacy id form), <code>HUB-REG-CRM-SEAM</code> (the store
+on the seam, checked in single on MongoDB and PostgreSQL and in multi by one harness),
+<code>HUB-REG-CRM-ADMIN</code> (owner actions on <code>ns-tenant-admin</code>), <code>SPEC-REG-COMMANDS</code> (command delivery in
+both modes) and <code>SPEC-REG-MIGRATE</code> (registration state across a site's move into a tenant, and
+back).)</em></p>
 <h3 id="262-d19--definitions-and-instances-maintainer-2026-10-14">2.6.2 D19 — definitions and instances (maintainer, 2026-10-14)<a class="headerlink" href="#262-d19--definitions-and-instances-maintainer-2026-10-14" title="Permanent link">&para;</a></h3>
 <p>D18 registers what a controller's data means. It does not say which copy of a controller is
 connected. Several copies on one site are expected, not exceptional: a development build or
@@ -6093,6 +6131,164 @@ prefix of rule 7 corrected; the choices the item made beyond them are listed in 
 confirmation. The generated well-known registrations declare no kind versions, so their kinds
 cannot yet be referenced by <code>wellKnownRef</code>; slot names, which become shared channels, are free
 strings in the grammar with no shared list.)</em></p>
+<h3 id="263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">2.6.3 D20 — version-scoped quirks and the two-id rule (maintainer, 2026-10-16)<a class="headerlink" href="#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16" title="Permanent link">&para;</a></h3>
+<p>D18 paves the cowpaths: the hub specifies what controllers do today and leaves room to grow. The
+cowpaths include quirks — behaviour particular to some releases of some apps — and a reader has
+to handle them for as long as those releases are in use. The <a href="../../../specs/quirks/index.html">quirks registry</a>
+records them per collection and per project, with prevalence measured over the corpus, but not
+which versions produce them or how an entry is retired once those versions are gone. D20 adds
+both, and applies them to the two places they are needed now: slot names, which become shared
+channels under D19 rule 5, and the document <code>_id</code>.</p>
+<p><strong>Why <code>_id</code>.</strong> In single-tenant Nightscout, where the API is coupled to a thin MongoDB driver,
+<code>_id</code> must be an ObjectId. That was the one hard rule, and it was unwritten; many apps sent
+other values, which produced undefined behaviour and the quirk handling that followed
+(write contract §2.3 rule 1, <code>UUID_HANDLING</code>, and the twin records BF-117 resolves). The
+intent was always that the data store assigns it. Separately, controllers gain from assigning a
+record's identity on the phone, so a record created offline or re-sent after a lost reply syncs
+without duplicating. Those are two jobs. Today's controllers, read-derived from the
+<a href="../../10-domain/client-id-analysis/index.html">client id analyses</a> and the
+<a href="../../backlogs/uuid-identifier-lookup.html">UUID identifier backlog</a>, not re-checked against
+source: Loop sends no <code>_id</code> and caches the ObjectId the server returns, so a lost cache
+duplicates on re-send; Trio sends a UUID it generated in <code>_id</code>, which <code>UUID_HANDLING</code> moves to
+<code>identifier</code>; AAPS keeps the server's <code>_id</code> as its <code>nightscoutId</code> and reads <code>_id</code> with
+<code>identifier</code> as a fallback.</p>
+<p><strong>Rules.</strong></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Quirks name the versions they affect.</strong> A registry entry may carry <code>affects: [{vendor, product, versions}]</code>, a range over the vendor's own version strings. It applies to stored documents (today's registry) and to declarations (a registration's slot names, units, vocabulary). Entries without it keep their project-level attribution; the member is additive.</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Catalogue for older versions, self-declared for newer.</strong> Versions released before registration existed get their mapping from a catalogue entry scoped to them, so they need no change. A newer definition declares the mapping itself — for a slot, <code>sameAs</code> naming a slot in an optional shared slot list in the well-known catalogue. Equal shared slots contend for roles (D19 rule 6). Two slots are never treated as one because their names look alike.</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Mappings are observed, not silent.</strong> The hub records which quirk mapping it applied to each record or declaration, so a reader can tell a mapped value from a declared one.</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>A quirk has a lifecycle.</strong> <code>proposed</code> → <code>active</code> → <code>historical</code> → <code>retired</code>. An entry becomes historical when measurement shows no live instance and no recent write from an affected version, and retired when no stored record depends on its mapping. Each move is measured (<code>make schema-quirks</code>), never asserted.</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Two ids, one rule.</strong> <code>identifier</code> is the sync identity the client assigns, stable across retries and devices; in the typed API it is the controller's record id. <code>_id</code> is the storage key the hub assigns. Every write reply returns both. Re-sends match on <code>identifier</code> first, as the write contract's keys already order it, so a client needs no cache of server ids.</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong><code>_id</code> is an ObjectId in single-tenant legacy mode.</strong> A hub declares its legacy id form in the capability document, <code>objectId</code> or <code>opaque</code>. cgm-remote-monitor in single-tenant mode declares <code>objectId</code>.</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Today's <code>_id</code> handling becomes a version-scoped quirk.</strong> A non-ObjectId <code>_id</code> moved to <code>identifier</code> (<code>UUID_HANDLING</code>) is recorded as a registry entry with the versions that send it; it becomes historical as those apps send <code>identifier</code> instead. Its behaviour does not change.</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>Projected records follow rule 5.</strong> On an <code>objectId</code> hub, each projected document (D19 rule 8) gets an ObjectId the hub assigns when the typed record is written and stores with it, so it is the same on every read; its <code>identifier</code> is the typed id. An <code>opaque</code> hub may use the typed id for both.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The roles do not change.</strong> The hub records which mapping it applied and which ids it assigned;
+the controller still owns its declarations and its records (D18).</p>
+<p><strong>Status.</strong> To be specified as <code>SPEC-REG-QUIRKS</code>; <code>HUB-REG-CRM</code>, <code>HUB-REG-NOCTURNE</code> and
+<code>PROPOSAL-REG-CONTROLLERS</code> follow it. Rule 8 replaces the
+<a href="../platform/nightscout-hub-sync-architecture-2026-09-11.html#36-definitions-and-instances">hub-sync design §3.6</a>
+choice of the typed id verbatim in v1 <code>_id</code>, for <code>objectId</code> hubs. The contents of the shared slot
+list are not decided here: which slots mean the same thing is evidence for the controller authors
+to confirm (<code>PROPOSAL-REG-CONTROLLERS</code>). <em>(2026-10-16: <code>SPEC-REG-QUIRKS</code> is done —
+<a href="../platform/nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">hub-sync design §3.7</a>,
+<code>specs/quirks/quirk.schema.json</code>, QUIRK-TREATMENTS-006 and QUIRK-ENTRIES-004, <code>specs/sync/shared-slots.yaml</code>,
+the grammar's <code>sameAs</code>, the capability document's <code>legacyIdForm</code>, <code>wellKnown.slots</code> and
+<code>wellKnown.mappings</code>, the write reply's <code>ids</code>, and 29 cases under <code>specs/sync/conformance/quirks/</code>,
+checked by <code>tools/nsschema/test_registration_quirks.py</code>. Rules 1–8 are specified as written. Rule
+6's <code>objectId</code> declaration is scoped to single-tenant mode on MongoDB; single-tenant on PostgreSQL
+is open (<code>SPEC-REG-MODES</code>). Rule 8 changed the instance case <code>project-served</code>. "Recent" in rule 4
+is 365 days before the newest snapshot. The shared slot list ships <code>override</code>, <code>loopMode</code> and
+<code>temporaryTarget</code>, the names already used identically; the candidates are in §3.7. Two statements
+of the "Why <code>_id</code>" paragraph differ from source read for this item: Loop sends a UUID <code>_id</code> for
+overrides (LoopWorkspace <code>f8412858</code>), and Trio 1.0.1 sends its id as <code>id</code>, not <code>_id</code> (Trio
+<code>e41c9db3</code>); no rule depends on them. The choices made beyond the rules are listed in §3.7 for
+confirmation.)</em></p>
+<p><strong>Decided in the 2026-10-16 walk-through (maintainer).</strong> These settle open points of §3.5–§3.7 and
+of the compatibility backlog; <code>SPEC-REG-AMEND</code> applies them to the contract and cases.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>point</th>
+<th>decision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>single-tenant on PostgreSQL</td>
+<td><code>objectId</code> names the <strong>shape</strong> — a 24-hex value the hub assigns — not MongoDB's native type, on either store. <code>UUID_HANDLING</code> already runs above the storage seam (<code>lib/server/treatments.js</code>, read at <code>crm-write</code> <code>239f8c25</code>), so a site keeps its ids across stores</td>
+</tr>
+<tr>
+<td>2</td>
+<td>legacy id form</td>
+<td><strong>Every hub's legacy surface (v1, v3) serves 24-hex <code>_id</code> values the hub assigns.</strong> The <code>opaque</code> option of rule 6 and the capability member <code>legacyIdForm</code> are dropped for now: Nocturne's legacy surface already coerces its UUIDs to 24 hex (read at <code>42275c812</code>, §3.7). A hub's own newer APIs may use other ids; the sync identity is <code>identifier</code>. Rule 8's "an opaque hub may use the typed id" is withdrawn</td>
+</tr>
+<tr>
+<td>3</td>
+<td>an assigned ObjectId's time</td>
+<td>the hub's <strong>receipt time</strong>, as for every id the server generates today; readers take a record's time from <code>created_at</code>/<code>date</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>"recent" in rule 4</td>
+<td><strong>365 days</strong>, a declared measurement parameter</td>
+</tr>
+<tr>
+<td>5</td>
+<td>equal slot names</td>
+<td><strong>A slot is shared only through the shared list or <code>sameAs</code>.</strong> Equal unlisted names from different products do not contend; the hub records an observation (same slot name as another product) on the owner's listing, for the catalogue to act on</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Trio's <code>id</code> member</td>
+<td>recorded as a measured, version-scoped registry entry with <strong>no new mapping</strong>: Trio's treatment model sends its UUID as <code>id</code> (<code>NightscoutTreatment.swift:62</code>, Trio <code>e41c9db37</code>), while its carbs and temporary-target models send <code>_id</code> (<code>CarbsEntry.swift:29</code>, <code>TempTarget.swift:50</code>); cgm-remote-monitor matches such treatments by <code>created_at</code> + <code>eventType</code> (<code>treatment-fallback-key</code>). Whether Trio should send <code>identifier</code> goes to <code>PROPOSAL-REG-CONTROLLERS</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>command-sink roles</td>
+<td><strong>A command-sink role goes only to an instance created by the product's bound subject, or one the owner transfers it to</strong> (<code>transfer-role</code>); otherwise refused <code>not-registration-owner</code>. Source roles stay open to any permitted subject, so development builds keep working</td>
+</tr>
+<tr>
+<td>8</td>
+<td>the delivery deadline</td>
+<td><strong>removed</strong> (it was added 2026-10-15 without being asked for). A typed write answered 5xx is retried with backoff until it succeeds; it is never re-sent as its carrier, so a write the hub stored before failing cannot appear twice. A definite 4xx refusal still sends the carrier at once (§3.5)</td>
+</tr>
+<tr>
+<td>9</td>
+<td>a released registration</td>
+<td>binds to its <strong>next permitted writer</strong>, as specified; the binding event and credential kind are shown on the owner's listing</td>
+</tr>
+<tr>
+<td>10</td>
+<td>loop-status exclusivity</td>
+<td><strong>left unspecified</strong>: <code>devicestatus</code> is not a channel until its decomposition is typed</td>
+</tr>
+<tr>
+<td>11</td>
+<td><code>HUB-REG-CRM</code></td>
+<td>stays <strong>one item</strong></td>
+</tr>
+<tr>
+<td>12</td>
+<td>migrating an <code>api-secret</code> binding</td>
+<td>binds to the <strong>tenant's root credential</strong>, a new credential kind (<code>SPEC-REG-MODES</code>, <code>SPEC-REG-MIGRATE</code>); the etag changes with <code>boundTo</code></td>
+</tr>
+</tbody>
+</table>
 <h3 id="27-d12--what-each-repository-is-for">2.7 D12 — what each repository is for<a class="headerlink" href="#27-d12--what-each-repository-is-for" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -6307,7 +6503,11 @@ path) and is silent on process topology. A second <code>listen()</code> in one p
 separation and the extraction prerequisite at no extra process; a separate process adds its own
 failure domain, bind address and resource ceiling, which is what makes <code>ns-admin</code> worth a process
 under D7. D7's argument does not transfer automatically, because <code>ns-tenant-admin</code> is credentialed
-and RLS-scoped where <code>ns-admin</code> is neither. Decide before the third listener is built.</p>
+and RLS-scoped where <code>ns-admin</code> is neither. Decide before the third listener is built.
+<em>(Decided 2026-10-16, maintainer: a <strong>second bound socket inside <code>ns-api</code></strong>, on its own bind
+address, sharing tenant resolution through <code>T30-WIRING</code>'s extracted module. The boundary is the
+socket, so it can move to its own process later without changing the contract. Built by
+<code>T30-TENANT-ADMIN</code>.)</em></p>
 <p><strong>The prerequisite.</strong> <code>lib/server/tenant-resolver.js</code> and <code>tenant-middleware.js</code> are the one module
 for the consumer path; the admin plane deliberately does not use them because it is cross-tenant.
 The tenant-owner plane is the first surface that is <strong>per-tenant and not the data path</strong>, so it is

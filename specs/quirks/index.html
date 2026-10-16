@@ -2262,6 +2262,39 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#versions-d20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Versions (D20)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#declarations-d20-rule-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Declarations (D20 rule 2)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lifecycle-d20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle (D20)
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2280,7 +2313,7 @@
 
 
 <h1 id="quirks-registry">Quirks registry<a class="headerlink" href="#quirks-registry" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-09-10 at <code>8bcc373d</code>.</em></p>
+<p><em>Living document, last changed 2026-10-16 at <code>a046470c</code>.</em></p>
 <p>A <em>quirk</em> is a way real Nightscout documents deviate from the schema, that
 enough of the ecosystem does that a reader has to handle it.</p>
 <p>Not a bug report and not a wishlist. Each entry names a deviation, states
@@ -2295,7 +2328,7 @@ nothing is reported, not silently kept.</p>
 <h2 id="why-a-registry-rather-than-schema-changes">Why a registry rather than schema changes<a class="headerlink" href="#why-a-registry-rather-than-schema-changes" title="Permanent link">&para;</a></h2>
 <p>Some of these can be fixed in the schema — a declared type widened, an enum
 extended — and
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb1b48e76661e7d2458d8be88c7aff3a2b0638a3/specs/openapi/aid-entries-2025.yaml">the 2025.2.0 spec revision</a> did exactly
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66403e0f60af5d31fbf774106b0399dbcaa1244f/specs/openapi/aid-entries-2025.yaml">the 2025.2.0 spec revision</a> did exactly
 that where it was safe. But widening a type records <em>that</em> two shapes exist,
 not <em>why</em>, <em>who</em> writes each, <em>how common</em> each is, or <em>what to do with
 them</em>. A reader implementing <code>entries.date</code> needs to know that a fractional
@@ -2322,11 +2355,15 @@ boundary, or two structurally different shapes for the same concept.</p>
 </tr>
 <tr>
 <td><code>status</code></td>
-<td><code>active</code> (measured in the corpus), <code>historical</code> (fixed upstream, still in stored data), <code>proposed</code> (suspected, not yet measured)</td>
+<td><code>proposed</code> (suspected, not yet measured), <code>active</code> (measured in the corpus), <code>historical</code> (no recent write and no live instance of an affected version), <code>retired</code> (also no stored record depends on its mapping) — see <a href="#lifecycle-d20">Lifecycle</a></td>
 </tr>
 <tr>
 <td><code>collection</code></td>
-<td><code>entries</code>, <code>treatments</code>, <code>devicestatus</code>, <code>profile</code>, <code>settings</code></td>
+<td><code>entries</code>, <code>treatments</code>, <code>devicestatus</code>, <code>profile</code>, <code>settings</code>, <code>declarations</code></td>
+</tr>
+<tr>
+<td><code>applies_to</code></td>
+<td><code>documents</code> (default) or <code>declarations</code> (D20 rule 1)</td>
 </tr>
 <tr>
 <td><code>path</code></td>
@@ -2334,7 +2371,7 @@ boundary, or two structurally different shapes for the same concept.</p>
 </tr>
 <tr>
 <td><code>kind</code></td>
-<td><code>type-union</code>, <code>nullability</code>, <code>enum-gap</code>, <code>case-mismatch</code>, <code>unit-mismatch</code>, <code>shape-divergence</code>, <code>sentinel</code>, <code>undeclared-field</code></td>
+<td><code>type-union</code>, <code>nullability</code>, <code>enum-gap</code>, <code>case-mismatch</code>, <code>unit-mismatch</code>, <code>shape-divergence</code>, <code>sentinel</code>, <code>undeclared-field</code>, <code>id-form</code>, <code>slot-name</code></td>
 </tr>
 <tr>
 <td><code>detect</code></td>
@@ -2351,6 +2388,18 @@ boundary, or two structurally different shapes for the same concept.</p>
 <tr>
 <td><code>attribution</code></td>
 <td>Projects with source evidence, from <code>reports/schema-census/attribution.json</code></td>
+</tr>
+<tr>
+<td><code>affects</code></td>
+<td>Optional (D20 rule 1): <code>[{vendor, product, versions, versionSource, evidence}]</code> — see below</td>
+</tr>
+<tr>
+<td><code>mapping</code></td>
+<td>Optional: what a hub does to a document the entry describes (<code>action</code>, <code>flag</code>, <code>erasesEvidence</code>), recorded on the stored record as <code>quirksApplied</code> (D20 rule 3)</td>
+</tr>
+<tr>
+<td><code>declaration</code></td>
+<td>For <code>applies_to: declarations</code>: the declared <code>member</code> (<code>slot</code>), its <code>value</code>, and the <code>sameAs</code> the catalogue maps it to</td>
 </tr>
 <tr>
 <td><code>measured</code></td>
@@ -2423,6 +2472,82 @@ data:</p>
 </tr>
 </tbody>
 </table>
+<p>Entries are validated at load against <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66403e0f60af5d31fbf774106b0399dbcaa1244f/specs/quirks/quirk.schema.json"><code>quirk.schema.json</code></a>.</p>
+<h2 id="versions-d20">Versions (D20)<a class="headerlink" href="#versions-d20" title="Permanent link">&para;</a></h2>
+<p><a href="../../docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">D20</a>
+(maintainer, 2026-10-16) lets an entry name what it affects. The member is additive: an entry
+without it keeps its project-level <code>attribution</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">affects</span><span class="p">:</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">vendor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LoopKit</span><span class="w">          </span><span class="c1"># a registration's metadata.vendor</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nt">product</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Loop</span><span class="w">            </span><span class="c1"># and metadata.product</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nt">versions</span><span class="p">:</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="s">"&gt;=3.2.3</span><span class="nv"> </span><span class="s">&lt;3.14"</span><span class="w"> </span><span class="c1"># only where the corpus or source shows it, else:</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">      </span><span class="c1"># unmeasured: why the versions are not known</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">      </span><span class="nt">seen</span><span class="p">:</span><span class="w">                  </span><span class="c1"># versions the evidence shows; not a range</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="nv">3.14.8</span><span class="p p-Indicator">,</span><span class="nt"> claim</span><span class="p">:</span><span class="w"> </span><span class="nv">read-derived</span><span class="p p-Indicator">,</span><span class="nt"> ref</span><span class="p">:</span><span class="w"> </span><span class="nv">&lt;file</span><span class="p p-Indicator">:</span><span class="nv">line&gt;</span><span class="p p-Indicator">,</span><span class="nt"> commit</span><span class="p">:</span><span class="w"> </span><span class="nv">&lt;sha&gt;</span><span class="p p-Indicator">}</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span><span class="nt">versionSource</span><span class="p">:</span><span class="w">           </span><span class="c1"># where make schema-quirks reads a version</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">      </span><span class="nt">collection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">devicestatus</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">      </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">loop.version</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">      </span><span class="nt">window_minutes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">    </span><span class="nt">evidence</span><span class="p">:</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">claim</span><span class="p">:</span><span class="w"> </span><span class="nv">measured</span><span class="p p-Indicator">,</span><span class="nt"> ref</span><span class="p">:</span><span class="w"> </span><span class="nv">&lt;how&gt;</span><span class="p p-Indicator">}</span>
+</code></pre></div>
+<p>A range is <code>*</code>, or whitespace-separated comparators (<code>=</code>, <code>&gt;=</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&lt;</code>) that must all
+hold, over the vendor's own version strings: dot-separated parts, numeric parts compared as
+numbers and before text. Several <code>affects</code> items are alternatives.</p>
+<p><code>versionSource</code> in the entry's own collection reads the version from the same document. In
+another collection it reads the nearest document on the same site within <code>window_minutes</code>;
+<code>quirks.json</code> labels those counts <code>co-occurrence</code>, which is not attribution, and none of them is
+copied into <code>versions.range</code>.</p>
+<p>Every claim in <code>affects</code> says whether it is <code>measured</code> or <code>read-derived</code>, with a file and line
+and a commit for source.</p>
+<h2 id="declarations-d20-rule-2">Declarations (D20 rule 2)<a class="headerlink" href="#declarations-d20-rule-2" title="Permanent link">&para;</a></h2>
+<p>An entry with <code>applies_to: declarations</code> maps a declared value for the versions it affects,
+for example a slot name that means a slot in the well-known catalogue's shared slot list
+(<code>declaration: {member: slot, value: &lt;name&gt;, sameAs: &lt;shared slot&gt;}</code>). The catalogue publishes it
+as a <code>wellKnown.mappings[]</code> entry of the hub's capability document; versions released after
+registration declare <code>sameAs</code> themselves. The hub records each mapping it applies
+(<code>quirksApplied</code>). The corpus has no declarations, so these entries are measured by a hub's
+recorded mappings, and <code>make schema-quirks</code> reports them unmeasured. None is listed yet: which
+slots share a meaning is for the controller authors to confirm (<code>PROPOSAL-REG-CONTROLLERS</code>).</p>
+<h2 id="lifecycle-d20">Lifecycle (D20)<a class="headerlink" href="#lifecycle-d20" title="Permanent link">&para;</a></h2>
+<p><code>proposed</code> → <code>active</code> → <code>historical</code> → <code>retired</code>. <code>make schema-quirks</code> writes, for each entry
+with <code>affects</code> (or a <code>historical</code> or <code>retired</code> status), which statuses the measurement
+supports and why not the others; <code>make schema-quirks-check</code> fails a <code>historical</code> or <code>retired</code>
+claim it does not support. A <code>proposed</code> entry never fails.</p>
+<table>
+<thead>
+<tr>
+<th>status</th>
+<th>the measurement must show</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>proposed</code></td>
+<td>nothing</td>
+</tr>
+<tr>
+<td><code>active</code></td>
+<td>documents in the corpus, and the entry's <code>expect</code> block</td>
+</tr>
+<tr>
+<td><code>historical</code></td>
+<td>no recent document; zero live instances of an affected version in a hub's instance listing (<code>--instances</code>, de-identified: <code>[{vendor, product, version, live}]</code>); and a detector whose evidence the hub's <code>mapping</code> does not erase</td>
+</tr>
+<tr>
+<td><code>retired</code></td>
+<td>historical's conditions, and no stored document left that depends on the mapping</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Recent</strong> is declared and measured: a document is recent when its own time (<code>date</code>, <code>mills</code>,
+<code>created_at</code>, <code>dateString</code> or <code>timestamp</code>) is within <code>RECENT_DAYS</code> (365) of the newest snapshot's
+collection date, <code>--recent-days</code> to change it. The window is relative to the corpus, not the wall
+clock, so a re-run over the same corpus gives the same answer.</p>
+<p>An entry whose <code>mapping.erasesEvidence</code> is true (the hub rewrites the stored document, as
+<code>UUID_HANDLING</code> does) cannot become <code>historical</code> from the corpus: a mapped write no longer shows
+the quirk, so only the hub's recorded mappings count recent writes.</p>
 
 
 

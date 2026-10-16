@@ -5164,7 +5164,7 @@ above, Node 22.23.2, MongoDB 7.0.43. <strong>[R]</strong> read: from source at t
 <hr />
 <h2 id="1-the-matrix-measured">1. The matrix, measured<a class="headerlink" href="#1-the-matrix-measured" title="Permanent link">&para;</a></h2>
 <h3 id="11-how-it-was-measured">1.1 How it was measured<a class="headerlink" href="#11-how-it-was-measured" title="Permanent link">&para;</a></h3>
-<p>The harness is <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb1b48e76661e7d2458d8be88c7aff3a2b0638a3/tools/qc/write-contract-matrix.js"><code>tools/qc/write-contract-matrix.js</code></a>.
+<p>The harness is <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66403e0f60af5d31fbf774106b0399dbcaa1244f/tools/qc/write-contract-matrix.js"><code>tools/qc/write-contract-matrix.js</code></a>.
 Per execution plan rule 4 it exercises the shipping modules, not a copy: it boots the build in
 its own process from the worktree named by <code>WC_WORKTREE</code>, exactly as <code>lib/server/server.js</code> does
 (<code>bootevent</code>, <code>app</code>, an HTTP listener, <code>websocket</code>), with every module <code>require()</code>d by path from
@@ -5185,8 +5185,8 @@ socket forwards) and the cache itself.</p>
 <li><strong>Builds:</strong> detached worktrees <code>externals/work/crm-wc-spec</code> at <code>43289dde</code> and
   <code>externals/work/crm-wc-1508</code> at <code>92d08342</code>, each after <code>npm ci</code>; <code>git status --porcelain -- lib</code>
   empty on both (recorded in each result file's <code>dirty_lib</code>).</li>
-<li><strong>Results:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb1b48e76661e7d2458d8be88c7aff3a2b0638a3/tools/qc/results/write-contract-matrix/dev-43289dde.json"><code>dev-43289dde.json</code></a>,
-  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb1b48e76661e7d2458d8be88c7aff3a2b0638a3/tools/qc/results/write-contract-matrix/v15.0.8-92d08342.json"><code>v15.0.8-92d08342.json</code></a>.
+<li><strong>Results:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66403e0f60af5d31fbf774106b0399dbcaa1244f/tools/qc/results/write-contract-matrix/dev-43289dde.json"><code>dev-43289dde.json</code></a>,
+  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66403e0f60af5d31fbf774106b0399dbcaa1244f/tools/qc/results/write-contract-matrix/v15.0.8-92d08342.json"><code>v15.0.8-92d08342.json</code></a>.
   The tables below are generated from them with <code>--compact</code>, <code>--divergence</code> and the cross-path
   listing (§8).</li>
 <li><strong>Liveness:</strong> <code>GET /api/v1/status.json</code> answered 200 before and after every measured step; a
@@ -6104,9 +6104,9 @@ devicestatus no longer collides (it answers 200, BF-116).</p>
 <h3 id="17-non-vacuity">1.7 Non-vacuity<a class="headerlink" href="#17-non-vacuity" title="Permanent link">&para;</a></h3>
 <p>Each rule column was broken in one place and the matrix re-run on the identical setup; the clean
 run is the positive control, and the restored file must reproduce it.
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb1b48e76661e7d2458d8be88c7aff3a2b0638a3/tools/qc/write-contract-ablate.sh"><code>tools/qc/write-contract-ablate.sh</code></a> runs all six on
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66403e0f60af5d31fbf774106b0399dbcaa1244f/tools/qc/write-contract-ablate.sh"><code>tools/qc/write-contract-ablate.sh</code></a> runs all six on
 a detached worktree of <code>43289dde</code>
-(<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bb1b48e76661e7d2458d8be88c7aff3a2b0638a3/tools/qc/results/write-contract-matrix/ablations-43289dde.txt">log</a>); every break
+(<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66403e0f60af5d31fbf774106b0399dbcaa1244f/tools/qc/results/write-contract-matrix/ablations-43289dde.txt">log</a>); every break
 changed exactly the cells listed and every revert matched the clean run.</p>
 <table>
 <thead>
@@ -6214,6 +6214,11 @@ That is what makes "every write from every path" checkable (gate G2).</p>
 <p>The natural keys and <code>onMatch</code> above are the recommendation, not decided: §6 Q1–Q3. <code>clientIdentity</code>
 is <code>treatment-fallback-key</code>'s <code>CLIENT_IDS</code> with its "a write without identity matches only a record
 without identity" rule (BF-121, BF-141).</p>
+<p><em>(2026-10-16, D20 rule 5, <a href="../platform/nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">hub-sync design §3.7</a>:
+every write reply returns both <code>_id</code> (the storage key the hub assigns) and <code>identifier</code> (the sync
+identity the client assigns, null when it sent none), which <code>WriteResult.items[]</code> already carries;
+each item also lists the registry mappings applied to it as <code>quirksApplied</code>, so the <code>UUID_HANDLING</code>
+move of rule 1 below is recorded as QUIRK-TREATMENTS-006 or QUIRK-ENTRIES-004 rather than silent.)</em></p>
 <p>The step's adapter calls are only methods both backends implement, or the dependency is named: on
 the seam, PostgreSQL declines <code>insertMany</code>, <code>updateMany</code> and <code>replaceFiltered</code> (they throw, naming
 themselves) and ignores <code>bulkUpsert</code>'s <code>mode</code> (BF-21, open)
@@ -6225,7 +6230,11 @@ through <code>patch</code>. The step on PostgreSQL waits on those.</p>
 <ol>
 <li><strong><code>_id</code> form</strong> (<code>object-id-forms</code>). <code>{"$oid": …}</code> and any 24-hex string, either case, become the
    ObjectId; an empty <code>_id</code> is dropped; a non-hex string keeps today's per-collection rule (moved
-   to <code>identifier</code> for treatments and entries under <code>UUID_HANDLING</code>, kept as given elsewhere).</li>
+   to <code>identifier</code> for treatments and entries under <code>UUID_HANDLING</code>, kept as given elsewhere).
+   <em>(2026-10-16, D20 rules 6 and 7: the move is the version-scoped registry entries
+   QUIRK-TREATMENTS-006 and QUIRK-ENTRIES-004, behaviour unchanged; on a hub whose legacy id form
+   is <code>objectId</code> a stored <code>_id</code> is always an ObjectId, so "kept as given elsewhere" is a deviation
+   rule 6 names, as U1 already plans; hub-sync design §3.7.)</em></li>
 <li><strong>Target resolution</strong> (re-send identity: <code>treatment-fallback-key</code> and the <code>keys</code> above; twins).
    One read per batch for all items. An <code>_id</code> matches every stored form (<code>idForms</code>); where both
    halves of a twin match, the ObjectId copy is the target (BF-117's sort) and the string form is
