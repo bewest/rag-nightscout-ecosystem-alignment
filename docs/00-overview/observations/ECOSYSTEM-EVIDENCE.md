@@ -2,7 +2,7 @@
 
 *For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
 **Observations** (part 1 of the overview; [how the overview is organised](../README.md)). Living
-page, assembled 2026-10-02 against this repository at `e3d7b65c`. It describes; it recommends
+page, assembled 2026-10-02 against this repository at `e3d7b65c`; §7 added 2026-10-16 at `66403e0f`. It describes; it recommends
 nothing. Each section names the date and the source or command of its figures; where a figure
 lives in a generated table or a record, this page links to that one home instead of copying it.
 Re-measure before quoting.*
@@ -181,7 +181,64 @@ comparison describe them as "a very selected group of people"
 Which system does better, for whom and in which circumstances is a question these studies do not
 answer.
 
-## 7. Limits of this page
+## 7. Research, analysis and test tools
+
+Measured 2026-10-16 against this repository at `66403e0f` and the clones in `externals/` (last
+commit dates from `git -C externals/<repo> log -1 --format=%cs`). Listed by kind, not ranked.
+
+### 7.1 Research tools elsewhere in the ecosystem
+
+| tool | what it does, from its README | licence file | last commit |
+|---|---|---|---|
+| [oref-digital-twin](https://github.com/tim2000s/oref-digital-twin) | advisory decision support for AndroidAPS and Trio settings, through read access to a Nightscout site | AGPL-3.0-or-later (stated as intended) | 2026-08-08 |
+| [Insulin-Kinetics](https://github.com/tim2000s/Insulin-Kinetics) | estimates insulin peak time, and duration of action where the data allow, from closed-loop data | AGPL | 2026-08-31 |
+| [dynamic-isf-calculations](https://github.com/tim2000s/dynamic-isf-calculations) | analysis of dynamic-ISF equations based on total daily dose and glucose | MIT | 2026-09-19 |
+| [Smoothing-Investigations](https://github.com/tim2000s/Smoothing-Investigations) | backtest of three CGM smoothing algorithms (AAPS average, TSUNAMI, adaptive UKF) | none | 2026-07-11 |
+| [exercise-eval](https://github.com/tim2000s/exercise-eval) | a browser page that reads a Nightscout site and an activity file and compares exercise sessions with published guidance | MIT | 2026-08-30 |
+| [clinical-advice-analysis](https://github.com/tim2000s/clinical-advice-analysis) | a study of how five large language models recommend pump settings from seven days of data | MIT | 2026-09-21 |
+| [GluPredKit](https://github.com/replicahealth/GluPredKit) | a framework for glucose prediction: data handling, training and evaluation, with a command line | MIT | 2026-01-13 |
+| [cgmsim-lib](https://github.com/lsandini/cgmsim-lib) | a TypeScript library simulating CGM, insulin and patient scenarios | Apache-2.0 | 2026-05-14 |
+| [babelbetes](https://github.com/nudgebg/babelbetes) | standardises publicly available clinical diabetes trial data | MIT (in `setup.py`) | 2026-07-21 |
+| [nightscout-cgm-skill](https://github.com/shanselman/nightscout-cgm-skill) | an agent skill for analysing Nightscout CGM data | MIT | 2026-06-07 |
+| [GlycemicGPT](https://github.com/GlycemicGPT/GlycemicGPT) | an open-source AI diabetes platform connecting to CGM and pump; its README opens with a safety warning | GPL | 2026-08-18 |
+| [nightscout-reporter](https://github.com/zreptil/nightscout-reporter) | PDF reports from a Nightscout site; the README points to its Angular successor | own text | 2025-10-23 |
+| [oref0](https://github.com/openaps/oref0) autotune | settings tuning from logged data, in `bin/oref0-autotune*` | MIT | 2026-03-09 |
+
+The OREF-INV-003 study ("What Drives Outcomes in oref Closed-Loop Insulin Delivery") is by the
+author of the first six rows. Its data warehouse and analysis code are not public; this
+repository's [replication brief](../../60-research/collaboration/oref-inv-003-replication-brief.md)
+describes what was replicated and the aggregate-only exchange proposed.
+
+### 7.2 Tools built in this repository
+
+| tool | what it does | test files |
+|---|---|---|
+| `tools/ns2parquet` | converts Nightscout exports from any AID system into columnar Parquet, with the normalisation written down | yes |
+| `tools/nsprobe` | aggregate-only probes a data holder runs on their own data to check this repository's schema claims, returning counts and shares | yes |
+| `tools/nsschema` | turns real Nightscout documents into evidence about the document model, reconciles it with `specs/openapi/`, and generates typed schemas, the registration grammar and negotiation | yes |
+| `tools/cgmencode` | the research pipeline of the experiments in §7.3: features, models and a supply-and-demand decomposition of glucose | 43 |
+| `tools/cgmencode/production` | the advisory pipeline: settings analysis and a clinical decision support report (`clinical_decision_report.py`, rendered by `clinical_decision_render.py`) comparable across AID and injection therapy | 38 |
+| `tools/report` | therapy-settings analysis that accounts for loop compensation, and an HTML report generator | yes |
+| `tools/oref_inv_003_replication` | replication of OREF-INV-003 on an independent cohort, and the 18-feature algorithm-neutral set | yes |
+| `tools/test-harness`, `tools/aid-autoresearch` | algorithm equivalence testing across JavaScript, Swift and Kotlin, and a composite algorithm score in which a safety violation scores zero | partly |
+| `tools/lab/*`, `tools/review/journey-lab` | labs on synthetic data: release-candidate soak, browser journeys with the lab acting as the phone, hub active-state, proxy trust and others | partly |
+| `tools/programme/stack-census` | the census of §1 | no |
+
+### 7.3 The 2026 experiment campaign
+
+From January to July 2026 this repository ran numbered experiments, `EXP-001` to `EXP-3460`
+(`ls tools/cgmencode | grep -oE '_[0-9]{4}\.py$' | sort | tail -1`), on Nightscout data held in
+the workspace and not in the repository: glucose forecasting, event detection, a supply-and-demand
+decomposition of glucose, insulin pharmacodynamics, settings extraction and therapy analysis. Its
+488 reports are in `docs/60-research/`, with an [index](../../60-research/INDEX.md) and an
+[overview of 2026-04-07](../../60-research/research-program-overview.md). The reports are
+snapshots: each gives results as of its date, and later experiments revised some of them. The
+largest revision concerns evaluation. Cross-validation that shuffled rows mixed each person's data
+across training and test folds; with folds grouped by person, every feature set compared scores a
+4-hour hypoglycaemia AUC of 0.67 to 0.69 (`EXP-2519`,
+[replication brief](../../60-research/collaboration/oref-inv-003-replication-brief.md)).
+
+## 8. Limits of this page
 
 - The release and contributor tables are from 2026-09-29 and the clones named; author counts are by
   email, so one person under two addresses counts twice.

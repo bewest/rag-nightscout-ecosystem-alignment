@@ -64,7 +64,7 @@ what the organisation does, not on how much it holds.
 | proposal | conditions it would bring |
 |---|---|
 | [sponsored maintenance team](../SPONSORED-TEAM-PROPOSAL.md) | paying people (§3), possibly including people with influence over the foundation; employee or contractor status |
-| [datalake pilot](../ECOSYSTEM-PROGRAMME.md#6-layer-4--the-research-and-quality-commons) | holding or processing health data; research with identifiable data |
+| [datalake pilot](../ECOSYSTEM-PROGRAMME.md#6-commons-c--evidence-research-and-quality) | holding or processing health data; research with identifiable data |
 | [partner readiness](../PARTNER-READINESS.md) | a manufacturer agreement; complaint records that carry health data |
 | [operating a shared service](../ECOSYSTEM-PROGRAMME.md#2b-sponsoring-and-operating) | operating a service that people depend on; this is why the programme proposes sponsoring by default |
 | [collaboration rules](../COLLABORATION-MODEL.md) | money from companies that also seek something; disclosure |

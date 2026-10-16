@@ -5,7 +5,7 @@ docs/00-overview/ECOSYSTEM-PROGRAMME.md.
 The page is a LIVING rich page (site/pages/pages.yaml): its content is the
 markdown, converted as-is. The layout and CSS follow the earlier artifact
 design. The only additions are page chrome: the table of contents (built from
-the headings), the layer figure drawn from the markdown's own text diagram in
+the headings), the stack-and-commons figure drawn from the markdown's own text diagram in
 §2, and one provenance line naming the source and commit.
 
     tools/site/.venv/bin/python tools/site/render_programme.py
@@ -52,16 +52,21 @@ def site_href(target: str) -> str:
     return rel + ("#" + frag if frag else "")
 
 
-FIGURE = """<figure class="layers" aria-label="The five layers">
-<div class="shared"><div class="cap">shared, stewarded by the foundation</div>
-<div class="L"><span class="n">5</span>Forward platform <small>MCP, agent-readable APIs</small></div>
-<div class="L"><span class="n">4</span>Research and quality commons</div>
-<div class="L"><span class="n">3</span>Identity and trust</div>
-<div class="L"><span class="n">2</span>Interoperability commons</div></div>
-<div class="L ref"><span class="n">1</span>Reference implementation: cgm-remote-monitor</div>
-<div class="side"><div class="cap"><span class="arrow" aria-hidden="true">&larr;&rarr;</span> built and run by each project</div>
-<ul><li>Nightscout (cgm-remote-monitor)</li><li>Nocturne</li><li>hosted operators</li><li>other compatible servers</li></ul>
-<ul><li>Loop, Trio, AndroidAPS, xDrip+,</li><li>followers, reports, researchers</li></ul></div>
+FIGURE = """<figure class="layers" aria-label="The stack and the shared commons">
+<div class="side"><div class="cap">the stack: built and run by each project</div>
+<div class="L"><span class="n">6</span>Reports and decision support</div>
+<div class="L"><span class="n">5</span>Followers</div>
+<div class="L"><span class="n">4</span>Servers <small>cgm-remote-monitor, Nocturne, hosted</small></div>
+<div class="L"><span class="n">3</span>Vendor clouds and connectors</div>
+<div class="L"><span class="n">2</span>Controllers <small>Loop, Trio, AndroidAPS, xDrip+</small></div>
+<div class="L"><span class="n">1</span>Devices <small>CGMs and pumps</small></div>
+<div class="L ref"><span class="n">&middot;</span>beside: wearables and health platforms</div></div>
+<div class="shared"><div class="cap">the shared commons: stewarded, open to every implementation</div>
+<div class="L"><span class="n">A</span>Shared contract <small>schemas, quirks, typed controller registrations</small></div>
+<div class="L"><span class="n">B</span>Identity, trust and device access</div>
+<div class="L"><span class="n">C</span>Evidence: research and quality</div>
+<div class="L"><span class="n">D</span>Interfaces for people and agents <small>reports, statistics, MCP</small></div>
+<div class="L ref"><span class="n">&darr;</span>under both: shared operations <small>complaints and incidents, security, partner and legal, administration</small></div></div>
 </figure>"""
 
 CSS = r"""
@@ -93,16 +98,16 @@ table{border-collapse:collapse;width:100%;font-size:14.5px;font-variant-numeric:
 th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--rule)}
 th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--accent-soft)}
 tr:last-child td{border-bottom:0}
-.layers{margin:20px 0 28px;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:12px 20px;align-items:start}
+.layers{margin:20px 0 28px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px 20px;align-items:start}
 .shared{border:1.5px solid var(--accent);border-radius:8px;padding:12px;display:grid;gap:8px;background:var(--accent-soft)}
 .L{background:var(--surface);border:1px solid var(--rule);border-radius:5px;padding:9px 12px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;font-weight:600}
 .L small{font-weight:400;color:var(--muted)}
 .n{font:500 13px "JetBrains Mono",monospace;color:var(--accent);min-width:1ch}
-.ref{grid-column:1;border-style:dashed}
-.side{grid-column:2;grid-row:1 / span 2;border:1px solid var(--rule);border-radius:8px;padding:12px;background:var(--surface)}
+.ref{border-style:dashed;font-weight:400}
+.side{border:1px solid var(--rule);border-radius:8px;padding:12px;display:grid;gap:8px;background:var(--surface)}
 .side ul{margin:6px 0 14px;padding-left:18px}.side li{margin:2px 0}
 .arrow{color:var(--accent);font-weight:700;margin-right:4px}
-@media (max-width:820px){.grid{grid-template-columns:1fr;gap:24px}.toc{position:static}.layers{grid-template-columns:1fr}.side{grid-column:1;grid-row:auto}}
+@media (max-width:820px){.grid{grid-template-columns:1fr;gap:24px}.toc{position:static}.layers{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
 """
 
@@ -120,11 +125,14 @@ def main():
     if not fence:
         sys.exit("render: the §2 text diagram was not found; update the figure by hand")
     diagram = fence.group(1)
-    for must in ["Forward platform", "MCP, agent-readable APIs", "Research and quality commons",
-                 "Identity and trust", "Interoperability commons", "Reference implementation: cgm-remote-monitor",
-                 "Nightscout (cgm-remote-monitor)", "Nocturne", "hosted operators", "other compatible servers",
-                 "Loop, Trio, AndroidAPS, xDrip+,", "followers, reports, researchers",
-                 "shared, stewarded by the foundation", "built and run by each project"]:
+    for must in ["the stack: built and run by each project", "the shared commons: stewarded, open to every implementation",
+                 "Reports and decision support", "Followers", "Servers: cgm-remote-monitor, Nocturne, hosted",
+                 "Vendor clouds and connectors", "Controllers: Loop, Trio, AndroidAPS, xDrip+", "Devices: CGMs and pumps",
+                 "beside: wearables and health platforms", "Shared contract",
+                 "schemas, quirks, typed controller registrations", "Identity, trust and device access",
+                 "Evidence: research and quality", "Interfaces for people and agents", "reports, statistics, MCP",
+                 "under both: shared operations",
+                 "complaints and incidents, security, partner and legal, administration"]:
         if must not in diagram:
             sys.exit(f"render: the §2 diagram no longer says {must!r}; redraw the figure")
     body = body[:fence.start()] + "\n\nFIGURE_PLACEHOLDER\n\n" + body[fence.end():]
