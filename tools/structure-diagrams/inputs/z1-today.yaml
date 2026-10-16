@@ -1,0 +1,26 @@
+# The Nightscout ecosystem as observed: GOVERNANCE-TODAY §1, §3 and §4, PARTNER-READINESS §1 and §3.
+# Every node exists today. The missing edges are the finding: no written agreement joins a project
+# or the foundation to a manufacturer, and no complaint route reaches a manufacturer or a regulator.
+title: "Z1 · Ecosystem · today: what joins the parts"
+nodes:
+  - {id: reg, label: "Regulatory authorities", kind: authority, level: 0, column: 1}
+  - {id: mfr, label: "Pump and CGM\nmanufacturers", kind: org, level: 1, column: 0}
+  - {id: fdn, label: "Nightscout Foundation\n501(c)(3)", kind: entity, level: 1, column: 2}
+  - {id: projects, label: "Open-source projects\n(each decides its own\nmerges and releases)", kind: org, level: 2, column: 1}
+  - {id: hosts, label: "Hosted Nightscout\nproviders (nine listed)", kind: org, level: 2, column: 2}
+  - {id: people, label: "People with diabetes\nand caregivers", kind: human, level: 3, column: 1}
+  - {id: devices, label: "Pumps, CGMs and\nmanufacturer clouds", kind: process, level: 4, column: 0}
+  - {id: sites, label: "Nightscout sites", kind: process, level: 4, column: 2}
+edges:
+  - {from: reg, to: mfr, kind: control, label: "clearance,\nenforcement"}
+  - {from: mfr, to: reg, kind: feedback, label: "submissions,\nadverse events"}
+  - {from: fdn, to: projects, kind: funding, label: "resource requests,\nevents, awards"}
+  - {from: projects, to: people, kind: control, label: "releases, docs"}
+  - {from: people, to: projects, kind: feedback, label: "issues, logs"}
+  - {from: people, to: hosts, kind: funding, label: "subscriptions"}
+  - {from: hosts, to: sites, kind: control, label: "run sites"}
+  - {from: mfr, to: devices, kind: control, label: "firmware, cloud\nterms of use"}
+  - {from: people, to: devices, kind: control, label: "wear, configure"}
+  - {from: devices, to: people, kind: feedback, label: "glucose, alarms"}
+  - {from: projects, to: devices, kind: data, label: "protocols worked out\nby volunteers"}
+  - {from: devices, to: sites, kind: data, label: "uploads"}

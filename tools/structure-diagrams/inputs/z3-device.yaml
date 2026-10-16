@@ -1,0 +1,21 @@
+# Zoom into one person's loop (controller, actuator, sensor, process), and where an issued
+# credential touches it. PARTNER-READINESS §7: a credential service must not be able to stop
+# insulin delivery by being unreachable; previously authorised, bounded operation continues.
+# Generic: the same loop as tools/lab/stpa-diagrams/inputs/aid-loop.yaml with the credential added.
+title: "Z3 · One person's loop · where a credential touches it"
+nodes:
+  - {id: cred, label: "Credential authority\n(may be unreachable)", kind: entity, level: 0, column: 0, status: proposed}
+  - {id: person, label: "Person or caregiver", kind: human, level: 0, column: 1}
+  - {id: app, label: "Controller app\n(holds a bounded,\noffline-valid grant)", kind: org, level: 1, column: 1}
+  - {id: pump, label: "Pump (actuator)", kind: process, level: 2, column: 0}
+  - {id: cgm, label: "CGM (sensor)", kind: process, level: 2, column: 2}
+  - {id: body, label: "Body (glucose)", kind: process, level: 3, column: 1}
+edges:
+  - {from: cred, to: app, kind: control, label: "grant, renew,\nrevoke", status: proposed}
+  - {from: person, to: app, kind: control, label: "settings, boluses"}
+  - {from: app, to: person, kind: feedback, label: "alerts, status"}
+  - {from: app, to: pump, kind: control, label: "authenticated\ncommands"}
+  - {from: pump, to: app, kind: feedback, label: "delivery status"}
+  - {from: cgm, to: app, kind: feedback, label: "glucose readings"}
+  - {from: pump, to: body, kind: control, label: "insulin"}
+  - {from: body, to: cgm, kind: feedback, label: "interstitial glucose"}

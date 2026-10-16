@@ -1,0 +1,24 @@
+# The Apple Developer Program as a platform gate: 10-domain/testflight-distribution-infrastructure.md
+# §1 and §3 (fee, entitlements, certificates, browser build). The point of comparison is the
+# credential authority in PARTNER-READINESS §7: a platform owner that enrols developers, issues
+# signing credentials, approves special entitlements and can revoke them.
+title: "P3 · Precedent · Apple Developer Program: a platform owner issues the credentials"
+groups:
+  - {id: diy, label: "Self-built apps (Loop, Trio, xDrip4iOS)"}
+  - {id: store, label: "App Store apps (Nightguard, DiaBLE)"}
+nodes:
+  - {id: apple, label: "Apple\n(platform owner)", kind: authority, level: 0, column: 1}
+  - {id: projects, label: "Open-source projects\n(publish source and\nbuild workflows)", kind: org, level: 1, column: 0, group: diy}
+  - {id: publisher, label: "Publishing developer\n(one account, $99 a year)", kind: org, level: 1, column: 2, group: store}
+  - {id: builder, label: "Each person who builds\n(own developer account)", kind: human, level: 2, column: 0, group: diy}
+  - {id: phone, label: "App on the\nperson's phone", kind: process, level: 3, column: 1}
+edges:
+  - {from: apple, to: builder, kind: control, label: "program agreement,\ncertificates (1 year),\nentitlements"}
+  - {from: builder, to: apple, kind: funding, label: "$99 a year"}
+  - {from: apple, to: publisher, kind: control, label: "App Review,\nentitlement approval"}
+  - {from: publisher, to: apple, kind: feedback, label: "submissions"}
+  - {from: projects, to: builder, kind: control, label: "source,\nbuild workflow"}
+  - {from: builder, to: projects, kind: feedback, label: "issues"}
+  - {from: builder, to: phone, kind: control, label: "build, sign,\ninstall via TestFlight"}
+  - {from: publisher, to: phone, kind: control, label: "App Store install"}
+  - {from: phone, to: builder, kind: feedback, label: "expiry, rebuild"}

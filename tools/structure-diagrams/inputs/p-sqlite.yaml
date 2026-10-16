@@ -1,0 +1,19 @@
+# SQLite: paying for assurance, not control. PRECEDENTS "SQLite" section, read from sqlite.org
+# 2026-09-29. Money reaches the developers through Hwaci; no edge runs from a customer to the
+# developers, because "technical control and direction of SQLite remains with the SQLite
+# architect and developers".
+title: "P1 · Precedent · SQLite: companies buy assurance, the developers keep control"
+nodes:
+  - {id: buyers, label: "Companies with quality\nand legal obligations", kind: org, level: 0, column: 0}
+  - {id: free, label: "Everyone else\n(free users)", kind: human, level: 0, column: 2}
+  - {id: hwaci, label: "Hwaci\n(small company)", kind: entity, level: 1, column: 0}
+  - {id: devs, label: "SQLite architect\nand developers", kind: org, level: 2, column: 1}
+  - {id: sqlite, label: "SQLite releases\n(public domain;\n100% MC/DC tested)", kind: process, level: 3, column: 1}
+edges:
+  - {from: buyers, to: hwaci, kind: funding, label: "consortium, support,\ntest runs, warranty of title"}
+  - {from: hwaci, to: buyers, kind: data, label: "back-ported fixes,\ntests in their configuration,\nindemnity"}
+  - {from: hwaci, to: devs, kind: funding, label: "employs"}
+  - {from: devs, to: sqlite, kind: control, label: "technical control\nand direction"}
+  - {from: sqlite, to: devs, kind: feedback, label: "test harness results"}
+  - {from: sqlite, to: buyers, kind: data, label: "same releases"}
+  - {from: sqlite, to: free, kind: data, label: "same releases"}
