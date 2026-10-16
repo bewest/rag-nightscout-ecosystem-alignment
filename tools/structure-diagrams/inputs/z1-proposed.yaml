@@ -1,0 +1,47 @@
+# A proposal for discussion, not a decision: the legal entities the ecosystem might muster to hold
+# agreements with pump and CGM manufacturers. Drawn from ECOSYSTEM-PROGRAMME §2b (sponsor by
+# default, operate by recorded decision), PARTNER-READINESS §2 (tiers A, B, C), §6 (complaint
+# intake) and §7 (registry, credential authority and hosting kept apart), and PRECEDENTS (Tidepool
+# Loop: a regulated track beside the DIY one). The manufacturer sits above the foundation because
+# here it grants access; that is the direction of control, not a ranking.
+title: "Z1 · Ecosystem · proposed: entities that hold agreements with manufacturers"
+nodes:
+  - {id: reg, label: "Regulatory authorities", kind: authority, level: 0, column: 1}
+  - {id: mfr, label: "Pump and CGM\nmanufacturers", kind: org, level: 1, column: 0}
+  - {id: fdn, label: "Nightscout Foundation\n501(c)(3): sponsors;\nsignatory for tier A", kind: entity, level: 2, column: 1}
+  - {id: cred, label: "Credential authority\noperator", kind: entity, level: 3, column: 0, status: proposed, zoom: Z2}
+  - {id: ops, label: "Shared operations:\nregistry, conformance,\ncomplaint intake,\nsecurity response", kind: commons, level: 3, column: 1, status: proposed}
+  - {id: projects, label: "Open-source projects\n(DIY track continues)", kind: org, level: 4, column: 0}
+  - {id: nsaas, label: "Nightscout-as-a-service\noperators", kind: entity, level: 4, column: 1}
+  - {id: laas, label: "Regulated controller\noperator (as Tidepool\ndid for Loop)", kind: entity, level: 4, column: 2, status: proposed, zoom: Z2b}
+  - {id: people, label: "People with diabetes\nand caregivers", kind: human, level: 5, column: 1}
+  - {id: devices, label: "Pumps, CGMs and\nthe person's own loop", kind: process, level: 6, column: 1, zoom: Z3}
+edges:
+  - {from: reg, to: mfr, kind: control, label: "clearance"}
+  - {from: mfr, to: reg, kind: feedback, label: "adverse events"}
+  - {from: reg, to: laas, kind: control, label: "clearance", status: proposed}
+  - {from: laas, to: reg, kind: feedback, label: "submissions,\nadverse events"}
+  - {from: mfr, to: fdn, kind: control, label: "tier A agreement:\nobserve and export", status: proposed}
+  - {from: fdn, to: mfr, kind: feedback, label: "readiness dossier"}
+  - {from: mfr, to: cred, kind: control, label: "authority to issue\nclient credentials", status: proposed}
+  - {from: mfr, to: laas, kind: control, label: "tier B/C agreement", status: proposed}
+  - {from: fdn, to: ops, kind: funding, label: "sponsors"}
+  - {from: ops, to: mfr, kind: feedback, label: "complaints forwarded,\nfield failures"}
+  - {from: cred, to: projects, kind: control, label: "issue, rotate,\nrevoke"}
+  - {from: ops, to: projects, kind: control, label: "conformance tests,\nregistry"}
+  - {from: projects, to: ops, kind: feedback, label: "conformance\nresults"}
+  - {from: ops, to: nsaas, kind: control, label: "hub conformance", status: proposed}
+  - {from: nsaas, to: people, kind: control, label: "hosted hubs"}
+  - {from: people, to: nsaas, kind: funding, label: "subscriptions"}
+  - {from: laas, to: people, kind: control, label: "cleared app"}
+  - {from: projects, to: people, kind: control, label: "releases"}
+  - {from: people, to: ops, kind: feedback, label: "complaints,\nincidents"}
+  - {from: people, to: devices, kind: control, label: "operate"}
+  - {from: devices, to: people, kind: feedback, label: "glucose, alarms"}
+views:
+  - {id: person, title: "view: a person with diabetes or a caregiver", focus: [people]}
+  - {id: maintainer, title: "view: a project maintainer", focus: [projects]}
+  - {id: host, title: "view: a Nightscout-as-a-service operator", focus: [nsaas]}
+  - {id: manufacturer, title: "view: a manufacturer", focus: [mfr]}
+  - {id: board, title: "view: the foundation board", focus: [fdn]}
+  - {id: regulator, title: "view: a regulator", focus: [reg]}

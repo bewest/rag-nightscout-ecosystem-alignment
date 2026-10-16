@@ -1,0 +1,4 @@
+.tools/
+results/build/
+results/sheets/*.html
+results/sheets/*-mutated.png

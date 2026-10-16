@@ -1,0 +1,37 @@
+# The frame: a sociotechnical control structure for open-source AID after Leveson's two-column
+# form, development on the left and operations on the right, the system in use at the bottom.
+# Generic: no organisation is named. Same structure as tools/lab/stpa-diagrams/inputs/governance.yaml.
+title: "Z0 · Sector · the frame: who controls whom, and what comes back"
+groups:
+  - {id: dev, label: "Development"}
+  - {id: ops, label: "Operations"}
+nodes:
+  - {id: gov, label: "Legislatures and\nsovereign governments", kind: authority, level: 0, column: 1}
+  - {id: reg, label: "Regulatory authorities", kind: authority, level: 1, column: 1}
+  - {id: companies, label: "Device and software\ncompanies", kind: org, level: 2, column: 0, group: dev}
+  - {id: care, label: "Clinicians and\ncare teams", kind: org, level: 2, column: 2, group: ops}
+  - {id: commons, label: "Shared infrastructure commons\n(foundation, specifications, hubs)", kind: commons, level: 3, column: 1, zoom: Z1}
+  - {id: projects, label: "Open-source projects\n(maintainers)", kind: org, level: 4, column: 0, group: dev}
+  - {id: community, label: "User community and\nsupport channels", kind: org, level: 4, column: 2, group: ops}
+  - {id: users, label: "People building and\nrunning AID", kind: human, level: 5, column: 2, group: ops}
+  - {id: system, label: "AID system in daily use", kind: process, level: 6, column: 1}
+edges:
+  - {from: gov, to: reg, kind: control, label: "statutes, mandates"}
+  - {from: reg, to: gov, kind: feedback, label: "reports"}
+  - {from: reg, to: companies, kind: control, label: "clearance, guidance,\nenforcement"}
+  - {from: companies, to: reg, kind: feedback, label: "submissions,\nadverse events"}
+  - {from: reg, to: care, kind: control, label: "practice guidance"}
+  - {from: companies, to: commons, kind: control, label: "API terms,\nsponsorship"}
+  - {from: commons, to: companies, kind: feedback, label: "interoperability specs,\nissue reports"}
+  - {from: commons, to: projects, kind: control, label: "shared contracts,\nrelease process"}
+  - {from: projects, to: commons, kind: feedback, label: "conformance results,\nproposals"}
+  - {from: commons, to: community, kind: control, label: "docs, guidance"}
+  - {from: projects, to: users, kind: control, label: "releases, docs"}
+  - {from: users, to: projects, kind: feedback, label: "issues, logs"}
+  - {from: care, to: users, kind: control, label: "therapy plans"}
+  - {from: users, to: care, kind: feedback, label: "hub reports"}
+  - {from: community, to: users, kind: control, label: "support"}
+  - {from: users, to: community, kind: feedback, label: "questions,\nincidents"}
+  - {from: users, to: system, kind: control, label: "build, configure,\noperate"}
+  - {from: system, to: users, kind: feedback, label: "outcomes, alerts"}
+  - {from: companies, to: system, kind: control, label: "pumps, CGMs"}
