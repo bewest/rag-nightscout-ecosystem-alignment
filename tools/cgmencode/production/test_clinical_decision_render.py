@@ -179,3 +179,61 @@ class TestHtml:
         out = render_deliverables(rep)
         assert "clinical-decision-report.html" in out
         assert "reimbursement-evidence.html" in out
+
+
+class TestBannerAndTitlePrefix:
+    BANNER = "Synthetic demonstration data <seed 7> & no real person's data."
+
+    def _rep(self, **kw):
+        return build_clinical_decision_report(
+            patient_id="synthetic-demo", glycemic=_glycemic(),
+            settings_recs=[], **kw)
+
+    def test_no_banner_by_default(self):
+        html = render_html(self._rep())
+        assert 'class="banner"' not in html
+        assert "Synthetic" not in html
+
+    def test_html_banner_escaped_and_after_header(self):
+        html = render_html(self._rep(), banner=self.BANNER)
+        escaped = ("Synthetic demonstration data &lt;seed 7&gt; &amp; "
+                   "no real person&#x27;s data.")
+        assert f'<div class="banner" role="note">{escaped}</div>' in html
+        # Near the top: after the header, before the first section.
+        assert (html.index("</header>") < html.index('class="banner"')
+                < html.index("Insulin sufficiency"))
+
+    def test_html_title_prefix(self):
+        html = render_html(self._rep(), title_prefix="Synthetic demo")
+        assert ("<title>Synthetic demo — Clinical Decision Support — "
+                "synthetic-demo</title>") in html
+        assert ("<h1>Synthetic demo — Clinical Decision Support — patient "
+                "synthetic-demo</h1>") in html
+
+    def test_markdown_banner_and_prefix(self):
+        md = render_markdown(self._rep(), banner="Synthetic data.",
+                             title_prefix="Synthetic demo")
+        lines = md.splitlines()
+        assert lines[0] == ("# Synthetic demo — Clinical Decision Support "
+                            "— patient `synthetic-demo`")
+        assert "> **Synthetic data.**" in lines[:4]
+
+    def test_deliverables_pass_banner_to_every_document(self):
+        policy = ClinicalDecisionPolicy(
+            output_mode=OutputMode.SPLIT, reimbursement_mode=True)
+        out = render_deliverables(
+            self._rep(policy=policy, days_of_data=90.0),
+            banner="Synthetic data.", title_prefix="Synthetic demo")
+        for name in ("clinical-decision-report.md",
+                     "clinical-decision-report.html",
+                     "reimbursement-evidence.md",
+                     "reimbursement-evidence.html"):
+            assert "Synthetic data." in out[name], name
+            assert "Synthetic demo — " in out[name], name
+        # Presentation only: the canonical JSON is unchanged.
+        assert "Synthetic data." not in out["report.json"]
+
+    def test_consolidated_deliverables_carry_banner(self):
+        out = render_deliverables(self._rep(), banner="Synthetic data.")
+        assert 'class="banner"' in out["clinical-decision-report.html"]
+        assert "> **Synthetic data.**" in out["clinical-decision-report.md"]

@@ -123,7 +123,16 @@ def _get_or_compute(loader_cls, patient_id, label, grid_df, **compute_kwargs):
 
 def analyze(patient_id: str, parquet_dir: Path, out_dir: Path,
             policy: "ClinicalDecisionPolicy | None" = None,
-            patient_barriers: "list[str] | None" = None) -> dict:
+            patient_barriers: "list[str] | None" = None,
+            banner: "str | None" = None,
+            title_prefix: "str | None" = None) -> dict:
+    """Run the analysis and write every deliverable into ``out_dir``.
+
+    ``banner`` and ``title_prefix`` are presentation-only: they are shown
+    on the markdown and decision-support documents (for example, to mark
+    a report built from synthetic demonstration data) and change no
+    computed value.
+    """
     plot_dir = out_dir / "plots"
     plot_dir.mkdir(parents=True, exist_ok=True)
 
@@ -515,18 +524,21 @@ def analyze(patient_id: str, parquet_dir: Path, out_dir: Path,
     (out_dir / "pipeline.json").write_text(json.dumps(pipe_dump, indent=2, default=str))
 
     # ── 9. Render markdown clinical report ───────────────────────────
-    _render_markdown_report(out_dir, patient_id, payload, result, df)
+    _render_markdown_report(out_dir, patient_id, payload, result, df,
+                            banner=banner, title_prefix=title_prefix)
 
     # ── 10. Clinical-grade decision support deliverables ─────────────
     _render_clinical_decision_support(
         out_dir, patient_id, glycemic, result, days, policy,
-        patient_barriers, df, patient_tz, patient)
+        patient_barriers, df, patient_tz, patient,
+        banner=banner, title_prefix=title_prefix)
 
     print(f"\n✅ Done. Outputs in {out_dir}")
     return payload
 
 
-def _render_markdown_report(out_dir, patient_id, payload, result, df):
+def _render_markdown_report(out_dir, patient_id, payload, result, df,
+                            banner=None, title_prefix=None):
     """Render a markdown clinical report; structure mirrors the previous
     private-report formatter so existing readers remain familiar."""
     g = payload["glycemic_summary"]
@@ -535,9 +547,13 @@ def _render_markdown_report(out_dir, patient_id, payload, result, df):
     recs = getattr(result, "recommendations", []) or []
     qc = getattr(result, "meal_logging_qc", None)
 
+    title = f"Clinical Analysis Report — patient `{patient_id}`"
+    if title_prefix:
+        title = f"{title_prefix} — {title}"
     lines = [
-        f"# Clinical Analysis Report — patient `{patient_id}`",
+        f"# {title}",
         "",
+        *([f"> **{banner}**", ""] if banner else []),
         f"_Generated: {payload['generated_at_utc']}_  ",
         f"_Source parquet: `{payload['parquet_dir']}`_  ",
         f"_Profile timezone: `{payload['profile_timezone']}`_  ",
@@ -748,7 +764,8 @@ def _render_markdown_report(out_dir, patient_id, payload, result, df):
 
 def _render_clinical_decision_support(out_dir, patient_id, glycemic, result,
                                       days, policy, patient_barriers,
-                                      df=None, patient_tz="UTC", patient=None):
+                                      df=None, patient_tz="UTC", patient=None,
+                                      banner=None, title_prefix=None):
     """Build and write the clinical-grade decision support deliverables.
 
     Consumes the pipeline's settings recommendations and glycemic summary
@@ -958,7 +975,8 @@ def _render_clinical_decision_support(out_dir, patient_id, glycemic, result,
 
     report.figures = figures
 
-    deliverables = render_deliverables(report)
+    deliverables = render_deliverables(
+        report, banner=banner, title_prefix=title_prefix)
     for fname, content in deliverables.items():
         (out_dir / fname).write_text(content)
 

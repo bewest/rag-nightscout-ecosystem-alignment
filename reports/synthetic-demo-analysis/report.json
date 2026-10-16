@@ -1,0 +1,310 @@
+{
+  "patient_id": "synthetic-demo",
+  "generated_at_utc": "2026-10-16T23:07:34.601774+00:00",
+  "glycemic_summary": {
+    "tir": 0.6429458808913735,
+    "tbr_lt70": 0.007725755105210032,
+    "tbr_lt54": 0.0019023216088205606,
+    "tar_gt180": 0.34932836400341644,
+    "tar_gt250": 0.0800916220203432,
+    "mean_mgdl": 170.4601287841797,
+    "cv_pct": 31.459123611450195,
+    "ea1c_gmi_pct": 7.387406349182129,
+    "n_readings": 25758
+  },
+  "insulin_sufficiency": {
+    "summary": "Overall insulin delivery shows opportunity for improvement (TIR 64%, TBR<70 0.8%, TAR>180 35%). 1 risk(s) identified; 2 parameter change(s) proposed this cycle.",
+    "overall_mode": "change",
+    "main_risks": [
+      "Hyperglycemia burden elevated (TAR>180 34.9% vs target 25%)."
+    ],
+    "whats_working": [
+      "Hypoglycemia within target (TBR<70 0.8%).",
+      "Glucose variability controlled (CV 31%)."
+    ],
+    "hypo_burden_frac": 0.007725755105210032,
+    "hyper_burden_frac": 0.34932836400341644
+  },
+  "basal": {
+    "domain": "basal",
+    "mode": "change",
+    "summary": "Basal: increase from 0.85 to 0.94 (+11%).",
+    "confidence": 0.71,
+    "evidence": "Deconfounded basal block audit (EXP-3447): morning 6:00-12:00 has 2017 clean samples after inferred-meal exclusion, median glucose 152 mg/dL, TBR 0.0%, and Loop actual/scheduled basal median 1.41 with additions >115% in 74% of samples.",
+    "justification": "Basal increase: implement the practical step 0.85 -> 0.94 (+11%) now. Theoretical optimum is 0.94 (+11%); the practical step honors a safe titration cap of 20% per cycle. This derives from a validated deconfounded estimate (the controller-masking confound is already removed), so it is not down-weighted for controller masking. Increase basal by 10% during morning (6:00-12:00). This is a narrow deconfounded step: inferred-meal windows are excluded, Loop is consistently adding basal, and TBR is below 4%. Use the 2-week TBR guardrail before considering another step.",
+    "follow_up": {
+      "success": [
+        "TIR improves by at least +0.5 pp toward the projected 65% within 2 weeks.",
+        "TBR<70 does not worsen by more than 1 pp."
+      ],
+      "stop_escalate": [
+        "TBR<70 increases by more than 1 pp after the Basal change -> revert and escalate.",
+        "Severe hypoglycemia (TBR<54) emerges -> revert immediately.",
+        "No measurable TIR improvement at 2 weeks -> reassess direction."
+      ],
+      "revisit_days": 14
+    },
+    "hold_reason": "none",
+    "current_value": 0.8500000238418579,
+    "practical_value": 0.94,
+    "practical_change_pct": 10.588232192201264,
+    "theoretical_value": 0.94,
+    "theoretical_change_pct": 10.588232192201264,
+    "affected_time_block": [
+      6.0,
+      12.0
+    ],
+    "expected_outcomes": [
+      {
+        "metric": "TIR",
+        "baseline": 64.3,
+        "expected_2wk": 65.3,
+        "unit": "%",
+        "direction": "increase"
+      },
+      {
+        "metric": "TBR<70",
+        "baseline": 0.77,
+        "expected_2wk": 0.77,
+        "unit": "%",
+        "direction": "stable"
+      },
+      {
+        "metric": "TAR>180",
+        "baseline": 34.9,
+        "expected_2wk": 33.9,
+        "unit": "%",
+        "direction": "decrease"
+      }
+    ]
+  },
+  "isf": {
+    "domain": "isf",
+    "mode": "no_change",
+    "summary": "ISF: no change recommended (insufficient evidence (confidence 0.35 below 0.50)).",
+    "confidence": 0.35,
+    "evidence": "Demand-phase ISF (EXP-2651): true 0\u20132h insulin effect \u2248 25.3 mg/dL/U, 95% CI 17.7\u201332.9 from 7 correction(s), confidence=low, vs profile 45. Apparent/correction ISF 74.3 is 2.9\u00d7 inflated by AID compensation and is NOT the target.",
+    "justification": "ISF reviewed: a directional signal exists (theoretical target 25.3) but is held due to insufficient evidence (confidence 0.35 below 0.50). Re-evaluate at the next review.",
+    "follow_up": {
+      "success": [
+        "ISF held: glycemic metrics remain within tolerance of baseline over the 2-week window.",
+        "No new hypoglycemia signal (TBR<70 stays below 4%)."
+      ],
+      "stop_escalate": [
+        "TBR<70 rises by more than 1 pp -> escalate review.",
+        "TIR declines materially -> re-open ISF for change."
+      ],
+      "revisit_days": 14
+    },
+    "hold_reason": "insufficient_evidence",
+    "current_value": 45.0,
+    "practical_value": null,
+    "practical_change_pct": null,
+    "theoretical_value": 25.3,
+    "theoretical_change_pct": -43.77777777777777,
+    "affected_time_block": null,
+    "expected_outcomes": [
+      {
+        "metric": "TIR",
+        "baseline": 64.3,
+        "expected_2wk": 64.3,
+        "unit": "%",
+        "direction": "stable"
+      },
+      {
+        "metric": "TBR<70",
+        "baseline": 0.77,
+        "expected_2wk": 0.77,
+        "unit": "%",
+        "direction": "stable"
+      },
+      {
+        "metric": "TAR>180",
+        "baseline": 34.9,
+        "expected_2wk": 34.9,
+        "unit": "%",
+        "direction": "stable"
+      }
+    ]
+  },
+  "cr": {
+    "domain": "cr",
+    "mode": "change",
+    "summary": "Carb ratio: decrease from 10.5 to 9.7 (-8%).",
+    "confidence": 0.5,
+    "evidence": "Consolidated from 4 time-block advisories (range: 6-29%). Context-aware CR analysis (EXP-2341): morning meals show mean excursion 55 mg/dL from 55 meals.",
+    "justification": "Carb ratio decrease: implement the practical step 10.5 -> 9.7 (-8%) now. Theoretical optimum is 9.7 (-8%); the practical step honors a safe titration cap of 20% per cycle. Decrease morning CR from 10.5 to 9.7 g/U (7% more insulin). Mean post-meal excursion is 55 mg/dL.",
+    "follow_up": {
+      "success": [
+        "TIR improves by at least -4.0 pp toward the projected 56% within 2 weeks.",
+        "TBR<70 does not worsen by more than 1 pp."
+      ],
+      "stop_escalate": [
+        "TBR<70 increases by more than 1 pp after the Carb ratio change -> revert and escalate.",
+        "Severe hypoglycemia (TBR<54) emerges -> revert immediately.",
+        "No measurable TIR improvement at 2 weeks -> reassess direction."
+      ],
+      "revisit_days": 14
+    },
+    "hold_reason": "none",
+    "current_value": 10.5,
+    "practical_value": 9.7,
+    "practical_change_pct": -7.619047619047626,
+    "theoretical_value": 9.7,
+    "theoretical_change_pct": -7.619047619047626,
+    "affected_time_block": [
+      0.0,
+      24.0
+    ],
+    "expected_outcomes": [
+      {
+        "metric": "TIR",
+        "baseline": 64.3,
+        "expected_2wk": 56.3,
+        "unit": "%",
+        "direction": "decrease"
+      },
+      {
+        "metric": "TBR<70",
+        "baseline": 0.77,
+        "expected_2wk": 0.77,
+        "unit": "%",
+        "direction": "stable"
+      },
+      {
+        "metric": "TAR>180",
+        "baseline": 34.9,
+        "expected_2wk": 42.9,
+        "unit": "%",
+        "direction": "stable"
+      }
+    ]
+  },
+  "overall_justification": "Practical changes this cycle: Basal 0.85->0.94; Carb ratio 10.5->9.7. Each practical step is the safe-titration projection of a larger theoretical optimum (documented in the addenda). Held/deferred: ISF (insufficient_evidence).",
+  "addenda": [
+    "Factors considered: time-in-range distribution, hypo/hyper burden, glycemic variability, per-parameter advisory evidence, and cross-parameter sequencing.",
+    "Basal theoretical optimum: 0.94 (+11% vs current 0.85); practical step capped at 20%/cycle -> 0.94.",
+    "ISF theoretical optimum: 25.3 (-44% vs current 45); held this cycle.",
+    "Carb ratio theoretical optimum: 9.7 (-8% vs current 10.5); practical step capped at 20%/cycle -> 9.7.",
+    "Risks reviewed and mitigated: Hyperglycemia burden elevated (TAR>180 34.9% vs target 25%).",
+    "Deconfounding applied: Basal recommendation(s) derive from validated deconfounded estimates (e.g. demand-phase ISF EXP-2651, correction-denominator/bilateral EXP-2741, deconfounded basal EXP-3447). The controller-masking confidence penalty does not apply to these, improving accuracy without removing the controller's residual safety margin (EXP-2738).",
+    "Mitigations: changes are bounded by a per-cycle titration cap; carb ratio is sequenced after basal/ISF to avoid confounded adjustment; explicit stop/escalate criteria accompany every recommendation for the 2-week feedback loop.",
+    "Dose-shaping guidance (ISF, NOT a baseline schedule change): Correction doses above 1.5U show diminishing returns. At 4.1U, each unit achieves only 13 mg/dL drop vs 45 mg/dL at 1U. Consider: (1) splitting large corrections into smaller doses spaced 30+ min apart, (2) using ISF=13 for doses \u22654U. This is a pharmacokinetic property (\u03b2=0.9), not circadian. This describes a dose-conditional effective value for large corrections; prefer splitting large corrections over altering the baseline ISF schedule."
+  ],
+  "reboot": {
+    "recommended": false,
+    "rationale": "Settings reboot not indicated: the severe-mismatch composite (burden + large mismatch + low consistency) is not met. Incremental titration is appropriate."
+  },
+  "policy": {
+    "output_mode": "consolidated",
+    "reimbursement_mode": false,
+    "min_confidence_for_change": 0.5,
+    "min_effect_size_pp": 1.0,
+    "max_change_pct_per_cycle": 20.0,
+    "titration_step_pct": 10.0,
+    "titration_cadence_days": 3.0,
+    "defer_cr_when_basal_isf_lockstep": true,
+    "severe_hyper_tar_frac": 0.5,
+    "severe_hyper_cr_score_max": 25.0,
+    "reboot_tbr_frac": 0.06,
+    "reboot_tar_frac": 0.55,
+    "reboot_mismatch_ratio": 0.4,
+    "reboot_consistency_max": 0.45,
+    "target_tir_frac": 0.7,
+    "target_tbr_frac": 0.04,
+    "target_tar_frac": 0.25,
+    "success_capture_frac": 0.5,
+    "tbr_worsening_guardrail_pp": 1.0,
+    "prefer_deconfounded": true,
+    "trust_deconfounded": true,
+    "deconfounding_markers": [
+      "EXP-3447",
+      "EXP-2651",
+      "EXP-2741",
+      "deconfound",
+      "deconfounded",
+      "demand-phase",
+      "correction-denominator",
+      "bilateral"
+    ],
+    "dose_shaping_markers": [
+      "non-linearity",
+      "nonlinearity",
+      "EXP-2511",
+      "diminishing returns",
+      "splitting",
+      "split-dose",
+      "split into",
+      "dose-shaping"
+    ],
+    "deconfounded_isf_confidence_cap": 0.8,
+    "deconfounded_cr_confidence_cap": 0.9,
+    "controller_dampening_marker": "[Controller:"
+  },
+  "reimbursement": null,
+  "figures": [
+    {
+      "section": "insulin_sufficiency",
+      "title": "Time-in-range distribution",
+      "caption": "Share of time in each glycemic band over 25,758 readings. Green is the 70-180 mg/dL target; reds are lows, ambers are highs.",
+      "filename": "fig_time_in_range.png",
+      "png_base64": null,
+      "rel_path": "figures/fig_time_in_range.png",
+      "alt": "Stacked bar of time spent in each glucose range."
+    },
+    {
+      "section": "overview",
+      "title": "Ambulatory glucose profile (AGP)",
+      "caption": "Median glucose by time of day with interquartile (25\u201375%) and 10\u201390% bands. The green zone is the 70\u2013180 mg/dL target; a flat median inside it is the goal.",
+      "filename": "fig_agp.png",
+      "png_base64": null,
+      "rel_path": "figures/fig_agp.png",
+      "alt": "Ambulatory glucose profile percentile bands by hour of day."
+    },
+    {
+      "section": "basal",
+      "title": "Overnight glucose profile (00:00\u201306:00)",
+      "caption": "Median overnight glucose with IQR. A rising trend suggests basal is too low; a falling trend suggests it is too high. Used to contextualize the basal recommendation.",
+      "filename": "fig_overnight.png",
+      "png_base64": null,
+      "rel_path": "figures/fig_overnight.png",
+      "alt": "Overnight median glucose by hour with interquartile band."
+    },
+    {
+      "section": "cr",
+      "title": "Post-meal glucose excursion",
+      "caption": "Median glucose rise after 189 carb-counted, bolused meals (peak +60 mg/dL at 155 min; +28 mg/dL vs baseline at 4 h). Recommendation: decrease carb ratio 10.5\u21929.7 g/U to tighten meal coverage and lower these peaks.",
+      "filename": "fig_cr_excursion.png",
+      "png_base64": null,
+      "rel_path": "figures/fig_cr_excursion.png",
+      "alt": "Mean post-meal glucose excursion curve with interquartile band."
+    },
+    {
+      "section": "isf",
+      "title": "Demand-phase ISF decomposition",
+      "caption": "Profile ISF vs the apparent/correction ISF (amplified by AID compensation) vs the demand-phase ISF \u2014 the validated 0\u20132h insulin effect (EXP-2651) and the true target, shown with its 95% confidence interval. The apparent value is not the target; the recommendation tracks the demand-phase value, bounded by a safety margin (EXP-2738).",
+      "filename": "fig_demand_isf.png",
+      "png_base64": null,
+      "rel_path": "figures/fig_demand_isf.png",
+      "alt": "Bar chart of profile, apparent, and demand-phase ISF with CI."
+    },
+    {
+      "section": "basal",
+      "title": "Scheduled vs actual basal",
+      "caption": "Median programmed basal vs what the loop actually delivered by hour. Persistent loop deviation indicates the scheduled rate is mismatched in that direction.",
+      "filename": "04_basal_pattern.png",
+      "png_base64": null,
+      "rel_path": "figures/04_basal_pattern.png",
+      "alt": "Scheduled vs actual basal"
+    },
+    {
+      "section": "isf",
+      "title": "ISF reconciliation (profile vs observed)",
+      "caption": "Profile ISF vs the correction-derived (observed/apparent) ISF. The observed value is amplified by AID compensation (basal suspension during corrections), so it is NOT a direct ISF target: the recommendation deliberately preserves the controller's residual safety margin (EXP-2738) rather than chasing the apparent value. Separately, a lower effective ISF for large single corrections is dose-shaping guidance (split the dose), not a baseline schedule change.",
+      "filename": "03_isf_reconciliation.png",
+      "png_base64": null,
+      "rel_path": "figures/03_isf_reconciliation.png",
+      "alt": "ISF reconciliation (profile vs observed)"
+    }
+  ]
+}
