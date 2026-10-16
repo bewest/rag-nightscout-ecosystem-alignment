@@ -703,7 +703,13 @@ def test_a_projected_document_is_labelled_and_carries_the_typed_id():
     projected = _response("project-served")["projected"]
     record = CASES["project-served"]["request"]["record"]
     document = projected["document"]
-    assert document["identifier"] == record["id"] == document["_id"]
+    # CHANGED 2026-10-16 (SPEC-REG-QUIRKS, D20 rule 8): this asserted `_id`
+    # was the typed id verbatim. On an `objectId` hub (this case's) it is the
+    # ObjectId the hub stored with the record at the typed write; `identifier`
+    # is still the typed id. tools/nsschema/test_registration_quirks.py
+    # covers the opaque hub, which keeps the typed id for both.
+    assert document["identifier"] == record["id"]
+    assert document["_id"] == record["_id"] and re.match(r"^[0-9a-f]{24}$", document["_id"])
     assert document[instances.PROJECTION_MARKER] == {
         "definitionId": record["definitionId"], "element": record["element"],
         "entities": [record["id"]]}

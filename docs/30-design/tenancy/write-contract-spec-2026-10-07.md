@@ -443,6 +443,12 @@ The natural keys and `onMatch` above are the recommendation, not decided: §6 Q1
 is `treatment-fallback-key`'s `CLIENT_IDS` with its "a write without identity matches only a record
 without identity" rule (BF-121, BF-141).
 
+*(2026-10-16, D20 rule 5, [hub-sync design §3.7](../platform/nightscout-hub-sync-architecture-2026-09-11.md#37-version-scoped-quirks-and-the-two-ids):
+every write reply returns both `_id` (the storage key the hub assigns) and `identifier` (the sync
+identity the client assigns, null when it sent none), which `WriteResult.items[]` already carries;
+each item also lists the registry mappings applied to it as `quirksApplied`, so the `UUID_HANDLING`
+move of rule 1 below is recorded as QUIRK-TREATMENTS-006 or QUIRK-ENTRIES-004 rather than silent.)*
+
 The step's adapter calls are only methods both backends implement, or the dependency is named: on
 the seam, PostgreSQL declines `insertMany`, `updateMany` and `replaceFiltered` (they throw, naming
 themselves) and ignores `bulkUpsert`'s `mode` (BF-21, open)
@@ -457,6 +463,10 @@ through `patch`. The step on PostgreSQL waits on those.
 1. **`_id` form** (`object-id-forms`). `{"$oid": …}` and any 24-hex string, either case, become the
    ObjectId; an empty `_id` is dropped; a non-hex string keeps today's per-collection rule (moved
    to `identifier` for treatments and entries under `UUID_HANDLING`, kept as given elsewhere).
+   *(2026-10-16, D20 rules 6 and 7: the move is the version-scoped registry entries
+   QUIRK-TREATMENTS-006 and QUIRK-ENTRIES-004, behaviour unchanged; on a hub whose legacy id form
+   is `objectId` a stored `_id` is always an ObjectId, so "kept as given elsewhere" is a deviation
+   rule 6 names, as U1 already plans; hub-sync design §3.7.)*
 2. **Target resolution** (re-send identity: `treatment-fallback-key` and the `keys` above; twins).
    One read per batch for all items. An `_id` matches every stored form (`idForms`); where both
    halves of a twin match, the ObjectId copy is the target (BF-117's sort) and the string form is

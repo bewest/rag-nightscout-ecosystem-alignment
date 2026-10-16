@@ -490,7 +490,20 @@ the controller still owns its declarations and its records (D18).
 [hub-sync design §3.6](../platform/nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances)
 choice of the typed id verbatim in v1 `_id`, for `objectId` hubs. The contents of the shared slot
 list are not decided here: which slots mean the same thing is evidence for the controller authors
-to confirm (`PROPOSAL-REG-CONTROLLERS`).
+to confirm (`PROPOSAL-REG-CONTROLLERS`). *(2026-10-16: `SPEC-REG-QUIRKS` is done —
+[hub-sync design §3.7](../platform/nightscout-hub-sync-architecture-2026-09-11.md#37-version-scoped-quirks-and-the-two-ids),
+`specs/quirks/quirk.schema.json`, QUIRK-TREATMENTS-006 and QUIRK-ENTRIES-004, `specs/sync/shared-slots.yaml`,
+the grammar's `sameAs`, the capability document's `legacyIdForm`, `wellKnown.slots` and
+`wellKnown.mappings`, the write reply's `ids`, and 29 cases under `specs/sync/conformance/quirks/`,
+checked by `tools/nsschema/test_registration_quirks.py`. Rules 1–8 are specified as written. Rule
+6's `objectId` declaration is scoped to single-tenant mode on MongoDB; single-tenant on PostgreSQL
+is open (`SPEC-REG-MODES`). Rule 8 changed the instance case `project-served`. "Recent" in rule 4
+is 365 days before the newest snapshot. The shared slot list ships `override`, `loopMode` and
+`temporaryTarget`, the names already used identically; the candidates are in §3.7. Two statements
+of the "Why `_id`" paragraph differ from source read for this item: Loop sends a UUID `_id` for
+overrides (LoopWorkspace `f8412858`), and Trio 1.0.1 sends its id as `id`, not `_id` (Trio
+`e41c9db3`); no rule depends on them. The choices made beyond the rules are listed in §3.7 for
+confirmation.)*
 
 ### 2.7 D12 — what each repository is for
 

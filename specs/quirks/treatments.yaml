@@ -117,3 +117,71 @@ quirks:
     writer_guidance: Prefer a documented value.
     references:
       - specs/openapi/aid-treatments-2025.yaml#/components/schemas/EventType
+
+  - id: QUIRK-TREATMENTS-006
+    title: _id is sent as a string that is not an ObjectId
+    status: active
+    path: _id
+    kind: id-form
+    description: >-
+      In single-tenant Nightscout on MongoDB `_id` must be an ObjectId, a
+      rule that was never written down (D20, execution plan §2.6.3). Some
+      writers put their own record id in `_id`. cgm-remote-monitor moves
+      such a value to `identifier` when `identifier` is absent and
+      `UUID_HANDLING` is on (the default), drops it otherwise, and assigns
+      an ObjectId (write contract §2.3 rule 1). Documents stored before that
+      handling, or by a path that bypasses it, keep the string. The detector
+      counts the string form still stored; a write the hub mapped no longer
+      shows it, so recent writes are measured by the hub's recorded mappings
+      (rule 3), not by this corpus.
+    detect:
+      path: _id
+      test: matches
+      pattern: '^(?![0-9a-fA-F]{24}$).+'
+    expect:
+      min_share: 0.0
+      min_sites: 5
+    mapping:
+      action: move-to-identifier
+      flag: UUID_HANDLING
+      erasesEvidence: true
+    affects:
+      - vendor: LoopKit
+        product: Loop
+        versions:
+          unmeasured: >-
+            Treatments carry no version. The source shows one version; the
+            corpus shows the Loop versions reporting on the same sites, by
+            co-occurrence, not attribution.
+          seen:
+            - version: 3.14.8
+              claim: read-derived
+              ref: >-
+                externals/LoopWorkspace NightscoutService/NightscoutServiceKit/Extensions/OverrideTreament.swift:59
+                (override id: syncIdentifier.uuidString) and NightscoutKit
+                Sources/NightscoutKit/Models/Treatments/NightscoutTreatment.swift:111
+                (written as _id); LOOP_MARKETING_VERSION in VersionOverride.xcconfig:11
+              commit: f8412858
+        versionSource:
+          collection: devicestatus
+          path: loop.version
+          window_minutes: 60
+        evidence:
+          - claim: measured
+            ref: >-
+              make schema-quirks over the 2026-04-01 and 2026-04-26 snapshots,
+              2026-10-16: every stored document it fires on is a Temporary
+              Override whose enteredBy is a loop:// scheme with an upper-case
+              UUID
+    reader_guidance: >-
+      Read the record's sync identity from `identifier`, and accept a
+      stored `_id` that is not an ObjectId as that record's key. A lookup by
+      a UUID resolves through `identifier` (UUID_HANDLING's read half).
+    writer_guidance: >-
+      Send the record's own id as `identifier` and no `_id`; the hub assigns
+      `_id` and returns both (D20 rule 5).
+    references:
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16
+      - docs/30-design/tenancy/write-contract-spec-2026-10-07.md#23-order-of-the-rules
+      - docs/backlogs/uuid-identifier-lookup.md
+      - externals/cgm-remote-monitor-official/lib/server/treatments.js:394-411 @a8888f0d (normalizeTreatmentId)

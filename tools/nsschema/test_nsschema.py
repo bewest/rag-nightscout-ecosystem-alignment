@@ -843,9 +843,17 @@ def test_check_fails_a_collapsed_share():
     assert len(failures) == 1 and "below claimed minimum" in failures[0][1]
 
 
-def test_check_ignores_a_historical_quirk():
+def test_check_measures_a_historical_quirk():
+    # CHANGED 2026-10-16 (SPEC-REG-QUIRKS, D20 rule 4: each lifecycle move is
+    # measured, never asserted). This was `test_check_ignores_a_historical_quirk`
+    # and expected `check` to skip a historical entry. A historical claim now
+    # needs the measurement's support (tools/nsschema/test_registration_quirks.py).
     rows = [{"id": "Q-1", "status": "historical", "documents": 0, "share": 0.0,
              "sites": 0, "expect": {"min_share": 0.5}}]
+    assert quirks_mod.check(rows) == [("Q-1", "historical is asserted, not measured")]
+    entry = {"affects": [{"vendor": "V", "product": "P", "versions": {"range": "<2"}}]}
+    rows[0]["recent_documents"] = 0
+    rows[0]["lifecycle"] = quirks_mod.lifecycle(rows[0], entry, [])
     assert quirks_mod.check(rows) == []
 
 

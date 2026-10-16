@@ -1,0 +1,304 @@
+# SYNTHETIC CONFORMANCE CASE. Describes no real controller, product, device or person.
+# Contract: docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md §3.7 (D20).
+# Schema: specs/sync/registration-submit.schema.json#/$defs/instanceCase.
+# Checked by tools/nsschema/test_registration_quirks.py; `detail` strings are
+# not compared.
+id: carrier-resend-matches-objectid
+title: A client ObjectId still matches, in either case
+description: Rule 5. A client that kept the server's `_id` (as AndroidAPS does, read-derived) and sends
+  no `identifier` matches by `_id`; an upper-case hex `_id` is the same ObjectId.
+cell: older-controller/newer-hub
+now: '2026-10-15T12:00:00Z'
+capabilities:
+  apiVersion: nightscout.dev/sync/v1
+  kind: HubCapabilities
+  hub:
+    product: Example Hub
+    version: 0.0.0-test
+  grammar:
+    versions:
+    - apiVersion: nightscout.dev/sync/v1
+      major: 1
+      minor: 1
+    interprets:
+    - apiVersion
+    - kind
+    - metadata
+    - spec
+  horizons:
+    classes:
+    - cycle
+    - span
+    - effective-dated
+    - definition
+    - aggregate
+    availability:
+    - released
+    - dev-only
+    - experimental
+  typeFragment:
+    keywords:
+    - type
+    - enum
+    - minimum
+    - maximum
+    - format
+    - items
+    - properties
+    - required
+    - description
+  limits:
+    maxRegistrationBytes: 65536
+    maxExtensions: 8
+    maxFieldsPerExtension: 32
+    maxTypeDepth: 4
+  wellKnown:
+    catalogue: /.well-known/nightscout/controllers
+    kinds:
+    - id: example-legacy
+      vendor: Example
+      product: LegacyController
+      versionRange: 0.x-test
+      href: /.well-known/nightscout/controllers/example-legacy
+    slots:
+    - name: override
+    - name: loopMode
+    - name: temporaryTarget
+  submit:
+    href: /api/v4/registrations
+    tiers:
+    - controller-owned
+    permissions:
+      submit: api:registrations:create
+      retire: api:registrations:delete
+  instances:
+    leaseSeconds: 900
+    instanceId: uuid-v4
+    roles:
+    - source
+    - command-sink
+    channels:
+    - slot
+    - element
+    labels:
+      maxLabels: 8
+      maxKeyLength: 96
+      maxValueLength: 64
+  legacyIdForm: objectId
+wellKnownRegistrations:
+  /.well-known/nightscout/controllers/example-legacy:
+    apiVersion: nightscout.dev/sync/v1
+    kind: ControllerStateModel
+    metadata:
+      vendor: Example
+      product: LegacyController
+      algorithmFamily: other
+      tier: well-known
+      versionRange: 0.x-test
+      source: synthetic well-known registration for a conformance case
+    spec:
+      stateSpans:
+      - category: Override
+        kind: LegacyOverride
+        slot: override
+        version: '1'
+        states:
+        - active
+        - ended
+        wire:
+          collection: treatments
+          eventType: Temporary Override
+          durationField: duration
+          durationUnit: minutes
+      - category: LoopMode
+        kind: LegacyRunningMode
+        slot: runningMode
+        version: '1'
+        states:
+        - active
+        - ended
+        wire:
+          collection: treatments
+          eventType: Example Offline
+          durationField: duration
+          durationUnit: minutes
+hubState:
+  registrations:
+  - identity:
+      vendor: Example
+      product: ControllerA
+    state: active
+    etag: sha256:aaeb0511e519dd695cc7ef87b6f80cd9f41d8cc0ec5955218fde5528d88e27e0
+    boundTo:
+      kind: subject
+      subject: subject-test-controller-a
+    credentialKind: subject
+    registration:
+      apiVersion: nightscout.dev/sync/v1
+      kind: ControllerStateModel
+      metadata:
+        vendor: Example
+        product: ControllerA
+        algorithmFamily: other
+        tier: controller-owned
+        versionRange: 1.0.0-test
+      spec:
+        cadence:
+          nominalSeconds: 300
+        documents:
+        - collection: devicestatus
+          discriminator:
+            path: example
+            test: is-object
+          decomposesTo:
+          - ApsSnapshot
+        stateSpans:
+        - category: Override
+          kind: ExampleOverride
+          slot: override
+          states:
+          - scheduled
+          - active
+          - ended
+          version: '1'
+          wire:
+            collection: treatments
+            eventType: Temporary Override
+            durationField: duration
+            durationUnit: minutes
+          acceptsFromHub:
+            channels:
+            - command
+            default: false
+        sensitivity:
+          unlabelledPolicy: withhold
+        extensions:
+          com.example.controllera.targets:
+            version: '1'
+            carrier:
+              collection: settings
+              documentIdentifier: example-targets
+            fields:
+            - name: target
+              type:
+                type: number
+                minimum: 70
+                maximum: 180
+              unit: mg/dL
+              sensitivity:
+                level: descriptive
+                category: therapy-setting
+  - identity:
+      vendor: Example
+      product: ControllerB
+    state: active
+    etag: sha256:7b2d494632046f3faae6c5360406fecb2eb15cbbe780e1c821f42b43c4902e4f
+    boundTo:
+      kind: subject
+      subject: subject-test-controller-b
+    credentialKind: subject
+    registration:
+      apiVersion: nightscout.dev/sync/v1
+      kind: ControllerStateModel
+      metadata:
+        vendor: Example
+        product: ControllerB
+        algorithmFamily: other
+        tier: controller-owned
+        versionRange: 1.0.0-test
+      spec:
+        cadence:
+          nominalSeconds: 300
+        documents:
+        - collection: devicestatus
+          discriminator:
+            path: example
+            test: is-object
+          decomposesTo:
+          - ApsSnapshot
+        stateSpans:
+        - category: Override
+          kind: OtherOverride
+          slot: override
+          states:
+          - scheduled
+          - active
+          - ended
+          version: '1'
+          wire:
+            collection: treatments
+            eventType: Temporary Override
+            durationField: duration
+            durationUnit: minutes
+          acceptsFromHub:
+            channels:
+            - command
+            default: false
+        - category: LoopMode
+          kind: OtherLoopMode
+          slot: loopMode
+          version: '1'
+          states:
+          - active
+          - ended
+        sensitivity:
+          unlabelledPolicy: withhold
+        extensions:
+          com.example.controllerb.targets:
+            version: '1'
+            carrier:
+              collection: settings
+              documentIdentifier: example-targets
+            fields:
+            - name: target
+              type:
+                type: number
+                minimum: 70
+                maximum: 180
+              unit: mg/dL
+              sensitivity:
+                level: descriptive
+                category: therapy-setting
+  definitions: []
+  instances: []
+  pins: []
+  records: []
+  documents:
+  - collection: treatments
+    _id: 6ad0b23500000000000000d1
+    identifier: 00000000-0000-7000-8000-0000000000f1
+submitter:
+  credentialKind: subject
+  subject: subject-test-legacy
+  token: token-test-l-1
+  permissions:
+  - api:treatments:create
+request:
+  action: write
+  identity:
+    vendor: Example
+    product: LegacyController
+  write:
+    as: carrier
+    collection: treatments
+    sent:
+      _id: 6AD0B23500000000000000D1
+body: null
+expected:
+  controllerWouldRegister: true
+  response:
+    apiVersion: nightscout.dev/sync/v1
+    kind: InstanceResponse
+    status: 200
+    outcome: written
+    write:
+      accepted: true
+      as: carrier
+      attributedTo:
+        vendor: Example
+        product: LegacyController
+        instanceId: unregistered
+      ids:
+        identifier: 00000000-0000-7000-8000-0000000000f1
+        _id: 6ad0b23500000000000000d1
+      matchedBy: _id

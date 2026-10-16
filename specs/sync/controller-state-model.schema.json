@@ -164,6 +164,10 @@
        "slot": {
         "$ref": "#/$defs/slotName"
        },
+       "sameAs": {
+        "$ref": "#/$defs/sharedSlotName",
+        "description": "D20 rule 2 (SPEC-REG-QUIRKS, hub-sync design §3.7): the slot of the hub's shared slot list (`wellKnown.slots` in the capability document) that this entry's `slot` means. The channel of the entry's roles is then the shared slot, so it contends with every entry that names or means that slot (D19 rule 6). Needs `slot`. A slot whose own name is in the shared list means only itself. A shared slot the hub does not list is refused `unknown-shared-slot`, and the entry goes as its carrier. Two slots are never treated as one because their names look alike: only an equal name or a declared `sameAs` makes a shared channel."
+       },
        "exclusiveWithinSlot": {
         "type": "boolean",
         "description": "At most one instance is active in this slot at a time."
@@ -903,6 +907,11 @@
   "slotName": {
    "type": "string",
    "description": "A slot named by this registration; `coexistsWith` refers to slots by these names. Under D19 (SPEC-REG-INSTANCE, hub-sync design §3.6) a slot name with no `/` is also the channel that a `source` or `command-sink` role names, across every product on the tenant, so two registrations that name the same slot contend for its roles. The grammar fixes no shared list of slot names."
+  },
+  "sharedSlotName": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9]*$",
+   "description": "A slot of the well-known catalogue's shared slot list (D20 rule 2). It has no `/`, so it is a slot channel shared across products on the tenant."
   },
   "cadence": {
    "type": "object",

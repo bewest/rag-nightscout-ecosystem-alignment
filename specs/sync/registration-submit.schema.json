@@ -245,7 +245,7 @@
   },
   "reason": {
    "type": "object",
-   "description": "Why a registration, an element or a typed write was not accepted, or why a request changed nothing. `code` is an open vocabulary (rule 3): a hub uses `other` with its own `term` for a reason not listed, and a controller treats any reason it does not know as not accepted. `not-registration-owner` (403): the registration is bound to another credential. `blocked-by-owner`: the tenant owner blocked the identity (403 to the controller; 409 to an owner retiring a blocked registration). `not-retired` (409): only a retired registration's namespaces are freed. D19 (SPEC-REG-INSTANCE, hub-sync design §3.6): `version-conflict` (an element typed differently at a version a stored definition of the product already types), `unknown-well-known-kind` (a `wellKnownRef` to a kind the catalogue does not have at that version), `definition-id-mismatch` (422: the body's hash is not the path id), `product-retired` (409), `unknown-definition`, `invalid-instance-id`, `invalid-instance`, `invalid-label` (422), per-role `unknown-channel`, `not-a-command-channel`, `unsupported-role`, `unknown-provenance`, `role-held`; `role-not-granted`, `role-not-claimed`, `not-live` (409); `instance-required` (422, a definite typed-write refusal); `no-command-destination`, `no-carrier-mapping`, `projected-read-only` (409); `unknown-version` (422, a pin); `definition-referenced`, `definition-in-use`, `definition-current` (why a definition is not eligible for removal).",
+   "description": "Why a registration, an element or a typed write was not accepted, or why a request changed nothing. `code` is an open vocabulary (rule 3): a hub uses `other` with its own `term` for a reason not listed, and a controller treats any reason it does not know as not accepted. `not-registration-owner` (403): the registration is bound to another credential. `blocked-by-owner`: the tenant owner blocked the identity (403 to the controller; 409 to an owner retiring a blocked registration). `not-retired` (409): only a retired registration's namespaces are freed. D19 (SPEC-REG-INSTANCE, hub-sync design §3.6): `version-conflict` (an element typed differently at a version a stored definition of the product already types), `unknown-well-known-kind` (a `wellKnownRef` to a kind the catalogue does not have at that version), `definition-id-mismatch` (422: the body's hash is not the path id), `product-retired` (409), `unknown-definition`, `invalid-instance-id`, `invalid-instance`, `invalid-label` (422), per-role `unknown-channel`, `not-a-command-channel`, `unsupported-role`, `unknown-provenance`, `role-held`; `role-not-granted`, `role-not-claimed`, `not-live` (409); `instance-required` (422, a definite typed-write refusal); `no-command-destination`, `no-carrier-mapping`, `projected-read-only` (409); `unknown-version` (422, a pin); `definition-referenced`, `definition-in-use`, `definition-current` (why a definition is not eligible for removal). D20 (SPEC-REG-QUIRKS, §3.7): `unknown-shared-slot` (an element's `sameAs` names a slot the hub's shared slot list does not have).",
    "required": [
     "code"
    ],
@@ -298,6 +298,7 @@
       "definition-referenced",
       "definition-in-use",
       "definition-current",
+      "unknown-shared-slot",
       "other"
      ]
     },
@@ -1541,6 +1542,14 @@
       "number",
       "null"
      ]
+    },
+    "_id": {
+     "type": "string",
+     "minLength": 1,
+     "description": "D20 rules 5 and 8: the storage key the hub assigned when the typed record was written, stored with it so it is the same on every read: an ObjectId on an `objectId` hub, the typed id on an `opaque` one. `id` is the record's `identifier`."
+    },
+    "quirksApplied": {
+     "$ref": "#/$defs/quirksApplied"
     }
    }
   },
@@ -1684,7 +1693,7 @@
      "required": [
       "as"
      ],
-     "description": "One write: typed or carrier, its element, the writing instance (absent: none presented), the document's collection, the document (for an observed alias), the target of an update, and the controller's record id with the element's dual-write link.",
+     "description": "One write: typed or carrier, its element, the writing instance (absent: none presented), the document's collection, the document (for an observed alias), the target of an update, and the controller's record id with the element's dual-write link. D20 (§3.7): `sent`, the id members the client sent (`_id`, `identifier`; for a typed write the controller's record id is `recordId`); `writer`, the vendor, product and version the hub identified for an older controller's write (how it identifies them is not specified here).",
      "properties": {
       "as": {
        "enum": [
@@ -1709,8 +1718,20 @@
       "target": {
        "type": "object",
        "required": [
-        "collection",
-        "identifier"
+        "collection"
+       ],
+       "description": "The document an update or delete aims at, by `identifier` or (D20) by `_id`.",
+       "anyOf": [
+        {
+         "required": [
+          "identifier"
+         ]
+        },
+        {
+         "required": [
+          "_id"
+         ]
+        }
        ]
       },
       "recordId": {
@@ -1718,6 +1739,39 @@
       },
       "link": {
        "type": "object"
+      },
+      "sent": {
+       "type": "object",
+       "properties": {
+        "_id": {},
+        "identifier": {
+         "type": [
+          "string",
+          "null"
+         ]
+        }
+       }
+      },
+      "writer": {
+       "type": "object",
+       "required": [
+        "vendor",
+        "product"
+       ],
+       "properties": {
+        "vendor": {
+         "type": "string"
+        },
+        "product": {
+         "type": "string"
+        },
+        "version": {
+         "type": [
+          "string",
+          "null"
+         ]
+        }
+       }
       }
      }
     }
@@ -2055,6 +2109,64 @@
         "string",
         "null"
        ]
+      },
+      "ids": {
+       "type": "object",
+       "required": [
+        "identifier",
+        "_id"
+       ],
+       "description": "D20 rule 5: every write reply returns both: `identifier`, the sync identity the client assigned (null when it sent none), and `_id`, the storage key the hub assigned.",
+       "properties": {
+        "identifier": {
+         "type": [
+          "string",
+          "null"
+         ]
+        },
+        "_id": {
+         "type": "string",
+         "minLength": 1
+        }
+       }
+      },
+      "matchedBy": {
+       "enum": [
+        "identifier",
+        "_id",
+        null
+       ],
+       "description": "D20 rule 5: the key a re-send matched a stored record by (identifier first), or null for a new record."
+      },
+      "quirksApplied": {
+       "$ref": "#/$defs/quirksApplied"
+      },
+      "slotMapping": {
+       "type": "object",
+       "required": [
+        "slot",
+        "channel",
+        "by"
+       ],
+       "description": "D20 rules 2 and 3: the channel a slot's records were attributed to when a `sameAs` decided it, and whether the definition declared it (`declared`), the catalogue mapped it (`catalogue`, with the registry entry), or the slot's own name decided it because no mapping applied (`name`).",
+       "properties": {
+        "slot": {
+         "type": "string"
+        },
+        "channel": {
+         "type": "string"
+        },
+        "by": {
+         "enum": [
+          "declared",
+          "catalogue",
+          "name"
+         ]
+        },
+        "quirk": {
+         "type": "string"
+        }
+       }
       }
      }
     }
@@ -2168,6 +2280,14 @@
      "type": "string",
      "format": "date-time"
     },
+    "assignedIds": {
+     "type": "array",
+     "items": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+     },
+     "description": "D20: the ObjectIds the hub assigns in this case, in order, so the reference is deterministic. A hub under test is compared on the form of an assigned `_id` and its timestamp (the first four bytes, hub receipt time `now`), not its value."
+    },
     "capabilities": {
      "oneOf": [
       {
@@ -2236,6 +2356,13 @@
        "items": {
         "$ref": "#/$defs/record"
        }
+      },
+      "documents": {
+       "type": "array",
+       "items": {
+        "$ref": "#/$defs/legacyDocument"
+       },
+       "description": "D20: stored v1/v3 documents, for the two-id rule."
       }
      }
     },
@@ -2332,6 +2459,64 @@
        "$ref": "#/$defs/fallback"
       }
      }
+    }
+   }
+  },
+  "quirksApplied": {
+   "type": "array",
+   "description": "D20 rule 3: each quirks registry mapping the hub applied to a record, a document or a declaration, so a reader can tell a mapped value from a declared one.",
+   "items": {
+    "type": "object",
+    "required": [
+     "quirk",
+     "member",
+     "action"
+    ],
+    "properties": {
+     "quirk": {
+      "type": "string",
+      "pattern": "^QUIRK-[A-Z]+-[0-9]{3}$"
+     },
+     "member": {
+      "type": "string"
+     },
+     "action": {
+      "enum": [
+       "moved-to-identifier",
+       "dropped",
+       "same-as"
+      ]
+     },
+     "sameAs": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "legacyDocument": {
+   "type": "object",
+   "description": "D20: a stored v1/v3 document as the two-id cases model it: its collection, the storage key the hub assigned (`_id`) and the client's sync identity (`identifier`, null when the client sent none), and the mappings applied when it was written.",
+   "required": [
+    "collection",
+    "_id",
+    "identifier"
+   ],
+   "properties": {
+    "collection": {
+     "type": "string"
+    },
+    "_id": {
+     "type": "string",
+     "minLength": 1
+    },
+    "identifier": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "quirksApplied": {
+     "$ref": "#/$defs/quirksApplied"
     }
    }
   }

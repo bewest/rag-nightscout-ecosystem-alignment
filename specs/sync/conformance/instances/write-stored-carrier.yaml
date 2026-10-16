@@ -3,6 +3,10 @@
 # Schema: specs/sync/registration-submit.schema.json#/$defs/instanceCase.
 # Checked by tools/nsschema/test_registration_instances.py; `detail` strings are
 # not compared.
+# CHANGED 2026-10-16 (SPEC-REG-QUIRKS, D20 rule 8; execution plan §2.6.3, hub-sync design §3.7):
+#   Stored state only: the typed record `...b1` gained `_id`, the ObjectId the hub assigned at its
+#   typed write (D20 rule 8), which an `objectId` hub needs to project it. The expected response
+#   is unchanged.
 id: write-stored-carrier
 title: A write to a stored carrier document is accepted as today
 description: The same update aimed at a carrier document that was written and stored as such.
@@ -297,6 +301,7 @@ hubState:
   pins: []
   records:
   - id: 00000000-0000-7000-8000-0000000000b1
+    _id: 6ad0b23500000000000000b1
     identity:
       vendor: Example
       product: ControllerA

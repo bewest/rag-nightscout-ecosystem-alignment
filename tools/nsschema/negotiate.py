@@ -93,7 +93,10 @@ def definition_id(definition):
 # a hub does not interpret them, so they cannot carry meaning to it).
 SPAN_MEANING = ("category", "kind", "slot", "exclusiveWithinSlot", "coexistsWith", "overlay",
                 "supersedes", "states", "endReasons", "wire", "dualWriteLink", "requested",
-                "applied", "initiators", "definitions", "acceptsFromHub", "horizon")
+                "applied", "initiators", "definitions", "acceptsFromHub", "horizon",
+                # D20 rule 2 (SPEC-REG-QUIRKS): which shared slot a slot means
+                # decides which instances contend, so it is meaning.
+                "sameAs")
 EXTENSION_MEANING = ("carrier", "dualWriteLink", "horizon", "fields")
 FIELD_MEANING = ("name", "type", "typeRef", "unit", "range", "horizon", "sensitivity")
 NOT_MEANING = frozenset({"description", "evidence", "writtenWhen"})
@@ -489,6 +492,36 @@ def _reference_checks(caps, well_known, node, path):
     return []
 
 
+def shared_slots(caps):
+    """D20 rule 2: the names of the hub's shared slot list
+    (`wellKnown.slots`), empty when it lists none."""
+    return [s["name"] for s in (((caps or {}).get("wellKnown") or {}).get("slots") or [])
+            if isinstance(s, dict) and s.get("name")]
+
+
+def _same_as_checks(caps, registration, node, path):
+    """D20 rule 2: a stateSpans entry's `sameAs` names a slot of the hub's
+    shared slot list (`unknown-shared-slot` otherwise), needs a `slot` with no
+    `/`, cannot remap a slot whose own name is a shared slot, and agrees with
+    every other entry of the definition naming the same slot."""
+    same, slot = node["sameAs"], node.get("slot")
+    if not isinstance(slot, str) or not slot or "/" in slot:
+        return [_reason("invalid-element", f"{path}.sameAs",
+                        "sameAs names the shared slot that this entry's slot means")]
+    listed = shared_slots(caps)
+    if slot in listed and slot != same:
+        return [_reason("invalid-element", f"{path}.sameAs",
+                        "a slot whose own name is a shared slot means only itself")]
+    for other in (registration.get("spec") or {}).get("stateSpans") or []:
+        if other is not node and other.get("slot") == slot and other.get("sameAs") != same:
+            return [_reason("invalid-element", f"{path}.sameAs",
+                            "entries naming one slot must agree on its sameAs")]
+    if same not in listed:
+        return [_reason("unknown-shared-slot", f"{path}.sameAs",
+                        "the hub's shared slot list has no such slot")]
+    return []
+
+
 def evaluate(caps, hub_state, submitter, registration, grammar, views=None, well_known=None):
     """The per-element results and registration-level ignored members for a
     registration that passed the registration-level checks. `views`: for
@@ -544,6 +577,8 @@ def evaluate(caps, hub_state, submitter, registration, grammar, views=None, well
             reasons += _field_checks(caps, node, path)
         elif kind == "stateSpans" and "wellKnownRef" in node:
             reasons += _reference_checks(caps, well_known, node, path)
+        elif kind == "stateSpans" and "sameAs" in node:
+            reasons += _same_as_checks(caps, registration, node, path)
         if not reasons and kind in ("stateSpans", "extensions"):
             try:
                 sync_model.version_plan(node)

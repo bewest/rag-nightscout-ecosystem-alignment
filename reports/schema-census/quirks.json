@@ -1,7 +1,7 @@
 {
  "generated_by": "tools/nsschema/quirks.py",
  "registry": "specs/quirks",
- "quirks": 17,
+ "quirks": 19,
  "results": [
   {
    "id": "QUIRK-DEVICESTATUS-001",
@@ -216,6 +216,55 @@
    "expect": {
     "min_share": 0.5,
     "min_sites": 8
+   }
+  },
+  {
+   "id": "QUIRK-ENTRIES-004",
+   "title": "_id is sent as a string that is not an ObjectId",
+   "collection": "entries",
+   "kind": "id-form",
+   "status": "active",
+   "path": "_id",
+   "documents": 88070,
+   "collection_documents": 896589,
+   "share": 0.098228,
+   "sites": 2,
+   "site_share": {
+    "b": 0.860752,
+    "j": 0.518805
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "expect": {
+    "min_share": 0.0,
+    "min_sites": 1
+   },
+   "applies_to": "documents",
+   "recent_documents": 88070,
+   "untimed_documents": 0,
+   "newest": "2026-04-27",
+   "versions": {
+    "Nightscout Foundation/Trio": {
+     "by": "co-occurrence",
+     "counts": {
+      "0.5.1": 1160,
+      "0.6.0": 56468,
+      "unattributed": 30442
+     }
+    }
+   },
+   "lifecycle": {
+    "supported": [
+     "proposed",
+     "active"
+    ],
+    "live_instances": null,
+    "why_not": {
+     "historical": "the hub's mapping rewrites the stored form, so recent writes are measured only by its recorded mappings (rule 3)",
+     "retired": "the hub's mapping rewrites the stored form, so recent writes are measured only by its recorded mappings (rule 3)"
+    }
    }
   },
   {
@@ -500,6 +549,84 @@
     "min_share": 0.0,
     "min_sites": 2
    }
+  },
+  {
+   "id": "QUIRK-TREATMENTS-006",
+   "title": "_id is sent as a string that is not an ObjectId",
+   "collection": "treatments",
+   "kind": "id-form",
+   "status": "active",
+   "path": "_id",
+   "documents": 2844,
+   "collection_documents": 369419,
+   "share": 0.007699,
+   "sites": 9,
+   "site_share": {
+    "a": 0.030523,
+    "b": 0.001697,
+    "c": 0.004547,
+    "d": 0.000182,
+    "e": 0.004516,
+    "g": 0.01112,
+    "h": 0.005975,
+    "i": 0.012819,
+    "k": 0.003006
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "expect": {
+    "min_share": 0.0,
+    "min_sites": 5
+   },
+   "applies_to": "documents",
+   "recent_documents": 2844,
+   "untimed_documents": 0,
+   "newest": "2026-04-27",
+   "versions": {
+    "LoopKit/Loop": {
+     "by": "co-occurrence",
+     "counts": {
+      "3.2.3.2025080100": 104,
+      "3.6.4.2025091500": 6,
+      "3.8.1.2025092400": 71,
+      "3.8.1.2025100100": 245,
+      "3.8.1.2025102901": 7,
+      "3.8.1.2025110600": 4,
+      "3.8.1.2025111300": 272,
+      "3.8.1.2025121500": 263,
+      "3.8.1.2025122900": 4,
+      "3.8.1.2026010900": 75,
+      "3.8.1.2026011400": 307,
+      "3.8.1.2026020200": 426,
+      "3.8.1.2026030500": 785,
+      "3.8.2.2025110300": 1,
+      "3.8.2.2025111001": 8,
+      "3.8.2.2025121200": 29,
+      "3.12.0.2": 105,
+      "3.12.0.2026030500": 43,
+      "3.12.1.2026041500": 85,
+      "unattributed": 4
+     }
+    }
+   },
+   "lifecycle": {
+    "supported": [
+     "proposed",
+     "active"
+    ],
+    "live_instances": null,
+    "why_not": {
+     "historical": "the hub's mapping rewrites the stored form, so recent writes are measured only by its recorded mappings (rule 3)",
+     "retired": "the hub's mapping rewrites the stored form, so recent writes are measured only by its recorded mappings (rule 3)"
+    }
+   }
   }
- ]
+ ],
+ "lifecycle": {
+  "recent_days": 365,
+  "as_of": "2026-04-26",
+  "instances": "unmeasured"
+ }
 }

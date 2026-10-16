@@ -694,7 +694,7 @@ one that does not serves neither, and §3.5 applies unchanged. Paths are proposa
 
   | | members that are meaning | not meaning |
   |---|---|---|
-  | stateSpans kind | `category`, `kind`, `slot`, `exclusiveWithinSlot`, `coexistsWith`, `overlay`, `supersedes`, `states`, `endReasons`, `wire`, `dualWriteLink`, `requested`, `applied`, `initiators`, `definitions`, `acceptsFromHub`, `horizon` | `description`, `evidence`, `availability`, `version`/`versions`, members the grammar does not define |
+  | stateSpans kind | `category`, `kind`, `slot`, `exclusiveWithinSlot`, `coexistsWith`, `overlay`, `supersedes`, `states`, `endReasons`, `wire`, `dualWriteLink`, `requested`, `applied`, `initiators`, `definitions`, `acceptsFromHub`, `horizon`; `sameAs` *(added 2026-10-16, D20, §3.7)* | `description`, `evidence`, `availability`, `version`/`versions`, members the grammar does not define |
   | extension | `carrier`, `dualWriteLink`, `horizon`, `fields` (compared by `name`) | `description`, `evidence`, `availability`, `version`/`versions` |
   | extension field | `name`, `type`, `typeRef`, `unit`, `range`, `horizon`, `sensitivity` | `description`, `evidence` |
 
@@ -788,6 +788,9 @@ one that does not serves neither, and §3.5 applies unchanged. Paths are proposa
   AndroidAPS), `profileSwitch`, `runningMode` and `scene` (AndroidAPS), hand-written in
   `tools/nsschema/sync_model.py` (measured 2026-10-15). Equal names contend; AndroidAPS's
   `runningMode` and Loop's and Trio's `loopMode` do not, though they name a similar state.
+  *(2026-10-16, D20 rule 2: a definition may declare `sameAs` naming a slot of the hub's optional
+  shared slot list, and its channel is then that slot; the list ships `override`, `loopMode` and
+  `temporaryTarget`; §3.7.)*
 - *Exclusivity.* Among live `device`-provenance instances of active products on the tenant, each
   (channel, role) has one holder. A second claimant is refused that role `role-held`; its other
   roles are still granted, and it writes the elements on that channel as their carriers. The hub
@@ -877,7 +880,12 @@ from the mapping, and nothing the mapping does not declare. The projected docume
   filter; the projected `Treatment` carries no projection marker of its own.
   *(2026-10-16: for hubs whose legacy id form is `objectId`, cgm-remote-monitor in single-tenant
   mode among them, D20 rule 8 replaces this: v1 `_id` is an ObjectId the hub assigns at the typed
-  write and stores, and `identifier` is the typed id; execution plan §2.6.3, `SPEC-REG-QUIRKS`.)*
+  write and stores, and `identifier` is the typed id; execution plan §2.6.3, `SPEC-REG-QUIRKS`.
+  Specified in §3.7, rule 8: the case `project-served` changed its expected `_id`. The
+  `objectId` declaration is scoped there to single-tenant mode on MongoDB; single-tenant on
+  PostgreSQL is open (`SPEC-REG-MODES`). The prior art above is in-memory: on the wire Nocturne
+  writes `Id` and `Identifier` through `ObjectIdJsonConverter` as the UUID's first 24 hex digits
+  (read-derived at `42275c812`, §3.7).)*
 
 A view for older readers is not a conversion between typed versions (D18 addendum rule 4).
 
@@ -1002,6 +1010,235 @@ The 26 §3.5 cases whose response is `accepted` or `partial` gained only `defini
 | `typed-write-simulated` | A simulated source's typed write carries simulated provenance | 200 written; typed, simulated, attributed to the instance |  |
 | `write-projected-read-only` | A write to a projected document is refused | 409 rejected; projected-read-only | `write-stored-carrier` |
 | `write-stored-carrier` | A write to a stored carrier document is accepted as today | 200 written; carrier, attributed unregistered |  |
+
+### 3.7 Version-scoped quirks and the two ids
+
+*Added 2026-10-16 (`SPEC-REG-QUIRKS`; D20, [execution plan §2.6.3](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16)).
+Specified, not implemented: no hub serves any of this.* The [quirks registry](../../../specs/quirks/README.md)
+recorded how stored documents deviate, per collection and project, with measured prevalence. D20
+adds the versions an entry affects and a measured lifecycle, applies them to slot names (which
+are shared channels under D19 rule 5) and to `_id`, and separates the two jobs an id does: the
+sync identity the client assigns and the storage key the hub assigns.
+
+| file | what it is |
+|---|---|
+| `specs/quirks/quirk.schema.json` | the registry entry, validated at load: `affects`, `retired`, `mapping`, declaration entries (new) |
+| `specs/quirks/{treatments,entries}.yaml` | QUIRK-TREATMENTS-006 and QUIRK-ENTRIES-004, today's `_id` handling (new entries) |
+| `tools/nsschema/quirks.py` | version ranges, recent writes, versions seen (same document or co-occurrence), the lifecycle check |
+| `specs/sync/shared-slots.yaml` | the shared slot list the well-known catalogue ships (new) |
+| `specs/sync/controller-state-model.schema.json` | gains `stateSpans[].sameAs` |
+| `specs/sync/hub-capabilities.schema.json` | gains `legacyIdForm`, `wellKnown.slots` and `wellKnown.mappings` |
+| `specs/sync/registration-submit.schema.json` | gains `unknown-shared-slot`, the write reply's `ids`, `matchedBy`, `quirksApplied` and `slotMapping`, a record's `_id`, `write.sent`, `write.writer`, a target by `_id`, and the cases' `assignedIds` and `hubState.documents` |
+| `specs/sync/conformance/quirks/*.yaml` | 29 synthetic cases, in the instance case format |
+| `tools/nsschema/quirks_registration.py` | a reference for this section, called by `instances.py` (which gained the `sameAs` channel, the stored projected `_id` and the write reply's ids) and `negotiate.py` (the `sameAs` checks); it is not a hub |
+| `tools/nsschema/test_registration_quirks.py` | the queue gate |
+
+**Rule 1: `affects`.** A registry entry may carry `affects: [{vendor, product, versions}]`,
+`vendor` and `product` a registration's `metadata`. `versions` is a `range` over the vendor's own
+version strings — `*`, or whitespace-separated comparators `=`, `>=`, `>`, `<=`, `<` that must
+all hold; dot-separated parts compare numerically, numbers before text, the order §3.6 uses for
+"newest" — stated only where the corpus or source shows it, else `unmeasured` with the reason.
+`seen` lists versions the evidence shows, which are not a range. Each claim says `measured` or
+`read-derived`, source claims with a file, a line and a commit. `versionSource` tells
+`make schema-quirks` where to read a version: in the same document, or by co-occurrence, the
+nearest version-bearing document of the same site within a window, which `quirks.json` labels as
+co-occurrence and never copies into a range. Entries without `affects` keep their project-level
+attribution, and their measured rows are unchanged (measured 2026-10-16: the 17 rows of
+`reports/schema-census/quirks.json` are identical before and after).
+
+**Rule 2: catalogue for older versions, `sameAs` for newer.**
+
+- *The shared slot list* is optional: the capability document's `wellKnown.slots`, shipped from
+  `specs/sync/shared-slots.yaml`. It holds `override` (Loop, Trio), `loopMode` (Loop, Trio) and
+  `temporaryTarget` (Trio, AndroidAPS): the slot names more than one generated registration already
+  uses with the same spelling, checked against `specs/sync/registrations/*.yaml` by the gate.
+  Equal slot names already contend under §3.6, so listing them adds no contention; it makes them
+  names a definition can declare `sameAs`. It does not confirm that their users mean the same
+  thing: Loop's override is written as treatments `Temporary Override` and Trio's as `Exercise`.
+- *`sameAs`.* A stateSpans entry may declare `sameAs: <shared slot>` beside its `slot`. On a hub
+  that interprets it and lists that slot, the entry's channel is the shared slot, so it contends
+  with every entry that names or means the slot (D19 rule 6). Checks, at a product or definition
+  PUT: a shared slot the hub does not list, or a hub with no list, is `unknown-shared-slot`; a
+  `sameAs` without a `slot` (or with a `/` in it), on a slot whose own name is a different shared
+  slot, or disagreeing with another entry of the definition that names the same slot, is
+  `invalid-element`. A refused element goes as its carrier, and its slot name then derives no
+  channel at all, so it never joins another product's slot by name instead. `sameAs` is meaning
+  (§3.6's table): changing it at the same version is `version-conflict`. A `wellKnownRef` entry
+  takes the catalogue kind's `sameAs` and restates none.
+- *Never by likeness.* Only an equal name or a declared `sameAs` puts two slots on one channel.
+  AndroidAPS's `runningMode` and Loop's and Trio's `loopMode` stay separate channels until a
+  definition or a catalogue mapping says otherwise; so do names that differ only in case.
+- *Catalogue mappings* cover versions released before registration, which change nothing on their
+  side: a quirks registry entry with `applies_to: declarations` (`declaration: {member: slot,
+  value, sameAs}`, with `affects`), published as a `wellKnown.mappings[]` entry `{quirk, vendor,
+  product, versions, slot, sameAs}`. When an older controller's write is described by its
+  well-known registration and the hub knows the writer's version and it is in `versions`, the
+  hub attributes the records to the shared slot and records the mapping. The hub identifies the
+  writer and its version by means this section does not specify; with no version it applies no
+  mapping. A carrier write is never refused for exclusivity (§3.6), so a mapping changes which
+  channel the records are shown on and which overlaps the owner sees, never whether they are
+  stored. No declaration entry is listed: which slots share a meaning is evidence for the
+  controller authors (`PROPOSAL-REG-CONTROLLERS`).
+
+**Rule 3: recorded, never silent.** Each mapping the hub applies is recorded on the reply and on
+the stored record or document as `quirksApplied: [{quirk, member, action, sameAs?}]`, `action`
+one of `moved-to-identifier`, `dropped`, `same-as`. A write whose channel a `sameAs` decided
+carries `slotMapping: {slot, channel, by}`, `by` being `declared` (the definition),
+`catalogue` (with the entry's id) or `name` (no mapping applied), so a reader tells a mapped value
+from a declared one.
+
+**Rule 4: the lifecycle.** `proposed` → `active` → `historical` → `retired`. `make schema-quirks`
+writes, for each entry with `affects`, which statuses the measurement supports and why not the
+others; `make schema-quirks-check` fails a `historical` or `retired` claim it does not support,
+and never fails a `proposed` one. `historical` needs no recent document, zero live instances of
+an affected version in a hub's de-identified instance listing (`--instances`; unmeasured without
+one), and a detector whose evidence the hub's mapping does not erase. `retired` needs, beyond
+that, no stored document left that depends on the mapping. **Recent** is a declared, measured
+parameter: a document whose own time is within `RECENT_DAYS` = 365 days of the newest snapshot's
+collection date, so a re-run over the same corpus gives the same answer. *(Changed with this
+item: `check` skipped a `historical` entry and checked a `proposed` one like an active one.)*
+Declaration entries are measured by a hub's recorded mappings, which the corpus predates.
+
+**Rule 5: two ids, one rule.**
+
+- `identifier` is the sync identity the client assigns, stable across retries and devices; in the
+  typed API it is the controller's record id. `_id` is the storage key the hub assigns.
+- *Every write reply returns both*: `write.ids: {identifier, _id}`, `identifier` null when the
+  client sent none, and `matchedBy` (`identifier`, `_id`, or null for a new record). For v1 and v3
+  documents this is the write contract's `WriteResult.items[]._id` and `identifier` (write
+  contract §2.2, U6), now required of every path; for typed writes it is new.
+- *Re-sends match on `identifier` first*, then on `_id` (the write contract's `keys` order). A
+  re-send that matches answers with the stored ids and stores no second copy, so a client needs
+  no cache of server ids. A typed re-send matches a stored typed record of the same product with
+  the same identifier, whichever instance sent it (stable across devices).
+- *The cases model writes abstractly.* The 86 instance cases and the 55 negotiation cases send no
+  record ids, and their replies are unchanged; the cases here send `write.sent` (the id members of
+  a v1/v3 document) or `write.recordId` (a typed record's id) and get the ids.
+
+**Rule 6: the legacy id form.** The capability document's `legacyIdForm` is `objectId` or
+`opaque`. On an `objectId` hub `_id` is always an ObjectId: one the hub assigns, or a client's
+24-hex or `{"$oid": …}` value kept as that ObjectId in lower case; a client `_id` that is not one
+is handled as the quirks registry says and never stored. cgm-remote-monitor in single-tenant mode
+on MongoDB declares `objectId`. A reader of a capability document without `legacyIdForm` assumes
+`objectId`, the legacy API's rule. **Single-tenant mode on PostgreSQL is not decided here**: the
+backend follows the URI scheme there, the server mints a 24-hex text `_id`, and a client-supplied
+`_id` is stored as sent (read-derived on the seam chain at `81a1f6ce`:
+`lib/server/storage-backends.js:41-46`, `lib/storage/pgCollection/sql.js:64-78`,
+`lib/storage/pgCollection/index.js:188-197`), so it fits neither form as written;
+`SPEC-REG-MODES` owns the per-mode question. Today's paths that store a non-ObjectId `_id` (API
+v3 keeps a client hex `_id` as a string, write contract U1) are deviations the write contract
+already plans to remove, not changed here.
+
+**Rule 7: today's handling as a registry entry, unchanged.** QUIRK-TREATMENTS-006 and
+QUIRK-ENTRIES-004 describe a non-ObjectId string `_id`. cgm-remote-monitor moves it to
+`identifier` when `UUID_HANDLING` is on (the default) and the client sent no `identifier`, drops
+it otherwise, and assigns an ObjectId (`lib/server/treatments.js:394-411`,
+`lib/server/entries.js:267-284`, official `a8888f0d`, read-derived); the reference reproduces
+that, and the cases model the default. Both entries carry `mapping: {action: move-to-identifier,
+flag: UUID_HANDLING, erasesEvidence: true}`: a mapped write no longer shows the quirk in storage,
+so they become `historical` only through the hub's rule 3 records. Measured 2026-10-16 over the
+2026-04-01 and 2026-04-26 snapshots:
+
+| entry | stored documents | sites | newest | versions |
+|---|---|---|---|---|
+| QUIRK-TREATMENTS-006 | 2,844 of 369,419 treatments (0.77%), every one a `Temporary Override` with an upper-case UUID and a `loop://` `enteredBy` | 9 | 2026-04-27 | Loop 3.2.3 to 3.12.1 by co-occurrence (`loop.version`, same site, within 60 minutes; 4 unattributed). Source: Loop 3.14.8 sends an override's `syncIdentifier.uuidString` as `_id` (LoopWorkspace `f8412858`, NightscoutService `OverrideTreament.swift:59`, NightscoutKit `NightscoutTreatment.swift:111`) |
+| QUIRK-ENTRIES-004 | 88,070 of 896,589 entries (9.82%): 57,722 upper-case UUIDs on one site, 30,348 24-character non-hex strings on another | 2 | 2026-04-27 | the UUID site's devicestatus reports `openaps.version` 0.5.1 and 0.6.0 by co-occurrence; the writer is attributed to Trio by the UUID identifier backlog only. Trio at `e41c9db3` (1.0.1) writes its own id as `id`, not `_id` (`BloodGlucose.swift:60-62`, `NightscoutTreatment.swift:62`), so the versions that sent `_id` are older and unmeasured |
+
+Two read-derived statements of D20's own context differ from this source reading: Loop does send
+`_id` (a UUID) for overrides, though not for carbs and doses; and Trio 1.0.1 sends `id`, not `_id`
+(55,939 corpus treatments carry a UUID `id` member, measured; their writer is not attributed). Neither changes a rule.
+
+**Rule 8: projected records.** On an `objectId` hub the typed write assigns an ObjectId and stores
+it with the typed record (`records[]._id`), one per projected document, so every projection of the
+record carries the same `_id`; its `identifier` is the typed id. A write aimed at the projected
+`_id` is refused `projected-read-only`, as one aimed at its identifier is. An `opaque` hub may use
+the typed id for both, which is what §3.6 specified before. **This replaces §3.6's "typed id
+verbatim in v1 `_id`" for `objectId` hubs**: the instance case `project-served` changed its
+expected `_id` (and its record gained the stored `_id`), and `write-projected-read-only` and
+`write-stored-carrier` gained the stored `_id` in their hub state with their expectations
+unchanged; each says so in-file. Prior art, read-derived at Nocturne `42275c812`: its legacy
+surface already serves 24-hex ids — `Treatment.Id` and `Identifier` are written through
+`ObjectIdJsonConverter`, which `MongoObjectId.Coerce` turns into the first 24 hex digits of the
+record's UUID (`src/Core/Nocturne.Core.Models/MongoObjectId.cs:38-61`,
+`Serializers/ObjectIdJsonConverter.cs:20-27`, `Treatment.cs:29-40`), resolved back by a UUID prefix
+range. Its comment gives the reason as AndroidAPS's strict 24-hex id check; no such check was
+found in AndroidAPS at `7e1d537d49`. A derived id is a different mechanism from a stored one: it
+needs no storage, and its first four bytes are the UUID v7's time bits, not an ObjectId timestamp.
+
+**The ObjectId's timestamp is the hub's receipt time** (an assumption of this item): the first four
+bytes of an assigned ObjectId are the time the hub received the write, as any MongoDB server
+assigns it, not the record's own time. A reader must not take an `_id`'s time as the record's.
+The cases pin it: every `assignedIds` value starts with the case's `now`.
+
+**Choices made here for the maintainer to confirm.**
+
+1. *Equal names still contend without a list.* D20's "Two slots are never treated as one because
+   their names look alike" is read as: never by likeness (case, similar words, a shared category);
+   equal names keep §3.6's contention, and the list is the vocabulary `sameAs` may name. The other
+   reading — only listed slots are shared — would change the instance cases `instance-role-held`
+   and the overlaps cases, whose capability documents list no slots.
+2. *The shipped list* holds the three names already used identically, not an empty list.
+3. *`unknown-shared-slot` refuses the element*, rather than falling back to the slot's own name.
+4. *Catalogue mappings need a known writer version*; with none the hub applies no mapping.
+5. *`legacyIdForm` absent is read as `objectId`.*
+6. *`identifier` is null in the reply* when the client sent none and the path assigns none.
+7. *A typed re-send matches across instances of one product* (D20's "stable across devices"),
+   unlike §3.6's dual-write link, which is scoped by instance.
+8. *Recent is 365 days* before the newest snapshot's collection date.
+9. *`historical` needs a hub's instance listing*; without one the corpus alone never supports it.
+10. *A mapping that erases its evidence* (`UUID_HANDLING`) makes `historical` depend on the hub's
+    rule 3 records.
+11. *A `proposed` entry never fails the check*; before, it was checked like an active one.
+12. *Declaration entries are measured only by hub records*, and none is listed.
+13. *The ObjectId timestamp is receipt time*, above.
+
+**Slot candidates for `PROPOSAL-REG-CONTROLLERS`** (read 2026-10-16 from the generated
+registrations, `tools/nsschema/sync_model.py`; meaning not confirmed by any controller author):
+
+| candidate | slots | evidence | differs in |
+|---|---|---|---|
+| `loopMode` | Loop `loopMode` (`dosingEnabled`, carried by the profile), Trio `loopMode` (`DosingMode`, devicestatus), AndroidAPS `runningMode` (`RunningMode`, treatments `OpenAPS Offline`) | all three have category `LoopMode` (`sync_model.py:201`, `:336`, `:488`) | name, carrier, states; AndroidAPS's coexists with `profileSwitch`, `temporaryTarget` and `scene` |
+| `override` | Loop `override` (`TemporaryScheduleOverride`), Trio `override` (`OverrideStored`) | same name and category `Override` (`:76`, `:240`); already contend | carrier eventType (`Temporary Override` vs `Exercise`); Loop's coexists with `preMeal`, Trio's with `temporaryTarget` |
+| `temporaryTarget` | Trio, AndroidAPS `temporaryTarget` | same name, category, carrier (`Temporary Target`, minutes) (`:296`, `:441`); already contend | coexistence lists |
+| `temporaryTarget` or `override` | Loop `preMeal` (`TemporaryScheduleOverride` with context `preMeal`, category `PreMealTarget`) | a target change for a time (`:166`) | it is a Loop override preset with its own slot; no carrier of its own |
+| `profileSwitch` | AndroidAPS `profileSwitch` (`ProfileSwitch`, category `ProfileState`) | no counterpart slot in Loop or Trio (`:368`) | — |
+| `scene` | AndroidAPS `scene` (`Scene`, settings carrier) | no counterpart (`:559`) | — |
+
+**The cases.** 29, under `specs/sync/conformance/quirks/`, in the instance case format; each
+refusal names a passing control. The 55 §3.5 cases and 86 §3.6 cases keep their meaning; the
+three §3.6 cases above changed for rule 8.
+
+| case | what it shows | outcome | control |
+|---|---|---|---|
+| `carrier-hex-id-kept` | A client ObjectId is kept as the ObjectId | 200 written; ids new |  |
+| `carrier-resend-identifier-first` | identifier is tried before _id | 200 written; ids matched by identifier |  |
+| `carrier-resend-matches-identifier` | A re-send matches on identifier, with no cache of server ids | 200 written; ids matched by identifier |  |
+| `carrier-resend-matches-objectid` | A client ObjectId still matches, in either case | 200 written; ids matched by _id |  |
+| `carrier-uuid-entries-moved` | The same handling on entries is QUIRK-ENTRIES-004 | 200 written; ids new; QUIRK-ENTRIES-004 moved-to-identifier |  |
+| `carrier-uuid-id-dropped` | A non-ObjectId _id beside an identifier is dropped, recorded | 200 written; ids new; QUIRK-TREATMENTS-006 dropped |  |
+| `carrier-uuid-id-moved` | A non-ObjectId _id moves to identifier, recorded | 200 written; ids new; QUIRK-TREATMENTS-006 moved-to-identifier |  |
+| `carrier-uuid-resend-matches` | A re-sent UUID _id matches the record it was moved from | 200 written; ids matched by identifier; QUIRK-TREATMENTS-006 moved-to-identifier |  |
+| `carrier-write-both-ids` | Every write reply returns both ids | 200 written; ids new |  |
+| `catalogue-mapping-applied` | An older version gets its slot mapping from the catalogue | 200 written; QUIRK-DECLARATION-901 same-as; channel loopMode by catalogue |  |
+| `catalogue-mapping-version-outside` | A catalogue mapping applies only to the versions it affects | 200 written; channel runningMode by name |  |
+| `catalogue-mapping-version-unknown` | No mapping when the hub does not know the version | 200 written; channel runningMode by name |  |
+| `names-alike-do-not-contend` | Slots are never one because their names look alike | 201 accepted; runningMode source: granted |  |
+| `project-served-opaque` | An opaque hub projects the typed id as both ids | 200 projected; `_id` = identifier |  |
+| `same-as-definition-accepted` | A slot declares the shared slot it means | 201 accepted |  |
+| `same-as-no-shared-list` | A hub without a shared slot list honours no sameAs | 201 partial; `stateSpans/ExampleRunningMode` unknown-shared-slot | `same-as-definition-accepted` |
+| `same-as-own-name-not-a-channel` | A slot that means a shared slot is not also its own channel | 201 partial; runningMode source: unknown-channel | `same-as-role-granted` |
+| `same-as-own-shared-name` | A shared slot means only itself | 201 partial; `stateSpans/ExampleRunningMode` invalid-element | `same-as-definition-accepted` |
+| `same-as-role-granted` | A sameAs slot's role is on the shared channel | 201 accepted; loopMode source: granted |  |
+| `same-as-role-held` | Equal shared slots contend for roles | 201 partial; loopMode source: role-held | `same-as-role-granted` |
+| `same-as-typed-write-declared` | A typed write on a sameAs channel says the channel was declared | 200 written; channel loopMode by declared |  |
+| `same-as-unknown-shared-slot` | sameAs must name a slot the hub lists | 201 partial; `stateSpans/ExampleRunningMode` unknown-shared-slot | `same-as-definition-accepted` |
+| `same-as-unlisted-not-own-name` | An unlisted sameAs never falls back to the slot name | 201 partial; runningMode source: unknown-channel | `same-as-role-granted` |
+| `same-as-without-slot` | sameAs needs a slot | 201 partial; `stateSpans/ExampleRunningMode` invalid-element | `same-as-definition-accepted` |
+| `typed-write-assigns-objectid` | A typed write gets an ObjectId the hub assigns and stores | 200 written; ids new |  |
+| `typed-write-opaque-hub` | An opaque hub may use the typed id for both | 200 written; ids new |  |
+| `typed-write-resend-same-ids` | A typed re-send answers with the stored ids | 200 written; ids matched by identifier |  |
+| `write-projected-read-only-by-objectid` | A write aimed at a projected _id is refused | 409 rejected; projected-read-only | `write-stored-carrier-by-objectid` |
+| `write-stored-carrier-by-objectid` | A write aimed at a stored document's _id is accepted | 200 written |  |
 
 ## 4. Replay, and why physicians cannot see the settings
 

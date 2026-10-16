@@ -3,11 +3,19 @@
 # Schema: specs/sync/registration-submit.schema.json#/$defs/instanceCase.
 # Checked by tools/nsschema/test_registration_instances.py; `detail` strings are
 # not compared.
+# CHANGED 2026-10-16 (SPEC-REG-QUIRKS, D20 rule 8; execution plan §2.6.3, hub-sync design §3.7):
+#   EXPECTATION CHANGED. The projected document's `_id` was the typed id verbatim; it is now the
+#   ObjectId the hub assigned when the typed record was written and stored with it
+#   (`request.record._id`, added here), because this hub's legacy id form is `objectId` (the
+#   capability document has no `legacyIdForm`, which a reader takes as `objectId`). `identifier`
+#   is still the typed id. The ObjectId's timestamp is the hub's receipt time of the typed write,
+#   2026-10-15T11:00:05Z, not the record's own start time (an assumption for the maintainer).
+#   An `opaque` hub keeps the typed id for both: quirks/project-served-opaque.
 id: project-served
 title: An older reader is served a labelled, read-only projection
 description: 'Rule 8. A typed override record (one hour) projects to a treatments document in the carrier''s
-  shape: eventType and duration in minutes from the wire mapping, `identifier` and `_id` the typed entity''s
-  id verbatim, and the marker `projectedFrom` naming the definition, element and entity ids. Never stored
+  shape: eventType and duration in minutes from the wire mapping, `identifier` the typed entity''s id
+  and `_id` the ObjectId the hub stored with it at the typed write (D20 rule 8), and the marker `projectedFrom` naming the definition, element and entity ids. Never stored
   as a source.'
 cell: newer-controller/newer-hub
 now: '2026-10-15T12:00:00Z'
@@ -314,6 +322,7 @@ request:
     product: ControllerA
   record:
     id: 00000000-0000-7000-8000-0000000000b1
+    _id: 6ad0b23500000000000000b1
     identity:
       vendor: Example
       product: ControllerA
@@ -334,7 +343,7 @@ expected:
       collection: treatments
       document:
         identifier: 00000000-0000-7000-8000-0000000000b1
-        _id: 00000000-0000-7000-8000-0000000000b1
+        _id: 6ad0b23500000000000000b1
         created_at: '2026-10-15T11:00:00Z'
         eventType: Temporary Override
         duration: 60

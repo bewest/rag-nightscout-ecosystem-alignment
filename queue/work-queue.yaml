@@ -14017,32 +14017,105 @@ items:
     parcel: platform
     repo: rag-nightscout-ecosystem-alignment
     branch: main
-    base: main@faafc57c
-    state: not-started
+    base: main@18397441
+    state: done
     pr: []
     blast_radius: >
-      Expected: an additive `affects` member and the lifecycle states in
-      the quirks registry (specs/quirks/README.md, tools/nsschema/quirks.py)
-      covering declarations as well as documents; an optional `sameAs` on
-      a definition's slots and an optional shared slot list in the
-      well-known catalogue; the capability document's legacy id form
-      (objectId or opaque); the write reply returning both ids; the
-      UUID_HANDLING move recorded as a version-scoped entry; D20 rule 8 in
-      the projected view (hub-sync §3.6 and its cases). Ships nothing.
+      New specs/quirks/quirk.schema.json, specs/sync/shared-slots.yaml,
+      tools/nsschema/quirks_registration.py, its test file and 29 cases
+      under specs/sync/conformance/quirks/; additive changes to the quirks
+      registry (affects, retired, mapping, declaration entries; two new
+      entries, QUIRK-TREATMENTS-006 and QUIRK-ENTRIES-004) and
+      tools/nsschema/quirks.py (version ranges, recent writes, versions
+      seen, the lifecycle check), the grammar (stateSpans[].sameAs), the
+      capability document (legacyIdForm, wellKnown.slots,
+      wellKnown.mappings) and the submit schema (unknown-shared-slot, the
+      write reply's ids, matchedBy, quirksApplied and slotMapping, a
+      record's _id, write.sent and write.writer, a target by _id, the
+      cases' assignedIds and hubState.documents); negotiate.py and
+      instances.py extended; three §3.6 instance cases changed for rule 8
+      (project-served's expected _id; two stored states); the hub-sync
+      design §3.7 with dated pointers in §3.6, the execution plan §2.6.3
+      status, the write contract §2.2 and §2.3 notes. Ships nothing.
     review: maintainer
     operator_visible: ""
     semver: n/a
     semver_reason: specification in this repository; ships nothing
     register: []
     gates:
-      - no-gate: >
-          Not started. The gate will be conformance cases for rules 1-8 of
-          the execution plan §2.6.3, each refusal or mapping with a passing
-          control, the existing registry and instance suites unchanged in
-          meaning, and a weakening of each rule shown red for the right
-          reason. Version ranges in `affects` are stated only where the
-          corpus or source shows the version; otherwise the entry says the
-          versions are unmeasured.
+      - run: python -m pytest -q tools/nsschema/test_registration_quirks.py
+        kind: unit
+        describe: >
+          RED on 2026-10-16 before the item (the test file and the cases did
+          not exist). GREEN on 2026-10-16: 185 tests over 29 conformance
+          cases in specs/sync/conformance/quirks/ and the registry. Rule 1:
+          version ranges over the vendor's own strings (numeric by part,
+          numbers before text), malformed ranges refused, affected() telling
+          inside, outside and unmeasured apart, the 19 registry entries
+          valid against quirk.schema.json, the 17 pre-D20 entries without any
+          D20 member, a range stated only with evidence and every
+          read-derived claim with file:line and commit. Rule 2: sameAs
+          accepted for a listed shared slot; unknown-shared-slot for an
+          unlisted one and for a hub without a list; invalid-element for a
+          sameAs without a slot and on a slot that is itself a shared slot;
+          the role on the shared channel granted, refused role-held when
+          another product's device instance holds an equal slot, and the
+          slot's own name no channel (also when the shared slot is
+          unlisted); names alike (runningMode, loopMode) never contending;
+          catalogue mappings applied only inside their version range and
+          never for an unknown version; the shipped shared slot list equal
+          to the names used by two or more generated registrations. Rule 3:
+          quirksApplied and slotMapping (declared, catalogue, name). Rule 4:
+          historical needs no recent document, a measured zero of live
+          affected instances and evidence the mapping does not erase;
+          retired needs no stored document; check fails unsupported
+          historical and retired claims, never a proposed one; recent
+          counted on a synthetic corpus; co-occurring and same-document
+          versions. Rules 5 and 6: both ids in every write reply,
+          identifier first, re-sends storing no second copy, the legacy id
+          form objectId or opaque and objectId when absent. Rule 7: the id
+          handling reproduces cgm-remote-monitor's normalizeTreatmentId (read
+          at official a8888f0d) with UUID_HANDLING at its default. Rule 8:
+          the ObjectId assigned at the typed write is the projected _id on
+          every read; an objectId hub never projects a record without one;
+          an opaque hub uses the typed id; a write to the projected _id is
+          refused. Every assigned ObjectId carries the case's now. Every
+          refusal names a passing control. In the same run
+          test_registration_instances.py stays 545 passed and
+          test_registration_negotiation.py 460: the 55 and 86 cases keep
+          their meaning except rule 8's change to project-served (expected
+          _id now the stored ObjectId) and the stored _id added to
+          write-projected-read-only and write-stored-carrier, each called
+          out in-file; test_a_projected_document_is_labelled_and_carries_the_typed_id
+          and test_nsschema.py's historical-quirk test (renamed
+          test_check_measures_a_historical_quirk) changed with them, called
+          out in-file. tools/nsschema in the item's worktree: 1554 passed, 1
+          failed, 15 skipped (baseline 1369 passed, the same 1 failure and
+          15 skips, which need the gitignored externals/ checkout).
+          sync_model --check green. make schema-quirks-check over the
+          corpus: every claim holds, the 17 pre-D20 rows of quirks.json
+          byte-identical. Non-vacuity: 26 weakenings, one at a time, each
+          red by assertion and reverted (red counts in parentheses): the
+          unknown-shared-slot check removed (2); sameAs ignored for the
+          channel (6); an unlisted sameAs falling back to the slot name (1;
+          green until the case same-as-unlisted-not-own-name was added);
+          runningMode inferred as loopMode (2); a shared slot remappable (1;
+          green until same-as-own-shared-name was isolated from the
+          one-slot-one-sameAs check); a catalogue mapping ignoring its range
+          (1) or applying to an unknown version (1); quirksApplied not
+          recorded (4); _id tried before identifier (1); no identifier
+          matching (3); a non-ObjectId _id kept (6; first red by ValueError,
+          rewritten); a UUID moved beside an identifier (2); the projection's
+          stored-id requirement removed (1) and the typed id used as _id on
+          an objectId hub (3); a typed re-send assigned a new ObjectId (1);
+          erasesEvidence ignored (1); unmeasured live instances read as zero
+          (1; first red by KeyError, the test now asserts the status first);
+          check skipping historical (2); versions compared as text (3); an
+          absent legacyIdForm read as opaque (1); the projected _id
+          unprotected (1); preMeal added to the shared list (1); the recent
+          window ignored (1); sameAs not meaning (1); a matched re-send
+          storing a second copy (4); the declared slotMapping not reported
+          (1).
     blocks_on: [SPEC-REG-INSTANCE]
     evidence:
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
@@ -14060,6 +14133,43 @@ items:
       the sync identity the client assigns. Which slots share a meaning
       (for example runningMode and loopMode) is not decided by this item:
       it lists candidates with evidence for PROPOSAL-REG-CONTROLLERS.
+
+      Done 2026-10-16; hub-sync design §3.7. Registry: affects
+      [{vendor, product, versions: range | unmeasured, seen,
+      versionSource, evidence}], statuses proposed, active, historical,
+      retired, mapping {action, flag, erasesEvidence}, declaration entries
+      (applies_to: declarations), validated by quirk.schema.json; recent =
+      365 days before the newest snapshot (a declared parameter,
+      --recent-days); historical also needs a hub's de-identified instance
+      listing (--instances), unmeasured without one. UUID_HANDLING is
+      QUIRK-TREATMENTS-006 (2,844 stored treatments on 9 sites, all Loop
+      overrides by enteredBy scheme; Loop 3.2.3 to 3.12.1 by co-occurrence;
+      Loop 3.14.8 sends it, read at LoopWorkspace f8412858) and
+      QUIRK-ENTRIES-004 (88,070 entries on 2 sites; writer attributed to
+      Trio by the backlog only; Trio 1.0.1 at e41c9db3 writes `id`, not
+      `_id`); versions unmeasured as ranges; both erase their evidence, so
+      they go historical only through hub records. Shared slot list
+      (specs/sync/shared-slots.yaml): override, loopMode, temporaryTarget,
+      the names already used identically by two generated registrations;
+      it adds no contention, and sameAs may name them. sameAs is meaning;
+      an unlisted one is unknown-shared-slot and its slot name derives no
+      channel. Catalogue mappings (wellKnown.mappings) need a known writer
+      version in range. legacyIdForm: crm single-tenant on MongoDB declares
+      objectId; single-tenant on PostgreSQL is left open for SPEC-REG-MODES
+      (the server mints a 24-hex text _id and keeps a client _id as sent,
+      read on the seam chain at 81a1f6ce). Write replies return ids
+      {identifier, _id} and matchedBy; re-sends match identifier first.
+      Rule 8: the typed write assigns and stores an ObjectId (timestamp =
+      receipt time, an assumption for the maintainer); an opaque hub may
+      use the typed id. Prior art: Nocturne at 42275c812 serves the UUID's
+      first 24 hex digits as _id and identifier on its legacy surface
+      (MongoObjectId.Coerce), a derived rather than stored id. Read for
+      this item and differing from D20's context paragraph: Loop sends a
+      UUID _id for overrides; Trio 1.0.1 sends `id`. Thirteen choices beyond
+      the rules are listed in §3.7 for confirmation, the first being that
+      equal slot names still contend without a list. Slot candidates for
+      PROPOSAL-REG-CONTROLLERS are in §3.7: runningMode with loopMode
+      (category LoopMode in all three), preMeal, profileSwitch and scene.
 
   - id: HUB-REG-CRM
     title: "cgm-remote-monitor: accept registrations and derive typed storage, validation and query from them, single-tenant first"

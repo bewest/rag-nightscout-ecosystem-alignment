@@ -1,0 +1,136 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://nightscout.dev/schemas/quirks/quirk.json",
+ "title": "Quirks registry entry",
+ "description": "One entry of specs/quirks/*.yaml (README.md). D20 (execution plan §2.6.3, SPEC-REG-QUIRKS) adds `affects` (the vendor versions an entry affects, rule 1), the lifecycle status `retired` (rule 4), `mapping` (what a hub does to a stored document, recorded per rule 3) and declaration entries (`applies_to: declarations`, rule 2). Every member D20 adds is optional; entries without them keep their project-level attribution. Checked by tools/nsschema/quirks.py at load.",
+ "type": "object",
+ "required": ["id", "title", "status", "kind", "reader_guidance", "references"],
+ "properties": {
+  "id": {"type": "string", "pattern": "^QUIRK-[A-Z]+-[0-9]{3}$"},
+  "title": {"type": "string", "minLength": 1},
+  "status": {
+   "enum": ["proposed", "active", "historical", "retired"],
+   "description": "Rule 4. `proposed`: suspected, not yet measured. `active`: measured in the corpus. `historical`: no recent write and no live instance of an affected version. `retired`: also no stored record depends on its mapping. Each move is measured by `make schema-quirks`; `make schema-quirks-check` fails a `historical` or `retired` claim the measurement does not support."
+  },
+  "applies_to": {
+   "enum": ["documents", "declarations"],
+   "description": "Rule 1. `documents` (the default): stored documents, measured over the corpus by `detect`. `declarations`: a registration's slot names, units or vocabulary, mapped by the well-known catalogue for the affected versions and measured by a hub's recorded mappings."
+  },
+  "path": {"type": "string"},
+  "kind": {
+   "enum": ["type-union", "nullability", "enum-gap", "case-mismatch", "unit-mismatch",
+            "shape-divergence", "sentinel", "undeclared-field", "id-form", "slot-name"]
+  },
+  "description": {"type": "string"},
+  "detect": {
+   "type": "object",
+   "required": ["path", "test"],
+   "properties": {
+    "path": {"type": "string"},
+    "test": {"type": "string"},
+    "value": {},
+    "values": {"type": "array"},
+    "pattern": {"type": "string"}
+   }
+  },
+  "expect": {
+   "type": "object",
+   "properties": {
+    "min_share": {"type": "number", "minimum": 0, "maximum": 1},
+    "min_sites": {"type": "integer", "minimum": 0}
+   }
+  },
+  "reader_guidance": {"type": "string"},
+  "writer_guidance": {"type": "string"},
+  "attribution": {"type": "object"},
+  "references": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+  "affects": {
+   "type": "array",
+   "minItems": 1,
+   "description": "Rule 1: the (vendor, product, versions) this entry affects. `vendor` and `product` are a registration's `metadata.vendor` and `metadata.product`.",
+   "items": {"$ref": "#/$defs/affects"}
+  },
+  "mapping": {
+   "type": "object",
+   "description": "What a hub does to a document this entry describes, recorded on the stored record as `quirksApplied` (rule 3). `erasesEvidence`: the stored form no longer shows the quirk, so the corpus cannot count recent writes and only the hub's records measure the lifecycle.",
+   "required": ["action", "erasesEvidence"],
+   "properties": {
+    "action": {"type": "string", "minLength": 1},
+    "flag": {"type": "string"},
+    "erasesEvidence": {"type": "boolean"}
+   }
+  },
+  "declaration": {
+   "type": "object",
+   "description": "For `applies_to: declarations`: the declared member and value the entry maps, for the affected versions. The catalogue publishes the mapping as a `wellKnown.mappings[]` entry of the capability document.",
+   "required": ["member", "value"],
+   "properties": {
+    "member": {"enum": ["slot"]},
+    "value": {"type": "string", "minLength": 1},
+    "sameAs": {"type": "string", "minLength": 1}
+   }
+  }
+ },
+ "allOf": [
+  {
+   "if": {"properties": {"applies_to": {"const": "declarations"}}, "required": ["applies_to"]},
+   "then": {"required": ["declaration", "affects"]},
+   "else": {"required": ["path", "detect"]}
+  }
+ ],
+ "$defs": {
+  "evidence": {
+   "type": "object",
+   "required": ["claim", "ref"],
+   "properties": {
+    "claim": {"enum": ["measured", "read-derived"]},
+    "ref": {"type": "string", "minLength": 1},
+    "commit": {"type": "string", "pattern": "^[0-9a-f]{7,40}$"}
+   }
+  },
+  "affects": {
+   "type": "object",
+   "required": ["vendor", "product", "versions"],
+   "properties": {
+    "vendor": {"type": "string", "minLength": 1},
+    "product": {"type": "string", "minLength": 1},
+    "versions": {
+     "type": "object",
+     "description": "A range over the vendor's own version strings (`*`, or whitespace-separated comparators `=`, `>=`, `>`, `<=`, `<` that must all hold; dot-separated parts compare numerically, numbers before text), stated only where the corpus or source shows it; otherwise `unmeasured`, saying why. `seen`: versions the evidence shows, which are not a range.",
+     "oneOf": [
+      {"required": ["range"], "not": {"required": ["unmeasured"]}},
+      {"required": ["unmeasured"], "not": {"required": ["range"]}}
+     ],
+     "properties": {
+      "range": {"type": "string", "minLength": 1},
+      "unmeasured": {"type": "string", "minLength": 1},
+      "seen": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "required": ["version", "claim", "ref"],
+        "properties": {
+         "version": {"type": "string", "minLength": 1},
+         "claim": {"enum": ["measured", "read-derived"]},
+         "ref": {"type": "string", "minLength": 1},
+         "commit": {"type": "string", "pattern": "^[0-9a-f]{7,40}$"}
+        }
+       }
+      }
+     }
+    },
+    "versionSource": {
+     "type": "object",
+     "description": "Where `make schema-quirks` reads a version: `path` in the same document when `collection` is the entry's, else in the nearest `collection` document of the same site within `window_minutes` (co-occurrence, not attribution).",
+     "required": ["collection", "path"],
+     "properties": {
+      "collection": {"type": "string"},
+      "path": {"type": "string"},
+      "window_minutes": {"type": "integer", "minimum": 1}
+     }
+    },
+    "evidence": {"type": "array", "items": {"$ref": "#/$defs/evidence"}}
+   }
+  }
+ }
+}

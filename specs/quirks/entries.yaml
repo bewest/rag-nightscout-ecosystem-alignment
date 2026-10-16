@@ -86,3 +86,52 @@ quirks:
     writer_guidance: Write both, derived from the same source value.
     references:
       - docs/10-domain/field-reference/entries.md
+
+  - id: QUIRK-ENTRIES-004
+    title: _id is sent as a string that is not an ObjectId
+    status: active
+    path: _id
+    kind: id-form
+    description: >-
+      QUIRK-TREATMENTS-006 for entries: cgm-remote-monitor moves a
+      non-ObjectId string `_id` to `identifier` under `UUID_HANDLING` and
+      assigns an ObjectId. The stored string forms in the corpus are
+      upper-case UUIDs on one site, whose devicestatus reports
+      `openaps.version` 0.5.1 and 0.6.0 by co-occurrence, and 24-character
+      non-hex strings on another; neither names its writer in the document.
+    detect:
+      path: _id
+      test: matches
+      pattern: '^(?![0-9a-fA-F]{24}$).+'
+    expect:
+      min_share: 0.0
+      min_sites: 1
+    mapping:
+      action: move-to-identifier
+      flag: UUID_HANDLING
+      erasesEvidence: true
+    affects:
+      - vendor: Nightscout Foundation
+        product: Trio
+        versions:
+          unmeasured: >-
+            Attributed by the UUID identifier backlog (read-derived, no
+            commit). Trio at e41c9db3 (APP_VERSION 1.0.1) writes its own id
+            as `id`, not `_id` (BloodGlucose.swift:60-62, NightscoutTreatment.swift:62),
+            so the versions that sent `_id` are older and unmeasured.
+        versionSource:
+          collection: devicestatus
+          path: openaps.version
+          window_minutes: 60
+        evidence:
+          - claim: read-derived
+            ref: docs/backlogs/uuid-identifier-lookup.md (Affected Apps)
+          - claim: read-derived
+            ref: externals/Trio Trio/Sources/Models/BloodGlucose.swift:60-62
+            commit: e41c9db3
+    reader_guidance: See QUIRK-TREATMENTS-006.
+    writer_guidance: See QUIRK-TREATMENTS-006.
+    references:
+      - docs/30-design/tenancy/write-contract-spec-2026-10-07.md#23-order-of-the-rules
+      - docs/backlogs/uuid-identifier-lookup.md
+      - externals/cgm-remote-monitor-official/lib/server/entries.js:267-284 @a8888f0d (normalizeEntryId)

@@ -30,7 +30,7 @@ import re
 
 import jsonschema
 
-from . import corpus, negotiate
+from . import corpus, negotiate, quirks_registration
 
 INSTANCE_SCHEMA = "specs/sync/controller-instance.schema.json"
 CASES_DIR = "specs/sync/conformance/instances"
@@ -208,8 +208,12 @@ def channels(caps, well_known, definition):
         source = (negotiate._resolved(caps, well_known, kind, node) or {}) \
             if kind == "stateSpans" else node
         slot = source.get("slot") if kind == "stateSpans" else None
-        name = slot if isinstance(slot, str) and slot and "/" not in slot \
-            else f"{meta['vendor']}/{meta['product']}/{eid}"
+        element_channel = f"{meta['vendor']}/{meta['product']}/{eid}"
+        if isinstance(slot, str) and slot and "/" not in slot:
+            # D20 rule 2: a declared `sameAs` names the shared slot instead.
+            name = quirks_registration.slot_channel(caps, source, element_channel)
+        else:
+            name = element_channel
         entry = out.setdefault(name, {"elements": [], "commands": False})
         entry["elements"].append(eid)
         accepts = (source.get("acceptsFromHub") or {}).get("channels") or []
@@ -727,8 +731,11 @@ def project(caps, hub_state, record, well_known):
     """Rule 8: the projected carrier document an older reader is served for
     one typed record, or None when the element has no declared mapping. The
     document is labelled with the marker `projectedFrom`, is never stored as
-    a source and is read-only; its `identifier` (and v1 `_id`) is the typed
-    entity's id, verbatim. Only the wire members the mapping declares are
+    a source and is read-only; its `identifier` is the typed entity's id.
+    *(Changed 2026-10-16, D20 rule 8: on an `objectId` hub its `_id` is the
+    ObjectId the hub assigned at the typed write and stored with the
+    record; an `opaque` hub may use the typed id for both, as this read
+    before.)* Only the wire members the mapping declares are
     filled: the collection, eventType, the start time and the duration in
     the wire's unit (or its indefinite sentinel)."""
     identity = _ident(record["identity"])
@@ -739,7 +746,8 @@ def project(caps, hub_state, record, well_known):
     wire = (resolved or {}).get("wire")
     if not wire:
         return None
-    document = {"identifier": record["id"], "_id": record["id"], "created_at": record["startedAt"]}
+    identifier, _id = quirks_registration.projected_ids(caps, record)
+    document = {"identifier": identifier, "_id": _id, "created_at": record["startedAt"]}
     if wire.get("eventType"):
         document["eventType"] = wire["eventType"]
     if wire.get("durationField"):
@@ -762,11 +770,14 @@ def _projected_ids(caps, hub_state, well_known):
         if record.get("as") == "typed" and record.get("carrierView") == "served":
             projected = project(caps, hub_state, record, well_known)
             if projected:
-                out[(projected["collection"], record["id"])] = record["id"]
+                doc = projected["document"]
+                out[(projected["collection"], "identifier", doc["identifier"])] = record["id"]
+                # D20 rule 8: a write aimed at the projected `_id` is refused too.
+                out[(projected["collection"], "_id", doc["_id"])] = record["id"]
     return out
 
 
-def write(caps, hub_state, request, now, well_known):
+def write(caps, hub_state, request, now, well_known, assigner=None):
     """One write, as the hub attributes and accepts it (rules 4, 6, 8; the
     four compatibility cells). Carrier writes are never refused for
     exclusivity. Typed writes need a live instance holding `source` on the
@@ -781,8 +792,11 @@ def write(caps, hub_state, request, now, well_known):
     attribution = {"vendor": identity[0], "product": identity[1],
                    "instanceId": instance_id if stored else "unregistered"}
     target = w.get("target")
-    if target and (target["collection"], target["identifier"]) in \
-            _projected_ids(caps, hub_state, well_known):
+    key = None
+    if target:
+        key = ("identifier", target["identifier"]) if "identifier" in target \
+            else ("_id", target["_id"])
+    if target and (target["collection"],) + key in _projected_ids(caps, hub_state, well_known):
         return _refused(409, "projected-read-only", "target",
                         "a projected document is served, never stored, and is read-only"), hub_state
     if w["as"] == "carrier":
@@ -801,6 +815,18 @@ def write(caps, hub_state, request, now, well_known):
                                        if r.get("as") == "typed"
                                        and r.get("instanceId") == attribution["instanceId"]
                                        and r.get("controllerRecordId") == w["recordId"]), None)
+        if "sent" in w:
+            # D20 rules 5 to 7: both ids, identifier first, the mappings applied.
+            members, after = quirks_registration.carrier_write(caps, after, w, assigner)
+            result.update(members)
+        if "writer" in w:
+            # D20 rule 2: the catalogue's mapping for a version before registration.
+            mapping, applied = quirks_registration.catalogue_mapping(
+                caps, well_known, w["writer"], w["element"])
+            if mapping:
+                result["slotMapping"] = mapping
+            if applied:
+                result["quirksApplied"] = result.get("quirksApplied", []) + applied
         return _response(200, "written", write=result), after
     # Typed.
     if not caps.get("instances"):
@@ -823,10 +849,21 @@ def write(caps, hub_state, request, now, well_known):
                             "another instance is the source of record; write the carrier"), hub_state
         return _refused(409, "role-not-granted", None,
                         "the instance holds no source role on this channel"), hub_state
-    return _response(200, "written", write={
-        "accepted": True, "as": "typed", "attributedTo": attribution,
-        "definitionId": stored["instance"]["definitionId"],
-        "provenance": role["provenance"]}), hub_state
+    result = {"accepted": True, "as": "typed", "attributedTo": attribution,
+              "definitionId": stored["instance"]["definitionId"],
+              "provenance": role["provenance"]}
+    after = hub_state
+    node = next((n for eid, _p, _d, n, k in negotiate.elements(definition)
+                 if eid == w["element"] and k == "stateSpans"), None)
+    source = negotiate._resolved(caps, well_known, "stateSpans", node) if node else None
+    if source and "sameAs" in source and channel == source["sameAs"]:
+        # D20 rule 3: a channel a declared `sameAs` decided is reported as declared.
+        result["slotMapping"] = {"slot": source["slot"], "channel": channel, "by": "declared"}
+    if w.get("recordId") is not None:
+        # D20 rules 5 and 8: both ids; the hub assigns and stores `_id` now.
+        members, after = quirks_registration.typed_write(caps, hub_state, w, stored, assigner)
+        result.update(members)
+    return _response(200, "written", write=result), after
 
 
 def retention(caps, hub_state, request, now):
@@ -940,7 +977,8 @@ def run_case(case, grammar=None):
             _refused(409, "no-carrier-mapping", None, "the element declares no carrier mapping")
         after = state
     elif action == "write":
-        response, after = write(caps, state, request, now, well_known)
+        response, after = write(caps, state, request, now, well_known,
+                                quirks_registration.Assigner(case.get("assignedIds")))
     elif action == "retention-check":
         response, after = retention(caps, state, request, now)
     else:

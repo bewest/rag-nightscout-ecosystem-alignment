@@ -208,6 +208,64 @@
        }
       }
      }
+    },
+    "slots": {
+     "type": "array",
+     "description": "D20 rule 2 (SPEC-REG-QUIRKS, hub-sync design §3.7): the optional shared slot list. A definition's `stateSpans[].sameAs` names one of these, and the entry's channel is then that slot. Listing a slot adds no contention: equal slot names already share a channel (D19, §3.6); the list is what `sameAs` and a catalogue mapping may name. Which slots share a meaning is for the controller authors to confirm (PROPOSAL-REG-CONTROLLERS).",
+     "items": {
+      "type": "object",
+      "required": [
+       "name"
+      ],
+      "properties": {
+       "name": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9]*$"
+       },
+       "description": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "mappings": {
+     "type": "array",
+     "description": "D20 rule 2: catalogue mappings for versions released before registration, each a quirks registry entry with `applies_to: declarations`, scoped to the vendor versions it affects. The hub applies one to a write it describes by a well-known registration when the writer's version is in `versions`, and records it (`quirksApplied`, rule 3). A write whose version the hub does not know gets no mapping.",
+     "items": {
+      "type": "object",
+      "required": [
+       "quirk",
+       "vendor",
+       "product",
+       "versions",
+       "slot",
+       "sameAs"
+      ],
+      "properties": {
+       "quirk": {
+        "type": "string",
+        "pattern": "^QUIRK-[A-Z]+-[0-9]{3}$"
+       },
+       "vendor": {
+        "type": "string"
+       },
+       "product": {
+        "type": "string"
+       },
+       "versions": {
+        "type": "string",
+        "minLength": 1,
+        "description": "A version range (specs/quirks/README.md)."
+       },
+       "slot": {
+        "type": "string"
+       },
+       "sameAs": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9]*$"
+       }
+      }
+     }
     }
    }
   },
@@ -326,6 +384,13 @@
      }
     }
    }
+  },
+  "legacyIdForm": {
+   "enum": [
+    "objectId",
+    "opaque"
+   ],
+   "description": "D20 rule 6 (SPEC-REG-QUIRKS, hub-sync design §3.7): the form of `_id` this hub stores and serves to v1 and v3 readers. `objectId`: `_id` is always an ObjectId the hub assigns (or a client ObjectId it keeps); a client `_id` that is not one is handled as the quirks registry says (QUIRK-TREATMENTS-006, QUIRK-ENTRIES-004) and never stored. `opaque`: `_id` is a string key the hub chooses. cgm-remote-monitor in single-tenant mode on MongoDB declares `objectId`; single-tenant mode on PostgreSQL is not decided (SPEC-REG-MODES). A reader of a document without this member assumes `objectId`, the legacy API's rule."
   }
  }
 }
