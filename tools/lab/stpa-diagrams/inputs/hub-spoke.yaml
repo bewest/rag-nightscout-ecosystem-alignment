@@ -1,0 +1,26 @@
+# Generic Nightscout hub and spoke, drawn with remote commands down and status up.
+# Edge kinds: control (commands), feedback (status back to the commander), data (records flowing to/from the hub).
+title: Nightscout hub and spoke
+nodes:
+  - {id: caregiver, label: "Caregiver", kind: human, level: 0, column: 1}
+  - {id: follower, label: "Follower app / watch", kind: controller, level: 1, column: 1}
+  - {id: reports, label: "Reports and\nresearch tools", kind: consumer, level: 1, column: 3}
+  - {id: hub, label: "Nightscout hub\n(one person's site)", kind: hub, level: 2, column: 1}
+  - {id: vendor, label: "Vendor cloud", kind: source, level: 2, column: 3}
+  - {id: push, label: "Push service", kind: relay, level: 3, column: 0}
+  - {id: uploader, label: "CGM uploader", kind: source, level: 3, column: 2}
+  - {id: aid, label: "AID controller app", kind: controller, level: 4, column: 1}
+edges:
+  - {from: caregiver, to: follower, kind: control, label: "remote command"}
+  - {from: follower, to: caregiver, kind: feedback, label: "glucose, alerts"}
+  - {from: follower, to: hub, kind: control, label: "command via API"}
+  - {from: hub, to: follower, kind: data, label: "realtime updates"}
+  - {from: hub, to: push, kind: control, label: "command"}
+  - {from: push, to: aid, kind: control, label: "notification"}
+  - {from: aid, to: hub, kind: feedback, label: "command status,\ndevicestatus"}
+  - {from: aid, to: hub, kind: data, label: "entries, treatments"}
+  - {from: uploader, to: hub, kind: data, label: "entries"}
+  - {from: vendor, to: hub, kind: data, label: "connector pull"}
+  - {from: hub, to: reports, kind: data, label: "history"}
+mutation:
+  - {from: hub, to: caregiver, kind: feedback, label: "web alarms"}

@@ -1,0 +1,25 @@
+# Generic AID control loop, drawn as an STPA control structure.
+# level: 0 is the top of the hierarchy; column: left-to-right lane (0 = actuator side, 2 = sensor side).
+# Edge kinds: control (down), feedback (up), disturbance (from outside the loop).
+title: AID control loop
+nodes:
+  - {id: person, label: "Person / caregiver", kind: human, level: 0, column: 1}
+  - {id: app, label: "AID controller app\n(algorithm + process model)", kind: controller, level: 1, column: 1}
+  - {id: pump, label: "Insulin pump", kind: actuator, level: 2, column: 0}
+  - {id: cgm, label: "CGM sensor", kind: sensor, level: 2, column: 2}
+  - {id: body, label: "Glucose-insulin dynamics\n(the body)", kind: process, level: 3, column: 1}
+  - {id: life, label: "Meals, activity, illness", kind: disturbance, level: 3, column: 3}
+edges:
+  - {from: person, to: app, kind: control, label: "settings, targets,\nmeals, overrides"}
+  - {from: app, to: person, kind: feedback, label: "glucose, predictions,\nalerts"}
+  - {from: app, to: pump, kind: control, label: "temp basal,\nbolus"}
+  - {from: pump, to: app, kind: feedback, label: "delivery status,\nfaults"}
+  - {from: pump, to: body, kind: control, label: "insulin"}
+  - {from: body, to: cgm, kind: feedback, label: "interstitial glucose"}
+  - {from: cgm, to: app, kind: feedback, label: "readings"}
+  - {from: person, to: pump, kind: control, label: "manual bolus,\nsuspend"}
+  - {from: body, to: person, kind: feedback, label: "symptoms,\nfingerstick"}
+  - {from: life, to: body, kind: disturbance, label: "disturbances"}
+# The break-it control: one added feedback path, used to measure layout stability.
+mutation:
+  - {from: cgm, to: person, kind: feedback, label: "CGM alarms"}

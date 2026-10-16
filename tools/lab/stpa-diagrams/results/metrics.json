@@ -1,0 +1,2642 @@
+[
+ {
+  "diagram": "aid-loop",
+  "mode": "base",
+  "variant": "control-grid",
+  "render": null,
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 10,
+   "of_edges": 10,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 2,
+  "edges_through_nodes": 1,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 8,
+  "width": 965,
+  "height": 457,
+  "svg_bytes": 2901,
+  "source_lines": null
+ },
+ {
+  "diagram": "aid-loop",
+  "mode": "base",
+  "variant": "control-random",
+  "render": null,
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 10,
+   "of_edges": 10,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   4,
+   13
+  ],
+  "column_violations": [
+   1,
+   2
+  ],
+  "loops_control_left": [
+   0,
+   2
+  ],
+  "loops_distinct": [
+   0,
+   2
+  ],
+  "edge_overlaps": 3,
+  "crossings": 2,
+  "edges_through_nodes": 3,
+  "group_intrusions": null,
+  "label_collisions": 1,
+  "text_runs": 8,
+  "width": 772,
+  "height": 287,
+  "svg_bytes": 2893,
+  "source_lines": null
+ },
+ {
+  "diagram": "aid-loop",
+  "mode": "base",
+  "variant": "dot-spline",
+  "render": {
+   "variant": "dot-spline",
+   "rc": 0,
+   "ms": 23
+  },
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 10,
+   "of_edges": 10,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 4,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 24,
+  "width": 509,
+  "height": 346,
+  "svg_bytes": 9250,
+  "source_lines": 27
+ },
+ {
+  "diagram": "aid-loop",
+  "mode": "base",
+  "variant": "dot-ortho",
+  "render": {
+   "variant": "dot-ortho",
+   "rc": 0,
+   "ms": 40
+  },
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 10,
+   "of_edges": 10,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   1,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 24,
+  "width": 385,
+  "height": 294,
+  "svg_bytes": 9127,
+  "source_lines": 27
+ },
+ {
+  "diagram": "aid-loop",
+  "mode": "base",
+  "variant": "d2-dagre",
+  "render": {
+   "variant": "d2-dagre",
+   "rc": 0,
+   "ms": 107
+  },
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 10,
+   "of_edges": 10,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   3,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 2,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 16,
+  "width": 641,
+  "height": 900,
+  "svg_bytes": 26548,
+  "source_lines": 28
+ },
+ {
+  "diagram": "aid-loop",
+  "mode": "base",
+  "variant": "d2-elk",
+  "render": {
+   "variant": "d2-elk",
+   "rc": 0,
+   "ms": 465
+  },
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 10,
+   "of_edges": 10,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   10,
+   13
+  ],
+  "column_violations": [
+   2,
+   2
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 16,
+  "width": 530,
+  "height": 1176,
+  "svg_bytes": 26635,
+  "source_lines": 28
+ },
+ {
+  "diagram": "aid-loop",
+  "mode": "base",
+  "variant": "d2-grid",
+  "render": {
+   "variant": "d2-grid",
+   "rc": 0,
+   "ms": 43
+  },
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 10,
+   "of_edges": 10,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   0,
+   2
+  ],
+  "loops_distinct": [
+   0,
+   2
+  ],
+  "edge_overlaps": 4,
+  "crossings": 0,
+  "edges_through_nodes": 2,
+  "group_intrusions": null,
+  "label_collisions": 3,
+  "text_runs": 16,
+  "width": 911,
+  "height": 602,
+  "svg_bytes": 27992,
+  "source_lines": 41
+ },
+ {
+  "diagram": "aid-loop",
+  "mode": "base",
+  "variant": "mermaid-dagre",
+  "render": null,
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 10,
+   "of_edges": 10,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   3,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 2,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 16,
+  "width": 593,
+  "height": 678,
+  "svg_bytes": 27285,
+  "source_lines": 41
+ },
+ {
+  "diagram": "aid-loop",
+  "mode": "base",
+  "variant": "mermaid-elk",
+  "render": null,
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 10,
+   "of_edges": 10,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   10,
+   13
+  ],
+  "column_violations": [
+   2,
+   2
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 16,
+  "width": 527,
+  "height": 882,
+  "svg_bytes": 26881,
+  "source_lines": 41
+ },
+ {
+  "diagram": "aid-loop",
+  "mode": "base",
+  "variant": "plantuml",
+  "render": {
+   "variant": "plantuml",
+   "rc": 0,
+   "ms": 650
+  },
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 10,
+   "of_edges": 10,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   1,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 24,
+  "width": 617,
+  "height": 453,
+  "svg_bytes": 11022,
+  "source_lines": 29
+ },
+ {
+  "diagram": "aid-loop",
+  "mode": "mutated",
+  "variant": "control-grid",
+  "render": null,
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 3,
+  "edges_through_nodes": 1,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 8,
+  "width": 965,
+  "height": 457,
+  "svg_bytes": 3036,
+  "source_lines": null
+ },
+ {
+  "diagram": "aid-loop",
+  "mode": "mutated",
+  "variant": "control-random",
+  "render": null,
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   4,
+   13
+  ],
+  "column_violations": [
+   1,
+   2
+  ],
+  "loops_control_left": [
+   0,
+   2
+  ],
+  "loops_distinct": [
+   0,
+   2
+  ],
+  "edge_overlaps": 3,
+  "crossings": 3,
+  "edges_through_nodes": 5,
+  "group_intrusions": null,
+  "label_collisions": 1,
+  "text_runs": 8,
+  "width": 772,
+  "height": 287,
+  "svg_bytes": 3029,
+  "source_lines": null
+ },
+ {
+  "diagram": "aid-loop",
+  "mode": "mutated",
+  "variant": "dot-spline",
+  "render": {
+   "variant": "dot-spline",
+   "rc": 0,
+   "ms": 24
+  },
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 4,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 25,
+  "width": 486,
+  "height": 346,
+  "svg_bytes": 9731,
+  "source_lines": 28,
+  "displacement": {
+   "mean": 0.091,
+   "max": 0.192
+  }
+ },
+ {
+  "diagram": "aid-loop",
+  "mode": "mutated",
+  "variant": "dot-ortho",
+  "render": {
+   "variant": "dot-ortho",
+   "rc": 0,
+   "ms": 24
+  },
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 25,
+  "width": 385,
+  "height": 294,
+  "svg_bytes": 9652,
+  "source_lines": 28,
+  "displacement": {
+   "mean": 0.051,
+   "max": 0.195
+  }
+ },
+ {
+  "diagram": "aid-loop",
+  "mode": "mutated",
+  "variant": "d2-dagre",
+  "render": {
+   "variant": "d2-dagre",
+   "rc": 0,
+   "ms": 102
+  },
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   3,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 2,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 17,
+  "width": 712,
+  "height": 900,
+  "svg_bytes": 27436,
+  "source_lines": 29,
+  "displacement": {
+   "mean": 0.078,
+   "max": 0.135
+  }
+ },
+ {
+  "diagram": "aid-loop",
+  "mode": "mutated",
+  "variant": "d2-elk",
+  "render": {
+   "variant": "d2-elk",
+   "rc": 0,
+   "ms": 486
+  },
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   3,
+   13
+  ],
+  "column_violations": [
+   1,
+   2
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 1,
+  "text_runs": 17,
+  "width": 847,
+  "height": 1320,
+  "svg_bytes": 27912,
+  "source_lines": 29,
+  "displacement": {
+   "mean": 0.67,
+   "max": 1.255
+  }
+ },
+ {
+  "diagram": "aid-loop",
+  "mode": "mutated",
+  "variant": "d2-grid",
+  "render": {
+   "variant": "d2-grid",
+   "rc": 0,
+   "ms": 42
+  },
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   0,
+   2
+  ],
+  "loops_distinct": [
+   0,
+   2
+  ],
+  "edge_overlaps": 4,
+  "crossings": 0,
+  "edges_through_nodes": 3,
+  "group_intrusions": null,
+  "label_collisions": 4,
+  "text_runs": 17,
+  "width": 911,
+  "height": 602,
+  "svg_bytes": 28496,
+  "source_lines": 42,
+  "displacement": {
+   "mean": 0,
+   "max": 0
+  }
+ },
+ {
+  "diagram": "aid-loop",
+  "mode": "mutated",
+  "variant": "mermaid-dagre",
+  "render": null,
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   3,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 2,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 17,
+  "width": 672,
+  "height": 678,
+  "svg_bytes": 28741,
+  "source_lines": 43,
+  "displacement": {
+   "mean": 0.078,
+   "max": 0.133
+  }
+ },
+ {
+  "diagram": "aid-loop",
+  "mode": "mutated",
+  "variant": "mermaid-elk",
+  "render": null,
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   10,
+   13
+  ],
+  "column_violations": [
+   1,
+   2
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 17,
+  "width": 486,
+  "height": 1016,
+  "svg_bytes": 28817,
+  "source_lines": 43,
+  "displacement": {
+   "mean": 0.213,
+   "max": 0.46
+  }
+ },
+ {
+  "diagram": "aid-loop",
+  "mode": "mutated",
+  "variant": "plantuml",
+  "render": {
+   "variant": "plantuml",
+   "rc": 0,
+   "ms": 647
+  },
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   0,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 25,
+  "width": 675,
+  "height": 453,
+  "svg_bytes": 11657,
+  "source_lines": 30,
+  "displacement": {
+   "mean": 0.046,
+   "max": 0.179
+  }
+ },
+ {
+  "diagram": "governance",
+  "mode": "base",
+  "variant": "control-grid",
+  "render": null,
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   8,
+   8
+  ],
+  "loops_distinct": [
+   8,
+   8
+  ],
+  "edge_overlaps": 2,
+  "crossings": 5,
+  "edges_through_nodes": 2,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "text_runs": 16,
+  "width": 735,
+  "height": 805,
+  "svg_bytes": 4933,
+  "source_lines": null
+ },
+ {
+  "diagram": "governance",
+  "mode": "base",
+  "variant": "control-random",
+  "render": null,
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   15,
+   34
+  ],
+  "column_violations": [
+   1,
+   2
+  ],
+  "loops_control_left": [
+   0,
+   8
+  ],
+  "loops_distinct": [
+   0,
+   8
+  ],
+  "edge_overlaps": 8,
+  "crossings": 3,
+  "edges_through_nodes": 6,
+  "group_intrusions": 6,
+  "label_collisions": 2,
+  "text_runs": 16,
+  "width": 623,
+  "height": 700,
+  "svg_bytes": 4930,
+  "source_lines": null
+ },
+ {
+  "diagram": "governance",
+  "mode": "base",
+  "variant": "dot-spline",
+  "render": {
+   "variant": "dot-spline",
+   "rc": 0,
+   "ms": 26
+  },
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   8,
+   8
+  ],
+  "loops_distinct": [
+   7,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 6,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 1,
+  "text_runs": 45,
+  "width": 786,
+  "height": 673,
+  "svg_bytes": 16657,
+  "source_lines": 46
+ },
+ {
+  "diagram": "governance",
+  "mode": "base",
+  "variant": "dot-ortho",
+  "render": {
+   "variant": "dot-ortho",
+   "rc": 0,
+   "ms": 27
+  },
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   8,
+   8
+  ],
+  "loops_distinct": [
+   8,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 1,
+  "text_runs": 45,
+  "width": 654,
+  "height": 542,
+  "svg_bytes": 16713,
+  "source_lines": 46
+ },
+ {
+  "diagram": "governance",
+  "mode": "base",
+  "variant": "d2-dagre",
+  "render": {
+   "variant": "d2-dagre",
+   "rc": 0,
+   "ms": 200
+  },
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   7,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   2,
+   8
+  ],
+  "loops_distinct": [
+   7,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 3,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 2,
+  "text_runs": 30,
+  "width": 1424,
+  "height": 1550,
+  "svg_bytes": 41661,
+  "source_lines": 46
+ },
+ {
+  "diagram": "governance",
+  "mode": "base",
+  "variant": "d2-elk",
+  "render": {
+   "variant": "d2-elk",
+   "rc": 0,
+   "ms": 1158
+  },
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   11,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   5,
+   8
+  ],
+  "loops_distinct": [
+   8,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 7,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 1,
+  "text_runs": 30,
+  "width": 1497,
+  "height": 1788,
+  "svg_bytes": 42727,
+  "source_lines": 46
+ },
+ {
+  "diagram": "governance",
+  "mode": "base",
+  "variant": "d2-grid",
+  "render": {
+   "variant": "d2-grid",
+   "rc": 0,
+   "ms": 42
+  },
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   1,
+   8
+  ],
+  "loops_distinct": [
+   0,
+   8
+  ],
+  "edge_overlaps": 12,
+  "crossings": 4,
+  "edges_through_nodes": 2,
+  "group_intrusions": 0,
+  "label_collisions": 8,
+  "text_runs": 28,
+  "width": 801,
+  "height": 1082,
+  "svg_bytes": 35241,
+  "source_lines": 55
+ },
+ {
+  "diagram": "governance",
+  "mode": "base",
+  "variant": "mermaid-dagre",
+  "render": null,
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   7,
+   34
+  ],
+  "column_violations": [
+   2,
+   2
+  ],
+  "loops_control_left": [
+   6,
+   8
+  ],
+  "loops_distinct": [
+   8,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 2,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 1,
+  "text_runs": 30,
+  "width": 1125,
+  "height": 1202,
+  "svg_bytes": 42079,
+  "source_lines": 69
+ },
+ {
+  "diagram": "governance",
+  "mode": "base",
+  "variant": "mermaid-elk",
+  "render": null,
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   12,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   5,
+   8
+  ],
+  "loops_distinct": [
+   8,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 3,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "text_runs": 30,
+  "width": 1194,
+  "height": 1246,
+  "svg_bytes": 44792,
+  "source_lines": 69
+ },
+ {
+  "diagram": "governance",
+  "mode": "base",
+  "variant": "plantuml",
+  "render": {
+   "variant": "plantuml",
+   "rc": 0,
+   "ms": 673
+  },
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   7,
+   34
+  ],
+  "column_violations": [
+   2,
+   2
+  ],
+  "loops_control_left": [
+   2,
+   8
+  ],
+  "loops_distinct": [
+   7,
+   8
+  ],
+  "edge_overlaps": 1,
+  "crossings": 4,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "text_runs": 45,
+  "width": 875,
+  "height": 644,
+  "svg_bytes": 21243,
+  "source_lines": 45
+ },
+ {
+  "diagram": "governance",
+  "mode": "mutated",
+  "variant": "control-grid",
+  "render": null,
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 20,
+   "of_edges": 20,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   8,
+   8
+  ],
+  "loops_distinct": [
+   8,
+   8
+  ],
+  "edge_overlaps": 2,
+  "crossings": 5,
+  "edges_through_nodes": 2,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "text_runs": 16,
+  "width": 735,
+  "height": 805,
+  "svg_bytes": 5069,
+  "source_lines": null
+ },
+ {
+  "diagram": "governance",
+  "mode": "mutated",
+  "variant": "control-random",
+  "render": null,
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 20,
+   "of_edges": 20,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   15,
+   34
+  ],
+  "column_violations": [
+   1,
+   2
+  ],
+  "loops_control_left": [
+   0,
+   8
+  ],
+  "loops_distinct": [
+   0,
+   8
+  ],
+  "edge_overlaps": 8,
+  "crossings": 8,
+  "edges_through_nodes": 6,
+  "group_intrusions": 6,
+  "label_collisions": 2,
+  "text_runs": 16,
+  "width": 623,
+  "height": 700,
+  "svg_bytes": 5065,
+  "source_lines": null
+ },
+ {
+  "diagram": "governance",
+  "mode": "mutated",
+  "variant": "dot-spline",
+  "render": {
+   "variant": "dot-spline",
+   "rc": 0,
+   "ms": 28
+  },
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 20,
+   "of_edges": 20,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   8,
+   8
+  ],
+  "loops_distinct": [
+   7,
+   8
+  ],
+  "edge_overlaps": 1,
+  "crossings": 7,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "text_runs": 46,
+  "width": 757,
+  "height": 673,
+  "svg_bytes": 17080,
+  "source_lines": 47,
+  "displacement": {
+   "mean": 0.063,
+   "max": 0.194
+  }
+ },
+ {
+  "diagram": "governance",
+  "mode": "mutated",
+  "variant": "dot-ortho",
+  "render": {
+   "variant": "dot-ortho",
+   "rc": 0,
+   "ms": 29
+  },
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 20,
+   "of_edges": 20,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   8,
+   8
+  ],
+  "loops_distinct": [
+   8,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 1,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "text_runs": 46,
+  "width": 624,
+  "height": 542,
+  "svg_bytes": 16491,
+  "source_lines": 47,
+  "displacement": {
+   "mean": 0.032,
+   "max": 0.145
+  }
+ },
+ {
+  "diagram": "governance",
+  "mode": "mutated",
+  "variant": "d2-dagre",
+  "render": {
+   "variant": "d2-dagre",
+   "rc": 0,
+   "ms": 229
+  },
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 20,
+   "of_edges": 20,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   7,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   2,
+   8
+  ],
+  "loops_distinct": [
+   7,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 3,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 1,
+  "text_runs": 31,
+  "width": 1424,
+  "height": 1550,
+  "svg_bytes": 42494,
+  "source_lines": 47,
+  "displacement": {
+   "mean": 0.037,
+   "max": 0.16
+  }
+ },
+ {
+  "diagram": "governance",
+  "mode": "mutated",
+  "variant": "d2-elk",
+  "render": {
+   "variant": "d2-elk",
+   "rc": 0,
+   "ms": 1300
+  },
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 20,
+   "of_edges": 20,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   11,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   6,
+   8
+  ],
+  "loops_distinct": [
+   8,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 5,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "text_runs": 31,
+  "width": 1470,
+  "height": 2143,
+  "svg_bytes": 43732,
+  "source_lines": 47,
+  "displacement": {
+   "mean": 0.255,
+   "max": 0.413
+  }
+ },
+ {
+  "diagram": "governance",
+  "mode": "mutated",
+  "variant": "d2-grid",
+  "render": {
+   "variant": "d2-grid",
+   "rc": 0,
+   "ms": 43
+  },
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 20,
+   "of_edges": 20,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   1,
+   8
+  ],
+  "loops_distinct": [
+   0,
+   8
+  ],
+  "edge_overlaps": 12,
+  "crossings": 4,
+  "edges_through_nodes": 2,
+  "group_intrusions": 0,
+  "label_collisions": 8,
+  "text_runs": 29,
+  "width": 801,
+  "height": 1082,
+  "svg_bytes": 35891,
+  "source_lines": 56,
+  "displacement": {
+   "mean": 0,
+   "max": 0
+  }
+ },
+ {
+  "diagram": "governance",
+  "mode": "mutated",
+  "variant": "mermaid-dagre",
+  "render": null,
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 20,
+   "of_edges": 20,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   7,
+   34
+  ],
+  "column_violations": [
+   2,
+   2
+  ],
+  "loops_control_left": [
+   6,
+   8
+  ],
+  "loops_distinct": [
+   8,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 2,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 1,
+  "text_runs": 31,
+  "width": 1125,
+  "height": 1202,
+  "svg_bytes": 43468,
+  "source_lines": 71,
+  "displacement": {
+   "mean": 0.044,
+   "max": 0.184
+  }
+ },
+ {
+  "diagram": "governance",
+  "mode": "mutated",
+  "variant": "mermaid-elk",
+  "render": null,
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 20,
+   "of_edges": 20,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   12,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   6,
+   8
+  ],
+  "loops_distinct": [
+   8,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 4,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "text_runs": 31,
+  "width": 1136,
+  "height": 1358,
+  "svg_bytes": 47323,
+  "source_lines": 71,
+  "displacement": {
+   "mean": 0.225,
+   "max": 0.343
+  }
+ },
+ {
+  "diagram": "governance",
+  "mode": "mutated",
+  "variant": "plantuml",
+  "render": {
+   "variant": "plantuml",
+   "rc": 0,
+   "ms": 738
+  },
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 20,
+   "of_edges": 20,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   6,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "loops_control_left": [
+   5,
+   8
+  ],
+  "loops_distinct": [
+   8,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "text_runs": 46,
+  "width": 858,
+  "height": 757,
+  "svg_bytes": 21835,
+  "source_lines": 46,
+  "displacement": {
+   "mean": 0.413,
+   "max": 1.003
+  }
+ },
+ {
+  "diagram": "hub-spoke",
+  "mode": "base",
+  "variant": "control-grid",
+  "render": null,
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "edge_overlaps": 2,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 10,
+  "width": 965,
+  "height": 573,
+  "svg_bytes": 3412,
+  "source_lines": null
+ },
+ {
+  "diagram": "hub-spoke",
+  "mode": "base",
+  "variant": "control-random",
+  "render": null,
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   9,
+   25
+  ],
+  "column_violations": [
+   2,
+   3
+  ],
+  "loops_control_left": [
+   0,
+   1
+  ],
+  "loops_distinct": [
+   0,
+   1
+  ],
+  "edge_overlaps": 3,
+  "crossings": 0,
+  "edges_through_nodes": 7,
+  "group_intrusions": null,
+  "label_collisions": 1,
+  "text_runs": 10,
+  "width": 772,
+  "height": 508,
+  "svg_bytes": 3398,
+  "source_lines": null
+ },
+ {
+  "diagram": "hub-spoke",
+  "mode": "base",
+  "variant": "dot-spline",
+  "render": {
+   "variant": "dot-spline",
+   "rc": 0,
+   "ms": 25
+  },
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 22,
+  "width": 572,
+  "height": 420,
+  "svg_bytes": 9795,
+  "source_lines": 32
+ },
+ {
+  "diagram": "hub-spoke",
+  "mode": "base",
+  "variant": "dot-ortho",
+  "render": {
+   "variant": "dot-ortho",
+   "rc": 0,
+   "ms": 26
+  },
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 22,
+  "width": 453,
+  "height": 376,
+  "svg_bytes": 9666,
+  "source_lines": 32
+ },
+ {
+  "diagram": "hub-spoke",
+  "mode": "base",
+  "variant": "d2-dagre",
+  "render": {
+   "variant": "d2-dagre",
+   "rc": 0,
+   "ms": 103
+  },
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   8,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 19,
+  "width": 694,
+  "height": 868,
+  "svg_bytes": 27483,
+  "source_lines": 31
+ },
+ {
+  "diagram": "hub-spoke",
+  "mode": "base",
+  "variant": "d2-elk",
+  "render": {
+   "variant": "d2-elk",
+   "rc": 0,
+   "ms": 608
+  },
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   14,
+   25
+  ],
+  "column_violations": [
+   2,
+   3
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 1,
+  "text_runs": 19,
+  "width": 865,
+  "height": 977,
+  "svg_bytes": 28131,
+  "source_lines": 31
+ },
+ {
+  "diagram": "hub-spoke",
+  "mode": "base",
+  "variant": "d2-grid",
+  "render": {
+   "variant": "d2-grid",
+   "rc": 0,
+   "ms": 46
+  },
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "loops_control_left": [
+   0,
+   1
+  ],
+  "loops_distinct": [
+   0,
+   1
+  ],
+  "edge_overlaps": 3,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 3,
+  "text_runs": 19,
+  "width": 817,
+  "height": 762,
+  "svg_bytes": 29693,
+  "source_lines": 46
+ },
+ {
+  "diagram": "hub-spoke",
+  "mode": "base",
+  "variant": "mermaid-dagre",
+  "render": null,
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   8,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 19,
+  "width": 647,
+  "height": 630,
+  "svg_bytes": 29131,
+  "source_lines": 47
+ },
+ {
+  "diagram": "hub-spoke",
+  "mode": "base",
+  "variant": "mermaid-elk",
+  "render": null,
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   18,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "loops_control_left": [
+   0,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 19,
+  "width": 1161,
+  "height": 558,
+  "svg_bytes": 30169,
+  "source_lines": 47
+ },
+ {
+  "diagram": "hub-spoke",
+  "mode": "base",
+  "variant": "plantuml",
+  "render": {
+   "variant": "plantuml",
+   "rc": 0,
+   "ms": 726
+  },
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 22,
+  "width": 578,
+  "height": 542,
+  "svg_bytes": 11674,
+  "source_lines": 33
+ },
+ {
+  "diagram": "hub-spoke",
+  "mode": "mutated",
+  "variant": "control-grid",
+  "render": null,
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 12,
+   "of_edges": 12,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "edge_overlaps": 4,
+  "crossings": 0,
+  "edges_through_nodes": 1,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 10,
+  "width": 965,
+  "height": 573,
+  "svg_bytes": 3547,
+  "source_lines": null
+ },
+ {
+  "diagram": "hub-spoke",
+  "mode": "mutated",
+  "variant": "control-random",
+  "render": null,
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 12,
+   "of_edges": 12,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   9,
+   25
+  ],
+  "column_violations": [
+   2,
+   3
+  ],
+  "loops_control_left": [
+   0,
+   1
+  ],
+  "loops_distinct": [
+   0,
+   1
+  ],
+  "edge_overlaps": 3,
+  "crossings": 0,
+  "edges_through_nodes": 9,
+  "group_intrusions": null,
+  "label_collisions": 1,
+  "text_runs": 10,
+  "width": 772,
+  "height": 508,
+  "svg_bytes": 3534,
+  "source_lines": null
+ },
+ {
+  "diagram": "hub-spoke",
+  "mode": "mutated",
+  "variant": "dot-spline",
+  "render": {
+   "variant": "dot-spline",
+   "rc": 0,
+   "ms": 26
+  },
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 12,
+   "of_edges": 12,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 1,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 23,
+  "width": 528,
+  "height": 420,
+  "svg_bytes": 10922,
+  "source_lines": 33,
+  "displacement": {
+   "mean": 0.308,
+   "max": 0.643
+  }
+ },
+ {
+  "diagram": "hub-spoke",
+  "mode": "mutated",
+  "variant": "dot-ortho",
+  "render": {
+   "variant": "dot-ortho",
+   "rc": 0,
+   "ms": 27
+  },
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 12,
+   "of_edges": 12,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 23,
+  "width": 385,
+  "height": 376,
+  "svg_bytes": 10199,
+  "source_lines": 33,
+  "displacement": {
+   "mean": 0.16,
+   "max": 0.504
+  }
+ },
+ {
+  "diagram": "hub-spoke",
+  "mode": "mutated",
+  "variant": "d2-dagre",
+  "render": {
+   "variant": "d2-dagre",
+   "rc": 0,
+   "ms": 107
+  },
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 12,
+   "of_edges": 12,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   8,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 20,
+  "width": 763,
+  "height": 868,
+  "svg_bytes": 27985,
+  "source_lines": 32,
+  "displacement": {
+   "mean": 0.104,
+   "max": 0.478
+  }
+ },
+ {
+  "diagram": "hub-spoke",
+  "mode": "mutated",
+  "variant": "d2-elk",
+  "render": {
+   "variant": "d2-elk",
+   "rc": 0,
+   "ms": 624
+  },
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 12,
+   "of_edges": 12,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   22,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 20,
+  "width": 806,
+  "height": 1077,
+  "svg_bytes": 29417,
+  "source_lines": 32,
+  "displacement": {
+   "mean": 0.506,
+   "max": 0.741
+  }
+ },
+ {
+  "diagram": "hub-spoke",
+  "mode": "mutated",
+  "variant": "d2-grid",
+  "render": {
+   "variant": "d2-grid",
+   "rc": 0,
+   "ms": 50
+  },
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 12,
+   "of_edges": 12,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "loops_control_left": [
+   0,
+   1
+  ],
+  "loops_distinct": [
+   0,
+   1
+  ],
+  "edge_overlaps": 7,
+  "crossings": 0,
+  "edges_through_nodes": 1,
+  "group_intrusions": null,
+  "label_collisions": 4,
+  "text_runs": 20,
+  "width": 817,
+  "height": 762,
+  "svg_bytes": 30201,
+  "source_lines": 47,
+  "displacement": {
+   "mean": 0,
+   "max": 0
+  }
+ },
+ {
+  "diagram": "hub-spoke",
+  "mode": "mutated",
+  "variant": "mermaid-dagre",
+  "render": null,
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 12,
+   "of_edges": 12,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   8,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 1,
+  "text_runs": 20,
+  "width": 702,
+  "height": 630,
+  "svg_bytes": 30507,
+  "source_lines": 49,
+  "displacement": {
+   "mean": 0.11,
+   "max": 0.491
+  }
+ },
+ {
+  "diagram": "hub-spoke",
+  "mode": "mutated",
+  "variant": "mermaid-elk",
+  "render": null,
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 12,
+   "of_edges": 12,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   22,
+   25
+  ],
+  "column_violations": [
+   3,
+   3
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 1,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 20,
+  "width": 834,
+  "height": 716,
+  "svg_bytes": 31750,
+  "source_lines": 49,
+  "displacement": {
+   "mean": 0.612,
+   "max": 1.284
+  }
+ },
+ {
+  "diagram": "hub-spoke",
+  "mode": "mutated",
+  "variant": "plantuml",
+  "render": {
+   "variant": "plantuml",
+   "rc": 0,
+   "ms": 742
+  },
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 12,
+   "of_edges": 12,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "text_runs": 23,
+  "width": 578,
+  "height": 542,
+  "svg_bytes": 12393,
+  "source_lines": 34,
+  "displacement": {
+   "mean": 0.051,
+   "max": 0.178
+  }
+ }
+]
