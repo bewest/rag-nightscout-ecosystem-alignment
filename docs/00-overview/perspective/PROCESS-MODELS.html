@@ -1369,6 +1369,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#1access-paths-who-holds-the-key-on-each-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1·access-paths: who holds the key on each path
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#1hosting-who-answers-for-a-site-run-for-someone-else" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2572,6 +2583,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#1access-paths-who-holds-the-key-on-each-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1·access-paths: who holds the key on each path
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#1hosting-who-answers-for-a-site-run-for-someone-else" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2677,7 +2699,7 @@
 
 
 <h1 id="what-we-believe-and-how-it-works">What we believe, and how it works<a class="headerlink" href="#what-we-believe-and-how-it-works" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-17 at <code>d6b6350f</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>12f0eb4d</code>.</em></p>
 <p><em>For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
 <strong>Perspective</strong> (part 2 of the overview; <a href="../index.html">how the overview is organised</a>). Living page,
 written 2026-10-17. Companion to <a href="STRUCTURES.html">Control structures, drawn</a>, whose conventions,
@@ -2726,6 +2748,11 @@ choice (terms, enforcement, revocation). The other lines and the icons are as in
 <td><a href="#1data-rights-getting-data-out-and-letting-others-in">1·data-rights</a></td>
 <td>how data gets out, and how others are let in</td>
 <td>believed, actual, emerging</td>
+</tr>
+<tr>
+<td><a href="#1access-paths-who-holds-the-key-on-each-path">1·access-paths</a></td>
+<td>who holds the key on each path between device, phone, cloud and site</td>
+<td>believed, actual, emerging; and a ladder</td>
 </tr>
 <tr>
 <td><a href="#1hosting-who-answers-for-a-site-run-for-someone-else">1·hosting</a></td>
@@ -2787,7 +2814,17 @@ read 2026-10-17).</p>
 <p><strong>As it is emerging.</strong> Two changes are under way at once. Newer devices authenticate the app as
 well as the person: the community's Omnipod 5 driver uses message signing with a certificate store
 and Apple's App Attest (<a href="../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.html#16-insulet-omnipod">vendor note §1.6</a>),
-so commands go through a credential the manufacturer issues. And in the EU, the Data Act (applying
+which points to commands going through a credential the manufacturer issues. That is read from the
+driver's file names; who issues the credential, and whether the driver runs against a real pod,
+were not checked. Most authenticated pairing found still uses a secret the person holds, a code
+printed with the sensor or shown on the pump, and open implementations handle it (Dexcom G7,
+Libre 3, Tandem; <a href="../../60-research/programme/stack-census-2026-09-30/device-layer.html">device-layer census</a>).
+Why device-level controls tighten and do not loosen is not settled by any source read. One reading,
+for counsel and regulatory review: §524B and the FDA's premarket cybersecurity guidance ask
+manufacturers to show how device interfaces authenticate those that connect, which leaves a
+manufacturer little reason to keep an unauthenticated path
+(<a href="../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.html#7-points-for-a-reviewer-to-verify">vendor note §7</a>).
+And in the EU, the Data Act (applying
 since 2025-09-12) turns part of the data right from a defence into a duty: the manufacturer must
 share device data at the person's request, real-time where feasible, including with a third party
 the person designates (<a href="../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.html#31-eu-data-act">vendor note §3.1</a>).
@@ -2795,8 +2832,8 @@ The drawing combines what exists on some devices and in one jurisdiction; it is 
 any one device or market.</p>
 <p><em>Interpretation.</em> Properties of the emerging landscape, read from the three drawings:</p>
 <ol>
-<li><strong>Access is bound to identity.</strong> A credential is issued to a known party and can be renewed or
-   withdrawn; knowing the protocol is no longer enough.</li>
+<li><strong>Where a device checks the app, access is bound to identity.</strong> A credential is issued to a
+   known party and can be renewed or withdrawn; knowing the protocol is no longer enough.</li>
 <li><strong>Authority is delegated, and its withdrawal is the issuer's.</strong> Whether revocation follows a
    published process or the issuer's discretion is decided by the agreement
    (<a href="../PARTNER-READINESS.html#4-what-the-ecosystem-needs-from-an-agreement">partner readiness §4</a>).</li>
@@ -2808,7 +2845,9 @@ any one device or market.</p>
 <li><strong>Requirements flow down by contract.</strong> Cybersecurity and quality duties sit with the
    manufacturer, and reach anyone holding its credentials through the agreement.</li>
 <li><strong>Authorisation becomes the binding constraint.</strong> The engineering gets cheaper for everyone; who
-   is authorised to use it does not.</li>
+   is authorised to use it does not. This is a reading of the direction, drawn from one device
+   found (Omnipod 5). Where the person holds the pairing secret, engineering is still the
+   constraint, and it has been met.</li>
 </ol>
 <p>The characterisations of law here are summaries for discussion, drafts for counsel to review, and
 not legal advice.</p>
@@ -2965,6 +3004,39 @@ not legal advice. Points to check: whether CGM values are in the Data Act's scop
 Art. 4(2) health-and-safety carve-out; whether a US non-profit can be a designated third party; and
 the current HIPAA rule for directing records to a third party (45 CFR 164.524)
 (<a href="../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.html#7-points-for-a-reviewer-to-verify">vendor note §7</a>).</p>
+<h3 id="1access-paths-who-holds-the-key-on-each-path">1·access-paths: who holds the key on each path<a class="headerlink" href="#1access-paths-who-holds-the-key-on-each-path" title="Permanent link">&para;</a></h3>
+<p><img alt="1·access-paths as believed: the sensor sends readings to the manufacturer's app and to the open AID app, to anyone who knows the protocol; the open app sends commands to the pump the same way; the vendor cloud's follower feed reaches the Nightscout site, the person's to share; the site serves caregivers" src="diagrams/1-access-paths--believed.svg" /></p>
+<p><strong>As believed.</strong> Every path is open to software that knows the protocol, and the data is the
+person's to share (<a href="../../DIGITAL-RIGHTS.html#overview">DIGITAL-RIGHTS, overview</a>;
+<a href="../../10-domain/data-rights-primer.html#the-five-fundamental-diabetes-data-rights">primer</a>).</p>
+<p><img alt="1·access-paths as it works today: readings reach the open app with a code or the sensor the person holds (G6, G7, Libre 3); commands reach the pump by protocol (Eros, DASH, Dana, Medtronic) or a code on the pump (Tandem), while Omnipod 5 needs a credential from a manufacturer-run issuer; the connector logs in to the vendor cloud as the person, under terms that ban unauthorised apps; the manufacturer changes device generations and older devices leave sale" src="diagrams/1-access-paths--actual.svg" /></p>
+<p><strong>As it works today.</strong> Most paths are open because the secret they need is one the person holds:
+a code printed with the sensor or shown on the pump, a serial, or the device itself
+(<a href="../../60-research/programme/stack-census-2026-09-30/device-layer.html">device-layer census</a>).
+Omnipod 5 is the one device found where the app itself is checked, read from the community
+driver's file names (<a href="../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.html#16-insulet-omnipod">vendor note §1.6</a>).
+The cloud path runs on the person's own login and the vendor's tolerance, and breaks when the cloud
+changes (<a href="../observations/ECOSYSTEM-EVIDENCE.html#5-work-that-arrives-on-other-organisations-calendars">evidence §5</a>).</p>
+<p><img alt="1·access-paths as it is emerging: on newer sensors, readings reach only an app the manufacturer has checked, or none if they are sealed end to end for the cloud with the phone only relaying them; on newer pumps, commands need an issued credential; the credential issuer issues, renews and revokes, and without it there is no access; the cloud path carries an EU duty to share with a designated third party, with no US duty" src="diagrams/1-access-paths--emerging.svg" /></p>
+<p><strong>As it is emerging.</strong> Two closures are possible on the device side: an app check, and readings
+sealed end to end for the manufacturer's cloud. The second was not looked for in the census
+(<a href="../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.html#51-blockers-what-is-removing-them-what-still-stands">vendor note §5.1</a>).
+On the cloud side the EU Data Act adds a duty to share, and the US has none
+(<a href="../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.html#31-eu-data-act">vendor note §3.1</a>).</p>
+<p><img alt="1·access-ladder: four rising steps of dependence on the manufacturer. A, protocol plus what the person has: Omnipod Eros and DASH, Medtronic 5xx/7xx, Tandem t:slim X2 and Mobi, Dana RS/i, Medtrum Nano, Dexcom G6 and G7, Libre 1/2 and 3, Eversense, Accu-Chek SmartGuide. B, the manufacturer's own app alongside: G7 passive mode, Medtronic 640G/670G and several CGMs through companion apps. C, a credential the manufacturer issues: Omnipod 5, read from file names. D, sealed for the cloud: none found, not looked for. Not placed: MiniMed 780G and SmartGuide advanced security" src="diagrams/1-access-ladder.svg" /></p>
+<p><em>Interpretation.</em></p>
+<ol>
+<li><strong>The key, not the encryption, decides access.</strong> Every device on step A uses authenticated or
+   encrypted links, and open implementations work with all of them.</li>
+<li><strong>Each step up moves the key towards the manufacturer.</strong> On step B the open app depends on the
+   manufacturer's app staying installed; on C, on a credential the manufacturer can withdraw; on D
+   no app on the phone can read the data at all.</li>
+<li><strong>Loss on the device side and on the cloud side reach different people.</strong> The device side stops
+   automation for the person; the cloud side stops remote following for caregivers
+   (<a href="../PARTNER-READINESS.html#what-is-at-stake-on-each-path">partner readiness §1</a>).</li>
+</ol>
+<p>The drawing and ladder are at mechanism level only. The ladder's data and generator are
+<code>tools/structure-diagrams/access/devices.yaml</code> and <code>access_charts.py</code>.</p>
 <h3 id="1hosting-who-answers-for-a-site-run-for-someone-else">1·hosting: who answers for a site run for someone else<a class="headerlink" href="#1hosting-who-answers-for-a-site-run-for-someone-else" title="Permanent link">&para;</a></h3>
 <p><img alt="1·hosting as believed: an open-source licence gives the cgm-remote-monitor project its release with no warranty; the project's releases reach a person or family, who run, upgrade and answer for their own Nightscout site, which returns glucose and alarms" src="diagrams/1-hosting--believed.svg" /></p>
 <p><strong>As believed.</strong> Nightscout is "software you run yourself", written for "the person who runs a
@@ -3164,7 +3236,7 @@ from the hub-assigned <code>_id</code> (<a href="../../30-design/platform/nights
 An agent would register its own instance; role types are open "so roles such as proposing versus
 acting can be added for agents" (D19 rule 5). <strong>Open:</strong> the command API (<code>SPEC-REG-COMMANDS</code>), the
 contract per tenancy mode (<code>SPEC-REG-MODES</code>), the first hub (<code>HUB-REG-CRM</code>), the proposals to
-Nocturne and the controllers, all not started (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/82b133a39c242fb0a4189656260a3fd5e797ac92/queue/work-queue.yaml">queue</a>); and how an
+Nocturne and the controllers, all not started (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0202e2ceda356e28a153abce826dad0a88d75af7/queue/work-queue.yaml">queue</a>); and how an
 agent is scoped, limited and revoked, which no decision covers.</p>
 <p><em>Interpretation.</em> Properties the three panels show:</p>
 <ol>
@@ -3241,7 +3313,7 @@ security contact, complaint workflow, SBOM or build-provenance record was found
 (<a href="../PARTNER-READINESS.html#3-what-a-manufacturer-will-need-to-see">partner readiness §3</a>). The
 conformance suite lives in this repository: 85 vector files, an oref0 runner, and AndroidAPS and
 Loop runners not implemented (<a href="../../../conformance/index.html"><code>conformance/</code></a>;
-<code>tools/conformance_suite.py:43-55</code>). This repository's <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/82b133a39c242fb0a4189656260a3fd5e797ac92/.github/workflows/ci.yml">CI</a> runs
+<code>tools/conformance_suite.py:43-55</code>). This repository's <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0202e2ceda356e28a153abce826dad0a88d75af7/.github/workflows/ci.yml">CI</a> runs
 Python syntax and spec validation; the suite and the <a href="../../../queue/index.html">queue gates</a> run by
 <code>make</code>, outside CI. The 15.0.9 run records are the nearest thing to release evidence
 (<a href="../QUALITY-SYSTEM.html#41-the-record-every-run-leaves">quality system §4.1</a>).</p>

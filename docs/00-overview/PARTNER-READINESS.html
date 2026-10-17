@@ -1049,6 +1049,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. The request">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-at-stake-on-each-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is at stake on each path
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2297,6 +2314,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. The request">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-at-stake-on-each-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is at stake on each path
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2416,7 +2450,7 @@
 
 
 <h1 id="ready-to-agree-with-a-device-manufacturer--proposal">Ready to agree with a device manufacturer — proposal<a class="headerlink" href="#ready-to-agree-with-a-device-manufacturer--proposal" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-16 at <code>8a5e34f9</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>12f0eb4d</code>.</em></p>
 <p><em>For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
 <strong>Recommendation</strong> (part 3 of the overview; <a href="index.html">how the overview is organised</a>).
 <strong>DRAFT PROPOSAL for discussion.</strong> Written 2026-10-16 against this repository at <code>faafc57c</code>. The
@@ -2439,6 +2473,70 @@ interoperability rights described in <a href="../DIGITAL-RIGHTS.html">DIGITAL-RI
 Where a device accepts commands only from a client holding a credential the manufacturer issues,
 knowing the protocol is no longer enough: access then depends on an authorised relationship with the
 manufacturer. This page is about being ready for that relationship.</p>
+<h3 id="what-is-at-stake-on-each-path">What is at stake on each path<a class="headerlink" href="#what-is-at-stake-on-each-path" title="Permanent link">&para;</a></h3>
+<p>Encryption alone does not close a path. Dexcom G7, Libre 3 and Tandem's t:slim X2 and Mobi pair
+with a secret the person holds, a code printed with the sensor or shown on the pump, and open
+implementations work with each of them
+(<a href="../60-research/programme/stack-census-2026-09-30/device-layer.html">device-layer census</a>). A path
+closes when the device or cloud accepts only a client the manufacturer has approved, or when the
+data is sealed so that the phone cannot read it.</p>
+<table>
+<thead>
+<tr>
+<th>path</th>
+<th>what it feeds</th>
+<th>what would close it</th>
+<th>what happens when it closes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sensor to phone, over the device's own radio link</td>
+<td>the glucose input of an automated insulin delivery (AID) app; readers such as xDrip+</td>
+<td>a sensor that pairs only with an app the manufacturer has authenticated; readings encrypted end to end for the vendor's cloud, so the phone relays data it cannot read</td>
+<td>automation stops. In Loop, no new dose is recommended once the newest reading is more than 15 minutes old, and the temporary basal rates Loop sets last at most 30 minutes, after which the pump returns to its programmed schedule (LoopAlgorithm <code>7d016fb</code>, <code>inputDataRecencyInterval</code>, <code>tempBasalDuration</code>). Other controllers: not verified here (§10)</td>
+</tr>
+<tr>
+<td>phone to pump, commands</td>
+<td>automated and manual dosing from the open app</td>
+<td>a pump that accepts commands only with a credential the manufacturer issues</td>
+<td>the pump keeps running its own programmed delivery; automation and dosing from the open app stop, and the person needs the manufacturer's own controller for that pump</td>
+</tr>
+<tr>
+<td>vendor cloud to a connector</td>
+<td>Nightscout sites, and the caregivers who follow them</td>
+<td>login, bot-defence or terms changes, or a cloud that admits only approved apps</td>
+<td>readings stop arriving at the site until a connector fix ships (<a href="observations/ECOSYSTEM-EVIDENCE.html#5-work-that-arrives-on-other-organisations-calendars">evidence §5</a>); remote following and alerts through the site stop. The loop on the phone is not affected</td>
+</tr>
+<tr>
+<td>device generations in supply</td>
+<td>which devices people can obtain</td>
+<td>today's accessible devices leaving sale or insurance coverage</td>
+<td>people move to newer devices, whose paths may be closed. No end-of-sale dates have been collected (§10)</td>
+</tr>
+<tr>
+<td>build and signing platform</td>
+<td>every self-built app</td>
+<td>signing and declaration policy (Apple, Google)</td>
+<td>the app stops running when its certificate or build expires (<a href="observations/ECOSYSTEM-EVIDENCE.html#5-work-that-arrives-on-other-organisations-calendars">evidence §5</a>)</td>
+</tr>
+</tbody>
+</table>
+<p>How many people each closure would reach is not counted anywhere today (§6).</p>
+<p>The paths are drawn as believed, today and emerging in
+<a href="perspective/PROCESS-MODELS.html#1access-paths-who-holds-the-key-on-each-path">1·access-paths</a>,
+with a ladder of how much each device makes an open app depend on its manufacturer. Device by
+device:</p>
+<p><img alt="1·access-matrix: for each pump and CGM line, the device link, the number of open implementations, the vendor-cloud route connectors use, the manufacturer's route for outsiders, the real-time route for outsiders, and supply. Most device links are open (step A); Omnipod 5 needs an issued credential; MiniMed 780G and SmartGuide advanced security are not determined. Cloud routes exist for Dexcom, Libre, CareLink and Tandem Source, at the vendor's discretion. The only route for outsiders is Dexcom's API with a one-to-three-hour delay; every real-time route is by invitation or not published. Supply has not been collected for any device" src="perspective/diagrams/1-access-matrix.svg" /></p>
+<p>The cells that read "not checked", "not read" or "not collected" are the list of what to find out
+next (§10).</p>
+<p><strong>Keeping access has running costs, with or without an agreement.</strong> Without one, connectors follow
+each vendor-cloud change (<a href="observations/ECOSYSTEM-EVIDENCE.html#5-work-that-arrives-on-other-organisations-calendars">evidence §5</a>),
+the US copyright exemption for device data needs evidence at each three-yearly renewal
+(<a href="../60-research/structures-2026-10-17/vendor-programs-and-data-rights.html#34-dmca-1201-exemptions-37-cfr-20140">vendor note §3.4</a>),
+and each new phone operating system needs app releases. With one, continued access depends on the
+terms in §4, which are the ecosystem's requests. Nothing in this repository yet shows what would
+lead a manufacturer to accept them.</p>
 <h2 id="2-three-tiers-of-access-and-which-to-ask-for-first">2. Three tiers of access, and which to ask for first<a class="headerlink" href="#2-three-tiers-of-access-and-which-to-ask-for-first" title="Permanent link">&para;</a></h2>
 <p>The tiers are this page's terms for technical risk. They are not FDA classifications.</p>
 <table>
@@ -2452,7 +2550,7 @@ manufacturer. This page is about being ready for that relationship.</p>
 <tbody>
 <tr>
 <td><strong>A — observe and export</strong></td>
-<td>read glucose, device status, delivery history and alarms; export them</td>
+<td>read glucose, device status, delivery history and alarms; export them. The agreement states the path (the device's own radio link, or the vendor's cloud) and the maximum delay</td>
 <td>lowest</td>
 </tr>
 <tr>
@@ -2472,6 +2570,17 @@ delivers the five rights in the <a href="../10-domain/data-rights-primer.html">d
 export, share, delegate, audit — for one device line, and it does not wait on anyone obtaining
 permission for a closed loop. Tiers B and C can follow under the same framework, each as its own
 agreement.</p>
+<p><strong>What tier A protects depends on its path and delay.</strong> An AID app needs readings on the phone
+within minutes (Loop stops recommending at 15, §1). A tier A agreement for a delayed cloud feed,
+such as Dexcom's public API, which runs one hour behind in the US and three elsewhere
+(<a href="../60-research/structures-2026-10-17/vendor-programs-and-data-rights.html#12-dexcom">vendor note §1.2</a>),
+secures display, export, sharing and research. It does not secure automated insulin delivery. For
+that, tier A has to cover real-time reads over the device's own link, and the pump side needs
+tier C.</p>
+<p>The same relationship at each tier, drawn (<a href="perspective/STRUCTURES.html#ideatiers">idea·tiers</a>):</p>
+<p><img alt="Tier A: the manufacturer's agreement gives the integration read access; the device line reports glucose, status, history and alarms to the client app; readiness evidence goes back" src="perspective/diagrams/idea-tiers--a.svg" /></p>
+<p><img alt="Tier B: the agreement adds limited, confirmed settings changes from the app to the device, with an audit trail back to the manufacturer" src="perspective/diagrams/idea-tiers--b.svg" /></p>
+<p><img alt="Tier C: the agreement adds authenticated dosing and delivery commands, with device validation, a regulatory pathway, and validation and complaints back to the manufacturer" src="perspective/diagrams/idea-tiers--c.svg" /></p>
 <h2 id="3-what-a-manufacturer-will-need-to-see">3. What a manufacturer will need to see<a class="headerlink" href="#3-what-a-manufacturer-will-need-to-see" title="Permanent link">&para;</a></h2>
 <p>A manufacturer weighs whether a relationship creates technical, security, legal, regulatory and
 business risk it can manage. These are the questions it is likely to ask, and the evidence that
@@ -2662,6 +2771,7 @@ to the party that is legally responsible. It does not take over a manufacturer's
 it does not by itself give every project the duties of a manufacturer. Whether operating it creates
 any duty for the foundation is a question for counsel (§9, question 7). Anyone can also report a
 device problem directly to FDA through MedWatch.</p>
+<p><img alt="Complaints in both directions: a person reports to the shared intake and gets an answer; the intake sends linked reports and a regression test to projects and gets fixes back; it refers reportable events to the manufacturer, which forwards what the agreement says and reports some events to the regulator; the person can also report to the regulator directly" src="perspective/diagrams/idea-complaints.svg" /></p>
 <p><strong>What the records are for.</strong></p>
 <ul>
 <li><strong>Across projects.</strong> A firmware change that breaks one CGM's link in Nightscout, AndroidAPS, Loop
@@ -2735,7 +2845,11 @@ without it does not supply revocation, accountability or a contract.</p>
 <p><strong>No single point of failure for therapy.</strong> A shared identity or credential service must not be able
 to stop someone's insulin delivery by being unreachable. Previously authorised, safely bounded local
 operation should continue without a connection. The permitted offline behaviour, the expiry rules
-and the safe states are defined and validated with each manufacturer.</p>
+and the safe states are defined and validated with each manufacturer. Drawn as three states of one
+credential (<a href="perspective/STRUCTURES.html#ideacredential-lifetime">idea·credential-lifetime</a>):</p>
+<p><img alt="Issued and renewed: the credential authority issues and renews the app's grant; the app sends authenticated commands to the pump" src="perspective/diagrams/idea-credential-lifetime--normal.svg" /></p>
+<p><img alt="The authority is unreachable: previously authorised, safely bounded operation continues and the person is told the grant's expiry is ahead" src="perspective/diagrams/idea-credential-lifetime--unreachable.svg" /></p>
+<p><img alt="Revoked: by process, with published grounds, notice and appeal, at once only for a security incident; commands stop, the pump enters its defined safe state, and the person is told why and how to appeal" src="perspective/diagrams/idea-credential-lifetime--revoked.svg" /></p>
 <p><strong>Separating request from effect.</strong> Identity answers who is asking; authorisation, whether they may;
 capability, whether this device and firmware can; and execution evidence, whether it happened. The
 last matches the split between <code>requested</code> and <code>applied</code> state that the
@@ -2794,6 +2908,12 @@ for its operator.</p>
   search for one specifically. A targeted search should confirm it per project.</li>
 <li><strong>The tiers</strong> (§2) are a proposal. A manufacturer's own categories may differ, and the agreement
   should use whichever both parties can apply.</li>
+<li><strong>What happens when a path closes</strong> (§1). The Loop row was read from LoopAlgorithm <code>7d016fb</code>, not
+  run. AndroidAPS, Trio and iAPS should be read or run for the same case (stale glucose, lost pump
+  link) before the table is given to anyone outside the ecosystem.</li>
+<li><strong>Device supply</strong> (§1). End-of-sale and coverage dates for the devices the open implementations
+  support today (Omnipod Eros and DASH, the older Medtronic pumps, Dana, Dexcom G6) have not been
+  collected.</li>
 </ul>
 
 

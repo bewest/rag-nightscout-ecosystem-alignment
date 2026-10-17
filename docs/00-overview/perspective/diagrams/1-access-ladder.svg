@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="966" height="575" viewBox="0 0 966 575" font-family="Helvetica, Arial, sans-serif">
+<title>1·access-ladder</title>
+<rect x="0" y="0" width="966" height="575" fill="#ffffff"/>
+<text x="483.0" y="26.0" font-size="14" fill="#111111" text-anchor="middle">1·access-ladder · How much an open app depends on the manufacturer</text>
+<rect x="18" y="154" width="222" height="354" rx="6" fill="#eef3fa" stroke="#c8c8c8"/>
+<text x="28.0" y="174.0" font-size="11.5" fill="#111111" text-anchor="start" font-weight="bold">A · Protocol, plus what the person has</text>
+<text x="28.0" y="192.0" font-size="10" fill="#555555" text-anchor="start">a code, a serial or the device itself; no</text>
+<text x="28.0" y="204.0" font-size="10" fill="#555555" text-anchor="start">manufacturer involvement</text>
+<rect x="28" y="222" width="202" height="18" rx="4" fill="#ffffff" stroke="#c8c8c8"/>
+<text x="34.0" y="235.0" font-size="10.5" fill="#111111" text-anchor="start">Omnipod Eros</text>
+<text x="224.0" y="235.0" font-size="9" fill="#555555" text-anchor="end">pump</text>
+<rect x="28" y="244" width="202" height="18" rx="4" fill="#ffffff" stroke="#c8c8c8"/>
+<text x="34.0" y="257.0" font-size="10.5" fill="#111111" text-anchor="start">Omnipod DASH</text>
+<text x="224.0" y="257.0" font-size="9" fill="#555555" text-anchor="end">pump</text>
+<rect x="28" y="266" width="202" height="18" rx="4" fill="#ffffff" stroke="#c8c8c8"/>
+<text x="34.0" y="279.0" font-size="10.5" fill="#111111" text-anchor="start">Medtronic 5xx / 7xx</text>
+<text x="224.0" y="279.0" font-size="9" fill="#555555" text-anchor="end">pump</text>
+<rect x="28" y="288" width="202" height="18" rx="4" fill="#ffffff" stroke="#c8c8c8"/>
+<text x="34.0" y="301.0" font-size="10.5" fill="#111111" text-anchor="start">Tandem t:slim X2 / Mobi</text>
+<text x="224.0" y="301.0" font-size="9" fill="#555555" text-anchor="end">pump</text>
+<rect x="28" y="310" width="202" height="18" rx="4" fill="#ffffff" stroke="#c8c8c8"/>
+<text x="34.0" y="323.0" font-size="10.5" fill="#111111" text-anchor="start">Dana RS / i</text>
+<text x="224.0" y="323.0" font-size="9" fill="#555555" text-anchor="end">pump</text>
+<rect x="28" y="332" width="202" height="18" rx="4" fill="#ffffff" stroke="#c8c8c8"/>
+<text x="34.0" y="345.0" font-size="10.5" fill="#111111" text-anchor="start">Medtrum Nano</text>
+<text x="224.0" y="345.0" font-size="9" fill="#555555" text-anchor="end">pump</text>
+<rect x="28" y="354" width="202" height="18" rx="4" fill="#ffffff" stroke="#c8c8c8"/>
+<text x="34.0" y="367.0" font-size="10.5" fill="#111111" text-anchor="start">Dexcom G6</text>
+<text x="224.0" y="367.0" font-size="9" fill="#555555" text-anchor="end">CGM</text>
+<rect x="28" y="376" width="202" height="18" rx="4" fill="#ffffff" stroke="#c8c8c8"/>
+<text x="34.0" y="389.0" font-size="10.5" fill="#111111" text-anchor="start">Dexcom G7 / ONE+</text>
+<text x="224.0" y="389.0" font-size="9" fill="#555555" text-anchor="end">CGM</text>
+<rect x="28" y="398" width="202" height="18" rx="4" fill="#ffffff" stroke="#c8c8c8"/>
+<text x="34.0" y="411.0" font-size="10.5" fill="#111111" text-anchor="start">Libre 1 / 2</text>
+<text x="224.0" y="411.0" font-size="9" fill="#555555" text-anchor="end">CGM</text>
+<rect x="28" y="420" width="202" height="18" rx="4" fill="#ffffff" stroke="#c8c8c8"/>
+<text x="34.0" y="433.0" font-size="10.5" fill="#111111" text-anchor="start">Libre 3</text>
+<text x="224.0" y="433.0" font-size="9" fill="#555555" text-anchor="end">CGM</text>
+<rect x="28" y="442" width="202" height="18" rx="4" fill="#ffffff" stroke="#c8c8c8"/>
+<text x="34.0" y="455.0" font-size="10.5" fill="#111111" text-anchor="start">Eversense</text>
+<text x="224.0" y="455.0" font-size="9" fill="#555555" text-anchor="end">CGM</text>
+<rect x="28" y="464" width="202" height="18" rx="4" fill="#ffffff" stroke="#c8c8c8"/>
+<text x="34.0" y="477.0" font-size="10.5" fill="#111111" text-anchor="start">Accu-Chek SmartGuide</text>
+<text x="224.0" y="477.0" font-size="9" fill="#555555" text-anchor="end">CGM</text>
+<rect x="254" y="120" width="222" height="388" rx="6" fill="#d6e3f4" stroke="#c8c8c8"/>
+<text x="264.0" y="140.0" font-size="11.5" fill="#111111" text-anchor="start" font-weight="bold">B · The manufacturer's own app</text>
+<text x="264.0" y="154.0" font-size="11.5" fill="#111111" text-anchor="start" font-weight="bold">alongside</text>
+<text x="264.0" y="172.0" font-size="10" fill="#555555" text-anchor="start">the open app listens beside the vendor's app,</text>
+<text x="264.0" y="184.0" font-size="10" fill="#555555" text-anchor="start">which keeps the pairing</text>
+<rect x="264" y="202" width="202" height="30" rx="4" fill="#ffffff" stroke="#c8c8c8" stroke-dasharray="3,2"/>
+<text x="270.0" y="215.0" font-size="10" fill="#111111" text-anchor="start">Dexcom G7 passive mode (G7SensorKit on</text>
+<text x="270.0" y="227.0" font-size="10" fill="#111111" text-anchor="start">main)</text>
+<rect x="264" y="236" width="202" height="30" rx="4" fill="#ffffff" stroke="#c8c8c8" stroke-dasharray="3,2"/>
+<text x="270.0" y="249.0" font-size="10" fill="#111111" text-anchor="start">Medtronic 640G / 670G through companion</text>
+<text x="270.0" y="261.0" font-size="10" fill="#111111" text-anchor="start">apps</text>
+<rect x="264" y="270" width="202" height="30" rx="4" fill="#ffffff" stroke="#c8c8c8" stroke-dasharray="3,2"/>
+<text x="270.0" y="283.0" font-size="10" fill="#111111" text-anchor="start">Eversense, CareSens Air, Sibionics, Aidex</text>
+<text x="270.0" y="295.0" font-size="10" fill="#111111" text-anchor="start">through app-to-app receivers</text>
+<rect x="490" y="86" width="222" height="422" rx="6" fill="#b9cfec" stroke="#c8c8c8"/>
+<text x="500.0" y="106.0" font-size="11.5" fill="#111111" text-anchor="start" font-weight="bold">C · A credential the manufacturer</text>
+<text x="500.0" y="120.0" font-size="11.5" fill="#111111" text-anchor="start" font-weight="bold">issues</text>
+<text x="500.0" y="138.0" font-size="10" fill="#555555" text-anchor="start">the device checks that the app is one the</text>
+<text x="500.0" y="150.0" font-size="10" fill="#555555" text-anchor="start">manufacturer approved</text>
+<rect x="500" y="168" width="202" height="18" rx="4" fill="#ffffff" stroke="#c8c8c8"/>
+<text x="506.0" y="181.0" font-size="10.5" fill="#111111" text-anchor="start">Omnipod 5</text>
+<text x="696.0" y="181.0" font-size="9" fill="#555555" text-anchor="end">pump</text>
+<text x="500.0" y="200.0" font-size="9.5" fill="#555555" text-anchor="start">Omnipod 5 is read from the driver's file names;</text>
+<text x="500.0" y="212.0" font-size="9.5" fill="#555555" text-anchor="start">who issues the credential is not checked</text>
+<rect x="726" y="52" width="222" height="456" rx="6" fill="#97b7e1" stroke="#c8c8c8"/>
+<text x="736.0" y="72.0" font-size="11.5" fill="#111111" text-anchor="start" font-weight="bold">D · Sealed for the manufacturer's</text>
+<text x="736.0" y="86.0" font-size="11.5" fill="#111111" text-anchor="start" font-weight="bold">cloud</text>
+<text x="736.0" y="104.0" font-size="10" fill="#555555" text-anchor="start">the phone only relays readings it cannot</text>
+<text x="736.0" y="116.0" font-size="10" fill="#555555" text-anchor="start">read; no app on the phone can use them</text>
+<text x="736.0" y="144.0" font-size="9.5" fill="#555555" text-anchor="start">none found; the census did not look for it</text>
+<text x="18.0" y="530.0" font-size="9.5" fill="#555555" text-anchor="start">Rising steps: more dependence on the manufacturer. Solid boxes are device lines; dashed boxes are modes, used</text>
+<text x="18.0" y="543.0" font-size="9.5" fill="#555555" text-anchor="start">where no direct implementation is in use. Not placed (custody not determined): MiniMed 780G (SAKE); SmartGuide "advanced security".</text>
+<text x="18.0" y="556.0" font-size="9.5" fill="#555555" text-anchor="start">Sources: device-layer census 2026-09-30 §2–§3; vendor note §1.6 and §5.1. Mechanism level only.</text>
+</svg>

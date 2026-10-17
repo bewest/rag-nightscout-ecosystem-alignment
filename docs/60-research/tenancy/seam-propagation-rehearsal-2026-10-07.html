@@ -7382,7 +7382,7 @@
 <p><strong>Snapshot — measured 2026-10-07 against <code>official/dev</code> <code>43289dde</code>, <code>official/chore/nightscout-modernization</code> <code>b1bdaca0</code> and <code>seam/t1-2-e</code> <code>a2690bd4</code>. Status: evidence for queue item <code>RT-PROPAGATION</code>, not the decision. Throwaway rehearsal: the two <code>prop/*</code> branches are local, unpushed, and are not the real refresh. Plan: <a href="../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a> §5, §5.1.</strong></p>
 </blockquote>
 <p><em>Audience: contributors and the maintainer deciding <code>RT-PROPAGATION</code>.</em></p>
-<p>Harness and raw results: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/82b133a39c242fb0a4189656260a3fd5e797ac92/tools/lab/seam-propagation"><code>tools/lab/seam-propagation/</code></a>.
+<p>Harness and raw results: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/0202e2ceda356e28a153abce826dad0a88d75af7/tools/lab/seam-propagation"><code>tools/lab/seam-propagation/</code></a>.
 Every figure below is <strong>measured</strong> (a command was run) unless it is labelled <strong>read</strong>.</p>
 <h2 id="0-setup">0. Setup<a class="headerlink" href="#0-setup" title="Permanent link">&para;</a></h2>
 <table>
@@ -7426,8 +7426,8 @@ Every figure below is <strong>measured</strong> (a command was run) unless it is
 <h3 id="01-seam-tips-before-and-after">0.1 Seam tips, before and after<a class="headerlink" href="#01-seam-tips-before-and-after" title="Permanent link">&para;</a></h3>
 <p>Recorded at 2026-10-07T21:25:28Z with
 <code>git for-each-ref --format='%(refname:short) %(objectname)' refs/heads/seam/</code>
-(<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/82b133a39c242fb0a4189656260a3fd5e797ac92/tools/lab/seam-propagation/results/seam-tips-before.txt">before</a>,
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/82b133a39c242fb0a4189656260a3fd5e797ac92/tools/lab/seam-propagation/results/seam-tips-after.txt">after</a>):</p>
+(<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0202e2ceda356e28a153abce826dad0a88d75af7/tools/lab/seam-propagation/results/seam-tips-before.txt">before</a>,
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0202e2ceda356e28a153abce826dad0a88d75af7/tools/lab/seam-propagation/results/seam-tips-after.txt">after</a>):</p>
 <table>
 <thead>
 <tr>
@@ -7729,7 +7729,7 @@ not built, so this rebase targets dev itself. §2.3 measures what the prefix nee
 <strong>58 hunks in 11 distinct lib files</strong>, plus 9 modify/delete events on 8 test files. Agent
 wall-clock from <code>--onto</code> to finish: 21:29:59–21:37:40Z (7 min 41 s), plus a follow-up commit
 after the suite (§2.4). Full stop log:
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/82b133a39c242fb0a4189656260a3fd5e797ac92/tools/lab/seam-propagation/results/rebase-stops.txt"><code>rebase-stops.txt</code></a>.</p>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0202e2ceda356e28a153abce826dad0a88d75af7/tools/lab/seam-propagation/results/rebase-stops.txt"><code>rebase-stops.txt</code></a>.</p>
 <table>
 <thead>
 <tr>
@@ -8174,7 +8174,7 @@ and whitespace-padded <code>' false '</code> as false. Dev's <code>readBooleanOp
 alone (its comment: guessing on <code>''</code> "would silently invert somebody's query"), and MongoDB then
 reads them as true.</p>
 <p>Non-vacuity, each on the identical setup with the unmodified run as its positive control
-(<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/82b133a39c242fb0a4189656260a3fd5e797ac92/tools/lab/seam-propagation/results"><code>results/ctl-*.jsonl</code></a>):</p>
+(<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/0202e2ceda356e28a153abce826dad0a88d75af7/tools/lab/seam-propagation/results"><code>results/ctl-*.jsonl</code></a>):</p>
 <table>
 <thead>
 <tr>
@@ -8250,10 +8250,10 @@ remains the guard that gives a 400.</p>
 <p><code>tools/lab/seam-propagation/classify.py &lt;base&gt; &lt;seam&gt;</code>; categories: add/add supersession from
 BF-04 (upstream wins), §4.1 write rule (the base's version of the path calls one of the four rule
 modules), manifest, test, docs, other lib. "Seam-own" means touched by a commit in <code>0a4109f6..tip</code>.
-Data: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/82b133a39c242fb0a4189656260a3fd5e797ac92/tools/lab/seam-propagation/results/full-vs-mod.json"><code>results/full-vs-mod.json</code></a>,
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/82b133a39c242fb0a4189656260a3fd5e797ac92/tools/lab/seam-propagation/results/full-vs-dev.json"><code>full-vs-dev.json</code></a>,
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/82b133a39c242fb0a4189656260a3fd5e797ac92/tools/lab/seam-propagation/results/e-vs-mod.json"><code>e-vs-mod.json</code></a>,
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/82b133a39c242fb0a4189656260a3fd5e797ac92/tools/lab/seam-propagation/results/e-vs-dev.json"><code>e-vs-dev.json</code></a>.</p>
+Data: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0202e2ceda356e28a153abce826dad0a88d75af7/tools/lab/seam-propagation/results/full-vs-mod.json"><code>results/full-vs-mod.json</code></a>,
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0202e2ceda356e28a153abce826dad0a88d75af7/tools/lab/seam-propagation/results/full-vs-dev.json"><code>full-vs-dev.json</code></a>,
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0202e2ceda356e28a153abce826dad0a88d75af7/tools/lab/seam-propagation/results/e-vs-mod.json"><code>e-vs-mod.json</code></a>,
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0202e2ceda356e28a153abce826dad0a88d75af7/tools/lab/seam-propagation/results/e-vs-dev.json"><code>e-vs-dev.json</code></a>.</p>
 <table>
 <thead>
 <tr>
@@ -8493,7 +8493,7 @@ prefix's own <code>1eba42df</code> makes <code>deleteMany</code> return both, so
 <a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>python3 tools/lab/seam-propagation/classify.py &lt;base-ref&gt; &lt;seam-ref&gt;
 <a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>OUT=/tmp/seam-propagation tools/lab/seam-propagation/hazards.sh
 </code></pre></div>
-<p>Suite summaries: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/82b133a39c242fb0a4189656260a3fd5e797ac92/tools/lab/seam-propagation/results/suite"><code>results/suite/</code></a>.</p>
+<p>Suite summaries: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/0202e2ceda356e28a153abce826dad0a88d75af7/tools/lab/seam-propagation/results/suite"><code>results/suite/</code></a>.</p>
 
 
 

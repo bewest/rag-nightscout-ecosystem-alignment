@@ -7106,7 +7106,7 @@
 
 
 <h1 id="vendor-programmes-and-data-rights-what-is-open-to-whom-and-under-what-law">Vendor programmes and data rights: what is open, to whom, and under what law<a class="headerlink" href="#vendor-programmes-and-data-rights-what-is-open-to-whom-and-under-what-law" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-17 at <code>27b338ba</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>1d159e9b</code>.</em></p>
 <p><em>For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
 <strong>Research note, 2026-10-17.</strong> Every external fact below carries its source and was read on
 2026-10-17 unless it says otherwise. Facts carried over from the
@@ -7789,16 +7789,28 @@ already expects contracts that allocate complaint investigation and reporting.</
 </thead>
 <tbody>
 <tr>
-<td>device encryption and pairing</td>
+<td>device encryption and pairing with a secret the person holds</td>
 <td>technical</td>
-<td>community implementations exist for most current devices (device-layer census, 14 protocols with two or more implementations)</td>
-<td>newer devices add authenticated pairing, message signing and app attestation (Omnipod 5, Dexcom G7, Libre 3, SmartGuide "advanced security" variants); nothing in law requires a manufacturer to issue a credential to a non-partner</td>
+<td>community implementations exist for most current devices (device-layer census, 14 protocols with two or more implementations), including authenticated pairing on Dexcom G7, Libre 3 and Tandem</td>
+<td>each new protocol has to be worked out again</td>
 </tr>
 <tr>
-<td>manufacturer-issued credentials</td>
+<td>app attestation and manufacturer-issued client credentials</td>
 <td>technical / commercial</td>
 <td>none found for outsiders</td>
-<td>where a device checks that the app is a genuine build the manufacturer approved, only the manufacturer can grant access (PARTNER-READINESS §7)</td>
+<td>found on Omnipod 5 (§1.6, read from the driver's file names); possibly SmartGuide "advanced security" variants (not determined); where a device checks that the app is a genuine build the manufacturer approved, only the manufacturer can grant access (PARTNER-READINESS §7), and nothing in law requires it to issue a credential to a non-partner</td>
+</tr>
+<tr>
+<td>readings encrypted end to end between the device and the vendor's cloud</td>
+<td>technical</td>
+<td>none</td>
+<td>not looked for in the census; where it is used, the phone relays data it cannot read and no reader on the phone, passive or authenticated, can use the readings</td>
+</tr>
+<tr>
+<td>devices leaving supply</td>
+<td>commercial</td>
+<td>none</td>
+<td>the devices open implementations support today leave sale and coverage over time; no dates collected (§6)</td>
 </tr>
 <tr>
 <td>cloud access for real-time data</td>
@@ -7867,10 +7879,11 @@ software on their own Apple device are needed to protect data rights in diabetes
 </ul>
 <p><strong>Not supported, or contradicted:</strong></p>
 <ul>
-<li><strong>Device-level protections are increasing, not decreasing.</strong> The newest devices authenticate the
-  app as well as the person (§1.6, device-layer census). Each new generation raises the cost of
-  independent access, and for a device that checks app attestation, knowledge of the protocol is not
-  enough.</li>
+<li><strong>Device-level protections are increasing, not decreasing.</strong> Each new generation raises the cost
+  of independent access. Most authenticated pairing found still uses a secret the person holds, and
+  open implementations handle it (Dexcom G7, Libre 3, Tandem; device-layer census). Omnipod 5 is the
+  one case found where the app itself is checked (§1.6), and for such a device knowledge of the
+  protocol is not enough.</li>
 <li><strong>The removals run through channels that require being a company with a contract.</strong> Every
   real-time vendor route, every interface specification and every cross-maker integration found is
   bilateral. No manufacturer publishes a route for a non-profit, an individual developer or an
@@ -7908,9 +7921,12 @@ projects, device connectivity among them. Tested against the same evidence:</p>
   healthcare apps to come from "a legal entity that provides the services, and not … an individual
   developer", and its only non-profit concession is a fee waiver for organisations that sell
   nothing (<a href="apple-accountability.html">Apple note</a> §1.3).</li>
-<li><strong>A company is required in practice: supported.</strong> Every real-time route and interface
-  specification found is a contract between legal entities (above); none is open to an individual
-  or an unincorporated project.</li>
+<li><strong>A legal entity with contracts is required in practice: supported. "A company" is narrower
+  than the evidence.</strong> Every real-time route and interface specification found is a contract
+  between legal entities (above); none is open to an individual or an unincorporated project.
+  Tidepool, a non-profit, took the same 510(k) route a company would (PRECEDENTS), so what is
+  required is an entity with a quality system and contracts. In practice that is usually a
+  company.</li>
 <li><strong>The non-profit's role is oversight, not an advantage in meeting requirements: consistent with
   the precedents.</strong> CNCF certifies vendors' offerings against one upstream with the same public
   tests, and the Open Home Foundation binds its commercial partners by contract to contribute a
@@ -8015,6 +8031,13 @@ is being an entity that meets them. That is the structure the
     Colorado statutes, and the status of the Vermont and Rhode Island bills.</li>
 <li><strong>Dexcom terms §5.11:</strong> how the bans on automated access and "unauthorized third-party
     applications" interact with the DMCA (b)(7) exemption and, in the EU, with Data Act Art. 7(2).</li>
+<li><strong>§524B as the driver of device changes:</strong> whether FD&amp;C Act §524B and FDA's premarket
+    cybersecurity guidance expect a manufacturer to show that a device's interfaces authenticate and
+    authorise those that connect. If they do, that explains why device-level controls tighten and
+    do not loosen, independent of whether §524B reaches a DIY build.</li>
+<li><strong>Omnipod 5 credential:</strong> who issues the credential behind the community driver's certificate
+    store and App Attest service, and whether that driver runs against a real pod. Read at mechanism
+    level only, under the device-layer census's disclosure rule; §1.6 is read from file names.</li>
 </ol>
 <h2 id="sources">Sources<a class="headerlink" href="#sources" title="Permanent link">&para;</a></h2>
 <p>All read 2026-10-17 unless noted.</p>

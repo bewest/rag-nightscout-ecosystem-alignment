@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="524" height="461" viewBox="0 0 524 461" font-family="Helvetica, Arial, sans-serif">
+<title>idea·tiers · Three tiers of access, three agreements — tier B, configure and coordinate</title>
+<defs>
+<marker id="ah00796b" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#00796b"/></marker>
+<marker id="ah1f5fa8" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f5fa8"/></marker>
+<marker id="ah2e7d32" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2e7d32"/></marker>
+<marker id="ah555555" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#555555"/></marker>
+<marker id="ah7b3294" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7b3294"/></marker>
+<marker id="ah888888" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#888888"/></marker>
+<marker id="ahb5541b" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b5541b"/></marker>
+<marker id="ahc8c8c8" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c8c8c8"/></marker>
+<symbol id="icon-activity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2" /></symbol>
+<symbol id="icon-building-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" /> <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" /> <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" /> <path d="M10 6h4" /> <path d="M10 10h4" /> <path d="M10 14h4" /> <path d="M10 18h4" /></symbol>
+<symbol id="icon-factory" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" /> <path d="M17 18h1" /> <path d="M12 18h1" /> <path d="M7 18h1" /></symbol>
+<symbol id="icon-smartphone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2" /> <path d="M12 18h.01" /></symbol>
+</defs>
+<rect x="0" y="0" width="524" height="461" fill="#ffffff"/>
+<text x="262.1" y="22" font-size="13" text-anchor="middle" fill="#111">idea·tiers · Three tiers of access, three agreements — tier B, configure and coordinate</text>
+<g transform="translate(135.8,0.0)">
+<g class="edge"><path class="edge" d="M135.5,86.0 L135.5,178.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M151.5,178.0 L151.5,86.0" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
+<g class="edge"><path class="edge" d="M143.5,219.0 L143.5,283.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M151.5,409.0 L151.5,317.0" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
+<g class="edge"><path class="edge" d="M135.5,317.0 L135.5,409.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="node" data-id="mfr"><rect x="83.5" y="52.0" width="120.0" height="34.0" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+<use href="#icon-factory" x="92.5" y="61.0" width="16" height="16" color="#3a4656"/>
+<text x="154.5" y="73.0" font-size="11" text-anchor="middle" fill="#111111">Manufacturer</text>
+</g>
+<g class="node" data-id="integ"><rect x="74.0" y="178.0" width="139.1" height="41.0" rx="5" fill="#e3f0e3" stroke="#333333" stroke-width="1"/>
+<use href="#icon-building-2" x="83.0" y="190.5" width="16" height="16" color="#3a4656"/>
+<text x="154.5" y="195.8" font-size="11" text-anchor="middle" fill="#111111">Integration under</text>
+<text x="154.5" y="209.2" font-size="11" text-anchor="middle" fill="#111111">a tier B agreement</text>
+</g>
+<g class="node" data-id="app"><rect x="83.5" y="283.0" width="120.0" height="34.0" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+<use href="#icon-smartphone" x="92.5" y="292.0" width="16" height="16" color="#3a4656"/>
+<text x="154.5" y="304.0" font-size="11" text-anchor="middle" fill="#111111">Client app</text>
+</g>
+<g class="node" data-id="device"><rect x="83.5" y="409.0" width="120.0" height="34.0" rx="5" fill="#e8e8e8" stroke="#333333" stroke-width="1"/>
+<use href="#icon-activity" x="92.5" y="418.0" width="16" height="16" color="#3a4656"/>
+<text x="154.5" y="430.0" font-size="11" text-anchor="middle" fill="#111111">Device line</text>
+</g>
+<g class="elabel" data-k="0">
+<text x="128.5" y="123.0" font-size="10" text-anchor="end" fill="#1f5fa8">tier B: configure and</text>
+<text x="128.5" y="135.0" font-size="10" text-anchor="end" fill="#1f5fa8">coordinate, with an</text>
+<text x="128.5" y="147.0" font-size="10" text-anchor="end" fill="#1f5fa8">audit trail</text>
+</g>
+<g class="elabel" data-k="1">
+<text x="158.5" y="135.0" font-size="10" text-anchor="start" fill="#b5541b">the audit trail</text>
+</g>
+<g class="elabel" data-k="2">
+<text x="136.5" y="248.0" font-size="10" text-anchor="end" fill="#1f5fa8">read and limited</text>
+<text x="136.5" y="260.0" font-size="10" text-anchor="end" fill="#1f5fa8">configuration</text>
+</g>
+<g class="elabel" data-k="3">
+<text x="158.5" y="360.0" font-size="10" text-anchor="start" fill="#b5541b">glucose, status,</text>
+<text x="158.5" y="372.0" font-size="10" text-anchor="start" fill="#b5541b">history, alarms</text>
+</g>
+<g class="elabel" data-k="4">
+<text x="128.5" y="360.0" font-size="10" text-anchor="end" fill="#1f5fa8">limited, confirmed</text>
+<text x="128.5" y="372.0" font-size="10" text-anchor="end" fill="#1f5fa8">settings changes</text>
+</g>
+</g></svg>
