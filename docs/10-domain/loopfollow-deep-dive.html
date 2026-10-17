@@ -8515,12 +8515,12 @@
 
 
 <h1 id="loopfollow-deep-dive">LoopFollow Deep Dive<a class="headerlink" href="#loopfollow-deep-dive" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-17 at <code>3eb62afa</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>dd3a7746</code>.</em></p>
 <blockquote>
 <p><strong>Source</strong>: <code>externals/LoopFollow/</code><br />
 <strong>Last Updated</strong>: 2026-01-29<br />
 <strong>Version</strong>: 2.x (maintained by Loop and Learn)<br />
-<strong>Corrected 2026-10-17</strong> against LoopFollow <code>4a74b781</code>: <code>RemoteType</code> has three cases (no <code>nightscout</code> case), Trio Remote Control sends to Apple Push Notification service (APNs) directly rather than through Nightscout, and the <code>Remote/Nightscout/</code> directory described before does not exist. See <a href="../60-research/structures-2026-10-17/technical-loops.html">technical control loops</a> §4.</p>
+<strong>Corrected 2026-10-17</strong> against LoopFollow <code>4a74b781</code>: <code>RemoteType</code> has three cases (no <code>nightscout</code> case), Trio Remote Control sends to Apple Push Notification service (APNs) directly rather than through Nightscout, and the <code>Remote/Nightscout/</code> directory described before does not exist. See <a href="../60-research/structures-2026-10-17/technical-loops.html">technical control loops</a> §4. Also 2026-10-17 (DOCS-REMOTE-FOLLOWUP): remote carbs go via APNs for both Loop (<code>LoopAPNSCarbsView.swift:563-564</code>, <code>sendCarbsViaAPNS</code>) and Trio (<code>TRC/MealView.swift:346</code>, <code>sendMealPushNotification</code>), not via Nightscout.</p>
 </blockquote>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>LoopFollow is an iOS/watchOS caregiver monitoring app that aggregates data from multiple diabetes management sources into a single view. It consumes Nightscout API data to display CGM readings, insulin dosing, carbs, predictions, and AID system status.</p>
@@ -8981,7 +8981,7 @@
 </tr>
 <tr>
 <td><strong>Remote Carbs</strong></td>
-<td>Via NS</td>
+<td>Via APNS</td>
 <td>✅</td>
 <td>✅</td>
 </tr>

@@ -8823,12 +8823,12 @@
 
 
 <h1 id="remote-bolus-command-comparison">Remote Bolus Command Comparison<a class="headerlink" href="#remote-bolus-command-comparison" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-17 at <code>3eb62afa</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>dd3a7746</code>.</em></p>
 <blockquote>
 <p><strong>Sources</strong>: Loop, AAPS, Trio, Nightscout<br />
 <strong>Last Updated</strong>: 2026-01-28<br />
 <strong>Corrected 2026-10-09</strong> against source; see <a href="../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.html">intent and workflow across the landscape</a> §11.<br />
-<strong>Corrected 2026-10-17</strong> against source: the Trio architecture no longer routes commands through Nightscout, the Nightscout relay is shown sending to Loop only, and the summary table now shows Loop's optional response notification, matching GAP-REMOTE-004. Revisions read: cgm-remote-monitor <code>a8888f0d</code>, LoopWorkspace <code>548b332</code> (NightscoutService <code>2cef489</code>), Trio <code>0b29cd534</code>, LoopFollow <code>4a74b781</code>. See <a href="../60-research/structures-2026-10-17/technical-loops.html">technical control loops</a> §4.  </p>
+<strong>Corrected 2026-10-17</strong> against source: the Trio architecture no longer routes commands through Nightscout, the Nightscout relay is shown sending to Loop only, and the summary table now shows Loop's optional response notification, matching GAP-REMOTE-004. Revisions read: cgm-remote-monitor <code>a8888f0d</code>, LoopWorkspace <code>548b332</code> (NightscoutService <code>2cef489</code>), Trio <code>0b29cd534</code>, LoopFollow <code>4a74b781</code>. See <a href="../60-research/structures-2026-10-17/technical-loops.html">technical control loops</a> §4. Also 2026-10-17 (DOCS-REMOTE-FOLLOWUP): Trio's shared secret is configured in Trio and the sending app, not in Nightscout.</p>
 </blockquote>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>Remote bolus commands allow caregivers to trigger insulin delivery from outside the AID app. This document compares how Loop, AAPS, Trio, and Nightscout handle these safety-critical commands.</p>
@@ -9112,7 +9112,7 @@
 <h3 id="security-model_2">Security Model<a class="headerlink" href="#security-model_2" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Encryption</strong>: AES-256 via <code>SecureMessenger</code></li>
-<li><strong>Shared Secret</strong>: Configured in Nightscout + Trio</li>
+<li><strong>Shared Secret</strong>: generated and stored in Trio, and entered by hand in the sending app (e.g. LoopFollow); Trio does not upload it to Nightscout, which receives only Trio's device token, bundle and team identifiers in the profile (Trio <code>0b29cd534</code>: <code>RemoteControlConfigStateModel.swift:7-37</code>, <code>TrioRemoteControl.swift:29</code>, <code>NightscoutManager.swift:838-853</code>)</li>
 <li><strong>Response Notifications</strong>: Sends delivery status back via APNs</li>
 <li><strong>Timestamp Validation</strong>: Command includes <code>timestamp</code> for freshness</li>
 </ul>
