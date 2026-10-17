@@ -143,9 +143,13 @@ plus rule 5:
   as `g7:<serial>:<seconds>` is neither hex nor a UUID, so by-id routes find nothing
   ([query.js:33-36, 95-144](https://github.com/nightscout/cgm-remote-monitor/blob/92d0834219aa771b5837dbcbf1baeb839a200cf6/lib/server/query.js#L95-L144));
 - **whether `date` may change on an `identifier` match.** On API v3, `date`, `device` and
-  `eventType` are immutable. A re-send with the same `identifier` and a different `date` is
-  answered 400, not stored twice (read from the code, not run)
+  `eventType` are immutable. A re-send with the same `identifier` and a different `date`,
+  `device` or `eventType` is answered 400 ("Field date cannot be modified by the client") and the
+  stored record is left as it was, not stored twice; a `PUT` by identifier is answered the same.
+  We ran it on 15.0.8 and on `dev` (`fade2299`) for entries, treatments and device status, with an
+  identical re-send answered 200 as the control
   ([update/validate.js:21-43](https://github.com/nightscout/cgm-remote-monitor/blob/92d0834219aa771b5837dbcbf1baeb839a200cf6/lib/api3/generic/update/validate.js#L21-L43)).
+  On v1 the same re-send updates the time on treatments and adds a second record on entries.
   Your watch-and-phone example (1.5 s apart, two `device` values) and an edited carb time both
   meet this rule. It needs a decision.
 

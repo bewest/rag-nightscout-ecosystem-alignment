@@ -15443,3 +15443,62 @@ items:
       path (treatments' identifier-first upsert arrived in 15.0.7: e78a5bc6,
       reaching dev through PR #8421's merge cdef1e7c, which GitHub lists as
       the commit's PR); Loop does not send identifier on devicestatus today.
+
+  - id: LOOP-ID-V3-IMMUTABLE
+    title: "Reproduce over HTTP that API v3 answers a re-send with the same identifier and a different date, device or eventType with 400"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: records/loop-identifier-2026-10-17
+    base: main@52a82ac8
+    state: done
+    pr: []
+    blast_radius: >
+      A lab under tools/lab/v3-identifier-immutable/ (lab.sh, probes.js,
+      README, dated results) and one passage of the Loop reply draft:
+      docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md
+      ("Not decided anywhere", last bullet) and its README evidence row.
+      Nothing in cgm-remote-monitor changes.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: lab tooling and drafted correspondence in this repository; ships nothing
+    register: []
+    gates:
+      - run: sh -c '! grep -q "read from the code, not run" docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md && ! grep -q "\[R, not run\]" docs/30-design/platform/upstream-asks-loop-identifier/README.md'
+        kind: static
+        describe: >
+          FAILS while the reply or its README evidence row still marks the v3
+          immutable-field claim as read from code and not run. RED on
+          2026-10-17 before the edit (exit 1); GREEN after (exit 0).
+      - no-gate: >
+          The lab itself is evidence, not a gate: the 400 is API v3's
+          documented rule (swagger "immutable by the client"), so nothing is
+          expected to turn it green. Whether `date` may change on an
+          identifier match is an open design question in the reply.
+    blocks_on: []
+    evidence:
+      - tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md
+      - docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md
+      - docs/30-design/platform/upstream-asks-loop-identifier/README.md
+    notes: >
+      The reply's last "Not decided anywhere" bullet said, from reading
+      lib/api3/generic/update/validate.js:21-43 at 15.0.8, that a v3 re-send
+      with the same identifier and a different date is answered 400, not
+      stored twice. POST reaches that check through create/operation.js:
+      a match on identifier becomes replace(..., { isDeduplication: true }),
+      and replace runs update/validate.js, which skips only `identifier`
+      under deduplication.
+
+      Done 2026-10-17, reproduced over HTTP with tools/lab/v3-identifier-immutable
+      at 15.0.8 (92d08342) and dev fade2299, MongoDB 7.0.43 in a dedicated
+      container, Node 22.23.2. On entries, treatments and devicestatus a v3
+      POST with a stored identifier and a different date, device or (treatments)
+      eventType is 400 "Field <name> cannot be modified by the client", the
+      stored record unchanged and single; PUT by identifier with a new date
+      the same; the identical re-send (control) is 200. The refs differ only
+      for a record first written through v1: dev accepts a first device and a
+      date equal to created_at (isSameAsStored), 15.0.8 answers 400 date. v1
+      contrast: treatments update created_at on the identifier match; entries
+      store a second record. Not filed as a backfix (documented v3 rule; the
+      open question is in the reply). Reply passage and README evidence row
+      updated.

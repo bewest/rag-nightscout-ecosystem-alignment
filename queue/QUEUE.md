@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 223 |
-| runnable gates | 281 |
-| explicit `no-gate:` markers | 264 |
+| items | 224 |
+| runnable gates | 282 |
+| explicit `no-gate:` markers | 265 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 264 of the 545 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 265 of the 547 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -49,7 +49,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 87 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 6 | RT-0, T30-RESEARCH, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164 |
-| `done` | 20 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, LAB-HUB-ACTIVE-STATE |
+| `done` | 21 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
 | `answered` | 2 | RT-D3, RT-PROPAGATION |
@@ -7205,7 +7205,7 @@ flag rule: versioning policy section 5.7.
 
 ## Controller registration and intent observability
 
-`parcel: platform` &mdash; 18 items
+`parcel: platform` &mdash; 19 items
 
 D18 (maintainer, 2026-10-09): two-tier controller registration - well-known
 declarations for backwards compatibility, controller-owned typed registrations
@@ -7234,6 +7234,7 @@ reproduced ones.
 | `PROPOSAL-REG-CONTROLLERS` | Open-source AID controllers: propose registration, instances and negotiation, with pre-filled declarations | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `LAB-HUB-ACTIVE-STATE` | Lab: cgm-remote-monitor and Nocturne answer 'what is active at t' for the same intent records | `done` | `main` | n/a | 1 run |
 | `LOOP-ID-REPLY` | Draft a reply to the Loop maintainers' proposal that Nightscout accept a client-supplied identifier | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `LOOP-ID-V3-IMMUTABLE` | Reproduce over HTTP that API v3 answers a re-send with the same identifier and a different date, device or eventType with 400 | `done` | `records/loop-identifier-2026-10-17` | n/a | 1 run + 1 no-gate |
 
 ### `LAB-TRIO-INTENT` &mdash; Simulator lab: Trio override expiry, temp-target upload repeats, downloaded temp-target echo
 
@@ -7810,6 +7811,38 @@ reproduced ones.
 - `docs/30-design/platform/upstream-asks-device-simulators/README.md`
 
 **Notes.** Points the reply should carry, each re-checked at the ref before sending: API v3 already keeps a client-supplied identifier on entries, treatments and devicestatus (resolveIdentifier, 15.0.8 and fade2299), while its swagger says the opposite (BF-169); API v1 is a different path (treatments' identifier- first upsert arrived in 15.0.7: e78a5bc6, reaching dev through PR #8421's merge cdef1e7c, which GitHub lists as the commit's PR); Loop does not send identifier on devicestatus today.
+
+### `LOOP-ID-V3-IMMUTABLE` &mdash; Reproduce over HTTP that API v3 answers a re-send with the same identifier and a different date, device or eventType with 400
+
+| | |
+|---|---|
+| state (claimed) | `done` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `records/loop-identifier-2026-10-17` |
+| base | `main@52a82ac8` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** A lab under tools/lab/v3-identifier-immutable/ (lab.sh, probes.js, README, dated results) and one passage of the Loop reply draft: docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md ("Not decided anywhere", last bullet) and its README evidence row. Nothing in cgm- remote-monitor changes.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** lab tooling and drafted correspondence in this repository; ships nothing
+
+**Gates.**
+
+- `[static]` `sh -c '! grep -q "read from the code, not run" docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md && ! grep -q "\[R, not run\]" docs/30-design/platform/upstream-asks-loop-identifier/README.md'`
+  - FAILS while the reply or its README evidence row still marks the v3 immutable-field claim as read from code and not run. RED on 2026-10-17 before the edit (exit 1); GREEN after (exit 0).
+- **NO GATE** &mdash; The lab itself is evidence, not a gate: the 400 is API v3's documented rule (swagger "immutable by the client"), so nothing is expected to turn it green. Whether `date` may change on an identifier match is an open design question in the reply.
+
+**Evidence.**
+
+- `tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md`
+- `docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md`
+- `docs/30-design/platform/upstream-asks-loop-identifier/README.md`
+
+**Notes.** The reply's last "Not decided anywhere" bullet said, from reading lib/api3/generic/update/validate.js:21-43 at 15.0.8, that a v3 re-send with the same identifier and a different date is answered 400, not stored twice. POST reaches that check through create/operation.js: a match on identifier becomes replace(..., { isDeduplication: true }), and replace runs update/validate.js, which skips only `identifier` under deduplication. Done 2026-10-17, reproduced over HTTP with tools/lab/v3-identifier-immutable at 15.0.8 (92d08342) and dev fade2299, MongoDB 7.0.43 in a dedicated container, Node 22.23.2. On entries, treatments and devicestatus a v3 POST with a stored identifier and a different date, device or (treatments) eventType is 400 "Field <name> cannot be modified by the client", the stored record unchanged and single; PUT by identifier with a new date the same; the identical re-send (control) is 200. The refs differ only for a record first written through v1: dev accepts a first device and a date equal to created_at (isSameAsStored), 15.0.8 answers 400 date. v1 contrast: treatments update created_at on the identifier match; entries store a second record. Not filed as a backfix (documented v3 rule; the open question is in the reply). Reply passage and README evidence row updated.
 
 ---
 

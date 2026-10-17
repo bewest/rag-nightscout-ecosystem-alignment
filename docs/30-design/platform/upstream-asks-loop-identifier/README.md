@@ -58,7 +58,7 @@ Records without one keep today's rules.
 | v1 device status insert-only | `insertMany`, no key [R]; dev (#8758) answers a re-sent 24-hex `_id` with the stored record [R] | `server/devicestatus.js:70` @15.0.8; `:45-56` @dev |
 | proposal: v3 "spec tells clients not to supply one" | the code keeps a client value, computes one only when absent, warns on mismatch [R, and reproduced at module level by the records agent]; swagger's "client should not create the identifier" is wrong: **BF-169** (filed 2026-10-17, branch `records/loop-identifier-2026-10-17` `e8a1f2d0`, not on main). Its "immutable by the client" part is accurate for PUT/PATCH | `api3/shared/operationTools.js:114-126`; `api3/swagger.yaml:1103` @15.0.8, `:1062` @dev; `swagger.json:1383` both |
 | v3 fallback dedup | `date`+`type` (entries), `created_at`+`device` (device status), `created_at`+`eventType` (treatments), and only against a stored record **with no `identifier`** [R] | `api3/generic/setup.js:44,54,95`; `api3/storage/mongoCollection/utils.js:128-168` (`:159`) @15.0.8, `:208` @dev |
-| v3 re-send with same `identifier`, different `date`/`device` | 400 immutable field; identifier itself may change in deduplication [R, not run] | `api3/generic/update/validate.js:21-43` @15.0.8; `:71-89` @dev |
+| v3 re-send with same `identifier`, different `date`/`device` | 400 immutable field, stored record unchanged, one copy; same for `eventType` on treatments and for `PUT` by identifier; identical re-send 200. Entries, treatments, device status [M, 15.0.8 and `fade2299`, MongoDB 7.0.43]. Only difference: on `dev` a record first written through v1 (no `date`/`device`) accepts a first `device` at the same time [M]. v1 contrast: treatments update the time, entries store a second record [M] | `api3/generic/update/validate.js:21-43` @15.0.8; `:71-91` @dev; [lab results 2026-10-17](../../../../tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md) |
 | indexes on `identifier` | present, none unique [R] | `server/entries.js:224,226`; `server/treatments.js:430,432`; `server/devicestatus.js:168`; `api3/storage/mongoCollection/index.js:21` @15.0.8 |
 | v1 batch failure | ordered `bulkWrite` / `insertMany`; stops at first failure, earlier writes kept, one 500 [R] | `server/treatments.js:91`, `server/entries.js:147`, `api/treatments/index.js:130-133` @15.0.8 |
 | v1 lookup by identifier | default window 4 days without a date or `_id`; UUID `_id` rewritten to `$or` identifier/`_id` under `UUID_HANDLING`; other non-hex values find nothing; `$in` not rewritten [R] | `server/query.js:33-36, 95-144` @15.0.8 |
@@ -109,7 +109,10 @@ decision row it produces.
 - **Device status Q3.** The reply offers to revisit the 2026-10-12 decision with `identifier`
   first. Confirm.
 - **The `date` question.** The reply raises v3's immutable `date`/`device` on an identifier match
-  as undecided. It is not yet a queue item.
+  as undecided. Reproduced over HTTP on 2026-10-17 (queue item `LOOP-ID-V3-IMMUTABLE`,
+  [lab results](../../../../tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md)).
+  Recorded as an observation, not a backfix: the 400 is API v3's documented rule; what it should
+  be for a client-supplied identifier is not decided.
 - **Push first.** The reply links pages on the project site; the gh-pages build of 2026-10-17
   (`de66763c`) has every linked page and anchor. BF-169 is on an unlanded branch and is cited by
   number only.
