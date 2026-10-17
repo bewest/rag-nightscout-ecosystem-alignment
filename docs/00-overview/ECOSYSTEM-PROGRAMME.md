@@ -115,7 +115,7 @@ none exists yet as shared work:
 | complaints, incidents and support | one intake for reports from users, clinicians, developers and manufacturers; triage into support, complaints and security; investigation records and referral to the responsible manufacturer | [PARTNER-READINESS §6](PARTNER-READINESS.md#6-complaint-incident-and-support-handling) |
 | security coordination | security contacts, private vulnerability reporting, embargoed fixes, an SBOM per release | [PARTNER-READINESS §8](PARTNER-READINESS.md#8-order-of-work) |
 | partner and legal operations | agreements with manufacturers, the evidence a manufacturer asks for, the terms that carry data rights | [PARTNER-READINESS §3–§5](PARTNER-READINESS.md#3-what-a-manufacturer-will-need-to-see) |
-| administration | funding, insurance, contracts, continuity, published accounts | [accountability as an organisation grows](perspective/ACCOUNTABILITY-THRESHOLDS.md) |
+| administration | funding, insurance, contracts, continuity, published accounts | [what each activity brings](perspective/ACCOUNTABILITY-THRESHOLDS.md) |
 
 Each feeds the commons: a confirmed complaint becomes a test vector in commons A or C, a security
 contact is part of what commons B's trust federation recognises, and an agreement with a
