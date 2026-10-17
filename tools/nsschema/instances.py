@@ -273,27 +273,58 @@ def _supported_roles(caps):
     return [negotiate.canonical_json(r) for r in caps["instances"].get("roles") or []]
 
 
+# Walk-through row 16 (maintainer, 2026-10-17): how a stored role result
+# records that the owner granted it by `transfer-role`, so a rebind can tell
+# it from a role granted by the binding. Not in the instance etag (the
+# transfer that sets it already changes the granted roles).
+GRANTED_BY = "grantedBy"
+TRANSFER_GRANT = "transfer-role"
+
+
+def _key(role):
+    return {k: role[k] for k in ("channel", "role", "provenance")}
+
+
+def transferred(stored):
+    """The roles `stored` holds by the owner's `transfer-role` (row 16)."""
+    return [_key(r) for r in (stored or {}).get("roles") or []
+            if r["result"] == "granted" and r.get(GRANTED_BY) == TRANSFER_GRANT]
+
+
+def binding_matches(hub_state, identity, binding):
+    """Whether an instance's binding equals its product's `boundTo`; a
+    released product (boundTo null) matches no instance."""
+    bound = (negotiate._find(hub_state, identity) or {}).get("boundTo")
+    return bound is not None and negotiate.canonical_json(bound) == negotiate.canonical_json(binding)
+
+
 def command_sink_permitted(hub_state, identity, binding, stored_before, claim):
     """Walk-through row 7 (maintainer, 2026-10-16): a command-sink role goes
     only to an instance created by the subject the product is bound to (the
     instance's binding equals the product's), or to one the owner transferred
-    it to (`transfer-role`). A role the instance already holds is kept on
-    renewal, so a transferred role survives the next renewal. Source roles
-    stay open to any permitted subject."""
-    product = negotiate._find(hub_state, identity) or {}
-    bound = product.get("boundTo")
-    if bound is not None and negotiate.canonical_json(bound) == negotiate.canonical_json(binding):
+    it to (`transfer-role`). Source roles stay open to any permitted subject.
+    *(Amended 2026-10-17, rows 15 and 16:)* a `simulated` command-sink claim
+    is exempt — any permitted subject's simulator may hold one, and it never
+    receives a routed command; a held `device` command-sink role survives
+    renewal only when the owner granted it by `transfer-role` (recorded on
+    the role as `grantedBy`) or the instance matches the binding. It read: "A
+    role the instance already holds is kept on renewal", so a product
+    transfer did not strip existing holders."""
+    if claim["provenance"] == "simulated":
         return True
-    held = {k: claim[k] for k in ("channel", "role", "provenance")}
-    return stored_before is not None and held in granted(stored_before)
+    if binding_matches(hub_state, identity, binding):
+        return True
+    return _key(claim) in transferred(stored_before)
 
 
 def evaluate_roles(caps, hub_state, well_known, instance_id, body, definition, now,
                    identity=None, binding=None, stored_before=None):
     """Per-role results for an instance's claimed roles (rules 5 and 6, and
-    the command-sink binding of row 7)."""
+    the command-sink binding of row 7). A role granted again that the
+    instance held by the owner's transfer keeps its `grantedBy` (row 16)."""
     chans = channels(caps, well_known, definition)
     supported = _supported_roles(caps)
+    by_transfer = transferred(stored_before)
     results = []
     for i, claim in enumerate(body.get("roles") or []):
         path = f"roles.{i}"
@@ -326,6 +357,8 @@ def evaluate_roles(caps, hub_state, well_known, instance_id, body, definition, n
             result.update(result="refused", reasons=reasons)
         else:
             result["result"] = "granted"
+            if _key(claim) in by_transfer:
+                result[GRANTED_BY] = TRANSFER_GRANT
         results.append(result)
     return results
 
@@ -524,7 +557,9 @@ def _owner_refusal(request, submitter):
 def transfer_role(caps, hub_state, submitter, request, now, well_known):
     """The owner moves one role from the instance that was granted it to
     another live instance that claims it with `device` provenance. The
-    precondition is the granted instance's etag; both etags change."""
+    precondition is the granted instance's etag; both etags change. The
+    moved role is stored with `grantedBy: transfer-role` (row 16,
+    2026-10-17), which a rebind of the product does not drop."""
     refusal = _owner_refusal(request, submitter)
     if refusal:
         return refusal, hub_state
@@ -561,7 +596,8 @@ def transfer_role(caps, hub_state, submitter, request, now, well_known):
                     r["provenance"] == "device":
                 r = {k: r[k] for k in ("channel", "role", "provenance")}
                 if now_granted:
-                    r["result"] = "granted"
+                    # Row 16 (2026-10-17): recorded, so a rebind keeps it.
+                    r.update(result="granted", **{GRANTED_BY: TRANSFER_GRANT})
                 else:
                     r.update(result="refused", reasons=[_reason("role-held", None,
                                                                  "transferred by the owner")])
@@ -659,17 +695,31 @@ def overlaps(caps, hub_state, now):
     return sorted(out, key=negotiate.canonical_json)
 
 
+def _declarations(hub_state):
+    """Every product's current registration and stored definitions, in any
+    state: what the hub knows each product declares."""
+    pairs = [(r["identity"], r["registration"])
+             for r in (hub_state or {}).get("registrations") or []
+             if r.get("registration") is not None]
+    pairs += [(d["identity"], d["definition"]) for d in (hub_state or {}).get("definitions") or []]
+    return pairs
+
+
+def declaring_products(caps, hub_state, well_known, channel):
+    """Walk-through row 14 (maintainer, 2026-10-17): the products whose
+    stored declarations (current registration or any stored definition, in
+    any state — the same set `slotNameObservations` reads) derive `channel`."""
+    return sorted({_ident(identity) for identity, definition in _declarations(hub_state)
+                   if channel in channels(caps, well_known, definition)})
+
+
 def slot_name_observations(caps, hub_state, well_known):
     """Walk-through row 5 (maintainer, 2026-10-16): a slot name that two or
     more products' stored definitions use, and that is not shared (no listed
     slot and no `sameAs`), is not one channel; the hub records the
     observation for the catalogue to act on. Returns [{slot, products}]."""
     seen = {}
-    pairs = [(r["identity"], r["registration"])
-             for r in (hub_state or {}).get("registrations") or []
-             if r.get("registration") is not None]
-    pairs += [(d["identity"], d["definition"]) for d in (hub_state or {}).get("definitions") or []]
-    for identity, definition in pairs:
+    for identity, definition in _declarations(hub_state):
         for name, entry in channels(caps, well_known, definition).items():
             if "/" not in name and not entry["shared"]:
                 seen.setdefault(name, set()).add(_ident(identity))
@@ -708,17 +758,34 @@ def list_instances(caps, hub_state, submitter, request, now, well_known=None):
 
 # ── commands, read selection, projection, writes, retention ───────────
 
-def route_command(caps, hub_state, request, now):
+def route_command(caps, hub_state, request, now, well_known=None):
     """Rule 6: a command for a channel goes to the live `device` instance
     holding `command-sink` on it. With no holder the hub refuses the command
     and never routes it to a guess — not to a lapsed former holder, not to a
     `simulated` command sink, not to the product's most recent instance.
     The command API itself is not specified here. *(2026-10-16, row 5:)* a
     command for a channel that is not a shared slot names its product
-    (`request.identity`), whose own channel it is."""
-    scope = None if is_shared(caps, request["channel"]) or not request.get("identity") \
-        else _ident(request["identity"])
-    destination = holder(hub_state, request["channel"], "command-sink", now, scope=scope)
+    (`request.identity`), whose own channel it is. *(Decided 2026-10-17,
+    walk-through row 14:)* a command that names no product for a channel
+    that is not shared goes to the product inferred when exactly one product
+    on the site declares that channel; when more than one does it is refused
+    409 `ambiguous-command-destination` (the owner's `slotNameObservations`
+    shows why), and naming the product resolves it. A channel no product
+    declares is refused `no-command-destination`, as before. Shared slots are
+    unchanged."""
+    channel = request["channel"]
+    if is_shared(caps, channel):
+        scope = None
+    elif request.get("identity"):
+        scope = _ident(request["identity"])
+    else:
+        products = declaring_products(caps, hub_state, well_known, channel)
+        if len(products) > 1:
+            return _refused(409, "ambiguous-command-destination", "channel",
+                            "more than one product declares this channel; name the product"), \
+                hub_state
+        scope = products[0] if products else None
+    destination = holder(hub_state, channel, "command-sink", now, scope=scope)
     if destination is None:
         return _refused(409, "no-command-destination", "channel",
                         "no live device instance holds command-sink on this channel"), hub_state
@@ -987,6 +1054,56 @@ def after_submit(hub_state, response, stored_after):
             state.setdefault("definitions", []).append(
                 {"identity": _identity(identity), "definitionId": old,
                  "definition": before["registration"]})
+    # Row 16: a released registration bound by its next permitted writer.
+    return drop_on_rebind(hub_state, state, identity)
+
+
+REBIND_OWNER_ACTIONS = ("release", "transfer")
+
+
+def after_owner(hub_state, response, stored_after):
+    """The hub state after the owner's `release` or `transfer` of a product
+    (§3.5): the product resource as the owner left it, then row 16."""
+    if response["outcome"] != "applied" or response.get("noop"):
+        return hub_state
+    identity = _ident(stored_after["identity"])
+    state = copy.deepcopy(hub_state)
+    state["registrations"] = [stored_after if _ident(r["identity"]) == identity else r
+                              for r in state.get("registrations") or []]
+    return drop_on_rebind(hub_state, state, identity)
+
+
+def drop_on_rebind(state_before, state_after, identity):
+    """Walk-through row 16 (maintainer, 2026-10-17): when a product's
+    `boundTo` changes — the owner's transfer or release, or a released
+    registration bound by its next writer — every `device` command-sink role
+    held by an instance of that product whose binding no longer matches the
+    new `boundTo` is dropped at once, except a role the owner granted by
+    `transfer-role` (`grantedBy`). The dropped role is stored refused
+    `not-registration-owner`, as the instance's next renewal would answer,
+    so its etag changes. Simulated roles, source roles and other products'
+    instances are unaffected. Replaces SPEC-REG-AMEND's "a product transfer
+    does not strip existing holders"."""
+    bound_before = (negotiate._find(state_before, identity) or {}).get("boundTo")
+    bound_after = (negotiate._find(state_after, identity) or {}).get("boundTo")
+    if negotiate.canonical_json(bound_before) == negotiate.canonical_json(bound_after):
+        return state_after
+    state = state_after
+    for stored in _instances(state_after):
+        if _ident(stored["identity"]) != identity or \
+                binding_matches(state_after, identity, stored["boundTo"]):
+            continue
+        roles, dropped = [], False
+        for i, r in enumerate(stored["roles"]):
+            if r["result"] == "granted" and r["role"] == "command-sink" and \
+                    r["provenance"] == "device" and r.get(GRANTED_BY) != TRANSFER_GRANT:
+                r = dict(_key(r), result="refused", reasons=[_reason(
+                    "not-registration-owner", f"roles.{i}",
+                    "dropped: the product's binding changed (row 16)")])
+                dropped = True
+            roles.append(r)
+        if dropped:
+            state = _replace_instance(state, _restate(stored, roles=roles), stored["instanceId"])
     return state
 
 
@@ -1017,7 +1134,7 @@ def role_plan(plan, response, definition, caps=None, well_known=None):
 
 ACTIONS = ("put-definition", "put-instance", "delete-instance", "transfer-role", "pin-version",
            "unpin-version", "list-instances", "route-command", "select-versions", "project",
-           "write", "retention-check")
+           "write", "retention-check") + REBIND_OWNER_ACTIONS
 
 
 def run_case(case, grammar=None):
@@ -1033,6 +1150,11 @@ def run_case(case, grammar=None):
                                                      grammar, case.get("carrierViews"),
                                                      well_known)
         after = after_submit(state, response, stored_after)
+    elif action in REBIND_OWNER_ACTIONS:
+        # The §3.5 owner actions that change a product's binding (row 16).
+        response, stored_after = negotiate.negotiate(caps, state, submitter, None, request,
+                                                     grammar, None, well_known)
+        after = after_owner(state, response, stored_after)
     elif action == "put-definition":
         response, after = put_definition(caps, state, submitter, request, body, grammar, well_known)
     elif action == "put-instance":
@@ -1046,7 +1168,7 @@ def run_case(case, grammar=None):
     elif action == "list-instances":
         response, after = list_instances(caps, state, submitter, request, now, well_known)
     elif action == "route-command":
-        response, after = route_command(caps, state, request, now)
+        response, after = route_command(caps, state, request, now, well_known)
     elif action == "select-versions":
         selection = select_versions(caps, state, _ident(request["identity"]), now, well_known,
                                     grammar, request.get("selector"))

@@ -656,9 +656,9 @@ added under it.
 |---|---|
 | `specs/sync/controller-instance.schema.json` | the instance document (new) |
 | `specs/sync/hub-capabilities.schema.json` | gains `instances` (lease length, role and channel vocabularies, label bounds) |
-| `specs/sync/registration-submit.schema.json` | gains the D19 reason codes, `definitionId` on product responses, and the stored-definition, stored-instance, request, response and case shapes (`instanceCase`) |
+| `specs/sync/registration-submit.schema.json` | gains the D19 reason codes, `definitionId` on product responses, and the stored-definition, stored-instance, request, response and case shapes (`instanceCase`); *(2026-10-17, `SPEC-REG-AMEND-2`)* `ambiguous-command-destination`, a role result's `grantedBy`, and §3.5's `release` and `transfer` as instance-case requests |
 | `specs/sync/controller-state-model.schema.json` | gains `stateSpans[].wellKnownRef`; `dualWriteLink` and `slotName` descriptions updated |
-| `specs/sync/conformance/instances/*.yaml` | 90 synthetic cases (86 until `SPEC-REG-AMEND` added four on 2026-10-16); the §3.5 cases are unchanged in meaning |
+| `specs/sync/conformance/instances/*.yaml` | 103 synthetic cases (86 until `SPEC-REG-AMEND` added four on 2026-10-16; 90 until `SPEC-REG-AMEND-2` added 13 on 2026-10-17); the §3.5 cases are unchanged in meaning |
 | `tools/nsschema/instances.py` | a reference for this section, extending `negotiate.py` (which gained the definition id, the meaning comparison, well-known references and namespace claims across a product's definitions); it checks the cases, it is not a hub |
 | `tools/nsschema/test_registration_instances.py` | the queue gate |
 
@@ -778,7 +778,8 @@ one that does not serves neither, and §3.5 applies unchanged. Paths are proposa
   and a renewal retried after a lost response still matches; a role granted on renewal, or moved
   by the owner, changes it, so the instance learns of an owner's transfer through a 412 on its
   next renewal and two owner actions racing on one instance meet 412. A create retried with the
-  same body by the same subject is a renewal.
+  same body by the same subject is a renewal. *(2026-10-17, row 16:)* a `device` command-sink role
+  dropped when its product's binding changes changes the holding instance's etag too.
 - *DELETE* releases the instance and all its roles. Records it wrote keep its id.
 
 **Roles, channels and provenance (rules 5 and 6).**
@@ -803,6 +804,32 @@ one that does not serves neither, and §3.5 applies unchanged. Paths are proposa
   `instance-create`; `owner-transfer-role-other-subject`; `instance-renew-transferred-command-sink`).
   `instance-create-other-subject` now answers `partial`: its simulated command-sink claim is
   refused, its source roles are granted.
+  **Decided 2026-10-17 (maintainer walk-through rows 15 and 16, `SPEC-REG-AMEND-2`), replacing "A
+  command-sink role an instance already holds is kept on its renewal" and the `partial` sentence
+  above:**
+  - *Simulated claims are exempt* (row 15). The binding rule applies to `device` command-sink
+    claims only: any permitted subject's simulator may hold a `simulated` command-sink, which never
+    receives a routed command. `instance-create-other-subject` answers `accepted` again, as before
+    2026-10-16; `instance-command-sink-not-registration-owner` (a device claim) is still refused;
+    `command-not-routed-to-other-subject-simulator` routes past another subject's granted simulator
+    to the device holder.
+  - *A rebind drops non-matching device command-sinks* (row 16). When a product's `boundTo`
+    changes — the owner's `transfer` or `release`, or a released registration bound by its next
+    writer — every `device` command-sink role held by an instance of that product whose binding no
+    longer matches the new `boundTo` is dropped at once: it is stored refused
+    `not-registration-owner`, as the instance's next renewal would answer, and the instance's etag
+    changes. A role the owner granted by `transfer-role` is kept; the hub records it on the stored
+    role result as `grantedBy: transfer-role` (not in the etag; kept on renewal while the role stays
+    granted). Simulated roles, source roles and other products' instances are unaffected. A command
+    sent before an instance of the new binding claims the role is refused `no-command-destination`.
+    A held `device` command-sink survives renewal only when it carries `grantedBy` or the instance
+    matches the binding. This replaces `SPEC-REG-AMEND`'s "a product transfer does not strip
+    existing holders" (`rebind-transfer-drops-command-sink`, control
+    `rebind-transfer-keeps-matching-instance`; `rebind-release-drops-command-sink`;
+    `rebind-keeps-transferred-role`; `command-after-rebind-no-destination`, control
+    `command-after-rebind-routed` after `rebind-new-holder-claims`; `listing-shows-rebind-drop`).
+    `owner-transfer-role` and `owner-transfer-role-other-subject` store `grantedBy` on the moved
+    role, and `instance-renew-transferred-command-sink` carries it, each called out in-file.
 - *Channels.* For a stateSpans kind that declares a `slot`, the channel is that slot name; for
   every other element it is `<vendor>/<product>/<element id>`. A slot channel is shared across
   products on the tenant, so two controllers that name the same slot contend for its roles. A
@@ -828,6 +855,20 @@ one that does not serves neither, and §3.5 applies unchanged. Paths are proposa
   instances of ControllerA and ControllerB contend on `override` now list `override` in their
   capability documents, with their expectations unchanged; each says so in-file. A command for a
   channel that is not shared names its product (`request.identity`).
+  **Decided 2026-10-17 (maintainer walk-through rows 13 and 14, `SPEC-REG-AMEND-2`):** an unlisted
+  slot is the product's own channel (`<vendor>/<product>/<slot>`; on the wire the channel keeps
+  the slot's name and its roles are scoped to the product), and instances of one product contend
+  on it, as built (row 13). A command that names no product for a channel that is not shared goes
+  to the product the hub infers when exactly one product on the site declares that channel; when
+  more than one does, it is refused 409 `ambiguous-command-destination` (the owner's
+  `slotNameObservations` shows why), and naming the product (`request.identity`) resolves it. The
+  inference is never a guess between candidates. "Declares" reads the same declarations as
+  `slotNameObservations`: every product's current registration and stored definitions, in any
+  state. A channel no product declares is refused `no-command-destination`, as before; shared slots
+  are unchanged (row 14; `command-inferred-one-product`, `command-ambiguous-destination` with
+  control `command-named-product`, `command-unknown-slot`). `command-no-destination-simulated`'s
+  hub now lists `override`, as its control's does, so the case still reaches the destination check
+  (called out in-file).
 - *Exclusivity.* Among live `device`-provenance instances of active products on the tenant, each
   (channel, role) has one holder. A second claimant is refused that role `role-held`; its other
   roles are still granted, and it writes the elements on that channel as their carriers. The hub
@@ -841,7 +882,9 @@ one that does not serves neither, and §3.5 applies unchanged. Paths are proposa
 - *Commands.* A command for a channel goes to the live `device` instance holding `command-sink` on
   it. With no holder the hub refuses the command `no-command-destination` and never routes it to
   a guess: not to a lapsed former holder, not to a `simulated` command sink, not to the product's
-  latest instance. The command API itself is not specified here.
+  latest instance. The command API itself is not specified here. *(2026-10-17, row 14: a command
+  naming no product for an unshared channel two products declare is refused
+  `ambiguous-command-destination`, above.)*
 - **The hub never decides dosing.** Role exclusivity decides only which instance is the typed
   source of record for a channel and where a command for that channel is routed; it never stops,
   directs or composes dosing. A claimant refused a role keeps running and keeps writing its
@@ -947,7 +990,10 @@ one unshared slot name; `instance-overlap-listed`, `instance-overlap-holder-laps
 `listing-includes-withheld` and `listing-withholds-alias` gained `registrations` in their
 expectations, and the last two also `slotNameObservations` (their hub lists no slots and both
 products declare `override`), with nothing else changed. `transfer-role` is the one way an instance of another
-subject gets a command-sink role (row 7).
+subject gets a command-sink role (row 7). *(2026-10-17, rows 15 and 16: a `device` command-sink
+role; the role it moves is stored with `grantedBy: transfer-role`, which a rebind keeps. §3.5's
+`release` and `transfer` now also drop non-matching `device` command-sink roles; the instance
+cases model them as requests.)*
 
 **Choices made here for the maintainer to confirm.** Creating an instance needs the permission,
 not the product's binding (a second subject may run a copy) *(decided 2026-10-16, maintainer
@@ -966,8 +1012,16 @@ channels (writes to them are attributed by instance, and their exclusivity is no
 a channel until its decomposition is typed)*;
 `wellKnownRef` needs a versioned catalogue kind; the permission names reuse
 `api:registrations:create`/`delete`. The label prefix correction above was set with this item.
+*(Decided 2026-10-17, maintainer walk-through rows 13–16, on four choices `SPEC-REG-AMEND` made:
+an unlisted slot is the product's own channel, as built (row 13); a command for an unshared slot
+is routed to the one product that declares it and refused `ambiguous-command-destination` when
+more than one does (row 14), replacing "a command for a channel that is not shared names its
+product"; simulated command-sink claims are exempt from the binding rule (row 15), replacing "the
+binding check applies to simulated claims too"; a change of a product's `boundTo` drops
+non-matching `device` command-sink roles at once except `transfer-role` grants (row 16), replacing
+"a product transfer does not strip existing holders". Applied by `SPEC-REG-AMEND-2`, above.)*
 
-**The cases.** 90 (86 until 2026-10-16), under `specs/sync/conformance/instances/`, each with its
+**The cases.** 103 (86 until 2026-10-16, 90 until 2026-10-17), under `specs/sync/conformance/instances/`, each with its
 time `now`, the hub's stored registrations, definitions, instances, pins and records, and the
 expected response and stored state. A refusal names the passing case that differs from it in the
 aspect under test. The 26 §3.5 cases whose response is `accepted` or `partial` gained only
@@ -975,7 +1029,12 @@ aspect under test. The 26 §3.5 cases whose response is `accepted` or `partial` 
 other 29 are unchanged. *(2026-10-16, `SPEC-REG-AMEND`: four cases added for rows 7 and 9; 20
 cases gained `wellKnown.slots: [override]` for row 5 with their expectations unchanged; four
 listing cases gained `registrations`, two of them also `slotNameObservations`; `instance-create-other-subject` changed its outcome for row
-7. Each says so in-file.)*
+7. Each says so in-file.)* *(2026-10-17, `SPEC-REG-AMEND-2`: 13 cases added for rows 14, 15 and
+16 (four, one and eight); `instance-create-other-subject` returned to `accepted` for row 15;
+`command-no-destination-simulated` gained `wellKnown.slots: [override]` for row 14 with its
+expectation unchanged; `owner-transfer-role` and `owner-transfer-role-other-subject` gained
+`grantedBy` on the moved role in their stored state, and `instance-renew-transferred-command-sink`
+gained it in its stored state and role results, for row 16. Each says so in-file.)*
 
 | case | what it shows | outcome | control |
 |---|---|---|---|
@@ -983,8 +1042,15 @@ listing cases gained `registrations`, two of them also `slotNameObservations`; `
 | `carrier-write-claimant` | Exclusivity never blocks a carrier write | 200 written; carrier, attributed to the instance |  |
 | `carrier-write-older-controller` | An older controller's write goes to the unregistered instance | 200 written; carrier, attributed unregistered |  |
 | `carrier-write-older-hub` | An older hub takes today's documents | 200 written; carrier |  |
+| `command-after-rebind-no-destination` | A command between a rebind's drop and the new holder's claim has no destination (added 2026-10-17) | 409 rejected; no-command-destination | `command-after-rebind-routed` |
+| `command-after-rebind-routed` | After the new holder's claim, a command is routed to it (added 2026-10-17) | 200 routed |  |
+| `command-ambiguous-destination` | A command naming no product for a slot two products declare is refused as ambiguous (added 2026-10-17) | 409 rejected; ambiguous-command-destination | `command-named-product` |
+| `command-inferred-one-product` | A command naming no product goes to the one product that declares its slot (added 2026-10-17) | 200 routed |  |
+| `command-named-product` | Naming the product resolves a command for a slot two products declare (added 2026-10-17) | 200 routed |  |
 | `command-no-destination-simulated` | A simulated command sink is never a command destination | 409 rejected; no-command-destination | `command-routed` |
+| `command-not-routed-to-other-subject-simulator` | Another subject's simulated command sink is granted and never a command destination (added 2026-10-17) | 200 routed, to the device holder |  |
 | `command-routed` | A command for a channel goes to its command-sink holder | 200 routed |  |
+| `command-unknown-slot` | A command for a slot no product declares has no destination (added 2026-10-17) | 409 rejected; no-command-destination | `command-inferred-one-product` |
 | `definition-blocked-by-owner` | No definition is added to a blocked product | 403 rejected; blocked-by-owner | `definition-put` |
 | `definition-extension-version-conflict` | An extension typed differently at the same version is rejected | 201 partial; `extensions/com.example.controllera.targets` version-conflict | `definition-put` |
 | `definition-id-mismatch` | A definition whose hash is not the path id is refused | 422 rejected; definition-id-mismatch | `definition-put` |
@@ -1005,7 +1071,7 @@ listing cases gained `registrations`, two of them also `slotNameObservations`; `
 | `dual-write-not-linked-across-instances` | Equal record ids from two instances never link | 200 written; carrier, attributed to the instance, linkedTo null | `dual-write-linked` |
 | `instance-blocked-product` | No instance for a blocked product | 403 rejected; blocked-by-owner | `instance-create` |
 | `instance-command-sink-not-registration-owner` | A command-sink role goes only to an instance of the product's bound subject (added 2026-10-16) | 201 partial; override command-sink: not-registration-owner | `instance-create` |
-| `instance-create-other-subject` | A second credential runs another copy of a registered product | 201 partial; override command-sink: not-registration-owner (was 201 accepted until 2026-10-16, row 7) | `instance-create` |
+| `instance-create-other-subject` | A second credential runs another copy of a registered product | 201 accepted (201 partial, override command-sink: not-registration-owner, from 2026-10-16 to 2026-10-17; rows 7 and 15) |  |
 | `instance-create-retry-noop` | An identical instance create retried is a renewal | 200 accepted |  |
 | `instance-create` | An instance is created with a lease and its roles | 201 accepted |  |
 | `instance-delete-stale` | DELETE needs the current etag | 412 precondition-failed; stale-etag | `instance-delete` |
@@ -1026,7 +1092,7 @@ listing cases gained `registrations`, two of them also `slotNameObservations`; `
 | `instance-renew-after-transfer-stale` | After a transfer the former holder's renewal meets 412 | 412 precondition-failed; stale-etag | `instance-renew-after-transfer` |
 | `instance-renew-after-transfer` | The former holder renews with its current etag | 200 partial; override command-sink: role-held | `owner-transfer-role` |
 | `instance-renew-holder-live` | A claimant's renewal stays refused while the holder is live | 200 partial; override source: role-held; override command-sink: role-held | `instance-handoff-lapse` |
-| `instance-renew-transferred-command-sink` | A command-sink role the owner transferred is kept on renewal (added 2026-10-16) | 200 accepted |  |
+| `instance-renew-transferred-command-sink` | A command-sink role the owner transferred (`grantedBy: transfer-role`, 2026-10-17) is kept on renewal (added 2026-10-16) | 200 accepted |  |
 | `instance-renew` | An instance renews its lease with If-Match | 200 accepted |  |
 | `instance-retired-product` | No instance for a retired product | 409 rejected; product-retired | `instance-create` |
 | `instance-role-held` | A second device source for a slot is refused role-held | 201 partial; override source: role-held; override command-sink: role-held | `instance-role-simulated` |
@@ -1038,6 +1104,7 @@ listing cases gained `registrations`, two of them also `slotNameObservations`; `
 | `lapsed-role-not-auto-assigned` | A lapsed holder's role is not given to anyone until asked | 409 rejected; no-command-destination | `command-routed` |
 | `listing-includes-withheld` | The owner may ask for withheld members | 200 listed |  |
 | `listing-shows-binding-event` | The owner's listing shows how a released registration was bound, and with what credential kind (added 2026-10-16) | 200 listed |  |
+| `listing-shows-rebind-drop` | The owner's listing shows a command-sink role dropped by a rebind (added 2026-10-17) | 200 listed |  |
 | `listing-withholds-alias` | The owner's default listing withholds observed aliases | 200 listed |  |
 | `observed-alias-recorded` | The free-text devicestatus.device is an observed alias | 200 written; carrier, attributed to the instance |  |
 | `owner-pin-stale` | A pin change needs the current pins etag | 412 precondition-failed; stale-etag | `owner-unpin-version` |
@@ -1053,6 +1120,11 @@ listing cases gained `registrations`, two of them also `slotNameObservations`; `
 | `product-update-version-conflict` | A product update retyping a kind at the same version is rejected for that kind | 200 partial; `stateSpans/ExampleOverride` version-conflict | `product-update-new-version` |
 | `project-no-mapping` | No projection without a declared mapping | 409 rejected; no-carrier-mapping | `project-served` |
 | `project-served` | An older reader is served a labelled, read-only projection | 200 projected |  |
+| `rebind-keeps-transferred-role` | A command-sink role the owner granted by transfer-role survives a rebind (added 2026-10-17) | 200 applied; nothing dropped |  |
+| `rebind-new-holder-claims` | After a rebind an instance of the new binding claims the dropped command-sink (added 2026-10-17) | 201 accepted |  |
+| `rebind-release-drops-command-sink` | A product release drops the device command-sink roles of its instances (added 2026-10-17) | 200 applied; override device command-sink dropped |  |
+| `rebind-transfer-drops-command-sink` | A product transfer drops the device command-sink of an instance that no longer matches (added 2026-10-17) | 200 applied; override device command-sink dropped | kept in `rebind-transfer-keeps-matching-instance` |
+| `rebind-transfer-keeps-matching-instance` | A product transfer keeps the device command-sink of an instance that matches the new binding (added 2026-10-17) | 200 applied; nothing dropped |  |
 | `retention-current` | The product's current registration is kept | 200 not-eligible; definition-current | `retention-eligible` |
 | `retention-eligible` | A definition nothing references may be removed | 200 eligible |  |
 | `retention-in-use` | A definition a live instance runs is kept | 200 not-eligible; definition-in-use | `retention-eligible` |
@@ -1180,7 +1252,7 @@ Declaration entries are measured by a hub's recorded mappings, which the corpus 
   no cache of server ids. A typed re-send matches a stored typed record of the same product with
   the same identifier, whichever instance sent it (stable across devices).
 - *The cases model writes abstractly.* The 86 instance cases and the 55 negotiation cases (90 and
-  54 since 2026-10-16) send no
+  54 since 2026-10-16; 103 instance cases since 2026-10-17, none of the 13 added a write) send no
   record ids, and their replies are unchanged; the cases here send `write.sent` (the id members of
   a v1/v3 document) or `write.recordId` (a typed record's id) and get the ids.
 
@@ -1273,7 +1345,10 @@ The cases pin it: every `assignedIds` value starts with the case's `now`.
    and the overlaps cases, whose capability documents list no slots. *(Decided otherwise
    2026-10-16, maintainer walk-through row 5: only listed slots and `sameAs` are shared, and equal
    unlisted names are recorded as an observation; the 20 instance cases that test cross-product
-   contention now list `override`.)*
+   contention now list `override`.)* *(Decided 2026-10-17, maintainer walk-through row 13: an
+   unlisted slot is the product's own channel, `<vendor>/<product>/<slot>`, on which instances of
+   one product contend, as built; row 14 routes a command naming no product for it to the one
+   product that declares it, §3.6.)*
 2. *The shipped list* holds the three names already used identically, not an empty list.
 3. *`unknown-shared-slot` refuses the element*, rather than falling back to the slot's own name.
 4. *Catalogue mappings need a known writer version*; with none the hub applies no mapping.

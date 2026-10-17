@@ -3,6 +3,12 @@
 # Schema: specs/sync/registration-submit.schema.json#/$defs/instanceCase.
 # Checked by tools/nsschema/test_registration_instances.py; `detail` strings are
 # not compared.
+# CHANGED 2026-10-17 (SPEC-REG-AMEND-2, walk-through row 14; execution plan §2.6.3):
+#   INPUT CHANGED. The capability document gains `wellKnown.slots: [override]`, as its control
+#   command-routed has. A command that names no product for an unshared slot that two products
+#   declare (ControllerA and ControllerB both declare `override`) is now refused
+#   `ambiguous-command-destination`; with the slot shared the command reaches the destination
+#   check this case tests. Expectation unchanged (409 no-command-destination).
 id: command-no-destination-simulated
 title: A simulated command sink is never a command destination
 description: 'Rule 6. Only the simulator claims command-sink on the override slot (simulated): no device
@@ -61,6 +67,8 @@ capabilities:
       product: LegacyController
       versionRange: 0.x-test
       href: /.well-known/nightscout/controllers/example-legacy
+    slots:
+    - name: override
   submit:
     href: /api/v4/registrations
     tiers:

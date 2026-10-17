@@ -547,6 +547,15 @@ deadline and its case removed; `bindingEvent` on the stored registration and `re
 the owner's listing, with one new case. The choices made beyond the rows are listed in the queue
 item.)*
 
+*(2026-10-17: `SPEC-REG-AMEND-2` is done — rows 13–16 applied to the
+[hub-sync design §3.6–§3.7](../platform/nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances),
+the submit schema, the reference and the cases: row 13 stated as decided; row 14's inference and
+the reason code `ambiguous-command-destination`, with four new cases; row 15's exemption, with
+`instance-create-other-subject` back to `accepted` and one new case; row 16's drop on a change of
+`boundTo`, with a `transfer-role` grant recorded on the stored role as `grantedBy: transfer-role`,
+§3.5's `release` and `transfer` modelled as instance-case requests, and eight new cases. 103
+instance cases. The choices made beyond the rows are listed in the queue item.)*
+
 ### 2.7 D12 — what each repository is for
 
 | repository | role |

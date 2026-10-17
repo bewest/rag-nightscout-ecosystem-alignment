@@ -32,16 +32,16 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 215 |
-| runnable gates | 265 |
-| explicit `no-gate:` markers | 263 |
+| runnable gates | 267 |
+| explicit `no-gate:` markers | 262 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 263 of the 528 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 262 of the 529 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 66 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, SPEC-REG-AMEND-2, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `not-started` | 65 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -49,7 +49,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 87 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 6 | RT-0, T30-RESEARCH, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164 |
-| `done` | 13 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, DOC-VIEWS, DOC-LINKS, RT-SOAK, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, LAB-HUB-ACTIVE-STATE |
+| `done` | 14 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, DOC-VIEWS, DOC-LINKS, RT-SOAK, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, LAB-HUB-ACTIVE-STATE |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
 | `answered` | 2 | RT-D3, RT-PROPAGATION |
@@ -6994,7 +6994,7 @@ reproduced ones.
 | `SPEC-REG-INSTANCE` | Registration definitions and instances: content-addressed definitions, leased instances, channel roles with provenance, labels (D19) | `done` | `main` | n/a | 1 run |
 | `SPEC-REG-QUIRKS` | Version-scoped quirks, the shared slot list and the two-id rule (D20) | `done` | `main` | n/a | 1 run |
 | `SPEC-REG-AMEND` | Registration contract amended by the 2026-10-16 walk-through: 24-hex legacy ids everywhere, explicit slot sharing, command-sink binding, no delivery deadline | `done` | `main` | n/a | 2 run |
-| `SPEC-REG-AMEND-2` | Registration contract: rows 13-16 of the walk-through (own-product slots, inferred command destination, simulated command-sink exempt, rebind drops command-sink) | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `SPEC-REG-AMEND-2` | Registration contract: rows 13-16 of the walk-through (own-product slots, inferred command destination, simulated command-sink exempt, rebind drops command-sink) | `done` | `main` | n/a | 2 run |
 | `HUB-REG-CRM` | cgm-remote-monitor: accept registrations and derive typed storage, validation and query from them, single-tenant first | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `SPEC-REG-MODES` | Registration contract in single and multi mode: storage key, credential kinds, owner listener, capability document scope, legacy id form | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `HUB-REG-CRM-SEAM` | cgm-remote-monitor: carry the registration store onto the storage seam, so single (MongoDB, PostgreSQL) and multi serve one contract | `not-started` | `-` | n/a | 0 run + 1 no-gate |
@@ -7236,7 +7236,7 @@ reproduced ones.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `done` |
 | repo | `rag-nightscout-ecosystem-alignment` |
 | branch | `main` |
 | base | `main@4eccd873` |
@@ -7245,7 +7245,7 @@ reproduced ones.
 | review | maintainer |
 | blocks on | `SPEC-REG-AMEND` |
 
-**Blast radius.** Expected: instances.py routing infers the product for an unshared slot when exactly one product declares it and refuses an ambiguous command; the row 7 binding check skips simulated claims (instance-create-other-subject returns to accepted); a change of a product's boundTo drops non-matching device command- sink roles at once, except roles granted by transfer-role; cases and §3.6/§3.7 text. Ships nothing.
+**Blast radius.** instances.py: route_command infers the product for a channel that is not shared when the command names none and exactly one product declares it, and refuses 409 ambiguous-command-destination when more than one does; command_sink_permitted exempts simulated claims and keeps a held device command-sink on renewal only when it carries grantedBy transfer-role or the instance matches the binding; transfer_role stores grantedBy on the moved role; drop_on_rebind drops non-matching device command-sink roles when a product's boundTo changes (owner release or transfer, and a next-writer bind), so the instance etag changes; run_case runs the owner's release and transfer. registration-submit.schema.json gains the reason code, roleResult's grantedBy and the instance-case requests release and transfer (with transferTo). 13 instance cases added (103); instance-create-other- subject back to accepted; command-no-destination-simulated gains the shared list; owner-transfer-role, owner-transfer-role-other-subject and instance-renew-transferred-command-sink gain grantedBy. Hub-sync design §3.6-§3.7 and the execution plan §2.6.3 status amended with dated notes. Ships nothing.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -7253,13 +7253,17 @@ reproduced ones.
 
 **Gates.**
 
-- **NO GATE** &mdash; Not started. The gate will be the tools/nsschema suites with each of rows 13-16 tested against a control and weakened to red for the right reason, every changed case called out in its file, and other cases unchanged in meaning.
+- `[unit]` `python -m pytest -q tools/nsschema/test_registration_negotiation.py tools/nsschema/test_registration_instances.py tools/nsschema/test_registration_quirks.py`
+  - Baseline at main d7bdbb01 in the item's worktree: negotiation 453, instances 569, quirks 185 passed; tools/nsschema 1571 passed, 1 failed, 15 skipped (the failure and skips need the gitignored externals/ checkout). GREEN on 2026-10-17: negotiation 453 (54 cases, unchanged), instances 643 (103 cases), quirks 185 (29 cases), grammar 46; tools/nsschema 1645 passed, the same 1 failed and 15 skipped; sync_model --check green. Row 13: stated as decided; a second instance of one product refused role-held on an unlisted slot, against instance-create. Row 14: command-inferred-one-product (routed); command-ambiguous-destination (409 ambiguous-command-destination) against command-named-product, which differs only in request.identity; command-unknown-slot (409 no-command-destination, as before); command-routed (shared slot, no product named) unchanged. Row 15: instance-create-other-subject accepted again, its expectation identical to dd02d8ed^; instance-command-sink-not-registration-owner (device) still refused and the released-product test of 62551dcd kept; command-not-routed-to-other-subject-simulator routes to the device holder, and without it is refused no-command-destination. Row 16: rebind-transfer-drops-command-sink against rebind-transfer-keeps-matching-instance; rebind-release-drops-command-sink; rebind-keeps-transferred-role; command-after-rebind-no-destination against command-after-rebind-routed after rebind-new-holder-claims; listing-shows-rebind-drop; each dropped role changes its instance's etag and kept roles keep theirs. Changed existing cases, each called out in its file: instance-create-other-subject (expectation back to accepted, control removed); command-no-destination-simulated (input: wellKnown.slots [override]; expectation unchanged); owner-transfer-role and owner-transfer-role-other-subject (stateAfter: grantedBy on the moved role); instance-renew- transferred-command-sink (input and expectation: grantedBy; description amended). Changed tests: the instance-binding test (accepted, all simulated roles granted), the command-sink binding test (a renewal without grantedBy refused; the bound-holder check limited to device holders), the case count 90 to 103, the required cases and the reason codes; seven tests added. Non-vacuity: 14 weakenings, one at a time, each red by assertion and reverted (red counts): infer even when two products match (1); never infer (1); no inference and no ambiguity, the SPEC-REG-AMEND tenant-wide search (1); the binding rule applied to simulated claims (1); the binding rule skipped for device claims (2); no drop on rebind (3); dropping transfer-role grants too (1); dropping source roles too (3); dropping on rebind without changing the etag (2); renewal keeping any held device command-sink (1); transfer-role recording no grantedBy (2); renewal not carrying grantedBy (1); dropping simulated command-sinks too (3); the reason code removed from the schema (2). Restored: 1281 passed.
+- `[static]` `make schema-quirks-check`
+  - With NSSCHEMA_CORPUS pointed at the main checkout's 2026-04-01 and 2026-04-26 snapshots: every registry claim holds; reports/schema-census/quirks.json unchanged.
 
 **Evidence.**
 
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md`
 
-**Notes.** Rows 13-16 of the execution plan §2.6.3 walk-through tables (maintainer, 2026-10-17).
+**Notes.** Rows 13-16 of the execution plan §2.6.3 walk-through tables (maintainer, 2026-10-17). Done 2026-10-17; hub-sync design §3.6-§3.7. Choices made beyond the rows, for the maintainer to confirm: a transfer-role grant is recorded on the stored role result as grantedBy: transfer-role, also returned in the instance's renewal role results, not in the etag, set on any role transfer- role moves (source too), kept on renewal while the role stays granted and gone when the role is moved away; "declares" for row 14 reads every product's current registration and stored definitions in any state (the set slotNameObservations reads), is not limited to channels that accept commands, and applies to element channels too; the ambiguous refusal is 409 with path channel and lists no candidates; an inferred route's response has no inference marker; a dropped role is stored refused not-registration-owner (what the next renewal answers), with no distinct code, so the listing shows it as refused; the drop covers the product's stored instances whether or not their lease is live; the drop also runs on a next-writer bind, where in a reachable state nothing is left to drop; the owner's release and transfer responses do not list dropped roles; release and transfer are modelled as instance-case requests; for row 13 the channel's wire name stays the bare slot name, scoped to the product; command-no-destination-simulated keeps its meaning by listing override (as its control does) rather than naming the product; rebind- transfer-keeps-matching-instance's prior state (the new subject's instance holding an unmarked device command-sink while the product is bound to another subject) is constructed and is not reachable under rows 7 and 16.
 
 ### `HUB-REG-CRM` &mdash; cgm-remote-monitor: accept registrations and derive typed storage, validation and query from them, single-tenant first
 

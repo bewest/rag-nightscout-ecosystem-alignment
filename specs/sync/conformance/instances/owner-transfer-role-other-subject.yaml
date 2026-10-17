@@ -4,6 +4,10 @@
 # Checked by tools/nsschema/test_registration_instances.py; `detail` strings are
 # not compared.
 # ADDED 2026-10-16 (SPEC-REG-AMEND; the maintainer's walk-through, execution plan §2.6.3, row 7).
+# CHANGED 2026-10-17 (SPEC-REG-AMEND-2, walk-through row 16; execution plan §2.6.3):
+#   EXPECTATION CHANGED. The moved role is stored with `grantedBy: transfer-role` on the `to`
+#   instance in stateAfter, so a later rebind of its product keeps it. The response, both
+#   etags and every other member are unchanged (`grantedBy` is not in the etag).
 id: owner-transfer-role-other-subject
 title: The owner transfers a command-sink role to another subject's instance
 description: Walk-through row 7. The `to` instance of ControllerA was created by a development build's
@@ -620,6 +624,7 @@ expected:
         role: command-sink
         provenance: device
         result: granted
+        grantedBy: transfer-role
       - channel: Example/ControllerA/extensions/com.example.controllera.targets
         role: source
         provenance: device

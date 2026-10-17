@@ -595,8 +595,11 @@ def test_the_existing_case_sets_keep_their_counts():
     # CHANGED 2026-10-16 (SPEC-REG-AMEND): 55 negotiation cases became 54
     # (typed-write-load-deadline-passed removed, row 8) and 86 instance cases
     # became 90 (rows 7 and 9 added four).
+    # CHANGED 2026-10-17 (SPEC-REG-AMEND-2): 90 instance cases became 103
+    # (rows 14, 15 and 16 added four, one and eight); the 54 negotiation cases
+    # are unchanged.
     assert len(list((ROOT / negotiate.CONFORMANCE_DIR).glob("*.yaml"))) == 54
-    assert len(list((ROOT / instances.CASES_DIR).glob("*.yaml"))) == 90
+    assert len(list((ROOT / instances.CASES_DIR).glob("*.yaml"))) == 103
 
 
 def test_the_new_reason_code_is_a_shared_value():
