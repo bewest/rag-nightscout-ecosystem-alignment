@@ -63,7 +63,7 @@ AndroidAPS in-tree pump drivers on `dev` @ 550605ee36 (`pump/`). "Shared" is the
 | Driver dir | Device(s) (from `PumpType.*` and plugin names) | Crypto family named in code | Test files / `@Test` | Notes |
 |---|---|---|---|---|
 | `omnipod/eros` | Omnipod Eros over RileyLink | none | 29 / 102 (on master) | shares 46 hex vectors with OmniKit |
-| `omnipod/dash` | Omnipod DASH | EAP-AKA/Milenage, X25519, AES-CCM, AES-CMAC | 28 / 57 (on master) | `MilenageTest` (4, fixed vectors), `EapMessageTest`, `KeyExchangeTest`, `EnDecryptTest`, command and response encode tests; shares 58 hex vectors with OmniBLE |
+| `omnipod/dash` | Omnipod DASH | EAP-AKA/Milenage, X25519, AES-CCM, AES-CMAC | 28 / 57 (on master) | `MilenageTest` (4, fixed vectors), `EapMessageTest`, `KeyExchangeTest`, `EnDecryptTest`, command and response encode tests; shares 14 hex vectors with OmniBLE *(corrected: 58 was counted over all of `pump/omnipod/`, 44 of them in `eros` tests; see the [2026-10-17 record](../device-simulators-2026-10-17.md#5-the-census-picture-updated))* |
 | `omnipod/common` | shared | – | 4 / 60 (on master) | Figures for all of `omnipod` on dev: 70 / 283 |
 | `rileylink` | RileyLink bridge (host) | none | 19 / 315 | CRC8-heavy radio-packet tests |
 | `medtronic` | Medtronic 512/712 … 554/754 (Veo) | none | 14 / 158 | shares 0 vectors with MinimedKit |
@@ -126,7 +126,7 @@ Column headings: iOS = Swift, Android = Kotlin/Java, JS, Py = Python, Go, C++. "
 | Device family | iOS | Android | JS | Py | Go | C++ | Sim? | Shared vectors across implementations |
 |---|---|---|---|---|---|---|---|---|
 | Omnipod Eros (RF over RileyLink) | OmniKit; OmnipodKit (Eros) | AAPS `omnipod/eros` | – | openomni (decode) | – | – | no | yes, by copying: OmniKit∩OmnipodKit 165, OmniKit∩AAPS 46, openomni∩each 2 |
-| Omnipod DASH | OmniBLE; OmnipodKit | AAPS `omnipod/dash` | – | – | `pod` (pod side) | – | **yes** (`loopandlearn/pod`, Raspberry Pi BLE) | OmniBLE∩OmnipodKit 191 (all of OmniBLE's), OmniBLE∩AAPS 58; the Milenage known-answer test exists only in AAPS |
+| Omnipod DASH | OmniBLE; OmnipodKit | AAPS `omnipod/dash` | – | – | `pod` (pod side) | – | **yes** (`loopandlearn/pod`, Raspberry Pi BLE) | OmniBLE∩OmnipodKit 191 (all of OmniBLE's), OmniBLE∩AAPS 14 (`dash`; corrected, 58 was all of `pump/omnipod/`); the Milenage known-answer test exists only in AAPS |
 | Omnipod 5 | OmnipodKit (O5) | – | – | – | – | – | no | n/a (1 implementation) |
 | Dexcom G5/G6 | CGMBLEKit; xdripswift; DiaBLE (reader) | xDrip | xdrip-js | – | – | – | no | effectively none: CGMBLEKit∩xdrip-js 1, CGMBLEKit∩xDrip 1, others 0 |
 | Dexcom G7 / ONE+ / Stelo | G7SensorKit (passive, needs the vendor app); xdripswift (auth); DiaBLE (auth TODO) | xDrip (`libkeks`); Juggluco (Java plus C++) | xdrip-js `dev` (port of libkeks) | – | – | Juggluco `ecJPake.cpp` | no | G7SensorKit∩xdripswift 2; no authentication vectors are shared |
@@ -158,7 +158,7 @@ Column headings: iOS = Swift, Android = Kotlin/Java, JS, Py = Python, Go, C++. "
 | Libre 2 | **5**: LibreTransmitter, xDrip, xdripswift, Juggluco, DiaBLE | – | none | Payload decrypt and decode vectors |
 | Libre 3 | **3**: LibreCRKit (+ LibreLoop), Juggluco, DiaBLE | – | none | NFC activation, handshake transcript, data-plane frames |
 | Omnipod Eros | **3** drivers (OmniKit, OmnipodKit, AAPS) + 1 decoder (openomni) | OmnipodKit forks OmniKit | 165 and 46 (copied) | The corpus exists de facto in OmniKit's tests. Extracting it to one file would stop it drifting between copies. |
-| Omnipod DASH | **3** (OmniBLE, OmnipodKit, AAPS) + a pod-side simulator | OmnipodKit forks OmniBLE; the AAPS tests share 58 vectors | 191 and 58 (copied) | The Milenage known-answer test exists only in AAPS. Its vectors, plus the public 3GPP Milenage test sets, could run in both Swift implementations. |
+| Omnipod DASH | **3** (OmniBLE, OmnipodKit, AAPS) + a pod-side simulator | OmnipodKit forks OmniBLE; the AAPS `dash` tests share 14 vectors (corrected, 58 was all of `pump/omnipod/`) | 191 and 14 (copied) | The Milenage known-answer test exists only in AAPS. Its vectors, plus the public 3GPP Milenage test sets, could run in both Swift implementations. |
 | Medtronic 5xx/7xx | **3**: MinimedKit, AAPS `medtronic`, decocare (USB path) | – | 0 | A history-page decode corpus (MinimedKit already holds 199 hex literals) |
 | Medtronic 7xxG SAKE | **2**: PythonSake, JavaSake (+ a differential harness against the vendor library) | JavaSake ports PythonSake | 6 plus NIST/RFC | Already the best-structured case: public known-answer tests for the primitives plus a cross-implementation transcript |
 | Tandem | **1** client in the clones (pumpX2) + a simulator (faketandem) + TandemKit outside the clones | – | 17 | The pumpX2 test hex (1,334 literals) is a de facto reference corpus. faketandem depends on pumpX2's codec, so a simulator decode path independent of pumpX2 would be needed before faketandem can catch pumpX2 decode errors. |

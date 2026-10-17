@@ -97,7 +97,7 @@ implementations, 41 implementations in all (a port counts once and is marked):
 | Dexcom G7 / ONE+ pairing (EC-JPAKE family) | 4 that authenticate (xDrip+, xdrip-js port, xDrip4iOS, Juggluco) | none |
 | Libre 3 | 3 (LibreCRKit, Juggluco, DiaBLE) | none; LibreCRKit tests AES-CCM against the RFC 3610 vector |
 | Omnipod Eros | 3 drivers and a decoder (OmniKit, OmnipodKit, AndroidAPS; openomni) | 165 and 46, from copied tests |
-| Omnipod DASH | 3 (OmniBLE, OmnipodKit, AndroidAPS) | 191 and 58, from copied tests |
+| Omnipod DASH | 3 (OmniBLE, OmnipodKit, AndroidAPS) | 191 and 14, from copied tests *(corrected: 58 was AndroidAPS's whole `pump/omnipod/`; see [device-simulators §5](device-simulators-2026-10-17.md#5-the-census-picture-updated))* |
 | Medtronic 5xx/7xx | 3 (MinimedKit, AndroidAPS, decocare) | none |
 | Medtronic 7xxG pairing | 2 (PythonSake, JavaSake) | 6, from a deliberate cross-check, plus NIST and RFC vectors |
 | Dana, Medtrum pump, Medtrum CGM, Eversense, Accu-Chek SmartGuide, RileyLink host | 2 each | Medtrum pump 7; the others none |

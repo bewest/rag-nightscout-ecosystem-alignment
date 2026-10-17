@@ -119,11 +119,14 @@ helpers (`testBridge` ×2, `testHarness`, `testCapture`) that the Swift test pat
 commits for trio-test-harness are 7 by author and 49 of 71 by `Co-Authored-By` trailer; the census
 counts authors only. The counter was not changed, so the 09-30 comparisons hold.
 
-**Not reproduced in this record.** The census credits AndroidAPS `omnipod/dash` with 58 vectors
-shared with OmniBLE. 58 reproduces only over all of AndroidAPS `pump/omnipod/` (common, dash and
-eros); `dash` alone gives 14 on `dev` `7e1d537d` and on `master` `598e2eb39c`. The census's
-AndroidAPS commit `550605ee36` is not in the local clone, so the figure is unconfirmed at that
-commit. OmniBLE∩OmnipodKit 191 reproduces exactly.
+**Census figure corrected.** The census credits AndroidAPS `omnipod/dash` with 58 vectors shared
+with OmniBLE. Re-run at the census commits (AndroidAPS `dev` `550605ee36`, OmniBLE `29358d5`), `dash`
+shares 14. 58 is the count over all of AndroidAPS `pump/omnipod/`: 44 in `eros` tests, 14 in `dash`,
+none in `common`. The figures are the same on `master` `598e2eb39c` and on `dev` `7e1d537d`. The same
+method (`tools/programme/stack-census/hexvec.py`) reproduces OmniBLE∩OmnipodKit 191,
+OmniKit∩AndroidAPS 46, OmniKit∩OmnipodKit 165 and G7SensorKit∩xdripswift 2; adding one OmniBLE
+literal to a scratch copy of an AndroidAPS `dash` test raises the count to 15. The census snapshot is
+corrected in place.
 
 ## 6. The joins that are missing
 
