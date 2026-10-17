@@ -2847,8 +2847,8 @@ the enumeration is complete or correct.</p>
 <li>The document names five gaps in its own coverage and none is closed. (1)
   the grep cannot see process.env['X'], which is how it missed the API v3
   family that includes the one that irreversibly deletes data; (2) three AWS
-  names are read directly and appear in no source; (3) twelve ADMIN_* /
-  FEED_* names read by the hosted entrypoints appear in no source, no gap
+  names are read directly and appear in no source; (3) twelve ADMIN_<em> /
+  FEED_</em> names read by the hosted entrypoints appear in no source, no gap
   and no total; (4) webhook's four reads are inside the plugin factory, not
   at module scope; (5) the per-group counts inside each class are hand-
   expansions, not script output, and the document says so. Completeness is

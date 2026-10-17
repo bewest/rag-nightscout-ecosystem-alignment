@@ -2317,6 +2317,8 @@
       
         
       
+        
+      
     
     
     
@@ -5293,7 +5295,7 @@ plan was carried out. Merged into <code>dev</code>: <code>bf/merge</code> #8734,
 the BF-30 throttle (P0-J) are carried by #8754 <code>bf2/auth-hardening</code>, open. <code>bf/connect-pin</code> was
 replaced by #8762, which pins <code>nightscout-connect</code> exactly <code>0.1.0</code>. Connector
 <code>fix/connect-timer-jitter</code> merged as nightscout-connect #68 and is in <code>0.1.0</code>; no 0.0.14 exists.
-Nothing past 15.0.8 is released. Current state: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5a6cef4d7c55a3a1f0eaa909bbe15e02df51c437/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a>
+Nothing past 15.0.8 is released. Current state: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/52a82ac811e713259e072991f463a1b88db73fbb/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a>
 items <code>P0-*</code>, <code>BF2-AUTH</code> and <code>RT-0</code>, and the <a href="nightscout-backfix-register.html">backfix register</a>.
 Branch SHAs, pins and counts below are as of 2026-09-15/16.</p>
 </blockquote>
@@ -6257,7 +6259,7 @@ an end-to-end run.</p>
 <h3 id="the-existstrue-claim--false-and-must-not-reach-the-release-note">The <code>$exists=true</code> claim — false, and must not reach the release note<a class="headerlink" href="#the-existstrue-claim--false-and-must-not-reach-the-release-note" title="Permanent link">&para;</a></h3>
 <p><code>bf/coercion</code>'s <code>CHANGELOG.md</code> used to tell operators something false. Lines 35-39:</p>
 <blockquote>
-<p><em>"<code>find[sgv][$exists]=true</code> became <code>$exists: NaN</code>, which MongoDB reads as <strong>false</strong>, so the query
+<p><em>"<code>find[sgv][$exists]=true</code> became <code>$exists: NaN</code>, which MongoDB reads as </em><em>false</em><em>, so the query
 returned exactly the records you did not ask for."</em></p>
 </blockquote>
 <p><strong>Measured 2026-09-15 against seven live <code>mongod</code> instances (3.6.8 and 7.0.43, identical on all

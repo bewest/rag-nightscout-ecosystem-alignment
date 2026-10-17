@@ -3967,7 +3967,7 @@
 
 
 <h1 id="nightscout-v3-treatments-schema">Nightscout v3 Treatments Schema<a class="headerlink" href="#nightscout-v3-treatments-schema" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-01-28 at <code>7145a4e6</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>e2206906</code>.</em></p>
 <blockquote>
 <p><strong>Source</strong>: <code>externals/cgm-remote-monitor/lib/api3/swagger.yaml</code><br />
 <strong>Version</strong>: v15.0.4 @ 3764790e<br />
@@ -4043,7 +4043,7 @@
 <td><code>identifier</code></td>
 <td>string</td>
 <td>❌</td>
-<td>Primary key (UUID), server-assigned</td>
+<td>Primary key. Kept as sent when the client supplies one; otherwise the server computes a UUID v5 from <code>device</code> + <code>date</code> (+ <code>eventType</code>) (<code>lib/api3/shared/operationTools.js</code> <code>resolveIdentifier</code>, 15.0.8 and <code>dev</code> <code>fade2299</code>)</td>
 </tr>
 <tr>
 <td><code>date</code></td>
@@ -4663,7 +4663,7 @@
 <li><a href="../aaps/nsclient-schema.html">AAPS NSClient Schema</a> - AAPS field mapping</li>
 <li><a href="../../docs/10-domain/treatments-deep-dive.html">Treatments Deep Dive</a> - Detailed analysis</li>
 <li><a href="../cross-project/terminology-matrix.html">Terminology Matrix</a> - Term mappings</li>
-<li><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5a6cef4d7c55a3a1f0eaa909bbe15e02df51c437/specs/openapi/aid-treatments-2025.yaml">OpenAPI Spec</a> - Formal schema</li>
+<li><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/52a82ac811e713259e072991f463a1b88db73fbb/specs/openapi/aid-treatments-2025.yaml">OpenAPI Spec</a> - Formal schema</li>
 </ul>
 <hr />
 <h2 id="source-files">Source Files<a class="headerlink" href="#source-files" title="Permanent link">&para;</a></h2>

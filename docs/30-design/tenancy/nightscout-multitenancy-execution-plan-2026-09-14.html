@@ -2317,6 +2317,8 @@
       
         
       
+        
+      
     
     
     
@@ -5441,7 +5443,7 @@
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is <strong>adopted in principle,
 gated</strong> on the edge's production conditions and the compliance question (<code>T30-ORY-PROOF</code> held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. <strong>Item state lives
-in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5a6cef4d7c55a3a1f0eaa909bbe15e02df51c437/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
+in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/52a82ac811e713259e072991f463a1b88db73fbb/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
 <a href="../../../queue/QUEUE.html"><code>queue/QUEUE.md</code></a>, measured by <code>make queue-status</code>); defect facts live
 in the <a href="../remedial/nightscout-backfix-register.html">backfix register</a>. Measured facts below name
 their date and commit.</p>
@@ -6229,8 +6231,8 @@ the grammar's <code>sameAs</code>, the capability document's <code>legacyIdForm<
 <code>wellKnown.mappings</code>, the write reply's <code>ids</code>, and 29 cases under <code>specs/sync/conformance/quirks/</code>,
 checked by <code>tools/nsschema/test_registration_quirks.py</code>. Rules 1–8 are specified as written. Rule
 6's <code>objectId</code> declaration is scoped to single-tenant mode on MongoDB; single-tenant on PostgreSQL
-is open (<code>SPEC-REG-MODES</code>) <em>(no longer open: decided 2026-10-16 in the walk-through below, rows 1
-and 2 — the shape is 24-hex on either store and the declaration is removed)</em>. Rule 8 changed the instance case <code>project-served</code>. "Recent" in rule 4
+is open (<code>SPEC-REG-MODES</code>) </em>(no longer open: decided 2026-10-16 in the walk-through below, rows 1
+and 2 — the shape is 24-hex on either store and the declaration is removed)<em>. Rule 8 changed the instance case <code>project-served</code>. "Recent" in rule 4
 is 365 days before the newest snapshot. The shared slot list ships <code>override</code>, <code>loopMode</code> and
 <code>temporaryTarget</code>, the names already used identically; the candidates are in §3.7. Two statements
 of the "Why <code>_id</code>" paragraph differ from source read for this item: Loop sends a UUID <code>_id</code> for
@@ -6576,7 +6578,7 @@ separation and the extraction prerequisite at no extra process; a separate proce
 failure domain, bind address and resource ceiling, which is what makes <code>ns-admin</code> worth a process
 under D7. D7's argument does not transfer automatically, because <code>ns-tenant-admin</code> is credentialed
 and RLS-scoped where <code>ns-admin</code> is neither. Decide before the third listener is built.
-<em>(Decided 2026-10-16, maintainer: a <strong>second bound socket inside <code>ns-api</code></strong>, on its own bind
+<em>(Decided 2026-10-16, maintainer: a </em><em>second bound socket inside <code>ns-api</code></em><em>, on its own bind
 address, sharing tenant resolution through <code>T30-WIRING</code>'s extracted module. The boundary is the
 socket, so it can move to its own process later without changing the contract. Built by
 <code>T30-TENANT-ADMIN</code>.)</em></p>

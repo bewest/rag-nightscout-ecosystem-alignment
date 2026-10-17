@@ -5049,7 +5049,7 @@ print a value.</p>
   v0.0.14 is not a security fix. It is, for the log-redaction question specifically, a no-op.
   <em>(VERIFIER CORRECTION. This bullet originally read "the safest of the three pins in the
   brief", which is wrong: cut 5's pin <code>b77e5bb</code> has the identical census — 22 live / 20
-  dynamic — and <strong>contains</strong> <code>234d47c</code> as well as the cut-4 redaction line, so by ancestry it
+  dynamic — and </em><em>contains</em><em> <code>234d47c</code> as well as the cut-4 redaction line, so by ancestry it
   is greater-or-equal, never worse. Independently reproduced: <code>git diff 234d47c b77e5bb --
   lib index.js</code> touches only <code>index.js</code>, <code>lib/outputs/internal.js</code> and the MiniMed source.)</em></li>
 <li><strong>master's pin is the leaking one</strong>, and master is what operators actually run. It logs
@@ -5644,7 +5644,7 @@ carries most of the redaction, is held back the longest.</p>
 in this document. It is cheap to fix: cuts 1–3 pin the v0.0.13 tag, so moving them to
 v0.0.14 is the same one-line change as dev's, with no incomparability to reason about.</p>
 <p><em>(VERIFIER QUALIFICATION. "Cheap" is true of the edit on each cut branch and false of
-landing it. GT2 measured that cuts 1–4 are each <strong>59 commits behind <code>origin/dev</code></strong> and
+landing it. GT2 measured that cuts 1–4 are each </em><em>59 commits behind <code>origin/dev</code></em><em> and
 conflict against it under <code>git merge-tree --write-tree</code> in 4–5 files — and <code>package.json</code>
 and <code>package-lock.json</code> are among the conflicting files on every one of them. So the pin
 edit is one line, but it lands inside a merge that already has to be resolved by hand in
@@ -5806,7 +5806,7 @@ recommending:</p>
    override reconciled (§0.3), or master keeps forcing axios 1.16.0 into a connector that
    wants <code>^1.18.1</code>. <em>(VERIFIER: "small diff" describes the cgm-remote-monitor change, not
    the behaviour delta. master is on the v0.0.13 tag, so this option moves it across
-   <strong>all 11 commits</strong> of <code>b394411..649a7de</code> — measured — including <code>8406edf</code>'s MiniMed
+   </em><em>all 11 commits</em><em> of <code>b394411..649a7de</code> — measured — including <code>8406edf</code>'s MiniMed
    glucose/measurement-time contract change and <code>c1cce2a</code>'s retry-timing change. That is
    strictly more connector change than the dev bump of §E.1, on the branch every current
    operator runs, in what would be a patch release. If the goal is only to stop the log
@@ -5985,7 +5985,7 @@ can never pass — B0 and B7 rule out the failure mode where a check is red on e
 tag-shaped, which is worth noting because it is also the most realistic way R4 fires in
 practice: a lockfile whose recorded version no longer matches the tree it resolves.</p>
 <p><em>(VERIFIER: B4 has a precondition the row does not state. It fires only when the ref set
-spans <strong>two different tags</strong>, so that the lying version collides with a sibling's. On a
+spans </em><em>two different tags</em><em>, so that the lying version collides with a sibling's. On a
 fixture where all three refs pin the same tag, the same mutation — lock version changed,
 <code>resolved</code> left alone — passes at exit 0. Reproduced both ways.)</em></p>
 <h3 id="f4-queue-entry">F.4 Queue entry<a class="headerlink" href="#f4-queue-entry" title="Permanent link">&para;</a></h3>

@@ -9029,7 +9029,7 @@
 
 
 <h1 id="nightscout-api-v1-vs-v3-comparison">Nightscout API v1 vs v3 Comparison<a class="headerlink" href="#nightscout-api-v1-vs-v3-comparison" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-06-17 at <code>c73f4fca</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>e2206906</code>.</em></p>
 <p><strong>Last Updated:</strong> 2026-01-17<br />
 <strong>Authoritative Sources:</strong>
 - v1: <code>externals/cgm-remote-monitor/lib/api/</code> (entries, treatments, devicestatus, profile)
@@ -9088,7 +9088,7 @@
 <tr>
 <td><strong>Document ID</strong></td>
 <td><code>_id</code> (MongoDB ObjectId)</td>
-<td><code>identifier</code> (server-assigned)</td>
+<td><code>identifier</code> (kept as sent by the client, or computed by the server when absent)</td>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
@@ -9428,7 +9428,7 @@ The v3 REST workflow is:
 <h3 id="42-api-v3-identifier">4.2 API v3: <code>identifier</code><a class="headerlink" href="#42-api-v3-identifier" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Format:</strong> String (typically UUID-like or hash-based)</li>
-<li><strong>Assignment:</strong> Server-assigned on insert</li>
+<li><strong>Assignment:</strong> kept as sent when the client supplies one; otherwise computed by the server on insert from <code>device</code> + <code>date</code> (+ <code>eventType</code>) (<code>lib/api3/shared/operationTools.js</code> <code>resolveIdentifier</code>, 15.0.8 and <code>dev</code> <code>fade2299</code>)</li>
 <li><strong>Immutability:</strong> Yes, except during v1→v3 deduplication migration</li>
 <li><strong>Usage:</strong> Primary addressing key for all operations</li>
 </ul>

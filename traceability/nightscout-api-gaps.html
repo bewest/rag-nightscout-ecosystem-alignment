@@ -4792,7 +4792,7 @@
 
 
 <h1 id="nightscout-api-gaps">Nightscout Api Gaps<a class="headerlink" href="#nightscout-api-gaps" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-09-16 at <code>1a10007b</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>e2206906</code>.</em></p>
 <p>Domain-specific gaps extracted from gaps.md.
 See <a href="gaps.html">gaps.md</a> for the index.</p>
 <blockquote>
@@ -4820,7 +4820,7 @@ See <a href="gaps.html">gaps.md</a> for the index.</p>
 <hr />
 <h3 id="gap-api-002-identifier-vs-_id-addressing-inconsistency">GAP-API-002: Identifier vs _id Addressing Inconsistency<a class="headerlink" href="#gap-api-002-identifier-vs-_id-addressing-inconsistency" title="Permanent link">&para;</a></h3>
 <p><strong>Scenario</strong>: Cross-API document identity</p>
-<p><strong>Description</strong>: API v1 uses <code>_id</code> (MongoDB ObjectId), API v3 uses <code>identifier</code> (server-assigned). Documents may have both fields with different values, causing confusion when tracking document identity across API versions.</p>
+<p><strong>Description</strong>: API v1 uses <code>_id</code> (MongoDB ObjectId), API v3 uses <code>identifier</code> (kept as sent by the client, or computed by the server when absent). Documents may have both fields with different values, causing confusion when tracking document identity across API versions.</p>
 <p><strong>Impact</strong>:
 - Clients using different APIs cannot reliably reference the same document
 - Deduplication may change <code>identifier</code> for v1-created documents

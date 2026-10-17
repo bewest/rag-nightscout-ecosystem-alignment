@@ -3012,7 +3012,7 @@
   <span class="md-ellipsis">
     
   
-    EXP-3012 — Per-patient (T*, M*) recommendation (2026-04-26)
+    EXP-3012 — Per-patient (T, M) recommendation (2026-04-26)
   
 
     
@@ -3544,7 +3544,7 @@
   <span class="md-ellipsis">
     
   
-    EXP-3028 — Per-patient (T*, M*) refit with carb-aware proxy
+    EXP-3028 — Per-patient (T, M) refit with carb-aware proxy
   
 
     
@@ -7397,7 +7397,7 @@
 <strong>Verdict:</strong> ✅ <strong>PASS</strong>, but with a smaller incremental lift than EXP-3028 reported.</p>
 <h2 id="why-this-experiment">Why this experiment<a class="headerlink" href="#why-this-experiment" title="Permanent link">&para;</a></h2>
 <p>EXP-3028 reported a +0.0082 verification-stripe lift over the
-EXP-3017 clamped table by re-fitting per-patient (T*, M*) under the
+EXP-3017 clamped table by re-fitting per-patient (T<em>, M</em>) under the
 same carb-aware proxy used by the scorer. Because that lift is the
 result of <em>changing per-patient recommendations</em> (unlike EXP-3027-FIX,
 which only adds conservatism by dropping uncertain patients), it

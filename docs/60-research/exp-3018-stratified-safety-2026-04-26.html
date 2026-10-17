@@ -3012,7 +3012,7 @@
   <span class="md-ellipsis">
     
   
-    EXP-3012 — Per-patient (T*, M*) recommendation (2026-04-26)
+    EXP-3012 — Per-patient (T, M) recommendation (2026-04-26)
   
 
     
@@ -3685,7 +3685,7 @@
   <span class="md-ellipsis">
     
   
-    EXP-3028 — Per-patient (T*, M*) refit with carb-aware proxy
+    EXP-3028 — Per-patient (T, M) refit with carb-aware proxy
   
 
     
@@ -7564,7 +7564,7 @@ with EXP-3017's clamped per-patient parquet, the deployable invocation is:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>cf_replay_score_v3 --per-patient --braking-gate --braking-mode m_unity \
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    --safety-mode stratified
 </code></pre></div>
-This applies per-patient (T*, M*) recommendations with phenotype clamp
+This applies per-patient (T<em>, M</em>) recommendations with phenotype clamp
 pre-baked AND validates safety per-stratum. Score 0.7051, all strata pass.</p>
 <h2 id="open-follow-ups">Open follow-ups<a class="headerlink" href="#open-follow-ups" title="Permanent link">&para;</a></h2>
 <ul>

@@ -5382,7 +5382,7 @@ is not a caveat section; §6 assigns each item an owner and a pass criterion.</p
 <hr />
 <h2 id="3-if-your-glucose-data-has-stopped--read-this-first">3. IF YOUR GLUCOSE DATA HAS STOPPED — READ THIS FIRST<a class="headerlink" href="#3-if-your-glucose-data-has-stopped--read-this-first" title="Permanent link">&para;</a></h2>
 <p><em>This section and the next are for anyone running Nightscout for themselves or a family member. They
-are placed before the technical sections on purpose. <strong>This is not medical advice.</strong> If a gap in
+are placed before the technical sections on purpose. </em><em>This is not medical advice.</em><em> If a gap in
 your data affects how you or someone you care for is managing diabetes, contact your diabetes care
 team. Do not use this page to decide on insulin doses. While your data is uncertain, fall back to
 your CGM's own app and to fingersticks as your care team has advised.</em></p>
@@ -5494,7 +5494,7 @@ a genuinely high or low reading behind it would not raise an alarm either. Verif
 (<code>bf/connect-pin</code> → <code>v0.0.14</code>), and §8 makes that pin a precondition.</p>
 <p><strong>How you spot it:</strong> a reading displayed as <code>0</code>, or as <code>0??</code>, on your graph.</p>
 <p><em>These two are different mechanisms with different symptoms. A future-dated reading switches off the
-<strong>stale-data</strong> alarm; a zero reading switches off the <strong>high/low</strong> alarm. Neither switches off the
+</em><em>stale-data</em><em> alarm; a zero reading switches off the </em><em>high/low</em><em> alarm. Neither switches off the
 other.</em></p>
 <h3 id="34-if-you-rolled-back-and-data-is-still-not-arriving">3.4 If you rolled back and data is still not arriving<a class="headerlink" href="#34-if-you-rolled-back-and-data-is-still-not-arriving" title="Permanent link">&para;</a></h3>
 <ol>
@@ -5518,7 +5518,7 @@ other.</em></p>
 </ol>
 <hr />
 <h2 id="4-cutover-runbook">4. Cutover runbook<a class="headerlink" href="#4-cutover-runbook" title="Permanent link">&para;</a></h2>
-<p><em>Plain language; the definitions in §3 apply here too. <strong>Not medical advice.</strong> Do this when you have
+<p><em>Plain language; the definitions in §3 apply here too. </em><em>Not medical advice.</em><em> Do this when you have
 unhurried time — not at bedtime, and not on a day when you are depending on overnight alarms. If a
 data gap would affect diabetes management, involve your care team first.</em></p>
 <h3 id="41-step-1--are-you-affected-at-all-most-people-are-not">4.1 Step 1 — Are you affected at all? Most people are not.<a class="headerlink" href="#41-step-1--are-you-affected-at-all-most-people-are-not" title="Permanent link">&para;</a></h3>
@@ -5713,11 +5713,11 @@ be turned into an address that does not exist, and your data will stop with no e
 Remove it or correct it first.</p>
 <p><em>(Reviewer note, added 2026-09-16 during adversarial review. An earlier draft of this paragraph
 named <code>US</code> and <code>us</code> among the values that break. That is true of the release operators are on
-today and <strong>false of the release this notice accompanies</strong>: parcel 4's shim adds an <code>=== 'US'</code> arm
+today and </em><em>false of the release this notice accompanies</em><em>: parcel 4's shim adds an <code>=== 'US'</code> arm
 and maps <code>US</code>/<code>us</code> to <code>CONNECT_SHARE_REGION=us</code>. Reproduced by executing both shims. Publishing
 the earlier wording would have told operators the retiring release breaks a configuration it
-actually fixes. <strong>If this notice is ever republished against <code>dev</code>/<code>master</code> rather than against
-the retiring release, the <code>US</code>/<code>us</code> warning must come back.</strong>)</em></p>
+actually fixes. </em><em>If this notice is ever republished against <code>dev</code>/<code>master</code> rather than against
+the retiring release, the <code>US</code>/<code>us</code> warning must come back.</em><em>)</em></p>
 <p><strong>MiniMed / CareLink.</strong> <code>CONNECT_COUNTRY_CODE</code> is new, mandatory, and cannot be worked out from
 your existing settings. <strong>If you do not set it, your whole Nightscout site will not start.</strong> Raw
 CareLink capture (<code>MMCONNECT_STORE_RAW_DATA</code>) is retired, as are the <code>MMCONNECT_SGV_LIMIT</code> and

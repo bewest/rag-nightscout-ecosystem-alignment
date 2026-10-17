@@ -2319,6 +2319,8 @@
       
         
       
+        
+      
     
     
     
@@ -2977,6 +2979,66 @@
     
   
     upstream-asks-device-simulators/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="upstream-asks-loop-identifier/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    upstream-asks-loop-identifier/
   
 
     
@@ -6670,10 +6732,10 @@ from the mapping, and nothing the mapping does not declare. The projected docume
   write and stores, and <code>identifier</code> is the typed id; execution plan §2.6.3, <code>SPEC-REG-QUIRKS</code>.
   Specified in §3.7, rule 8: the case <code>project-served</code> changed its expected <code>_id</code>. The
   <code>objectId</code> declaration is scoped there to single-tenant mode on MongoDB; single-tenant on
-  PostgreSQL is open (<code>SPEC-REG-MODES</code>). <em>(Decided 2026-10-16, maintainer walk-through rows 1
+  PostgreSQL is open (<code>SPEC-REG-MODES</code>). </em>(Decided 2026-10-16, maintainer walk-through rows 1
   and 2: every hub's legacy surface serves 24-hex <code>_id</code> values the hub assigns, on either store;
   there is no <code>opaque</code> form and nothing to declare, so this applies to every hub and the
-  PostgreSQL question is closed.)</em> The prior art above is in-memory: on the wire Nocturne
+  PostgreSQL question is closed.)<em> The prior art above is in-memory: on the wire Nocturne
   writes <code>Id</code> and <code>Identifier</code> through <code>ObjectIdJsonConverter</code> as the UUID's first 24 hex digits
   (read-derived at <code>42275c812</code>, §3.7).)</em></li>
 </ul>

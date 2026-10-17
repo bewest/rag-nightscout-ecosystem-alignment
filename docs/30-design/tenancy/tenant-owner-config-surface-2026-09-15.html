@@ -2317,6 +2317,8 @@
       
         
       
+        
+      
     
     
     
@@ -6940,7 +6942,7 @@ the right key is known at verify time; cross-tenant token reuse becomes a signat
 claim-check failure.</p>
 </blockquote>
 <p>BF-25 stated as a class: <em>a credential presented by a client must not be able to authorise an action
-against a tenant other than the one the <strong>address</strong> resolved to.</em> Today there are two distinct ways
+against a tenant other than the one the </em><em>address</em><em> resolved to.</em> Today there are two distinct ways
 it can, and D14 closes one of them completely and the other not at all. Both were executed against
 the real <code>lib/server/tenant-middleware.js</code> on <code>crm-seam</code>; the harness and its controls are §G.4.</p>
 <p><strong>Vector 1 — signed JWT.</strong> Closed by D14, structurally.</p>
@@ -7786,7 +7788,7 @@ directly. Call sites: <code>API3_SECURITY_ENABLE</code>, <code>API3_DEDUP_FALLBA
 environment variable silently and irreversibly deletes a person's glucose history, and
 <code>API3_SECURITY_ENABLE=false</code> disables v3 authorization with nothing in the README to say so.
 Multi-tenant impact: retention is the most per-tenant setting in the system and is set
-deployment-wide, invisibly, for everyone. <em>Severity: <strong>high</strong>. Ships to operators today. This is the
+deployment-wide, invisibly, for everyone. <em>Severity: </em><em>high</em><em>. Ships to operators today. This is the
 sharpest thing this task found.</em></p>
 <p><strong>H.5 — the deployment mints JWTs with no tenant claim, so under <code>TENANCY_MODE=multi</code> the tenant
 check refuses every token the deployment issues.</strong> <code>lib/authorization/index.js:289</code> is the only
@@ -7795,7 +7797,7 @@ caller of <code>signJWT</code> and its payload is <code>{ accessToken }</code>. 
 <code>MSG_NO_CLAIM</code> because <code>requireTokenClaim</code> defaults true (<code>:208</code>). Reproduced by executing both
 modules with the exact payload line 289 mints; the control (the same token with a <code>tenant</code> field)
 proceeds. The claim check and the minting path have never been exercised against each other.
-<em>Severity: medium. <strong>§1b pre-release</strong> — it affects the tenancy branches only, no operator runs
+<em>Severity: medium. </em><em>§1b pre-release</em><em> — it affects the tenancy branches only, no operator runs
 <code>multi</code>. Fails safe (refuses rather than admits), which is why it has gone unnoticed. Must be fixed
 by the task that introduces the per-tenant key, because that task chooses the payload.</em></p>
 <p><strong>H.7 — <code>verifyThresholds()</code> silently rewrites a person's alarm thresholds and only logs it.</strong>
@@ -7833,7 +7835,7 @@ the ALTER. The counter-argument is that <code>tenant_members</code> is the <em>p
 in a tenant and <code>tenant_subject</code> is the <em>tenant's</em> own subject list, and conflating them may be
 wrong — a hoster's support engineer granted access to a tenant is a member without being a subject.
 If they are genuinely different things, <code>subject_id</code> should be renamed rather than retyped.</p>
-<p><strong>I.3 — <code>IMPORT_CONFIG</code> was classified <strong>D</strong> without being read. Who settles it: whoever owns §B's
+<p><strong>I.3 — <code>IMPORT_CONFIG</code> was classified </strong>D<strong> without being read. Who settles it: whoever owns §B's
 gate.</strong> It is a documented mechanism for importing configuration wholesale. If it can import
 <em>settings</em>, then under <code>multi</code> it is a deployment-wide variable that writes per-tenant state, which
 would be a D15 violation wearing a <strong>D</strong> classification. It has not been read. The

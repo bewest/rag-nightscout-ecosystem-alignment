@@ -3012,7 +3012,7 @@
   <span class="md-ellipsis">
     
   
-    EXP-3012 — Per-patient (T*, M*) recommendation (2026-04-26)
+    EXP-3012 — Per-patient (T, M) recommendation (2026-04-26)
   
 
     
@@ -3657,7 +3657,7 @@
   <span class="md-ellipsis">
     
   
-    EXP-3028 — Per-patient (T*, M*) refit with carb-aware proxy
+    EXP-3028 — Per-patient (T, M) refit with carb-aware proxy
   
 
     
@@ -7350,12 +7350,12 @@
 <p>Record as of 2026-04-26. A point-in-time document; it is not kept up to date.</p>
 </div>
 <p><strong>Date:</strong> 2026-04-26
-<strong>Hypothesis:</strong> Pre-applying the EXP-3016 phenotype clamp (force M*=1.0 when
+<strong>Hypothesis:</strong> Pre-applying the EXP-3016 phenotype clamp (force M<em>=1.0 when
 braking_ratio ≥ 0.10) directly to the EXP-3012 per-patient parquet should
 make the runtime <code>--braking-mode m_unity</code> gate a no-op consistency check —
 i.e. <code>m_unity</code> and <code>none</code> should produce identical scores when consuming the
 clamped parquet.
-<strong>Verdict:</strong> Confirmed. Clamped+m_unity == Clamped+none == 0.7051 exactly.</p>
+</em><em>Verdict:</em>* Confirmed. Clamped+m_unity == Clamped+none == 0.7051 exactly.</p>
 <h2 id="method">Method<a class="headerlink" href="#method" title="Permanent link">&para;</a></h2>
 <p><code>tools/cgmencode/autoresearch_cf/exp_3017_phenotype_clamp.py</code> reads
 <code>exp-3012_per_patient.parquet</code>, joins phenotype's <code>braking_ratio</code>, and
@@ -7397,7 +7397,7 @@ value is retained as <code>rec_M_mult_pre_clamp</code>. Output:
 </table>
 <p>All 7 high-braking patients had previously been recommended M=0.5 by the
 EXP-3012 individual gate. The remaining 22 high-braking-or-low-braking
-patients keep their EXP-3012 (T*, M*).</p>
+patients keep their EXP-3012 (T<em>, M</em>).</p>
 <h2 id="consistency-check-phase-4-cohort-carb-aware-proxy">Consistency check (Phase 4 cohort, carb-aware proxy)<a class="headerlink" href="#consistency-check-phase-4-cohort-carb-aware-proxy" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

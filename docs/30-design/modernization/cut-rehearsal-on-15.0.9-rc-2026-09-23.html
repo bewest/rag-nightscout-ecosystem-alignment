@@ -2671,6 +2671,8 @@
       
         
       
+        
+      
     
     
     
@@ -4862,7 +4864,7 @@
 <p class="admonition-title">Record</p>
 <p>Record as of 2026-09-23. A point-in-time document; it is not kept up to date.</p>
 </div>
-<p><em>Contributor-facing, with operator-facing lines marked <strong>Operators:</strong>. Snapshot,
+<p><em>Contributor-facing, with operator-facing lines marked </em><em>Operators:</em><em>. Snapshot,
 2026-09-22/23 (US Pacific), on local branches (not pushed) built on <code>rc/15.0.9-additions-c</code>
 <code>b9c9828b</code>. Current: the latest cut rehearsal. The real propagation is redone on <code>dev</code>
 after 15.0.9 is tagged, and every count here must be re-measured then; item state is in
@@ -4958,11 +4960,11 @@ cut 1; <code>rh/cut1</code> merged into the published cut 2; and so on, then <co
 the published cut 5. Every later fix was committed on the lowest cut it belongs
 to and merged up again, so the prefix property holds at every tip. All merges are
 <code>--no-ff</code>. Commits use git's configured identity and carry no trailers.</p>
-<p><em><em>Reuse of rt/</em> resolutions.</em>* No rerere cache exists in the shared clone. For each
-conflicting path that rt/* had resolved, the rt resolution was carried forward
+<p><strong>Reuse of rt/* resolutions.</strong> No rerere cache exists in the shared clone. For each
+conflicting path that rt/<em> had resolved, the rt resolution was carried forward
 with a three-way file merge: <code>git merge-file &lt;rt tip file&gt; &lt;rt's base-side file&gt;
 &lt;rh base-side file&gt;</code>. This keeps rt's resolution and applies what changed on the
-base side since rt was made (rt/* merged <code>59430336</code>, 43 commits behind <code>b9c9828b</code>).
+base side since rt was made (rt/</em> merged <code>59430336</code>, 43 commits behind <code>b9c9828b</code>).
 Where the base side had not changed, rt's file is taken verbatim. After each merge,
 the whole tree was compared with rt's: the files that differ are exactly the files
 that differ between rt's base side and rh's base side (<code>git diff --name-only</code>
@@ -5670,10 +5672,10 @@ maintainer judges cut 1 minor they shift to 15.1.0 / 15.2.0 / 16.0.0. Not decide
    removals are separated out of cut 5, which is unmeasured work.</li>
 <li>BF-61 and the <code>ENABLE</code> gap in its remedy (§4.5), wherever cut 4's code ships.</li>
 <li>BF-88: decided 2026-09-23, the cuts keep 15.0.9's behaviour (§5), as the rehearsal did.</li>
-<li>The rt/* propagation is not a usable base as it stands: its reused resolutions
+<li>The rt/<em> propagation is not a usable base as it stands: its reused resolutions
    carried two production defects (<code>event-stream</code> at cut 2, the quick-pick batch
    bound at cut 3), four jsdom test files it could not load at cut 1, and cut-5-only
-   test harness at cut 2. rh/* fixes them; the real propagation should start from rh/*
+   test harness at cut 2. rh/</em> fixes them; the real propagation should start from rh/*
    resolutions or re-derive them, and re-run the full suite at each cut.</li>
 </ol>
 <h2 id="9-not-measured">9. Not measured<a class="headerlink" href="#9-not-measured" title="Permanent link">&para;</a></h2>
