@@ -1,0 +1,9018 @@
+[
+ {
+  "diagram": "aid-loop",
+  "variant": "dot-spline",
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 10,
+   "of_edges": 10,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 207,
+  "grid_misaligned": [
+   1,
+   3
+  ],
+  "bends_mean": 0.82,
+  "bends_max": 2,
+  "axis_share": 0.197,
+  "pair_detail": [
+   [
+    "app",
+    "person",
+    29.6,
+    124.7,
+    1.57,
+    2
+   ],
+   [
+    "app",
+    "pump",
+    35.5,
+    102.9,
+    1.76,
+    1.78
+   ]
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "loops_straight": [
+   0,
+   2
+  ],
+  "loops_parallel": [
+   0,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 4,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   1,
+   17
+  ],
+  "label_over_line_texts": [
+   "settings, targets,"
+  ],
+  "width": 536,
+  "height": 384,
+  "area_per_node": 34276
+ },
+ {
+  "diagram": "aid-loop",
+  "variant": "grid",
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 10,
+   "of_edges": 10,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   3
+  ],
+  "bends_mean": 0.8,
+  "bends_max": 2,
+  "axis_share": 0.995,
+  "pair_detail": [
+   [
+    "app",
+    "person",
+    16,
+    16,
+    0,
+    0
+   ],
+   [
+    "app",
+    "pump",
+    16,
+    22.6,
+    1,
+    1
+   ]
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "loops_straight": [
+   1,
+   2
+  ],
+  "loops_parallel": [
+   2,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 2,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   17
+  ],
+  "label_over_line_texts": [],
+  "width": 754,
+  "height": 406,
+  "area_per_node": 51021
+ },
+ {
+  "diagram": "aid-loop",
+  "variant": "grid-z",
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 10,
+   "of_edges": 10,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   3
+  ],
+  "bends_mean": 1.6,
+  "bends_max": 4,
+  "axis_share": 0.994,
+  "pair_detail": [
+   [
+    "app",
+    "person",
+    12.8,
+    12.8,
+    0,
+    0
+   ],
+   [
+    "app",
+    "pump",
+    16,
+    22.6,
+    2,
+    2
+   ]
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "loops_straight": [
+   1,
+   2
+  ],
+  "loops_parallel": [
+   2,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 1,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   17
+  ],
+  "label_over_line_texts": [],
+  "width": 754,
+  "height": 527,
+  "area_per_node": 66226
+ },
+ {
+  "diagram": "aid-loop",
+  "variant": "neato-ortho",
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 10,
+   "of_edges": 10,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0,
+  "grid_misaligned": [
+   0,
+   3
+  ],
+  "bends_mean": 0.8,
+  "bends_max": 2,
+  "axis_share": 0.995,
+  "pair_detail": [
+   [
+    "app",
+    "person",
+    40,
+    40,
+    0,
+    0
+   ],
+   [
+    "app",
+    "pump",
+    13,
+    32.8,
+    1,
+    1
+   ]
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "loops_straight": [
+   1,
+   2
+  ],
+  "loops_parallel": [
+   1,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 1,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   6,
+   17
+  ],
+  "label_over_line_texts": [
+   "glucose, predictions,",
+   "alerts",
+   "delivery status,",
+   "faults",
+   "insulin",
+   "interstitial glucose"
+  ],
+  "width": 786,
+  "height": 396,
+  "area_per_node": 51877
+ },
+ {
+  "diagram": "aid-loop",
+  "variant": "elk",
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 10,
+   "of_edges": 10,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   2,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 278.8,
+  "grid_misaligned": [
+   1,
+   3
+  ],
+  "bends_mean": 5.6,
+  "bends_max": 12,
+  "axis_share": 0.992,
+  "pair_detail": [
+   [
+    "app",
+    "person",
+    10,
+    18.9,
+    4,
+    4
+   ],
+   [
+    "app",
+    "pump",
+    13,
+    23.5,
+    4,
+    4
+   ]
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "loops_straight": [
+   0,
+   2
+  ],
+  "loops_parallel": [
+   0,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 26,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   17
+  ],
+  "label_over_line_texts": [],
+  "width": 710,
+  "height": 685,
+  "area_per_node": 81058
+ },
+ {
+  "diagram": "aid-loop",
+  "variant": "avoid",
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 10,
+   "of_edges": 10,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   3
+  ],
+  "bends_mean": 1.6,
+  "bends_max": 4,
+  "axis_share": 0.994,
+  "pair_detail": [
+   [
+    "app",
+    "person",
+    16,
+    16,
+    0,
+    0
+   ],
+   [
+    "app",
+    "pump",
+    10,
+    33.5,
+    2,
+    2
+   ]
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "loops_straight": [
+   1,
+   2
+  ],
+  "loops_parallel": [
+   1,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 2,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   2,
+   17
+  ],
+  "label_over_line_texts": [
+   "settings, targets,",
+   "glucose, predictions,"
+  ],
+  "width": 754,
+  "height": 406,
+  "area_per_node": 51021
+ },
+ {
+  "diagram": "aid-loop",
+  "variant": "control-grid",
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 10,
+   "of_edges": 10,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   3
+  ],
+  "bends_mean": 1.2,
+  "bends_max": 2,
+  "axis_share": 0.994,
+  "bends_check_max_err": 0,
+  "pair_detail": [
+   [
+    "app",
+    "person",
+    20,
+    20,
+    0,
+    0
+   ],
+   [
+    "app",
+    "pump",
+    0.1,
+    20,
+    2,
+    2
+   ]
+  ],
+  "loops_control_left": [
+   1,
+   2
+  ],
+  "loops_distinct": [
+   1,
+   2
+  ],
+  "loops_straight": [
+   1,
+   2
+  ],
+  "loops_parallel": [
+   1,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 9,
+  "edges_through_nodes": 1,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   17
+  ],
+  "label_over_line_texts": [],
+  "width": 898,
+  "height": 406,
+  "area_per_node": 60765
+ },
+ {
+  "diagram": "aid-loop",
+  "variant": "control-random",
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 10,
+   "of_edges": 10,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   5,
+   13
+  ],
+  "column_violations": [
+   1,
+   2
+  ],
+  "grid_max_dev": 200.7,
+  "grid_misaligned": [
+   3,
+   3
+  ],
+  "bends_mean": 2.66,
+  "bends_max": 3.87,
+  "axis_share": 0.024,
+  "pair_detail": [
+   [
+    "app",
+    "person",
+    44.4,
+    172.3,
+    3.14,
+    2.36
+   ],
+   [
+    "app",
+    "pump",
+    60.7,
+    357.1,
+    2.01,
+    3.02
+   ]
+  ],
+  "loops_control_left": [
+   1,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "loops_straight": [
+   0,
+   2
+  ],
+  "loops_parallel": [
+   0,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 48,
+  "edges_through_nodes": 14,
+  "group_intrusions": null,
+  "label_collisions": 1,
+  "label_over_line": [
+   14,
+   15
+  ],
+  "label_over_line_texts": [
+   "settings, targets,",
+   "meals, overrides",
+   "glucose, predictions,",
+   "alerts",
+   "temp basal,",
+   "bolus",
+   "insulin",
+   "interstitial glucose",
+   "readings",
+   "manual bolus,",
+   "suspend",
+   "symptoms,",
+   "fingerstick",
+   "disturbances"
+  ],
+  "width": 754,
+  "height": 406,
+  "area_per_node": 51021
+ },
+ {
+  "diagram": "governance",
+  "variant": "dot-spline",
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 327,
+  "grid_misaligned": [
+   2,
+   5
+  ],
+  "bends_mean": 1.59,
+  "bends_max": 4.68,
+  "axis_share": 0.158,
+  "pair_detail": [
+   [
+    "care",
+    "users",
+    0.4,
+    105.6,
+    4.68,
+    2.42
+   ],
+   [
+    "commons",
+    "companies",
+    43.3,
+    142.4,
+    1.99,
+    1.32
+   ],
+   [
+    "commons",
+    "projects",
+    46.2,
+    123.7,
+    0.41,
+    2.32
+   ],
+   [
+    "community",
+    "users",
+    119.2,
+    127.5,
+    0.9,
+    2.51
+   ],
+   [
+    "companies",
+    "reg",
+    110.9,
+    149.3,
+    1.63,
+    1.83
+   ],
+   [
+    "gov",
+    "reg",
+    153.5,
+    165.9,
+    0.92,
+    0.88
+   ],
+   [
+    "projects",
+    "users",
+    7.6,
+    141,
+    1.87,
+    1.75
+   ],
+   [
+    "system",
+    "users",
+    139.2,
+    161.6,
+    0.85,
+    0.9
+   ]
+  ],
+  "loops_control_left": [
+   8,
+   8
+  ],
+  "loops_distinct": [
+   7,
+   8
+  ],
+  "loops_straight": [
+   0,
+   8
+  ],
+  "loops_parallel": [
+   3,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 6,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 2,
+  "label_over_line": [
+   3,
+   30
+  ],
+  "label_over_line_texts": [
+   "conformance results,",
+   "proposals",
+   "therapy plans"
+  ],
+  "width": 762,
+  "height": 697,
+  "area_per_node": 59013
+ },
+ {
+  "diagram": "governance",
+  "variant": "grid",
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   5
+  ],
+  "bends_mean": 0.95,
+  "bends_max": 2,
+  "axis_share": 0.994,
+  "pair_detail": [
+   [
+    "care",
+    "users",
+    16,
+    16,
+    2,
+    2
+   ],
+   [
+    "commons",
+    "companies",
+    16,
+    22.6,
+    1,
+    1
+   ],
+   [
+    "commons",
+    "projects",
+    16,
+    22.6,
+    1,
+    1
+   ],
+   [
+    "community",
+    "users",
+    16,
+    16,
+    0,
+    0
+   ],
+   [
+    "companies",
+    "reg",
+    16,
+    22.6,
+    1,
+    1
+   ],
+   [
+    "gov",
+    "reg",
+    16,
+    16,
+    0,
+    0
+   ],
+   [
+    "projects",
+    "users",
+    16,
+    22.6,
+    1,
+    1
+   ],
+   [
+    "system",
+    "users",
+    16,
+    16,
+    1,
+    1
+   ]
+  ],
+  "loops_control_left": [
+   8,
+   8
+  ],
+  "loops_distinct": [
+   8,
+   8
+  ],
+  "loops_straight": [
+   2,
+   8
+  ],
+  "loops_parallel": [
+   8,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 4,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "label_over_line": [
+   2,
+   30
+  ],
+  "label_over_line_texts": [
+   "API terms,",
+   "sponsorship"
+  ],
+  "width": 722,
+  "height": 824,
+  "area_per_node": 66103
+ },
+ {
+  "diagram": "governance",
+  "variant": "grid-z",
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   5
+  ],
+  "bends_mean": 1.79,
+  "bends_max": 4,
+  "axis_share": 0.992,
+  "pair_detail": [
+   [
+    "care",
+    "users",
+    16,
+    22.6,
+    4,
+    4
+   ],
+   [
+    "commons",
+    "companies",
+    16,
+    22.6,
+    2,
+    2
+   ],
+   [
+    "commons",
+    "projects",
+    16,
+    35.7,
+    2,
+    2
+   ],
+   [
+    "community",
+    "users",
+    16,
+    16,
+    0,
+    0
+   ],
+   [
+    "companies",
+    "reg",
+    16,
+    22.6,
+    2,
+    2
+   ],
+   [
+    "gov",
+    "reg",
+    16,
+    16,
+    0,
+    0
+   ],
+   [
+    "projects",
+    "users",
+    16,
+    22.6,
+    2,
+    2
+   ],
+   [
+    "system",
+    "users",
+    16,
+    22.6,
+    2,
+    2
+   ]
+  ],
+  "loops_control_left": [
+   6,
+   8
+  ],
+  "loops_distinct": [
+   8,
+   8
+  ],
+  "loops_straight": [
+   2,
+   8
+  ],
+  "loops_parallel": [
+   7,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 4,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   30
+  ],
+  "label_over_line_texts": [],
+  "width": 617,
+  "height": 986,
+  "area_per_node": 67596
+ },
+ {
+  "diagram": "governance",
+  "variant": "neato-ortho",
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0,
+  "grid_misaligned": [
+   0,
+   5
+  ],
+  "bends_mean": 0.95,
+  "bends_max": 2,
+  "axis_share": 0.994,
+  "pair_detail": [
+   [
+    "care",
+    "users",
+    12,
+    12,
+    2,
+    2
+   ],
+   [
+    "commons",
+    "companies",
+    6.5,
+    11.9,
+    1,
+    1
+   ],
+   [
+    "commons",
+    "projects",
+    6.5,
+    10,
+    1,
+    1
+   ],
+   [
+    "community",
+    "users",
+    41,
+    41,
+    0,
+    0
+   ],
+   [
+    "companies",
+    "reg",
+    11,
+    43.3,
+    1,
+    1
+   ],
+   [
+    "gov",
+    "reg",
+    44.3,
+    44.4,
+    0,
+    0
+   ],
+   [
+    "projects",
+    "users",
+    14,
+    43.7,
+    1,
+    1
+   ],
+   [
+    "system",
+    "users",
+    11,
+    41,
+    1,
+    1
+   ]
+  ],
+  "loops_control_left": [
+   6,
+   8
+  ],
+  "loops_distinct": [
+   8,
+   8
+  ],
+  "loops_straight": [
+   2,
+   8
+  ],
+  "loops_parallel": [
+   5,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 4,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "label_over_line": [
+   10,
+   28
+  ],
+  "label_over_line_texts": [
+   "submissions,",
+   "adverse events",
+   "API terms,",
+   "sponsorship",
+   "interop specs,",
+   "issue reports",
+   "releases, docs",
+   "hub reports",
+   "issues, logs",
+   "questions,"
+  ],
+  "width": 617,
+  "height": 812,
+  "area_per_node": 55623
+ },
+ {
+  "diagram": "governance",
+  "variant": "elk",
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 67,
+  "grid_misaligned": [
+   1,
+   5
+  ],
+  "bends_mean": 5.08,
+  "bends_max": 14.52,
+  "axis_share": 0.994,
+  "pair_detail": [
+   [
+    "care",
+    "users",
+    0.4,
+    83.9,
+    8,
+    10
+   ],
+   [
+    "commons",
+    "companies",
+    20,
+    52.3,
+    4,
+    4
+   ],
+   [
+    "commons",
+    "projects",
+    10,
+    18.9,
+    4,
+    4
+   ],
+   [
+    "community",
+    "users",
+    10,
+    41.8,
+    4,
+    4
+   ],
+   [
+    "companies",
+    "reg",
+    3.9,
+    86,
+    3.95,
+    4
+   ],
+   [
+    "gov",
+    "reg",
+    10,
+    13,
+    4,
+    4
+   ],
+   [
+    "projects",
+    "users",
+    0.7,
+    14.3,
+    4,
+    4
+   ],
+   [
+    "system",
+    "users",
+    10,
+    23.3,
+    4,
+    4
+   ]
+  ],
+  "loops_control_left": [
+   6,
+   8
+  ],
+  "loops_distinct": [
+   5,
+   8
+  ],
+  "loops_straight": [
+   0,
+   8
+  ],
+  "loops_parallel": [
+   1,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 55,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   30
+  ],
+  "label_over_line_texts": [],
+  "width": 713,
+  "height": 1302,
+  "area_per_node": 103147
+ },
+ {
+  "diagram": "governance",
+  "variant": "avoid",
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   5
+  ],
+  "bends_mean": 2.11,
+  "bends_max": 4,
+  "axis_share": 0.99,
+  "pair_detail": [
+   [
+    "care",
+    "users",
+    16,
+    137.6,
+    4,
+    4
+   ],
+   [
+    "commons",
+    "companies",
+    10,
+    33.5,
+    2,
+    2
+   ],
+   [
+    "commons",
+    "projects",
+    10,
+    18.9,
+    2,
+    2
+   ],
+   [
+    "community",
+    "users",
+    5.5,
+    31.1,
+    2,
+    2
+   ],
+   [
+    "companies",
+    "reg",
+    10,
+    18.9,
+    2,
+    2
+   ],
+   [
+    "gov",
+    "reg",
+    16,
+    16,
+    0,
+    0
+   ],
+   [
+    "projects",
+    "users",
+    10,
+    17.4,
+    2,
+    2
+   ],
+   [
+    "system",
+    "users",
+    10,
+    18.9,
+    2,
+    2
+   ]
+  ],
+  "loops_control_left": [
+   8,
+   8
+  ],
+  "loops_distinct": [
+   7,
+   8
+  ],
+  "loops_straight": [
+   1,
+   8
+  ],
+  "loops_parallel": [
+   2,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 3,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "label_over_line": [
+   1,
+   30
+  ],
+  "label_over_line_texts": [
+   "questions,"
+  ],
+  "width": 673,
+  "height": 824,
+  "area_per_node": 61617
+ },
+ {
+  "diagram": "governance",
+  "variant": "control-grid",
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   5
+  ],
+  "bends_mean": 1.37,
+  "bends_max": 2,
+  "axis_share": 0.995,
+  "bends_check_max_err": 0,
+  "pair_detail": [
+   [
+    "care",
+    "users",
+    20,
+    20,
+    0,
+    0
+   ],
+   [
+    "commons",
+    "companies",
+    1.2,
+    20,
+    2,
+    2
+   ],
+   [
+    "commons",
+    "projects",
+    1.3,
+    20,
+    2,
+    2
+   ],
+   [
+    "community",
+    "users",
+    20,
+    20,
+    0,
+    0
+   ],
+   [
+    "companies",
+    "reg",
+    0.1,
+    20,
+    2,
+    2
+   ],
+   [
+    "gov",
+    "reg",
+    20,
+    20,
+    0,
+    0
+   ],
+   [
+    "projects",
+    "users",
+    5.8,
+    20,
+    2,
+    2
+   ],
+   [
+    "system",
+    "users",
+    0.2,
+    20,
+    2,
+    2
+   ]
+  ],
+  "loops_control_left": [
+   5,
+   8
+  ],
+  "loops_distinct": [
+   3,
+   8
+  ],
+  "loops_straight": [
+   3,
+   8
+  ],
+  "loops_parallel": [
+   3,
+   8
+  ],
+  "edge_overlaps": 4,
+  "crossings": 21,
+  "edges_through_nodes": 3,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   30
+  ],
+  "label_over_line_texts": [],
+  "width": 786,
+  "height": 824,
+  "area_per_node": 71963
+ },
+ {
+  "diagram": "governance",
+  "variant": "control-random",
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   10,
+   34
+  ],
+  "column_violations": [
+   1,
+   2
+  ],
+  "grid_max_dev": 547,
+  "grid_misaligned": [
+   5,
+   5
+  ],
+  "bends_mean": 2.69,
+  "bends_max": 4,
+  "axis_share": 0.052,
+  "pair_detail": [
+   [
+    "care",
+    "users",
+    27.1,
+    135.3,
+    2.15,
+    2.62
+   ],
+   [
+    "commons",
+    "companies",
+    0.4,
+    96,
+    3.37,
+    3.28
+   ],
+   [
+    "commons",
+    "projects",
+    0.1,
+    116.8,
+    2.39,
+    2.61
+   ],
+   [
+    "community",
+    "users",
+    0.7,
+    375.3,
+    3.14,
+    3.43
+   ],
+   [
+    "companies",
+    "reg",
+    98,
+    377.4,
+    2.56,
+    2.41
+   ],
+   [
+    "gov",
+    "reg",
+    0.8,
+    206,
+    2.72,
+    4
+   ],
+   [
+    "projects",
+    "users",
+    4.1,
+    226.4,
+    2.38,
+    1.96
+   ],
+   [
+    "system",
+    "users",
+    0.4,
+    145.6,
+    3.53,
+    1.08
+   ]
+  ],
+  "loops_control_left": [
+   4,
+   8
+  ],
+  "loops_distinct": [
+   2,
+   8
+  ],
+  "loops_straight": [
+   0,
+   8
+  ],
+  "loops_parallel": [
+   0,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 174,
+  "edges_through_nodes": 27,
+  "group_intrusions": 5,
+  "label_collisions": 3,
+  "label_over_line": [
+   26,
+   28
+  ],
+  "label_over_line_texts": [
+   "Operations",
+   "statutes, mandates",
+   "reports",
+   "clearance, guidance,",
+   "enforcement",
+   "submissions,",
+   "adverse events",
+   "practice guidance",
+   "API terms,",
+   "sponsorship",
+   "interop specs,",
+   "issue reports",
+   "shared contracts,",
+   "release process",
+   "conformance results,",
+   "proposals",
+   "docs, guidance",
+   "releases, docs",
+   "issues, logs",
+   "therapy plans",
+   "hub reports",
+   "support",
+   "questions,",
+   "incidents",
+   "outcomes, alerts",
+   "pumps, CGMs"
+  ],
+  "width": 673,
+  "height": 825,
+  "area_per_node": 61692
+ },
+ {
+  "diagram": "hub-spoke",
+  "variant": "dot-spline",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "grid_max_dev": 99,
+  "grid_misaligned": [
+   2,
+   5
+  ],
+  "bends_mean": 0.44,
+  "bends_max": 1.43,
+  "axis_share": 0.085,
+  "pair_detail": [
+   [
+    "caregiver",
+    "follower",
+    85.6,
+    123.4,
+    0.87,
+    1.07
+   ]
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "loops_straight": [
+   0,
+   1
+  ],
+  "loops_parallel": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   1,
+   13
+  ],
+  "label_over_line_texts": [
+   "command"
+  ],
+  "width": 582,
+  "height": 454,
+  "area_per_node": 33029
+ },
+ {
+  "diagram": "hub-spoke",
+  "variant": "grid",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   5
+  ],
+  "bends_mean": 0.45,
+  "bends_max": 2,
+  "axis_share": 0.996,
+  "pair_detail": [
+   [
+    "caregiver",
+    "follower",
+    16,
+    16,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "loops_straight": [
+   1,
+   1
+  ],
+  "loops_parallel": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   1,
+   13
+  ],
+  "label_over_line_texts": [
+   "entries, treatments"
+  ],
+  "width": 719,
+  "height": 541,
+  "area_per_node": 48622
+ },
+ {
+  "diagram": "hub-spoke",
+  "variant": "grid-z",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   5
+  ],
+  "bends_mean": 0.73,
+  "bends_max": 2,
+  "axis_share": 0.996,
+  "pair_detail": [
+   [
+    "caregiver",
+    "follower",
+    16,
+    16,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "loops_straight": [
+   1,
+   1
+  ],
+  "loops_parallel": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   13
+  ],
+  "label_over_line_texts": [],
+  "width": 691,
+  "height": 554,
+  "area_per_node": 47852
+ },
+ {
+  "diagram": "hub-spoke",
+  "variant": "neato-ortho",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "grid_max_dev": 0,
+  "grid_misaligned": [
+   0,
+   5
+  ],
+  "bends_mean": 0.45,
+  "bends_max": 2,
+  "axis_share": 0.995,
+  "pair_detail": [
+   [
+    "caregiver",
+    "follower",
+    40,
+    40,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "loops_straight": [
+   1,
+   1
+  ],
+  "loops_parallel": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   4,
+   13
+  ],
+  "label_over_line_texts": [
+   "glucose, alerts",
+   "realtime updates",
+   "entries",
+   "entries, treatments"
+  ],
+  "width": 719,
+  "height": 529,
+  "area_per_node": 47572
+ },
+ {
+  "diagram": "hub-spoke",
+  "variant": "elk",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   1,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "grid_max_dev": 180.3,
+  "grid_misaligned": [
+   3,
+   5
+  ],
+  "bends_mean": 5.07,
+  "bends_max": 7.91,
+  "axis_share": 0.988,
+  "pair_detail": [
+   [
+    "caregiver",
+    "follower",
+    10,
+    13,
+    4,
+    4
+   ]
+  ],
+  "loops_control_left": [
+   0,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "loops_straight": [
+   0,
+   1
+  ],
+  "loops_parallel": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 20,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   13
+  ],
+  "label_over_line_texts": [],
+  "width": 707,
+  "height": 798,
+  "area_per_node": 70523
+ },
+ {
+  "diagram": "hub-spoke",
+  "variant": "avoid",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   5
+  ],
+  "bends_mean": 1.45,
+  "bends_max": 2,
+  "axis_share": 0.991,
+  "pair_detail": [
+   [
+    "caregiver",
+    "follower",
+    16,
+    16,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "loops_straight": [
+   1,
+   1
+  ],
+  "loops_parallel": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   13
+  ],
+  "label_over_line_texts": [],
+  "width": 719,
+  "height": 541,
+  "area_per_node": 48622
+ },
+ {
+  "diagram": "hub-spoke",
+  "variant": "control-grid",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   5
+  ],
+  "bends_mean": 0.73,
+  "bends_max": 2,
+  "axis_share": 0.997,
+  "bends_check_max_err": 0,
+  "pair_detail": [
+   [
+    "caregiver",
+    "follower",
+    20,
+    20,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "loops_straight": [
+   1,
+   1
+  ],
+  "loops_parallel": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 3,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   13
+  ],
+  "label_over_line_texts": [],
+  "width": 854,
+  "height": 541,
+  "area_per_node": 57752
+ },
+ {
+  "diagram": "hub-spoke",
+  "variant": "control-random",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   9,
+   25
+  ],
+  "column_violations": [
+   1,
+   3
+  ],
+  "grid_max_dev": 345.8,
+  "grid_misaligned": [
+   5,
+   5
+  ],
+  "bends_mean": 2.56,
+  "bends_max": 3.44,
+  "axis_share": 0,
+  "pair_detail": [
+   [
+    "caregiver",
+    "follower",
+    44.7,
+    351.6,
+    2.3,
+    2.21
+   ]
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "loops_straight": [
+   0,
+   1
+  ],
+  "loops_parallel": [
+   0,
+   1
+  ],
+  "edge_overlaps": 1,
+  "crossings": 54,
+  "edges_through_nodes": 14,
+  "group_intrusions": null,
+  "label_collisions": 1,
+  "label_over_line": [
+   12,
+   13
+  ],
+  "label_over_line_texts": [
+   "remote command",
+   "glucose, alerts",
+   "command via API",
+   "realtime updates",
+   "command",
+   "notification",
+   "command status,",
+   "devicestatus",
+   "entries, treatments",
+   "entries",
+   "connector pull",
+   "history"
+  ],
+  "width": 719,
+  "height": 541,
+  "area_per_node": 48622
+ },
+ {
+  "diagram": "p-apple",
+  "variant": "dot-spline",
+  "found": {
+   "nodes": 5,
+   "of_nodes": 5,
+   "edges": 9,
+   "of_edges": 9,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   9
+  ],
+  "column_violations": [
+   1,
+   1
+  ],
+  "grid_max_dev": 116,
+  "grid_misaligned": [
+   2,
+   3
+  ],
+  "bends_mean": 1.27,
+  "bends_max": 2.2,
+  "axis_share": 0.098,
+  "pair_detail": [
+   [
+    "apple",
+    "publisher",
+    21.7,
+    169.4,
+    2.2,
+    0.95
+   ],
+   [
+    "builder",
+    "phone",
+    5.8,
+    108.5,
+    2.07,
+    2.15
+   ],
+   [
+    "builder",
+    "projects",
+    136.6,
+    167.7,
+    0.99,
+    0.85
+   ]
+  ],
+  "loops_control_left": [
+   3,
+   3
+  ],
+  "loops_distinct": [
+   2,
+   3
+  ],
+  "loops_straight": [
+   0,
+   3
+  ],
+  "loops_parallel": [
+   1,
+   3
+  ],
+  "edge_overlaps": 0,
+  "crossings": 4,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "label_over_line": [
+   3,
+   17
+  ],
+  "label_over_line_texts": [
+   "submissions",
+   "build, sign,",
+   "install via TestFlight"
+  ],
+  "width": 733,
+  "height": 419,
+  "area_per_node": 61425
+ },
+ {
+  "diagram": "p-apple",
+  "variant": "grid",
+  "found": {
+   "nodes": 5,
+   "of_nodes": 5,
+   "edges": 9,
+   "of_edges": 9,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   9
+  ],
+  "column_violations": [
+   0,
+   1
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   3
+  ],
+  "bends_mean": 0.78,
+  "bends_max": 1,
+  "axis_share": 0.995,
+  "pair_detail": [
+   [
+    "apple",
+    "publisher",
+    16,
+    22.6,
+    1,
+    1
+   ],
+   [
+    "builder",
+    "phone",
+    16,
+    16,
+    1,
+    1
+   ],
+   [
+    "builder",
+    "projects",
+    16,
+    16,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   3,
+   3
+  ],
+  "loops_distinct": [
+   3,
+   3
+  ],
+  "loops_straight": [
+   1,
+   3
+  ],
+  "loops_parallel": [
+   3,
+   3
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "label_over_line": [
+   3,
+   17
+  ],
+  "label_over_line_texts": [
+   "$99 a year",
+   "entitlement approval",
+   "expiry, rebuild"
+  ],
+  "width": 650,
+  "height": 548,
+  "area_per_node": 71240
+ },
+ {
+  "diagram": "p-apple",
+  "variant": "grid-z",
+  "found": {
+   "nodes": 5,
+   "of_nodes": 5,
+   "edges": 9,
+   "of_edges": 9,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   9
+  ],
+  "column_violations": [
+   0,
+   1
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   3
+  ],
+  "bends_mean": 1.56,
+  "bends_max": 2,
+  "axis_share": 0.991,
+  "pair_detail": [
+   [
+    "apple",
+    "publisher",
+    16,
+    22.7,
+    2,
+    2
+   ],
+   [
+    "builder",
+    "phone",
+    16,
+    22.6,
+    2,
+    2
+   ],
+   [
+    "builder",
+    "projects",
+    16,
+    16,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   1,
+   3
+  ],
+  "loops_distinct": [
+   3,
+   3
+  ],
+  "loops_straight": [
+   1,
+   3
+  ],
+  "loops_parallel": [
+   3,
+   3
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "label_over_line": [
+   1,
+   17
+  ],
+  "label_over_line_texts": [
+   "App Store apps (Nightguard, DiaBLE)"
+  ],
+  "width": 568,
+  "height": 552,
+  "area_per_node": 62707
+ },
+ {
+  "diagram": "p-apple",
+  "variant": "neato-ortho",
+  "found": {
+   "nodes": 5,
+   "of_nodes": 5,
+   "edges": 9,
+   "of_edges": 9,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   9
+  ],
+  "column_violations": [
+   0,
+   1
+  ],
+  "grid_max_dev": 0,
+  "grid_misaligned": [
+   0,
+   3
+  ],
+  "bends_mean": 0.78,
+  "bends_max": 1,
+  "axis_share": 0.996,
+  "pair_detail": [
+   [
+    "apple",
+    "publisher",
+    12,
+    24,
+    1,
+    1
+   ],
+   [
+    "builder",
+    "phone",
+    97.3,
+    166.3,
+    1,
+    1
+   ],
+   [
+    "builder",
+    "projects",
+    43.7,
+    43.7,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   2,
+   3
+  ],
+  "loops_distinct": [
+   3,
+   3
+  ],
+  "loops_straight": [
+   1,
+   3
+  ],
+  "loops_parallel": [
+   2,
+   3
+  ],
+  "edge_overlaps": 1,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "label_over_line": [
+   3,
+   15
+  ],
+  "label_over_line_texts": [
+   "App Review,",
+   "entitlement approval",
+   "expiry, rebuild"
+  ],
+  "width": 665,
+  "height": 537,
+  "area_per_node": 71378
+ },
+ {
+  "diagram": "p-apple",
+  "variant": "elk",
+  "found": {
+   "nodes": 5,
+   "of_nodes": 5,
+   "edges": 9,
+   "of_edges": 9,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   9
+  ],
+  "column_violations": [
+   0,
+   1
+  ],
+  "grid_max_dev": 265.4,
+  "grid_misaligned": [
+   2,
+   3
+  ],
+  "bends_mean": 4.67,
+  "bends_max": 6,
+  "axis_share": 0.994,
+  "pair_detail": [
+   [
+    "apple",
+    "publisher",
+    1,
+    13,
+    4,
+    4
+   ],
+   [
+    "builder",
+    "phone",
+    8,
+    13,
+    4,
+    4
+   ],
+   [
+    "builder",
+    "projects",
+    10,
+    13,
+    4,
+    4
+   ]
+  ],
+  "loops_control_left": [
+   0,
+   3
+  ],
+  "loops_distinct": [
+   2,
+   3
+  ],
+  "loops_straight": [
+   0,
+   3
+  ],
+  "loops_parallel": [
+   2,
+   3
+  ],
+  "edge_overlaps": 0,
+  "crossings": 22,
+  "edges_through_nodes": 0,
+  "group_intrusions": 1,
+  "label_collisions": 0,
+  "label_over_line": [
+   2,
+   17
+  ],
+  "label_over_line_texts": [
+   "Self-built apps (Loop, Trio, xDrip4iOS)",
+   "App Store apps (Nightguard, DiaBLE)"
+  ],
+  "width": 606,
+  "height": 704,
+  "area_per_node": 85325
+ },
+ {
+  "diagram": "p-apple",
+  "variant": "avoid",
+  "found": {
+   "nodes": 5,
+   "of_nodes": 5,
+   "edges": 9,
+   "of_edges": 9,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   9
+  ],
+  "column_violations": [
+   0,
+   1
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   3
+  ],
+  "bends_mean": 2,
+  "bends_max": 2,
+  "axis_share": 0.989,
+  "pair_detail": [
+   [
+    "apple",
+    "publisher",
+    10,
+    18.9,
+    2,
+    2
+   ],
+   [
+    "builder",
+    "phone",
+    10,
+    18.9,
+    2,
+    2
+   ],
+   [
+    "builder",
+    "projects",
+    10,
+    21,
+    2,
+    2
+   ]
+  ],
+  "loops_control_left": [
+   3,
+   3
+  ],
+  "loops_distinct": [
+   3,
+   3
+  ],
+  "loops_straight": [
+   0,
+   3
+  ],
+  "loops_parallel": [
+   0,
+   3
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "label_over_line": [
+   1,
+   17
+  ],
+  "label_over_line_texts": [
+   "App Store apps (Nightguard, DiaBLE)"
+  ],
+  "width": 650,
+  "height": 548,
+  "area_per_node": 71240
+ },
+ {
+  "diagram": "p-apple",
+  "variant": "control-grid",
+  "found": {
+   "nodes": 5,
+   "of_nodes": 5,
+   "edges": 9,
+   "of_edges": 9,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   9
+  ],
+  "column_violations": [
+   0,
+   1
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   3
+  ],
+  "bends_mean": 1.56,
+  "bends_max": 2,
+  "axis_share": 0.994,
+  "bends_check_max_err": 0,
+  "pair_detail": [
+   [
+    "apple",
+    "publisher",
+    0,
+    20,
+    2,
+    2
+   ],
+   [
+    "builder",
+    "phone",
+    0.2,
+    20,
+    2,
+    2
+   ],
+   [
+    "builder",
+    "projects",
+    20,
+    20,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   2,
+   3
+  ],
+  "loops_distinct": [
+   1,
+   3
+  ],
+  "loops_straight": [
+   1,
+   3
+  ],
+  "loops_parallel": [
+   1,
+   3
+  ],
+  "edge_overlaps": 1,
+  "crossings": 8,
+  "edges_through_nodes": 2,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "label_over_line": [
+   2,
+   17
+  ],
+  "label_over_line_texts": [
+   "Self-built apps (Loop, Trio, xDrip4iOS)",
+   "App Store apps (Nightguard, DiaBLE)"
+  ],
+  "width": 792,
+  "height": 548,
+  "area_per_node": 86803
+ },
+ {
+  "diagram": "p-apple",
+  "variant": "control-random",
+  "found": {
+   "nodes": 5,
+   "of_nodes": 5,
+   "edges": 9,
+   "of_edges": 9,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   1,
+   9
+  ],
+  "column_violations": [
+   0,
+   1
+  ],
+  "grid_max_dev": 151.7,
+  "grid_misaligned": [
+   3,
+   3
+  ],
+  "bends_mean": 2.88,
+  "bends_max": 3.73,
+  "axis_share": 0.051,
+  "pair_detail": [
+   [
+    "apple",
+    "publisher",
+    0.6,
+    145,
+    2.76,
+    3.73
+   ],
+   [
+    "builder",
+    "phone",
+    28.7,
+    125.3,
+    3.24,
+    2.17
+   ],
+   [
+    "builder",
+    "projects",
+    0.5,
+    174.2,
+    1.66,
+    2.25
+   ]
+  ],
+  "loops_control_left": [
+   2,
+   3
+  ],
+  "loops_distinct": [
+   1,
+   3
+  ],
+  "loops_straight": [
+   0,
+   3
+  ],
+  "loops_parallel": [
+   0,
+   3
+  ],
+  "edge_overlaps": 0,
+  "crossings": 34,
+  "edges_through_nodes": 10,
+  "group_intrusions": 2,
+  "label_collisions": 4,
+  "label_over_line": [
+   14,
+   15
+  ],
+  "label_over_line_texts": [
+   "Self-built apps (Loop, Trio, xDrip4iOS)",
+   "App Store apps (Nightguard, DiaBLE)",
+   "program agreement,",
+   "$99 a year",
+   "App Review,",
+   "entitlement approval",
+   "submissions",
+   "source,",
+   "build workflow",
+   "issues",
+   "build, sign,",
+   "install via TestFlight",
+   "App Store install",
+   "expiry, rebuild"
+  ],
+  "width": 650,
+  "height": 548,
+  "area_per_node": 71240
+ },
+ {
+  "diagram": "p-cncf",
+  "variant": "dot-spline",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   26
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 428,
+  "grid_misaligned": [
+   3,
+   5
+  ],
+  "bends_mean": 0.52,
+  "bends_max": 1.8,
+  "axis_share": 0.197,
+  "pair_detail": [
+   [
+    "offerings",
+    "tests",
+    43.6,
+    141.2,
+    1.8,
+    1.26
+   ],
+   [
+    "projects",
+    "toc",
+    137.3,
+    152.8,
+    0.91,
+    0.96
+   ]
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "loops_straight": [
+   0,
+   2
+  ],
+  "loops_parallel": [
+   1,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 1,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   18
+  ],
+  "label_over_line_texts": [],
+  "width": 638,
+  "height": 588,
+  "area_per_node": 46856
+ },
+ {
+  "diagram": "p-cncf",
+  "variant": "grid",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   26
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   5
+  ],
+  "bends_mean": 0.45,
+  "bends_max": 1,
+  "axis_share": 0.996,
+  "pair_detail": [
+   [
+    "offerings",
+    "tests",
+    16,
+    16,
+    1,
+    1
+   ],
+   [
+    "projects",
+    "toc",
+    16,
+    16,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "loops_straight": [
+   1,
+   2
+  ],
+  "loops_parallel": [
+   2,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   2,
+   18
+  ],
+  "label_over_line_texts": [
+   "results in a",
+   "public repository"
+  ],
+  "width": 611,
+  "height": 714,
+  "area_per_node": 54532
+ },
+ {
+  "diagram": "p-cncf",
+  "variant": "grid-z",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   26
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   5
+  ],
+  "bends_mean": 0.91,
+  "bends_max": 2,
+  "axis_share": 0.992,
+  "pair_detail": [
+   [
+    "offerings",
+    "tests",
+    16,
+    22.6,
+    2,
+    2
+   ],
+   [
+    "projects",
+    "toc",
+    16,
+    16,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "loops_straight": [
+   1,
+   2
+  ],
+  "loops_parallel": [
+   2,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   18
+  ],
+  "label_over_line_texts": [],
+  "width": 583,
+  "height": 758,
+  "area_per_node": 55239
+ },
+ {
+  "diagram": "p-cncf",
+  "variant": "neato-ortho",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   26
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0,
+  "grid_misaligned": [
+   0,
+   5
+  ],
+  "bends_mean": 0.45,
+  "bends_max": 1,
+  "axis_share": 0.997,
+  "pair_detail": [
+   [
+    "offerings",
+    "tests",
+    2.7,
+    14.2,
+    1,
+    1
+   ],
+   [
+    "projects",
+    "toc",
+    40.3,
+    40.4,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   1,
+   2
+  ],
+  "loops_distinct": [
+   1,
+   2
+  ],
+  "loops_straight": [
+   1,
+   2
+  ],
+  "loops_parallel": [
+   1,
+   2
+  ],
+  "edge_overlaps": 1,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   2,
+   18
+  ],
+  "label_over_line_texts": [
+   "due diligence,",
+   "security review"
+  ],
+  "width": 627,
+  "height": 703,
+  "area_per_node": 55055
+ },
+ {
+  "diagram": "p-cncf",
+  "variant": "elk",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   26
+  ],
+  "column_violations": [
+   1,
+   2
+  ],
+  "grid_max_dev": 503.3,
+  "grid_misaligned": [
+   3,
+   5
+  ],
+  "bends_mean": 4.73,
+  "bends_max": 8,
+  "axis_share": 0.993,
+  "pair_detail": [
+   [
+    "offerings",
+    "tests",
+    10,
+    20,
+    4,
+    4
+   ],
+   [
+    "projects",
+    "toc",
+    0.9,
+    16.1,
+    6,
+    4
+   ]
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   1,
+   2
+  ],
+  "loops_straight": [
+   0,
+   2
+  ],
+  "loops_parallel": [
+   0,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 13,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   18
+  ],
+  "label_over_line_texts": [],
+  "width": 707,
+  "height": 1231,
+  "area_per_node": 108790
+ },
+ {
+  "diagram": "p-cncf",
+  "variant": "avoid",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   26
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   5
+  ],
+  "bends_mean": 1.09,
+  "bends_max": 2,
+  "axis_share": 0.991,
+  "pair_detail": [
+   [
+    "offerings",
+    "tests",
+    10,
+    18.9,
+    2,
+    2
+   ],
+   [
+    "projects",
+    "toc",
+    16,
+    16,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "loops_straight": [
+   1,
+   2
+  ],
+  "loops_parallel": [
+   1,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   18
+  ],
+  "label_over_line_texts": [],
+  "width": 611,
+  "height": 714,
+  "area_per_node": 54532
+ },
+ {
+  "diagram": "p-cncf",
+  "variant": "control-grid",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   26
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   5
+  ],
+  "bends_mean": 0.91,
+  "bends_max": 2,
+  "axis_share": 0.992,
+  "bends_check_max_err": 0,
+  "pair_detail": [
+   [
+    "offerings",
+    "tests",
+    0.4,
+    20,
+    2,
+    2
+   ],
+   [
+    "projects",
+    "toc",
+    20,
+    20,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   1,
+   2
+  ],
+  "loops_straight": [
+   1,
+   2
+  ],
+  "loops_parallel": [
+   1,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 2,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   18
+  ],
+  "label_over_line_texts": [],
+  "width": 757,
+  "height": 714,
+  "area_per_node": 67562
+ },
+ {
+  "diagram": "p-cncf",
+  "variant": "control-random",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 11,
+   "of_edges": 11,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   9,
+   26
+  ],
+  "column_violations": [
+   1,
+   2
+  ],
+  "grid_max_dev": 236.2,
+  "grid_misaligned": [
+   5,
+   5
+  ],
+  "bends_mean": 2.54,
+  "bends_max": 3.73,
+  "axis_share": 0.05,
+  "pair_detail": [
+   [
+    "offerings",
+    "tests",
+    1,
+    226.1,
+    2.28,
+    1.88
+   ],
+   [
+    "projects",
+    "toc",
+    9,
+    121.4,
+    3.73,
+    3.25
+   ]
+  ],
+  "loops_control_left": [
+   1,
+   2
+  ],
+  "loops_distinct": [
+   1,
+   2
+  ],
+  "loops_straight": [
+   0,
+   2
+  ],
+  "loops_parallel": [
+   0,
+   2
+  ],
+  "edge_overlaps": 2,
+  "crossings": 60,
+  "edges_through_nodes": 20,
+  "group_intrusions": null,
+  "label_collisions": 4,
+  "label_over_line": [
+   14,
+   15
+  ],
+  "label_over_line_texts": [
+   "directed fund",
+   "dues",
+   "admit; Sandbox,",
+   "Incubation, Graduated",
+   "due diligence,",
+   "employ maintainers",
+   "define required APIs",
+   "certify,",
+   "renewed yearly",
+   "results in a",
+   "public repository",
+   "products, support",
+   "can run the",
+   "same tests"
+  ],
+  "width": 606,
+  "height": 714,
+  "area_per_node": 54086
+ },
+ {
+  "diagram": "p-sqlite",
+  "variant": "dot-spline",
+  "found": {
+   "nodes": 5,
+   "of_nodes": 5,
+   "edges": 7,
+   "of_edges": 7,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   9
+  ],
+  "column_violations": [
+   0,
+   1
+  ],
+  "grid_max_dev": 49,
+  "grid_misaligned": [
+   2,
+   3
+  ],
+  "bends_mean": 0.81,
+  "bends_max": 1.4,
+  "axis_share": 0.064,
+  "pair_detail": [
+   [
+    "devs",
+    "sqlite",
+    119.2,
+    136.2,
+    0.9,
+    0.99
+   ]
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "loops_straight": [
+   0,
+   1
+  ],
+  "loops_parallel": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 2,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   2,
+   12
+  ],
+  "label_over_line_texts": [
+   "technical control",
+   "and direction"
+  ],
+  "width": 582,
+  "height": 406,
+  "area_per_node": 47258
+ },
+ {
+  "diagram": "p-sqlite",
+  "variant": "grid",
+  "found": {
+   "nodes": 5,
+   "of_nodes": 5,
+   "edges": 7,
+   "of_edges": 7,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   9
+  ],
+  "column_violations": [
+   0,
+   1
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   3
+  ],
+  "bends_mean": 0.71,
+  "bends_max": 3,
+  "axis_share": 0.997,
+  "pair_detail": [
+   [
+    "devs",
+    "sqlite",
+    16,
+    16,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "loops_straight": [
+   1,
+   1
+  ],
+  "loops_parallel": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   12
+  ],
+  "label_over_line_texts": [],
+  "width": 623,
+  "height": 526,
+  "area_per_node": 65540
+ },
+ {
+  "diagram": "p-sqlite",
+  "variant": "grid-z",
+  "found": {
+   "nodes": 5,
+   "of_nodes": 5,
+   "edges": 7,
+   "of_edges": 7,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   9
+  ],
+  "column_violations": [
+   0,
+   1
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   3
+  ],
+  "bends_mean": 1.14,
+  "bends_max": 4,
+  "axis_share": 0.996,
+  "pair_detail": [
+   [
+    "devs",
+    "sqlite",
+    16,
+    16,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "loops_straight": [
+   1,
+   1
+  ],
+  "loops_parallel": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   12
+  ],
+  "label_over_line_texts": [],
+  "width": 609,
+  "height": 560,
+  "area_per_node": 68208
+ },
+ {
+  "diagram": "p-sqlite",
+  "variant": "neato-ortho",
+  "found": {
+   "nodes": 5,
+   "of_nodes": 5,
+   "edges": 7,
+   "of_edges": 7,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   9
+  ],
+  "column_violations": [
+   0,
+   1
+  ],
+  "grid_max_dev": 0,
+  "grid_misaligned": [
+   0,
+   3
+  ],
+  "bends_mean": 0.43,
+  "bends_max": 1,
+  "axis_share": 0.997,
+  "pair_detail": [
+   [
+    "devs",
+    "sqlite",
+    40,
+    40,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "loops_straight": [
+   1,
+   1
+  ],
+  "loops_parallel": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 1,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   4,
+   12
+  ],
+  "label_over_line_texts": [
+   "back-ported fixes,",
+   "tests in their configuration,",
+   "employs",
+   "test harness results"
+  ],
+  "width": 637,
+  "height": 514,
+  "area_per_node": 65406
+ },
+ {
+  "diagram": "p-sqlite",
+  "variant": "elk",
+  "found": {
+   "nodes": 5,
+   "of_nodes": 5,
+   "edges": 7,
+   "of_edges": 7,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   9
+  ],
+  "column_violations": [
+   0,
+   1
+  ],
+  "grid_max_dev": 6.6,
+  "grid_misaligned": [
+   1,
+   3
+  ],
+  "bends_mean": 5.71,
+  "bends_max": 10,
+  "axis_share": 0.994,
+  "pair_detail": [
+   [
+    "devs",
+    "sqlite",
+    10,
+    23.8,
+    4,
+    4
+   ]
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "loops_straight": [
+   0,
+   1
+  ],
+  "loops_parallel": [
+   0,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 13,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   12
+  ],
+  "label_over_line_texts": [],
+  "width": 783,
+  "height": 680,
+  "area_per_node": 106488
+ },
+ {
+  "diagram": "p-sqlite",
+  "variant": "avoid",
+  "found": {
+   "nodes": 5,
+   "of_nodes": 5,
+   "edges": 7,
+   "of_edges": 7,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   9
+  ],
+  "column_violations": [
+   0,
+   1
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   3
+  ],
+  "bends_mean": 1.71,
+  "bends_max": 4,
+  "axis_share": 0.992,
+  "pair_detail": [
+   [
+    "devs",
+    "sqlite",
+    16,
+    16,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "loops_straight": [
+   1,
+   1
+  ],
+  "loops_parallel": [
+   1,
+   1
+  ],
+  "edge_overlaps": 0,
+  "crossings": 1,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   1,
+   12
+  ],
+  "label_over_line_texts": [
+   "tests in their configuration,"
+  ],
+  "width": 623,
+  "height": 526,
+  "area_per_node": 65540
+ },
+ {
+  "diagram": "p-sqlite",
+  "variant": "control-grid",
+  "found": {
+   "nodes": 5,
+   "of_nodes": 5,
+   "edges": 7,
+   "of_edges": 7,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   9
+  ],
+  "column_violations": [
+   0,
+   1
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   3
+  ],
+  "bends_mean": 0.86,
+  "bends_max": 2,
+  "axis_share": 0.995,
+  "bends_check_max_err": 0,
+  "pair_detail": [
+   [
+    "devs",
+    "sqlite",
+    20,
+    20,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   1,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "loops_straight": [
+   1,
+   1
+  ],
+  "loops_parallel": [
+   1,
+   1
+  ],
+  "edge_overlaps": 2,
+  "crossings": 2,
+  "edges_through_nodes": 2,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   12
+  ],
+  "label_over_line_texts": [],
+  "width": 792,
+  "height": 526,
+  "area_per_node": 83318
+ },
+ {
+  "diagram": "p-sqlite",
+  "variant": "control-random",
+  "found": {
+   "nodes": 5,
+   "of_nodes": 5,
+   "edges": 7,
+   "of_edges": 7,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   1,
+   9
+  ],
+  "column_violations": [
+   0,
+   1
+  ],
+  "grid_max_dev": 103.4,
+  "grid_misaligned": [
+   3,
+   3
+  ],
+  "bends_mean": 2.74,
+  "bends_max": 3.45,
+  "axis_share": 0.027,
+  "pair_detail": [
+   [
+    "devs",
+    "sqlite",
+    89.6,
+    425.2,
+    2.83,
+    1.98
+   ]
+  ],
+  "loops_control_left": [
+   0,
+   1
+  ],
+  "loops_distinct": [
+   1,
+   1
+  ],
+  "loops_straight": [
+   0,
+   1
+  ],
+  "loops_parallel": [
+   0,
+   1
+  ],
+  "edge_overlaps": 1,
+  "crossings": 18,
+  "edges_through_nodes": 11,
+  "group_intrusions": null,
+  "label_collisions": 4,
+  "label_over_line": [
+   11,
+   12
+  ],
+  "label_over_line_texts": [
+   "consortium, support,",
+   "test runs, warranty of title",
+   "back-ported fixes,",
+   "tests in their configuration,",
+   "indemnity",
+   "employs",
+   "technical control",
+   "and direction",
+   "test harness results",
+   "same releases",
+   "same releases"
+  ],
+  "width": 623,
+  "height": 526,
+  "area_per_node": 65540
+ },
+ {
+  "diagram": "z0-sector",
+  "variant": "dot-spline",
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 327,
+  "grid_misaligned": [
+   2,
+   5
+  ],
+  "bends_mean": 1.54,
+  "bends_max": 4.67,
+  "axis_share": 0.162,
+  "pair_detail": [
+   [
+    "care",
+    "users",
+    0.2,
+    103.4,
+    4.67,
+    2.41
+   ],
+   [
+    "commons",
+    "companies",
+    45,
+    143.1,
+    1.99,
+    0.16
+   ],
+   [
+    "commons",
+    "projects",
+    46.2,
+    123.7,
+    0.41,
+    2.48
+   ],
+   [
+    "community",
+    "users",
+    119.2,
+    127.5,
+    0.9,
+    2.51
+   ],
+   [
+    "companies",
+    "reg",
+    110.9,
+    149.3,
+    1.63,
+    1.83
+   ],
+   [
+    "gov",
+    "reg",
+    153.5,
+    165.9,
+    0.92,
+    0.88
+   ],
+   [
+    "projects",
+    "users",
+    7.6,
+    141,
+    1.87,
+    1.75
+   ],
+   [
+    "system",
+    "users",
+    139.2,
+    161.6,
+    0.85,
+    0.9
+   ]
+  ],
+  "loops_control_left": [
+   8,
+   8
+  ],
+  "loops_distinct": [
+   7,
+   8
+  ],
+  "loops_straight": [
+   0,
+   8
+  ],
+  "loops_parallel": [
+   3,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 6,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 2,
+  "label_over_line": [
+   3,
+   30
+  ],
+  "label_over_line_texts": [
+   "conformance results,",
+   "proposals",
+   "therapy plans"
+  ],
+  "width": 762,
+  "height": 709,
+  "area_per_node": 60029
+ },
+ {
+  "diagram": "z0-sector",
+  "variant": "grid",
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   5
+  ],
+  "bends_mean": 0.95,
+  "bends_max": 2,
+  "axis_share": 0.995,
+  "pair_detail": [
+   [
+    "care",
+    "users",
+    16,
+    16,
+    2,
+    2
+   ],
+   [
+    "commons",
+    "companies",
+    16,
+    22.6,
+    1,
+    1
+   ],
+   [
+    "commons",
+    "projects",
+    16,
+    22.6,
+    1,
+    1
+   ],
+   [
+    "community",
+    "users",
+    16,
+    16,
+    0,
+    0
+   ],
+   [
+    "companies",
+    "reg",
+    16,
+    22.6,
+    1,
+    1
+   ],
+   [
+    "gov",
+    "reg",
+    16,
+    16,
+    0,
+    0
+   ],
+   [
+    "projects",
+    "users",
+    16,
+    22.6,
+    1,
+    1
+   ],
+   [
+    "system",
+    "users",
+    16,
+    16,
+    1,
+    1
+   ]
+  ],
+  "loops_control_left": [
+   8,
+   8
+  ],
+  "loops_distinct": [
+   8,
+   8
+  ],
+  "loops_straight": [
+   2,
+   8
+  ],
+  "loops_parallel": [
+   8,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 4,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "label_over_line": [
+   2,
+   30
+  ],
+  "label_over_line_texts": [
+   "API terms,",
+   "sponsorship"
+  ],
+  "width": 729,
+  "height": 824,
+  "area_per_node": 66744
+ },
+ {
+  "diagram": "z0-sector",
+  "variant": "grid-z",
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   5
+  ],
+  "bends_mean": 1.79,
+  "bends_max": 4,
+  "axis_share": 0.992,
+  "pair_detail": [
+   [
+    "care",
+    "users",
+    16,
+    22.6,
+    4,
+    4
+   ],
+   [
+    "commons",
+    "companies",
+    16,
+    22.6,
+    2,
+    2
+   ],
+   [
+    "commons",
+    "projects",
+    16,
+    35.7,
+    2,
+    2
+   ],
+   [
+    "community",
+    "users",
+    16,
+    16,
+    0,
+    0
+   ],
+   [
+    "companies",
+    "reg",
+    16,
+    22.6,
+    2,
+    2
+   ],
+   [
+    "gov",
+    "reg",
+    16,
+    16,
+    0,
+    0
+   ],
+   [
+    "projects",
+    "users",
+    16,
+    22.6,
+    2,
+    2
+   ],
+   [
+    "system",
+    "users",
+    16,
+    22.6,
+    2,
+    2
+   ]
+  ],
+  "loops_control_left": [
+   6,
+   8
+  ],
+  "loops_distinct": [
+   8,
+   8
+  ],
+  "loops_straight": [
+   2,
+   8
+  ],
+  "loops_parallel": [
+   7,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 4,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   30
+  ],
+  "label_over_line_texts": [],
+  "width": 625,
+  "height": 1000,
+  "area_per_node": 69444
+ },
+ {
+  "diagram": "z0-sector",
+  "variant": "neato-ortho",
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0,
+  "grid_misaligned": [
+   0,
+   5
+  ],
+  "bends_mean": 0.95,
+  "bends_max": 2,
+  "axis_share": 0.994,
+  "pair_detail": [
+   [
+    "care",
+    "users",
+    12,
+    12,
+    2,
+    2
+   ],
+   [
+    "commons",
+    "companies",
+    7.9,
+    12.9,
+    1,
+    1
+   ],
+   [
+    "commons",
+    "projects",
+    7.9,
+    10,
+    1,
+    1
+   ],
+   [
+    "community",
+    "users",
+    41,
+    41,
+    0,
+    0
+   ],
+   [
+    "companies",
+    "reg",
+    11,
+    43.3,
+    1,
+    1
+   ],
+   [
+    "gov",
+    "reg",
+    44.3,
+    44.4,
+    0,
+    0
+   ],
+   [
+    "projects",
+    "users",
+    14,
+    43.7,
+    1,
+    1
+   ],
+   [
+    "system",
+    "users",
+    11,
+    41,
+    1,
+    1
+   ]
+  ],
+  "loops_control_left": [
+   6,
+   8
+  ],
+  "loops_distinct": [
+   8,
+   8
+  ],
+  "loops_straight": [
+   2,
+   8
+  ],
+  "loops_parallel": [
+   5,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 4,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "label_over_line": [
+   11,
+   28
+  ],
+  "label_over_line_texts": [
+   "submissions,",
+   "adverse events",
+   "API terms,",
+   "sponsorship",
+   "interoperability specs,",
+   "issue reports",
+   "shared contracts,",
+   "releases, docs",
+   "hub reports",
+   "issues, logs",
+   "questions,"
+  ],
+  "width": 622,
+  "height": 812,
+  "area_per_node": 56132
+ },
+ {
+  "diagram": "z0-sector",
+  "variant": "elk",
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 67,
+  "grid_misaligned": [
+   1,
+   5
+  ],
+  "bends_mean": 5,
+  "bends_max": 14.43,
+  "axis_share": 0.994,
+  "pair_detail": [
+   [
+    "care",
+    "users",
+    0.2,
+    83.9,
+    8,
+    10
+   ],
+   [
+    "commons",
+    "companies",
+    20,
+    57.6,
+    4,
+    4
+   ],
+   [
+    "commons",
+    "projects",
+    10,
+    24.1,
+    4,
+    4
+   ],
+   [
+    "community",
+    "users",
+    10,
+    41.8,
+    4,
+    4
+   ],
+   [
+    "companies",
+    "reg",
+    3.9,
+    86,
+    2.52,
+    4
+   ],
+   [
+    "gov",
+    "reg",
+    10,
+    13,
+    4,
+    4
+   ],
+   [
+    "projects",
+    "users",
+    1.2,
+    14.2,
+    4,
+    4
+   ],
+   [
+    "system",
+    "users",
+    10,
+    24,
+    4,
+    4
+   ]
+  ],
+  "loops_control_left": [
+   6,
+   8
+  ],
+  "loops_distinct": [
+   5,
+   8
+  ],
+  "loops_straight": [
+   0,
+   8
+  ],
+  "loops_parallel": [
+   1,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 53,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   30
+  ],
+  "label_over_line_texts": [],
+  "width": 756,
+  "height": 1302,
+  "area_per_node": 109368
+ },
+ {
+  "diagram": "z0-sector",
+  "variant": "avoid",
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   5
+  ],
+  "bends_mean": 2.11,
+  "bends_max": 4,
+  "axis_share": 0.991,
+  "pair_detail": [
+   [
+    "care",
+    "users",
+    16,
+    137.6,
+    4,
+    4
+   ],
+   [
+    "commons",
+    "companies",
+    10,
+    33.5,
+    2,
+    2
+   ],
+   [
+    "commons",
+    "projects",
+    10,
+    18.8,
+    2,
+    2
+   ],
+   [
+    "community",
+    "users",
+    5.5,
+    31.1,
+    2,
+    2
+   ],
+   [
+    "companies",
+    "reg",
+    10,
+    18.8,
+    2,
+    2
+   ],
+   [
+    "gov",
+    "reg",
+    16,
+    16,
+    0,
+    0
+   ],
+   [
+    "projects",
+    "users",
+    10,
+    15.6,
+    2,
+    2
+   ],
+   [
+    "system",
+    "users",
+    10,
+    18.8,
+    2,
+    2
+   ]
+  ],
+  "loops_control_left": [
+   8,
+   8
+  ],
+  "loops_distinct": [
+   7,
+   8
+  ],
+  "loops_straight": [
+   1,
+   8
+  ],
+  "loops_parallel": [
+   2,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 3,
+  "edges_through_nodes": 0,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "label_over_line": [
+   1,
+   30
+  ],
+  "label_over_line_texts": [
+   "questions,"
+  ],
+  "width": 681,
+  "height": 824,
+  "area_per_node": 62349
+ },
+ {
+  "diagram": "z0-sector",
+  "variant": "control-grid",
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   34
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   5
+  ],
+  "bends_mean": 1.37,
+  "bends_max": 2,
+  "axis_share": 0.996,
+  "bends_check_max_err": 0,
+  "pair_detail": [
+   [
+    "care",
+    "users",
+    20,
+    20,
+    0,
+    0
+   ],
+   [
+    "commons",
+    "companies",
+    1.2,
+    20,
+    2,
+    2
+   ],
+   [
+    "commons",
+    "projects",
+    1.2,
+    20,
+    2,
+    2
+   ],
+   [
+    "community",
+    "users",
+    20,
+    20,
+    0,
+    0
+   ],
+   [
+    "companies",
+    "reg",
+    0.2,
+    20,
+    2,
+    2
+   ],
+   [
+    "gov",
+    "reg",
+    20,
+    20,
+    0,
+    0
+   ],
+   [
+    "projects",
+    "users",
+    6,
+    20,
+    2,
+    2
+   ],
+   [
+    "system",
+    "users",
+    0.2,
+    20,
+    2,
+    2
+   ]
+  ],
+  "loops_control_left": [
+   5,
+   8
+  ],
+  "loops_distinct": [
+   3,
+   8
+  ],
+  "loops_straight": [
+   3,
+   8
+  ],
+  "loops_parallel": [
+   3,
+   8
+  ],
+  "edge_overlaps": 4,
+  "crossings": 21,
+  "edges_through_nodes": 3,
+  "group_intrusions": 0,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   30
+  ],
+  "label_over_line_texts": [],
+  "width": 798,
+  "height": 824,
+  "area_per_node": 73061
+ },
+ {
+  "diagram": "z0-sector",
+  "variant": "control-random",
+  "found": {
+   "nodes": 9,
+   "of_nodes": 9,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   10,
+   34
+  ],
+  "column_violations": [
+   1,
+   2
+  ],
+  "grid_max_dev": 547,
+  "grid_misaligned": [
+   5,
+   5
+  ],
+  "bends_mean": 2.69,
+  "bends_max": 4,
+  "axis_share": 0.052,
+  "pair_detail": [
+   [
+    "care",
+    "users",
+    27,
+    136.9,
+    2.15,
+    2.63
+   ],
+   [
+    "commons",
+    "companies",
+    0.7,
+    95.8,
+    3.38,
+    3.29
+   ],
+   [
+    "commons",
+    "projects",
+    0.7,
+    117.3,
+    2.39,
+    2.61
+   ],
+   [
+    "community",
+    "users",
+    0.6,
+    379.3,
+    3.14,
+    3.42
+   ],
+   [
+    "companies",
+    "reg",
+    99.8,
+    378.3,
+    2.56,
+    2.4
+   ],
+   [
+    "gov",
+    "reg",
+    0.7,
+    206.4,
+    2.72,
+    4
+   ],
+   [
+    "projects",
+    "users",
+    4.1,
+    228,
+    2.38,
+    1.96
+   ],
+   [
+    "system",
+    "users",
+    0.3,
+    146.9,
+    3.52,
+    1.08
+   ]
+  ],
+  "loops_control_left": [
+   4,
+   8
+  ],
+  "loops_distinct": [
+   2,
+   8
+  ],
+  "loops_straight": [
+   0,
+   8
+  ],
+  "loops_parallel": [
+   0,
+   8
+  ],
+  "edge_overlaps": 0,
+  "crossings": 174,
+  "edges_through_nodes": 27,
+  "group_intrusions": 5,
+  "label_collisions": 3,
+  "label_over_line": [
+   26,
+   28
+  ],
+  "label_over_line_texts": [
+   "Operations",
+   "statutes, mandates",
+   "reports",
+   "clearance, guidance,",
+   "enforcement",
+   "submissions,",
+   "adverse events",
+   "practice guidance",
+   "API terms,",
+   "sponsorship",
+   "interoperability specs,",
+   "issue reports",
+   "shared contracts,",
+   "release process",
+   "conformance results,",
+   "proposals",
+   "docs, guidance",
+   "releases, docs",
+   "issues, logs",
+   "therapy plans",
+   "hub reports",
+   "support",
+   "questions,",
+   "incidents",
+   "outcomes, alerts",
+   "pumps, CGMs"
+  ],
+  "width": 681,
+  "height": 825,
+  "area_per_node": 62425
+ },
+ {
+  "diagram": "z1-proposed",
+  "variant": "dot-spline",
+  "found": {
+   "nodes": 10,
+   "of_nodes": 10,
+   "edges": 21,
+   "of_edges": 21,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   41
+  ],
+  "column_violations": [
+   0,
+   4
+  ],
+  "grid_max_dev": 382,
+  "grid_misaligned": [
+   2,
+   4
+  ],
+  "bends_mean": 1,
+  "bends_max": 2.48,
+  "axis_share": 0.115,
+  "pair_detail": [
+   [
+    "devices",
+    "people",
+    145.4,
+    157.2,
+    0.87,
+    0.9
+   ],
+   [
+    "fdn",
+    "mfr",
+    82.1,
+    148.8,
+    1.65,
+    0.45
+   ],
+   [
+    "laas",
+    "reg",
+    144.5,
+    171.8,
+    2.03,
+    1.53
+   ],
+   [
+    "mfr",
+    "reg",
+    28.8,
+    115.9,
+    1.86,
+    1.15
+   ],
+   [
+    "ops",
+    "projects",
+    56.3,
+    186.9,
+    2.48,
+    2.48
+   ]
+  ],
+  "loops_control_left": [
+   5,
+   5
+  ],
+  "loops_distinct": [
+   5,
+   5
+  ],
+  "loops_straight": [
+   0,
+   5
+  ],
+  "loops_parallel": [
+   2,
+   5
+  ],
+  "edge_overlaps": 0,
+  "crossings": 6,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   1,
+   30
+  ],
+  "label_over_line_texts": [
+   "tier B/C agreement"
+  ],
+  "width": 854,
+  "height": 750,
+  "area_per_node": 64038
+ },
+ {
+  "diagram": "z1-proposed",
+  "variant": "grid",
+  "found": {
+   "nodes": 10,
+   "of_nodes": 10,
+   "edges": 21,
+   "of_edges": 21,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   41
+  ],
+  "column_violations": [
+   0,
+   4
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   4
+  ],
+  "bends_mean": 0.81,
+  "bends_max": 2,
+  "axis_share": 0.996,
+  "pair_detail": [
+   [
+    "devices",
+    "people",
+    16,
+    16,
+    0,
+    0
+   ],
+   [
+    "fdn",
+    "mfr",
+    12.8,
+    20.3,
+    1,
+    1
+   ],
+   [
+    "laas",
+    "reg",
+    16,
+    16,
+    1,
+    1
+   ],
+   [
+    "mfr",
+    "reg",
+    16,
+    22.6,
+    1,
+    1
+   ],
+   [
+    "ops",
+    "projects",
+    12.8,
+    20.6,
+    2,
+    2
+   ]
+  ],
+  "loops_control_left": [
+   5,
+   5
+  ],
+  "loops_distinct": [
+   5,
+   5
+  ],
+  "loops_straight": [
+   1,
+   5
+  ],
+  "loops_parallel": [
+   5,
+   5
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   30
+  ],
+  "label_over_line_texts": [],
+  "width": 567,
+  "height": 890,
+  "area_per_node": 50463
+ },
+ {
+  "diagram": "z1-proposed",
+  "variant": "grid-z",
+  "found": {
+   "nodes": 10,
+   "of_nodes": 10,
+   "edges": 21,
+   "of_edges": 21,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   41
+  ],
+  "column_violations": [
+   0,
+   4
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   4
+  ],
+  "bends_mean": 1.33,
+  "bends_max": 4,
+  "axis_share": 0.995,
+  "pair_detail": [
+   [
+    "devices",
+    "people",
+    16,
+    16,
+    0,
+    0
+   ],
+   [
+    "fdn",
+    "mfr",
+    16,
+    35.7,
+    2,
+    2
+   ],
+   [
+    "laas",
+    "reg",
+    16,
+    22.6,
+    2,
+    2
+   ],
+   [
+    "mfr",
+    "reg",
+    16,
+    22.6,
+    2,
+    2
+   ],
+   [
+    "ops",
+    "projects",
+    12.8,
+    20.6,
+    2,
+    2
+   ]
+  ],
+  "loops_control_left": [
+   3,
+   5
+  ],
+  "loops_distinct": [
+   5,
+   5
+  ],
+  "loops_straight": [
+   1,
+   5
+  ],
+  "loops_parallel": [
+   4,
+   5
+  ],
+  "edge_overlaps": 0,
+  "crossings": 1,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   30
+  ],
+  "label_over_line_texts": [],
+  "width": 567,
+  "height": 1060,
+  "area_per_node": 60102
+ },
+ {
+  "diagram": "z1-proposed",
+  "variant": "neato-ortho",
+  "found": {
+   "nodes": 10,
+   "of_nodes": 10,
+   "edges": 21,
+   "of_edges": 21,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   41
+  ],
+  "column_violations": [
+   0,
+   4
+  ],
+  "grid_max_dev": 0,
+  "grid_misaligned": [
+   0,
+   4
+  ],
+  "bends_mean": 0.67,
+  "bends_max": 2,
+  "axis_share": 0.996,
+  "pair_detail": [
+   [
+    "devices",
+    "people",
+    42.7,
+    42.7,
+    0,
+    0
+   ],
+   [
+    "fdn",
+    "mfr",
+    19,
+    24,
+    1,
+    1
+   ],
+   [
+    "laas",
+    "reg",
+    11,
+    34.8,
+    1,
+    1
+   ],
+   [
+    "mfr",
+    "reg",
+    11,
+    41.4,
+    1,
+    1
+   ],
+   [
+    "ops",
+    "projects",
+    2.1,
+    30.3,
+    1,
+    1
+   ]
+  ],
+  "loops_control_left": [
+   3,
+   5
+  ],
+  "loops_distinct": [
+   4,
+   5
+  ],
+  "loops_straight": [
+   1,
+   5
+  ],
+  "loops_parallel": [
+   2,
+   5
+  ],
+  "edge_overlaps": 1,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   15,
+   30
+  ],
+  "label_over_line_texts": [
+   "clearance",
+   "adverse events",
+   "tier A agreement:",
+   "observe and export",
+   "complaints forwarded,",
+   "conformance tests,",
+   "registry",
+   "conformance",
+   "releases",
+   "submissions,",
+   "adverse events",
+   "complaints,",
+   "incidents",
+   "subscriptions",
+   "glucose, alarms"
+  ],
+  "width": 617,
+  "height": 878,
+  "area_per_node": 54173
+ },
+ {
+  "diagram": "z1-proposed",
+  "variant": "elk",
+  "found": {
+   "nodes": 10,
+   "of_nodes": 10,
+   "edges": 21,
+   "of_edges": 21,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   2,
+   41
+  ],
+  "column_violations": [
+   0,
+   4
+  ],
+  "grid_max_dev": 466.8,
+  "grid_misaligned": [
+   3,
+   4
+  ],
+  "bends_mean": 5.14,
+  "bends_max": 8,
+  "axis_share": 0.992,
+  "pair_detail": [
+   [
+    "devices",
+    "people",
+    10,
+    15.8,
+    4,
+    4
+   ],
+   [
+    "fdn",
+    "mfr",
+    0.8,
+    127,
+    4,
+    4
+   ],
+   [
+    "laas",
+    "reg",
+    10,
+    46.9,
+    8,
+    8
+   ],
+   [
+    "mfr",
+    "reg",
+    10,
+    84,
+    4,
+    4
+   ],
+   [
+    "ops",
+    "projects",
+    0.8,
+    203.9,
+    4,
+    4
+   ]
+  ],
+  "loops_control_left": [
+   3,
+   5
+  ],
+  "loops_distinct": [
+   3,
+   5
+  ],
+  "loops_straight": [
+   0,
+   5
+  ],
+  "loops_parallel": [
+   1,
+   5
+  ],
+  "edge_overlaps": 0,
+  "crossings": 36,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   30
+  ],
+  "label_over_line_texts": [],
+  "width": 674,
+  "height": 1382,
+  "area_per_node": 93147
+ },
+ {
+  "diagram": "z1-proposed",
+  "variant": "avoid",
+  "found": {
+   "nodes": 10,
+   "of_nodes": 10,
+   "edges": 21,
+   "of_edges": 21,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   41
+  ],
+  "column_violations": [
+   0,
+   4
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   4
+  ],
+  "bends_mean": 1.9,
+  "bends_max": 4,
+  "axis_share": 0.991,
+  "pair_detail": [
+   [
+    "devices",
+    "people",
+    16,
+    16,
+    0,
+    0
+   ],
+   [
+    "fdn",
+    "mfr",
+    10,
+    18.8,
+    2,
+    2
+   ],
+   [
+    "laas",
+    "reg",
+    10,
+    18.9,
+    2,
+    2
+   ],
+   [
+    "mfr",
+    "reg",
+    10,
+    18.9,
+    2,
+    2
+   ],
+   [
+    "ops",
+    "projects",
+    10,
+    16,
+    2,
+    2
+   ]
+  ],
+  "loops_control_left": [
+   5,
+   5
+  ],
+  "loops_distinct": [
+   5,
+   5
+  ],
+  "loops_straight": [
+   1,
+   5
+  ],
+  "loops_parallel": [
+   2,
+   5
+  ],
+  "edge_overlaps": 0,
+  "crossings": 2,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   1,
+   30
+  ],
+  "label_over_line_texts": [
+   "observe and export"
+  ],
+  "width": 567,
+  "height": 890,
+  "area_per_node": 50463
+ },
+ {
+  "diagram": "z1-proposed",
+  "variant": "control-grid",
+  "found": {
+   "nodes": 10,
+   "of_nodes": 10,
+   "edges": 21,
+   "of_edges": 21,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   41
+  ],
+  "column_violations": [
+   0,
+   4
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   4
+  ],
+  "bends_mean": 1.14,
+  "bends_max": 2,
+  "axis_share": 0.994,
+  "bends_check_max_err": 0,
+  "pair_detail": [
+   [
+    "devices",
+    "people",
+    20,
+    20,
+    0,
+    0
+   ],
+   [
+    "fdn",
+    "mfr",
+    0.3,
+    20,
+    2,
+    2
+   ],
+   [
+    "laas",
+    "reg",
+    0.5,
+    20,
+    2,
+    2
+   ],
+   [
+    "mfr",
+    "reg",
+    0.3,
+    20,
+    2,
+    2
+   ],
+   [
+    "ops",
+    "projects",
+    0.3,
+    20,
+    2,
+    2
+   ]
+  ],
+  "loops_control_left": [
+   3,
+   5
+  ],
+  "loops_distinct": [
+   1,
+   5
+  ],
+  "loops_straight": [
+   1,
+   5
+  ],
+  "loops_parallel": [
+   1,
+   5
+  ],
+  "edge_overlaps": 3,
+  "crossings": 20,
+  "edges_through_nodes": 2,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   30
+  ],
+  "label_over_line_texts": [],
+  "width": 717,
+  "height": 890,
+  "area_per_node": 63813
+ },
+ {
+  "diagram": "z1-proposed",
+  "variant": "control-random",
+  "found": {
+   "nodes": 10,
+   "of_nodes": 10,
+   "edges": 21,
+   "of_edges": 21,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   12,
+   41
+  ],
+  "column_violations": [
+   2,
+   4
+  ],
+  "grid_max_dev": 595.5,
+  "grid_misaligned": [
+   4,
+   4
+  ],
+  "bends_mean": 2.54,
+  "bends_max": 3.94,
+  "axis_share": 0.002,
+  "pair_detail": [
+   [
+    "devices",
+    "people",
+    0.1,
+    311.5,
+    2.96,
+    1.7
+   ],
+   [
+    "fdn",
+    "mfr",
+    0.3,
+    188.3,
+    2.82,
+    3.94
+   ],
+   [
+    "laas",
+    "reg",
+    52.8,
+    282.5,
+    2.93,
+    3.69
+   ],
+   [
+    "mfr",
+    "reg",
+    84.7,
+    358.8,
+    2.39,
+    3.2
+   ],
+   [
+    "ops",
+    "projects",
+    20.7,
+    315.7,
+    2.65,
+    2.36
+   ]
+  ],
+  "loops_control_left": [
+   1,
+   5
+  ],
+  "loops_distinct": [
+   3,
+   5
+  ],
+  "loops_straight": [
+   0,
+   5
+  ],
+  "loops_parallel": [
+   0,
+   5
+  ],
+  "edge_overlaps": 3,
+  "crossings": 190,
+  "edges_through_nodes": 52,
+  "group_intrusions": null,
+  "label_collisions": 6,
+  "label_over_line": [
+   27,
+   28
+  ],
+  "label_over_line_texts": [
+   "clearance",
+   "clearance",
+   "submissions,",
+   "adverse events",
+   "tier A agreement:",
+   "observe and export",
+   "readiness dossier",
+   "authority to issue",
+   "client credentials",
+   "tier B/C agreement",
+   "sponsors",
+   "complaints forwarded,",
+   "field failures",
+   "issue, rotate,",
+   "revoke",
+   "conformance tests,",
+   "registry",
+   "conformance",
+   "results",
+   "hub conformance",
+   "hosted hubs",
+   "cleared app",
+   "releases",
+   "complaints,",
+   "incidents",
+   "operate",
+   "glucose, alarms"
+  ],
+  "width": 567,
+  "height": 890,
+  "area_per_node": 50463
+ },
+ {
+  "diagram": "z1-today",
+  "variant": "dot-spline",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 12,
+   "of_edges": 12,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "grid_max_dev": 287,
+  "grid_misaligned": [
+   3,
+   6
+  ],
+  "bends_mean": 0.93,
+  "bends_max": 2.02,
+  "axis_share": 0.162,
+  "pair_detail": [
+   [
+    "devices",
+    "people",
+    29,
+    114.8,
+    0.49,
+    1.25
+   ],
+   [
+    "mfr",
+    "reg",
+    115.8,
+    152.6,
+    1.01,
+    0.88
+   ],
+   [
+    "people",
+    "projects",
+    92.9,
+    154.5,
+    1.82,
+    1.7
+   ]
+  ],
+  "loops_control_left": [
+   3,
+   3
+  ],
+  "loops_distinct": [
+   3,
+   3
+  ],
+  "loops_straight": [
+   0,
+   3
+  ],
+  "loops_parallel": [
+   2,
+   3
+  ],
+  "edge_overlaps": 0,
+  "crossings": 3,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   1,
+   18
+  ],
+  "label_over_line_texts": [
+   "releases, docs"
+  ],
+  "width": 599,
+  "height": 496,
+  "area_per_node": 37142
+ },
+ {
+  "diagram": "z1-today",
+  "variant": "grid",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 12,
+   "of_edges": 12,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   6
+  ],
+  "bends_mean": 0.58,
+  "bends_max": 1,
+  "axis_share": 0.996,
+  "pair_detail": [
+   [
+    "devices",
+    "people",
+    12.8,
+    20.5,
+    1,
+    1
+   ],
+   [
+    "mfr",
+    "reg",
+    16,
+    22.6,
+    1,
+    1
+   ],
+   [
+    "people",
+    "projects",
+    16,
+    16,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   3,
+   3
+  ],
+  "loops_distinct": [
+   3,
+   3
+  ],
+  "loops_straight": [
+   1,
+   3
+  ],
+  "loops_parallel": [
+   3,
+   3
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   18
+  ],
+  "label_over_line_texts": [],
+  "width": 543,
+  "height": 538,
+  "area_per_node": 36517
+ },
+ {
+  "diagram": "z1-today",
+  "variant": "grid-z",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 12,
+   "of_edges": 12,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   6
+  ],
+  "bends_mean": 1.17,
+  "bends_max": 2,
+  "axis_share": 0.995,
+  "pair_detail": [
+   [
+    "devices",
+    "people",
+    12.8,
+    20.6,
+    2,
+    2
+   ],
+   [
+    "mfr",
+    "reg",
+    16,
+    22.6,
+    2,
+    2
+   ],
+   [
+    "people",
+    "projects",
+    12.8,
+    12.8,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   3,
+   3
+  ],
+  "loops_distinct": [
+   3,
+   3
+  ],
+  "loops_straight": [
+   1,
+   3
+  ],
+  "loops_parallel": [
+   3,
+   3
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   18
+  ],
+  "label_over_line_texts": [],
+  "width": 543,
+  "height": 643,
+  "area_per_node": 43644
+ },
+ {
+  "diagram": "z1-today",
+  "variant": "neato-ortho",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 12,
+   "of_edges": 12,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "grid_max_dev": 0,
+  "grid_misaligned": [
+   0,
+   6
+  ],
+  "bends_mean": 0.58,
+  "bends_max": 1,
+  "axis_share": 0.996,
+  "pair_detail": [
+   [
+    "devices",
+    "people",
+    14,
+    28.2,
+    1,
+    1
+   ],
+   [
+    "mfr",
+    "reg",
+    12,
+    41.9,
+    1,
+    1
+   ],
+   [
+    "people",
+    "projects",
+    42.7,
+    42.7,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   3,
+   3
+  ],
+  "loops_distinct": [
+   3,
+   3
+  ],
+  "loops_straight": [
+   1,
+   3
+  ],
+  "loops_parallel": [
+   1,
+   3
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   7,
+   18
+  ],
+  "label_over_line_texts": [
+   "submissions,",
+   "adverse events",
+   "protocols worked out",
+   "by volunteers",
+   "issues, logs",
+   "wear, configure",
+   "glucose, alarms"
+  ],
+  "width": 588,
+  "height": 534,
+  "area_per_node": 39242
+ },
+ {
+  "diagram": "z1-today",
+  "variant": "elk",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 12,
+   "of_edges": 12,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   1,
+   25
+  ],
+  "column_violations": [
+   1,
+   3
+  ],
+  "grid_max_dev": 360.6,
+  "grid_misaligned": [
+   5,
+   6
+  ],
+  "bends_mean": 6,
+  "bends_max": 14,
+  "axis_share": 0.993,
+  "pair_detail": [
+   [
+    "devices",
+    "people",
+    10,
+    43.8,
+    4,
+    4
+   ],
+   [
+    "mfr",
+    "reg",
+    10,
+    23.6,
+    4,
+    4
+   ],
+   [
+    "people",
+    "projects",
+    10,
+    13,
+    4,
+    4
+   ]
+  ],
+  "loops_control_left": [
+   2,
+   3
+  ],
+  "loops_distinct": [
+   3,
+   3
+  ],
+  "loops_straight": [
+   0,
+   3
+  ],
+  "loops_parallel": [
+   1,
+   3
+  ],
+  "edge_overlaps": 0,
+  "crossings": 36,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   18
+  ],
+  "label_over_line_texts": [],
+  "width": 707,
+  "height": 1012,
+  "area_per_node": 89436
+ },
+ {
+  "diagram": "z1-today",
+  "variant": "avoid",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 12,
+   "of_edges": 12,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   6
+  ],
+  "bends_mean": 1.83,
+  "bends_max": 2,
+  "axis_share": 0.99,
+  "pair_detail": [
+   [
+    "devices",
+    "people",
+    10,
+    33.5,
+    2,
+    2
+   ],
+   [
+    "mfr",
+    "reg",
+    10,
+    18.9,
+    2,
+    2
+   ],
+   [
+    "people",
+    "projects",
+    10,
+    21,
+    2,
+    2
+   ]
+  ],
+  "loops_control_left": [
+   3,
+   3
+  ],
+  "loops_distinct": [
+   3,
+   3
+  ],
+  "loops_straight": [
+   0,
+   3
+  ],
+  "loops_parallel": [
+   0,
+   3
+  ],
+  "edge_overlaps": 0,
+  "crossings": 1,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   18
+  ],
+  "label_over_line_texts": [],
+  "width": 546,
+  "height": 538,
+  "area_per_node": 36719
+ },
+ {
+  "diagram": "z1-today",
+  "variant": "control-grid",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 12,
+   "of_edges": 12,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   6
+  ],
+  "bends_mean": 1.17,
+  "bends_max": 2,
+  "axis_share": 0.994,
+  "bends_check_max_err": 0,
+  "pair_detail": [
+   [
+    "devices",
+    "people",
+    0.1,
+    20,
+    2,
+    2
+   ],
+   [
+    "mfr",
+    "reg",
+    0.1,
+    20,
+    2,
+    2
+   ],
+   [
+    "people",
+    "projects",
+    20,
+    20,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   1,
+   3
+  ],
+  "loops_distinct": [
+   1,
+   3
+  ],
+  "loops_straight": [
+   1,
+   3
+  ],
+  "loops_parallel": [
+   1,
+   3
+  ],
+  "edge_overlaps": 2,
+  "crossings": 6,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   18
+  ],
+  "label_over_line_texts": [],
+  "width": 687,
+  "height": 538,
+  "area_per_node": 46201
+ },
+ {
+  "diagram": "z1-today",
+  "variant": "control-random",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 12,
+   "of_edges": 12,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   8,
+   25
+  ],
+  "column_violations": [
+   2,
+   3
+  ],
+  "grid_max_dev": 279.4,
+  "grid_misaligned": [
+   6,
+   6
+  ],
+  "bends_mean": 2.52,
+  "bends_max": 3.38,
+  "axis_share": 0,
+  "pair_detail": [
+   [
+    "devices",
+    "people",
+    87.6,
+    439,
+    2.33,
+    0.74
+   ],
+   [
+    "mfr",
+    "reg",
+    51.3,
+    345.9,
+    2.31,
+    2.28
+   ],
+   [
+    "people",
+    "projects",
+    14.6,
+    173.8,
+    2.58,
+    3
+   ]
+  ],
+  "loops_control_left": [
+   1,
+   3
+  ],
+  "loops_distinct": [
+   3,
+   3
+  ],
+  "loops_straight": [
+   0,
+   3
+  ],
+  "loops_parallel": [
+   0,
+   3
+  ],
+  "edge_overlaps": 1,
+  "crossings": 51,
+  "edges_through_nodes": 24,
+  "group_intrusions": null,
+  "label_collisions": 3,
+  "label_over_line": [
+   15,
+   16
+  ],
+  "label_over_line_texts": [
+   "clearance,",
+   "enforcement",
+   "submissions,",
+   "adverse events",
+   "releases, docs",
+   "issues, logs",
+   "subscriptions",
+   "run sites",
+   "firmware, cloud",
+   "terms of use",
+   "wear, configure",
+   "glucose, alarms",
+   "protocols worked out",
+   "by volunteers",
+   "uploads"
+  ],
+  "width": 543,
+  "height": 538,
+  "area_per_node": 36517
+ },
+ {
+  "diagram": "z2-agreement",
+  "variant": "dot-spline",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 14,
+   "of_edges": 14,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "grid_max_dev": 24,
+  "grid_misaligned": [
+   2,
+   4
+  ],
+  "bends_mean": 1.32,
+  "bends_max": 2.91,
+  "axis_share": 0.16,
+  "pair_detail": [
+   [
+    "app",
+    "cred",
+    142,
+    186,
+    0.98,
+    0.83
+   ],
+   [
+    "app",
+    "device",
+    126.8,
+    140.5,
+    0.92,
+    0.9
+   ],
+   [
+    "app",
+    "person",
+    22.4,
+    126.5,
+    2.13,
+    1.91
+   ],
+   [
+    "cred",
+    "mfr",
+    139.1,
+    174.5,
+    0.83,
+    2.91
+   ],
+   [
+    "fdn",
+    "mfr",
+    35.5,
+    165.2,
+    2.16,
+    1.49
+   ]
+  ],
+  "loops_control_left": [
+   5,
+   5
+  ],
+  "loops_distinct": [
+   5,
+   5
+  ],
+  "loops_straight": [
+   0,
+   5
+  ],
+  "loops_parallel": [
+   2,
+   5
+  ],
+  "edge_overlaps": 0,
+  "crossings": 5,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   2,
+   23
+  ],
+  "label_over_line_texts": [
+   "chooses, configures,",
+   "delegates"
+  ],
+  "width": 673,
+  "height": 630,
+  "area_per_node": 52968
+ },
+ {
+  "diagram": "z2-agreement",
+  "variant": "grid",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 14,
+   "of_edges": 14,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   4
+  ],
+  "bends_mean": 0.43,
+  "bends_max": 1,
+  "axis_share": 0.997,
+  "pair_detail": [
+   [
+    "app",
+    "cred",
+    16,
+    16,
+    0,
+    0
+   ],
+   [
+    "app",
+    "device",
+    16,
+    16,
+    0,
+    0
+   ],
+   [
+    "app",
+    "person",
+    12.8,
+    20.7,
+    1,
+    1
+   ],
+   [
+    "cred",
+    "mfr",
+    12.8,
+    12.8,
+    0,
+    0
+   ],
+   [
+    "fdn",
+    "mfr",
+    16,
+    16,
+    1,
+    1
+   ]
+  ],
+  "loops_control_left": [
+   5,
+   5
+  ],
+  "loops_distinct": [
+   5,
+   5
+  ],
+  "loops_straight": [
+   3,
+   5
+  ],
+  "loops_parallel": [
+   5,
+   5
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   23
+  ],
+  "label_over_line_texts": [],
+  "width": 578,
+  "height": 705,
+  "area_per_node": 50936
+ },
+ {
+  "diagram": "z2-agreement",
+  "variant": "grid-z",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 14,
+   "of_edges": 14,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   4
+  ],
+  "bends_mean": 0.86,
+  "bends_max": 2,
+  "axis_share": 0.995,
+  "pair_detail": [
+   [
+    "app",
+    "cred",
+    16,
+    16,
+    0,
+    0
+   ],
+   [
+    "app",
+    "device",
+    16,
+    16,
+    0,
+    0
+   ],
+   [
+    "app",
+    "person",
+    15.2,
+    22.2,
+    2,
+    2
+   ],
+   [
+    "cred",
+    "mfr",
+    15.2,
+    15.2,
+    0,
+    0
+   ],
+   [
+    "fdn",
+    "mfr",
+    16,
+    22.6,
+    2,
+    2
+   ]
+  ],
+  "loops_control_left": [
+   5,
+   5
+  ],
+  "loops_distinct": [
+   5,
+   5
+  ],
+  "loops_straight": [
+   3,
+   5
+  ],
+  "loops_parallel": [
+   5,
+   5
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   23
+  ],
+  "label_over_line_texts": [],
+  "width": 536,
+  "height": 759,
+  "area_per_node": 50853
+ },
+ {
+  "diagram": "z2-agreement",
+  "variant": "neato-ortho",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 14,
+   "of_edges": 14,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "grid_max_dev": 0,
+  "grid_misaligned": [
+   0,
+   4
+  ],
+  "bends_mean": 0.43,
+  "bends_max": 1,
+  "axis_share": 0.996,
+  "pair_detail": [
+   [
+    "app",
+    "cred",
+    24,
+    24,
+    0,
+    0
+   ],
+   [
+    "app",
+    "device",
+    40,
+    40,
+    0,
+    0
+   ],
+   [
+    "app",
+    "person",
+    14,
+    27.7,
+    1,
+    1
+   ],
+   [
+    "cred",
+    "mfr",
+    24,
+    24,
+    0,
+    0
+   ],
+   [
+    "fdn",
+    "mfr",
+    18,
+    24,
+    1,
+    1
+   ]
+  ],
+  "loops_control_left": [
+   5,
+   5
+  ],
+  "loops_distinct": [
+   5,
+   5
+  ],
+  "loops_straight": [
+   3,
+   5
+  ],
+  "loops_parallel": [
+   4,
+   5
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   10,
+   23
+  ],
+  "label_over_line_texts": [
+   "terms: nonexclusive,",
+   "notice before change,",
+   "revocation by process",
+   "authority to issue",
+   "chooses, configures,",
+   "delegates",
+   "enrolment",
+   "alarms, status",
+   "applied state,",
+   "data (tier A)"
+  ],
+  "width": 578,
+  "height": 694,
+  "area_per_node": 50139
+ },
+ {
+  "diagram": "z2-agreement",
+  "variant": "elk",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 14,
+   "of_edges": 14,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   2,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "grid_max_dev": 202.5,
+  "grid_misaligned": [
+   1,
+   4
+  ],
+  "bends_mean": 4.51,
+  "bends_max": 8,
+  "axis_share": 0.99,
+  "pair_detail": [
+   [
+    "app",
+    "cred",
+    0.3,
+    80.6,
+    8,
+    7.13
+   ],
+   [
+    "app",
+    "device",
+    10,
+    13,
+    4,
+    4
+   ],
+   [
+    "app",
+    "person",
+    0.5,
+    13,
+    4,
+    4
+   ],
+   [
+    "cred",
+    "mfr",
+    10,
+    13,
+    4,
+    4
+   ],
+   [
+    "fdn",
+    "mfr",
+    0.4,
+    234.3,
+    4,
+    4
+   ]
+  ],
+  "loops_control_left": [
+   0,
+   5
+  ],
+  "loops_distinct": [
+   2,
+   5
+  ],
+  "loops_straight": [
+   0,
+   5
+  ],
+  "loops_parallel": [
+   2,
+   5
+  ],
+  "edge_overlaps": 0,
+  "crossings": 30,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   23
+  ],
+  "label_over_line_texts": [],
+  "width": 566,
+  "height": 934,
+  "area_per_node": 66081
+ },
+ {
+  "diagram": "z2-agreement",
+  "variant": "avoid",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 14,
+   "of_edges": 14,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   4
+  ],
+  "bends_mean": 1.43,
+  "bends_max": 2,
+  "axis_share": 0.989,
+  "pair_detail": [
+   [
+    "app",
+    "cred",
+    10.4,
+    17,
+    2,
+    2
+   ],
+   [
+    "app",
+    "device",
+    16,
+    16,
+    0,
+    0
+   ],
+   [
+    "app",
+    "person",
+    10,
+    18.8,
+    2,
+    2
+   ],
+   [
+    "cred",
+    "mfr",
+    10.4,
+    17,
+    2,
+    2
+   ],
+   [
+    "fdn",
+    "mfr",
+    10,
+    18.9,
+    2,
+    2
+   ]
+  ],
+  "loops_control_left": [
+   5,
+   5
+  ],
+  "loops_distinct": [
+   5,
+   5
+  ],
+  "loops_straight": [
+   1,
+   5
+  ],
+  "loops_parallel": [
+   3,
+   5
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   1,
+   23
+  ],
+  "label_over_line_texts": [
+   "readiness dossier,"
+  ],
+  "width": 578,
+  "height": 705,
+  "area_per_node": 50936
+ },
+ {
+  "diagram": "z2-agreement",
+  "variant": "control-grid",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 14,
+   "of_edges": 14,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   25
+  ],
+  "column_violations": [
+   0,
+   3
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   4
+  ],
+  "bends_mean": 0.86,
+  "bends_max": 2,
+  "axis_share": 0.994,
+  "bends_check_max_err": 0,
+  "pair_detail": [
+   [
+    "app",
+    "cred",
+    20,
+    20,
+    0,
+    0
+   ],
+   [
+    "app",
+    "device",
+    20,
+    20,
+    0,
+    0
+   ],
+   [
+    "app",
+    "person",
+    1.1,
+    20,
+    2,
+    2
+   ],
+   [
+    "cred",
+    "mfr",
+    20,
+    20,
+    0,
+    0
+   ],
+   [
+    "fdn",
+    "mfr",
+    0.3,
+    20,
+    2,
+    2
+   ]
+  ],
+  "loops_control_left": [
+   4,
+   5
+  ],
+  "loops_distinct": [
+   3,
+   5
+  ],
+  "loops_straight": [
+   3,
+   5
+  ],
+  "loops_parallel": [
+   3,
+   5
+  ],
+  "edge_overlaps": 1,
+  "crossings": 8,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   23
+  ],
+  "label_over_line_texts": [],
+  "width": 731,
+  "height": 705,
+  "area_per_node": 64419
+ },
+ {
+  "diagram": "z2-agreement",
+  "variant": "control-random",
+  "found": {
+   "nodes": 8,
+   "of_nodes": 8,
+   "edges": 14,
+   "of_edges": 14,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   9,
+   25
+  ],
+  "column_violations": [
+   3,
+   3
+  ],
+  "grid_max_dev": 167.4,
+  "grid_misaligned": [
+   4,
+   4
+  ],
+  "bends_mean": 2.81,
+  "bends_max": 3.94,
+  "axis_share": 0,
+  "pair_detail": [
+   [
+    "app",
+    "cred",
+    61.9,
+    218.8,
+    2.21,
+    3.94
+   ],
+   [
+    "app",
+    "device",
+    18.7,
+    248.5,
+    3.36,
+    3
+   ],
+   [
+    "app",
+    "person",
+    0.6,
+    263.6,
+    2.87,
+    3.09
+   ],
+   [
+    "cred",
+    "mfr",
+    0.5,
+    167.8,
+    3.43,
+    3.52
+   ],
+   [
+    "fdn",
+    "mfr",
+    78.5,
+    457.2,
+    2.23,
+    2.37
+   ]
+  ],
+  "loops_control_left": [
+   2,
+   5
+  ],
+  "loops_distinct": [
+   3,
+   5
+  ],
+  "loops_straight": [
+   0,
+   5
+  ],
+  "loops_parallel": [
+   0,
+   5
+  ],
+  "edge_overlaps": 0,
+  "crossings": 103,
+  "edges_through_nodes": 23,
+  "group_intrusions": null,
+  "label_collisions": 1,
+  "label_over_line": [
+   21,
+   22
+  ],
+  "label_over_line_texts": [
+   "terms: nonexclusive,",
+   "notice before change,",
+   "revocation by process",
+   "readiness dossier,",
+   "conformance results",
+   "authority to issue",
+   "issuance audit",
+   "who qualifies",
+   "issue, rotate, revoke",
+   "(bounded offline grant)",
+   "enrolment",
+   "complaints forwarded",
+   "complaints,",
+   "incidents",
+   "chooses, configures,",
+   "delegates",
+   "alarms, status",
+   "requests",
+   "(tier B/C commands)",
+   "applied state,",
+   "data (tier A)"
+  ],
+  "width": 584,
+  "height": 705,
+  "area_per_node": 51465
+ },
+ {
+  "diagram": "z2b-loop-as-a-service",
+  "variant": "dot-spline",
+  "found": {
+   "nodes": 10,
+   "of_nodes": 10,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   40
+  ],
+  "column_violations": [
+   0,
+   5
+  ],
+  "grid_max_dev": 250,
+  "grid_misaligned": [
+   3,
+   6
+  ],
+  "bends_mean": 1.57,
+  "bends_max": 3.16,
+  "axis_share": 0.056,
+  "pair_detail": [
+   [
+    "app",
+    "op",
+    155.9,
+    353.8,
+    2.8,
+    2.66
+   ],
+   [
+    "app",
+    "person",
+    122.9,
+    146.7,
+    1.54,
+    1.49
+   ],
+   [
+    "app",
+    "pump",
+    88.7,
+    124.4,
+    1.62,
+    2.23
+   ],
+   [
+    "cgmmfr",
+    "op",
+    61.5,
+    156.7,
+    2.08,
+    1.76
+   ],
+   [
+    "op",
+    "pumpmfr",
+    106.4,
+    203.4,
+    3.16,
+    1.32
+   ],
+   [
+    "op",
+    "reg",
+    182.8,
+    325.5,
+    2.68,
+    3.01
+   ]
+  ],
+  "loops_control_left": [
+   6,
+   6
+  ],
+  "loops_distinct": [
+   6,
+   6
+  ],
+  "loops_straight": [
+   0,
+   6
+  ],
+  "loops_parallel": [
+   1,
+   6
+  ],
+  "edge_overlaps": 1,
+  "crossings": 5,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   35
+  ],
+  "label_over_line_texts": [],
+  "width": 785,
+  "height": 630,
+  "area_per_node": 49475
+ },
+ {
+  "diagram": "z2b-loop-as-a-service",
+  "variant": "grid",
+  "found": {
+   "nodes": 10,
+   "of_nodes": 10,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   40
+  ],
+  "column_violations": [
+   0,
+   5
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   6
+  ],
+  "bends_mean": 0.84,
+  "bends_max": 2,
+  "axis_share": 0.994,
+  "pair_detail": [
+   [
+    "app",
+    "op",
+    16,
+    16,
+    2,
+    2
+   ],
+   [
+    "app",
+    "person",
+    16,
+    16,
+    0,
+    0
+   ],
+   [
+    "app",
+    "pump",
+    16,
+    16,
+    1,
+    1
+   ],
+   [
+    "cgmmfr",
+    "op",
+    16,
+    22.6,
+    1,
+    1
+   ],
+   [
+    "op",
+    "pumpmfr",
+    16,
+    16,
+    1,
+    1
+   ],
+   [
+    "op",
+    "reg",
+    16,
+    16,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   6,
+   6
+  ],
+  "loops_distinct": [
+   6,
+   6
+  ],
+  "loops_straight": [
+   2,
+   6
+  ],
+  "loops_parallel": [
+   6,
+   6
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   35
+  ],
+  "label_over_line_texts": [],
+  "width": 637,
+  "height": 735,
+  "area_per_node": 46820
+ },
+ {
+  "diagram": "z2b-loop-as-a-service",
+  "variant": "grid-z",
+  "found": {
+   "nodes": 10,
+   "of_nodes": 10,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   40
+  ],
+  "column_violations": [
+   0,
+   5
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   6
+  ],
+  "bends_mean": 1.68,
+  "bends_max": 4,
+  "axis_share": 0.991,
+  "pair_detail": [
+   [
+    "app",
+    "op",
+    16,
+    40.9,
+    4,
+    4
+   ],
+   [
+    "app",
+    "person",
+    16,
+    16,
+    0,
+    0
+   ],
+   [
+    "app",
+    "pump",
+    16,
+    22.6,
+    2,
+    2
+   ],
+   [
+    "cgmmfr",
+    "op",
+    16,
+    22.6,
+    2,
+    2
+   ],
+   [
+    "op",
+    "pumpmfr",
+    16,
+    22.6,
+    2,
+    2
+   ],
+   [
+    "op",
+    "reg",
+    16,
+    16,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   5,
+   6
+  ],
+  "loops_distinct": [
+   6,
+   6
+  ],
+  "loops_straight": [
+   2,
+   6
+  ],
+  "loops_parallel": [
+   5,
+   6
+  ],
+  "edge_overlaps": 0,
+  "crossings": 1,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   35
+  ],
+  "label_over_line_texts": [],
+  "width": 581,
+  "height": 920,
+  "area_per_node": 53452
+ },
+ {
+  "diagram": "z2b-loop-as-a-service",
+  "variant": "neato-ortho",
+  "found": {
+   "nodes": 10,
+   "of_nodes": 10,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   40
+  ],
+  "column_violations": [
+   0,
+   5
+  ],
+  "grid_max_dev": 0,
+  "grid_misaligned": [
+   0,
+   6
+  ],
+  "bends_mean": 0.84,
+  "bends_max": 2,
+  "axis_share": 0.995,
+  "pair_detail": [
+   [
+    "app",
+    "op",
+    17.2,
+    40.8,
+    2,
+    2
+   ],
+   [
+    "app",
+    "person",
+    40.7,
+    40.7,
+    0,
+    0
+   ],
+   [
+    "app",
+    "pump",
+    7,
+    34.5,
+    1,
+    1
+   ],
+   [
+    "cgmmfr",
+    "op",
+    8.1,
+    19.2,
+    1,
+    1
+   ],
+   [
+    "op",
+    "pumpmfr",
+    8,
+    19.9,
+    1,
+    1
+   ],
+   [
+    "op",
+    "reg",
+    17.7,
+    17.7,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   4,
+   6
+  ],
+  "loops_distinct": [
+   6,
+   6
+  ],
+  "loops_straight": [
+   2,
+   6
+  ],
+  "loops_parallel": [
+   2,
+   6
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 2,
+  "label_over_line": [
+   11,
+   34
+  ],
+  "label_over_line_texts": [
+   "iAGC clearance,",
+   "special controls",
+   "submissions,",
+   "adverse events",
+   "validation of",
+   "the implementation",
+   "validated release,",
+   "labelling, updates",
+   "alerts, status",
+   "glucose",
+   "(iCGMs only)"
+  ],
+  "width": 637,
+  "height": 723,
+  "area_per_node": 46040
+ },
+ {
+  "diagram": "z2b-loop-as-a-service",
+  "variant": "elk",
+  "found": {
+   "nodes": 10,
+   "of_nodes": 10,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   1,
+   40
+  ],
+  "column_violations": [
+   0,
+   5
+  ],
+  "grid_max_dev": 390.5,
+  "grid_misaligned": [
+   4,
+   6
+  ],
+  "bends_mean": 5.05,
+  "bends_max": 10,
+  "axis_share": 0.994,
+  "pair_detail": [
+   [
+    "app",
+    "op",
+    15.8,
+    127.4,
+    8,
+    8
+   ],
+   [
+    "app",
+    "person",
+    1.2,
+    13,
+    4,
+    4
+   ],
+   [
+    "app",
+    "pump",
+    10,
+    24.2,
+    4,
+    4
+   ],
+   [
+    "cgmmfr",
+    "op",
+    0.5,
+    13,
+    4,
+    4
+   ],
+   [
+    "op",
+    "pumpmfr",
+    0.3,
+    142,
+    4,
+    4
+   ],
+   [
+    "op",
+    "reg",
+    0.3,
+    17,
+    8,
+    6
+   ]
+  ],
+  "loops_control_left": [
+   3,
+   6
+  ],
+  "loops_distinct": [
+   2,
+   6
+  ],
+  "loops_straight": [
+   0,
+   6
+  ],
+  "loops_parallel": [
+   0,
+   6
+  ],
+  "edge_overlaps": 0,
+  "crossings": 55,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   35
+  ],
+  "label_over_line_texts": [],
+  "width": 712,
+  "height": 1167,
+  "area_per_node": 83090
+ },
+ {
+  "diagram": "z2b-loop-as-a-service",
+  "variant": "avoid",
+  "found": {
+   "nodes": 10,
+   "of_nodes": 10,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   40
+  ],
+  "column_violations": [
+   0,
+   5
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   6
+  ],
+  "bends_mean": 2,
+  "bends_max": 4,
+  "axis_share": 0.988,
+  "pair_detail": [
+   [
+    "app",
+    "op",
+    16,
+    93.5,
+    4,
+    4
+   ],
+   [
+    "app",
+    "person",
+    17,
+    32,
+    2,
+    2
+   ],
+   [
+    "app",
+    "pump",
+    10,
+    18.9,
+    2,
+    2
+   ],
+   [
+    "cgmmfr",
+    "op",
+    10,
+    18.9,
+    2,
+    2
+   ],
+   [
+    "op",
+    "pumpmfr",
+    10,
+    18.9,
+    2,
+    2
+   ],
+   [
+    "op",
+    "reg",
+    16,
+    16,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   6,
+   6
+  ],
+  "loops_distinct": [
+   6,
+   6
+  ],
+  "loops_straight": [
+   1,
+   6
+  ],
+  "loops_parallel": [
+   1,
+   6
+  ],
+  "edge_overlaps": 0,
+  "crossings": 2,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   2,
+   35
+  ],
+  "label_over_line_texts": [
+   "settings, boluses",
+   "alerts, status"
+  ],
+  "width": 637,
+  "height": 726,
+  "area_per_node": 46246
+ },
+ {
+  "diagram": "z2b-loop-as-a-service",
+  "variant": "control-grid",
+  "found": {
+   "nodes": 10,
+   "of_nodes": 10,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   40
+  ],
+  "column_violations": [
+   0,
+   5
+  ],
+  "grid_max_dev": 0.1,
+  "grid_misaligned": [
+   0,
+   6
+  ],
+  "bends_mean": 1.26,
+  "bends_max": 2,
+  "axis_share": 0.995,
+  "bends_check_max_err": 0,
+  "pair_detail": [
+   [
+    "app",
+    "op",
+    20,
+    20,
+    0,
+    0
+   ],
+   [
+    "app",
+    "person",
+    20,
+    20,
+    0,
+    0
+   ],
+   [
+    "app",
+    "pump",
+    0.1,
+    20,
+    2,
+    2
+   ],
+   [
+    "cgmmfr",
+    "op",
+    1.2,
+    20,
+    2,
+    2
+   ],
+   [
+    "op",
+    "pumpmfr",
+    1.3,
+    20,
+    2,
+    2
+   ],
+   [
+    "op",
+    "reg",
+    20,
+    20,
+    0,
+    0
+   ]
+  ],
+  "loops_control_left": [
+   5,
+   6
+  ],
+  "loops_distinct": [
+   3,
+   6
+  ],
+  "loops_straight": [
+   3,
+   6
+  ],
+  "loops_parallel": [
+   3,
+   6
+  ],
+  "edge_overlaps": 5,
+  "crossings": 18,
+  "edges_through_nodes": 2,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   35
+  ],
+  "label_over_line_texts": [],
+  "width": 784,
+  "height": 726,
+  "area_per_node": 56918
+ },
+ {
+  "diagram": "z2b-loop-as-a-service",
+  "variant": "control-random",
+  "found": {
+   "nodes": 10,
+   "of_nodes": 10,
+   "edges": 19,
+   "of_edges": 19,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   12,
+   40
+  ],
+  "column_violations": [
+   1,
+   5
+  ],
+  "grid_max_dev": 480.3,
+  "grid_misaligned": [
+   6,
+   6
+  ],
+  "bends_mean": 2.74,
+  "bends_max": 3.79,
+  "axis_share": 0.018,
+  "pair_detail": [
+   [
+    "app",
+    "op",
+    0.3,
+    212,
+    2.6,
+    2.04
+   ],
+   [
+    "app",
+    "person",
+    1.1,
+    230.6,
+    2.5,
+    2.51
+   ],
+   [
+    "app",
+    "pump",
+    0.4,
+    65.4,
+    1.81,
+    3.79
+   ],
+   [
+    "cgmmfr",
+    "op",
+    28,
+    322.8,
+    3.02,
+    2.1
+   ],
+   [
+    "op",
+    "pumpmfr",
+    0.7,
+    119.6,
+    1.86,
+    2.97
+   ],
+   [
+    "op",
+    "reg",
+    0.2,
+    401.3,
+    1.93,
+    3.69
+   ]
+  ],
+  "loops_control_left": [
+   4,
+   6
+  ],
+  "loops_distinct": [
+   1,
+   6
+  ],
+  "loops_straight": [
+   0,
+   6
+  ],
+  "loops_parallel": [
+   0,
+   6
+  ],
+  "edge_overlaps": 2,
+  "crossings": 174,
+  "edges_through_nodes": 39,
+  "group_intrusions": null,
+  "label_collisions": 7,
+  "label_over_line": [
+   30,
+   31
+  ],
+  "label_over_line_texts": [
+   "iAGC clearance,",
+   "special controls",
+   "ACE pump",
+   "classification",
+   "iCGM",
+   "classification",
+   "pump interface spec,",
+   "pairing (tier C)",
+   "validation of",
+   "the implementation",
+   "CGM interface spec",
+   "validation of",
+   "the implementation",
+   "releases",
+   "(one codebase)",
+   "fixes and validation",
+   "evidence returned",
+   "validated release,",
+   "labelling, updates",
+   "critical-events record,",
+   "complaints",
+   "settings, boluses",
+   "alerts, status",
+   "complaints",
+   "commands",
+   "(ACE pumps only)",
+   "state; safe fallback",
+   "on lost connection",
+   "glucose",
+   "(iCGMs only)"
+  ],
+  "width": 637,
+  "height": 727,
+  "area_per_node": 46310
+ },
+ {
+  "diagram": "z3-device",
+  "variant": "dot-spline",
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 8,
+   "of_edges": 8,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 123,
+  "grid_misaligned": [
+   2,
+   4
+  ],
+  "bends_mean": 1.07,
+  "bends_max": 2.47,
+  "axis_share": 0.067,
+  "pair_detail": [
+   [
+    "app",
+    "person",
+    121.9,
+    186.5,
+    2.47,
+    0.94
+   ],
+   [
+    "app",
+    "pump",
+    100.5,
+    126.4,
+    1.62,
+    2.01
+   ]
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "loops_straight": [
+   0,
+   2
+  ],
+  "loops_parallel": [
+   1,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 1,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   11
+  ],
+  "label_over_line_texts": [],
+  "width": 449,
+  "height": 408,
+  "area_per_node": 30532
+ },
+ {
+  "diagram": "z3-device",
+  "variant": "grid",
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 8,
+   "of_edges": 8,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0,
+  "grid_misaligned": [
+   0,
+   4
+  ],
+  "bends_mean": 0.75,
+  "bends_max": 1,
+  "axis_share": 0.994,
+  "pair_detail": [
+   [
+    "app",
+    "person",
+    16,
+    16,
+    0,
+    0
+   ],
+   [
+    "app",
+    "pump",
+    16,
+    16,
+    1,
+    1
+   ]
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "loops_straight": [
+   1,
+   2
+  ],
+  "loops_parallel": [
+   2,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   1,
+   11
+  ],
+  "label_over_line_texts": [
+   "delivery status"
+  ],
+  "width": 565,
+  "height": 490,
+  "area_per_node": 46142
+ },
+ {
+  "diagram": "z3-device",
+  "variant": "grid-z",
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 8,
+   "of_edges": 8,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0,
+  "grid_misaligned": [
+   0,
+   4
+  ],
+  "bends_mean": 1.5,
+  "bends_max": 2,
+  "axis_share": 0.994,
+  "pair_detail": [
+   [
+    "app",
+    "person",
+    15.2,
+    15.2,
+    0,
+    0
+   ],
+   [
+    "app",
+    "pump",
+    16,
+    22.6,
+    2,
+    2
+   ]
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "loops_straight": [
+   1,
+   2
+  ],
+  "loops_parallel": [
+   2,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   11
+  ],
+  "label_over_line_texts": [],
+  "width": 523,
+  "height": 522,
+  "area_per_node": 45501
+ },
+ {
+  "diagram": "z3-device",
+  "variant": "neato-ortho",
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 8,
+   "of_edges": 8,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0,
+  "grid_misaligned": [
+   0,
+   4
+  ],
+  "bends_mean": 0.75,
+  "bends_max": 1,
+  "axis_share": 0.993,
+  "pair_detail": [
+   [
+    "app",
+    "person",
+    30,
+    30,
+    0,
+    0
+   ],
+   [
+    "app",
+    "pump",
+    3.1,
+    24,
+    1,
+    1
+   ]
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   1,
+   2
+  ],
+  "loops_straight": [
+   1,
+   2
+  ],
+  "loops_parallel": [
+   1,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   3,
+   11
+  ],
+  "label_over_line_texts": [
+   "settings, boluses",
+   "delivery status",
+   "glucose readings"
+  ],
+  "width": 565,
+  "height": 479,
+  "area_per_node": 45096
+ },
+ {
+  "diagram": "z3-device",
+  "variant": "elk",
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 8,
+   "of_edges": 8,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 13.5,
+  "grid_misaligned": [
+   1,
+   4
+  ],
+  "bends_mean": 3.92,
+  "bends_max": 4,
+  "axis_share": 0.992,
+  "pair_detail": [
+   [
+    "app",
+    "person",
+    0,
+    48.8,
+    4,
+    4
+   ],
+   [
+    "app",
+    "pump",
+    10,
+    18.9,
+    4,
+    4
+   ]
+  ],
+  "loops_control_left": [
+   1,
+   2
+  ],
+  "loops_distinct": [
+   1,
+   2
+  ],
+  "loops_straight": [
+   0,
+   2
+  ],
+  "loops_parallel": [
+   0,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 3,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   11
+  ],
+  "label_over_line_texts": [],
+  "width": 553,
+  "height": 676,
+  "area_per_node": 62305
+ },
+ {
+  "diagram": "z3-device",
+  "variant": "avoid",
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 8,
+   "of_edges": 8,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0,
+  "grid_misaligned": [
+   0,
+   4
+  ],
+  "bends_mean": 2,
+  "bends_max": 2,
+  "axis_share": 0.991,
+  "pair_detail": [
+   [
+    "app",
+    "person",
+    8.2,
+    16,
+    2,
+    2
+   ],
+   [
+    "app",
+    "pump",
+    10,
+    18.9,
+    2,
+    2
+   ]
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   2,
+   2
+  ],
+  "loops_straight": [
+   0,
+   2
+  ],
+  "loops_parallel": [
+   1,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 0,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   11
+  ],
+  "label_over_line_texts": [],
+  "width": 565,
+  "height": 490,
+  "area_per_node": 46142
+ },
+ {
+  "diagram": "z3-device",
+  "variant": "control-grid",
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 8,
+   "of_edges": 8,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   0,
+   13
+  ],
+  "column_violations": [
+   0,
+   2
+  ],
+  "grid_max_dev": 0,
+  "grid_misaligned": [
+   0,
+   4
+  ],
+  "bends_mean": 1.5,
+  "bends_max": 2,
+  "axis_share": 0.992,
+  "bends_check_max_err": 0,
+  "pair_detail": [
+   [
+    "app",
+    "person",
+    20,
+    20,
+    0,
+    0
+   ],
+   [
+    "app",
+    "pump",
+    1.3,
+    20,
+    2,
+    2
+   ]
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   1,
+   2
+  ],
+  "loops_straight": [
+   1,
+   2
+  ],
+  "loops_parallel": [
+   1,
+   2
+  ],
+  "edge_overlaps": 1,
+  "crossings": 2,
+  "edges_through_nodes": 0,
+  "group_intrusions": null,
+  "label_collisions": 0,
+  "label_over_line": [
+   0,
+   11
+  ],
+  "label_over_line_texts": [],
+  "width": 696,
+  "height": 490,
+  "area_per_node": 56840
+ },
+ {
+  "diagram": "z3-device",
+  "variant": "control-random",
+  "found": {
+   "nodes": 6,
+   "of_nodes": 6,
+   "edges": 8,
+   "of_edges": 8,
+   "missing_nodes": [],
+   "missing_edges": []
+  },
+  "level_violations": [
+   5,
+   13
+  ],
+  "column_violations": [
+   1,
+   2
+  ],
+  "grid_max_dev": 207.3,
+  "grid_misaligned": [
+   4,
+   4
+  ],
+  "bends_mean": 2.82,
+  "bends_max": 3.42,
+  "axis_share": 0,
+  "pair_detail": [
+   [
+    "app",
+    "person",
+    44.7,
+    260.5,
+    2.61,
+    2.46
+   ],
+   [
+    "app",
+    "pump",
+    1,
+    175,
+    3.33,
+    2.76
+   ]
+  ],
+  "loops_control_left": [
+   2,
+   2
+  ],
+  "loops_distinct": [
+   1,
+   2
+  ],
+  "loops_straight": [
+   0,
+   2
+  ],
+  "loops_parallel": [
+   0,
+   2
+  ],
+  "edge_overlaps": 0,
+  "crossings": 25,
+  "edges_through_nodes": 14,
+  "group_intrusions": null,
+  "label_collisions": 2,
+  "label_over_line": [
+   7,
+   8
+  ],
+  "label_over_line_texts": [
+   "grant, renew,",
+   "revoke",
+   "settings, boluses",
+   "alerts, status",
+   "delivery status",
+   "insulin",
+   "interstitial glucose"
+  ],
+  "width": 565,
+  "height": 490,
+  "area_per_node": 46142
+ }
+]

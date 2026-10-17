@@ -1,0 +1,7 @@
+.tools/
+results/build/
+results/sheets/*.html
+results/demo/*.png
+__pycache__/
+results/sheets/*.png
+!results/sheets/*-dot-spline-vs-grid.png
