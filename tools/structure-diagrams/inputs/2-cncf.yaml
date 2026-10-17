@@ -1,6 +1,6 @@
 # CNCF: one upstream, many certified offerings. PRECEDENTS funding and rules rows (charter §9(c),
 # TOC process, software conformance and KCSP pages, read 2026-09-29 and 2026-10-01).
-title: "P2 · Precedent · CNCF: many vendors, one upstream, the same public tests"
+title: "2·cncf · Precedent, CNCF: many vendors, one upstream, the same public tests"
 nodes:
   - {id: lf, label: "Linux Foundation\n501(c)(6)", kind: entity, level: 0, column: 1}
   - {id: board, label: "CNCF governing board\n(budget)", kind: entity, level: 1, column: 0}

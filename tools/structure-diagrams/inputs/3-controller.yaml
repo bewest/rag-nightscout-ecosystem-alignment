@@ -3,11 +3,14 @@
 # The controller app box opens into L1a (inside the controller: algorithm, CGM manager,
 # pump manager / command queue, dose and glucose stores, uploader); L1a is proposed, not drawn here.
 # The hub node is a pointer to L2 and is the only off-phone node in this drawing.
-title: "L1 · The controller loop on the phone"
+title: "3·controller · The controller loop on the phone"
+bands:
+  - {label: "Social", levels: [0]}
+  - {label: "Technical", levels: [1, 2, 3]}
 nodes:
   - {id: person, label: "Person with diabetes\nor caregiver at hand\n(supervisor)", kind: human, level: 0, column: 1}
-  - {id: app, label: "Controller app\n(Loop, Trio or AAPS:\nalgorithm + process model)", kind: org, level: 1, column: 1, zoom: L1a}
-  - {id: hub, label: "Nightscout hub\n(see L2)", kind: commons, level: 0, column: 3, zoom: L2}
+  - {id: app, label: "Controller app\n(Loop, Trio or AAPS:\nalgorithm + process model)", kind: org, level: 1, column: 1}
+  - {id: hub, label: "Nightscout hub", kind: commons, level: 0, column: 3, zoom: 3·hub-sync}
   - {id: pump, label: "Insulin pump\n(actuator)", kind: process, level: 2, column: 0}
   - {id: cgm, label: "CGM\n(sensor)", kind: process, level: 2, column: 2}
   - {id: body, label: "Glucose-insulin\ndynamics (the body)", kind: process, level: 3, column: 1}

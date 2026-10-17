@@ -3,7 +3,7 @@
 # insulin delivery by being unreachable; previously authorised, bounded operation continues.
 # Z2b's cleared controller app is this loop too, with ACE pump and iCGM.
 # Generic: the same loop as tools/lab/stpa-diagrams/inputs/aid-loop.yaml with the credential added.
-title: "Z3 · One person's loop · where a credential touches it"
+title: "3·person-loop · One person's loop: where a credential touches it"
 nodes:
   - {id: cred, label: "Credential authority\n(may be unreachable)", kind: entity, level: 0, column: 0, status: proposed}
   - {id: person, label: "Person or caregiver", kind: human, level: 0, column: 1}

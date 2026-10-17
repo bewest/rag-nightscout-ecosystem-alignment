@@ -1,7 +1,7 @@
 # Zoom into one manufacturer agreement: PARTNER-READINESS §4 (terms that carry data rights),
 # §6 (complaints in both directions) and §7 (registry, credential authority and hosting kept apart;
 # no single point of failure for therapy; requested apart from applied).
-title: "Z2 · One agreement · what a manufacturer agreement has to carry"
+title: "2·agreement · what a manufacturer agreement has to carry"
 nodes:
   - {id: mfr, label: "One manufacturer", kind: org, level: 0, column: 1}
   - {id: fdn, label: "Signatory\n(the foundation for tier A;\nan operator for B/C)", kind: entity, level: 1, column: 0}
@@ -10,7 +10,7 @@ nodes:
   - {id: intake, label: "Complaint and\nincident intake", kind: commons, level: 2, column: 2, status: proposed}
   - {id: person, label: "Person using\nthe integration", kind: human, level: 3, column: 2}
   - {id: app, label: "One client release\n(app or connector)", kind: org, level: 4, column: 1}
-  - {id: device, label: "Device line\n(firmware, cloud)", kind: process, level: 5, column: 1, zoom: Z3}
+  - {id: device, label: "Device line\n(firmware, cloud)", kind: process, level: 5, column: 1, zoom: 3·person-loop}
 edges:
   - {from: mfr, to: fdn, kind: control, label: "terms: nonexclusive,\nnotice before change,\nrevocation by process", status: proposed}
   - {from: fdn, to: mfr, kind: feedback, label: "readiness dossier,\nconformance results"}

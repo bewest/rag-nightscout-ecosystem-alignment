@@ -539,7 +539,7 @@ projects, device connectivity among them. Tested against the same evidence:
 Read this way, the evidence supports the view: the engineering is becoming cheaper for everyone,
 the requirements are the same for everyone, and what stands between the ecosystem and the devices
 is being an entity that meets them. That is the structure the
-[proposed ecosystem drawing](../../00-overview/perspective/STRUCTURES.md) (Z1, Z2, Z2b) shows.
+[proposed ecosystem drawing](../../00-overview/perspective/STRUCTURES.md) (1·proposed, 2·agreement, 2·controller-operator) shows.
 
 ### 5.3 What an organisation would need to use each right
 

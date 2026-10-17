@@ -2,7 +2,7 @@
 # §1 and §3 (fee, entitlements, certificates, browser build). The point of comparison is the
 # credential authority in PARTNER-READINESS §7: a platform owner that enrols developers, issues
 # signing credentials, approves special entitlements and can revoke them.
-title: "P3 · Precedent · Apple Developer Program: a platform owner issues the credentials"
+title: "2·apple · Precedent, Apple Developer Program: a platform owner issues the credentials"
 groups:
   - {id: diy, label: "Self-built apps (Loop, Trio, xDrip4iOS)"}
   - {id: store, label: "App Store apps (Nightguard, DiaBLE)"}

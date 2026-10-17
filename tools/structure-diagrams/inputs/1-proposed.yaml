@@ -4,17 +4,20 @@
 # intake) and §7 (registry, credential authority and hosting kept apart), and PRECEDENTS (Tidepool
 # Loop: a regulated track beside the DIY one). The manufacturer sits above the foundation because
 # here it grants access; that is the direction of control, not a ranking.
-title: "Z1 · Ecosystem · proposed: entities that hold agreements with manufacturers"
+title: "1·proposed · Proposed: entities that hold agreements with manufacturers"
+bands:
+  - {label: "Legal", levels: [0]}
+  - {label: "Social", levels: [1, 2, 3, 4, 5]}
 nodes:
   - {id: reg, label: "Regulatory authorities", kind: authority, level: 0, column: 1}
   - {id: mfr, label: "Pump and CGM\nmanufacturers", kind: org, level: 1, column: 0}
   - {id: fdn, label: "Nightscout Foundation\n501(c)(3): sponsors;\nsignatory for tier A", kind: entity, level: 2, column: 1}
-  - {id: cred, label: "Credential authority\noperator", kind: entity, level: 3, column: 0, status: proposed, zoom: Z2}
+  - {id: cred, label: "Credential authority\noperator", kind: entity, level: 3, column: 0, status: proposed, zoom: 2·agreement}
   - {id: ops, label: "Shared operations:\nregistry, conformance,\ncomplaint intake,\nsecurity response", kind: commons, level: 3, column: 1, status: proposed}
   - {id: projects, label: "Open-source projects\n(DIY track continues)", kind: org, level: 4, column: 0}
   - {id: nsaas, label: "Nightscout-as-a-service\noperators", kind: entity, level: 4, column: 1}
-  - {id: laas, label: "Regulated controller\noperator (as Tidepool\ndid for Loop)", kind: entity, level: 4, column: 2, status: proposed, zoom: Z2b}
-  - {id: people, label: "People with diabetes\nand caregivers", kind: human, level: 5, column: 1, zoom: Z3}
+  - {id: laas, label: "Regulated controller\noperator (as Tidepool\ndid for Loop)", kind: entity, level: 4, column: 2, status: proposed, zoom: 2·controller-operator}
+  - {id: people, label: "People with diabetes\nand caregivers", kind: human, level: 5, column: 1, zoom: 3·controller}
 edges:
   - {from: reg, to: mfr, kind: control, label: "clearance"}
   - {from: mfr, to: reg, kind: feedback, label: "adverse events"}

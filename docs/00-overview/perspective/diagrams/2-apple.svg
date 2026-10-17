@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="650" height="548" viewBox="0 0 650 548" font-family="Helvetica, Arial, sans-serif">
-<title>P3 · Precedent · Apple Developer Program: a platform owner issues the credentials</title>
+<title>2·apple · Precedent, Apple Developer Program: a platform owner issues the credentials</title>
 <defs>
 <marker id="ah1f5fa8" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f5fa8"/></marker>
 <marker id="ah2e7d32" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2e7d32"/></marker>
@@ -9,7 +9,7 @@
 <marker id="ahc8c8c8" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c8c8c8"/></marker>
 </defs>
 <rect x="0" y="0" width="650" height="548" fill="#ffffff"/>
-<text x="324.9" y="22" font-size="13" text-anchor="middle" fill="#111">P3 · Precedent · Apple Developer Program: a platform owner issues the credentials</text>
+<text x="324.9" y="22" font-size="13" text-anchor="middle" fill="#111">2·apple · Precedent, Apple Developer Program: a platform owner issues the credentials</text>
 <g transform="translate(0.0,0.0)">
 <g class="group" data-id="diy"><rect x="4.0" y="163.0" width="174.4" height="246.5" fill="none" stroke="#999" stroke-dasharray="4,3"/><text x="12.0" y="176.0" font-size="10" fill="#555">Self-built apps (Loop, Trio, xDrip4iOS)</text></g>
 <g class="group" data-id="store"><rect x="466.4" y="165.2" width="179.3" height="84.0" fill="none" stroke="#999" stroke-dasharray="4,3"/><text x="474.4" y="178.2" font-size="10" fill="#555">App Store apps (Nightguard, DiaBLE)</text></g>

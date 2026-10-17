@@ -128,7 +128,7 @@ its source, and the page that argues from a drawing embeds or links it by its la
 The labels so far mix two axes: Z0–Z3 is a zoom level, P1–P3 a kind (precedent), and the research
 note's L1–L3 a topic (technical loops). Z2b exists because two drawings share a level.
 
-**Proposed** (for the maintainer, §8.5 point 1): one label per drawing of the form *level ·
+**Decided by the maintainer, 2026-10-17** (§8.5 point 1): one label per drawing of the form *level ·
 subject*, where the level is the Leveson hierarchy the drawing sits at, and the subject is a short
 name that stays stable when drawings are added beside it:
 
@@ -171,11 +171,17 @@ label is cut.
 
 ### 8.5 Open points for the maintainer
 
-1. **Labelling** (§8.2): adopt *level · subject*, keep Z/P/L, or another scheme.
-2. **Bands**: name the horizontal bands (for example legal, organisational, technical) or leave them
-   off.
-3. **Which single-idea drawings first** (§8.3).
-4. **Where L1–L3 live**: in the overview gallery, or with the design pages they serve.
+Answered by the maintainer, 2026-10-17:
+
+1. **Labelling** (§8.2): *level · subject*, adopted.
+2. **Bands**: the maintainer asked which serves communication; recommended and applied **legal,
+   social, technical**, the boundaries the maintainer described accountability crossing, on the
+   drawings that span more than one (0·sector, 1·proposed, 2·controller-operator, 3·controller).
+   Bands named by level would repeat the labels.
+3. **First drawings**: the controller, actuator and sensor loops on the pump, phone and CGM
+   (3·controller), ahead of the single-idea drawings in §8.3.
+4. **Where the technical loops live**: both: in the gallery at level 3, and embedded in the design
+   pages they serve (hub-sync architecture §1; controller-descriptions proposal §1).
 
 ### 8.6 Steps and progress
 
@@ -186,4 +192,6 @@ label is cut.
 | 14 | Grid renderer replaces Graphviz for every drawing | done | `e7566100` |
 | 15 | This phase plan | done | this commit |
 | 16 | Trim pass (§8.4) | done for the three largest: 0·sector 9 boxes and 19 edges → 8 and 15 (the support-community column and edges Z1 carries; the pumps-and-CGMs line routed round the left), 1·proposed 10 and 21 → 9 and 16 (complaints to Z2, the person's loop to Z3), Z2b 10 and 19 → 9 and 15 (the device classifications the text states, the hub upload). STRUCTURES text and the stakeholder table updated to match | this commit |
-| 17 | Relabel (§8.2) and single-idea drawings (§8.3), after the maintainer's answers | waiting | |
+| 17 | Relabel to *level · subject*: inputs and SVGs renamed, titles and zoom markers relabelled, the research note's L1–L3 inputs moved into `tools/structure-diagrams/inputs/` as 3·controller, 3·hub-sync and 3·delegation; zoom markers to undrawn drawings (L1a–L3a) removed; bands on four drawings; STRUCTURES gains "The technical loops"; inbound labels and anchors updated | done | this commit |
+| 18 | Single-idea drawings (§8.3) | next | |
+| 19 | Trim 3·delegation (15 edges; one label lies on a line) | next | |

@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="611" height="714" viewBox="0 0 611 714" font-family="Helvetica, Arial, sans-serif">
-<title>P2 · Precedent · CNCF: many vendors, one upstream, the same public tests</title>
+<title>2·cncf · Precedent, CNCF: many vendors, one upstream, the same public tests</title>
 <defs>
 <marker id="ah1f5fa8" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f5fa8"/></marker>
 <marker id="ah2e7d32" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2e7d32"/></marker>
@@ -9,7 +9,7 @@
 <marker id="ahc8c8c8" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c8c8c8"/></marker>
 </defs>
 <rect x="0" y="0" width="611" height="714" fill="#ffffff"/>
-<text x="305.4" y="22" font-size="13" text-anchor="middle" fill="#111">P2 · Precedent · CNCF: many vendors, one upstream, the same public tests</text>
+<text x="305.4" y="22" font-size="13" text-anchor="middle" fill="#111">2·cncf · Precedent, CNCF: many vendors, one upstream, the same public tests</text>
 <g transform="translate(0.0,0.0)">
 <g class="edge"><path class="edge" d="M310.9,93.0 L310.9,177.5 L190.0,177.5" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
 <g class="edge"><path class="edge" d="M128.4,310.2 L128.4,198.0" fill="none" stroke="#2e7d32" stroke-width="2.6" stroke-linecap="butt" marker-end="url(#ah2e7d32)"/></g>

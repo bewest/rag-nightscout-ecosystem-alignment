@@ -3,15 +3,15 @@
 # "Followers" is a group box: LoopFollow, LoopCaregiver (read side), nightguard, xDrip+ follower,
 # AAPSClient. "Web UI" is cgm-remote-monitor's browser client, careportal and server plugins.
 # The controller box is L1; the hub box opens into the per-collection view (L2a, proposed).
-title: "L2 · Hub and spoke: who writes, who reads"
+title: "3·hub-sync · Hub and spoke: who writes, who reads"
 nodes:
   - {id: caregiver, label: "Caregiver or person\n(watching remotely)", kind: human, level: 0, column: 1}
   - {id: followers, label: "Follower apps\n(LoopFollow, nightguard,\nxDrip+ follower, LoopCaregiver)", kind: entity, level: 1, column: 0}
   - {id: webui, label: "Nightscout web UI,\ncareportal, plugins", kind: entity, level: 1, column: 2}
-  - {id: hub, label: "Nightscout hub\n(entries, treatments,\ndevicestatus, profile)", kind: commons, level: 2, column: 1, zoom: L2a}
+  - {id: hub, label: "Nightscout hub\n(entries, treatments,\ndevicestatus, profile)", kind: commons, level: 2, column: 1}
   - {id: reports, label: "Reports and\nresearch tools", kind: entity, level: 1, column: 3}
   - {id: uploader, label: "CGM uploaders\n(xDrip+, connectors,\nvendor bridges)", kind: entity, level: 3, column: 0}
-  - {id: app, label: "Controller app\n(Loop, Trio, AAPS)", kind: org, level: 3, column: 2, zoom: L1}
+  - {id: app, label: "Controller app\n(Loop, Trio, AAPS)", kind: org, level: 3, column: 2, zoom: 3·controller}
 edges:
   - {from: caregiver, to: webui, kind: control, label: "careportal entries"}
   - {from: webui, to: hub, kind: control, label: "requested: treatments\n(carbs, temp target,\nprofile switch)"}

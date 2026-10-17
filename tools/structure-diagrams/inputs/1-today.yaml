@@ -1,7 +1,7 @@
 # The Nightscout ecosystem as observed: GOVERNANCE-TODAY §1, §3 and §4, PARTNER-READINESS §1 and §3.
 # Every node exists today. The missing edges are the finding: no written agreement joins a project
 # or the foundation to a manufacturer, and no complaint route reaches a manufacturer or a regulator.
-title: "Z1 · Ecosystem · today: what joins the parts"
+title: "1·today · The ecosystem today: what joins the parts"
 nodes:
   - {id: reg, label: "Regulatory authorities", kind: authority, level: 0, column: 1}
   - {id: mfr, label: "Pump and CGM\nmanufacturers", kind: org, level: 1, column: 0}

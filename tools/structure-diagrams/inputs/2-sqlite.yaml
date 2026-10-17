@@ -2,7 +2,7 @@
 # 2026-09-29. Money reaches the developers through Hwaci; no edge runs from a customer to the
 # developers, because "technical control and direction of SQLite remains with the SQLite
 # architect and developers".
-title: "P1 · Precedent · SQLite: companies buy assurance, the developers keep control"
+title: "2·sqlite · Precedent, SQLite: companies buy assurance, the developers keep control"
 nodes:
   - {id: buyers, label: "Companies with quality\nand legal obligations", kind: org, level: 0, column: 0}
   - {id: free, label: "Everyone else\n(free users)", kind: human, level: 0, column: 2}

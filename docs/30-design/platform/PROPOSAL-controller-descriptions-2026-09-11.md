@@ -70,6 +70,13 @@ writes down get silently dropped. Three measured consequences:
 None of this is a bug in any project. It is the cost of the shape being
 tacit.
 
+*Drawn 2026-10-17:* the loop whose record this proposal is about, common to Loop, Trio and
+AndroidAPS, read from their source (the
+[technical loops note](../../60-research/structures-2026-10-17/technical-loops.md) §1 compares
+them). What the controller reports to the hub is the right-hand, dotted edge.
+
+![3·controller: the person supervises the controller app; the app sends temporary basal rates and boluses to the pump and reads glucose from the CGM; the pump delivers insulin to the body, the CGM senses it; the app reports status and records to the Nightscout hub](../../00-overview/perspective/diagrams/3-controller.svg)
+
 ## 2. The proposal
 
 **Write the description down, in the hub, on the controller's behalf.**

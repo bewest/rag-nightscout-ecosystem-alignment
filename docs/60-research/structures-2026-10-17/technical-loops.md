@@ -13,12 +13,17 @@ prompts. The prompts are **questions for analysis, not findings**.
 
 | Family | Drawing input | Zoom levels proposed (not drawn) |
 |---|---|---|
-| 1. Controller loop on the phone | [`loops/l1-controller.yaml`](loops/l1-controller.yaml) | **L1a** inside the controller app |
-| 2. Hub-and-spoke sync loop | [`loops/l2-hub-spoke.yaml`](loops/l2-hub-spoke.yaml) | **L2a** per-collection view of the hub |
-| 3. Delegation loop | [`loops/l3-delegation.yaml`](loops/l3-delegation.yaml) | **L3a** per-controller validation pipeline |
+| 1. Controller loop on the phone | [`3-controller.yaml`](../../../tools/structure-diagrams/inputs/3-controller.yaml) | **L1a** inside the controller app |
+| 2. Hub-and-spoke sync loop | [`3-hub-sync.yaml`](../../../tools/structure-diagrams/inputs/3-hub-sync.yaml) | **L2a** per-collection view of the hub |
+| 3. Delegation loop | [`3-delegation.yaml`](../../../tools/structure-diagrams/inputs/3-delegation.yaml) | **L3a** per-controller validation pipeline |
 
 The three drawings nest: L1's `hub` node opens into L2, L2's `app` node opens into L1, and L3
 reuses the hub and controller boxes with the command path added.
+
+*Relabelled 2026-10-17:* L1, L2 and L3 are now the drawings **3·controller**, **3·hub-sync** and
+**3·delegation**, published in [Control structures, drawn](../../00-overview/perspective/STRUCTURES.md);
+their inputs moved to `tools/structure-diagrams/inputs/`. The zoom levels L1a–L3a below remain
+proposals; the drawings no longer carry markers for them.
 
 ---
 
@@ -49,7 +54,7 @@ Repository documents used: [remote bolus comparison](../../10-domain/remote-bolu
 
 ### 1.1 Drawing
 
-[`loops/l1-controller.yaml`](loops/l1-controller.yaml): six nodes. Person (supervisor) at the top;
+[`3-controller.yaml`](../../../tools/structure-diagrams/inputs/3-controller.yaml): six nodes. Person (supervisor) at the top;
 the controller app; pump (actuator) and CGM (sensor); the body (controlled process). A pointer
 node for the Nightscout hub carries the app's outbound record of applied state and opens into L2.
 
@@ -121,7 +126,7 @@ Control action: **temp basal / automatic bolus from controller to pump.**
 
 ### 2.1 Drawing
 
-[`loops/l2-hub-spoke.yaml`](loops/l2-hub-spoke.yaml): seven nodes. The hub in the middle;
+[`3-hub-sync.yaml`](../../../tools/structure-diagrams/inputs/3-hub-sync.yaml): seven nodes. The hub in the middle;
 uploaders and the controller below it (writers); followers and the web UI above it (readers and,
 for the web UI, writers of requested state); reports to the side. **Requested state** and
 **applied state** are separate edges: requests flow down to the controller as downloaded
@@ -196,7 +201,7 @@ alarm acted on by a caregiver.**
 
 ### 3.1 Drawing
 
-[`loops/l3-delegation.yaml`](loops/l3-delegation.yaml): seven nodes. The person or primary
+[`3-delegation.yaml`](../../../tools/structure-diagrams/inputs/3-delegation.yaml): seven nodes. The person or primary
 caregiver who grants the credential; the caregiver or automated agent who sends; the remote app;
 the hub; the push or SMS relay; the controller; the pump. Two edges are `status: proposed`: a
 command record with an id at the hub, and a correlated acknowledgement from the controller. Those

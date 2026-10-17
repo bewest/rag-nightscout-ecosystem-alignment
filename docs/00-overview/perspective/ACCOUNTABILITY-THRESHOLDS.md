@@ -57,21 +57,21 @@ The last column points at the drawing in which the activity appears.
 
 | activity | pillars | duties it brings | insurance usually considered | in the drawings |
 |---|---|---|---|---|
-| a person builds and runs software on their own device for their own use | none organisational | the person's own; the platform may impose credential lifetimes (Apple's free tier: 7 days) | none | Z3 |
-| reading device data: glucose, status, history (tier A) | 1, 4, 5; 2 and 3 depending on the claims made for a display or alarm | a privacy notice and purpose limits; accuracy evidence for any health measurement claimed | cyber and privacy liability | Z1, Z2 |
-| hosting or processing anyone's health data, including complaints and research | 1, 2, 4, 5, 8 | a privacy notice, retention rules, breach response. HIPAA applies only through relationships with covered entities; consumer health services outside HIPAA may fall under the FTC Health Breach Notification Rule (16 CFR Part 318); Washington's My Health My Data Act does not exclude nonprofits; EU residents bring GDPR | cyber and privacy liability | Z1 (hosting operators, shared operations) |
+| a person builds and runs software on their own device for their own use | none organisational | the person's own; the platform may impose credential lifetimes (Apple's free tier: 7 days) | none | 3·controller |
+| reading device data: glucose, status, history (tier A) | 1, 4, 5; 2 and 3 depending on the claims made for a display or alarm | a privacy notice and purpose limits; accuracy evidence for any health measurement claimed | cyber and privacy liability | 1·proposed, 2·agreement |
+| hosting or processing anyone's health data, including complaints and research | 1, 2, 4, 5, 8 | a privacy notice, retention rules, breach response. HIPAA applies only through relationships with covered entities; consumer health services outside HIPAA may fall under the FTC Health Breach Notification Rule (16 CFR Part 318); Washington's My Health My Data Act does not exclude nonprofits; EU residents bring GDPR | cyber and privacy liability | 1·proposed (hosting operators, shared operations) |
 | research with identifiable data | 4, 9 | ethics (IRB) review, consent and withdrawal terms, data-use agreements | cyber and privacy; research liability where a partner requires it | — |
-| distributing software to other people | 1, 2, 5, 6; 3 if claims are made | an identified publisher, release review, export classification of encryption, end-user terms | technology errors and omissions | Z1 (projects), Z2b |
-| operating a service that people's data or therapy depends on: hosting, a relay, a credential authority | 2, 5, 8 | availability, security and incident duties to the people using it; a continuity and succession plan | technology errors and omissions; cyber | Z1, Z2 |
-| holding or issuing credentials for a device | 1, 2, 5, 8 | custody, rotation, revocation, breach notice, and a defined safe state when a credential expires or is withdrawn | technology errors and omissions; cyber; what the manufacturer's contract requires | Z2, Z3 |
-| commanding insulin delivery (tier C) | all nine; 3 and 6 dominate | being, or contracting with, the legal manufacturer of the controller: a regulatory pathway, a quality system, complaint and adverse-event reporting | product liability is a question for counsel | Z2b |
-| signing an agreement with a manufacturer | 1, 2, 9 | the indemnities, insurance minimums and named contacts the contract sets; often an independent security assessment | whatever the contract requires | Z1, Z2 |
-| taking money for a product or service | 1, 2, 7 | tax, payments and consumer law; trader status in the EU; for a 501(c)(3), whether the income is related to its exempt purpose | — | Z1 (hosting operators) |
-| a board approving grants and spending | 9 | a duty of care and loyalty in each decision; following the conflict-of-interest policy | directors' and officers' liability (D&O), commonly held at any size | Z1 (foundation) |
+| distributing software to other people | 1, 2, 5, 6; 3 if claims are made | an identified publisher, release review, export classification of encryption, end-user terms | technology errors and omissions | 1·proposed (projects), 2·controller-operator |
+| operating a service that people's data or therapy depends on: hosting, a relay, a credential authority | 2, 5, 8 | availability, security and incident duties to the people using it; a continuity and succession plan | technology errors and omissions; cyber | 1·proposed, 2·agreement |
+| holding or issuing credentials for a device | 1, 2, 5, 8 | custody, rotation, revocation, breach notice, and a defined safe state when a credential expires or is withdrawn | technology errors and omissions; cyber; what the manufacturer's contract requires | 2·agreement, 3·person-loop |
+| commanding insulin delivery (tier C) | all nine; 3 and 6 dominate | being, or contracting with, the legal manufacturer of the controller: a regulatory pathway, a quality system, complaint and adverse-event reporting | product liability is a question for counsel | 2·controller-operator |
+| signing an agreement with a manufacturer | 1, 2, 9 | the indemnities, insurance minimums and named contacts the contract sets; often an independent security assessment | whatever the contract requires | 1·proposed, 2·agreement |
+| taking money for a product or service | 1, 2, 7 | tax, payments and consumer law; trader status in the EU; for a 501(c)(3), whether the income is related to its exempt purpose | — | 1·proposed (hosting operators) |
+| a board approving grants and spending | 9 | a duty of care and loyalty in each decision; following the conflict-of-interest policy | directors' and officers' liability (D&O), commonly held at any size | 1·proposed (foundation) |
 | holding or moving money | 7 | controls on who can sign and who reconciles | crime or fidelity cover | — |
 | events (a hackathon, sponsored travel) | 2 | venue contracts, which often require certificates of insurance | general liability | — |
-| receiving money from a company that also seeks something from the organisation | 9 | conflict-of-interest disclosure and recusal; a public record of the arrangement | none specific; D&O covers the decisions | Z1 |
-| overseeing companies that build on a commons: listing, certifying, setting rules | 2, 9 | published criteria applied the same way to everyone, notice and appeal, and no assumption of the companies' own regulatory duties | D&O; errors and omissions where it certifies (counsel) | Z1 (shared operations), P2 |
+| receiving money from a company that also seeks something from the organisation | 9 | conflict-of-interest disclosure and recusal; a public record of the arrangement | none specific; D&O covers the decisions | 1·proposed |
+| overseeing companies that build on a commons: listing, certifying, setting rules | 2, 9 | published criteria applied the same way to everyone, notice and appeal, and no assumption of the companies' own regulatory duties | D&O; errors and omissions where it certifies (counsel) | 1·proposed (shared operations), 2·cncf |
 
 ## 4. How mature programmes put the pillars in place
 
@@ -134,7 +134,7 @@ ambitious projects, device connectivity among them (the author's observation; no
 measures it). That lowers the cost of building an integration. It does not change who is
 authorised to use one: device authentication, app attestation and issued credentials are met by
 an entity and its agreements, which is the structure drawn in
-[Z1, Z2 and Z2b](STRUCTURES.md).
+[1·proposed, 2·agreement and 2·controller-operator](STRUCTURES.md).
 
 ## 6. A US nonprofit's own thresholds
 
@@ -175,9 +175,9 @@ some of the conditions above if adopted:
 | [partner readiness](../PARTNER-READINESS.md) | a manufacturer agreement; complaint records that carry health data |
 | [operating a shared service](../ECOSYSTEM-PROGRAMME.md#2b-sponsoring-and-operating) | operating a service that people depend on; this is why the programme proposes sponsoring by default |
 | [collaboration rules](../COLLABORATION-MODEL.md) | money from companies that also seek something; disclosure; overseeing companies that build on the commons |
-| a hosting operator ([Z1](STRUCTURES.md#z1--ecosystem-proposed)) | hosting health data, operating a service, taking money |
-| a credential authority operator ([Z2](STRUCTURES.md#z2--one-agreement)) | holding or issuing credentials, operating a service, a manufacturer agreement |
-| a regulated controller operator ([Z2b](STRUCTURES.md#z2b--one-regulated-controller-loop-as-a-service)) | commanding insulin delivery, distributing software, a manufacturer agreement, hosting health data |
+| a hosting operator ([1·proposed](STRUCTURES.md#1proposed)) | hosting health data, operating a service, taking money |
+| a credential authority operator ([2·agreement](STRUCTURES.md#2agreement)) | holding or issuing credentials, operating a service, a manufacturer agreement |
+| a regulated controller operator ([2·controller-operator](STRUCTURES.md#2controller-operator-loop-as-a-service)) | commanding insulin delivery, distributing software, a manufacturer agreement, hosting health data |
 
 The [infrastructure-transition frame](INFRASTRUCTURE-TRANSITION.md) asks when the work of keeping
 software current stops being something to leave to whoever has time. This page asks the matching

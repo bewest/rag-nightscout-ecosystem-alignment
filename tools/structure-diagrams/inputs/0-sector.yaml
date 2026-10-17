@@ -1,7 +1,11 @@
 # The frame: a sociotechnical control structure for open-source AID after Leveson's two-column
 # form, development on the left and operations on the right, the system in use at the bottom.
 # Generic: no organisation is named. Same structure as tools/lab/stpa-diagrams/inputs/governance.yaml.
-title: "Z0 · Sector · the frame: who controls whom, and what comes back"
+title: "0·sector · The frame: who controls whom, and what comes back"
+bands:
+  - {label: "Legal", levels: [0, 1]}
+  - {label: "Social", levels: [2, 3, 4, 5]}
+  - {label: "Technical", levels: [6]}
 groups:
   - {id: dev, label: "Development"}
   - {id: ops, label: "Operations"}
@@ -10,7 +14,7 @@ nodes:
   - {id: reg, label: "Regulatory authorities", kind: authority, level: 1, column: 1}
   - {id: companies, label: "Device and software\ncompanies", kind: org, level: 2, column: 0, group: dev}
   - {id: care, label: "Clinicians and\ncare teams", kind: org, level: 2, column: 2, group: ops}
-  - {id: commons, label: "Shared infrastructure commons\n(foundation, specifications, hubs)", kind: commons, level: 3, column: 1, zoom: Z1}
+  - {id: commons, label: "Shared infrastructure commons\n(foundation, specifications, hubs)", kind: commons, level: 3, column: 1, zoom: 1·proposed}
   - {id: projects, label: "Open-source projects\n(maintainers)", kind: org, level: 4, column: 0, group: dev}
   - {id: users, label: "People building and\nrunning AID", kind: human, level: 5, column: 2, group: ops}
   - {id: system, label: "AID system in daily use", kind: process, level: 6, column: 1}
