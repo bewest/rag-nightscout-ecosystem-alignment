@@ -233,10 +233,24 @@ it points the other way.
 
 In order:
 
-1. **Loop sends `identifier` on treatments, entries and device status.** On 15.0.8 this already
-   works for treatments over v1 and for every collection over API v3. Over v1, entries and device
-   status store it and do not yet match on it, so sending it changes nothing until the server side
-   lands, and loses nothing.
+1. **Loop sends `identifier` on treatments, entries and device status.** Nothing on the server
+   blocks this today. A server older than 15.0.7 stores the field and ignores it. On 15.0.7 and
+   later it already works for treatments over v1, including `DELETE /treatments/<uuid>`, which is
+   how Loop deletes overrides now. It also works for every collection over API v3. Two cautions:
+    - **Each `identifier` must name exactly one Nightscout record.** In our 12-site corpus, 13 of
+      the 255,811 `syncIdentifier` values on Loop treatments are each on 2 to 4 records. For
+      example, a Suspend Pump and a Temp Basal at the same instant share one value
+      ([identifier duplicates §2.2](https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/tenancy/identifier-duplicates-2026-10-17.html#22-syncidentifier-on-treatments-as-a-proxy-m)).
+      Sent as `identifier` to a 15.0.7+ server, the second upload would replace the first, because
+      treatments match on `identifier` first and replace the whole stored record. Where one
+      `syncIdentifier` becomes several treatments, each needs its own `identifier`. We have not
+      read which Loop path produces these pairs.
+    - **Entries are not matched on `identifier` yet.** Until the server side lands, a phone backfill
+      with the same `identifier` and a different time is stored as a second record. We measured
+      this on v1 at 15.0.8 and `dev`
+      ([lab results](https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.html)).
+      Keep the phone's skip-the-watch-period approach until then. Device status stores the field
+      and does not match on it, so sending it changes nothing there yet.
 2. **We turn your three questions, and the `date` question above, into decision rows** beside rule
    5 and the write contract's §6.1, with a link to your proposal. We would like you to review
    them before they are marked decided.
