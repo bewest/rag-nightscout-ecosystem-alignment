@@ -201,6 +201,9 @@ can lapse.
 The drawings are generated. Each one's source is a YAML file in
 [`tools/structure-diagrams/inputs/`](../../../tools/structure-diagrams/inputs/), with nodes placed
 by level and column, edges typed as control, feedback, funding or data, and optional stakeholder
-views. Edit the YAML and run `python3 tools/structure-diagrams/render.py`. Graphviz was chosen
-because it was the one tool that kept hierarchy, columns and the control-left convention on every
-structure in the [diagram tool lab](../../../tools/lab/stpa-diagrams/README.md).
+views. Edit the YAML and run `python3 tools/structure-diagrams/render.py`. The renderer places
+every box on a grid and routes lines at right angles, with each control and feedback pair drawn as
+two parallel lines, in the manner of Leveson's control structures. It replaced a Graphviz renderer
+on 2026-10-17 after the [grid layout lab](../../../tools/lab/stpa-grid-style/README.md) measured
+both; the earlier [diagram tool lab](../../../tools/lab/stpa-diagrams/README.md) compared the
+off-the-shelf tools.

@@ -5,7 +5,7 @@
                              tools/lab/stpa-diagrams/inputs/*.yaml)
 
 Candidates (README has the reasons):
-  dot-spline      the published renderer, tools/structure-diagrams/render.py, unchanged (baseline)
+  dot-spline      the renderer published until 2026-10-17, kept here as baseline_dot.py (baseline)
   grid            gridstpa.py, default costs (a side entry costs less than a second bend)
   grid-z          gridstpa.py with side entries made expensive, so edges enter tops and bottoms
   neato-ortho     Graphviz neato -n2: nodes pinned at the grid positions, splines=ortho, xlabels
@@ -39,7 +39,7 @@ INPUTS = sorted((REPO / "tools" / "structure-diagrams" / "inputs").glob("*.yaml"
 
 
 def baseline_module():
-    spec = importlib.util.spec_from_file_location("render", REPO / "tools" / "structure-diagrams" / "render.py")
+    spec = importlib.util.spec_from_file_location("render", HERE / "baseline_dot.py")
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
