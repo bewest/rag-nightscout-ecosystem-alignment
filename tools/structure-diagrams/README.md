@@ -13,6 +13,11 @@
   `icons/` holds only the Lucide icons in use, copied from `lucide-static` 0.460.0 with its ISC
   `LICENSE`; to add one, copy its SVG from that package and add a line to `ICON_KEY` in
   `render.py`, which also writes `icon-key.svg`.
+- Scenarios: `scenarios: [believed, actual, emerging]`, `base: false` and one view per scenario
+  draw the same structure several times on one layout. An edge or node with `in: [...]` appears
+  only in those scenarios; `labels: {scenario: text}` changes an edge's label there. Edge kinds
+  `authority` (where a right to act comes from) and `discretion` (control exercised at the
+  controller's own choice) exist for these drawings. See `inputs/1-authority.yaml`.
 - Optional layout keys: `bands` (horizontal bands behind rows, e.g. legal / organisational /
   technical), and per edge `route` (`straight`, `z`, `l`, `corridor`), `via` and `label_side`. Use
   them to move a line that crosses the middle of a drawing; see the docstring of `render.py`.

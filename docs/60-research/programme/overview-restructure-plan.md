@@ -195,3 +195,5 @@ Answered by the maintainer, 2026-10-17:
 | 17 | Relabel to *level · subject*: inputs and SVGs renamed, titles and zoom markers relabelled, the research note's L1–L3 inputs moved into `tools/structure-diagrams/inputs/` as 3·controller, 3·hub-sync and 3·delegation; zoom markers to undrawn drawings (L1a–L3a) removed; bands on four drawings; STRUCTURES gains "The technical loops"; inbound labels and anchors updated | done | this commit |
 | 18 | Single-idea drawings (§8.3) | next | |
 | 19 | Trim 3·delegation (15 edges; one label lies on a line) | next | |
+| 20 | Icons on every box (Lucide, ISC) with a generated key | done | `0f5e6c76` |
+| 21 | 1·authority, believed / actual / emerging, on one layout (renderer scenarios; `authority` and `discretion` edge kinds), with the emerging landscape's properties as interpretation; asked for by the maintainer 2026-10-17 | done | this commit |

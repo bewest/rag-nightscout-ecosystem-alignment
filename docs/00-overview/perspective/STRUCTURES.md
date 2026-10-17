@@ -36,7 +36,7 @@ same as drawings are added beside it.
 | level | what sits at it | drawings |
 |---|---|---|
 | 0 · society | legislatures, regulators and the sector around AID in general | 0·sector |
-| 1 · ecosystem | the ecosystem's organisations and how they connect | 1·today, 1·proposed (and six stakeholder views) |
+| 1 · ecosystem | the ecosystem's organisations and how they connect | 1·today, 1·proposed (and six stakeholder views), 1·authority (believed, actual, emerging) |
 | 2 · one organisation or agreement | one entity, one agreement, one programme | 2·agreement, 2·controller-operator; the precedents 2·sqlite, 2·cncf, 2·apple |
 | 3 · technical process | one loop in software and devices | 3·controller, 3·hub-sync, 3·delegation, 3·person-loop |
 
@@ -110,6 +110,74 @@ the views can be laid side by side.
 
 The "feedback" column is read from the drawing; it is where the stakeholders are likely to
 disagree, and where the drawing should be corrected if it is wrong.
+
+## 1·authority: believed, actual, emerging
+
+Every controller in an STPA structure acts on a *process model*: its belief about the system it
+controls. Many hazards come from the gap between that model and how the system actually behaves.
+These three drawings apply the idea to the authority under which DIY and open-source AID acts. They
+share one layout, so the boxes line up and the edges that appear, disappear or change their label
+are the finding. Teal dashed edges are **authority**: where a party's right to act comes from (a
+law, an exemption, a licence). Purple dash-dot edges are **discretion**: control another party
+exercises at its own choice (terms, enforcement, revocation).
+
+![1·authority as believed: copyright law and open-source licences give the person a right to use their own device and data and the projects a licence to share code; the person builds and runs the app, which commands the pump and CGM over a worked-out protocol; manufacturers, regulators and phone platforms have no edge to the person](diagrams/1-authority--believed.svg)
+
+**As believed.** The community's own reading of its protections: open-source licences, the DMCA
+medical-device data exemption, interoperability rights
+([DIGITAL-RIGHTS, overview](../../DIGITAL-RIGHTS.md#overview)). In this picture the person's
+authority runs straight from the law to their own device and data, and no one else's choices sit
+between them.
+
+![1·authority as it works today: the same boxes, with discretion edges from the manufacturer (firmware and cloud changes, takedown notices, cloud terms banning unauthorized apps), the regulator (a 2019 warning against unauthorised devices) and the phone platform (a revocable signing licence) converging on the person](diagrams/1-authority--actual.svg)
+
+**As it works today.** The same rights, read precisely, and the discretion they leave standing. The
+DMCA exemption covers data access only and is a defence renewed every three years; DIY looping
+"remains in a legal gray area", and the community operates partly on "the practical reality that
+manufacturers have generally not pursued enforcement"
+([DIGITAL-RIGHTS, implications](../../DIGITAL-RIGHTS.md#implications-for-diy-looping)). Five
+discretion edges reach the person or the projects: a manufacturer's firmware and cloud changes, its
+takedown notices (Abbott, 2019), cloud terms that ban "unauthorized third-party applications"
+(Dexcom consumer terms §5.11, [vendor note §1.2](../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md#12-dexcom)),
+the FDA's 2019 warning against unauthorised devices ([history](../observations/HISTORY.md)), and a
+phone platform's signing licence, 7 days on a free account and revocable
+([Apple note §1.1](../../60-research/structures-2026-10-17/apple-accountability.md#11-free-apple-account-development-personal-team)).
+Regulators' requirements reach manufacturers, including premarket cybersecurity for connected
+devices under FD&C Act §524B, in effect since 2023-03-29
+([FDA, cybersecurity](https://www.fda.gov/medical-devices/digital-health-center-excellence/cybersecurity),
+read 2026-10-17).
+
+![1·authority as it is emerging: a manufacturer PKI issues, renews and revokes the app's credentials and the app sends authenticated commands; data-rights law gives the person a right to access their data and designate a third party, and obliges the manufacturer to share at the person's request](diagrams/1-authority--emerging.svg)
+
+**As it is emerging.** Two changes are under way at once. Newer devices authenticate the app as
+well as the person: the community's Omnipod 5 driver uses message signing with a certificate store
+and Apple's App Attest ([vendor note §1.6](../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md#16-insulet-omnipod)),
+so commands go through a credential the manufacturer issues. And in the EU, the Data Act (applying
+since 2025-09-12) turns part of the data right from a defence into a duty: the manufacturer must
+share device data at the person's request, real-time where feasible, including with a third party
+the person designates ([vendor note §3.1](../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md#31-eu-data-act)).
+The drawing combines what exists on some devices and in one jurisdiction; it is not a forecast for
+any one device or market.
+
+*Interpretation.* Properties of the emerging landscape, read from the three drawings:
+
+1. **Access is bound to identity.** A credential is issued to a known party and can be renewed or
+   withdrawn; knowing the protocol is no longer enough.
+2. **Authority is delegated, and its withdrawal is the issuer's.** Whether revocation follows a
+   published process or the issuer's discretion is decided by the agreement
+   ([partner readiness §4](../PARTNER-READINESS.md#4-what-the-ecosystem-needs-from-an-agreement)).
+3. **Rights move from defences to duties, for data first.** The Data Act obliges sharing data; no
+   law found obliges a manufacturer to accept commands from another party's software.
+4. **The designated third party has to be an entity that can meet the requirements**: privacy,
+   security, and the terms the manufacturer's credentials carry
+   ([what each activity brings §5](ACCOUNTABILITY-THRESHOLDS.md#5-the-same-requirements-for-anyone)).
+5. **Requirements flow down by contract.** Cybersecurity and quality duties sit with the
+   manufacturer, and reach anyone holding its credentials through the agreement.
+6. **Authorisation becomes the binding constraint.** The engineering gets cheaper for everyone; who
+   is authorised to use it does not.
+
+The characterisations of law here are summaries for discussion, drafts for counsel to review, and
+not legal advice.
 
 ## 2·agreement
 

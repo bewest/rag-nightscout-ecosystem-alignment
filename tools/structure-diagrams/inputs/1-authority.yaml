@@ -1,0 +1,66 @@
+# Where DIY/OSS authority to act comes from: as believed, as it actually works today, and as the
+# landscape is emerging. One layout, three scenarios (STPA: a controller's process model against
+# the process it controls). Sources:
+#   believed  - DIGITAL-RIGHTS "Overview" (#WeAreNotWaiting; key protections as the community reads them)
+#   actual    - DIGITAL-RIGHTS "Implications for DIY Looping" ("legal gray area"; the community operates
+#               on licences, interoperability defences and "the practical reality that manufacturers have
+#               generally not pursued enforcement"), "Anti-Trafficking", "The Abbott Labs Precedent (2019)";
+#               HISTORY 2019-05-17 (FDA warning); vendor note §1.2 (Dexcom consumer terms §5.11);
+#               Apple note §1.1 (free tier: 7-day profiles, revocable licence);
+#               FDA cybersecurity page (FD&C Act §524B in effect 2023-03-29), read 2026-10-17
+#   emerging  - vendor note §1.6 (Omnipod 5 message signing and App Attest), §3.1 (EU Data Act, applies
+#               since 2025-09-12); PARTNER-READINESS §7 (issued credentials, revocation by process)
+title: "1·authority · Where the authority to act comes from"
+base: false
+scenarios: [believed, actual, emerging]
+bands:
+  - {label: "Legal", levels: [0]}
+  - {label: "Social", levels: [1, 2]}
+  - {label: "Technical", levels: [3]}
+nodes:
+  - {id: law, label: "Copyright law, its\nexemptions (DMCA §1201)\nand open-source licences", kind: authority, level: 0, column: 0, icon: landmark}
+  - {id: datalaw, label: "Data-rights law\n(EU Data Act)", kind: authority, level: 0, column: 1, icon: landmark, in: [emerging]}
+  - {id: reg, label: "Regulators", kind: authority, level: 0, column: 3, icon: scale}
+  - {id: mfr, label: "Pump and CGM\nmanufacturers", kind: org, level: 1, column: 0, icon: factory}
+  - {id: platform, label: "Phone platforms\n(app signing)", kind: org, level: 1, column: 3, icon: store}
+  - {id: projects, label: "Open-source\nprojects", kind: org, level: 2, column: 0, icon: git-branch}
+  - {id: ca, label: "Manufacturer PKI:\ndevice and client\ncertificates", kind: entity, level: 2, column: 1, icon: key-round, in: [emerging]}
+  - {id: person, label: "Person who builds\nand runs it (own device,\nown data)", kind: human, level: 2, column: 2, icon: user}
+  - {id: third, label: "Third party the\nperson designates", kind: entity, level: 2, column: 3, icon: building-2, in: [emerging]}
+  - {id: device, label: "Pump, CGM\nand cloud", kind: process, level: 3, column: 0, icon: activity}
+  - {id: app, label: "DIY app on the\nperson's phone", kind: org, level: 3, column: 2, icon: smartphone}
+edges:
+  - {from: law, to: person, kind: authority, label: "my device, my data",
+     labels: {believed: "my device, my data:\nuse them as I choose",
+              actual: "§1201 exemption: data access\nonly; a defence, renewed every\n3 years (to 2027-10-28)",
+              emerging: "§1201 exemption: still a\ndefence; renewal due 2027"}}
+  - {from: law, to: projects, kind: authority, label: "GPL",
+     labels: {believed: "GPL: share the code,\nno warranty",
+              actual: "GPL; sharing circumvention\ntools risks anti-trafficking",
+              emerging: "GPL; anti-trafficking\nstill applies"}}
+  - {from: reg, to: mfr, kind: control, label: "clearance",
+     labels: {believed: "clearance of devices",
+              actual: "clearance; premarket\ncybersecurity (§524B, 2023)",
+              emerging: "clearance; premarket\ncybersecurity (§524B, 2023)"}}
+  - {from: projects, to: person, kind: control, label: "source and instructions"}
+  - {from: person, to: app, kind: control, label: "build and run"}
+  - {from: app, to: device, kind: control, label: "commands",
+     labels: {believed: "commands over a\nworked-out protocol",
+              actual: "commands over a worked-out\nprotocol (\"legal gray area\")",
+              emerging: "authenticated commands,\nonly with an issued credential"}}
+  - {from: device, to: app, kind: feedback, label: "glucose, status",
+     labels: {emerging: "signed glucose\nand status"}}
+  - {from: mfr, to: device, kind: discretion, label: "firmware, pairing,\ncloud changes", in: [actual, emerging]}
+  - {from: mfr, to: projects, kind: discretion, label: "takedown notices (2019);\nenforcement not generally\npursued, by choice", in: [actual, emerging]}
+  - {from: mfr, to: person, kind: discretion, label: "cloud terms ban\nunauthorized third-party\napps (Dexcom §5.11)", in: [actual, emerging]}
+  - {from: reg, to: person, kind: discretion, label: "warning against\nunauthorised devices\n(FDA, 2019)", in: [actual, emerging]}
+  - {from: platform, to: person, kind: discretion, label: "signing licence: 7 days\nfree, yearly paid;\nrevocable", in: [actual, emerging]}
+  - {from: mfr, to: ca, kind: control, label: "runs the PKI", in: [emerging]}
+  - {from: ca, to: app, kind: discretion, label: "issues, renews,\nrevokes credentials", in: [emerging]}
+  - {from: datalaw, to: person, kind: authority, label: "right to access and\ndesignate a third party", in: [emerging]}
+  - {from: datalaw, to: mfr, kind: control, label: "share at the person's\nrequest, real-time\nwhere feasible", in: [emerging]}
+  - {from: person, to: third, kind: control, label: "designates", in: [emerging]}
+views:
+  - {id: believed, title: "as believed", scenario: believed}
+  - {id: actual, title: "as it works today", scenario: actual}
+  - {id: emerging, title: "as it is emerging", scenario: emerging}

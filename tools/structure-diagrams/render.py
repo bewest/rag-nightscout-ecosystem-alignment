@@ -21,6 +21,10 @@ Layout, in the order it happens:
      near it grow and the layout is redone.
 
 Optional YAML additions (all backwards compatible):
+  `scenarios`: [believed, actual, ...] with `base: false`: one drawing per scenario on one layout.
+               An edge or node with `in: [...]` appears only in those scenarios; an edge's
+               `labels: {scenario: text}` replaces its label there. Layout uses every edge and
+               the longest label variant, so the scenarios line up box for box.
   node `icon`: a file name in icons/ without .svg (Lucide, ISC licence), drawn at the box's left
                to say what the box does: factory for a manufacturer, landmark for a legislature,
                scale for a regulator, user / users for a person / people
@@ -45,6 +49,10 @@ EDGE = {
     "funding": {"color": "#2e7d32", "dash": None, "width": 2.6},
     "data": {"color": "#555555", "dash": "1.5,3", "width": 1.5},
     "disturbance": {"color": "#888888", "dash": "1.5,3", "width": 1.5},
+    # where a party's authority to act comes from (a law, an exemption, a licence) ...
+    "authority": {"color": "#00796b", "dash": "9,3", "width": 1.6},
+    # ... and control another party exercises at its own discretion (terms, revocation, enforcement)
+    "discretion": {"color": "#7b3294", "dash": "9,3,2,3", "width": 1.6},
 }
 NODE = {"authority": "#dfe7f2", "entity": "#e3f0e3", "org": "#ffffff", "commons": "#f3e7d3",
         "human": "#ffffff", "process": "#e8e8e8", "hub": "#e8e8e8"}
@@ -136,6 +144,11 @@ def load(path):
     m.setdefault("bands", [])
     for k, e in enumerate(m["edges"]):
         e.setdefault("k", k)
+        e.setdefault("label", "")
+        e["label_base"] = e["label"]
+        variants = [e["label"]] + list((e.get("labels") or {}).values())
+        # lay out with the widest variant, so every scenario's text fits the same place
+        e["label"] = max(variants, key=lambda t: (max(tw(x, EFS) for x in t.split("\n")), t.count("\n")))
     m["byid"] = {n["id"]: n for n in m["nodes"]}
     m["nodes"] = sorted(m["nodes"], key=lambda n: (n["level"], n["column"]))
     return m
@@ -594,8 +607,13 @@ class Grid:
 
 # ---------------------------------------------------------------- SVG
 
+def in_scenario(x, scen):
+    return scen is None or scen in (x.get("in") or [scen])
+
+
 def svg(m, G, view=None, data_ids=True):
-    focus = set(view["focus"]) if view else None
+    scen = view.get("scenario") if view else None
+    focus = set(view["focus"]) if view and view.get("focus") else None
     lit_e = {e["k"] for e in m["edges"] if focus is None or {e["from"], e["to"]} & focus}
     lit_n = None if focus is None else focus | {x for e in m["edges"] if e["k"] in lit_e for x in (e["from"], e["to"])}
     W, H = G.size
@@ -641,6 +659,8 @@ def svg(m, G, view=None, data_ids=True):
     byk = {e["k"]: e for e in m["edges"]}
     for k, pts in G.P.items():
         e = byk[k]
+        if not in_scenario(e, scen):
+            continue
         st = EDGE.get(e["kind"], EDGE["data"])
         col = st["color"] if k in lit_e else GREY
         dash = st["dash"] or ("6,4" if e.get("status") == "proposed" else None)
@@ -652,6 +672,8 @@ def svg(m, G, view=None, data_ids=True):
                  f'stroke-linecap="{"round" if e["kind"] in ("data", "disturbance") else "butt"}" '
                  f'marker-end="url(#ah{col[1:]})"/></g>')
     for n in m["nodes"]:
+        if not in_scenario(n, scen):
+            continue
         g = G.N[n["id"]]
         lit = lit_n is None or n["id"] in lit_n
         fill = NODE.get(n["kind"], "#ffffff") if lit else "#f6f6f6"
@@ -673,8 +695,10 @@ def svg(m, G, view=None, data_ids=True):
         o.append("</g>")
     for k, (_, (x, y, w, h), side) in sorted(G.labels.items()):
         e = byk[k]
+        if not in_scenario(e, scen):
+            continue
         col = EDGE.get(e["kind"], EDGE["data"])["color"] if k in lit_e else "#a8a8a8"
-        lines = e["label"].split("\n")
+        lines = (e.get("labels") or {}).get(scen, e["label_base"]).split("\n")
         anchor, tx = (("end", x + w - 2) if side == "left" else ("start", x + 2) if side == "right"
                       else ("middle", x + w / 2))
         o.append(f'<g class="elabel" data-k="{k}">')
@@ -687,8 +711,8 @@ def svg(m, G, view=None, data_ids=True):
 
 
 def legend():
-    rows = list(EDGE.items())[:4]
-    W, H = 640, 92
+    rows = [(k, st) for k, st in EDGE.items() if k != "disturbance"]
+    W, H = 14 + len(rows) * 150, 92
     o = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" font-family="{FONT}">',
          "<defs>"]
     for _, st in rows:
@@ -752,8 +776,9 @@ def render(path, outdir, data_ids=False):
     G = Grid(m)
     stem = Path(path).stem
     written = []
-    (outdir / f"{stem}.svg").write_text(svg(m, G, data_ids=data_ids))
-    written.append(outdir / f"{stem}.svg")
+    if m.get("base", True):
+        (outdir / f"{stem}.svg").write_text(svg(m, G, data_ids=data_ids))
+        written.append(outdir / f"{stem}.svg")
     for v in m.get("views", []):
         (outdir / f'{stem}--{v["id"]}.svg').write_text(svg(m, G, v, data_ids=data_ids))
         written.append(outdir / f'{stem}--{v["id"]}.svg')
