@@ -153,10 +153,10 @@ says nothing, the cell says "not stated".
   statement "Future alternate controllers (iAGCs) may be established for use with the Pod"
   (<https://www.tidepool.org/blog/the-inside-scoop-on-third-party-control-for-ace-pumps>,
   2023-02-01; the Insulet summary itself was **not read**).
-- Device level: the Omnipod 5 driver in the community kit uses message signing with a certificate
-  store and an Apple App Attest service (device-layer census, OmnipodKit row). App Attest is Apple's
-  service by which an app proves to a server that it is a genuine, unmodified build; this is the
-  "credential the manufacturer issues" case in PARTNER-READINESS §1 and §7.
+- Device level: the Omnipod 5 driver in the community kit presents a controller certificate and
+  signs pod commands (OmnipodKit `928bb79`, read 2026-10-17). The pod's check is the "credential the
+  manufacturer issues" case in PARTNER-READINESS §1 and §7. Where the driver's certificate comes
+  from is not described in this note.
 - Looked for and **nothing published found**: a developer, partner or interface-specification page on
   omnipod.com or insulet.com.
 
@@ -450,7 +450,7 @@ already expects contracts that allocate complaint investigation and reporting.
 | blocker | kind | what is removing it | what still stands |
 |---|---|---|---|
 | device encryption and pairing with a secret the person holds | technical | community implementations exist for most current devices (device-layer census, 14 protocols with two or more implementations), including authenticated pairing on Tandem (a code shown on the pump) and Dexcom G6 (the transmitter ID) | each new protocol has to be worked out again |
-| app checks and manufacturer-issued client credentials | technical / commercial | none issued to outsiders; open implementations present fixed credentials not issued to them | found on Dexcom G7 and Libre 3, where the open implementations carry a fixed client credential the manufacturer did not issue to them (xdripswift `c268542`, Juggluco `75399d7`, LibreLoop `150d2b1`, read 2026-10-17), which new sensors or firmware could stop accepting; on Omnipod 5 (§1.6, read from the driver's file names); possibly SmartGuide "advanced security" variants (not determined; AccuChekKit `4f8c3a8` carries manufacturer-certificate code, all of it commented out). Eversense 365 takes a device certificate from the manufacturer's service through the person's own account, with no app check found (EversenseKit `e1bb6fa`); where a device checks that the app is a genuine build the manufacturer approved, only the manufacturer can grant access (PARTNER-READINESS §7), and nothing in law requires it to issue a credential to a non-partner |
+| app checks and manufacturer-issued client credentials | technical / commercial | none issued to outsiders; open implementations present fixed credentials not issued to them | found on Dexcom G7 and Libre 3, where the open implementations carry a fixed client credential the manufacturer did not issue to them (xdripswift `c268542`, Juggluco `75399d7`, LibreLoop `150d2b1`, read 2026-10-17), which new sensors or firmware could stop accepting; on the MiniMed 780G, whose open connectors use the manufacturer's own mobile app key database (OpenMinimed Documentation `73a7811`); on Omnipod 5 (§1.6); possibly SmartGuide "advanced security" variants (not determined; AccuChekKit `4f8c3a8` carries manufacturer-certificate code, all of it commented out). Eversense 365 takes a device certificate from the manufacturer's service through the person's own account, with no app check found (EversenseKit `e1bb6fa`); where a device checks that the app is a genuine build the manufacturer approved, only the manufacturer can grant access (PARTNER-READINESS §7), and nothing in law requires it to issue a credential to a non-partner |
 | readings encrypted end to end between the device and the vendor's cloud | technical | none | not looked for in the census; where it is used, the phone relays data it cannot read and no reader on the phone, passive or authenticated, can use the readings |
 | devices leaving supply | commercial | none | the devices open implementations support today leave sale and coverage over time; no dates collected (§6) |
 | cloud access for real-time data | technical / contract | EU Data Act Art. 4–5 (real-time "where relevant and technically feasible") | in the US, no law requires it; Dexcom's public API is 1–3 h delayed; other clouds publish no API; follower routes change about twice a year per vendor (cloud-layer §1.3) |
@@ -484,8 +484,9 @@ software on their own Apple device are needed to protect data rights in diabetes
 - **Device-level protections are increasing, not decreasing.** Each new generation raises the cost
   of independent access. Pumps found still pair with a secret the person holds (Tandem, Dana,
   Medtrum). Dexcom G7 and Libre 3 already check the app, and open implementations work only by
-  carrying a fixed credential the manufacturer did not issue to them (xdripswift `c268542`, Juggluco `75399d7`, LibreLoop `150d2b1`, read 2026-10-17); Omnipod 5 checks the
-  app too (§1.6). For such a device knowledge of the protocol is not enough.
+  carrying a fixed credential the manufacturer did not issue to them (xdripswift `c268542`, Juggluco `75399d7`, LibreLoop `150d2b1`, read 2026-10-17). The MiniMed 780G and
+  Omnipod 5 check the app too; the 780G is met by the manufacturer's own mobile-app keys, and
+  Omnipod 5 as in §1.6. For such a device knowledge of the protocol is not enough.
 - **The removals run through channels that require being a company with a contract.** Every
   real-time vendor route, every interface specification and every cross-maker integration found is
   bilateral. No manufacturer publishes a route for a non-profit, an individual developer or an
@@ -609,12 +610,12 @@ is being an entity that meets them. That is the structure the
     cybersecurity guidance expect a manufacturer to show that a device's interfaces authenticate and
     authorise those that connect. If they do, that explains why device-level controls tighten and
     do not loosen, independent of whether §524B reaches a DIY build.
-15. **Omnipod 5 credential:** who issues the credential behind the community driver's certificate
-    store and App Attest service, and whether that driver runs against a real pod. Read at mechanism
-    level only, under the device-layer census's disclosure rule; §1.6 is read from file names.
+15. **Omnipod 5 credential:** where the community driver's controller certificate comes from, and
+    whether that driver runs against a real pod. To be raised with counsel in confidence, not in
+    this public note.
 16. **Fixed client credentials:** whether carrying, in published source or as a separate download,
-    a client credential that a device checks (Dexcom G7, Libre 3; §5.1) is circumvention or
-    trafficking under 17 U.S.C. §1201(a)(2); whether the (b)(7) data exemption covers its use by or
+    a client credential that a device checks (Dexcom G7, Libre 3, MiniMed 780G; §5.1) is
+    circumvention or trafficking under 17 U.S.C. §1201(a)(2); whether the (b)(7) data exemption covers its use by or
     on behalf of a patient; and the same questions under the EU anti-circumvention rule and Data Act
     Art. 4(11).
 
