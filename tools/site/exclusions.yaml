@@ -35,6 +35,10 @@
 
 exclusions:
   # ---- correspondence ----
+  - pattern: "docs/30-design/platform/upstream-asks-device-simulators/*.body.md"
+    axis: correspondence
+    reason: "Drafted messages to other projects (issues, a PR comment, Zulip and Discussions posts), not sent; the README index stays."
+    decided_by: "correspondence axis (maintainer 2026-09-30), applied 2026-10-17"
   - pattern: "docs/30-design/remedial/advisory-response-2026-09/pull-requests/reply-to-reporter-*.md"
     axis: correspondence
     reason: "Drafted reply to an advisory reporter, not sent."
