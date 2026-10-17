@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 149 | 43 | 7 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 151 | 45 | 7 |
 | **Modernization** | `release-train` | 32 | 5 | 1 |
-| **Multitenant** | `tenancy`, `platform` | 37 | 17 | 3 |
-| | **total** | **220** | **65** | **11** |
+| **Multitenant** | `tenancy`, `platform` | 38 | 18 | 3 |
+| | **total** | **223** | **68** | **11** |
 
 <!-- END GENERATED: horizons -->
 
@@ -171,6 +171,7 @@ cover more than one `BF-`:
 | `BFQ-165` | `not-started` | BF-165 - a treatment re-send matched by its fallback key is answered without _id |
 | `BFQ-166` | `not-started` | BF-166 - a profile re-sent with its own _id answers 500 |
 | `BFQ-168` | `merged-upstream` | BF-168 - the context chart's window sometimes cannot be dragged back to now |
+| `BFQ-169` | `not-started` | BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a  |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `in-progress` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `merged-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -206,11 +207,11 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 5 |  | 5 |  | 5 |  | 13 | 1 | 1 |  |  | 2 | **32** |
-| `register-open` | 33 | 3 | 1 | 1 | 11 | 1 | 55 | 4 |  |  | 3 |  | **112** |
+| `register-open` | 34 | 3 | 1 | 1 | 11 | 1 | 55 | 4 |  |  | 3 |  | **113** |
 | `tenancy` | 8 |  |  | 1 | 7 |  |  | 1 | 2 | 1 |  |  | **20** |
-| `docs-truth` | 7 |  | 1 |  |  |  |  |  | 7 |  |  |  | **15** |
+| `docs-truth` | 8 |  | 1 |  |  |  |  |  | 7 |  |  |  | **16** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
-| `platform` | 9 |  |  |  |  |  |  |  | 8 |  |  |  | **17** |
+| `platform` | 10 |  |  |  |  |  |  |  | 8 |  |  |  | **18** |
 
 <!-- END GENERATED: state-matrix -->
 
@@ -246,14 +247,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 185 | 84% |
+| Maintainer | 188 | 84% |
 | SECURITY reviewer | 16 | 7% |
 | Maintainer + a second human | 7 | 3% |
 | SAFETY reviewer | 6 | 3% |
 | Whoever edits it next | 3 | 1% |
 | Unassigned | 2 | 1% |
 | Upstream reviewers | 1 | 0% |
-| **total** | **220** | |
+| **total** | **223** | |
 
 <!-- END GENERATED: reviewer-load -->
 

@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 220 |
-| runnable gates | 278 |
-| explicit `no-gate:` markers | 262 |
+| items | 223 |
+| runnable gates | 281 |
+| explicit `no-gate:` markers | 264 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 262 of the 540 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 264 of the 545 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 65 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `not-started` | 68 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LOOP-ID-RECORDS, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, LOOP-ID-REPLY |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -122,6 +122,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-165** BF-165 - a treatment re-send matched by its fallback key is answered without _id
 - **BFQ-166** BF-166 - a profile re-sent with its own _id answers 500
 - **BFQ-168** BF-168 - the context chart's window sometimes cannot be dragged back to now
+- **BFQ-169** BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a client-supplied one
 - **BFQ-134** BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 - **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
 - **BFQ-133** BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one (fixed by BF-146's #8784), merged for 15.0.9
@@ -2118,7 +2119,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 112 items
+`parcel: register-open` &mdash; 113 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2221,6 +2222,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-166` | BF-166 - a profile re-sent with its own _id answers 500 | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-167` | BF-167 - devicestatus remove()'s filter is not pinned by any test | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `BFQ-168` | BF-168 - the context chart's window sometimes cannot be dragged back to now | `merged-upstream` | `bf/brush-extent` | patch | 2 run + 1 no-gate |
+| `BFQ-169` | BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a client-supplied one | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `merged-upstream` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -5348,6 +5350,36 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Notes.** Merged 2026-10-08 00:47Z as #8807 (merge fade2299, head b919af9f), merged by the maintainer; CI (Node 20/22/24 x Mongo 4.4/5/6, npm 12 install) and CodeQL green, Docker image validation still running when recorded. Not released. 2026-10-08 (maintainer): goes into 15.0.9; the release head moves from 43289dde to fade2299 (#8598's head), so run 023, the hand check of the chart drag and the #8598 re-approval are owed at fade2299. Filed 2026-10-07 by session -96 from a user's screen recording of dev (Firefox on Android, landscape). Branch bf/brush-extent b919af9f, one commit on dev 43289dde. Full suite 3566/0/4 (Node 22.23.2, MongoDB 7.0.43, dev 3564 plus 2); ESLint clean on the 3 files. Present on v15.0.8 too (2 of 12 unforced phone loads stuck); not a D3 7 regression. PR body reports/phase0-pr-bodies/brush-extent.md.
 
+### `BFQ-169` &mdash; BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a client-supplied one
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@fade2299` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-169` |
+
+**Blast radius.** Documentation only: the identifierField description in lib/api3/swagger.yaml and the same text in lib/api3/swagger.json (served at /api3-docs). No code change.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `patch`.** API documentation corrected to match shipped behaviour; nothing a client receives changes
+
+**Gates.**
+
+- **NO GATE** &mdash; Filed only. Reproduced 2026-10-17 by running resolveIdentifier from lib/api3/shared/operationTools.js at 15.0.8 and fade2299: a client-supplied identifier is kept (one console.warn), and one is computed only when none is sent. A fix's gate greps both swagger files for "The client should not create the identifier"; control: fade2299 still has it.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-10-17 while checking the Loop maintainers' proposal that Nightscout accept a client-supplied identifier. The text "this field is immutable by the client (it cannot be updated or patched)" is accurate for PUT and PATCH and stays; only the "should not create ... the server automatically assigns it" sentence is wrong. lib/api3/doc/ and README.md do not repeat it (read at fade2299).
+
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 
 | | |
@@ -6551,7 +6583,7 @@ alarm-readiness items, and the seam branch refresh.
 
 ## Document-truth sweeps
 
-`parcel: docs-truth` &mdash; 15 items
+`parcel: docs-truth` &mdash; 16 items
 
 Rule 6 work. Agents read SECTIONS, not documents, so a fact stated twice and
 differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
@@ -6573,6 +6605,7 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 | `DOCS-DATA-RIGHTS-LAW` | Bring the data-rights pages up to date: EU Data Act, the current DMCA medical-device data exemption and the 2027 rulemaking, the Washington health-data act | `done` | `main` | n/a | 3 run |
 | `DOCS-VENDOR-FACTS` | Update vendor facts across the repo: Abbott's partner list, MiniMed's separation from Medtronic, Diabeloop in twiist (verify each first) | `done` | `main` | n/a | 2 run |
 | `DOCS-REMOTE-FOLLOWUP` | Re-check two remote-command statements found while correcting DOCS-REMOTE-PATHS: where Trio's shared secret is configured, and LoopFollow's remote carbs path | `done` | `main` | n/a | 2 run |
+| `LOOP-ID-RECORDS` | Correct BF-116's claim that Loop sends identifier on devicestatus, and the docs that call the v3 identifier server-assigned | `not-started` | `records/loop-identifier-2026-10-17` | n/a | 3 run |
 
 ### `DOC-SEQUENCING` &mdash; phase0-pr-sequencing contradicts itself on the branch count
 
@@ -7044,6 +7077,40 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 
 **Notes.** Found by the DOCS-REMOTE-PATHS correction on 2026-10-17 and left out of that item's scope; both are read-derived suspicions, not yet verified. (1) remote- bolus-comparison.md:172 says Trio's shared secret is "Configured in Nightscout + Trio"; in source the sender (e.g. LoopFollow) holds the secret and Trio uploads only its device token to Nightscout (Trio 0b29cd534 NightscoutManager.swift:838-853, SecureMessenger.swift:30; LoopFollow 4a74b781 SecureMessenger.swift). (2) loopfollow-deep-dive.md:343 lists LoopFollow's remote carbs as "Via NS", while LoopFollow's RemoteType has no Nightscout path (Remote/RemoteType.swift). Re-read both at the pinned revisions in workspace.lock.json before editing; if either statement turns out to be right, record that and retire the gate rather than editing the page. Describe paths only; nothing about how any command's protection could be bypassed. Done 2026-10-17, both statements verified wrong in source and corrected: Trio generates and stores the shared secret (RemoteControlConfigStateModel.swift:7-37), reads it only to verify commands (TrioRemoteControl.swift:29), and uploads only its device token, bundle and team identifiers to Nightscout (NightscoutManager.swift:838-853), Trio 0b29cd534; LoopFollow 4a74b781 sends remote carbs via APNs for Loop (LoopAPNSCarbsView.swift:563-564) and Trio (TRC/MealView.swift:346), its only Nightscout call on the remote settings screen being a profile read (RemoteSettingsViewModel.swift:256).
 
+### `LOOP-ID-RECORDS` &mdash; Correct BF-116's claim that Loop sends identifier on devicestatus, and the docs that call the v3 identifier server-assigned
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `records/loop-identifier-2026-10-17` |
+| base | `main@5a6cef4d` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** docs/30-design/remedial/nightscout-backfix-register.md (BF-116 severity cell); living mapping and domain pages that say the API v3 identifier is server- assigned: mapping/nightscout/v3-treatments-schema.md, mapping/cross- project/terminology-matrix.md, docs/10-domain/nightscout-api-comparison.md, traceability/nightscout-api-gaps.md, docs/60-research/cgm-remote-monitor- source-synthesis.md.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** programme documentation
+
+**Gates.**
+
+- `[static]` `sh -c '! grep -qF "(Loop sends " docs/30-design/remedial/nightscout-backfix-register.md'`
+  - FAILS while BF-116's severity cell says Loop sends identifier on devicestatus. RED on 2026-10-17.
+- `[static]` `sh -c '! grep -nE "server-assigned\)|Primary key \(UUID\), server-assigned|Server-assigned immutable document ID|The .identifier. field is server-assigned" mapping/nightscout/v3-treatments-schema.md mapping/cross-project/terminology-matrix.md docs/10-domain/nightscout-api-comparison.md traceability/nightscout-api-gaps.md docs/60-research/cgm-remote-monitor-source-synthesis.md'`
+  - FAILS while any of the five living pages calls the v3 identifier server-assigned without saying a client-supplied one is kept. RED on 2026-10-17 (6 lines).
+- `[static]` `sh -c '! grep -A3 "^### 4.2 API v3" docs/10-domain/nightscout-api-comparison.md | grep -q "Server-assigned on insert"'`
+  - FAILS while the API comparison's v3 identifier section says "Server-assigned on insert". RED on 2026-10-17.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `reports/consumer-impact-15.0.9/clients-8758.md`
+
+**Notes.** Found 2026-10-17 while checking the Loop maintainers' identifier proposal. API v3 keeps a client-supplied identifier and computes one from device + date (+ eventType) only when none is sent (lib/api3/shared/operationTools.js resolveIdentifier, 15.0.8 and fade2299). Loop does not set identifier on devicestatus: NightscoutKit 4ec9fd12 Models/DeviceStatus.swift:60-61 writes it only if set, and NightscoutService StoredDosingDecision.swift:149 builds the status without it (consumer-impact report clients-8758.md, Loop item (a)). Dated snapshot reports and archives are left as written; pages that describe AndroidAPS's own model (it sends none, so the server computes one) are accurate for that client and are left.
+
 ---
 
 ## Backfix 2 - folded into 15.0.9
@@ -7138,7 +7205,7 @@ flag rule: versioning policy section 5.7.
 
 ## Controller registration and intent observability
 
-`parcel: platform` &mdash; 17 items
+`parcel: platform` &mdash; 18 items
 
 D18 (maintainer, 2026-10-09): two-tier controller registration - well-known
 declarations for backwards compatibility, controller-owned typed registrations
@@ -7166,6 +7233,7 @@ reproduced ones.
 | `HUB-REG-NOCTURNE` | Nocturne: propose the registration grammar and negotiation as a shared contract, with the hub active-state evidence | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `PROPOSAL-REG-CONTROLLERS` | Open-source AID controllers: propose registration, instances and negotiation, with pre-filled declarations | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `LAB-HUB-ACTIVE-STATE` | Lab: cgm-remote-monitor and Nocturne answer 'what is active at t' for the same intent records | `done` | `main` | n/a | 1 run |
+| `LOOP-ID-REPLY` | Draft a reply to the Loop maintainers' proposal that Nightscout accept a client-supplied identifier | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 
 ### `LAB-TRIO-INTENT` &mdash; Simulator lab: Trio override expiry, temp-target upload repeats, downloaded temp-target echo
 
@@ -7711,6 +7779,37 @@ reproduced ones.
 - `tools/lab/hub-active-state/results/RESULTS.md`
 
 **Notes.** The landscape document's §5 compares the two hubs case by case; the cgm- remote-monitor side is measured (fade2299), the Nocturne side (42275c812) is read-derived. Cases: a timed temp target followed by a cancel; Temporary Override Cancel; a Loop devicestatus override (duration in seconds remaining); a timed profile switch after a permanent one, queried after the timed one expires; an AndroidAPS 3.x profile switch with timeshift in milliseconds; two temp targets with the same millisecond; an out-of-order backfill of two overrides. For each, record each hub's answer at fixed query times. Break-it control for each Nocturne case: a record set where the hubs should agree, confirming the harness can report agreement. Findings that are Nocturne defects go to Nocturne as shared-contract evidence, with the record set attached. Measured 2026-10-12 (tools/lab/hub-active-state/results/RESULTS.md): Nocturne on SQLite through its real decomposers, StateSpanRepository, DeduplicationService, ActiveProfileResolver and BasalRateResolver; cgm-remote- monitor through ddata.js, profilefunctions.js and the loop and override plugins. 12 of 18 case rows agree on the latest-span read; all 20 control rows agree on every reading; every case has a perturbation that moves at least one hub. §5 confirmed for the devicestatus duration unit, the timed profile switch, the AAPS timeshift and the cancel span; the same-millisecond row is corrected (deduplication hides the second arrival on list reads, as cgm- remote-monitor drops it; GetActiveAtAsync still sees it); a stored Temporary Override Cancel is ignored by both hubs; the out-of-order backfill leaves two open Override spans. Not run: either HTTP API, Nocturne on PostgreSQL. Nothing filed with Nocturne.
+
+### `LOOP-ID-REPLY` &mdash; Draft a reply to the Loop maintainers' proposal that Nightscout accept a client-supplied identifier
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main@5a6cef4d` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `LOOP-ID-RECORDS`, `BFQ-169` |
+
+**Blast radius.** A drafted message in docs/30-design/platform/upstream-asks-loop-identifier/ (README plus body files, modelled on docs/30-design/platform/upstream-asks- device-simulators/). Nothing is sent by an agent; the maintainer sends it.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** drafted correspondence in this repository; ships nothing
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started. Done when the draft is in the directory above with its facts checked at named refs; whether it is sent cannot be checked from here.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `reports/consumer-impact-15.0.9/clients-8758.md`
+- `docs/30-design/platform/upstream-asks-device-simulators/README.md`
+
+**Notes.** Points the reply should carry, each re-checked at the ref before sending: API v3 already keeps a client-supplied identifier on entries, treatments and devicestatus (resolveIdentifier, 15.0.8 and fade2299), while its swagger says the opposite (BF-169); API v1 is a different path (treatments' identifier- first upsert arrived in 15.0.7: e78a5bc6, reaching dev through PR #8421's merge cdef1e7c, which GitHub lists as the commit's PR); Loop does not send identifier on devicestatus today.
 
 ---
 
