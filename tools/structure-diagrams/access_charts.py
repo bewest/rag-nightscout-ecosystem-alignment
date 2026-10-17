@@ -22,7 +22,7 @@ from render import DIAGRAMS, FONT, tw  # noqa: E402
 
 DATA = HERE / "access" / "devices.yaml"
 INK, MUTED, RULE, CARD = "#111111", "#555555", "#c8c8c8", "#ffffff"
-STEP_FILL = ["#eef3fa", "#d6e3f4", "#b9cfec", "#97b7e1"]   # one hue, light to dark: dependence
+STEP_FILL = ["#eef3fa", "#dce7f5", "#c6d8ef", "#adc7e8", "#93b5e0"]   # one hue, light to dark: dependence
 STATE = {   # tint, stripe, glyph, legend text
     "open": ("#e2f3e2", "#0ca30c", "●", "available without the manufacturer's permission"),
     "cond": ("#fdf0d2", "#c98a00", "◆", "available on conditions or at the manufacturer's discretion"),
@@ -60,7 +60,7 @@ def svg(w, h, title, body):
 
 def ladder(d):
     rungs, devs = d["rungs"], d["devices"]
-    colw, gap, m, rise = 222, 14, 18, 34
+    colw, gap, m, rise = 200, 12, 18, 30
     w = m * 2 + len(rungs) * colw + (len(rungs) - 1) * gap
     body = [text(w / 2, 26, "1·access-ladder · How much an open app depends on the manufacturer", 14, anchor="middle")]
     cols, tallest = [], 0
@@ -116,9 +116,10 @@ def ladder(d):
 
 
 def states(x):
-    r = {"A": "open", "B": "cond", "C": "closed", "D": "closed", None: "unknown"}[x["rung"]]
+    r = {"A": "open", "B": "cond", "C": "cond", "D": "closed", "E": "closed", None: "unknown"}[x["rung"]]
     rl = {"A": "A · protocol and what the person has", "B": "B · vendor app alongside",
-          "C": "C · issued credential", "D": "D · sealed", None: "not determined"}[x["rung"]]
+          "C": "C · credential via own account", "D": "D · approved app only", "E": "E · sealed",
+          None: "not determined"}[x["rung"]]
     o = x["open"]
     op = "open" if o >= 2 else "cond" if o == 1 else "closed"
     ot = f'{o}' + (f' ({x["open_note"]})' if x.get("open_note") else "")

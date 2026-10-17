@@ -51,7 +51,7 @@ The paths are drawn as believed, today and emerging in
 with a ladder of how much each device makes an open app depend on its manufacturer. Device by
 device:
 
-![1·access-matrix: for each pump and CGM line, the device link, the number of open implementations, the vendor-cloud route connectors use, the manufacturer's route for outsiders, the real-time route for outsiders, and supply. Most device links are open (step A); Omnipod 5 needs an issued credential; MiniMed 780G and SmartGuide advanced security are not determined. Cloud routes exist for Dexcom, Libre, CareLink and Tandem Source, at the vendor's discretion. The only route for outsiders is Dexcom's API with a one-to-three-hour delay; every real-time route is by invitation or not published. Supply has not been collected for any device](perspective/diagrams/1-access-matrix.svg)
+![1·access-matrix: for each pump and CGM line, the device link, the number of open implementations, the vendor-cloud route connectors use, the manufacturer's route for outsiders, the real-time route for outsiders, and supply. Most device links are open (step A); Eversense 365 needs a certificate fetched through the person's own account (step C); Omnipod 5 needs a credential for an approved app (step D); MiniMed 780G and SmartGuide advanced security are not determined. Cloud routes exist for Dexcom, Libre, CareLink and Tandem Source, at the vendor's discretion. The only route for outsiders is Dexcom's API with a one-to-three-hour delay; every real-time route is by invitation or not published. Supply has not been collected for any device](perspective/diagrams/1-access-matrix.svg)
 
 The cells that read "not checked", "not read" or "not collected" are the list of what to find out
 next (§10).

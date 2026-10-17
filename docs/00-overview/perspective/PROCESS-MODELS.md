@@ -303,6 +303,10 @@ a code printed with the sensor or shown on the pump, a serial, or the device its
 ([device-layer census](../../60-research/programme/stack-census-2026-09-30/device-layer.md)).
 Omnipod 5 is the one device found where the app itself is checked, read from the community
 driver's file names ([vendor note §1.6](../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md#16-insulet-omnipod)).
+Eversense 365 sits between the two: the open driver signs in to the manufacturer's service with
+the person's own account to get the device's certificate, so the manufacturer's service is in the
+path though no check of the app was found (EversenseKit `e1bb6fa`; its predecessor, the E3, has no
+link security).
 The cloud path runs on the person's own login and the vendor's tolerance, and breaks when the cloud
 changes ([evidence §5](../observations/ECOSYSTEM-EVIDENCE.md#5-work-that-arrives-on-other-organisations-calendars)).
 
@@ -314,15 +318,16 @@ sealed end to end for the manufacturer's cloud. The second was not looked for in
 On the cloud side the EU Data Act adds a duty to share, and the US has none
 ([vendor note §3.1](../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md#31-eu-data-act)).
 
-![1·access-ladder: four rising steps of dependence on the manufacturer. A, protocol plus what the person has: Omnipod Eros and DASH, Medtronic 5xx/7xx, Tandem t:slim X2 and Mobi, Dana RS/i, Medtrum Nano, Dexcom G6 and G7, Libre 1/2 and 3, Eversense, Accu-Chek SmartGuide. B, the manufacturer's own app alongside: G7 passive mode, Medtronic 640G/670G and several CGMs through companion apps. C, a credential the manufacturer issues: Omnipod 5, read from file names. D, sealed for the cloud: none found, not looked for. Not placed: MiniMed 780G and SmartGuide advanced security](diagrams/1-access-ladder.svg)
+![1·access-ladder: five rising steps of dependence on the manufacturer. A, protocol plus what the person has: Omnipod Eros and DASH, Medtronic 5xx/7xx, Tandem t:slim X2 and Mobi, Dana RS/i, Medtrum Nano, Dexcom G6 and G7, Libre 1/2 and 3, Eversense E3, Accu-Chek SmartGuide. B, the manufacturer's own app alongside: G7 passive mode, Medtronic 640G/670G and several CGMs through companion apps. C, a credential through the person's own account: Eversense 365. D, a credential for an approved app: Omnipod 5, read from file names. E, sealed for the cloud: none found, not looked for. Not placed: MiniMed 780G and SmartGuide advanced security](diagrams/1-access-ladder.svg)
 
 *Interpretation.*
 
 1. **The key, not the encryption, decides access.** Every device on step A uses authenticated or
    encrypted links, and open implementations work with all of them.
 2. **Each step up moves the key towards the manufacturer.** On step B the open app depends on the
-   manufacturer's app staying installed; on C, on a credential the manufacturer can withdraw; on D
-   no app on the phone can read the data at all.
+   manufacturer's app staying installed; on C, on the manufacturer's service answering the person's
+   sign-in; on D, on the manufacturer approving the app itself; on E no app on the phone can read
+   the data at all.
 3. **Loss on the device side and on the cloud side reach different people.** The device side stops
    automation for the person; the cloud side stops remote following for caregivers
    ([partner readiness §1](../PARTNER-READINESS.md#what-is-at-stake-on-each-path)).
