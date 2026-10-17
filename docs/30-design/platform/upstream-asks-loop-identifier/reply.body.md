@@ -196,6 +196,39 @@ has an `identifier` member; NightscoutService does not set it today. We would re
 device status decision with you on that basis: `identifier` first, then the identical-body rule
 for clients that send none.
 
+**A question back to you: a re-send or an edit?**
+Your watch-and-phone example could mean either of two things, and the proposal does not say
+which. Say the watch uploads a reading, and later the phone uploads the same reading with the same
+`identifier`, a different `device` and a `date` 1.5 s later. What should Nightscout do?
+
+| outcome | what is stored | what the phone sees |
+|---|---|---|
+| reject | the watch's record | an error (API v3 today: 400) |
+| update | one record, now with the phone's `device` and `date` | success |
+| acknowledge | the watch's record, unchanged | success, with the stored ids |
+
+Our decision of record is **update**. The write contract merges a matching re-send into the
+stored record on every path (decision Q1, 2026-10-12), and rule 5 matches on `identifier` first.
+So once built, the phone's upload would replace `device` and move `date` by 1.5 s. Today's
+servers do something different on every path: API v3 rejects it, v1 entries store a second
+record, and v1 treatments update it.
+
+The contrast matters for the backfill you describe. A rejection would stall the phone's upload of
+that data type, because NightscoutKit treats an error reply as a failed batch. An update rewrites
+which device uploaded the reading. An acknowledgement keeps the first upload and needs no
+coordination, but it cannot carry a correction.
+
+So, two cases:
+
+1. **The same reading, uploaded again by another device.** Should Nightscout acknowledge it and
+   keep the first `device` and `date`, or overwrite them with the later upload's?
+2. **An intended edit**, such as a carb's time or amount changed in Loop. Should a re-send with
+   the same `identifier` update the record? If both cases are wanted, how should Nightscout tell
+   them apart: by `POST` versus `PUT`, or by something in the record?
+
+Your answer becomes a decision row next to Q1, and we would revise Q1 for `identifier` matches if
+it points the other way.
+
 ## 6. What we propose to do next
 
 In order:

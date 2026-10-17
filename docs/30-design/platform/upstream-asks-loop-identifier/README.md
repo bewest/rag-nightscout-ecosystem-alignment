@@ -90,7 +90,7 @@ send `identifier`) is the direction the reply takes.
 | date | direction | channel | summary | where recorded |
 |---|---|---|---|---|
 | 2026-10-17 | received | private page shared with the maintainer | Loop developers' proposal: client `identifier`, unique sparse index, upsert, v1 by-identifier routes; Q1–Q3 | this README; to be weighed against D20 rule 5, write contract §6.1, and [ADR-002](../../../90-decisions/adr-002-sync-identity-strategy.md) (Proposed) |
-| — | to send | not chosen | [reply.body.md](reply.body.md) | — |
+| — | to send | not chosen | [reply.body.md](reply.body.md); adds (2026-10-17) a question back: is the watch-and-phone case a re-send to acknowledge or an edit to apply? Our decision of record (write contract Q1, merge on match) answers "update" | `ID-V3-IMMUTABLE-DECISION` (queue), beside write contract §6.1 Q1 |
 
 When the reply is sent, add its date, channel and link. When they answer, add a row and the
 decision row it produces.
