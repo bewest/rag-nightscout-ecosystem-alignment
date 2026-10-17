@@ -4012,7 +4012,7 @@ See <a href="gaps.html">gaps.md</a> for the index.</p>
 2. Reverse engineering of official Dexcom app
 3. Collaboration with existing implementations (xDrip+, DiaBLE)</p>
 <p><strong>Status</strong>: Documentation effort</p>
-<p><strong>Assertions</strong>: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/d9167f59429bf9f6b2ad41d941b2954422bb95ea/conformance/assertions/ble-protocol.yaml"><code>ble-protocol.yaml</code></a> - auth-required-before-glucose, auth-handshake-enables-glucose</p>
+<p><strong>Assertions</strong>: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ded8957322d283badedce691873a69bc2aded395/conformance/assertions/ble-protocol.yaml"><code>ble-protocol.yaml</code></a> - auth-required-before-glucose, auth-handshake-enables-glucose</p>
 <hr />
 <hr />
 <h3 id="gap-g7-002-g7-certificate-chain-undocumented">GAP-G7-002: G7 Certificate Chain Undocumented<a class="headerlink" href="#gap-g7-002-g7-certificate-chain-undocumented" title="Permanent link">&para;</a></h3>
@@ -4028,13 +4028,13 @@ See <a href="gaps.html">gaps.md</a> for the index.</p>
 2. Analysis of certificate formats (likely X.509)
 3. Documentation of signature verification</p>
 <p><strong>Status</strong>: Needs investigation</p>
-<p><strong>Assertions</strong>: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/d9167f59429bf9f6b2ad41d941b2954422bb95ea/conformance/assertions/ble-protocol.yaml"><code>ble-protocol.yaml</code></a> - auth-required-before-glucose</p>
+<p><strong>Assertions</strong>: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ded8957322d283badedce691873a69bc2aded395/conformance/assertions/ble-protocol.yaml"><code>ble-protocol.yaml</code></a> - auth-required-before-glucose</p>
 <hr />
 <hr />
 <h3 id="gap-g7-003-service-b-purpose-unknown">GAP-G7-003: Service B Purpose Unknown<a class="headerlink" href="#gap-g7-003-service-b-purpose-unknown" title="Permanent link">&para;</a></h3>
 <p><strong>Scenario</strong>: BLE Protocol Completeness</p>
 <p><strong>Description</strong>: The secondary Bluetooth service (UUID: F8084532-849E-531C-C594-30F1F86A4EA5) with characteristics E (F8084533) and F (F8084534) is present on Dexcom transmitters but its purpose is unknown.</p>
-<p><strong>Source</strong>: <a href="https://github.com/LoopKit/LoopWorkspace/blob/f8412858c59278d93b72f2905a9915b5101c9d82/CGMBLEKit/CGMBLEKit/BluetoothServices.swift">CGMBLEKit BluetoothServices.swift</a></p>
+<p><strong>Source</strong>: <a href="https://github.com/LoopKit/LoopWorkspace/blob/548b33245198eaae165c094c9c68fe333cb69c05/CGMBLEKit/CGMBLEKit/BluetoothServices.swift">CGMBLEKit BluetoothServices.swift</a></p>
 <p><strong>Impact</strong>:
 - Potentially missing functionality
 - May be used for firmware updates or diagnostics</p>

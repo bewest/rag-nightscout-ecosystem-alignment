@@ -2548,14 +2548,15 @@
 
 
 <h1 id="enough-quality-management-across-the-nightscout-ecosystem--proposal">Enough quality management across the Nightscout ecosystem — proposal<a class="headerlink" href="#enough-quality-management-across-the-nightscout-ecosystem--proposal" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>e502a327</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>5e265927</code>.</em></p>
 <p><em>For the maintainers of the ecosystem projects, the Nightscout Foundation board, the companies that
 host or build on Nightscout, and the community. <strong>Recommendation</strong> (part 3 of the overview;
 <a href="index.html">how the overview is organised</a>). <strong>DRAFT PROPOSAL for discussion, requiring review by
 the maintainers and by a quality-management professional before it is adopted.</strong> Where it touches
 vendor terms of use, device regulation or funding agreements, it also needs review by the
 foundation's counsel (§10). Written 2026-09-30 against this repository at <code>df5e2ade</code> and the
-<a href="../60-research/programme/stack-census-2026-09-30.html">stack census record</a> of the same day. Borrowing
+<a href="../60-research/programme/stack-census-2026-09-30.html">stack census record</a> of the same day; simulator
+and app-rig facts are from the <a href="../60-research/programme/device-simulators-2026-10-17.html">device-simulators record of 2026-10-17</a>. Borrowing
 a practice from a quality standard is not a claim of conformity with it. Nothing here is decided.</em></p>
 <p><em>Author's interests: the author maintains cgm-remote-monitor, founded a company that hosts
 Nightscout commercially, and could be a candidate for paid work under the
@@ -2584,10 +2585,16 @@ repositories (63 listed; a fork kept level with its upstream counts once), 56 of
   bases log in to Dexcom Share and five to LibreLinkUp, and each meets a vendor change on its own
   schedule.</li>
 <li><strong>Evidence exists but is not kept as evidence.</strong> There are more than 35,000 test declarations
-  across the stack, and simulators as good as faketandem. But only 14 repositories run their tests in
-  CI, and no device or connector repository publishes a per-release test report.</li>
+  across the stack, and simulators as good as faketandem, which since 2026-10-14 also holds its own
+  Tandem codec to pumpX2's with 7,961 recorded cases. Since 2026-10-12 a Dexcom G7 sensor emulator
+  (g7sim) and an Omnipod DASH pod simulator (LoopKit/pod) can serve one Loop build together in the iOS
+  Simulator, with no radio. But only 14 repositories run their tests in CI, and no device or connector
+  repository publishes a per-release test report.</li>
 <li><strong>Some checks exist nowhere.</strong> No fuzzing harnesses, no automated hardware-in-the-loop rigs, no
-  shared fixtures for vendor clouds, no scheduled check that notices a vendor change before users do.</li>
+  shared fixtures for vendor clouds, no scheduled check that notices a vendor change before users do.
+  The nearest to a rig is trio-test-harness, which builds Trio or Loop from a PR and drives it on the
+  iOS Simulator or a phone with the apps' built-in device simulators, and reports per PR. No harness
+  run yet configures a Nightscout or checks what an app uploads.</li>
 </ul>
 <p>The ecosystem's purpose depends on every layer. People use these tools to keep their data portable
 and computable for their own benefit, and to hand that job to helpers and tools they choose. That
@@ -2657,7 +2664,7 @@ each element, keep it only where it pays. Sources for every SQLite row:
 <tr>
 <td>Anomaly testing</td>
 <td>simulated out-of-memory, I/O errors, crashes, power loss</td>
-<td>fault injection in faketandem; disruption scenarios in the journey lab</td>
+<td>fault injection in faketandem (armed per message, transport level); pod-state faults and crash-on-next-command in LoopKit/pod; disruption scenarios in the journey lab</td>
 <td>fault injection in every simulator and lab: dropped, duplicated and corrupted frames, disconnects mid-command, clock skew, vendor refusals</td>
 </tr>
 <tr>
@@ -2691,14 +2698,14 @@ each element, keep it only where it pays. Sources for every SQLite row:
 <tr>
 <td><strong>device</strong> (drivers, simulators, pairing cryptography)</td>
 <td>a language-neutral vector corpus per protocol; known-answer tests from public standards for each primitive; fixed-randomness handshake transcripts; simulators with a virtual transport and fault injection; parser fuzzing; a hardware-in-the-loop smoke run before release</td>
-<td>faketandem (simulator in CI with faults); pumpX2's captured-message suite; OpenMinimed's cross-implementation SAKE transcript; AndroidAPS's cross-platform crypto vectors; Omnipod vectors held in common by copying</td>
+<td>faketandem (simulator in CI with faults, and a Go codec held to pumpX2's by 7,961 recorded cases); LoopKit/pod (DASH pod side, CI) and g7sim (G7 sensor side, no CI), both with an iOS Simulator transport; pumpX2's captured-message suite; OpenMinimed's cross-implementation SAKE transcript; AndroidAPS's cross-platform crypto vectors; Omnipod vectors held in common by copying</td>
 <td>extract the Omnipod and Tandem vectors that already exist into one file each and load them from every implementation's tests</td>
 </tr>
 <tr>
 <td><strong>controller</strong> (Loop, Trio, AndroidAPS, iAPS, oref0)</td>
-<td>algorithm conformance vectors across implementations; driver test targets run in the app's CI; validation on real AID rigs</td>
-<td><code>conformance/</code> vectors for oref0; Trio and AndroidAPS CI; LoopAlgorithm as a package</td>
-<td>run the kits' own test targets in Trio's and LoopWorkspace's CI</td>
+<td>algorithm conformance vectors across implementations; driver test targets run in the app's CI; app runs with external device simulators in place of the built-in ones, uploading to a lab Nightscout that checks what arrived; validation on real AID rigs</td>
+<td><code>conformance/</code> vectors for oref0; Trio and AndroidAPS CI; LoopWorkspace's CircleCI, which runs six kits' test targets (G7SensorKit, OmnipodKit, MinimedKit, MedtrumKit, CGMBLEKit, RileyLinkBLEKit) at the commits it pins; LoopAlgorithm as a package; trio-test-harness (app builds from any PR driven on the iOS Simulator or a phone by a coding agent, with per-PR reports; built-in device simulators only)</td>
+<td>run the kits' own test targets in Trio's CI, as LoopWorkspace's already does</td>
 </tr>
 <tr>
 <td><strong>cloud</strong> (vendor connectors)</td>
@@ -2780,8 +2787,9 @@ The same pattern fits here, with each stage useful even if the next never happen
 <li><strong>Publish.</strong> The vector-corpus format, the fixture format, the record template and the checklist
    templates. No project is asked to change anything. Volunteer-sized.</li>
 <li><strong>Adopt where it is already half done.</strong> The projects that already share vectors or run
-   simulators in CI: Omnipod (three implementations holding copied vectors), Tandem (pumpX2 and
-   faketandem), Medtronic 7xxG (PythonSake and JavaSake), and nightscout-connect with
+   simulators in CI: Omnipod (three implementations holding copied vectors, and LoopKit/pod), Tandem
+   (pumpX2 and faketandem, which already check each other), Dexcom G7 (G7SensorKit <code>next-dev</code> and
+   g7sim, which share known-answer cases), Medtronic 7xxG (PythonSake and JavaSake), and nightscout-connect with
    cgm-remote-monitor.</li>
 <li><strong>Shared labs.</strong> A connector lab and a change canary for the vendor clouds; the conformance suite
    runnable against any server.</li>

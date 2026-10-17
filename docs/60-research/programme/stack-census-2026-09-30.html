@@ -1792,6 +1792,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -4423,6 +4429,8 @@
       
         
       
+        
+      
     
     
     
@@ -4475,6 +4483,34 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="device-simulators-2026-10-17.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Device simulators and app-level test rigs, measured — 2026-10-17
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
               
             
               
@@ -6642,7 +6678,9 @@ commit named in the census table; written against this repository at <code>df5e2
 in §6 are <strong>estimates</strong> with their assumptions stated, not measurements. The legal and regulatory
 texts in the cloud annex are quoted for counsel and a regulatory professional to review; nothing
 here is a legal or regulatory conclusion. The proposal that uses this record is
-<a href="../../00-overview/QUALITY-SYSTEM.html">QUALITY-SYSTEM</a>.</em></p>
+<a href="../../00-overview/QUALITY-SYSTEM.html">QUALITY-SYSTEM</a>. Device simulators, G7SensorKit's
+<code>next-dev</code> and faketandem's own codec are brought up to date, with corrections, in
+the <a href="device-simulators-2026-10-17.html">device-simulators record of 2026-10-17</a>.</em></p>
 <h2 id="1-what-this-measures">1. What this measures<a class="headerlink" href="#1-what-this-measures" title="Permanent link">&para;</a></h2>
 <p>The question: across the whole Nightscout ecosystem stack, from the radio link to a sensor or pump
 up to the cloud services people use to get their data back, what validation and verification (V&amp;V)
@@ -6863,7 +6901,7 @@ implementations, 41 implementations in all (a port counts once and is marked):</
 <tr>
 <td>Omnipod DASH</td>
 <td>3 (OmniBLE, OmnipodKit, AndroidAPS)</td>
-<td>191 and 58, from copied tests</td>
+<td>191 and 14, from copied tests <em>(corrected: 58 was AndroidAPS's whole <code>pump/omnipod/</code>; see <a href="device-simulators-2026-10-17.html#5-the-census-picture-updated">device-simulators §5</a>)</em></td>
 </tr>
 <tr>
 <td>Medtronic 5xx/7xx</td>
@@ -6893,7 +6931,9 @@ found for X25519, P-256 key agreement or signatures, HKDF, or EC-JPAKE.</p>
 controllable clock, a pump-side request log, fault injection, and an integration job against pumpX2.
 It was built from the <code>pod</code> simulator (its README: "based on the 'pod' OmniPod simulator"). <code>pod</code>
 (Omnipod DASH) and dana-simulator (Dana, no commits since 2024-10-01) are Raspberry Pi BLE rigs with
-2 and 0 tests. No simulator exists for any Dexcom, Libre or Medtronic-over-RileyLink device.</p>
+2 and 0 tests. No simulator exists for any Dexcom, Libre or Medtronic-over-RileyLink device.
+<em>Correction: the <code>pod</code> figures are for the fork loopandlearn/pod; its upstream LoopKit/pod was 9
+commits ahead on this date and ran its tests in CI from 2026-05-23 (the <a href="device-simulators-2026-10-17.html#5-the-census-picture-updated">device-simulators record of 2026-10-17</a>).</em></p>
 <p><strong>Not found anywhere in the device layer:</strong> fuzzing harnesses, automated hardware-in-the-loop rigs,
 and per-release test reports.</p>
 <p><strong>Newer work in the census:</strong> loopandlearn's kits (OmnipodKit, including an Omnipod 5 pod type;

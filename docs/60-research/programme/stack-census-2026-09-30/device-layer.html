@@ -1792,6 +1792,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -4423,6 +4429,8 @@
       
         
       
+        
+      
     
     
     
@@ -4475,6 +4483,34 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../device-simulators-2026-10-17.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Device simulators and app-level test rigs, measured — 2026-10-17
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
               
             
               
@@ -4651,7 +4687,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27_24_7" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27_24_8" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -4673,14 +4709,14 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_5_27_24_7" id="__nav_5_27_24_7_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_5_27_24_8" id="__nav_5_27_24_8_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_27_24_7_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_5_27_24_7">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_27_24_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27_24_8">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -6961,7 +6997,7 @@
 <p class="admonition-title">Record</p>
 <p>Record as of 2026-09-30. A point-in-time document; it is not kept up to date.</p>
 </div>
-<p><em>Contributor-facing. Annex to the <a href="../stack-census-2026-09-30.html">stack census record of 2026-09-30</a>; a snapshot, not rewritten as the world moves. Prepared by research agents from the clones and pages named in it, and checked by the session that wrote the record.</em></p>
+<p><em>Contributor-facing. Annex to the <a href="../stack-census-2026-09-30.html">stack census record of 2026-09-30</a>; a snapshot, not rewritten as the world moves. Prepared by research agents from the clones and pages named in it, and checked by the session that wrote the record. Device simulators and G7SensorKit <code>next-dev</code> are brought up to date, with corrections, in the <a href="../device-simulators-2026-10-17.html">device-simulators record of 2026-10-17</a>.</em></p>
 <p>Measured 2026-09-30 from fresh clones under <code>externals/stack/&lt;owner&gt;__&lt;repo&gt;</code>. The manifest is <code>tools/programme/stack-census/repos.tsv</code> (layers <code>device</code> and <code>controller</code>). For four repositories a second checkout of the <code>dev</code> branch sits under <code>externals/stack/.dev/</code>. Where the <code>dev</code> branch is the active line, the figures below use it and name it.</p>
 <p>Scope: the BLE and radio drivers for CGMs and insulin pumps, the simulators, the protocol reverse-engineering, and the cryptography. Disclosure level: this file names mechanisms and protocol families only. It contains no keys, key-derivation constants, command sequences or bypass steps.</p>
 <h2 id="0-how-the-numbers-were-made">0. How the numbers were made<a class="headerlink" href="#0-how-the-numbers-were-made" title="Permanent link">&para;</a></h2>
@@ -7075,12 +7111,12 @@
 <td>2 / 2 (<code>pkg/eap/eap_test.go</code>, <code>pkg/message/message_test.go</code>)</td>
 <td>EAP message parse, message parse</td>
 <td>is the simulator: dynamic reservoir level, total delivery, alerts and faults; an optional 3-minute disconnect; WebSocket API for a separate front end</td>
-<td>none</td>
+<td>none <em>(correction: this is a fork; its upstream LoopKit/pod ran <code>go test ./...</code> in CI from 2026-05-23, see the <a href="../device-simulators-2026-10-17.html#5-the-census-picture-updated">2026-10-17 record</a>)</em></td>
 <td>GPL-3.0</td>
 </tr>
 </tbody>
 </table>
-<p>Trio (<code>nightscout/Trio</code> @ c0160aeaf) pulls all of the kits above except <code>pod</code> and <code>dana-simulator</code> as git submodules from <code>loopandlearn/*</code> (<code>.gitmodules</code>). Its <code>unit_tests.yml</code> runs on PRs and pushes to <code>dev</code>. It runs the "Trio Tests" scheme and <code>swift test</code> on <code>AlgorithmPackage</code>. No kit test target is referenced in Trio's project files, so the kits' own tests are not run by any CI found in the clones.</p>
+<p>Trio (<code>nightscout/Trio</code> @ c0160aeaf) pulls all of the kits above except <code>pod</code> and <code>dana-simulator</code> as git submodules from <code>loopandlearn/*</code> (<code>.gitmodules</code>). Its <code>unit_tests.yml</code> runs on PRs and pushes to <code>dev</code>. It runs the "Trio Tests" scheme and <code>swift test</code> on <code>AlgorithmPackage</code>. No kit test target is referenced in Trio's project files, so Trio's CI does not run the kits' own tests. <em>(Correction: LoopKit/LoopWorkspace, which the census did not list, runs <code>xcodebuild test</code> in CircleCI on a scheme that includes the CGMBLEKit, G7SensorKit, MedtrumKit, MinimedKit, OmnipodKit (<code>OmniTests</code>) and RileyLinkBLEKit test targets, at the commits it pins; the scheme was the same at <code>f8412858</code> on this date; see the <a href="../device-simulators-2026-10-17.html#5-the-census-picture-updated">2026-10-17 record</a>.)</em></p>
 <h3 id="12-ios-kits-swift-loopkit">1.2 iOS kits (Swift): LoopKit<a class="headerlink" href="#12-ios-kits-swift-loopkit" title="Permanent link">&para;</a></h3>
 <p>The LoopKit kits all show commits dated 2026-09-26, which look like a shared maintenance sweep.</p>
 <table>
@@ -7143,7 +7179,7 @@
 </tr>
 <tr>
 <td>LoopKit/G7SensorKit @ 0574a74 (2026-09-26)</td>
-<td>Dexcom G7 / ONE+. README: "Requires use of official G7 app", so this kit listens alongside the vendor app and does not authenticate itself.</td>
+<td>Dexcom G7 / ONE+. README: "Requires use of official G7 app", so this kit listens alongside the vendor app and does not authenticate itself. <em>(Scope: <code>main</code> only. <code>next-dev</code> authenticates directly from <code>7da3b69</code>, 2026-09-20; see the <a href="../device-simulators-2026-10-17.html#5-the-census-picture-updated">2026-10-17 record</a>.)</em></td>
 <td>none in the kit</td>
 <td>4 / 28</td>
 <td>G7 glucose message decode (with calibration, lifecycle, negative rate), extended version, CGM manager</td>
@@ -7253,7 +7289,7 @@
 <td>Omnipod DASH</td>
 <td>EAP-AKA/Milenage, X25519, AES-CCM, AES-CMAC</td>
 <td>28 / 57 (on master)</td>
-<td><code>MilenageTest</code> (4, fixed vectors), <code>EapMessageTest</code>, <code>KeyExchangeTest</code>, <code>EnDecryptTest</code>, command and response encode tests; shares 58 hex vectors with OmniBLE</td>
+<td><code>MilenageTest</code> (4, fixed vectors), <code>EapMessageTest</code>, <code>KeyExchangeTest</code>, <code>EnDecryptTest</code>, command and response encode tests; shares 14 hex vectors with OmniBLE <em>(corrected: 58 was counted over all of <code>pump/omnipod/</code>, 44 of them in <code>eros</code> tests; see the <a href="../device-simulators-2026-10-17.html#5-the-census-picture-updated">2026-10-17 record</a>)</em></td>
 </tr>
 <tr>
 <td><code>omnipod/common</code></td>
@@ -7572,7 +7608,7 @@
 <td><code>pod</code> (pod side)</td>
 <td>–</td>
 <td><strong>yes</strong> (<code>loopandlearn/pod</code>, Raspberry Pi BLE)</td>
-<td>OmniBLE∩OmnipodKit 191 (all of OmniBLE's), OmniBLE∩AAPS 58; the Milenage known-answer test exists only in AAPS</td>
+<td>OmniBLE∩OmnipodKit 191 (all of OmniBLE's), OmniBLE∩AAPS 14 (<code>dash</code>; corrected, 58 was all of <code>pump/omnipod/</code>); the Milenage known-answer test exists only in AAPS</td>
 </tr>
 <tr>
 <td>Omnipod 5</td>
@@ -7836,8 +7872,8 @@
 <tr>
 <td>Omnipod DASH</td>
 <td><strong>3</strong> (OmniBLE, OmnipodKit, AAPS) + a pod-side simulator</td>
-<td>OmnipodKit forks OmniBLE; the AAPS tests share 58 vectors</td>
-<td>191 and 58 (copied)</td>
+<td>OmnipodKit forks OmniBLE; the AAPS <code>dash</code> tests share 14 vectors (corrected, 58 was all of <code>pump/omnipod/</code>)</td>
+<td>191 and 14 (copied)</td>
 <td>The Milenage known-answer test exists only in AAPS. Its vectors, plus the public 3GPP Milenage test sets, could run in both Swift implementations.</td>
 </tr>
 <tr>
@@ -7917,7 +7953,7 @@
 <li><strong>Fuzzing:</strong> none found. The matches for "fuzz" in xDrip, AAPS and Juggluco are timing and graph "fuzz" factors, not fuzz harnesses.</li>
 <li><strong>Hardware-in-the-loop:</strong> there are no automated rigs in the clones. The Raspberry Pi simulators and the LibreCR harness app are manual rigs.</li>
 <li><strong>Records:</strong> no per-release test report or verification record was found in any device repository. Coverage upload exists for pumpX2 and faketandem (codecov/jacoco) and for AAPS (<code>codecov.yml</code>).</li>
-<li><strong>CI that runs device tests:</strong> AAPS (CircleCI), xDrip, pumpX2, controlX2, faketandem, JavaSake, JavaPumpConnector and xdrip-js. <strong>No CI</strong> covers OmnipodKit, DanaKit, MedtrumKit, EversenseKit, AccuChekKit, LibreCRKit, LibreLoop, OmniBLE, OmniKit, MinimedKit or G7SensorKit (RileyLinkKit, CGMBLEKit and LibreTransmitter have legacy <code>.travis.yml</code> only), and none covers PythonSake, PythonPumpConnector, Juggluco, DiaBLE, pod or dana-simulator. Trio's test workflow does not reference the kits' test targets.</li>
+<li><strong>CI that runs device tests:</strong> AAPS (CircleCI), xDrip, pumpX2, controlX2, faketandem, JavaSake, JavaPumpConnector and xdrip-js. <strong>No CI</strong> covers OmnipodKit, DanaKit, MedtrumKit, EversenseKit, AccuChekKit, LibreCRKit, LibreLoop, OmniBLE, OmniKit, MinimedKit or G7SensorKit (RileyLinkKit, CGMBLEKit and LibreTransmitter have legacy <code>.travis.yml</code> only), and none covers PythonSake, PythonPumpConnector, Juggluco, DiaBLE, pod (the fork measured; its upstream LoopKit/pod has CI, see the <a href="../device-simulators-2026-10-17.html#5-the-census-picture-updated">2026-10-17 record</a>) or dana-simulator. Trio's test workflow does not reference the kits' test targets. <em>(Correction: LoopKit/LoopWorkspace, which the census did not list, runs <code>xcodebuild test</code> in CircleCI on a scheme that includes the CGMBLEKit, G7SensorKit, MedtrumKit, MinimedKit, OmnipodKit (<code>OmniTests</code>) and RileyLinkBLEKit test targets, at the commits it pins; the scheme was the same at <code>f8412858</code> on this date; see the <a href="../device-simulators-2026-10-17.html#5-the-census-picture-updated">2026-10-17 record</a>.)</em></li>
 </ul>
 <h3 id="42-what-a-quality-control-system-for-this-layer-would-need">4.2 What a quality-control system for this layer would need<a class="headerlink" href="#42-what-a-quality-control-system-for-this-layer-would-need" title="Permanent link">&para;</a></h3>
 <ol>

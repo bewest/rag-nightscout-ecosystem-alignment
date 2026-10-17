@@ -2551,7 +2551,7 @@
 
 
 <h1 id="the-nightscout-ecosystem-what-it-consists-of-what-depends-on-it-and-what-keeping-it-current-takes">The Nightscout ecosystem: what it consists of, what depends on it, and what keeping it current takes<a class="headerlink" href="#the-nightscout-ecosystem-what-it-consists-of-what-depends-on-it-and-what-keeping-it-current-takes" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-16 at <code>97d0e2fa</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>38395a91</code>.</em></p>
 <p><em>For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
 <strong>Observations</strong> (part 1 of the overview; <a href="../index.html">how the overview is organised</a>). Living
 page, assembled 2026-10-02 against this repository at <code>e3d7b65c</code>; §7 added 2026-10-16 at <code>66403e0f</code>. It describes; it recommends
@@ -2986,7 +2986,8 @@ Which system does better, for whom and in which circumstances is a question thes
 answer.</p>
 <h2 id="7-research-analysis-and-test-tools">7. Research, analysis and test tools<a class="headerlink" href="#7-research-analysis-and-test-tools" title="Permanent link">&para;</a></h2>
 <p>Measured 2026-10-16 against this repository at <code>66403e0f</code> and the clones in <code>externals/</code> (last
-commit dates from <code>git -C externals/&lt;repo&gt; log -1 --format=%cs</code>). Listed by kind, not ranked.</p>
+commit dates from <code>git -C externals/&lt;repo&gt; log -1 --format=%cs</code>); the g7sim, pod and trio-test-harness rows on
+2026-10-17 (detail in the <a href="../../60-research/programme/device-simulators-2026-10-17.html">device-simulators record</a>). Listed by kind, not ranked.</p>
 <h3 id="71-research-tools-elsewhere-in-the-ecosystem">7.1 Research tools elsewhere in the ecosystem<a class="headerlink" href="#71-research-tools-elsewhere-in-the-ecosystem" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3045,6 +3046,24 @@ commit dates from <code>git -C externals/&lt;repo&gt; log -1 --format=%cs</code>
 <td>a TypeScript library simulating CGM, insulin and patient scenarios</td>
 <td>Apache-2.0</td>
 <td>2026-05-14</td>
+</tr>
+<tr>
+<td><a href="https://github.com/LoopKit/g7sim">g7sim</a></td>
+<td>a Dexcom G7 sensor emulator for CGM software under development, over Bluetooth on Linux or for an app in the iOS Simulator; simulated data only</td>
+<td>MIT</td>
+<td>2026-10-12</td>
+</tr>
+<tr>
+<td><a href="https://github.com/LoopKit/pod">pod</a></td>
+<td>an Omnipod DASH pod simulator, over Bluetooth on a Raspberry Pi or for an app in the iOS Simulator, with a control panel for reservoir, alerts and faults</td>
+<td>GPL-3.0</td>
+<td>2026-10-12</td>
+</tr>
+<tr>
+<td><a href="https://github.com/jwoglom/trio-test-harness">trio-test-harness</a></td>
+<td>builds, installs, drives and screenshots Trio or Loop from any branch or PR on the iOS Simulator or a phone, with HTML or PR-comment reports</td>
+<td>none</td>
+<td>2026-10-17</td>
 </tr>
 <tr>
 <td><a href="https://github.com/nudgebg/babelbetes">babelbetes</a></td>

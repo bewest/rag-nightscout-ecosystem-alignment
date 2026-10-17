@@ -1,0 +1,8976 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/10-domain/g7sim-deep-dive.html">
+      
+      
+        <link rel="prev" href="g7-protocol-specification.html">
+      
+      
+        <link rel="next" href="gap-api-freshness-verification.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>g7sim Deep Dive - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#g7sim-deep-dive" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              g7sim Deep Dive
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../site/pages/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_23" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_23" id="__nav_5_23_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_23_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_23">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    10-domain/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="aaps-oref0-divergence-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS vs oref0 Algorithm Divergence Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="algorithm-comparison-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithm Prediction Comparison: Cross-System Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api-v3-pagination-compliance.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API v3 Pagination Compliance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="app-store-pathway-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    App Store Pathway Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="apple-watch-complications-survey.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Apple Watch Complications Survey
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="authentication-flows-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Authentication Flows Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="authority-model.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authority &amp; Identity Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="autosens-dynamic-isf-comparison.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosens and Dynamic ISF Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="babelbetes-multifactor-pattern.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Multi-Factor Data Extraction Pattern
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="basal-schedule-comparison.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Basal Schedule Comparison: Loop vs AAPS vs Trio vs oref0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="batch-ordering-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Batch Operation Ordering Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ble-cgm-library-consolidation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BLE CGM Library Consolidation Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bolus-wizard-formula-comparison.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bolus Wizard Formula Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bridge-deprecation-plan.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Connector Bridge Deprecation Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="carb-absorption-comparison.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Carb Absorption Model Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="carb-absorption-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Carb Absorption Models: Cross-System Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="carb-absorption-model-comparison.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Carb Absorption Model Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-data-sources-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Data Sources Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-remote-monitor-analysis-depth-matrix.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor Analysis Depth Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-remote-monitor-api-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor API Layer Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-remote-monitor-auth-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor Authentication Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-remote-monitor-database-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor Database Layer Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-remote-monitor-design-review.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor Design Review
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-remote-monitor-frontend-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor Frontend Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-remote-monitor-plugin-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor Plugin System Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-remote-monitor-pr-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor Open PR Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-remote-monitor-sync-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor Sync/Upload Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-session-handling-comparison.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Sensor Session Handling Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-session-handling-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Sensor Session Handling Cross-Project Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-trend-arrow-standardization.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Trend Arrow Standardization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="client-id-handling-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Client-Supplied _id Handling in Nightscout
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cross-controller-conflicts-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-Controller Conflict Detection Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cross-platform-testing-infrastructure-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-Platform Testing Infrastructure Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cross-platform-testing-research.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-Platform Testing Harness Research
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="data-rights-primer.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Rights Primer for Diabetes Technology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="device-capability-architecture-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Device Capability Architecture Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="devicestatus-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DeviceStatus Structure Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="dexcom-ble-protocol-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dexcom G6/G7 BLE Protocol Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="diable-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DiaBLE Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="documentation-parse-audit.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Parse Audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="duration-utcoffset-unit-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Duration and utcOffset Unit Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="effect-bundle-architecture-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Effect Bundle Architecture Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="entries-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Entries Collection Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="follower-caregiver-feature-consolidation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Follower/Caregiver Feature Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="g7-jpake-implementation-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    G7 J-PAKE Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="g7-protocol-specification.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dexcom G7 BLE Protocol Specification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    g7sim Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="g7sim-deep-dive.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    g7sim Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-g7sim-emulates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What g7sim emulates
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. What g7sim emulates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-sensor-identity-and-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Sensor identity and models
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-advertising-schedule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Advertising schedule
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-gatt-layout-and-protocol-handler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 GATT layout and protocol handler
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-readings-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Readings model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-ios-behaviours-modelled-for-the-simulator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 iOS behaviours modelled for the Simulator
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-transports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Transports
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-control-surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Control surface
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-readme-status-table-checked-against-the-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. README status table checked against the code
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Tests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Inventory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-ablation-do-the-crypto-tests-fail-for-the-right-reason" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Ablation: do the crypto tests fail for the right reason?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-relationship-to-other-g7-implementations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Relationship to other G7 implementations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Relationship to other G7 implementations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-which-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Which "app"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-shared-test-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Shared test vectors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-executed-cross-check-emulator-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Executed cross-check: emulator identity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-integration-surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Integration surface
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Integration surface">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-trio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Trio
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-loopkitpod" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 LoopKit/pod
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-trio-test-harness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4 trio-test-harness
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#75-ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.5 CI
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-relevance-to-nightscout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Relevance to Nightscout
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-what-is-not-covered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. What is not covered
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-reproduce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Reproduce
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gap-api-freshness-verification.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GAP-API Freshness Verification Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="glooko-public-connectivity-research-2026-07-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glooko Public Connectivity Research (2026-07-07)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="glossary.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="glucose-unit-conversion-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glucose Unit Conversion Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="healthkit-integration-audit.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HealthKit Integration Audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="insulin-curves-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Insulin Curves Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="insulin-model-comparison.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Insulin Model Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="libre-protocol-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Libre Sensor Protocol Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="libre3-protocol-gap-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Libre 3 Protocol Readiness Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="loop-oref0-semantic-equivalence.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop vs oref0 Semantic Equivalence Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="loop-smb-gating-deep-dive-2026-04-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop Automatic-Bolus SMB Gating — Code Deep Dive (EXP-2990)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="loopcaregiver-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LoopCaregiver Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="loopfollow-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LoopFollow Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="lsp-environment-check.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LSP Environment Suitability Check
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="lsp-verification-setup-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LSP Verification Setup Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="mongodb-storage-layer-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MongoDB Storage Layer Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="multifactored-factsloaders-deconfounding-architecture.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multifactored FactsLoaders as Deconfounding Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-api-comparison.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout API v1 vs v3 Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-apiv3-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout API v3 Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-connect-architecture-review-2026-07-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-connect Architecture Review (2026-07-07)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-connect-connector-triage-2026-07-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-connect Connector PR Triage (2026-07-07)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-connect-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-connect Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-connect-design-review.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-connect Design Review
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-data-model.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Data Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-devicestatus-schema-audit.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout devicestatus Schema Audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-librelink-up-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-librelink-up Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-maintainer-recommendations.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Maintainer Recommendations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-pr-review-protocol.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout PR Coherence Review Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-telemetry-observability-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry and Observability Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-write-purification-compatibility-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Write Purification Compatibility Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nocturne-auth-compatibility.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nocturne Authentication Mode Compatibility Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nocturne-cgm-remote-monitor-profile-sync.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nocturne vs cgm-remote-monitor Profile Sync Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nocturne-connector-coordination.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nocturne Connector Polling Coordination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nocturne-ddata-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nocturne V2 DData Endpoint Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nocturne-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nocturne Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nocturne-deletion-semantics.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nocturne Deletion Semantics Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nocturne-eventtype-handling.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nocturne eventType Handling Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nocturne-override-temptarget-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nocturne Override/Temporary Target Representation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nocturne-percentage-timeshift-handling.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nocturne Percentage/Timeshift Handling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nocturne-profileswitch-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nocturne ProfileSwitch Treatment Model Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nocturne-rust-oref-profile-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nocturne Rust oref Profile Handling Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nocturne-signalr-bridge-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nocturne SignalR→Socket.IO Bridge Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nocturne-srvmodified-gap-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nocturne srvModified Field Gap Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nocturne-v4-profile-extensions.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nocturne V4 ProfileSwitch Extensions Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="node-lts-upgrade-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Node.js LTS Upgrade Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="omnipod-pod-simulator-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Omnipod DASH Pod Simulator (LoopKit/pod) Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="openaps-oref0-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenAPS and oref0 Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="override-profile-switch-comparison.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Override and Profile Switch Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="override-temp-target-sync-comparison.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Override and Temporary Target Sync Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pr-adoption-sequencing-proposal.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PR Adoption Sequencing Proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="prediction-arrays-comparison.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prediction Array Formats Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="prediction-curve-documentation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prediction Curve Documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="priority-pr-deep-dives.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Priority PR Deep-Dives
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="profile-client-patterns.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profile Client Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="profile-schema-alignment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profile Schema Alignment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="profile-switch-sync-comparison.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profile Switch Sync Comparison: AAPS vs Loop vs Trio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="progressive-enhancement-framework.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progressive Enhancement Framework for Diabetes Technology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pump-communication-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pump Communication Protocols Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="remote-bolus-comparison.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remote Bolus Command Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="remote-commands-comparison.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remote Commands Cross-System Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reporting-needs-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reporting Needs Analysis: nightscout-reporter vs Built-in Reports
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="req-api-openapi-alignment-audit.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REQ-API → OpenAPI Alignment Audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sdqctl-iterate-effectiveness-report-3.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl iterate Effectiveness Report #3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sdqctl-workflow-integration.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Integration Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="server-side-dedup-considerations.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Server-Side Deduplication Considerations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="share2nightscout-bridge-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    share2nightscout-bridge Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="share2nightscout-bridge-pr-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    share2nightscout-bridge PR &amp; Issue Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="smb-emission-policy-deep-dive-2026-04-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SMB Emission Policy — Loop (AB-ON) vs oref1 — Code-side deep dive (2026-04-23)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="statespan-client-sdk-patterns.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    StateSpan Client SDK Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="statespan-gap-remediation-mapping.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    StateSpan Gap Remediation Mapping
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="swift-package-ecosystem-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Swift Package Ecosystem Assessment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sync-identity-field-audit.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sync Identity Field Audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tandem-integration-inventory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tandem Integration Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="target-range-handling-comparison.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Target Range Handling Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tconnectsync-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tconnectsync Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="temp-basal-vs-smb-comparison.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Temp Basal vs SMB Dosing Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="testflight-distribution-infrastructure.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TestFlight Distribution Infrastructure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tidepool-integration-inventory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tidepool Integration Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tool-coverage-audit.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tool Coverage Audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="treatments-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Treatments Collection Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="trio-comprehensive-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Trio Comprehensive Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="trio-nightscout-sync-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Trio Nightscout Sync Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="trio-openaps-bridge-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Trio OpenAPS.swift Bridge Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="trio-oref-integration-mapping.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Trio-dev oref Integration Mapping
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="trio-test-harness-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    trio-test-harness Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="trusted-identity-providers.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Trusted Identity Providers in the Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="v4-api-client-implementation-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    V4 API Client Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="websocket-event-coverage.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WebSocket Event Coverage: Nightscout Socket.IO vs REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="widgetkit-standardization-survey.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WidgetKit Standardization Survey
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="xdrip-js-deep-dive.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip-js Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="client-id-analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    client-id-analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="field-reference/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    field-reference/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../30-design/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../60-research/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/pages/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-g7sim-emulates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What g7sim emulates
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. What g7sim emulates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-sensor-identity-and-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Sensor identity and models
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-advertising-schedule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Advertising schedule
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-gatt-layout-and-protocol-handler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 GATT layout and protocol handler
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-readings-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Readings model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-ios-behaviours-modelled-for-the-simulator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 iOS behaviours modelled for the Simulator
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-transports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Transports
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-control-surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Control surface
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-readme-status-table-checked-against-the-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. README status table checked against the code
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Tests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Inventory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-ablation-do-the-crypto-tests-fail-for-the-right-reason" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Ablation: do the crypto tests fail for the right reason?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-relationship-to-other-g7-implementations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Relationship to other G7 implementations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Relationship to other G7 implementations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-which-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Which "app"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-shared-test-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Shared test vectors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-executed-cross-check-emulator-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Executed cross-check: emulator identity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-integration-surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Integration surface
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Integration surface">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-trio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Trio
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-loopkitpod" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 LoopKit/pod
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-trio-test-harness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4 trio-test-harness
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#75-ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.5 CI
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-relevance-to-nightscout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Relevance to Nightscout
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-what-is-not-covered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. What is not covered
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-reproduce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Reproduce
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="g7sim-deep-dive">g7sim Deep Dive<a class="headerlink" href="#g7sim-deep-dive" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-10-17 at <code>38395a91</code>.</em></p>
+<p><em>Contributor-facing. Measured 2026-10-17 at LoopKit/g7sim <code>7c039de5</code> (2026-10-12; the GitHub default branch <code>main</code> had the same head on 2026-10-17). Other repositories cited: LoopKit/G7SensorKit <code>next-dev</code> <code>e17129d</code> (2026-10-15) and <code>main</code> <code>dd91f46</code> (2026-10-03); LoopKit/LoopWorkspace <code>next-dev</code> <code>1561bff0</code> (2026-10-15), <code>dev</code> <code>c1f55970</code> and <code>main</code> <code>548b3324</code> (read through the GitHub API); LoopKit/NightscoutService <code>ace20b0f</code> (2026-10-14, the LoopWorkspace <code>next-dev</code> pin); nightscout/Trio <code>dev</code> and <code>main</code> (G7SensorKit pointer read through the GitHub API on 2026-10-17); LoopKit/pod <code>a491a5e</code> (2026-10-12); jwoglom/trio-test-harness <code>c3c1bfe</code> (2026-10-17); mickeyl/ImpossiBLE <code>58fe38d</code> (the pin in g7sim's build script); JohanDegraeve/xdripswift <code>c268542e</code>; NightscoutFoundation/xDrip <code>9898cb8e0</code>; xdrip-js/xdrip-js <code>dev</code> <code>e301273</code>; j-kaltes/Juggluco <code>db70dc1</code>. Disclosure level: cryptography is named by family only. This page contains no keys, constants, test vectors or handshake byte sequences.</em></p>
+<p>g7sim is a Go program that plays the sensor side of a Dexcom G7, ONE+ or Stelo for CGM software under development. The client it was built against is LoopKit/G7SensorKit's direct-connection code, which is on G7SensorKit's <code>next-dev</code> branch and not on its <code>main</code>. g7sim has two transports. The first is a real Bluetooth LE peripheral on Linux, built on a vendored <code>paypal/gatt</code> HCI stack. The second, <code>impossible</code>, serves an app running in the iOS Simulator over ImpossiBLE's JSON-over-Unix-socket CoreBluetooth replacement, so no radio is needed. It models the sensor's advertising schedule, display slots, lockout, readings (warm-up, expiry, a 24-hour backfill store, calibration offset), the identity certificate chain, and the iOS behaviours that decide whether a backgrounded app wakes for a reading. The project describes itself as "for development use only — not a Dexcom product", unaffiliated with Dexcom, Inc., emitting "only simulated, made-up data".</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+<th>How it was measured</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Repository</td>
+<td>LoopKit/g7sim, MIT, Go</td>
+<td><code>gh api repos/LoopKit/g7sim</code></td>
+</tr>
+<tr>
+<td>History</td>
+<td>17 commits, 2026-10-09 to 2026-10-12; GitHub repository created 2026-10-10</td>
+<td><code>git log</code> at <code>7c039de5</code></td>
+</tr>
+<tr>
+<td>Size</td>
+<td>5,407 lines of Go outside <code>third_party/</code> (26 files)</td>
+<td><code>wc -l $(git ls-files '*.go' \| grep -v third_party)</code></td>
+</tr>
+<tr>
+<td>Packages</td>
+<td><code>main</code> (transports, HTTP API, web UI), <code>g7</code> (sensor model, protocol handler, crypto), <code>suspend</code>, <code>cmd/impossible-mux</code></td>
+<td>tree</td>
+</tr>
+<tr>
+<td>Tests</td>
+<td>33 <code>func Test</code> in 8 files, no <code>t.Run</code> subtests; 4 functions loop over 11 table cases</td>
+<td><code>go test -v ./...</code> (§5)</td>
+</tr>
+<tr>
+<td>Test result</td>
+<td>4 packages <code>ok</code>, 33 PASS, 0 FAIL; also clean under <code>-race</code> and <code>go vet</code></td>
+<td>Go 1.23.0, linux/amd64, offline</td>
+</tr>
+<tr>
+<td>CI</td>
+<td>none: no <code>.github/</code> in the tree, and <code>gh api repos/LoopKit/g7sim/actions/workflows</code> returns <code>total_count</code> 0</td>
+<td>2026-10-17</td>
+</tr>
+<tr>
+<td>Builds</td>
+<td>linux/amd64, linux/arm (GOARM=6, Pi Zero class) and darwin/arm64 cross-builds succeed</td>
+<td><code>GOOS=… go build</code></td>
+</tr>
+<tr>
+<td>Client it targets</td>
+<td>G7SensorKit direct connection (<code>next-dev</code>); Loop built from LoopWorkspace <code>next-dev</code></td>
+<td>§6, §7</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="1-what-g7sim-emulates">1. What g7sim emulates<a class="headerlink" href="#1-what-g7sim-emulates" title="Permanent link">&para;</a></h2>
+<h3 id="11-sensor-identity-and-models">1.1 Sensor identity and models<a class="headerlink" href="#11-sensor-identity-and-models" title="Permanent link">&para;</a></h3>
+<p>A sensor is created with <code>-fresh</code>, or from the web UI or <code>POST /new</code>, and is persisted in a JSON state file (<code>g7state.json</code> by default). The state holds the serial, the 4-digit pairing code, the model, the activation time, the session parameters, the display slots and their keys, the identity certificate, the calibration and the stored readings (<code>g7/state.go</code>).</p>
+<ul>
+<li><strong>Models.</strong> <code>g7</code>, <code>oneplus</code> and <code>stelo</code> differ only in the advertised name prefix, which is the only thing G7SensorKit uses to tell them apart (<code>g7/state.go:34-36</code>).</li>
+<li><strong>Presets.</strong> The 10- and 15-day presets carry the session length, warm-up, algorithm version and maximum lifetime that a real sensor reports in its extended-version reply. The values come from captured replies (<code>g7/state.go:43-57</code>). <code>-lifetime</code> and <code>-warmup</code> override the preset lengths. A 12-hour grace period is added after the rated lifetime (<code>GracePeriod</code>).</li>
+<li><strong>Address and peripheral identity.</strong> The BLE transport advertises from a random static address derived from the serial. The Simulator transport derives a stable peripheral UUID from the serial (<code>impossible.go</code>, <code>peripheralID</code>). Each new sensor is therefore a new peripheral to iOS, and a restarted g7sim is the same one.</li>
+<li><strong>Identity certificate.</strong> A real G7 streams an X.509 P-256 certificate chain during pairing and signs the display's key-challenge nonce with its leaf key (ECDSA P-256). g7sim mirrors this with its own fixed dummy CA. The CA's signing key is in the source by design: a marker that the data is simulated, not a secret (<code>g7/identity.go:16-24</code>). G7SensorKit <code>next-dev</code> pins that dummy CA as a second trust anchor and classifies a sensor as genuine, simulated or unverified (§6.3).</li>
+</ul>
+<h3 id="12-advertising-schedule">1.2 Advertising schedule<a class="headerlink" href="#12-advertising-schedule" title="Permanent link">&para;</a></h3>
+<p>The timing model is <code>g7.MeasuredTiming()</code> (<code>g7/sensor.go:43</code>). The README attributes it to sniffer and scanner measurements of a real G7, recorded in LoopKit/Loop <code>docs/G7_MUTE_INVESTIGATION_2026-09.md</code> at <code>b930fe17</code>. That file exists at that commit (checked through the GitHub API, 2026-10-17). In outline:</p>
+<ul>
+<li>A reading every 300 s from activation, and a burst of adverts shortly after each one.</li>
+<li>The burst ends early once every held display has collected the reading. It runs longer while a held display is missing. A short "bare" advert that admits only the phone is repeated at four minute marks while the phone's slot is held and it missed the reading.</li>
+<li>A display slot stays held for 15 minutes after it was last seen. Held slots set bits in a types-in-use byte in the manufacturer data.</li>
+<li>A client that has collected the current reading is refused for the rest of that window: by address when its link comes up, and by display type at its challenge.</li>
+<li>Four rejections in a row stop all advertising for 10 minutes.</li>
+<li>A sensor that no phone has paired with advertises continuously, so a phone can find it at any time (<code>g7/sensor.go:210</code>).</li>
+</ul>
+<p>A difference the README states itself: a real sensor refuses a served client at the link layer, whereas g7sim lets the link come up and closes it within milliseconds. iOS reports that as a connect followed by a disconnect.</p>
+<h3 id="13-gatt-layout-and-protocol-handler">1.3 GATT layout and protocol handler<a class="headerlink" href="#13-gatt-layout-and-protocol-handler" title="Permanent link">&para;</a></h3>
+<p>Both transports serve the same table: the CGM service with control, authentication, backfill and certificate characteristics plus one notify-only characteristic, and a second vendor service with two characteristics, under a 16-bit advertised service UUID (<code>ble.go</code>, <code>impossible.go:122-139</code>). Writes to characteristics with no protocol role are logged and acknowledged.</p>
+<p><code>g7/handler.go</code> runs one goroutine per link and reads the exchange as a straight-line sequence. The README says this mirrors G7SensorKit's <code>G7Authenticator.run()</code>. The first write on the authentication characteristic selects the path:</p>
+<ul>
+<li><strong>Fresh pairing.</strong> A three-round EC-JPAKE exchange on P-256 over the 4-digit code. Then an AES-128 challenge in each direction under the derived key, the certificate phase (the identity chain from §1.1), a key-challenge step in which the sensor signs the display's nonce and checks the display's signature, and a finalize/bond exchange.</li>
+<li><strong>Reconnect.</strong> Straight to the AES challenge with the key stored for that display type. A wrong answer is a rejection that counts toward the lockout. With no stored key (the slot was forgotten), the sensor answers with random bytes, so the client's own check fails and it re-pairs with the code.</li>
+</ul>
+<p>After authentication the session answers the control requests: current glucose, backfill over a time range, two version replies, and calibration (set and bounds). It hangs up after 6 s without a request (<code>sessionIdle</code>, <code>g7/handler.go:20</code>).</p>
+<p>Where the emulated sensor is more permissive than the client's own model of a real sensor:</p>
+<ul>
+<li>The sensor does not act on its verification of the client's J-PAKE round proofs. <code>SetClientRound</code> returns a verdict, and <code>keyExchange</code> discards it (<code>g7/handler.go:153,155</code>). A wrong code still surfaces at the AES challenge, as it does with a real sensor.</li>
+<li>G7SensorKit's tests record a constraint that the real sensor places on the client's third round (<code>G7JPAKETests.swift</code>, <code>testRound3UsesTheFixedRandomizer</code>). g7sim does not check it. A client that broke that constraint would pair with g7sim and fail against a real sensor.</li>
+<li>The display-signature check in the key-challenge step is logged and not enforced: "Advisory for now (logged, not enforced) so a verification quirk cannot block pairing" (<code>g7/handler.go:295</code>).</li>
+</ul>
+<h3 id="14-readings-model">1.4 Readings model<a class="headerlink" href="#14-readings-model" title="Permanent link">&para;</a></h3>
+<p><code>g7/glucose.go</code> and <code>g7/sensor.go</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cadence</td>
+<td>One reading per 300 s since activation. Missed readings are generated on the next tick, so the store has no gaps.</td>
+</tr>
+<tr>
+<td>Glucose modes</td>
+<td><code>sine</code> (default: 120 mg/dL ± 50, 240-minute period), <code>fixed</code>, and <code>walk</code> (a mean-reverting random walk with Gaussian noise). Output is clamped to 40–400 mg/dL and rounded.</td>
+</tr>
+<tr>
+<td>Trend</td>
+<td>The difference from the previous reading per minute, rounded to 0.1. It is present only when the previous reading exists and had glucose.</td>
+</tr>
+<tr>
+<td>Warm-up and expiry</td>
+<td>Algorithm state "warm-up" before the warm-up time and "expired" after the session length (rated lifetime plus 12 h). Neither carries glucose.</td>
+</tr>
+<tr>
+<td>Forced states</td>
+<td><code>algorithmState</code> in the glucose mode replaces the computed state, for example a temporary sensor issue or a failed sensor. Any state other than OK carries no glucose.</td>
+</tr>
+<tr>
+<td>Backfill store</td>
+<td>The last 24 × 12 = 288 readings (<code>keptReadings</code>, <code>g7/state.go:32</code>).</td>
+</tr>
+<tr>
+<td>Calibration</td>
+<td>Calibration shifts later readings by the difference between the entered value and the stored reading nearest the calibration time (<code>Calibrate</code>). Bounds are reported back to the client.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="15-ios-behaviours-modelled-for-the-simulator">1.5 iOS behaviours modelled for the Simulator<a class="headerlink" href="#15-ios-behaviours-modelled-for-the-simulator" title="Permanent link">&para;</a></h3>
+<p>These run only with <code>-transport impossible</code> (<code>impossible.go</code>, <code>suspend/suspend.go</code>):</p>
+<ul>
+<li><strong>Discovery and connect follow the advertising schedule.</strong> The app sees the sensor only while it advertises, and a pending connect waits for the next advert. A connect is also held for the <code>kCBConnectOptionStartDelay</code> the app passes, "as iOS does" (<code>7c039de5</code>).</li>
+<li><strong>Wake-path check.</strong> When a reading starts advertising and the app has no pending connect, no scan and no live link, g7sim logs <code>NO WAKE PATH</code> with a running count. On a phone, the backgrounded app would sleep through that reading.</li>
+<li><strong>Suspension (<code>-suspend</code>).</strong> g7sim follows runningboard's suspend and resume verdicts from the simulator's log (<code>xcrun simctl spawn … log stream</code>) and stops the app process with SIGSTOP while it is suspended. Every message g7sim then sends the app resumes it for 10 s (SIGCONT), as bluetoothd's wake assertion does.</li>
+<li><strong>Termination and relaunch (<code>-relaunch</code>).</strong> When the app's socket closes with a connect or scan lodged, g7sim holds those requests, as bluetoothd does. At the next reading it relaunches the app through <code>simctl launch</code> with ImpossiBLE injected, and hands the requests back as a state restoration at the app's first call. <code>POST /force-quit</code> makes the app's end a user force-quit instead, which drops the held requests. The README lists four ways this differs from iOS: foreground relaunch, the order of the restore callback, a restored peripheral that is still connecting, and live links being closed rather than kept.</li>
+</ul>
+<hr />
+<h2 id="2-transports">2. Transports<a class="headerlink" href="#2-transports" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><code>-transport ble</code> (default)</th>
+<th><code>-transport impossible</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Host</td>
+<td>Linux, raw HCI socket on <code>hci0</code> (needs <code>cap_net_raw,cap_net_admin</code> or root)</td>
+<td>any OS the Go toolchain targets. The app side needs a Mac with the iOS Simulator.</td>
+</tr>
+<tr>
+<td>Stack</td>
+<td>vendored <code>paypal/gatt</code> in <code>third_party/gatt</code> (<code>go.mod</code> <code>replace</code>)</td>
+<td>g7sim is the provider on ImpossiBLE's socket (default <code>/tmp/impossible.sock</code>)</td>
+</tr>
+<tr>
+<td>Client</td>
+<td>a phone over the air</td>
+<td>an app in the iOS Simulator with <code>libImpossiBLE.dylib</code> injected through <code>DYLD_INSERT_LIBRARIES</code></td>
+</tr>
+<tr>
+<td>System bond</td>
+<td>none. The stack has no Security Manager, so iOS connects unencrypted and the sensor does not appear under Settings → Bluetooth (README).</td>
+<td>not applicable</td>
+</tr>
+<tr>
+<td>Coexistence</td>
+<td>takes <code>hci0</code>, so it cannot share an adapter with the pod simulator. <code>bluetoothd</code> must not hold the adapter on newer Pi OS releases (README).</td>
+<td>one app per provider. <code>impossible-mux</code> lets several providers share one app.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Vendored <code>paypal/gatt</code> changes.</strong> A diff against the copy LoopKit/pod vendors (<code>pod/vendor/github.com/paypal/gatt</code>) shows g7sim's changes in <code>linux/hci.go</code>, <code>linux/l2cap.go</code> and <code>linux/device.go</code>. They do three things: keep the advertiser off when its owner turned it off, count controller buffers per connection and return them on disconnect, and serialise the fragments of one PDU. The darwin files are removed and a <code>go.mod</code> is added. The README says the fixes are "noted in the README's library-changes notes". No such notes exist in the tree. The fixes are described in code comments only.</p>
+<p><strong><code>impossible-mux</code></strong> (<code>cmd/impossible-mux</code>) holds the app's single ImpossiBLE socket and connects it to several providers, for example g7sim and LoopKit/pod. Session-wide messages (hello, scans) go to every provider. Each peripheral's requests go to the provider that owns it. A connect to an unknown peripheral goes to all of them, and the one that holds it takes ownership. When suspension is wanted, the mux runs <code>-suspend</code> instead of g7sim, so that a message from any provider wakes the app (<code>43ff5eb</code>).</p>
+<p><strong>ImpossiBLE build and patches.</strong> <code>simulator/build-impossible.sh</code> clones mickeyl/ImpossiBLE, checks out <code>58fe38d</code> ("Library 3.1.0, the protocol impossible.go speaks"), applies <code>simulator/impossible-patches/0001…0006</code>, and builds an <code>arm64-apple-ios15.0-simulator</code> dylib, so the script as written targets Apple-silicon Macs. The six patches are as follows:</p>
+<ul>
+<li>0001 and 0002 deliver the initial state callback on the central's own queue. G7SensorKit asserts its queue, so without them Loop crashed at launch.</li>
+<li>0003 matches 16-bit and 128-bit forms of a service UUID.</li>
+<li>0004 ends subscriptions on a disconnect.</li>
+<li>0005 makes <code>retrievePeripheralsWithIdentifiers:</code> return peripherals seen before a relaunch.</li>
+<li>0006 forgets services on a disconnect, because OmnipodKit rebuilds its session only when it rediscovers them.</li>
+</ul>
+<p>The matching upstream pull requests mickeyl/ImpossiBLE #2–#6 were all open on 2026-10-17 (<code>gh api repos/mickeyl/ImpossiBLE/pulls?state=all</code>). The README still names <code>simulator/impossible-delegate-queue.patch</code>, which <code>6d3527c</code> (2026-10-12) deleted when it moved to the numbered patch series.</p>
+<hr />
+<h2 id="3-control-surface">3. Control surface<a class="headerlink" href="#3-control-surface" title="Permanent link">&para;</a></h2>
+<p><strong>Command line</strong> (<code>main.go:94-110</code>): <code>-state</code>, <code>-fresh</code>, <code>-code</code>, <code>-serial</code>, <code>-age</code>, <code>-model</code>, <code>-days</code>, <code>-lifetime</code>, <code>-warmup</code>, <code>-max-connections</code>, <code>-api</code> (default <code>:8080</code>), <code>-transport</code>, <code>-socket</code>, <code>-simulator</code>, <code>-relaunch</code>, <code>-suspend</code>, <code>-dylib</code>.</p>
+<p><strong>HTTP API</strong> (<code>api.go</code>), which also serves a self-contained web control panel at <code>/</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET /status</code></td>
+<td>sensor, slots, current window, latest reading</td>
+</tr>
+<tr>
+<td><code>POST /glucose</code></td>
+<td>sets the glucose mode (<code>kind</code>, <code>value</code>, <code>amplitude</code>, <code>periodMinutes</code>, optional <code>algorithmState</code>)</td>
+</tr>
+<tr>
+<td><code>POST /forget</code></td>
+<td>drops every display's key, so the next connection must re-pair</td>
+</tr>
+<tr>
+<td><code>POST /force-quit</code></td>
+<td>Simulator transport only: the app's end counts as a user force-quit</td>
+</tr>
+<tr>
+<td><code>POST /new</code></td>
+<td>replaces the sensor (<code>model</code>, <code>days</code>, <code>code</code>, <code>serial</code>, <code>ageMinutes</code>, <code>lifetimeHours</code>, <code>warmupMinutes</code>), saves it over the state file and re-executes the process</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Reproduced run (Linux, 2026-10-17, built from <code>7c039de5</code>).</strong> g7sim ran with <code>-transport impossible</code> on a socket in a scratch directory, with <code>-fresh -code 1234 -serial 123456789012 -age 1h59m50s</code>. A short Python client then spoke ImpossiBLE's JSON protocol: hello, scan, connect, discover, subscribe. Observed:</p>
+<ul>
+<li><code>didDiscover</code> arrived immediately after the scan, with name prefix <code>DXCM</code>, local name, connectable flag, service UUIDs and manufacturer data. An unpaired sensor advertises continuously, so this is expected.</li>
+<li><code>didConnect</code> followed. Then 2 services and 7 characteristics, with property sets matching <code>simServices</code>.</li>
+<li><code>GET /status</code> returned reading index 24 at sensor time 7200 s, 120 mg/dL, state OK. This matches the sine default at a 2-hour age.</li>
+<li>When the client's socket closed with its scan still lodged, the log read "ended with a scan lodged; holding it as iOS would for a terminated app".</li>
+<li><code>POST /glucose</code> with a fixed value and a forced algorithm state was accepted and echoed. An empty mode returned 400, and <code>GET /glucose</code> returned 405.</li>
+<li><code>POST /new</code> (Stelo, age 0, 36 h lifetime, 5 min warm-up) returned the new name, code and serial. The process re-executed under the same PID. <code>/status</code> then showed the <code>DX01</code> prefix, a 15-day preset with a 36 h lifetime and 5 min warm-up, and reading 0 in the warm-up state.</li>
+</ul>
+<p>The run went no further than discovery and connection. Authentication was not attempted, because that would need a G7 client (§5.3). A <code>-socket</code> given as an absolute path longer than the platform's Unix-socket path limit fails at bind and the process exits. A relative path works.</p>
+<hr />
+<h2 id="4-readme-status-table-checked-against-the-code">4. README status table checked against the code<a class="headerlink" href="#4-readme-status-table-checked-against-the-code" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>README row (quoted)</th>
+<th>Check</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Advertising schedule (bursts, tails, minute calls, lockout): "done, unit tested, runs on the Pi"</td>
+<td>9 schedule tests in <code>g7/sensor_test.go</code> (<code>TestEmptyBurst</code> … <code>TestRejectionsLockTheSensor</code>) pass</td>
+<td>unit tests confirmed. "Runs on the Pi" not checked (no hardware).</td>
+</tr>
+<tr>
+<td>Display slots, served-client refusal, types-in-use byte: "done, unit tested"</td>
+<td><code>TestServedClientIsDroppedForTheRestOfTheWindow</code>, <code>TestTypesInUse</code> pass</td>
+<td>confirmed</td>
+</tr>
+<tr>
+<td>Readings: warmup, expiry, sine/fixed/walk glucose, calibration offset, 24 h backfill store: "done, unit tested"</td>
+<td><code>TestReadingsAndBackfill</code>, <code>TestWarmup</code>, <code>TestModelNamesAndSessionLength</code> pass. No test calls <code>Calibrate</code>, and none exercises <code>walk</code> or expiry.</td>
+<td>partly: calibration offset, walk mode and expiry have no direct test</td>
+</tr>
+<tr>
+<td>Reply encoders (4e, backfill record, 52, 4a, 32): "done"</td>
+<td>the extended-version reply is checked against two captures (<code>TestExtendedVersionMatchesCaptures</code>). Glucose, backfill and version replies are exercised by the handler test.</td>
+<td>consistent. The table claims no tests here.</td>
+</tr>
+<tr>
+<td>Key-exchange and challenge crypto: "done, tested against a port of the app's client and the app's AES vectors"</td>
+<td>the "port" reuses g7sim's own proof and hash primitives (§5.3). The AES vectors are G7SensorKit's <code>G7AuthCryptoTests</code> vectors, which G7SensorKit states were generated with <code>openssl enc -aes-128-ecb -nopad</code>. They are reproduced by OpenSSL 3.0.13 here (§6.2).</td>
+<td>AES: confirmed, and independent of both implementations. J-PAKE: the agreement test does not detect a change to a shared primitive (§5.3).</td>
+</tr>
+<tr>
+<td>GATT layout, random static address, HTTP API: "done, runs on the Pi"</td>
+<td>HTTP API exercised in §3. GATT layout seen over the Simulator transport.</td>
+<td>API and Simulator-side GATT reproduced. Pi not checked.</td>
+</tr>
+<tr>
+<td>Per-connection protocol handler: "done, reconnect + session integration-tested; fresh pairing untested against real hardware"</td>
+<td><code>TestReconnectHandshakeAndSession</code>, <code>TestReconnectWithForgottenSlot</code> pass. No Go test drives the fresh-pairing path through the handler.</td>
+<td>confirmed. The README's "Testing it" section (from <code>045b94f</code>) still says fresh pairing "has not yet been run end to end against the app". The Simulator row (<code>7321535</code>) and G7SensorKit <code>1a87aad</code> ("Pair for real in the Simulator when a Bluetooth bridge is injected") describe Loop pairing with g7sim in the Simulator. The two README statements disagree. The later one was not reproduced here (no Mac).</td>
+</tr>
+<tr>
+<td>iOS Simulator transport: "done; Loop pairs, reads and reconnects in the Simulator"</td>
+<td>4 tests in <code>impossible_test.go</code> pass. Discovery and connect reproduced with a scratch client.</td>
+<td>transport confirmed. Loop pairing not reproduced (no Mac).</td>
+</tr>
+<tr>
+<td>Wake-path check, suspension, termination relaunch + state restoration: "done, unit tested; run against Loop"</td>
+<td><code>TestSimRadioCountsReadingsNothingWouldWake</code>, <code>TestSimRadioHoldsATerminatedAppsRequests</code>, <code>TestSuspenderFollowsRunningboardAndWakesForBluetooth</code> pass. Termination hold reproduced (§3).</td>
+<td>unit tests confirmed. "Run against Loop" not reproduced.</td>
+</tr>
+</tbody>
+</table>
+<p>Two more README statements do not match the tree: the deleted <code>impossible-delegate-queue.patch</code> (§2) and the missing "library-changes notes" (§2). The README says "Go 1.15 (what the Pi has) is enough", and <code>go.mod</code> declares <code>go 1.15</code>. Only Go 1.23.0 was available here. A search for post-1.15 standard-library APIs (<code>os.ReadFile</code>, <code>strings.Cut</code>, generics, <code>any</code>) found none.</p>
+<hr />
+<h2 id="5-tests">5. Tests<a class="headerlink" href="#5-tests" title="Permanent link">&para;</a></h2>
+<h3 id="51-inventory">5.1 Inventory<a class="headerlink" href="#51-inventory" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th><code>func Test</code></th>
+<th>Covers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>g7/sensor_test.go</code></td>
+<td>14</td>
+<td>serial checksum, advertising windows, slots, lockout, readings and backfill, warm-up, model names, extended-version captures</td>
+</tr>
+<tr>
+<td><code>g7/identity_test.go</code></td>
+<td>5</td>
+<td>dummy CA, leaf chain, challenge signature, identity round trip, display-signature check</td>
+</tr>
+<tr>
+<td><code>g7/jpake_test.go</code></td>
+<td>3</td>
+<td>J-PAKE agreement against the Go client port, wrong code, AES challenge known answers</td>
+</tr>
+<tr>
+<td><code>g7/handler_test.go</code></td>
+<td>2</td>
+<td>reconnect handshake and session over an in-memory link, forgotten slot</td>
+</tr>
+<tr>
+<td><code>impossible_test.go</code></td>
+<td>4</td>
+<td>Simulator radio: serving the sensor, connect start delay, wake-path count, termination hold</td>
+</tr>
+<tr>
+<td><code>main_test.go</code></td>
+<td>3</td>
+<td>new-sensor defaults, overrides, rejections</td>
+</tr>
+<tr>
+<td><code>cmd/impossible-mux/mux_test.go</code></td>
+<td>1</td>
+<td>routing each peripheral to its provider</td>
+</tr>
+<tr>
+<td><code>suspend/suspend_test.go</code></td>
+<td>1</td>
+<td>following runningboard and waking for Bluetooth</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>33</strong></td>
+<td>4 functions loop over 11 table cases: 3 pairing codes, 2 AES cases, 4 models, 2 captures</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52-run">5.2 Run<a class="headerlink" href="#52-run" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>$ GOPROXY=off GOFLAGS=-mod=mod go test -count=1 ./...        # Go 1.23.0 linux/amd64, at 7c039de5
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>ok      github.com/loopkit/g7sim    1.919s
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>ok      github.com/loopkit/g7sim/cmd/impossible-mux 0.306s
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>ok      github.com/loopkit/g7sim/g7 0.013s
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>ok      github.com/loopkit/g7sim/suspend    0.002s
+</code></pre></div>
+<p><code>go test -v</code> gives 33 <code>=== RUN</code> and 33 <code>--- PASS</code>. <code>go test -race</code> and <code>go vet ./...</code> are clean. No network was needed. The only module dependency is the vendored <code>paypal/gatt</code> through a <code>replace</code>. The checkout was unchanged after the runs (<code>git status</code> empty).</p>
+<h3 id="53-ablation-do-the-crypto-tests-fail-for-the-right-reason">5.3 Ablation: do the crypto tests fail for the right reason?<a class="headerlink" href="#53-ablation-do-the-crypto-tests-fail-for-the-right-reason" title="Permanent link">&para;</a></h3>
+<p>Each break was made in a scratch copy of <code>7c039de5</code>, and the full suite was run.</p>
+<table>
+<thead>
+<tr>
+<th>Break (in <code>g7/jpake.go</code>)</th>
+<th>Expected</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A. The challenge transform returns the wrong half of the AES output</td>
+<td>the known-answer test fails</td>
+<td><code>TestEncryptChallengeMatchesApp</code> fails on both cases with <code>challenge …: got …, want …</code> (<code>jpake_test.go:90</code>). <strong>No other test fails.</strong> <code>TestReconnectHandshakeAndSession</code> computes its expected answers with the same <code>EncryptChallenge</code>, so it cannot catch this.</td>
+</tr>
+<tr>
+<td>B. The sensor-side shared-key derivation hashes the wrong coordinate</td>
+<td>agreement fails</td>
+<td><code>TestJPAKEAgreesWithClient</code> fails with <code>code 1234: sensor …, client …</code> (<code>jpake_test.go:60</code>)</td>
+</tr>
+<tr>
+<td>C. The Schnorr-proof transcript hash omits the party identifier (a primitive shared by the sensor and the test's client port)</td>
+<td>ideally a failure</td>
+<td><strong>all 33 tests pass</strong></td>
+</tr>
+</tbody>
+</table>
+<p>For C, a check that the break changed anything: a scratch test kept an unbroken copy of the transcript hash and verified a round-1 proof from the broken sensor against it. The proof failed verification, so the break does change what goes on the wire. The same scratch test run on the unbroken copy failed its "ablation changed nothing" assertion, as it should. The J-PAKE agreement test is a self-consistency check. The test's client port (<code>jpake_test.go:12-29</code>) builds its rounds with g7sim's own <code>makeCert</code>, <code>generator</code> and transcript hash, so a fault in those primitives moves both sides together. Only the round-3 and key-derivation formulas are written independently. The AES known-answer test is the one crypto check here whose expected values come from outside both implementations.</p>
+<hr />
+<h2 id="6-relationship-to-other-g7-implementations">6. Relationship to other G7 implementations<a class="headerlink" href="#6-relationship-to-other-g7-implementations" title="Permanent link">&para;</a></h2>
+<h3 id="61-which-app">6.1 Which "app"<a class="headerlink" href="#61-which-app" title="Permanent link">&para;</a></h3>
+<p>The "app" in g7sim's README and test comments is LoopKit/G7SensorKit, the Loop CGM plugin. The handler cites <code>G7Authenticator.swift</code>, <code>G7Sensor.swift</code> and the <code>Messages/</code> parsers. <code>jpake_test.go</code> says its client "mirrors G7SensorKit's G7JPAKE". The AES cases are "the known answers from G7SensorKit's G7AuthCryptoTests".</p>
+<p>G7SensorKit has two lines on 2026-10-17:</p>
+<table>
+<thead>
+<tr>
+<th>Branch @ sha</th>
+<th>README</th>
+<th>Direct connection</th>
+<th>Crypto and tests</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>main</code> @ <code>dd91f46</code> (2026-10-03)</td>
+<td>"Requires use of official G7 app"</td>
+<td>no: the kit listens alongside the vendor app</td>
+<td>no <code>Crypto/</code> directory; 4 test files</td>
+</tr>
+<tr>
+<td><code>next-dev</code> @ <code>e17129d</code> (2026-10-15)</td>
+<td>"The plugin connects to the sensor directly over Bluetooth … The Dexcom app is not needed"</td>
+<td>yes</td>
+<td><code>G7SensorKit/Crypto/</code> (EC-JPAKE on P-256 with its own P-256 and big-integer code, AES-128 challenge, ECDSA P-256 challenge signing, identity verification); 17 test files, 173 <code>func test</code></td>
+</tr>
+</tbody>
+</table>
+<p>Direct connection entered with <code>764e002</code> "Direct sensor connection: pairing, session management, calibration and lifecycle alerts" (2026-09-15). That commit added <code>G7JPAKE.swift</code>, <code>G7Authenticator.swift</code>, <code>G7AuthCryptoTests.swift</code>, <code>G7JPAKETests.swift</code> and <code>G7P256Tests.swift</code>. It reached <code>next-dev</code> through merge <code>7da3b69</code> (PR #67, 2026-09-20). Neither <code>main</code> nor the <code>0574a74</code> tip of 2026-09-26 contains it (<code>git merge-base --is-ancestor</code>). Later <code>next-dev</code> commits that touch g7sim directly:</p>
+<ul>
+<li><code>2a8716c</code> (#86, 2026-10-10), "Identify genuine vs simulated G7 sensors from their identity certificate". It pins the vendor intermediate and g7sim's dummy CA as trust anchors, verifies the challenge signature, shows a "Simulated Sensor" warning in settings, and marks every reading's HealthKit device as manufacturer "g7sim (Simulator)" with no vendor UDI (<code>G7CGMManager.swift</code>, <code>device</code>).</li>
+<li><code>1a87aad</code> / <code>8fa9c73</code> (#89, 2026-10-11), "Pair for real in the Simulator when a Bluetooth bridge is injected". When ImpossiBLE's classes are present, pairing takes the real path instead of the Simulator stand-in (<code>G7PairingService.swift</code>, <code>simulatorHasBluetooth</code>).</li>
+<li><code>e995628</code> (#90, 2026-10-11) records G7 states without reliable glucose as <code>sensorIssue</code> CGM events, and <code>e240399</code> (#94, 2026-10-13) tags backfilled samples <code>isBackfill</code>.</li>
+</ul>
+<p>The README credits Juggluco and xDrip for the knowledge of the authentication protocol.</p>
+<h3 id="62-shared-test-vectors">6.2 Shared test vectors<a class="headerlink" href="#62-shared-test-vectors" title="Permanent link">&para;</a></h3>
+<p><strong>Method.</strong> This follows the 2026-09-30 census (§0 of its device annex). Every hex literal of 16 or more hex digits was extracted, along with byte arrays of 8 or more <code>0x</code> elements. Literals made of one repeated digit were dropped, and each project's set was intersected with the others. Per project, both test files and all source files were scanned. Script and output: <code>hexlits.py</code> and <code>hex-intersections.json</code> in the session scratch directory. Vendored code (<code>third_party</code>, <code>vendor</code>) is excluded. A shared hex-alphabet string (<code>0123456789abcdef…</code>, a lookup table) is counted below as noise.</p>
+<table>
+<thead>
+<tr>
+<th>Pair</th>
+<th>Shared literals</th>
+<th>What they are</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>g7sim tests ∩ G7SensorKit <code>next-dev</code> tests</td>
+<td>8</td>
+<td>the 2 AES-challenge known-answer cases (6 literals) and the 2 captured extended-version replies</td>
+</tr>
+<tr>
+<td>g7sim all ∩ G7SensorKit <code>next-dev</code> all</td>
+<td>9</td>
+<td>the 8 above and 1 credential constant used by the display-authentication step</td>
+</tr>
+<tr>
+<td>g7sim ∩ xdripswift</td>
+<td>2 (+1 noise)</td>
+<td>the 2 captured extended-version replies (in <code>DexcomG7CalibrationTests.swift</code>)</td>
+</tr>
+<tr>
+<td>g7sim ∩ Juggluco</td>
+<td>2 (+1 noise)</td>
+<td>2 credential constants in <code>cpp/dexcom/ecJPake.cpp</code> (source, not tests)</td>
+</tr>
+<tr>
+<td>g7sim ∩ xDrip (<code>libkeks</code>, tests)</td>
+<td>0 (+1 noise)</td>
+<td>–</td>
+</tr>
+<tr>
+<td>g7sim ∩ xdrip-js <code>dev</code> (<code>lib/keks_plugin</code>, <code>test</code>)</td>
+<td>0</td>
+<td>–</td>
+</tr>
+<tr>
+<td>G7SensorKit <code>next-dev</code> tests ∩ xdripswift tests</td>
+<td>2</td>
+<td>the same 2 version replies. This is the census's "G7SensorKit∩xdripswift 2".</td>
+</tr>
+<tr>
+<td>G7SensorKit <code>next-dev</code> ∩ xdrip-js <code>dev</code></td>
+<td>3</td>
+<td>the published P-256 curve parameters (G7SensorKit <code>G7P256.swift</code>; xdrip-js <code>test-keks-curve-test.js</code>)</td>
+</tr>
+<tr>
+<td>G7SensorKit <code>next-dev</code> ∩ Juggluco</td>
+<td>2</td>
+<td>1 J-PAKE constant and 1 credential constant (source)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Independent reproduction.</strong> Both AES-challenge known answers that g7sim shares with G7SensorKit were recomputed with <code>openssl enc -aes-128-ecb -nopad</code> (OpenSSL 3.0.13): 2/2 match. A control with a one-nibble change to the key gave a different output in both cases.</p>
+<p><strong>What remains unshared.</strong> No EC-JPAKE transcript or proof vector appears in more than one project. g7sim's J-PAKE test and G7SensorKit's <code>G7JPAKETests</code> are both agreement tests against a mirror written in the same repository. G7SensorKit's mirror has its own transcript-hash helper and fixed-seed keys. Neither is a known-answer test against an external reference.</p>
+<h3 id="63-executed-cross-check-emulator-identity">6.3 Executed cross-check: emulator identity<a class="headerlink" href="#63-executed-cross-check-emulator-identity" title="Permanent link">&para;</a></h3>
+<p>A scratch Go test parsed the emulator anchor certificate embedded in G7SensorKit <code>next-dev</code> (<code>G7SensorIdentity.swift</code>, <code>emulatorAnchor</code>). It checked that a leaf certificate freshly issued by g7sim (<code>NewSensorIdentity(…).CertChain()[1]</code>) verifies against it: pass. The control was a leaf with the same names signed by a different P-256 key. It was rejected with <code>x509: ECDSA verification failure</code>. An earlier control that corrupted the anchor's public key failed for an unrelated reason (the point would not parse) and was discarded. So g7sim's dummy CA and G7SensorKit's "simulated" anchor are the same key at these two shas.</p>
+<hr />
+<h2 id="7-integration-surface">7. Integration surface<a class="headerlink" href="#7-integration-surface" title="Permanent link">&para;</a></h2>
+<h3 id="71-loop">7.1 Loop<a class="headerlink" href="#71-loop" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Which Loop.</strong> LoopWorkspace <code>next-dev</code> @ <code>1561bff0</code> (2026-10-15) pins G7SensorKit <code>e17129d</code>, which has the direct connection, the Simulator bridge path and the identity check. LoopWorkspace <code>dev</code> @ <code>c1f55970</code> (2026-10-17) and <code>main</code> @ <code>548b3324</code> (2026-10-05) pin G7SensorKit <code>dd91f46</code>, which listens passively (all read through <code>gh api repos/LoopKit/LoopWorkspace/contents/G7SensorKit?ref=…</code>). The local LoopWorkspace clone (<code>f841285</code>, 2026-09-19) pins <code>c2abb4f</code>, which predates both. Pairing with g7sim therefore needs a Loop built from LoopWorkspace <code>next-dev</code>. This is an inference from the pins. A passive-mode G7SensorKit does not authenticate, and g7sim delivers readings only after authentication.</li>
+<li><strong>How it pairs in the Simulator</strong> (README). Start g7sim with <code>-transport impossible -fresh -code 4321 -serial 7810293746</code>. These are the stand-in applicator values G7SensorKit offers in the Simulator, so both "scan" and manual code entry find this sensor. Build the dylib with <code>simulator/build-impossible.sh</code>, then launch Loop with <code>SIMCTL_CHILD_DYLD_INSERT_LIBRARIES=&lt;dylib&gt; xcrun simctl launch &lt;simulator&gt; &lt;bundle id&gt;</code>. Loop's source is not changed. ImpossiBLE's own menu-bar app must be quit first, because g7sim refuses to start while another provider answers on the socket (<code>NewSimRadio</code>).</li>
+</ul>
+<h3 id="72-trio">7.2 Trio<a class="headerlink" href="#72-trio" title="Permanent link">&para;</a></h3>
+<p>nightscout/Trio <code>dev</code> and <code>main</code> both pin <code>loopandlearn/G7SensorKit</code> at <code>dd91f465</code> (<code>gh api repos/nightscout/Trio/contents/G7SensorKit?ref=…</code>, 2026-10-17). That is the passive line. The <code>loopandlearn/G7SensorKit</code> fork has no <code>G7SensorKit/Crypto</code> directory at its head (API returns 404). No Trio build in these pins can pair with g7sim. This is an inference from the pins. No Trio run was attempted.</p>
+<h3 id="73-loopkitpod">7.3 LoopKit/pod<a class="headerlink" href="#73-loopkitpod" title="Permanent link">&para;</a></h3>
+<p>LoopKit/pod and g7sim share an approach, not code. Each vendors its own copy of <code>paypal/gatt</code> at the same upstream version. g7sim's copy carries the fixes in §2. Each has its own <code>-transport impossible</code>. pod gained its Simulator transport, a web control panel and a JSON API in <code>3f82784</code> (#21, 2026-10-12), whose message names g7sim as the model. ImpossiBLE patches 0004 and 0006 were added for OmnipodKit's behaviour, and <code>impossible-mux</code> exists so that one Loop can run against g7sim and pod together. LoopKit/pod has had a GitHub Actions workflow running <code>go test ./...</code> since <code>1d34e9b</code> (2026-05-23). At <code>a491a5e</code> its suite passes offline: 4 packages <code>ok</code>, 7 <code>func Test</code> in 5 files. <code>loopandlearn/pod</code> @ <code>ec13f46</code> (2025-12-05), the clone the 2026-09-30 census read, is an ancestor of LoopKit/pod <code>a491a5e</code>.</p>
+<h3 id="74-trio-test-harness">7.4 trio-test-harness<a class="headerlink" href="#74-trio-test-harness" title="Permanent link">&para;</a></h3>
+<p>jwoglom/trio-test-harness @ <code>c3c1bfe</code> drives Trio and Loop in the iOS Simulator with the apps' built-in fake devices only: Trio's Glucose Simulator, Loop's CGM Simulator and the Pump Simulator. A search for <code>g7sim</code>, <code>impossible</code> and <code>faketandem</code> outside <code>.git</code> finds only those built-in simulator names. Nothing in the harness injects ImpossiBLE. A separate trio-test-harness deep dive covers the harness in detail.</p>
+<h3 id="75-ci">7.5 CI<a class="headerlink" href="#75-ci" title="Permanent link">&para;</a></h3>
+<p>g7sim has no workflow (summary table). Its whole suite runs without Bluetooth hardware, a Mac or network access, so a Linux CI job could run it. The Simulator transport also runs on Linux (§3). Only the app side needs macOS.</p>
+<hr />
+<h2 id="8-relevance-to-nightscout">8. Relevance to Nightscout<a class="headerlink" href="#8-relevance-to-nightscout" title="Permanent link">&para;</a></h2>
+<p>With g7sim feeding a Loop built from LoopWorkspace <code>next-dev</code> in the Simulator, and Loop's Nightscout service configured, the following records would reach a Nightscout site. Each line is <strong>inferred from code at the cited shas</strong>. None of this was run end to end here.</p>
+<table>
+<thead>
+<tr>
+<th>Record</th>
+<th>Source in code</th>
+<th>What g7sim controls</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>entries</code>, type <code>sgv</code>: one per reading, including backfilled ones</td>
+<td>NightscoutService <code>ace20b0f</code> <code>StoredGlucoseSample.swift</code>: glucose, date, <code>device</code>, trend, <code>changeRate</code>, <code>isCalibration</code>, <code>isBackfill</code>, <code>receivedTime</code></td>
+<td>the value and its shape (sine/fixed/walk), gaps and recovery (stop g7sim or the app, then backfill), warm-up and expiry, calibration offset</td>
+</tr>
+<tr>
+<td>The <code>device</code> string on those entries</td>
+<td><code>"\(manufacturer) \(model) \(name)"</code>, with G7SensorKit <code>next-dev</code> setting manufacturer "g7sim (Simulator)" and model "<model> Simulator" for a simulated sensor</td>
+<td>always marks the data as simulated, so test uploads are distinguishable from real-sensor data on the server</td>
+</tr>
+<tr>
+<td><code>treatments</code>, <code>eventType</code> "Sensor Start"</td>
+<td><code>PersistedCgmEvent.swift</code> <code>.sensorStart</code></td>
+<td>a new sensor (<code>-fresh</code>, <code>/new</code>)</td>
+</tr>
+<tr>
+<td><code>treatments</code>, <code>eventType</code> Note "CGM: <state>"</td>
+<td><code>PersistedCgmEvent.swift</code> <code>.sensorIssue</code> (at <code>ace20b0f</code>), fed by G7SensorKit <code>e995628</code></td>
+<td><code>algorithmState</code> in <code>POST /glucose</code></td>
+</tr>
+<tr>
+<td><code>devicestatus</code> (loop and pump status)</td>
+<td>Loop's loop cycle</td>
+<td>indirectly: Loop needs a pump as well (its Pump Simulator, or LoopKit/pod through <code>impossible-mux</code>). g7sim supplies only the CGM.</td>
+</tr>
+</tbody>
+</table>
+<p>How <code>isBackfill</code> and <code>receivedTime</code> serialise into the uploaded JSON depends on NightscoutKit and was not checked. Together with Loop's background wake and relaunch behaviour (§1.5), this setup could give server-side testing upload traffic that is realistic, controllable and labelled. That includes the timing gaps, catch-up batches and duplicate-prone backfill that real G7 users generate. This is an inference. It has not been measured against a Nightscout server.</p>
+<hr />
+<h2 id="9-what-is-not-covered">9. What is not covered<a class="headerlink" href="#9-what-is-not-covered" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Hardware.</strong> Fresh pairing against a real phone over the air, the Pi "runs on" claims, and Loop in the Simulator were not reproduced here (no Pi, no Mac).</li>
+<li><strong>Fault injection.</strong> There is no frame-level injection: no dropped, duplicated, reordered or corrupted notifications, and no disconnect mid-command. The fault surface is the sensor's own states (forced algorithm state, warm-up, expiry), forgetting keys, the lockout, provider restarts through the mux, app termination and force-quit, and <code>NO WAKE PATH</code> accounting.</li>
+<li><strong>Clock.</strong> Readings are timed by wall-clock time. There is no controllable or skewable clock (README: a Pi without an RTC must be NTP-synced).</li>
+<li><strong>Device-side request log.</strong> There is none apart from the process log. <code>/status</code> gives state, not a history of requests.</li>
+<li><strong>Fidelity gaps</strong> the code states or shows: link-layer refusal (§1.2), unenforced client-proof and display-signature checks (§1.3), and the four relaunch differences from iOS (§1.5).</li>
+<li><strong>Protocols.</strong> G7 family only (G7, ONE+, Stelo). No G6, Libre or other CGM.</li>
+</ul>
+<hr />
+<h2 id="10-reproduce">10. Reproduce<a class="headerlink" href="#10-reproduce" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">cd</span><span class="w"> </span>externals/g7sim<span class="w">                                   </span><span class="c1"># at 7c039de5</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nv">GOPROXY</span><span class="o">=</span>off<span class="w"> </span><span class="nv">GOFLAGS</span><span class="o">=</span>-mod<span class="o">=</span>mod<span class="w"> </span>go<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-count<span class="o">=</span><span class="m">1</span><span class="w"> </span>-v<span class="w"> </span>./...<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-c<span class="w"> </span><span class="s1">'^--- PASS'</span><span class="w">     </span><span class="c1"># 33</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>grep<span class="w"> </span>-h<span class="w"> </span><span class="s1">'^func Test'</span><span class="w"> </span><span class="k">$(</span>git<span class="w"> </span>ls-files<span class="w"> </span><span class="s1">'*_test.go'</span><span class="k">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l<span class="w">                          </span><span class="c1"># 33</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nv">GOPROXY</span><span class="o">=</span>off<span class="w"> </span><span class="nv">GOFLAGS</span><span class="o">=</span>-mod<span class="o">=</span>mod<span class="w"> </span>go<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-race<span class="w"> </span>-count<span class="o">=</span><span class="m">1</span><span class="w"> </span>./...<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>go<span class="w"> </span>vet<span class="w"> </span>./...
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>git<span class="w"> </span>-C<span class="w"> </span>externals/stack/LoopKit__G7SensorKit<span class="w"> </span>fetch<span class="w"> </span>origin
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>git<span class="w"> </span>-C<span class="w"> </span>externals/stack/LoopKit__G7SensorKit<span class="w"> </span>merge-base<span class="w"> </span>--is-ancestor<span class="w"> </span>7da3b69<span class="w"> </span>origin/main<span class="w">    </span><span class="c1"># exit 1</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>git<span class="w"> </span>-C<span class="w"> </span>externals/stack/LoopKit__G7SensorKit<span class="w"> </span>merge-base<span class="w"> </span>--is-ancestor<span class="w"> </span>7da3b69<span class="w"> </span>origin/next-dev<span class="w"> </span><span class="c1"># exit 0</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>gh<span class="w"> </span>api<span class="w"> </span>repos/LoopKit/LoopWorkspace/contents/G7SensorKit?ref<span class="o">=</span>next-dev<span class="w"> </span>--jq<span class="w"> </span>.sha<span class="w">   </span><span class="c1"># e17129d…</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>gh<span class="w"> </span>api<span class="w"> </span>repos/nightscout/Trio/contents/G7SensorKit?ref<span class="o">=</span>dev<span class="w"> </span>--jq<span class="w"> </span>.sha<span class="w">              </span><span class="c1"># dd91f465…</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>gh<span class="w"> </span>api<span class="w"> </span><span class="s1">'repos/mickeyl/ImpossiBLE/pulls?state=all'</span><span class="w"> </span>--jq<span class="w"> </span><span class="s1">'.[] | "\(.number) \(.state)"'</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
