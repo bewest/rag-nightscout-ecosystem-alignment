@@ -1,0 +1,67 @@
+# How people's Nightscout data reaches research and quality work: as the parties expect, as it
+# works today, and as the datalake pilot and evidence commons propose. One layout, three scenarios.
+# Sources:
+#   believed  - COLLABORATION-MODEL §2 (people need "control of their own data" and can contribute
+#               "consent to research"; researchers need "consented, well-described data without
+#               taking custody of it" and contribute "studies, methods, aggregate results")
+#   actual    - tools/ns2parquet/ns_fetch.py:36-81 (fetch from a site URL with a readable token read
+#               from an env file; read-derived); tools/ns2parquet/odc_loader.py:1-17 (OpenAPS Data
+#               Commons layout); tools/nsprobe/README.md and privacy.py:34 (MIN_SITES = 3; aggregates
+#               only leave the holder's machine); typed-schema evidence §1.3 (11 consenting sites,
+#               redact.py); HISTORY 2017-02-16 and 2017-02-24 (Open Humans transfer and data commons);
+#               openhumans.org activity pages, read 2026-10-17 (remove data any time; copies already
+#               shared "may have already been shared"; administrators grant project access);
+#               ACCOUNTABILITY-THRESHOLDS §3 research row (IRB, consent and withdrawal, data-use
+#               agreements)
+#   proposed  - ECOSYSTEM-PROGRAMME §6 and §2b (sponsor by default); datalake proposal
+#               (bewest/ns-data-proposal 18df3a0: board-draft "operating flow", "consent model",
+#               "why this team"; roadmap "later expansion candidates": federated analysis);
+#               ECOSYSTEM-PROGRAMME §5 "where data may go" (analysis where the data is, permitted
+#               aggregates only); PRECEDENTS OHDSI row
+title: "2·data-commons · How Nightscout data reaches research"
+base: false
+scenarios: [believed, actual, proposed]
+bands:
+  - {label: "Legal", levels: [0]}
+  - {label: "Social", levels: [1, 2]}
+  - {label: "Technical", levels: [3, 4]}
+nodes:
+  - {id: ethics, label: "Ethics review (IRB),\nconsent and\nhealth-data law", kind: authority, level: 0, column: 3, icon: gavel, in: [actual, proposed]}
+  - {id: fdn, label: "Nightscout\nFoundation", kind: entity, level: 1, column: 1, icon: hand-heart, in: [actual, proposed]}
+  - {id: person, label: "Person and their\nNightscout site", kind: human, level: 2, column: 0, icon: user}
+  - {id: operator, label: "Contracted\npilot operator", kind: org, level: 2, column: 2, icon: building-2, status: proposed, in: [proposed]}
+  - {id: researcher, label: "Researchers and\nmaintainers", kind: human, level: 2, column: 3, icon: microscope}
+  - {id: commons, label: "Data commons on\nOpen Humans (2017;\nvolunteer admins)", kind: commons, level: 3, column: 1, icon: network, in: [actual]}
+  - {id: lake, label: "Governed intake\nand research tables", kind: process, level: 3, column: 2, icon: database, status: proposed, in: [proposed]}
+  - {id: tools, label: "ns2parquet, nsprobe\non the holder's\nmachine", kind: process, level: 3, column: 3, icon: chart-line}
+  - {id: export, label: "Export or\nreadable token", kind: process, level: 4, column: 0, icon: upload}
+  - {id: fed, label: "Analysis where the\ndata is: aggregates\nonly (OHDSI)", kind: process, level: 4, column: 4, icon: waypoints, status: proposed, in: [proposed]}
+edges:
+  - {from: person, to: export, kind: control, label: "shares",
+     labels: {believed: "my data, my\nconsent to research",
+              actual: "hands over an export\nor a token, per study",
+              proposed: "opts in; can revoke\nand ask for deletion"}}
+  - {from: export, to: tools, kind: data, label: "data",
+     labels: {believed: "consented, well-\ndescribed data",
+              actual: "one site at a time\n(11 consenting sites)",
+              proposed: "one site at a time"}}
+  - {from: tools, to: researcher, kind: data, label: "results",
+     labels: {believed: "studies, aggregate\nresults",
+              actual: "datasets; aggregates\nwith 3+ sites per value",
+              proposed: "aggregates with\n3+ sites per value"}}
+  - {from: export, to: commons, kind: data, label: "opt-in transfer;\nremovable, but shared\ncopies may remain", in: [actual]}
+  - {from: commons, to: researcher, kind: data, label: "access granted by\nadministrators", in: [actual]}
+  - {from: fdn, to: commons, kind: control, label: "ran the Nightscout\ntransfer (2017)", in: [actual]}
+  - {from: ethics, to: researcher, kind: authority, label: "per study",
+     labels: {actual: "a duty per study; no\nshared review record found",
+              proposed: "consent, withdrawal and\ndata-use terms; IRB not\nnamed in the proposal"}, in: [actual, proposed]}
+  - {from: fdn, to: operator, kind: control, label: "sponsors, scopes;\nstays accountable", status: proposed, in: [proposed]}
+  - {from: fdn, to: researcher, kind: control, label: "advisory group approves\naccess and publication", status: proposed, in: [proposed]}
+  - {from: operator, to: lake, kind: control, label: "runs intake and\nnormalisation", status: proposed, in: [proposed]}
+  - {from: export, to: lake, kind: data, label: "exports, incl. via\nhosts' opt-in consent", status: proposed, in: [proposed]}
+  - {from: lake, to: researcher, kind: data, label: "documented extracts,\naggregate reports", status: proposed, in: [proposed]}
+  - {from: fed, to: researcher, kind: data, label: "aggregates only\n(later expansion)", status: proposed, in: [proposed]}
+views:
+  - {id: believed, title: "as believed", scenario: believed}
+  - {id: actual, title: "as it works today", scenario: actual}
+  - {id: proposed, title: "as proposed", scenario: proposed}

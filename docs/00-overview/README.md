@@ -26,6 +26,8 @@ and the volunteer-only view is stated beside the others.
 | [When a DIY ecosystem becomes infrastructure](perspective/INFRASTRUCTURE-TRANSITION.md) | the conditions under which other open-source communities changed how their work was organised, which of those conditions can be measured here, and what the frame does not show |
 | [Precedents](perspective/PRECEDENTS.md) | one table of every organisation the proposals cite: how each is funded, who is paid, the commercial role, and size |
 | [What each activity brings](perspective/ACCOUNTABILITY-THRESHOLDS.md) | the nine pillars of duty that holding health data, issuing credentials, commanding insulin delivery, signing with a manufacturer or taking money bring to any organisation; how Apple, Dexcom and the FDA's interoperable routes put them in place; why the requirements are the same for anyone; and a US nonprofit's own money and staffing thresholds |
+| [Control structures, drawn](perspective/STRUCTURES.md) | the ecosystem and the proposals as STPA control structures, from society down to software and devices, with stakeholder views and precedents |
+| [What we believe, and how it works](perspective/PROCESS-MODELS.md) | the authority DIY acts under, its regulatory status, data rights, hosting, identity, federation and registration, each drawn as believed, as it works today, and as emerging or proposed |
 
 ## 3. Recommendations: the author's proposals
 

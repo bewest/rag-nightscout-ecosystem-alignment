@@ -1,0 +1,64 @@
+# Who is who on a Nightscout hub, and who may do what: as operators and clients assume, as
+# cgm-remote-monitor does it today, and as the multitenancy decisions propose.
+# Sources (code cited at cgm-remote-monitor tag 15.0.8; the same lines are unchanged on dev a8888f0d):
+#   believed  - README.md:233 (API_SECRET described only as "a secret passphrase");
+#               docs/10-domain/authority-model.md "The Credential Dilemma" (people share passwords with
+#               apps and caregivers); technical-loops note §3.3 path G (a caregiver app takes the API
+#               secret). Inferred from these: the scenario is how the setup reads, not a survey.
+#   actual    - lib/authorization/index.js:161-169 (no credential: default roles), :173-180 (a matching
+#               API secret: shiro `*`), :196-207 and :222-238 (an access token: the subject's roles plus
+#               the default roles), :279-307 (a token exchanged for a JWT); lib/server/enclave.js:58-59
+#               (JWT lifetime 8 h), :71-76 and lib/authorization/storage.js:187-193 (subject tokens
+#               derived from the API secret); storage.js:140-148 (default roles); lib/settings.js:39 and
+#               README.md:242-244 (AUTH_DEFAULT_ROLES `readable`, or `denied`); endpoints.js:38-98
+#               (subjects and roles managed with admin permissions); configuration-and-delegation §5.3
+#   proposed  - execution plan §1 and §2.8-§2.9: D7 (ns-admin, unreachable), D13 (no deployment
+#               secret in multi mode; tenant root credential), D14 (per-tenant signing key), D16
+#               (three listeners; ns-tenant-admin a second socket in ns-api, decided 2026-10-16),
+#               D17 (devices native, never Ory; Kratos for people adopted in principle, gated; Hydra
+#               deferred); hub-sync design §3.5 "Binding and credential kind" and "The owner's actions";
+#               walk-through 2026-10-16 rows 7 and 12 (commit 66403e0f); authority model "Delegation
+#               Grants" (designed, not implemented)
+title: "3·identity · Who is who on a hub, and who may do what"
+base: false
+scenarios: [believed, actual, proposed]
+nodes:
+  - {id: owner, label: "Site owner (person\nor family; the tenant\nowner when hosted)", kind: human, level: 0, column: 1, icon: user}
+  - {id: hoster, label: "Hosting operator", kind: org, level: 0, column: 3, icon: building-2, status: proposed, in: [proposed]}
+  - {id: people, label: "Caregivers,\nfollowers and\nclinicians", kind: human, level: 1, column: 0, icon: users}
+  - {id: apps, label: "Uploaders,\ncontrollers and\nclient apps", kind: entity, level: 1, column: 2, icon: smartphone}
+  - {id: hub, label: "Nightscout hub:\ndata API", kind: commons, level: 2, column: 1, icon: server}
+  - {id: tadmin, label: "ns-tenant-admin:\nthe owner's socket", kind: entity, level: 2, column: 3, icon: settings, status: proposed, in: [proposed]}
+  - {id: reg, label: "Controller\nregistration", kind: process, level: 3, column: 2, icon: clipboard-list, status: proposed, in: [proposed]}
+edges:
+  - {from: owner, to: hub, kind: control, label: "sets API_SECRET",
+     labels: {believed: "sets API_SECRET, a\npassphrase of 12 or\nmore characters",
+              actual: "API_SECRET grants every\npermission (*); it also\nroots every subject token"},
+     in: [believed, actual]}
+  - {from: owner, to: apps, kind: control, label: "credential",
+     labels: {believed: "gives the API secret\nso the app can upload",
+              actual: "the API secret, or a\nsubject's token with the\nroles the owner chose",
+              proposed: "a native per-subject\ncredential; never Ory\n(D17)"}}
+  - {from: owner, to: people, kind: control, label: "access",
+     labels: {believed: "shares the address,\nand the secret with\nthose who help",
+              actual: "shares the secret or a\ntoken; no scoped, expiring\ngrant exists",
+              proposed: "per-person login (Ory\nKratos, gated); scoped\ngrants not yet decided"}}
+  - {from: apps, to: hub, kind: control, label: "upload",
+     labels: {believed: "upload with\nthe secret",
+              actual: "a token resolves to its\nsubject's roles plus the\ndefault roles; JWT 8 h",
+              proposed: "per-tenant token signed\nwith the tenant's own\nkey (D13, D14)"}}
+  - {from: people, to: hub, kind: control, label: "view",
+     labels: {believed: "open the site",
+              actual: "no credential: the\ndefault roles",
+              proposed: "a token Nightscout mints\nafter login (D17)"}}
+  - {from: hub, to: people, kind: data, label: "glucose and treatments",
+     labels: {actual: "default readable (*:*:read)\nunless set to denied;\nread is all or nothing",
+              proposed: "read by role, inside\nthe tenant's own rows\n(RLS, D3)"}}
+  - {from: hoster, to: tadmin, kind: control, label: "mints the tenant root\ncredential from ns-admin,\nan unreachable port (D7, D13)", status: proposed, in: [proposed]}
+  - {from: owner, to: tadmin, kind: control, label: "root credential, which\nthe owner can rotate;\nno deployment secret", status: proposed, in: [proposed]}
+  - {from: apps, to: reg, kind: control, label: "registers; bound to the\ncreating subject, not\nthe token (§3.5)", status: proposed, in: [proposed]}
+  - {from: tadmin, to: reg, kind: control, label: "retire, block, release,\ntransfer; api-secret\nbindings move to the\nroot credential", status: proposed, in: [proposed]}
+views:
+  - {id: believed, title: "as believed", scenario: believed}
+  - {id: actual, title: "as it works today", scenario: actual}
+  - {id: proposed, title: "as proposed", scenario: proposed}

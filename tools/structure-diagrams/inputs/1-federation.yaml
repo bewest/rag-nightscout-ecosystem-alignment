@@ -1,0 +1,61 @@
+# Federated identity and trust across regional zones, with zero-trust access. Believed / actual /
+# proposed on one layout. Sources:
+#   believed  - inferred: no survey exists. Reads from the setup as documented: one API secret per site
+#               (README), and ADR-003's position that Nightscout holds no custom credentials.
+#   actual    - ECOSYSTEM-PROGRAMME §5 "What exists" (identity is per site; API_SECRET and tokens issued
+#               by each site; D13/D14 per-tenant root credential and signing key; D17 devices keep a
+#               native per-tenant credential; Nocturne RFC 7591 with a bundled list of known apps) and
+#               "State" (no work item and no decision on the federation); GOVERNANCE-TODAY §4
+#               (providers listed with no criteria).
+#   proposed  - ECOSYSTEM-PROGRAMME §5 "What is proposed here" (a trust federation: each party keeps its
+#               own identity provider; the foundation defines recognised participation and holds no
+#               passwords; OpenID Federation 1.0 trust anchors and entity statements; RFC 8693 token
+#               exchange; a shared control plane and regional data planes); sdqctl-proposals/
+#               ns-community-idp-proposal.md Option A (a council of hosting operators, trust levels);
+#               precedents TEFCA (healthit.gov, read 2026-10-17) and eduGAIN (Wikipedia, read
+#               2026-10-17; edugain.org refused the fetch).
+title: "1·federation · One sign-in across regional zones"
+base: false
+scenarios: [believed, actual, proposed]
+bands:
+  - {label: "Legal", levels: [0]}
+  - {label: "Social", levels: [1, 2, 3, 4]}
+  - {label: "Technical", levels: [5]}
+nodes:
+  - {id: law, label: "Regional law\n(privacy and health-data\nrules where data lives)", kind: authority, level: 0, column: 1, icon: landmark}
+  - {id: council, label: "Members' council\n(one seat per\nzone operator)", kind: org, level: 1, column: 2, icon: users-round, status: proposed, in: [proposed]}
+  - {id: anchor, label: "Foundation: trust anchor\nand published federation\npolicy (no passwords)", kind: entity, level: 2, column: 1, icon: hand-heart, status: proposed, in: [proposed]}
+  - {id: zonea, label: "Zone operator\n(a hosting company)", kind: entity, level: 3, column: 0, icon: building-2}
+  - {id: site, label: "Self-hosted site", kind: process, level: 3, column: 1, icon: server}
+  - {id: zoneb, label: "Zone operator\n(a national or\ninformal group)", kind: entity, level: 3, column: 2, icon: building-2}
+  - {id: person, label: "Person and\nthe people they\nshare with", kind: human, level: 4, column: 1, icon: users}
+  - {id: apps, label: "Apps and agents\nacting for them", kind: org, level: 5, column: 0, icon: smartphone}
+  - {id: data, label: "Health data in\neach zone's store", kind: process, level: 5, column: 2, icon: database}
+edges:
+  - {from: law, to: zonea, kind: authority, label: "rules for data\nheld there"}
+  - {from: law, to: zoneb, kind: authority, label: "rules for data\nheld there"}
+  - {from: council, to: anchor, kind: control, label: "approves policy,\nmembers, suspensions", in: [proposed], status: proposed}
+  - {from: anchor, to: zonea, kind: control, label: "recognises: signed\nstatement, same criteria\nfor every member", in: [proposed], status: proposed}
+  - {from: anchor, to: zoneb, kind: control, label: "recognises on the\nsame criteria", in: [proposed], status: proposed}
+  - {from: zoneb, to: anchor, kind: feedback, label: "evidence, incidents", in: [proposed]}
+  - {from: zonea, to: person, kind: control, label: "sign-in",
+     labels: {believed: "my site, my secret",
+              actual: "its own sign-in;\nidentity per site",
+              proposed: "one sign-in, accepted\nin every zone"}}
+  - {from: site, to: person, kind: control, label: "API secret",
+     labels: {believed: "API secret: private,\nso secure",
+              actual: "API secret and\ntokens, per site",
+              proposed: "joins the federation,\nor keeps its secret"}}
+  - {from: person, to: apps, kind: control, label: "shares access",
+     labels: {believed: "shares the secret\nwith trusted apps",
+              actual: "one secret or token\nper site, per app",
+              proposed: "scoped, short-lived\ndelegation (token\nexchange)"}}
+  - {from: apps, to: data, kind: data, label: "reads and writes",
+     labels: {believed: "reads and writes",
+              actual: "an app holding the\nsecret may make\nany request",
+              proposed: "every request verified;\ndata stays in its zone"}}
+  - {from: zoneb, to: data, kind: control, label: "stores", in: [actual, proposed]}
+views:
+  - {id: believed, title: "as believed", scenario: believed}
+  - {id: actual, title: "as it works today", scenario: actual}
+  - {id: proposed, title: "as proposed", scenario: proposed}

@@ -1,0 +1,63 @@
+# Who answers for a Nightscout site run for someone else: as believed, as it works today, and as
+# the duties of the activity are emerging. One layout, three scenarios. Sources:
+#   believed  - cgm-remote-monitor README.md:873 (AGPL-3.0, "WITHOUT ANY WARRANTY"; read at
+#               externals/cgm-remote-monitor-official a8888f0d); operator upgrade path §1 ("Nightscout is
+#               software you run yourself"; "the person who runs a Nightscout site: for themselves, for
+#               their child, or for someone they care for")
+#   actual    - GOVERNANCE-TODAY §4 (nine listed providers, added by pull request, no criteria, no
+#               order rule; the listing's own words: "avoid the need to maintain a DIY solution");
+#               1·today (subscriptions, hosts run sites); vendor note §3.5-3.6 (FTC Health Breach
+#               Notification Rule; Washington My Health My Data Act, no non-profit exclusion).
+#               Providers' own terms were not read (inferred that they set them).
+#   emerging  - ACCOUNTABILITY-THRESHOLDS §3 ("hosting or processing anyone's health data" and
+#               "operating a service" rows; "overseeing companies that build on a commons" row);
+#               COLLABORATION-MODEL §5 rule 3 (published listing criteria; proposed);
+#               ECOSYSTEM-PROGRAMME §2 (commercial offerings show they track the contract with the same
+#               public conformance suite; proposed); multitenancy execution plan §1 D1, D13, D15
+#               (design adopted, not released)
+title: "1·hosting · Who answers for a site run for someone else"
+base: false
+scenarios: [believed, actual, emerging]
+bands:
+  - {label: "Legal", levels: [0]}
+  - {label: "Social", levels: [1, 2, 3]}
+  - {label: "Technical", levels: [4]}
+nodes:
+  - {id: licence, label: "Open-source licence\n(AGPL-3.0)", kind: authority, level: 0, column: 0, icon: file-text}
+  - {id: hdl, label: "Health-data law\n(FTC breach rule,\nstate laws)", kind: authority, level: 0, column: 2, icon: landmark, in: [actual, emerging]}
+  - {id: project, label: "cgm-remote-monitor\nproject (releases)", kind: org, level: 1, column: 0, icon: git-branch}
+  - {id: docs, label: "Shared documentation:\nprovider listing", kind: org, level: 1, column: 1, icon: clipboard-list, in: [actual, emerging]}
+  - {id: conf, label: "Public conformance\nsuite (hub contract)", kind: commons, level: 1, column: 3, icon: badge-check, status: proposed, in: [emerging]}
+  - {id: host, label: "Hosting operator\n(runs sites for\nother people)", kind: org, level: 2, column: 2, icon: building-2, in: [actual, emerging]}
+  - {id: person, label: "Person or family\nwho relies on\nthe site", kind: human, level: 3, column: 0, icon: users}
+  - {id: site, label: "Nightscout site\n(one person's data)", kind: process, level: 4, column: 0, icon: server}
+  - {id: multi, label: "One service,\nmany tenants", kind: process, level: 4, column: 2, icon: layers, status: proposed, in: [emerging]}
+edges:
+  - {from: licence, to: project, kind: authority, label: "as is, no warranty",
+     labels: {believed: "provided as is,\nno warranty",
+              actual: "provided as is,\nno warranty",
+              emerging: "as is, no warranty;\nnot a duty-free activity"}}
+  - {from: project, to: person, kind: control, label: "releases, upgrade notes"}
+  - {from: person, to: site, kind: control, label: "run it",
+     labels: {believed: "my own site: I run,\nupgrade and answer for it",
+              actual: "self-hosters run\nand upgrade it",
+              emerging: "self-hosting stays\nfirst-class (D1)"}}
+  - {from: site, to: person, kind: feedback, label: "glucose, alarms"}
+  - {from: docs, to: host, kind: discretion, label: "listing",
+     labels: {actual: "listed by pull request;\nno criteria, no order rule",
+              emerging: "listed if it meets\npublished criteria"}, in: [actual, emerging]}
+  - {from: person, to: host, kind: funding, label: "subscription", in: [actual, emerging]}
+  - {from: host, to: person, kind: discretion, label: "its own terms",
+     labels: {actual: "its own terms\n(not read here)",
+              emerging: "duties to users: uptime,\nsecurity, incidents"}, in: [actual, emerging]}
+  - {from: host, to: site, kind: control, label: "runs and upgrades\nsites for others",
+     labels: {emerging: "runs sites; answers\nfor them"}, in: [actual, emerging]}
+  - {from: hdl, to: host, kind: control, label: "breach notice",
+     labels: {actual: "in force; whether it\nreaches a host: counsel",
+              emerging: "breach notice, consent,\naccess and deletion"}, in: [actual, emerging]}
+  - {from: conf, to: host, kind: control, label: "same public tests\nfor every offering", status: proposed, in: [emerging]}
+  - {from: host, to: multi, kind: control, label: "one operator, every\ntenant (D1, D13)", status: proposed, in: [emerging]}
+views:
+  - {id: believed, title: "as believed", scenario: believed}
+  - {id: actual, title: "as it works today", scenario: actual}
+  - {id: emerging, title: "as it is emerging", scenario: emerging}

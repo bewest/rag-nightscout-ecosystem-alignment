@@ -197,3 +197,4 @@ Answered by the maintainer, 2026-10-17:
 | 19 | Trim 3·delegation (15 edges; one label lies on a line) | next | |
 | 20 | Icons on every box (Lucide, ISC) with a generated key | done | `0f5e6c76` |
 | 21 | 1·authority, believed / actual / emerging, on one layout (renderer scenarios; `authority` and `discretion` edge kinds), with the emerging landscape's properties as interpretation; asked for by the maintainer 2026-10-17 | done | this commit |
+| 22 | Eight more three-panel sets: 0·diy-status, 1·data-rights, 1·hosting (policy: believed, actual, emerging); 3·identity, 1·federation, 3·registration, 2·data-commons, 2·shared-infra (designs: believed, actual, proposed). Gathered with 1·authority on a companion page, PROCESS-MODELS ("What we believe, and how it works"), so the gallery stays to single-view drawings; TEFCA and eduGAIN added to PRECEDENTS; nine icons added to the key | done | this commit |

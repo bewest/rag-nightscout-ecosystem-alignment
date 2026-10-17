@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="718" height="314" viewBox="0 0 718 314" font-family="Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="718" height="392" viewBox="0 0 718 392" font-family="Helvetica, Arial, sans-serif">
 <title>Icon key</title><defs>
 <symbol id="icon-landmark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" x2="21" y1="22" y2="22" /> <line x1="6" x2="6" y1="18" y2="11" /> <line x1="10" x2="10" y1="18" y2="11" /> <line x1="14" x2="14" y1="18" y2="11" /> <line x1="18" x2="18" y1="18" y2="11" /> <polygon points="12 2 20 7 4 7" /></symbol>
 <symbol id="icon-scale" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" /> <path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" /> <path d="M7 21h10" /> <path d="M12 3v18" /> <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2" /></symbol>
@@ -31,7 +31,16 @@
 <symbol id="icon-database" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3" /> <path d="M3 5V19A9 3 0 0 0 21 19V5" /> <path d="M3 12A9 3 0 0 0 21 12" /></symbol>
 <symbol id="icon-store" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" /> <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /> <path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" /> <path d="M2 7h20" /> <path d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7" /></symbol>
 <symbol id="icon-repeat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4" /> <path d="M3 11v-1a4 4 0 0 1 4-4h14" /> <path d="m7 22-4-4 4-4" /> <path d="M21 13v1a4 4 0 0 1-4 4H3" /></symbol>
-</defs><rect width="718" height="314" fill="#ffffff"/>
+<symbol id="icon-cloud" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" /></symbol>
+<symbol id="icon-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /> <circle cx="12" cy="12" r="3" /></symbol>
+<symbol id="icon-file-text" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /> <path d="M14 2v4a2 2 0 0 0 2 2h4" /> <path d="M10 9H8" /> <path d="M16 13H8" /> <path d="M16 17H8" /></symbol>
+<symbol id="icon-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" /> <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65" /> <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65" /></symbol>
+<symbol id="icon-waypoints" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.5" r="2.5" /> <path d="m10.2 6.3-3.9 3.9" /> <circle cx="4.5" cy="12" r="2.5" /> <path d="M7 12h10" /> <circle cx="19.5" cy="12" r="2.5" /> <path d="m13.8 17.7 3.9-3.9" /> <circle cx="12" cy="19.5" r="2.5" /></symbol>
+<symbol id="icon-microscope" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18h8" /> <path d="M3 22h18" /> <path d="M14 22a7 7 0 1 0 0-14h-1" /> <path d="M9 14h2" /> <path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z" /> <path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3" /></symbol>
+<symbol id="icon-package" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z" /> <path d="M12 22V12" /> <path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7" /> <path d="m7.5 4.27 9 5.15" /></symbol>
+<symbol id="icon-shield-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /> <path d="M12 8v4" /> <path d="M12 16h.01" /></symbol>
+<symbol id="icon-book-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14" /> <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" /></symbol>
+</defs><rect width="718" height="392" fill="#ffffff"/>
 <use href="#icon-landmark" x="14" y="17" width="16" height="16" color="#3a4656"/><text x="38" y="29" font-size="11" fill="#111111">legislature or government</text>
 <use href="#icon-scale" x="14" y="43" width="16" height="16" color="#3a4656"/><text x="38" y="55" font-size="11" fill="#111111">regulator</text>
 <use href="#icon-gavel" x="14" y="69" width="16" height="16" color="#3a4656"/><text x="38" y="81" font-size="11" fill="#111111">court</text>
@@ -43,24 +52,33 @@
 <use href="#icon-git-branch" x="14" y="225" width="16" height="16" color="#3a4656"/><text x="38" y="237" font-size="11" fill="#111111">open-source project</text>
 <use href="#icon-key-round" x="14" y="251" width="16" height="16" color="#3a4656"/><text x="38" y="263" font-size="11" fill="#111111">credential authority</text>
 <use href="#icon-clipboard-list" x="14" y="277" width="16" height="16" color="#3a4656"/><text x="38" y="289" font-size="11" fill="#111111">registry</text>
-<use href="#icon-clipboard-check" x="244" y="17" width="16" height="16" color="#3a4656"/><text x="268" y="29" font-size="11" fill="#111111">technical oversight</text>
-<use href="#icon-badge-check" x="244" y="43" width="16" height="16" color="#3a4656"/><text x="268" y="55" font-size="11" fill="#111111">conformance tests</text>
-<use href="#icon-message-square-warning" x="244" y="69" width="16" height="16" color="#3a4656"/><text x="268" y="81" font-size="11" fill="#111111">complaint intake</text>
-<use href="#icon-stethoscope" x="244" y="95" width="16" height="16" color="#3a4656"/><text x="268" y="107" font-size="11" fill="#111111">clinicians</text>
-<use href="#icon-user" x="244" y="121" width="16" height="16" color="#3a4656"/><text x="268" y="133" font-size="11" fill="#111111">a person</text>
-<use href="#icon-users" x="244" y="147" width="16" height="16" color="#3a4656"/><text x="268" y="159" font-size="11" fill="#111111">people</text>
-<use href="#icon-users-round" x="244" y="173" width="16" height="16" color="#3a4656"/><text x="268" y="185" font-size="11" fill="#111111">a governing board</text>
-<use href="#icon-bot" x="244" y="199" width="16" height="16" color="#3a4656"/><text x="268" y="211" font-size="11" fill="#111111">an automated agent</text>
-<use href="#icon-smartphone" x="244" y="225" width="16" height="16" color="#3a4656"/><text x="268" y="237" font-size="11" fill="#111111">app on a phone</text>
-<use href="#icon-monitor-smartphone" x="244" y="251" width="16" height="16" color="#3a4656"/><text x="268" y="263" font-size="11" fill="#111111">remote or follower app</text>
-<use href="#icon-syringe" x="244" y="277" width="16" height="16" color="#3a4656"/><text x="268" y="289" font-size="11" fill="#111111">insulin pump</text>
-<use href="#icon-activity" x="474" y="17" width="16" height="16" color="#3a4656"/><text x="498" y="29" font-size="11" fill="#111111">sensor or device data</text>
-<use href="#icon-droplet" x="474" y="43" width="16" height="16" color="#3a4656"/><text x="498" y="55" font-size="11" fill="#111111">the body's glucose</text>
-<use href="#icon-server" x="474" y="69" width="16" height="16" color="#3a4656"/><text x="498" y="81" font-size="11" fill="#111111">Nightscout hub or site</text>
-<use href="#icon-upload" x="474" y="95" width="16" height="16" color="#3a4656"/><text x="498" y="107" font-size="11" fill="#111111">uploader</text>
-<use href="#icon-bell-ring" x="474" y="121" width="16" height="16" color="#3a4656"/><text x="498" y="133" font-size="11" fill="#111111">push or SMS channel</text>
-<use href="#icon-chart-line" x="474" y="147" width="16" height="16" color="#3a4656"/><text x="498" y="159" font-size="11" fill="#111111">web view and reports</text>
-<use href="#icon-database" x="474" y="173" width="16" height="16" color="#3a4656"/><text x="498" y="185" font-size="11" fill="#111111">data store or releases</text>
-<use href="#icon-store" x="474" y="199" width="16" height="16" color="#3a4656"/><text x="498" y="211" font-size="11" fill="#111111">app platform</text>
-<use href="#icon-repeat" x="474" y="225" width="16" height="16" color="#3a4656"/><text x="498" y="237" font-size="11" fill="#111111">a system in daily use</text>
+<use href="#icon-clipboard-check" x="14" y="303" width="16" height="16" color="#3a4656"/><text x="38" y="315" font-size="11" fill="#111111">technical oversight</text>
+<use href="#icon-badge-check" x="14" y="329" width="16" height="16" color="#3a4656"/><text x="38" y="341" font-size="11" fill="#111111">conformance tests</text>
+<use href="#icon-message-square-warning" x="14" y="355" width="16" height="16" color="#3a4656"/><text x="38" y="367" font-size="11" fill="#111111">complaint intake</text>
+<use href="#icon-stethoscope" x="244" y="17" width="16" height="16" color="#3a4656"/><text x="268" y="29" font-size="11" fill="#111111">clinicians</text>
+<use href="#icon-user" x="244" y="43" width="16" height="16" color="#3a4656"/><text x="268" y="55" font-size="11" fill="#111111">a person</text>
+<use href="#icon-users" x="244" y="69" width="16" height="16" color="#3a4656"/><text x="268" y="81" font-size="11" fill="#111111">people</text>
+<use href="#icon-users-round" x="244" y="95" width="16" height="16" color="#3a4656"/><text x="268" y="107" font-size="11" fill="#111111">a governing board</text>
+<use href="#icon-bot" x="244" y="121" width="16" height="16" color="#3a4656"/><text x="268" y="133" font-size="11" fill="#111111">an automated agent</text>
+<use href="#icon-smartphone" x="244" y="147" width="16" height="16" color="#3a4656"/><text x="268" y="159" font-size="11" fill="#111111">app on a phone</text>
+<use href="#icon-monitor-smartphone" x="244" y="173" width="16" height="16" color="#3a4656"/><text x="268" y="185" font-size="11" fill="#111111">remote or follower app</text>
+<use href="#icon-syringe" x="244" y="199" width="16" height="16" color="#3a4656"/><text x="268" y="211" font-size="11" fill="#111111">insulin pump</text>
+<use href="#icon-activity" x="244" y="225" width="16" height="16" color="#3a4656"/><text x="268" y="237" font-size="11" fill="#111111">sensor or device data</text>
+<use href="#icon-droplet" x="244" y="251" width="16" height="16" color="#3a4656"/><text x="268" y="263" font-size="11" fill="#111111">the body's glucose</text>
+<use href="#icon-server" x="244" y="277" width="16" height="16" color="#3a4656"/><text x="268" y="289" font-size="11" fill="#111111">Nightscout hub or site</text>
+<use href="#icon-upload" x="244" y="303" width="16" height="16" color="#3a4656"/><text x="268" y="315" font-size="11" fill="#111111">uploader</text>
+<use href="#icon-bell-ring" x="244" y="329" width="16" height="16" color="#3a4656"/><text x="268" y="341" font-size="11" fill="#111111">push or SMS channel</text>
+<use href="#icon-chart-line" x="244" y="355" width="16" height="16" color="#3a4656"/><text x="268" y="367" font-size="11" fill="#111111">web view and reports</text>
+<use href="#icon-database" x="474" y="17" width="16" height="16" color="#3a4656"/><text x="498" y="29" font-size="11" fill="#111111">data store or releases</text>
+<use href="#icon-store" x="474" y="43" width="16" height="16" color="#3a4656"/><text x="498" y="55" font-size="11" fill="#111111">app platform</text>
+<use href="#icon-repeat" x="474" y="69" width="16" height="16" color="#3a4656"/><text x="498" y="81" font-size="11" fill="#111111">a system in daily use</text>
+<use href="#icon-cloud" x="474" y="95" width="16" height="16" color="#3a4656"/><text x="498" y="107" font-size="11" fill="#111111">vendor cloud</text>
+<use href="#icon-settings" x="474" y="121" width="16" height="16" color="#3a4656"/><text x="498" y="133" font-size="11" fill="#111111">owner's settings</text>
+<use href="#icon-file-text" x="474" y="147" width="16" height="16" color="#3a4656"/><text x="498" y="159" font-size="11" fill="#111111">open-source licence</text>
+<use href="#icon-layers" x="474" y="173" width="16" height="16" color="#3a4656"/><text x="498" y="185" font-size="11" fill="#111111">multitenant service</text>
+<use href="#icon-waypoints" x="474" y="199" width="16" height="16" color="#3a4656"/><text x="498" y="211" font-size="11" fill="#111111">federated analysis</text>
+<use href="#icon-microscope" x="474" y="225" width="16" height="16" color="#3a4656"/><text x="498" y="237" font-size="11" fill="#111111">researchers</text>
+<use href="#icon-package" x="474" y="251" width="16" height="16" color="#3a4656"/><text x="498" y="263" font-size="11" fill="#111111">built app handed out</text>
+<use href="#icon-shield-alert" x="474" y="277" width="16" height="16" color="#3a4656"/><text x="498" y="289" font-size="11" fill="#111111">security coordination</text>
+<use href="#icon-book-open" x="474" y="303" width="16" height="16" color="#3a4656"/><text x="498" y="315" font-size="11" fill="#111111">documentation site</text>
 </svg>

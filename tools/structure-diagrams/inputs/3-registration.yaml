@@ -1,0 +1,69 @@
+# How a hub knows which controllers, uploaders and agents write to it, what each may do, and how
+# a command reaches one controller: as believed, as the code works today, and as decided.
+# Sources:
+#   believed - inferred: the assumptions the actual panel tests (technical-loops §2.2, §3.4)
+#   actual   - cgm-remote-monitor a8888f0d, read-derived: controllers told apart by top-level key
+#              (lib/plugins/loop.js:50 'loop' in status; lib/plugins/openaps.js:82 'openaps' in
+#              status; lib/plugins/iob.js:100-101); Trio and AAPS both write `openaps`
+#              (control-plane reconciliation §3.2); no registration code under lib/ (grep);
+#              default roles, relay permission only in admin (lib/authorization/storage.js:140-148,
+#              lib/api2/notifications-v2.js:19); no command record or correlated ack on any path
+#              but AAPS dev (technical-loops §3.3-§3.4, landscape §6); an agent holds a shared
+#              credential (technical-loops §3.2, path H)
+#   proposed - D18, D19, D20 (execution plan §1, §2.6.1-§2.6.3); hub-sync design §3.1, §3.5
+#              (binding to the creating subject, owner actions), §3.6 (instances, roles,
+#              provenance, one command destination, `no-command-destination`); command API not
+#              specified (SPEC-REG-COMMANDS, not started); hub work not started (HUB-REG-CRM)
+title: "3·registration · Who writes to the hub, and where a command goes"
+base: false
+scenarios: [believed, actual, proposed]
+nodes:
+  - {id: owner, label: "Site owner (the person\nor a parent)", kind: human, level: 0, column: 2, icon: user}
+  - {id: catalogue, label: "Well-known catalogue:\ntoday's writers described\n(ships with the hub)", kind: entity, level: 3, column: 1, icon: database, status: proposed, in: [proposed]}
+  - {id: registry, label: "Registrations: definitions\n(by content hash) and\nleased instances", kind: entity, level: 1, column: 3, icon: clipboard-list, status: proposed, in: [proposed]}
+  - {id: remote, label: "Caregiver's\nremote app", kind: entity, level: 1, column: 1, icon: monitor-smartphone}
+  - {id: agent, label: "Automated agent", kind: entity, level: 1, column: 0, icon: bot}
+  - {id: hub, label: "Nightscout hub", kind: commons, level: 2, column: 2, icon: server}
+  - {id: uploader, label: "CGM uploaders and\nother writers", kind: entity, level: 3, column: 0, icon: upload}
+  - {id: app, label: "Controller app\n(Loop, Trio, AAPS)", kind: org, level: 3, column: 3, icon: smartphone}
+edges:
+  - {from: owner, to: hub, kind: control, label: "access", in: [believed, actual],
+     labels: {believed: "decides who\nmay write",
+              actual: "shares API_SECRET or\ntokens; relay permission\nonly in admin role"}}
+  - {from: owner, to: registry, kind: control, status: proposed, in: [proposed],
+     label: "grants permission;\nblock, retire, release,\ntransfer (never edit)"}
+  - {from: hub, to: owner, kind: feedback, status: proposed, in: [proposed],
+     label: "listing: bindings,\ncredential kind,\noverlaps flagged"}
+  - {from: catalogue, to: hub, kind: data, status: proposed, in: [proposed],
+     label: "declarations for\nunchanged writers (D18)"}
+  - {from: registry, to: hub, kind: control, status: proposed, in: [proposed],
+     label: "typed API; one source\nof record per role (D19)"}
+  - {from: app, to: registry, kind: feedback, status: proposed, in: [proposed],
+     label: "submits definition;\ninstance renews lease,\nclaims roles"}
+  - {from: uploader, to: hub, kind: data, label: "entries, treatments",
+     labels: {actual: "entries, treatments;\nknown by a free-text\ndevice string",
+              proposed: "entries, treatments\n(well-known tier)"}}
+  - {from: app, to: hub, kind: feedback, label: "status",
+     labels: {believed: "status: the hub\nknows Loop from Trio",
+              actual: "devicestatus; told apart\nby key ('loop', 'openaps');\nTrio = AAPS by key",
+              proposed: "applied state, typed;\ncarrier where refused;\nidentifier + _id (D20)"}}
+  - {from: hub, to: app, kind: control, label: "command",
+     labels: {believed: "command sent =\ncommand applied",
+              actual: "push or download;\nno command record,\nno id to acknowledge",
+              proposed: "to the one live device\ncommand sink, else\nrefused (no guess)"}}
+  - {from: remote, to: hub, kind: control, label: "request",
+     labels: {believed: "request",
+              actual: "relay request, or an\nentity written as\nthe request",
+              proposed: "request (command\nAPI open: SPEC-\nREG-COMMANDS)"}}
+  - {from: hub, to: remote, kind: feedback, label: "result",
+     labels: {believed: "it was done",
+              actual: "the resulting record,\nor a free-text Note",
+              proposed: "requested kept\napart from applied"}}
+  - {from: agent, to: hub, kind: control, label: "acts",
+     labels: {believed: "acts on the\nperson's behalf",
+              actual: "uses a shared credential:\nlooks like whoever\nshared it",
+              proposed: "own instance; roles\n(propose, act) in an\nopen vocabulary"}}
+views:
+  - {id: believed, title: "as believed", scenario: believed}
+  - {id: actual, title: "as the code works today", scenario: actual}
+  - {id: proposed, title: "as decided (D18-D20), not built", scenario: proposed}

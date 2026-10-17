@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="798" height="496" viewBox="0 0 798 496" font-family="Helvetica, Arial, sans-serif">
+<title>3·identity · Who is who on a hub, and who may do what — as it works today</title>
+<defs>
+<marker id="ah00796b" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#00796b"/></marker>
+<marker id="ah1f5fa8" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f5fa8"/></marker>
+<marker id="ah2e7d32" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2e7d32"/></marker>
+<marker id="ah555555" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#555555"/></marker>
+<marker id="ah7b3294" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7b3294"/></marker>
+<marker id="ah888888" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#888888"/></marker>
+<marker id="ahb5541b" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b5541b"/></marker>
+<marker id="ahc8c8c8" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c8c8c8"/></marker>
+<symbol id="icon-building-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" /> <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" /> <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" /> <path d="M10 6h4" /> <path d="M10 10h4" /> <path d="M10 14h4" /> <path d="M10 18h4" /></symbol>
+<symbol id="icon-clipboard-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></symbol>
+<symbol id="icon-server" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="8" x="2" y="2" rx="2" ry="2" /> <rect width="20" height="8" x="2" y="14" rx="2" ry="2" /> <line x1="6" x2="6.01" y1="6" y2="6" /> <line x1="6" x2="6.01" y1="18" y2="18" /></symbol>
+<symbol id="icon-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /> <circle cx="12" cy="12" r="3" /></symbol>
+<symbol id="icon-smartphone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2" /> <path d="M12 18h.01" /></symbol>
+<symbol id="icon-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /> <circle cx="12" cy="7" r="4" /></symbol>
+<symbol id="icon-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /> <circle cx="9" cy="7" r="4" /> <path d="M22 21v-2a4 4 0 0 0-3-3.87" /> <path d="M16 3.13a4 4 0 0 1 0 7.75" /></symbol>
+</defs>
+<rect x="0" y="0" width="798" height="496" fill="#ffffff"/>
+<text x="398.8" y="22" font-size="13" text-anchor="middle" fill="#111">3·identity · Who is who on a hub, and who may do what — as it works today</text>
+<g transform="translate(0.0,0.0)">
+<g class="edge"><path class="edge" d="M263.5,106.5 L263.5,311.8" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M341.0,79.2 L457.1,79.2 L457.1,186.5" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M194.0,79.2 L78.0,79.2 L78.0,186.5" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M449.1,241.0 L449.1,332.2 L329.7,332.2" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M70.0,241.0 L70.0,340.2 L205.3,340.2" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M205.3,324.2 L86.0,324.2 L86.0,241.0" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="1.5,3" stroke-linecap="round" marker-end="url(#ah555555)"/></g>
+<g class="node" data-id="owner"><rect x="194.0" y="52.0" width="147.0" height="54.5" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+<use href="#icon-user" x="203.0" y="71.2" width="16" height="16" color="#3a4656"/>
+<text x="278.5" y="69.8" font-size="11" text-anchor="middle" fill="#111111">Site owner (person</text>
+<text x="278.5" y="83.2" font-size="11" text-anchor="middle" fill="#111111">or family; the tenant</text>
+<text x="278.5" y="96.8" font-size="11" text-anchor="middle" fill="#111111">owner when hosted)</text>
+</g>
+<g class="node" data-id="people"><rect x="18.0" y="186.5" width="120.0" height="54.5" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+<use href="#icon-users" x="27.0" y="205.8" width="16" height="16" color="#3a4656"/>
+<text x="89.0" y="204.2" font-size="11" text-anchor="middle" fill="#111111">Caregivers,</text>
+<text x="89.0" y="217.8" font-size="11" text-anchor="middle" fill="#111111">followers and</text>
+<text x="89.0" y="231.2" font-size="11" text-anchor="middle" fill="#111111">clinicians</text>
+</g>
+<g class="node" data-id="apps"><rect x="397.0" y="186.5" width="120.1" height="54.5" rx="5" fill="#e3f0e3" stroke="#333333" stroke-width="1"/>
+<use href="#icon-smartphone" x="406.0" y="205.8" width="16" height="16" color="#3a4656"/>
+<text x="468.1" y="204.2" font-size="11" text-anchor="middle" fill="#111111">Uploaders,</text>
+<text x="468.1" y="217.8" font-size="11" text-anchor="middle" fill="#111111">controllers and</text>
+<text x="468.1" y="231.2" font-size="11" text-anchor="middle" fill="#111111">client apps</text>
+</g>
+<g class="node" data-id="hub"><rect x="205.3" y="311.8" width="124.4" height="41.0" rx="5" fill="#f3e7d3" stroke="#333333" stroke-width="1"/>
+<use href="#icon-server" x="214.3" y="324.2" width="16" height="16" color="#3a4656"/>
+<text x="278.5" y="329.5" font-size="11" text-anchor="middle" fill="#111111">Nightscout hub:</text>
+<text x="278.5" y="343.0" font-size="11" text-anchor="middle" fill="#111111">data API</text>
+</g>
+<g class="elabel" data-k="0">
+<text x="270.5" y="200.1" font-size="10" text-anchor="start" fill="#1f5fa8">API_SECRET grants every</text>
+<text x="270.5" y="212.1" font-size="10" text-anchor="start" fill="#1f5fa8">permission (*); it also</text>
+<text x="270.5" y="224.1" font-size="10" text-anchor="start" fill="#1f5fa8">roots every subject token</text>
+</g>
+<g class="elabel" data-k="1">
+<text x="399.1" y="47.2" font-size="10" text-anchor="middle" fill="#1f5fa8">the API secret, or a</text>
+<text x="399.1" y="59.2" font-size="10" text-anchor="middle" fill="#1f5fa8">subject's token with the</text>
+<text x="399.1" y="71.2" font-size="10" text-anchor="middle" fill="#1f5fa8">roles the owner chose</text>
+</g>
+<g class="elabel" data-k="2">
+<text x="85.0" y="123.9" font-size="10" text-anchor="start" fill="#1f5fa8">shares the secret or a</text>
+<text x="85.0" y="135.9" font-size="10" text-anchor="start" fill="#1f5fa8">token; no scoped, expiring</text>
+<text x="85.0" y="147.9" font-size="10" text-anchor="start" fill="#1f5fa8">grant exists</text>
+</g>
+<g class="elabel" data-k="3">
+<text x="389.4" y="300.2" font-size="10" text-anchor="middle" fill="#1f5fa8">a token resolves to its</text>
+<text x="389.4" y="312.2" font-size="10" text-anchor="middle" fill="#1f5fa8">subject's roles plus the</text>
+<text x="389.4" y="324.2" font-size="10" text-anchor="middle" fill="#1f5fa8">default roles; JWT 8 h</text>
+</g>
+<g class="elabel" data-k="4">
+<text x="137.7" y="354.2" font-size="10" text-anchor="middle" fill="#1f5fa8">no credential: the</text>
+<text x="137.7" y="366.2" font-size="10" text-anchor="middle" fill="#1f5fa8">default roles</text>
+</g>
+<g class="elabel" data-k="5">
+<text x="93.0" y="273.6" font-size="10" text-anchor="start" fill="#555555">default readable (*:*:read)</text>
+<text x="93.0" y="285.6" font-size="10" text-anchor="start" fill="#555555">unless set to denied;</text>
+<text x="93.0" y="297.6" font-size="10" text-anchor="start" fill="#555555">read is all or nothing</text>
+</g>
+</g></svg>

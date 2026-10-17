@@ -1,0 +1,66 @@
+# How a person's data gets out of a device, a vendor cloud or a Nightscout site, and how the person
+# lets someone else read it or act for them: as believed, as it works today, and as it is emerging.
+# Sources (relative to the repo root; web sources read 2026-10-17):
+#   believed  - docs/10-domain/data-rights-primer.md "The Five Fundamental Diabetes Data Rights"
+#               (access, export, share: "on your terms, with the scope you choose. Revocable");
+#               docs/DIGITAL-RIGHTS.md "Overview" (key protections as the community reads them)
+#   actual    - vendor note §1.2 (Dexcom consumer terms §5.11), §1.4 (MiniMed: clinic upload, CareLink
+#               Connect "up to five care partners"), §1.9 (real-time data from follower services the
+#               vendors do not document), §5.2 and §5.3 (HIPAA access through clinics; the rule for
+#               designating a third party not verified); externals/nightscout-connect README.md:213-215,
+#               295-296 (the person's vendor username and password in the site's configuration);
+#               cgm-remote-monitor 15.0.8 lib/settings.js:39 and README.md:242-244 (default role
+#               `readable`), lib/authorization/storage.js:144 (`readable` = `*:*:read`);
+#               docs/30-design/tenancy/nightscout-configuration-and-delegation-2026-09-10.md §5.3
+#               (read permission is one bit; delegation grants not implemented)
+#   emerging  - vendor note §3.1 (EU Data Act Art. 4, 5, 9; applies since 2025-09-12), §3.2 (EHDS
+#               Art. 4(2) proxy services); data-rights primer "The Right to Delegate";
+#               docs/10-domain/authority-model.md "Delegation Grants" (designed, not implemented)
+title: "1·data-rights · Getting data out, and letting others in"
+base: false
+scenarios: [believed, actual, emerging]
+bands:
+  - {label: "Legal", levels: [0]}
+  - {label: "Social", levels: [1, 2, 3]}
+  - {label: "Technical", levels: [4]}
+nodes:
+  - {id: law, label: "Privacy and copyright law\n(HIPAA, GDPR, DMCA\ndata exemption)", kind: authority, level: 0, column: 0, icon: landmark}
+  - {id: datalaw, label: "EU Data Act and\nEuropean Health\nData Space", kind: authority, level: 0, column: 2, icon: landmark, in: [emerging]}
+  - {id: mfr, label: "Pump and CGM\nmanufacturers", kind: org, level: 1, column: 0, icon: factory}
+  - {id: clinic, label: "Clinic or care\nteam (holds\nhealth records)", kind: org, level: 1, column: 3, icon: stethoscope}
+  - {id: cloud, label: "Vendor cloud and\nits follower service", kind: entity, level: 2, column: 0, icon: cloud}
+  - {id: person, label: "Person with diabetes\nor their family", kind: human, level: 2, column: 1, icon: user}
+  - {id: third, label: "Third party the\nperson designates", kind: entity, level: 3, column: 2, icon: building-2, in: [emerging]}
+  - {id: helper, label: "Caregivers,\nfollowers and\nclinicians", kind: human, level: 3, column: 3, icon: users}
+  - {id: site, label: "Nightscout site\n(the person's own)", kind: commons, level: 4, column: 1, icon: server}
+edges:
+  - {from: law, to: person, kind: authority, label: "my data",
+     labels: {believed: "my data: see it,\nget it out, share it",
+              actual: "access from clinics (HIPAA),\ncopies (GDPR); DMCA data\nexemption is a defence",
+              emerging: "the same, plus the\nrights below"}}
+  - {from: mfr, to: cloud, kind: control, label: "runs"}
+  - {from: mfr, to: person, kind: discretion, label: "consumer terms: no automated\naccess, no unauthorized\napps (Dexcom §5.11)", in: [actual, emerging]}
+  - {from: person, to: site, kind: control, label: "runs own site",
+     labels: {actual: "vendor login and API\nsecret kept in the\nsite's configuration",
+              emerging: "runs own site; may\nreceive own data under\nthe Data Act (Art. 4)"}}
+  - {from: cloud, to: site, kind: data, label: "readings, live",
+     labels: {actual: "a bridge logs in as the\nperson to a follower\nservice not documented\nfor this use",
+              emerging: "readings on request,\nreal-time where\nfeasible (Art. 4)"}}
+  - {from: site, to: helper, kind: data, label: "shared with the\npeople I choose",
+     labels: {actual: "anyone with the address\n(default role readable),\nor the secret or a token:\nall data, or none",
+              emerging: "scoped, revocable\nread grant (designed,\nnot built)"}}
+  - {from: person, to: helper, kind: control, label: "chooses who sees, and\ncan take it back",
+     labels: {actual: "shares the address, the\nsecret or a token; no\nscoped grant exists",
+              emerging: "delegates within limits,\nwith expiry and revocation\n(designed, not built)"}}
+  - {from: cloud, to: helper, kind: data, label: "vendor follower app\n(MiniMed: up to five\ncare partners)", in: [actual]}
+  - {from: cloud, to: clinic, kind: data, label: "clinic upload", in: [actual]}
+  - {from: clinic, to: person, kind: data, label: "copy of records on\nrequest (HIPAA)", in: [actual]}
+  - {from: clinic, to: helper, kind: data, label: "proxy access to\nclinic records\n(EHDS Art. 4(2))", in: [emerging]}
+  - {from: datalaw, to: person, kind: authority, label: "access, and designate\na third party\n(Art. 4, 5)", in: [emerging]}
+  - {from: datalaw, to: mfr, kind: control, label: "share at the user's\nrequest, free to\nthe user", in: [emerging]}
+  - {from: person, to: third, kind: control, label: "designates; a party\nmay act on the\nuser's behalf (Art. 5)", in: [emerging]}
+  - {from: cloud, to: third, kind: data, label: "the person's data,\nfor agreed purposes\nonly (Art. 6)", in: [emerging]}
+views:
+  - {id: believed, title: "as believed", scenario: believed}
+  - {id: actual, title: "as it works today", scenario: actual}
+  - {id: emerging, title: "as it is emerging", scenario: emerging}

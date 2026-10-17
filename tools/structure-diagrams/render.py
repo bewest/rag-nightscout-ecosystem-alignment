@@ -748,6 +748,9 @@ ICON_KEY = [
     ("activity", "sensor or device data"), ("droplet", "the body's glucose"), ("server", "Nightscout hub or site"),
     ("upload", "uploader"), ("bell-ring", "push or SMS channel"), ("chart-line", "web view and reports"),
     ("database", "data store or releases"), ("store", "app platform"), ("repeat", "a system in daily use"),
+    ("cloud", "vendor cloud"), ("settings", "owner's settings"), ("file-text", "open-source licence"),
+    ("layers", "multitenant service"), ("waypoints", "federated analysis"), ("microscope", "researchers"),
+    ("package", "built app handed out"), ("shield-alert", "security coordination"), ("book-open", "documentation site"),
 ]
 
 

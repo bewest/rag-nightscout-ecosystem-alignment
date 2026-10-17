@@ -1,0 +1,72 @@
+# The shared operations the ecosystem depends on, and who runs them: as believed, as measured
+# today, and as proposed. Sources:
+#   believed - inferred: the assumption the actual panel tests ("someone is doing it")
+#   actual   - GOVERNANCE-TODAY §2 (of 20 repositories: no SECURITY policy of their own; private
+#              vulnerability reporting on in 4; discussion channels), §3 (resource-request form),
+#              §4 (provider listing by pull request, no published criteria), §6 (no criteria, no
+#              cross-project body), measured 2026-10-02; PARTNER-READINESS §3 ("what exists today":
+#              no named security contact, no complaint workflow, no SBOM or build provenance found);
+#              conformance/ (85 vector files in conformance/vectors; tools/conformance_suite.py:43-55,
+#              oref0 runner available, aaps and loop not implemented); .github/workflows/ci.yml (two
+#              jobs: Python syntax, specs and fixtures; no conformance or queue gates);
+#              mkdocs.yml (this repository's Pages site); QUALITY-SYSTEM §4.1 (15.0.9 run records)
+#   proposed - ECOSYSTEM-PROGRAMME §2b (sponsor by default, operate only by recorded decision),
+#              §2c (four shared operations, none exists yet as shared work), §5 (the foundation
+#              would define recognised participation); PARTNER-READINESS §6 (one intake, three
+#              streams, referral), §7 (registry, credential authority and hosting kept apart),
+#              §8 (security contacts and private reporting per project, at once); QUALITY-SYSTEM
+#              §4-§5 (shared kit, suite runnable against any server, each project decides)
+title: "2·shared-infra · Shared operations, and who runs them"
+base: false
+scenarios: [believed, actual, proposed]
+nodes:
+  - {id: fdn, label: "Nightscout Foundation\n(501(c)(3))", kind: org, level: 0, column: 2, icon: hand-heart}
+  - {id: align, label: "Alignment repository\n(a maintainer, with\ncoding agents)", kind: entity, level: 1, column: 0, icon: git-branch}
+  - {id: projects, label: "Project maintainers\n(volunteers, each\nproject on its own)", kind: human, level: 1, column: 2, icon: users}
+  - {id: operator, label: "Named operator\n(contract, insurance,\nsuccessor)", kind: org, level: 1, column: 3, icon: building-2, status: proposed, in: [proposed]}
+  - {id: conf, label: "Conformance suite,\ntest vectors, CI,\nrelease evidence", kind: commons, level: 2, column: 0, icon: badge-check}
+  - {id: sec, label: "Security coordination:\nprivate reporting,\nSBOM per release", kind: commons, level: 2, column: 2, icon: shield-alert}
+  - {id: docs, label: "Documentation\nand Pages sites", kind: commons, level: 2, column: 1, icon: book-open}
+  - {id: registry, label: "Registry of\nparticipants", kind: commons, level: 2, column: 4, icon: clipboard-list}
+  - {id: intake, label: "Complaint and\nincident intake", kind: commons, level: 2, column: 3, icon: message-square-warning}
+  - {id: people, label: "People, caregivers,\nclinicians (reporters)", kind: human, level: 3, column: 3, icon: users}
+  - {id: mfr, label: "Device\nmanufacturers", kind: org, level: 3, column: 4, icon: factory}
+edges:
+  - {from: fdn, to: projects, kind: funding, label: "support",
+     labels: {believed: "funds the work",
+              actual: "resource requests by\nform; no published\nreview criteria",
+              proposed: "sponsors shared work\nby default (§2b)"}}
+  - {from: fdn, to: operator, kind: funding, status: proposed, in: [proposed],
+     label: "operates only by a\nrecorded decision\nnaming the operator"}
+  - {from: align, to: conf, kind: control, label: "conformance",
+     labels: {believed: "tested",
+              actual: "85 oref0 vectors; AAPS\nand Loop runners not\nbuilt; not run in CI",
+              proposed: "shared kit; one run\nrecord; suite against\nany server"}}
+  - {from: projects, to: sec, kind: control, label: "security",
+     labels: {believed: "handled\nprivately",
+              actual: "own SECURITY policy:\n0 of 20; private\nreporting: 4 of 20",
+              proposed: "contact and private\nreporting per project,\nstarting at once"}}
+  - {from: projects, to: docs, kind: control, label: "documentation", route: z, via: 1, label_side: left,
+     labels: {believed: "documented",
+              actual: "by pull request;\nprovider listing:\nno criteria",
+              proposed: "docs by pull request\n(no change proposed)"}}
+  - {from: fdn, to: registry, kind: control, label: "registry", in: [believed, proposed],
+     labels: {believed: "keeps a list",
+              proposed: "defines recognised\nparticipation (§5)"}}
+  - {from: fdn, to: intake, kind: control, label: "someone\ninvestigates", in: [believed]}
+  - {from: operator, to: intake, kind: control, status: proposed, in: [proposed],
+     label: "one intake, three\nstreams, one record"}
+  - {from: people, to: intake, kind: feedback, label: "reports", in: [believed, proposed],
+     labels: {believed: "reported",
+              proposed: "support, complaints,\nsecurity reports"}}
+  - {from: people, to: projects, kind: feedback, in: [actual],
+     label: "reports in Discord,\nFacebook, Zulip,\nGitter, GitHub"}
+  - {from: intake, to: projects, kind: feedback, status: proposed, in: [proposed],
+     label: "linked reports;\nregression test"}
+  - {from: intake, to: mfr, kind: control, label: "referral", in: [believed, proposed],
+     labels: {believed: "passed on",
+              proposed: "referral to the\nresponsible\nmanufacturer"}}
+views:
+  - {id: believed, title: "as believed", scenario: believed}
+  - {id: actual, title: "as measured today", scenario: actual}
+  - {id: proposed, title: "as proposed", scenario: proposed}

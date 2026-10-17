@@ -1,0 +1,66 @@
+# The regulatory status of a DIY build: as believed, as regulators have actually spoken, and as the
+# landscape is emerging. One layout, three scenarios. Four positions are drawn apart because that is
+# where the status can change: a person building for themselves, a project publishing source, anyone
+# handing out built apps, anyone running it for others. Draft for regulatory counsel; not advice.
+# Sources (web sources read 2026-10-17):
+#   believed  - LoopDocs home ("not approved for therapy by any government organization"; "You take full
+#               responsibility for building and running this system"), https://loopkit.github.io/loopdocs/ ;
+#               Loop README and Trio README ("not CE or FDA approved for therapy"), externals/ (read-only);
+#               AAPS FAQ "Can I just download the AAPS installation file?" (MDR class IIa/IIb; distribution
+#               "even giving away for free"; "Building a medical device for yourself is the only way"),
+#               https://wiki.aaps.app/en/latest/UsefulLinks/FAQ.html ; DIGITAL-RIGHTS "Disclaimers"
+#   actual    - FDA press release 2019-05-17 (patients "may choose to create these systems"; use only reviewed
+#               devices); 21 CFR 807.3(b) ("commercial distribution" = "held or offered for sale"), 807.65
+#               (registration exemptions: none for a person making a device for their own use), 807.81(a)
+#               (premarket notification before "introduction ... for commercial distribution"), eCFR;
+#               21 U.S.C. 331(a) (LII); cloud-layer §2.2 (iCGM 862.1355, ACE 880.5730, iAGC 862.1356);
+#               HISTORY 2023-01-23 (Tidepool Loop K203689, cleared as an iAGC); MDCG 2023-1 (MDR Art. 5(5)
+#               applies to health institutions; use outside the institution's legal entity is not in-house)
+#   emerging  - FDA cybersecurity page (FD&C Act §524B in effect 2023-03-29; guidance 2025-06-27); LII 21 U.S.C.
+#               360n-2 (applies to "a person who submits an application or submission"); Apple note §1.7 [R7]
+#               (regulated-device status declaration, 2026-03-26); vendor note §2 (ACE/iAGC interface plans
+#               cover contracts and complaint responsibilities)
+title: "0·diy-status · Under what status a DIY build runs"
+base: false
+scenarios: [believed, actual, emerging]
+bands:
+  - {label: "Legal", levels: [0]}
+  - {label: "Social", levels: [1, 2]}
+  - {label: "Technical", levels: [3]}
+nodes:
+  - {id: us, label: "US: FD&C Act, FDA\n(21 CFR 807, 820)", kind: authority, level: 0, column: 1, icon: scale}
+  - {id: eu, label: "EU: MDR 2017/745\n(UK: no MHRA\nstatement found)", kind: authority, level: 0, column: 3, icon: scale}
+  - {id: mfr, label: "Device makers, incl.\na cleared controller\n(Tidepool Loop, 2023)", kind: org, level: 1, column: 3, icon: factory}
+  - {id: projects, label: "Open-source projects:\npublish source", kind: org, level: 1, column: 0, icon: git-branch}
+  - {id: store, label: "App stores", kind: org, level: 1, column: 2, icon: store, in: [emerging]}
+  - {id: service, label: "Anyone who runs it\nfor others", kind: entity, level: 2, column: 3, icon: building-2}
+  - {id: binary, label: "Anyone who hands\nout built apps", kind: entity, level: 2, column: 2, icon: package}
+  - {id: person, label: "Person who builds\nand runs it for\nthemselves", kind: human, level: 2, column: 1, icon: user}
+  - {id: app, label: "AID app with a\ncleared pump and CGM", kind: process, level: 3, column: 2, icon: smartphone}
+edges:
+  - {from: us, to: mfr, kind: control, label: "clearance",
+     labels: {believed: "clearance of devices",
+              actual: "510(k) or De Novo; iCGM, ACE and iAGC special controls",
+              emerging: "the same, plus premarket cybersecurity (§524B, 2023)"}}
+  - {from: eu, to: mfr, kind: control, label: "CE marking"}
+  - {from: projects, to: person, kind: control, label: "source and instructions",
+     labels: {believed: "source; \"not approved for therapy\""}}
+  - {from: person, to: app, kind: control, label: "build and run",
+     labels: {believed: "build and run: \"you take\nfull responsibility\""}}
+  - {from: eu, to: binary, kind: control, label: "CE mark to supply",
+     labels: {believed: "\"any distribution (even\ngiving away for free)\"\nneeds a CE mark",
+              actual: "placing on the market\nneeds a CE mark; free\nsupply: to verify",
+              emerging: "placing on the market\nneeds a CE mark"}}
+  - {from: us, to: person, kind: discretion, label: "2019 warning: use only\nreviewed devices; no rule\nfound on self-build",
+     in: [actual, emerging]}
+  - {from: us, to: binary, kind: control, label: "if held or offered for\nsale: register, notify\n(807.3, 807.81)",
+     in: [actual, emerging]}
+  - {from: projects, to: binary, kind: control, label: "source", in: [actual, emerging]}
+  - {from: binary, to: app, kind: control, label: "built app", in: [actual, emerging]}
+  - {from: service, to: app, kind: control, label: "runs it for\nsomeone else", in: [actual, emerging]}
+  - {from: store, to: binary, kind: discretion, label: "declare regulated-\ndevice status (2026)", in: [emerging]}
+  - {from: mfr, to: service, kind: discretion, label: "interfaces under\ncontract, with\ncomplaint duties", in: [emerging]}
+views:
+  - {id: believed, title: "as believed", scenario: believed}
+  - {id: actual, title: "as regulators have spoken", scenario: actual}
+  - {id: emerging, title: "as it is emerging", scenario: emerging}
