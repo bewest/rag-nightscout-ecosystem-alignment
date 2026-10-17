@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 216 |
-| runnable gates | 269 |
+| items | 218 |
+| runnable gates | 274 |
 | explicit `no-gate:` markers | 262 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 262 of the 531 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 262 of the 536 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 67 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `not-started` | 69 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -6551,7 +6551,7 @@ alarm-readiness items, and the seam branch refresh.
 
 ## Document-truth sweeps
 
-`parcel: docs-truth` &mdash; 12 items
+`parcel: docs-truth` &mdash; 14 items
 
 Rule 6 work. Agents read SECTIONS, not documents, so a fact stated twice and
 differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
@@ -6570,6 +6570,8 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 | `OID-DOCS` | Mark the MongoDB upgrade reports as 2026-01 snapshots: no release shipped mongodb-legacy | `not-started` | `main` | n/a | 1 run |
 | `DOCS-TESTFLIGHT-APPLE` | Correct the TestFlight and App Store pathway pages against Apple's current terms (TestFlight limits, free-tier limits, health-app guidelines, device-status declaration) | `not-started` | `main` | n/a | 2 run |
 | `DOCS-REMOTE-PATHS` | Correct the remote-bolus comparison and the LoopFollow deep dive: who relays Trio commands, Loop's reply, LoopFollow's remote types | `not-started` | `main` | n/a | 2 run |
+| `DOCS-DATA-RIGHTS-LAW` | Bring the data-rights pages up to date: EU Data Act, the current DMCA medical-device data exemption and the 2027 rulemaking, the Washington health-data act | `not-started` | `main` | n/a | 3 run |
+| `DOCS-VENDOR-FACTS` | Update vendor facts across the repo: Abbott's partner list, MiniMed's separation from Medtronic, Diabeloop in twiist (verify each first) | `not-started` | `main` | n/a | 2 run |
 
 ### `DOC-SEQUENCING` &mdash; phase0-pr-sequencing contradicts itself on the branch count
 
@@ -6945,6 +6947,70 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 - `docs/60-research/structures-2026-10-17/technical-loops.md`
 
 **Notes.** Listed in technical-loops.md §4. The comparison's Trio architecture shows Nightscout → APNs → Trio, but lib/server/loop.js:31-130 builds only the Loop payload from loopSettings, Trio expects an AES-GCM encrypted_data payload, and the sender seen in source is LoopFollow over direct APNs. Its summary marks Loop's response notification ❌, but Loop replies when the sender supplies return info (NightscoutService.swift:462-484), as its own GAP-REMOTE-004 says. The deep dive lists a nightscout RemoteType and has Trio Remote Control post to /api/v2/notifications/loop; LoopFollow's Remote/RemoteType.swift has {none, trc, loopAPNS} and Remote/TRC/PushNotificationManager.swift posts to APNs directly. Verified by this session on 2026-10-17 against externals/LoopFollow (RemoteType cases, the APNs URL). Re-read the source revisions given in technical-loops.md §0 before editing; mark what changed and when.
+
+### `DOCS-DATA-RIGHTS-LAW` &mdash; Bring the data-rights pages up to date: EU Data Act, the current DMCA medical-device data exemption and the 2027 rulemaking, the Washington health-data act
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** docs/DIGITAL-RIGHTS.md, docs/10-domain/data-rights-primer.md, docs/00-overview/PARTNER-READINESS.md (§9 question 10 only).
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** programme documentation; legal characterisations are drafts for counsel
+
+**Gates.**
+
+- `[static]` `grep -q "Data Act" docs/DIGITAL-RIGHTS.md`
+  - FAILS until DIGITAL-RIGHTS covers the EU Data Act (applies since 2025-09-12). RED on 2026-10-17.
+- `[static]` `grep -q "Data Act" docs/10-domain/data-rights-primer.md`
+  - FAILS until the primer's legal-frameworks table names the Data Act. RED on 2026-10-17.
+- `[static]` `grep -q "Washington" docs/00-overview/PARTNER-READINESS.md`
+  - FAILS until §9 question 10 names the Washington My Health My Data Act among the privacy regimes. RED on 2026-10-17.
+
+**Evidence.**
+
+- `docs/60-research/structures-2026-10-17/vendor-programs-and-data-rights.md`
+
+**Notes.** From vendor-programs-and-data-rights.md §4 (read 2026-10-17). DIGITAL-RIGHTS, five changes: the current 37 CFR 201.40(b)(7) text has no implanted-device or passive-monitoring limit; the 2027 rulemaking dates (NOI 2026-06-09, petitions 2026-08-24, comments 2026-09-28; no opposition listed to (b)(7); AdvaMed and Philips oppose (b)(17)); (b)(9) phone jailbreaking for app interoperability renewed and petitioned again; a Data Act entry under data portability (real- time and third-party sharing duties, and its limits: the health-and-safety restriction, trade secrets, the ban on abusing technical gaps, derived data excluded); right to repair confirmed as excluding medical devices in Minnesota and the EU directive, with the federal repair exemption now opposed. Primer: Access and Export rows add the Data Act and the Washington access right; the Delegate row notes the Data Act's party acting on a user's behalf and EHDS proxy services as the first legal forms of delegation found. PARTNER- READINESS §9 q10: the Washington act has no non-profit exclusion. Each characterisation of law is marked as a draft for legal review, as the source note is; re-read the instruments before writing.
+
+### `DOCS-VENDOR-FACTS` &mdash; Update vendor facts across the repo: Abbott's partner list, MiniMed's separation from Medtronic, Diabeloop in twiist (verify each first)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** docs/60-research/programme/stack-census-2026-09-30/cloud-layer.md, the ten pages that say "Medtronic CareLink", and the pages that describe twiist (observations/HISTORY.md, perspective/PRECEDENTS.md, the census histories annex).
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** programme documentation
+
+**Gates.**
+
+- `[static]` `grep -q "Beta Bionics" docs/60-research/programme/stack-census-2026-09-30/cloud-layer.md`
+  - FAILS until the census's Abbott row reflects the eleven partner integrations listed on 2026-10-17 (four today). RED on 2026-10-17.
+- `[static]` `grep -q "Diabeloop" docs/00-overview/observations/HISTORY.md`
+  - FAILS until the history records the announced integration of Diabeloop's algorithm into twiist, once verified. RED on 2026-10-17.
+
+**Evidence.**
+
+- `docs/60-research/structures-2026-10-17/vendor-programs-and-data-rights.md`
+
+**Notes.** From vendor-programs-and-data-rights.md §4 and §1.3, §1.4, §1.7. Abbott's partner list read 2026-10-17 has eleven integrations, including Tandem, Beta Bionics, twiist and Omada. MiniMed Group's separation from Medtronic plc on 2026-10-15 and Diabeloop-in-twiist for a 2027 US launch were read through search summaries only, so verify each against the primary source (the SEC 8-K exhibit; a Sequel or Diabeloop announcement) before editing. Do not rename historical statements: "Medtronic CareLink" stays correct for dates before the separation; add the change where a page describes the present. The HISTORY gate is the only one bound to a single page; the CareLink pages have no gate, because a grep cannot tell a historical mention from a present-tense one.
 
 ---
 

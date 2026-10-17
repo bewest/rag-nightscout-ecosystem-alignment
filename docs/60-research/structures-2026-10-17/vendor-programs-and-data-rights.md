@@ -500,11 +500,46 @@ software on their own Apple device are needed to protect data rights in diabetes
   Apple chooses to allow it (and in the EU because the DMA requires some openness). No law obliges a
   pump or CGM maker to offer the equivalent, and no right-to-repair law reaches medical devices.
 
-**Verdict:** the view holds for regulated, company-to-company interoperability and for EU data
+**Verdict on the view as first worded:** the view holds for regulated, company-to-company interoperability and for EU data
 access. It does not hold for independent access to devices, for control, or for the US: the
 blockers that stand in the ecosystem's way specifically (device authentication, issued
 credentials, terms of service, bilateral-only routes, three-yearly copyright exemptions) are not
 being removed, and some are growing.
+
+**The view as the maintainer clarified it (2026-10-17).** "Regardless of who does it" means that
+the requirements are the same for anyone. In the US anyone may meet them who strives to and
+fulfils all of them; in practice that means a company is required. A non-profit has no real
+advantage in meeting them; what it offers is a layer of oversight, at one level of governance,
+over many for-profits, which answers the community's sociological needs. On the technology side,
+the cost of the engineering is falling: coding agents are used for increasingly ambitious
+projects, device connectivity among them. Tested against the same evidence:
+
+- **Same requirements for anyone: supported.** The FDA classifications in §2 are open to any
+  manufacturer that meets the special controls; Tidepool, a non-profit, went through the same 510(k)
+  route as a company would (PRECEDENTS). Dexcom offers one "standard, non-negotiable Data Licensing
+  Agreement" (§1.2). The Washington act's definitions do not exclude non-profits (§3.6). Apple asks
+  healthcare apps to come from "a legal entity that provides the services, and not … an individual
+  developer", and its only non-profit concession is a fee waiver for organisations that sell
+  nothing ([Apple note](apple-accountability.md) §1.3).
+- **A company is required in practice: supported.** Every real-time route and interface
+  specification found is a contract between legal entities (above); none is open to an individual
+  or an unincorporated project.
+- **The non-profit's role is oversight, not an advantage in meeting requirements: consistent with
+  the precedents.** CNCF certifies vendors' offerings against one upstream with the same public
+  tests, and the Open Home Foundation binds its commercial partners by contract to contribute a
+  majority of their profit from licensed products; neither carries those companies' own regulatory
+  duties (PRECEDENTS). Whether a manufacturer
+  values such a layer is not shown by any source read.
+- **Falling engineering cost: plausible, not measured here.** No source read measures the effect of
+  coding agents on device-integration work. It also bears on a different blocker from the ones that
+  are growing: agents lower the cost of building an integration, while device authentication, app
+  attestation and issued credentials (§1.6) decide who is authorised to use one. Those are met by
+  the entity and its agreements, not by engineering.
+
+Read this way, the evidence supports the view: the engineering is becoming cheaper for everyone,
+the requirements are the same for everyone, and what stands between the ecosystem and the devices
+is being an entity that meets them. That is the structure the
+[proposed ecosystem drawing](../../00-overview/perspective/STRUCTURES.md) (Z1, Z2, Z2b) shows.
 
 ### 5.3 What an organisation would need to use each right
 

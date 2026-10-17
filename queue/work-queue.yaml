@@ -13630,6 +13630,107 @@ items:
       (RemoteType cases, the APNs URL). Re-read the source revisions given
       in technical-loops.md §0 before editing; mark what changed and when.
 
+  - id: DOCS-DATA-RIGHTS-LAW
+    title: "Bring the data-rights pages up to date: EU Data Act, the current DMCA medical-device data exemption and the 2027 rulemaking, the Washington health-data act"
+    parcel: docs-truth
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main
+    state: not-started
+    pr: []
+    blast_radius: >
+      docs/DIGITAL-RIGHTS.md, docs/10-domain/data-rights-primer.md,
+      docs/00-overview/PARTNER-READINESS.md (§9 question 10 only).
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: programme documentation; legal characterisations are drafts for counsel
+    register: []
+    gates:
+      - run: grep -q "Data Act" docs/DIGITAL-RIGHTS.md
+        kind: static
+        describe: >
+          FAILS until DIGITAL-RIGHTS covers the EU Data Act (applies since
+          2025-09-12). RED on 2026-10-17.
+      - run: grep -q "Data Act" docs/10-domain/data-rights-primer.md
+        kind: static
+        describe: >
+          FAILS until the primer's legal-frameworks table names the Data
+          Act. RED on 2026-10-17.
+      - run: grep -q "Washington" docs/00-overview/PARTNER-READINESS.md
+        kind: static
+        describe: >
+          FAILS until §9 question 10 names the Washington My Health My Data
+          Act among the privacy regimes. RED on 2026-10-17.
+    blocks_on: []
+    evidence:
+      - docs/60-research/structures-2026-10-17/vendor-programs-and-data-rights.md
+    notes: >
+      From vendor-programs-and-data-rights.md §4 (read 2026-10-17).
+      DIGITAL-RIGHTS, five changes: the current 37 CFR 201.40(b)(7) text
+      has no implanted-device or passive-monitoring limit; the 2027
+      rulemaking dates (NOI 2026-06-09, petitions 2026-08-24, comments
+      2026-09-28; no opposition listed to (b)(7); AdvaMed and Philips
+      oppose (b)(17)); (b)(9) phone jailbreaking for app interoperability
+      renewed and petitioned again; a Data Act entry under data portability
+      (real-time and third-party sharing duties, and its limits: the
+      health-and-safety restriction, trade secrets, the ban on abusing
+      technical gaps, derived data excluded); right to repair confirmed as
+      excluding medical devices in Minnesota and the EU directive, with the
+      federal repair exemption now opposed. Primer: Access and Export rows
+      add the Data Act and the Washington access right; the Delegate row
+      notes the Data Act's party acting on a user's behalf and EHDS proxy
+      services as the first legal forms of delegation found. PARTNER-
+      READINESS §9 q10: the Washington act has no non-profit exclusion.
+      Each characterisation of law is marked as a draft for legal review,
+      as the source note is; re-read the instruments before writing.
+  - id: DOCS-VENDOR-FACTS
+    title: "Update vendor facts across the repo: Abbott's partner list, MiniMed's separation from Medtronic, Diabeloop in twiist (verify each first)"
+    parcel: docs-truth
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main
+    state: not-started
+    pr: []
+    blast_radius: >
+      docs/60-research/programme/stack-census-2026-09-30/cloud-layer.md,
+      the ten pages that say "Medtronic CareLink", and the pages that
+      describe twiist (observations/HISTORY.md, perspective/PRECEDENTS.md,
+      the census histories annex).
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: programme documentation
+    register: []
+    gates:
+      - run: grep -q "Beta Bionics" docs/60-research/programme/stack-census-2026-09-30/cloud-layer.md
+        kind: static
+        describe: >
+          FAILS until the census's Abbott row reflects the eleven partner
+          integrations listed on 2026-10-17 (four today). RED on 2026-10-17.
+      - run: grep -q "Diabeloop" docs/00-overview/observations/HISTORY.md
+        kind: static
+        describe: >
+          FAILS until the history records the announced integration of
+          Diabeloop's algorithm into twiist, once verified. RED on
+          2026-10-17.
+    blocks_on: []
+    evidence:
+      - docs/60-research/structures-2026-10-17/vendor-programs-and-data-rights.md
+    notes: >
+      From vendor-programs-and-data-rights.md §4 and §1.3, §1.4, §1.7.
+      Abbott's partner list read 2026-10-17 has eleven integrations,
+      including Tandem, Beta Bionics, twiist and Omada. MiniMed Group's
+      separation from Medtronic plc on 2026-10-15 and Diabeloop-in-twiist
+      for a 2027 US launch were read through search summaries only, so
+      verify each against the primary source (the SEC 8-K exhibit; a
+      Sequel or Diabeloop announcement) before editing. Do not rename
+      historical statements: "Medtronic CareLink" stays correct for dates
+      before the separation; add the change where a page describes the
+      present. The HISTORY gate is the only one bound to a single page;
+      the CareLink pages have no gate, because a grep cannot tell a
+      historical mention from a present-tense one.
+
 # ---------------------------------------------------------------------------
 # PARCEL: platform
 
