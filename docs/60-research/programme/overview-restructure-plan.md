@@ -185,5 +185,5 @@ label is cut.
 | 13 | ACCOUNTABILITY-THRESHOLDS widened into "What each activity brings"; Apple and Dexcom in PRECEDENTS | done | `3996bd65` |
 | 14 | Grid renderer replaces Graphviz for every drawing | done | `e7566100` |
 | 15 | This phase plan | done | this commit |
-| 16 | Trim pass (§8.4) | next | |
+| 16 | Trim pass (§8.4) | done for the three largest: 0·sector 9 boxes and 19 edges → 8 and 15 (the support-community column and edges Z1 carries; the pumps-and-CGMs line routed round the left), 1·proposed 10 and 21 → 9 and 16 (complaints to Z2, the person's loop to Z3), Z2b 10 and 19 → 9 and 15 (the device classifications the text states, the hub upload). STRUCTURES text and the stakeholder table updated to match | this commit |
 | 17 | Relabel (§8.2) and single-idea drawings (§8.3), after the maintainer's answers | waiting | |

@@ -13,15 +13,12 @@ nodes:
   - {id: op, label: "Controller operator:\nthe legal manufacturer\nof the controller", kind: entity, level: 2, column: 1, status: proposed}
   - {id: project, label: "Open-source project\n(DIY track continues)", kind: org, level: 3, column: 0}
   - {id: person, label: "Person or caregiver", kind: human, level: 3, column: 1}
-  - {id: hub, label: "Nightscout hub\n(self-run or hosted)", kind: process, level: 3, column: 2}
   - {id: app, label: "Cleared controller app\n(one validated release)", kind: org, level: 4, column: 1, zoom: Z3}
   - {id: pump, label: "ACE pump", kind: process, level: 5, column: 0}
   - {id: cgm, label: "iCGM", kind: process, level: 5, column: 2}
 edges:
   - {from: reg, to: op, kind: control, label: "iAGC clearance,\nspecial controls", status: proposed}
   - {from: op, to: reg, kind: feedback, label: "submissions,\nadverse events"}
-  - {from: reg, to: pumpmfr, kind: control, label: "ACE pump\nclassification"}
-  - {from: reg, to: cgmmfr, kind: control, label: "iCGM\nclassification"}
   - {from: pumpmfr, to: op, kind: control, label: "pump interface spec,\npairing (tier C)", status: proposed}
   - {from: op, to: pumpmfr, kind: feedback, label: "validation of\nthe implementation"}
   - {from: cgmmfr, to: op, kind: control, label: "CGM interface spec", status: proposed}
@@ -32,8 +29,6 @@ edges:
   - {from: app, to: op, kind: feedback, label: "critical-events record,\ncomplaints"}
   - {from: person, to: app, kind: control, label: "settings, boluses"}
   - {from: app, to: person, kind: feedback, label: "alerts, status"}
-  - {from: person, to: op, kind: feedback, label: "complaints"}
-  - {from: app, to: hub, kind: data, label: "uploads for\nfollowers"}
   - {from: app, to: pump, kind: control, label: "commands\n(ACE pumps only)"}
   - {from: pump, to: app, kind: feedback, label: "state; safe fallback\non lost connection"}
   - {from: cgm, to: app, kind: feedback, label: "glucose\n(iCGMs only)"}

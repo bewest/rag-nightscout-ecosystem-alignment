@@ -12,7 +12,6 @@ nodes:
   - {id: care, label: "Clinicians and\ncare teams", kind: org, level: 2, column: 2, group: ops}
   - {id: commons, label: "Shared infrastructure commons\n(foundation, specifications, hubs)", kind: commons, level: 3, column: 1, zoom: Z1}
   - {id: projects, label: "Open-source projects\n(maintainers)", kind: org, level: 4, column: 0, group: dev}
-  - {id: community, label: "User community and\nsupport channels", kind: org, level: 4, column: 2, group: ops}
   - {id: users, label: "People building and\nrunning AID", kind: human, level: 5, column: 2, group: ops}
   - {id: system, label: "AID system in daily use", kind: process, level: 6, column: 1}
 edges:
@@ -25,13 +24,9 @@ edges:
   - {from: commons, to: companies, kind: feedback, label: "interoperability specs,\nissue reports"}
   - {from: commons, to: projects, kind: control, label: "shared contracts,\nrelease process"}
   - {from: projects, to: commons, kind: feedback, label: "conformance results,\nproposals"}
-  - {from: commons, to: community, kind: control, label: "docs, guidance"}
   - {from: projects, to: users, kind: control, label: "releases, docs"}
-  - {from: users, to: projects, kind: feedback, label: "issues, logs"}
   - {from: care, to: users, kind: control, label: "therapy plans"}
   - {from: users, to: care, kind: feedback, label: "hub reports"}
-  - {from: community, to: users, kind: control, label: "support"}
-  - {from: users, to: community, kind: feedback, label: "questions,\nincidents"}
   - {from: users, to: system, kind: control, label: "build, configure,\noperate"}
   - {from: system, to: users, kind: feedback, label: "outcomes, alerts"}
-  - {from: companies, to: system, kind: control, label: "pumps, CGMs"}
+  - {from: companies, to: system, kind: control, label: "pumps, CGMs", route: corridor, via: 0}

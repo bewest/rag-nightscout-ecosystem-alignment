@@ -14,8 +14,7 @@ nodes:
   - {id: projects, label: "Open-source projects\n(DIY track continues)", kind: org, level: 4, column: 0}
   - {id: nsaas, label: "Nightscout-as-a-service\noperators", kind: entity, level: 4, column: 1}
   - {id: laas, label: "Regulated controller\noperator (as Tidepool\ndid for Loop)", kind: entity, level: 4, column: 2, status: proposed, zoom: Z2b}
-  - {id: people, label: "People with diabetes\nand caregivers", kind: human, level: 5, column: 1}
-  - {id: devices, label: "Pumps, CGMs and\nthe person's own loop", kind: process, level: 6, column: 1, zoom: Z3}
+  - {id: people, label: "People with diabetes\nand caregivers", kind: human, level: 5, column: 1, zoom: Z3}
 edges:
   - {from: reg, to: mfr, kind: control, label: "clearance"}
   - {from: mfr, to: reg, kind: feedback, label: "adverse events"}
@@ -26,18 +25,13 @@ edges:
   - {from: mfr, to: cred, kind: control, label: "authority to issue\nclient credentials", status: proposed}
   - {from: mfr, to: laas, kind: control, label: "tier B/C agreement", status: proposed}
   - {from: fdn, to: ops, kind: funding, label: "sponsors"}
-  - {from: ops, to: mfr, kind: feedback, label: "complaints forwarded,\nfield failures"}
   - {from: cred, to: projects, kind: control, label: "issue, rotate,\nrevoke"}
   - {from: ops, to: projects, kind: control, label: "conformance tests,\nregistry"}
   - {from: projects, to: ops, kind: feedback, label: "conformance\nresults"}
-  - {from: ops, to: nsaas, kind: control, label: "hub conformance", status: proposed}
   - {from: nsaas, to: people, kind: control, label: "hosted hubs"}
   - {from: people, to: nsaas, kind: funding, label: "subscriptions"}
   - {from: laas, to: people, kind: control, label: "cleared app"}
   - {from: projects, to: people, kind: control, label: "releases"}
-  - {from: people, to: ops, kind: feedback, label: "complaints,\nincidents"}
-  - {from: people, to: devices, kind: control, label: "operate"}
-  - {from: devices, to: people, kind: feedback, label: "glucose, alarms"}
 views:
   - {id: person, title: "view: a person with diabetes or a caregiver", focus: [people]}
   - {id: maintainer, title: "view: a project maintainer", focus: [projects]}

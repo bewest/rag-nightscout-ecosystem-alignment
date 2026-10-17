@@ -41,7 +41,7 @@ same box can appear at several levels: the credential authority is in Z1, Z2 and
 
 ## Z0 · Sector
 
-![Z0: legislatures, regulators, companies, clinicians, the shared commons, projects, community, people and the AID system, in development and operations columns](diagrams/z0-sector.svg)
+![Z0: legislatures, regulators, companies, clinicians, the shared commons, projects, people and the AID system, in development and operations columns](diagrams/z0-sector.svg)
 
 The two columns follow Leveson's sociotechnical form: development on the left, operations on the
 right. The commons sits between them because it is both: specifications and release processes on
@@ -63,7 +63,7 @@ Sources: [how decisions are made today](../observations/GOVERNANCE-TODAY.md) §1
 
 ## Z1 · Ecosystem, proposed
 
-![Z1 proposed: the foundation signs tier A agreements and sponsors shared operations; a credential authority operator and a regulated controller operator hold tier B and C relationships with manufacturers; projects, hosted operators and people below](diagrams/z1-proposed.svg)
+![Z1 proposed: the foundation signs tier A agreements and sponsors shared operations; a credential authority operator and a regulated controller operator hold tier B and C relationships with manufacturers; projects, hosted operators and people below, with people's own loop in Z3](diagrams/z1-proposed.svg)
 
 Sources: [ecosystem programme §2b](../ECOSYSTEM-PROGRAMME.md#2b-sponsoring-and-operating) (the
 foundation sponsors by default and operates only by recorded decision);
@@ -74,8 +74,9 @@ foundation sponsors by default and operates only by recorded decision);
 What changes against today: each new edge to a manufacturer runs through a named legal entity. The
 foundation signs for tier A, observe and export. Tier B and C relationships go to an operator with
 its own contract, insurance and successor: a credential authority, or a regulated controller
-operator as Tidepool was for Loop. Complaints gain a route back to the manufacturer and the
-regulator. The DIY track keeps its own edges to people. The manufacturer is drawn above the
+operator as Tidepool was for Loop. The DIY track keeps its own edges to people. Complaints and
+incidents gain a route back to the manufacturer; that route is drawn one level down, in Z2, and
+the person's own loop in Z3, so that this drawing carries one idea: who holds which agreement. The manufacturer is drawn above the
 foundation because in this drawing it grants access; that is the direction of control, not a
 ranking.
 
@@ -86,10 +87,10 @@ the views can be laid side by side.
 
 | view | what this stakeholder controls | what reaches them as feedback |
 |---|---|---|
-| [a person with diabetes or a caregiver](diagrams/z1-proposed--person.svg) | which releases, hosted hubs and devices they use, and whether to pay a host | glucose and alarms from devices; nothing returns from the complaints they send unless the intake replies |
+| [a person with diabetes or a caregiver](diagrams/z1-proposed--person.svg) | which releases, hosted hubs and devices they use, and whether to pay a host | releases, hosted hubs and a cleared app; their complaints and their own loop are in Z2 and Z3 |
 | [a project maintainer](diagrams/z1-proposed--maintainer.svg) | releases to people | conformance results go up; credentials and tests come down from bodies the project does not run |
 | [a Nightscout-as-a-service operator](diagrams/z1-proposed--host.svg) | the hosted hubs | subscriptions; hub conformance is proposed, not existing |
-| [a manufacturer](diagrams/z1-proposed--manufacturer.svg) | agreements, credential authority, clearance submissions | a readiness dossier, forwarded complaints and field failures, none of which exist today |
+| [a manufacturer](diagrams/z1-proposed--manufacturer.svg) | agreements, credential authority, clearance submissions | a readiness dossier from the foundation and submissions from any regulated operator; forwarded complaints are in Z2. None of this exists today |
 | [the foundation board](diagrams/z1-proposed--board.svg) | sponsorship of shared operations | the tier A agreement and nothing else; it operates nothing in this drawing |
 | [a regulator](diagrams/z1-proposed--regulator.svg) | clearance of manufacturers and of any regulated controller operator | adverse events and submissions; the DIY track has no edge to a regulator |
 
@@ -110,7 +111,7 @@ already makes.
 
 ## Z2b · One regulated controller: Loop-as-a-service
 
-![Z2b: a regulator classifies the pump and CGM and clears the controller operator; the pump and CGM manufacturers give the operator interface specifications and pairing; the operator releases one validated controller app, which commands only ACE pumps, reads only iCGMs and uploads to a Nightscout hub; the open-source project supplies its releases and the operator returns fixes and validation evidence to them](diagrams/z2b-loop-as-a-service.svg)
+![Z2b: a regulator clears the controller operator; the pump and CGM manufacturers give the operator interface specifications and pairing; the operator releases one validated controller app, which commands only ACE pumps, reads only iCGMs; the open-source project supplies its releases and the operator returns fixes and validation evidence to them](diagrams/z2b-loop-as-a-service.svg)
 
 A proposal for discussion. Sources: the special controls for interoperable automated glycemic
 controllers (iAGC, 21 CFR 862.1356), integrated CGMs (iCGM, 862.1355) and alternate controller
