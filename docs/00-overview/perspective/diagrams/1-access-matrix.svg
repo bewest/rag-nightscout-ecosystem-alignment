@@ -63,10 +63,10 @@
 <text x="1084.0" y="148.0" font-size="10" fill="#8a8a8a" text-anchor="start">?</text>
 <text x="1096.0" y="148.0" font-size="10" fill="#111111" text-anchor="start">not collected</text>
 <text x="26.0" y="172.0" font-size="10.5" fill="#111111" text-anchor="start">Omnipod 5</text>
-<rect x="255" y="157" width="228" height="22" fill="#f7dede"/>
-<rect x="255" y="157" width="3" height="22" fill="#d03b3b"/>
-<text x="264.0" y="172.0" font-size="10" fill="#d03b3b" text-anchor="start">○</text>
-<text x="276.0" y="172.0" font-size="10" fill="#111111" text-anchor="start">D · approved app only</text>
+<rect x="255" y="157" width="228" height="22" fill="#fdf0d2"/>
+<rect x="255" y="157" width="3" height="22" fill="#c98a00"/>
+<text x="264.0" y="172.0" font-size="10" fill="#c98a00" text-anchor="start">◆</text>
+<text x="276.0" y="172.0" font-size="10" fill="#111111" text-anchor="start">D · app check</text>
 <rect x="485" y="157" width="118" height="22" fill="#fdf0d2"/>
 <rect x="485" y="157" width="3" height="22" fill="#c98a00"/>
 <text x="494.0" y="172.0" font-size="10" fill="#c98a00" text-anchor="start">◆</text>
@@ -113,14 +113,14 @@
 <text x="1084.0" y="196.0" font-size="10" fill="#8a8a8a" text-anchor="start">?</text>
 <text x="1096.0" y="196.0" font-size="10" fill="#111111" text-anchor="start">not collected</text>
 <text x="26.0" y="220.0" font-size="10.5" fill="#111111" text-anchor="start">MiniMed 780G</text>
-<rect x="255" y="205" width="228" height="22" fill="#eeeeee"/>
-<rect x="255" y="205" width="3" height="22" fill="#8a8a8a"/>
-<text x="264.0" y="220.0" font-size="10" fill="#8a8a8a" text-anchor="start">?</text>
-<text x="276.0" y="220.0" font-size="10" fill="#111111" text-anchor="start">not determined</text>
+<rect x="255" y="205" width="228" height="22" fill="#fdf0d2"/>
+<rect x="255" y="205" width="3" height="22" fill="#c98a00"/>
+<text x="264.0" y="220.0" font-size="10" fill="#c98a00" text-anchor="start">◆</text>
+<text x="276.0" y="220.0" font-size="10" fill="#111111" text-anchor="start">D · app check</text>
 <rect x="485" y="205" width="118" height="22" fill="#e2f3e2"/>
 <rect x="485" y="205" width="3" height="22" fill="#0ca30c"/>
 <text x="494.0" y="220.0" font-size="10" fill="#0ca30c" text-anchor="start">●</text>
-<text x="506.0" y="220.0" font-size="10" fill="#111111" text-anchor="start">2 (SAKE)</text>
+<text x="506.0" y="220.0" font-size="10" fill="#111111" text-anchor="start">2 (proofs of concept)</text>
 <rect x="605" y="205" width="188" height="22" fill="#fdf0d2"/>
 <rect x="605" y="205" width="3" height="22" fill="#c98a00"/>
 <text x="614.0" y="220.0" font-size="10" fill="#c98a00" text-anchor="start">◆</text>
@@ -239,10 +239,10 @@
 <text x="1084.0" y="338.0" font-size="10" fill="#8a8a8a" text-anchor="start">?</text>
 <text x="1096.0" y="338.0" font-size="10" fill="#111111" text-anchor="start">not collected</text>
 <text x="26.0" y="362.0" font-size="10.5" fill="#111111" text-anchor="start">Dexcom G7 / ONE+</text>
-<rect x="255" y="347" width="228" height="22" fill="#e2f3e2"/>
-<rect x="255" y="347" width="3" height="22" fill="#0ca30c"/>
-<text x="264.0" y="362.0" font-size="10" fill="#0ca30c" text-anchor="start">●</text>
-<text x="276.0" y="362.0" font-size="10" fill="#111111" text-anchor="start">A · protocol and what the person has</text>
+<rect x="255" y="347" width="228" height="22" fill="#fdf0d2"/>
+<rect x="255" y="347" width="3" height="22" fill="#c98a00"/>
+<text x="264.0" y="362.0" font-size="10" fill="#c98a00" text-anchor="start">◆</text>
+<text x="276.0" y="362.0" font-size="10" fill="#111111" text-anchor="start">D · app check</text>
 <rect x="485" y="347" width="118" height="22" fill="#e2f3e2"/>
 <rect x="485" y="347" width="3" height="22" fill="#0ca30c"/>
 <text x="494.0" y="362.0" font-size="10" fill="#0ca30c" text-anchor="start">●</text>
@@ -289,10 +289,10 @@
 <text x="1084.0" y="386.0" font-size="10" fill="#8a8a8a" text-anchor="start">?</text>
 <text x="1096.0" y="386.0" font-size="10" fill="#111111" text-anchor="start">not collected</text>
 <text x="26.0" y="410.0" font-size="10.5" fill="#111111" text-anchor="start">Libre 3</text>
-<rect x="255" y="395" width="228" height="22" fill="#e2f3e2"/>
-<rect x="255" y="395" width="3" height="22" fill="#0ca30c"/>
-<text x="264.0" y="410.0" font-size="10" fill="#0ca30c" text-anchor="start">●</text>
-<text x="276.0" y="410.0" font-size="10" fill="#111111" text-anchor="start">A · protocol and what the person has</text>
+<rect x="255" y="395" width="228" height="22" fill="#fdf0d2"/>
+<rect x="255" y="395" width="3" height="22" fill="#c98a00"/>
+<text x="264.0" y="410.0" font-size="10" fill="#c98a00" text-anchor="start">◆</text>
+<text x="276.0" y="410.0" font-size="10" fill="#111111" text-anchor="start">D · app check</text>
 <rect x="485" y="395" width="118" height="22" fill="#e2f3e2"/>
 <rect x="485" y="395" width="3" height="22" fill="#0ca30c"/>
 <text x="494.0" y="410.0" font-size="10" fill="#0ca30c" text-anchor="start">●</text>

@@ -8823,11 +8823,12 @@
 
 
 <h1 id="remote-bolus-command-comparison">Remote Bolus Command Comparison<a class="headerlink" href="#remote-bolus-command-comparison" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-09 at <code>a6191372</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>3eb62afa</code>.</em></p>
 <blockquote>
 <p><strong>Sources</strong>: Loop, AAPS, Trio, Nightscout<br />
 <strong>Last Updated</strong>: 2026-01-28<br />
-<strong>Corrected 2026-10-09</strong> against source; see <a href="../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.html">intent and workflow across the landscape</a> §11.  </p>
+<strong>Corrected 2026-10-09</strong> against source; see <a href="../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.html">intent and workflow across the landscape</a> §11.<br />
+<strong>Corrected 2026-10-17</strong> against source: the Trio architecture no longer routes commands through Nightscout, the Nightscout relay is shown sending to Loop only, and the summary table now shows Loop's optional response notification, matching GAP-REMOTE-004. Revisions read: cgm-remote-monitor <code>a8888f0d</code>, LoopWorkspace <code>548b332</code> (NightscoutService <code>2cef489</code>), Trio <code>0b29cd534</code>, LoopFollow <code>4a74b781</code>. See <a href="../60-research/structures-2026-10-17/technical-loops.html">technical control loops</a> §4.  </p>
 </blockquote>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>Remote bolus commands allow caregivers to trigger insulin delivery from outside the AID app. This document compares how Loop, AAPS, Trio, and Nightscout handle these safety-critical commands.</p>
@@ -9036,8 +9037,9 @@
 <hr />
 <h2 id="trio-ios">Trio (iOS)<a class="headerlink" href="#trio-ios" title="Permanent link">&para;</a></h2>
 <h3 id="architecture_2">Architecture<a class="headerlink" href="#architecture_2" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Nightscout → APNs → Trio App → APSManager → Pump
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Sender app (e.g. LoopFollow) → APNs → Trio App → APSManager → Pump
 </code></pre></div>
+<p>The sender pushes directly to Apple Push Notification service (APNs); Nightscout does not relay Trio commands. Trio expects an AES-GCM encrypted <code>encrypted_data</code> payload (<code>Trio/Sources/Models/CommandPayload.swift:3-9</code>, Trio <code>0b29cd534</code>), and Nightscout's relay builds only Loop's payload (see <a href="#nightscout-server">Nightscout</a> below). The sender observed in source is LoopFollow's Trio Remote Control, which posts to APNs itself (<code>LoopFollow/Remote/TRC/PushNotificationManager.swift:329-333</code>, LoopFollow <code>4a74b781</code>). Nightscout's part is to hold the APNs device token that Trio uploads to its profile (<code>Trio/Sources/Services/Network/Nightscout/NightscoutManager.swift:838-853</code>), which a sender can read.</p>
 <h3 id="key-files_2">Key Files<a class="headerlink" href="#key-files_2" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -9117,8 +9119,9 @@
 <hr />
 <h2 id="nightscout-server">Nightscout (Server)<a class="headerlink" href="#nightscout-server" title="Permanent link">&para;</a></h2>
 <h3 id="architecture_3">Architecture<a class="headerlink" href="#architecture_3" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>Careportal UI → API → loop.sendNotification() → APNs → Loop/Trio
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>Careportal UI → API → loop.sendNotification() → APNs → Loop
 </code></pre></div>
+<p><code>loop.sendNotification()</code> reads the device token and bundle identifier from the profile's <code>loopSettings</code> and builds Loop's payload keys only (<code>lib/server/loop.js:31-130</code>, cgm-remote-monitor <code>a8888f0d</code>). It does not build Trio's encrypted payload.</p>
 <h3 id="key-files_3">Key Files<a class="headerlink" href="#key-files_3" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -9438,7 +9441,7 @@
 </tr>
 <tr>
 <td><strong>Response Notification</strong></td>
-<td>❌</td>
+<td>✅ Optional (only when the sender supplies return info)</td>
 <td>❌</td>
 <td>✅</td>
 <td>❌</td>

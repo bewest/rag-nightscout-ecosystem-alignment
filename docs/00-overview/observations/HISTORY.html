@@ -2431,13 +2431,14 @@
 
 
 <h1 id="from-a-diy-project-to-shared-infrastructure-a-chronology-of-the-nightscout-ecosystem">From a DIY project to shared infrastructure: a chronology of the Nightscout ecosystem<a class="headerlink" href="#from-a-diy-project-to-shared-infrastructure-a-chronology-of-the-nightscout-ecosystem" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>5ca36a94</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>3eb62afa</code>.</em></p>
 <p><em>For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
 <strong>Observations</strong> (part 1 of the overview; <a href="../index.html">how the overview is organised</a>). Living
 page, assembled 2026-10-02 against this repository at <code>9b219f31</code>. It records dates and what
 happened; it gives no causes and makes no recommendation. People are named by role. Every row cites
 a primary source read on 2026-10-02 or a <code>git</code> command run on the clone named in §6, and a row that
-could not be established that way is listed in §5 rather than given a date.</em></p>
+could not be established that way is listed in §5 rather than given a date. The rows dated 2026-01-13
+and 2026-10-15 were added 2026-10-17, from sources read that day.</em></p>
 <h2 id="1-origins-20122014">1. Origins, 2012–2014<a class="headerlink" href="#1-origins-20122014" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -2755,6 +2756,11 @@ could not be established that way is listed in §5 rather than given a date.</em
 <td><code>git log --reverse</code>, <code>nightscout/nocturne</code> (<code>b0eeebe0c</code>)</td>
 </tr>
 <tr>
+<td>2026-01-13</td>
+<td>Diabeloop and Sequel announce that Diabeloop's DBLG2 algorithm, cleared by the FDA as an interoperable automated glycemic controller on 2025-12-18, "will be integrated into Sequel's twiist Automated Insulin Delivery (AID) system"; the companies "anticipate product readiness by end of 2026 and launch in the US in 2027"</td>
+<td><a href="https://www.diabeloop.com/news/company/dbl-sequel-partnership-en">Diabeloop</a></td>
+</tr>
+<tr>
 <td>2026-01-16</td>
 <td>this alignment workspace has its first commit</td>
 <td><code>git log --reverse</code> (<code>bdca28cb</code>)</td>
@@ -2778,6 +2784,11 @@ could not be established that way is listed in §5 rather than given a date.</em
 <td>2026-09 to now</td>
 <td>15.0.9 is prepared as a release candidate on <code>dev</code>, not yet tagged; its current head and what it waits on are in <a href="../ROADMAP.html#1-the-next-release-1509">ROADMAP §1</a>, and how it was made in the <a href="../../../releases/cgm-remote-monitor-15.0.9/colophon.html">colophon</a></td>
 <td>ROADMAP §1</td>
+</tr>
+<tr>
+<td>2026-10-15</td>
+<td>MiniMed announces "the completion of its separation from Medtronic plc", its "first day as a fully independent company"</td>
+<td><a href="https://www.sec.gov/Archives/edgar/data/0002062583/000110465926116441/tm2627653d1_ex99-1.htm">press release, SEC 8-K exhibit 99.1</a></td>
 </tr>
 </tbody>
 </table>
@@ -2806,7 +2817,8 @@ entirely (only the Heroku add-on removal is sourced); Azure's free-tier history 
 <h2 id="6-how-to-check">6. How to check<a class="headerlink" href="#6-how-to-check" title="Permanent link">&para;</a></h2>
 <p><code>git</code> rows were run on the clones under <code>externals/stack/&lt;owner&gt;__&lt;repo&gt;</code> (<code>git log --reverse
 --format='%ad %h %s' --date=short | head</code>, and <code>git for-each-ref --sort=creatordate refs/tags</code>);
-<code>gh api</code> rows on 2026-10-02. Web sources were read with their text extracted on 2026-10-02.</p>
+<code>gh api</code> rows on 2026-10-02. Web sources were read with their text extracted on 2026-10-02, except the
+2026-01-13 and 2026-10-15 rows, read 2026-10-17.</p>
 
 
 

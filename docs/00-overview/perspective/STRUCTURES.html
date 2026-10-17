@@ -2919,7 +2919,7 @@
 
 
 <h1 id="control-structures-drawn">Control structures, drawn<a class="headerlink" href="#control-structures-drawn" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-17 at <code>022da04e</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>49a75d55</code>.</em></p>
 <p><em>For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
 <strong>Perspective</strong> (part 2 of the overview; <a href="../index.html">how the overview is organised</a>). Living page,
 written 2026-10-16, relabelled 2026-10-17. Drawings to follow and discuss the overview's proposals with: who controls
@@ -2940,7 +2940,7 @@ is a loop whose controller cannot see the result of what it does.</p>
 building for a legislature, scales for a regulator, one figure for a person and two for people, a
 key for a credential authority, a phone for an app. The key lists every icon. The icons are from
 <a href="https://lucide.dev">Lucide</a> (ISC licence), copied into
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/29f1a78abd141cdd8b038e142f7572db8440d245/tools/structure-diagrams/icons"><code>tools/structure-diagrams/icons/</code></a> with their licence.</p>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/3af810b8e6628c12bda953b2d048f496856f7b4f/tools/structure-diagrams/icons"><code>tools/structure-diagrams/icons/</code></a> with their licence.</p>
 <p><img alt="Icon key: each icon and the role it marks, from legislature, regulator and court to app, insulin pump, sensor, the body's glucose and the Nightscout hub" src="diagrams/icon-key.svg" /></p>
 <p>Every drawing is labelled <em>level · subject</em>. The level is where the drawing sits in the
 hierarchy, from society down to software and devices; the subject is a short name that stays the
@@ -3269,8 +3269,8 @@ responsibility (<a href="../PARTNER-READINESS.html#6-complaint-incident-and-supp
 <p>In the EU since 2025-09-12, the person decides who receives their device data, and the data holder
 must send it there; the recipient is bound to the agreed purposes
 (<a href="../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.html#31-eu-data-act">vendor note §3.1</a>).
-This is a draft summary of the law for counsel to review, not legal advice; it will join the
-data-rights pages when they are brought up to date (queue <code>DOCS-DATA-RIGHTS-LAW</code>).</p>
+This is a draft summary of the law for counsel to review, not legal advice. The drawing is also
+embedded in <a href="../../DIGITAL-RIGHTS.html#eu-data-act-regulation-eu-20232854">DIGITAL-RIGHTS</a>, beside the Data Act entry.</p>
 <h2 id="what-the-drawings-do-not-show">What the drawings do not show<a class="headerlink" href="#what-the-drawings-do-not-show" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Legal relationships in detail.</strong> An edge labelled "agreement" stands for terms that
@@ -3283,7 +3283,7 @@ data-rights pages when they are brought up to date (queue <code>DOCS-DATA-RIGHTS
 </ul>
 <h2 id="changing-a-drawing">Changing a drawing<a class="headerlink" href="#changing-a-drawing" title="Permanent link">&para;</a></h2>
 <p>The drawings are generated. Each one's source is a YAML file in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/29f1a78abd141cdd8b038e142f7572db8440d245/tools/structure-diagrams/inputs"><code>tools/structure-diagrams/inputs/</code></a>, with nodes placed
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/3af810b8e6628c12bda953b2d048f496856f7b4f/tools/structure-diagrams/inputs"><code>tools/structure-diagrams/inputs/</code></a>, with nodes placed
 by level and column, edges typed as control, feedback, funding or data, and optional stakeholder
 views. Edit the YAML and run <code>python3 tools/structure-diagrams/render.py</code>. The renderer places
 every box on a grid and routes lines at right angles, with each control and feedback pair drawn as

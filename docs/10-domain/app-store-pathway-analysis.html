@@ -2145,10 +2145,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#guideline-51-safety" class="md-nav__link">
+  <a href="#guideline-14-physical-harm" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Guideline 5.1: Safety
+        Guideline 1.4: Physical Harm
       
     </span>
   </a>
@@ -8200,10 +8200,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#guideline-51-safety" class="md-nav__link">
+  <a href="#guideline-14-physical-harm" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Guideline 5.1: Safety
+        Guideline 1.4: Physical Harm
       
     </span>
   </a>
@@ -8427,13 +8427,21 @@
 
 
 <h1 id="app-store-pathway-analysis">App Store Pathway Analysis<a class="headerlink" href="#app-store-pathway-analysis" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-01-31 at <code>5aa14612</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>3eb62afa</code>.</em></p>
 <blockquote>
 <p><strong>Date</strong>: 2026-01-31<br />
 <strong>Status</strong>: Complete<br />
 <strong>Source</strong>: ios-mobile-platform.md #3<br />
 <strong>Related</strong>: <a href="../sdqctl-proposals/nightscoutkit-swift-sdk-design.html">nightscoutkit-swift-sdk-design.md</a></p>
 </blockquote>
+<p><strong>Corrected 2026-10-17:</strong> checked against Apple's pages, read on 2026-10-17, and corrected in place:
+the safety guideline is 1.4 (Physical Harm), not 5.1 (which is Privacy), and its wording is now
+quoted; the reasons an AID app cannot be distributed now cite Apple's own texts (guidelines 1.4.1,
+1.4.2 and 5.1.1(ix), the Developer Program License Agreement §3.3.2 and the regulated medical
+device status declaration) instead of a paraphrase; the Critical Alerts approval likelihood is
+marked unverified. The findings and sources are in
+<a href="../60-research/structures-2026-10-17/apple-accountability.html#7-corrections-to-existing-repository-pages">Apple accountability §7.2</a>. The descriptions of
+Apple's terms are a non-lawyer's reading, to be checked by counsel.</p>
 <hr />
 <h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
 <p>This analysis examines App Store submission strategies for Nightscout ecosystem iOS apps, identifying patterns that enable successful App Store presence versus factors requiring self-build distribution.</p>
@@ -8600,9 +8608,25 @@
 </tbody>
 </table>
 <p><strong>Why App Store Impossible</strong>:
-1. <strong>Guideline 5.1 Safety</strong>: Apps that could harm users physically face rejection
+1. <strong>Guideline 1.4 Physical Harm</strong>: "If your app behaves in a way that risks physical harm, we may
+   reject it" (<a href="https://developer.apple.com/app-store/review/guidelines/">App Review Guidelines</a>, read 2026-10-17)
 2. <strong>FDA Regulation</strong>: Automated insulin dosing is Class II/III medical device
-3. <strong>Liability</strong>: Apple won't distribute unapproved medical devices</p>
+3. <strong>Apple's own texts</strong> (the page previously said "Apple won't distribute unapproved medical
+   devices", which is not Apple's wording):
+   - Guideline 1.4.1: medical apps "may be reviewed with greater scrutiny"; if a medical app "has
+     received regulatory clearance, please submit a link to that documentation with your app."
+   - Guideline 1.4.2: "Drug dosage calculators must come from the drug manufacturer, a hospital,
+     university, health insurance company, pharmacy or other approved entity, or receive approval
+     by the FDA or one of its international counterparts."
+   - Guideline 5.1.1(ix): apps in highly regulated fields such as healthcare "should be submitted
+     by a legal entity that provides the services, and not by an individual developer."
+   - Developer Program License Agreement §3.3.2: the developer must comply with FDA and other
+     regulatory requirements, and market an app "only for its cleared or approved intended use"
+     (<a href="https://developer.apple.com/support/terms/apple-developer-program-license-agreement/">DPLA</a>).
+   - Regulated medical device status: apps in the Health &amp; Fitness or Medical categories
+     distributed in the EEA, UK or US must declare whether they are a regulated medical device;
+     existing apps "must provide a status by early 2027"
+     (<a href="https://developer.apple.com/news/?id=nyqbfz1y">Apple news, 2026-03-26</a>).</p>
 <p><strong>Source</strong>: <code>externals/LoopWorkspace/Loop/README.md</code>, <code>externals/Trio/README.md</code></p>
 <hr />
 <h3 id="xdrip4ios---self-build-only-">xDrip4iOS - Self-Build Only ❌<a class="headerlink" href="#xdrip4ios---self-build-only-" title="Permanent link">&para;</a></h3>
@@ -8651,9 +8675,11 @@
 - Can't submit "Nightscout Follower", "Nightscout CGM", "Nightscout AID" if 90% identical
 - Each app must serve genuinely different use case
 - Modular architecture with distinct App Store submissions is acceptable</p>
-<h3 id="guideline-51-safety">Guideline 5.1: Safety<a class="headerlink" href="#guideline-51-safety" title="Permanent link">&para;</a></h3>
+<h3 id="guideline-14-physical-harm">Guideline 1.4: Physical Harm<a class="headerlink" href="#guideline-14-physical-harm" title="Permanent link">&para;</a></h3>
 <blockquote>
-<p>"Apps that could cause physical harm may be rejected."</p>
+<p>"If your app behaves in a way that risks physical harm, we may reject it."
+(<a href="https://developer.apple.com/app-store/review/guidelines/">App Review Guidelines</a>, read 2026-10-17. Safety is section 1 of the guidelines; 5.1 is
+Privacy.)</p>
 </blockquote>
 <p><strong>Implications</strong>:
 - Display-only apps: ✅ Generally safe
@@ -8731,12 +8757,12 @@
 <tr>
 <td><strong>Remote bolus commands</strong></td>
 <td>⚠️ Risky</td>
-<td>Safety concerns (5.1)</td>
+<td>Safety concerns (1.4)</td>
 </tr>
 <tr>
 <td><strong>Temp basal suggestions</strong></td>
 <td>⚠️ Risky</td>
-<td>Medical advice (5.1)</td>
+<td>Medical advice (1.4.1, 1.4.2)</td>
 </tr>
 <tr>
 <td><strong>Automated dosing</strong></td>
@@ -8877,8 +8903,9 @@
 1. Must request from Apple: <a href="https://developer.apple.com/contact/request/notifications-critical-alerts-entitlement/">Critical Alert Entitlement Request</a>
 2. Justify medical/safety need
 3. Apple manually reviews each request</p>
-<p><strong>Approval Likelihood</strong>:
-- Glucose monitoring apps: ✅ Typically approved
+<p><strong>Approval Likelihood</strong> (unverified: Apple's approval criteria are not on any Apple page read on
+2026-10-17, and the request form needs sign-in):
+- Glucose monitoring apps: ✅ Typically approved (unverified)
 - Must demonstrate legitimate safety use case</p>
 <hr />
 <h2 id="architecture-recommendation">Architecture Recommendation<a class="headerlink" href="#architecture-recommendation" title="Permanent link">&para;</a></h2>

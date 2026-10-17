@@ -3761,17 +3761,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#nightscout-commands-trio" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Nightscout Commands (Trio)
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -8303,17 +8292,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#nightscout-commands-trio" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Nightscout Commands (Trio)
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -8537,11 +8515,12 @@
 
 
 <h1 id="loopfollow-deep-dive">LoopFollow Deep Dive<a class="headerlink" href="#loopfollow-deep-dive" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-01-28 at <code>cd7cb43d</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>3eb62afa</code>.</em></p>
 <blockquote>
 <p><strong>Source</strong>: <code>externals/LoopFollow/</code><br />
 <strong>Last Updated</strong>: 2026-01-29<br />
-<strong>Version</strong>: 2.x (maintained by Loop and Learn)</p>
+<strong>Version</strong>: 2.x (maintained by Loop and Learn)<br />
+<strong>Corrected 2026-10-17</strong> against LoopFollow <code>4a74b781</code>: <code>RemoteType</code> has three cases (no <code>nightscout</code> case), Trio Remote Control sends to Apple Push Notification service (APNs) directly rather than through Nightscout, and the <code>Remote/Nightscout/</code> directory described before does not exist. See <a href="../60-research/structures-2026-10-17/technical-loops.html">technical control loops</a> §4.</p>
 </blockquote>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>LoopFollow is an iOS/watchOS caregiver monitoring app that aggregates data from multiple diabetes management sources into a single view. It consumes Nightscout API data to display CGM readings, insulin dosing, carbs, predictions, and AID system status.</p>
@@ -8632,12 +8611,11 @@
 <a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>│   │           └── ...
 <a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>│   ├── Remote/                   # Remote command support
 <a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>│   │   ├── LoopAPNS/             # Loop APNS commands
-<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>│   │   ├── Nightscout/           # NS-based commands (Trio)
-<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>│   │   └── TRC/                  # Trio Remote Control
-<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>│   ├── Helpers/
-<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>│   │   └── NightscoutUtils.swift # API request utilities
-<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>│   └── Nightscout/               # NS settings UI
-<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>└── Tests/
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>│   │   └── TRC/                  # Trio Remote Control
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>│   ├── Helpers/
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>│   │   └── NightscoutUtils.swift # API request utilities
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>│   └── Nightscout/               # NS settings UI
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>└── Tests/
 </code></pre></div>
 <hr />
 <h2 id="nightscout-api-usage">Nightscout API Usage<a class="headerlink" href="#nightscout-api-usage" title="Permanent link">&para;</a></h2>
@@ -8678,8 +8656,8 @@
 </tr>
 <tr>
 <td><code>POST /api/v2/notifications/loop</code></td>
-<td>Remote commands</td>
-<td>Override payloads</td>
+<td>Override enable/cancel (endpoint defined)</td>
+<td>No caller found at <code>4a74b781</code>; remote commands go over APNs (see <a href="#remote-command-support">Remote Command Support</a>)</td>
 </tr>
 </tbody>
 </table>
@@ -8868,10 +8846,9 @@
 <p><strong>Source</strong>: <code>LoopFollow/Remote/RemoteType.swift</code></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kd">enum</span><span class="w"> </span><span class="nc">RemoteType</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">,</span><span class="w"> </span><span class="n">Codable</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="kr">none</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"None"</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">nightscout</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Nightscout"</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">trc</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Trio Remote Control"</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">loopAPNS</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Loop APNS"</span>
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="p">}</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">trc</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Trio Remote Control"</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">loopAPNS</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Loop APNS"</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="p">}</span>
 </code></pre></div>
 <h3 id="loop-apns-commands">Loop APNS Commands<a class="headerlink" href="#loop-apns-commands" title="Permanent link">&para;</a></h3>
 <p><strong>Source</strong>: <code>LoopFollow/Remote/LoopAPNS/</code></p>
@@ -8880,14 +8857,11 @@
 - Push notifications to Loop app</p>
 <h3 id="trio-remote-control-trc">Trio Remote Control (TRC)<a class="headerlink" href="#trio-remote-control-trc" title="Permanent link">&para;</a></h3>
 <p><strong>Source</strong>: <code>LoopFollow/Remote/TRC/</code></p>
-<p>Uses Nightscout notifications endpoint for Trio:
-- <code>POST /api/v2/notifications/loop</code>
-- Sends override commands</p>
-<h3 id="nightscout-commands-trio">Nightscout Commands (Trio)<a class="headerlink" href="#nightscout-commands-trio" title="Permanent link">&para;</a></h3>
-<p><strong>Source</strong>: <code>LoopFollow/Remote/Nightscout/</code></p>
-<p>Direct Nightscout treatment posting for Trio:
-- Override enable/cancel
-- Temporary targets</p>
+<p>Sends commands to Trio directly over APNs; Nightscout does not relay them:
+- Posts to <code>api.push.apple.com</code> (or the sandbox host) for Trio's device token (<code>Remote/TRC/PushNotificationManager.swift:329-333</code>)
+- The command is AES-GCM encrypted with the shared secret and sent as <code>encrypted_data</code> (<code>Remote/TRC/SecureMessenger.swift:21-22</code>, <code>Remote/TRC/PushNotificationManager.swift:255-256</code>)
+- Each command can carry <code>return_notification</code> details, so Trio can send its response back to LoopFollow (<code>Remote/TRC/PushMessage.swift:46</code>)
+- Trio's device token is read from the Nightscout profile (<code>Controllers/Nightscout/ProfileManager.swift:111</code>)</p>
 <hr />
 <h2 id="profile-consumption">Profile Consumption<a class="headerlink" href="#profile-consumption" title="Permanent link">&para;</a></h2>
 <p><strong>Source</strong>: <code>LoopFollow/Controllers/Nightscout/Profile.swift</code>, <code>ProfileManager.swift</code></p>
@@ -9091,7 +9065,6 @@
 <li><code>LoopFollow/Remote/RemoteType.swift</code> - Remote type enum</li>
 <li><code>LoopFollow/Remote/LoopAPNS/</code> - Loop APNS support</li>
 <li><code>LoopFollow/Remote/TRC/</code> - Trio Remote Control</li>
-<li><code>LoopFollow/Remote/Nightscout/</code> - NS-based commands</li>
 </ul>
 <hr />
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
@@ -9121,7 +9094,7 @@
 </tr>
 <tr>
 <td><strong>Remote</strong></td>
-<td>APNS (Loop), TRC (Trio), Nightscout</td>
+<td>APNS (Loop), TRC (Trio)</td>
 </tr>
 <tr>
 <td><strong>Multi-User</strong></td>
