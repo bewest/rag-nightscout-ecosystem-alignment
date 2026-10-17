@@ -2062,3 +2062,16 @@ controls:
     proves: >
       origin/master (15.0.8) does not contain e9dbb1fb, so the same ancestry
       question exits 1 there. Goes stale when 15.0.9 is released.
+
+  - gate: |-
+      python3 -I docs/60-research/tenancy/identifier-duplicates-2026-10-17/iddup.py | grep -c "yes at every site" | grep -qx 4
+    cwd: .
+    control: |-
+      python3 -I docs/60-research/tenancy/identifier-duplicates-2026-10-17/iddup.py --planted | grep -c "yes at every site" | grep -qx 4
+    control-kind: static
+    proves: >
+      ID-DUP-MEASURE. The control runs the same instrument over the corpus
+      with two treatments and two entries sharing an identifier planted in
+      site a; entries and treatments then report "no at a" and the count is
+      2, so it exits 1. Run 2026-10-17: gate 0, control 1. Needs
+      externals/ns-data in the main checkout.

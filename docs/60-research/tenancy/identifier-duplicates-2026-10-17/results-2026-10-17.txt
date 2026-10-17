@@ -1,0 +1,164 @@
+## collections present (site, collection, docs)
+47431	L	devicestatus
+69719	L	entries
+10	L	profile
+30306	L	treatments
+50213	a	devicestatus
+49762	a	entries
+10	a	profile
+28908	a	treatments
+62386	b	devicestatus
+49986	b	entries
+10	b	profile
+48690	b	treatments
+51856	c	devicestatus
+93677	c	entries
+10	c	profile
+26514	c	treatments
+40490	d	devicestatus
+87930	d	entries
+10	d	profile
+22976	d	treatments
+56338	e	devicestatus
+67224	e	entries
+10	e	profile
+30748	e	treatments
+51375	f	devicestatus
+50217	f	entries
+10	f	profile
+15584	f	treatments
+54001	g	devicestatus
+50464	g	entries
+10	g	profile
+26410	g	treatments
+47014	h	devicestatus
+20034	h	entries
+10	h	profile
+21289	h	treatments
+51470	i	devicestatus
+100535	i	entries
+10	i	profile
+31152	i	treatments
+15181	j	devicestatus
+29324	j	entries
+1	j	profile
+436	j	treatments
+33935	k	devicestatus
+50687	k	entries
+10	k	profile
+24983	k	treatments
+## idclass
+47431	L	devicestatus	absent
+69719	L	entries	absent
+10	L	profile	absent
+29812	L	treatments	absent
+494	L	treatments	non-empty string
+50213	a	devicestatus	absent
+49762	a	entries	absent
+10	a	profile	absent
+28908	a	treatments	absent
+62386	b	devicestatus	absent
+49986	b	entries	absent
+10	b	profile	absent
+48690	b	treatments	absent
+51856	c	devicestatus	absent
+93677	c	entries	absent
+10	c	profile	absent
+26514	c	treatments	absent
+40490	d	devicestatus	absent
+87930	d	entries	absent
+10	d	profile	absent
+22976	d	treatments	absent
+56338	e	devicestatus	absent
+67224	e	entries	absent
+10	e	profile	absent
+30748	e	treatments	absent
+51375	f	devicestatus	absent
+50217	f	entries	absent
+10	f	profile	absent
+15584	f	treatments	absent
+54001	g	devicestatus	absent
+50464	g	entries	absent
+10	g	profile	absent
+26410	g	treatments	absent
+47014	h	devicestatus	absent
+20034	h	entries	absent
+10	h	profile	absent
+21289	h	treatments	absent
+51470	i	devicestatus	absent
+100535	i	entries	absent
+10	i	profile	absent
+31141	i	treatments	absent
+11	i	treatments	non-empty string
+15181	j	devicestatus	absent
+29324	j	entries	absent
+1	j	profile	absent
+436	j	treatments	absent
+33935	k	devicestatus	absent
+50687	k	entries	absent
+10	k	profile	absent
+24983	k	treatments	absent
+## idclass_client
+485141	devicestatus	Loop	absent
+61368	devicestatus	Trio	absent
+15181	devicestatus	uploader-only (phone-model device)	absent
+220675	entries	CGM manager (Loop/Trio)	absent
+128294	entries	Dexcom app	absent
+13096	entries	LibreLinkUp	absent
+75	entries	Loop	absent
+18856	entries	Trio	absent
+48864	entries	no-device	absent
+320	entries	other	absent
+244429	entries	redacted device	absent
+28773	entries	share2	absent
+16177	entries	xDrip+	absent
+110	profile	Loop	absent
+1	profile	no-enteredBy	absent
+258923	treatments	Loop	absent
+505	treatments	Loop	non-empty string
+48130	treatments	Trio	absent
+2	treatments	other free-text	absent
+436	treatments	xDrip4iOS	absent
+## dupvals
+4	syncIdentifier	L	treatments
+9	syncIdentifier	i	treatments
+## dupdocs
+11	syncIdentifier	L	treatments
+18	syncIdentifier	i	treatments
+## dupkind
+9	syncIdentifier	L	treatments	different natural key	docs
+3	syncIdentifier	L	treatments	different natural key	values
+2	syncIdentifier	L	treatments	same natural key, different body	docs
+1	syncIdentifier	L	treatments	same natural key, different body	values
+18	syncIdentifier	i	treatments	different natural key	docs
+9	syncIdentifier	i	treatments	different natural key	values
+## dupclient
+27	syncIdentifier	treatments	Loop	different natural key	docs
+12	syncIdentifier	treatments	Loop	different natural key	values
+2	syncIdentifier	treatments	Loop	same natural key, different body	docs
+1	syncIdentifier	treatments	Loop	same natural key, different body	values
+## dupshape
+1	syncIdentifier	L	Temp Basal+Temp Basal	created_at spread 0 s	1 of 2 carry identifier
+1	syncIdentifier	L	Temp Basal+Temp Basal	created_at spread <=60 s	0 of 2 carry identifier
+1	syncIdentifier	L	Temp Basal+Temp Basal+Temp Basal	created_at spread >1 d	0 of 3 carry identifier
+1	syncIdentifier	L	Temp Basal+Temp Basal+Temp Basal+Temp Basal	created_at spread >1 d	0 of 4 carry identifier
+9	syncIdentifier	i	Suspend Pump+Temp Basal	created_at spread 0 s	0 of 2 carry identifier
+## syncid_docs
+30188	L	Loop
+27880	a	Loop
+538	b	Loop
+26254	c	Loop
+22796	d	Loop
+30496	e	Loop
+15439	f	Loop
+26054	g	Loop
+21005	h	Loop
+30474	i	Loop
+24687	k	Loop
+## partial unique index {identifier: {$type:"string",$gt:""}} builds? (per collection, all sites)
+entries	yes at every site	(12 sites)
+treatments	yes at every site	(12 sites)
+devicestatus	yes at every site	(12 sites)
+profile	yes at every site	(12 sites)
+food	not in corpus
+treatments, if syncIdentifier were sent as identifier	no at L,i

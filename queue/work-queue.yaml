@@ -5111,32 +5111,45 @@ items:
     repo: rag-nightscout-ecosystem-alignment
     branch: records/loop-identifier-2026-10-17
     base: main@52a82ac8
-    state: not-started
+    state: done
     pr: []
     blast_radius: >
-      A research note under docs/60-research/tenancy/ and the script that
-      produced it, following write-contract-null-and-keys-2026-10-12 (same
-      corpus, same pseudonymous site labels, aggregate counts only). No
-      corpus data is committed. Nothing in cgm-remote-monitor changes.
+      A research note, docs/60-research/tenancy/identifier-duplicates-2026-10-17.md,
+      and its directory (iddup.py plus aggregate results and control output).
+      No corpus data is committed. Nothing in cgm-remote-monitor changes.
     review: maintainer
     operator_visible: ""
     semver: n/a
     semver_reason: research in this repository; ships nothing
     register: []
     gates:
-      - no-gate: >
-          Not started. Done when the note reports, per site and collection,
-          documents with a non-empty string identifier, with null, "" or a
-          non-string one, and without; identifier values held by more than
-          one document, split by same or different natural key and by client
-          class; and whether a partial unique index would build.
+      - run: python3 -I docs/60-research/tenancy/identifier-duplicates-2026-10-17/iddup.py | grep -c "yes at every site" | grep -qx 4
+        kind: static
+        describe: >
+          FAILS unless entries, treatments, devicestatus and profile each have
+          no identifier value held by more than one document at any corpus
+          site. Needs externals/ns-data in the main checkout. Control: the
+          same pipeline over the --planted run (two treatments and two entries
+          sharing an identifier planted in site a) exits 1; measured
+          2026-10-17, gate 0, control 1.
     blocks_on: []
     evidence:
+      - docs/60-research/tenancy/identifier-duplicates-2026-10-17.md
       - docs/60-research/tenancy/write-contract-null-and-keys-2026-10-12.md
     notes: >
-      Input to ID-UNIQUE-INDEX. The corpus (externals/ns-data, 12 sites) was
-      fetched through API v1 GET only and cannot see indexes or server-side
-      state.
+      Done 2026-10-17. The partial unique index would build on every
+      collection at every site: 0 identifier values held by more than one
+      document. That says little: only 505 of 1,589,356 documents carry
+      identifier at all, all Loop treatments at 2 of 12 sites (L 494, i 11);
+      no entry, devicestatus or profile carries it; none is null, "" or
+      non-string. The corpus has no AndroidAPS or other API v3 writer, was
+      fetched through v1 GET only, and cannot see indexes or server-side
+      state. Proxy: if Loop sent syncIdentifier as identifier, the index
+      would NOT build at sites i and L: 13 syncIdentifier values on 29 Loop
+      treatments, 12 of them on different natural keys (9 Suspend Pump +
+      Temp Basal pairs at i; Temp Basal groups spread over more than a day
+      at L) and 1 on the same natural key (one with identifier, one
+      without, the Q1 adoption case).
 
   - id: WC-STEP-PATCH
     title: "Release 1 (patch): one write step for every v1, v3 and socket path, today's behaviour pinned; BF-165's _id in every reply"
@@ -5232,10 +5245,16 @@ items:
     evidence:
       - docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
+      - docs/60-research/tenancy/identifier-duplicates-2026-10-17.md
     notes: >
       Q1 rule as proposed in LOOP-ID-REPLY: an identified write that finds no
       identifier match may adopt a stored record with NO identifier on the
-      natural key; never one with a different identifier.
+      natural key; never one with a different identifier. ID-DUP-MEASURE
+      found Loop writing one syncIdentifier to a Suspend Pump and a Temp
+      Basal at the same instant (9 pairs at one site); if Loop sends
+      syncIdentifier as identifier (the reply names syncIdentifier as Loop's
+      treatment identity), matching on it alone would fold those pairs into
+      one record. The reply draft does not raise this yet.
 
   - id: ID-BATCH-RESULTS
     title: "Release 2 (minor): per-item results in v1 batch replies; one bad item no longer fails the batch"
@@ -5310,9 +5329,14 @@ items:
     blocks_on: [WC-STEP-PATCH]
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
+      - docs/60-research/tenancy/identifier-duplicates-2026-10-17.md
     notes: >
       BF-141's fix (#8781) treats an empty treatment identity as absent;
       this extends the rule to identifier on every collection.
+      ID-DUP-MEASURE found no stored identifier that is null, "" or
+      non-string in the corpus, and every stored one is a UUID-shaped or
+      Loop syncIdentifier value; the corpus has no v3 writer, so this does
+      not bound what AndroidAPS stores.
 
   - id: ID-V1-LOOKUP
     title: "Release 2 (minor): v1 GET and DELETE by any identifier, without the default time window"
@@ -5417,10 +5441,14 @@ items:
           control: an ensureIndexes that throws on the build stops start-up.
     blocks_on: [ID-DUP-MEASURE, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-V3-IMMUTABLE-DECISION]
     evidence:
+      - docs/60-research/tenancy/identifier-duplicates-2026-10-17.md
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
-      Whether the index would build on stored data is ID-DUP-MEASURE. The
-      pre-flight report is what decides on a real site.
+      ID-DUP-MEASURE: the index would build on every collection at every
+      corpus site, but the corpus has almost no identifier (505 documents)
+      and no v3 writer; if Loop sent syncIdentifier as identifier it would
+      not build at 2 of 12 sites. The pre-flight report is what decides on a
+      real site.
 
 
 # ---------------------------------------------------------------------------

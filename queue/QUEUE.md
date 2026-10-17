@@ -32,16 +32,16 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 232 |
-| runnable gates | 282 |
-| explicit `no-gate:` markers | 273 |
+| runnable gates | 283 |
+| explicit `no-gate:` markers | 272 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 273 of the 555 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 272 of the 555 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 67 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, ID-DUP-MEASURE, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `not-started` | 66 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 4 | BFQ-46, BFQ-ENV, OID-LAB, LOOP-ID-REPLY |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -49,7 +49,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 87 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 7 | RT-0, T30-RESEARCH, ID-V3-IMMUTABLE-DECISION, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164 |
-| `done` | 21 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE |
+| `done` | 22 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
 | `answered` | 2 | RT-D3, RT-PROPAGATION |
@@ -5947,7 +5947,7 @@ alarm-readiness items, and the seam branch refresh.
 | `A7A-GATE` | The alarms-on gate itself - nothing here may be marked done by inference | `blocked` | `-` | n/a | 0 run + 2 no-gate |
 | `SEAM-REFRESH` | Refresh the seam chain once after 15.0.9, onto the base the release train leaves | `blocked` | `seam/t1-2-storage-interface` | n/a | 2 run + 1 no-gate |
 | `WRITE-CONTRACT` | One write step behind the storage interface: _id form, srv dates, soft delete, re-send identity, one change event | `blocked` | `-` | minor | 0 run + 1 no-gate |
-| `ID-DUP-MEASURE` | Measure duplicate identifier values across the 12-site ns-data corpus | `not-started` | `records/loop-identifier-2026-10-17` | n/a | 0 run + 1 no-gate |
+| `ID-DUP-MEASURE` | Measure duplicate identifier values across the 12-site ns-data corpus | `done` | `records/loop-identifier-2026-10-17` | n/a | 1 run |
 | `WC-STEP-PATCH` | Release 1 (patch): one write step for every v1, v3 and socket path, today's behaviour pinned; BF-165's _id in every reply | `blocked` | `-` | patch | 0 run + 1 no-gate |
 | `ID-FIRST-MATCH` | Release 2 (minor): identifier-first matching for entries, devicestatus and socket dbAdd, with the Q1 adoption rule | `blocked` | `-` | minor | 0 run + 1 no-gate |
 | `ID-BATCH-RESULTS` | Release 2 (minor): per-item results in v1 batch replies; one bad item no longer fails the batch | `blocked` | `-` | minor | 0 run + 1 no-gate |
@@ -6526,7 +6526,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `done` |
 | repo | `rag-nightscout-ecosystem-alignment` |
 | branch | `records/loop-identifier-2026-10-17` |
 | base | `main@52a82ac8` |
@@ -6534,7 +6534,7 @@ alarm-readiness items, and the seam branch refresh.
 | semver | `n/a` |
 | review | maintainer |
 
-**Blast radius.** A research note under docs/60-research/tenancy/ and the script that produced it, following write-contract-null-and-keys-2026-10-12 (same corpus, same pseudonymous site labels, aggregate counts only). No corpus data is committed. Nothing in cgm-remote-monitor changes.
+**Blast radius.** A research note, docs/60-research/tenancy/identifier-duplicates-2026-10-17.md, and its directory (iddup.py plus aggregate results and control output). No corpus data is committed. Nothing in cgm-remote-monitor changes.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -6542,13 +6542,15 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; Not started. Done when the note reports, per site and collection, documents with a non-empty string identifier, with null, "" or a non-string one, and without; identifier values held by more than one document, split by same or different natural key and by client class; and whether a partial unique index would build.
+- `[static]` `python3 -I docs/60-research/tenancy/identifier-duplicates-2026-10-17/iddup.py | grep -c "yes at every site" | grep -qx 4`
+  - FAILS unless entries, treatments, devicestatus and profile each have no identifier value held by more than one document at any corpus site. Needs externals/ns-data in the main checkout. Control: the same pipeline over the --planted run (two treatments and two entries sharing an identifier planted in site a) exits 1; measured 2026-10-17, gate 0, control 1.
 
 **Evidence.**
 
+- `docs/60-research/tenancy/identifier-duplicates-2026-10-17.md`
 - `docs/60-research/tenancy/write-contract-null-and-keys-2026-10-12.md`
 
-**Notes.** Input to ID-UNIQUE-INDEX. The corpus (externals/ns-data, 12 sites) was fetched through API v1 GET only and cannot see indexes or server-side state.
+**Notes.** Done 2026-10-17. The partial unique index would build on every collection at every site: 0 identifier values held by more than one document. That says little: only 505 of 1,589,356 documents carry identifier at all, all Loop treatments at 2 of 12 sites (L 494, i 11); no entry, devicestatus or profile carries it; none is null, "" or non-string. The corpus has no AndroidAPS or other API v3 writer, was fetched through v1 GET only, and cannot see indexes or server-side state. Proxy: if Loop sent syncIdentifier as identifier, the index would NOT build at sites i and L: 13 syncIdentifier values on 29 Loop treatments, 12 of them on different natural keys (9 Suspend Pump + Temp Basal pairs at i; Temp Basal groups spread over more than a day at L) and 1 on the same natural key (one with identifier, one without, the Q1 adoption case).
 
 ### `WC-STEP-PATCH` &mdash; Release 1 (patch): one write step for every v1, v3 and socket path, today's behaviour pinned; BF-165's _id in every reply
 
@@ -6609,8 +6611,9 @@ alarm-readiness items, and the seam branch refresh.
 
 - `docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md`
 - `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
+- `docs/60-research/tenancy/identifier-duplicates-2026-10-17.md`
 
-**Notes.** Q1 rule as proposed in LOOP-ID-REPLY: an identified write that finds no identifier match may adopt a stored record with NO identifier on the natural key; never one with a different identifier.
+**Notes.** Q1 rule as proposed in LOOP-ID-REPLY: an identified write that finds no identifier match may adopt a stored record with NO identifier on the natural key; never one with a different identifier. ID-DUP-MEASURE found Loop writing one syncIdentifier to a Suspend Pump and a Temp Basal at the same instant (9 pairs at one site); if Loop sends syncIdentifier as identifier (the reply names syncIdentifier as Loop's treatment identity), matching on it alone would fold those pairs into one record. The reply draft does not raise this yet.
 
 ### `ID-BATCH-RESULTS` &mdash; Release 2 (minor): per-item results in v1 batch replies; one bad item no longer fails the batch
 
@@ -6668,8 +6671,9 @@ alarm-readiness items, and the seam branch refresh.
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/60-research/tenancy/identifier-duplicates-2026-10-17.md`
 
-**Notes.** BF-141's fix (#8781) treats an empty treatment identity as absent; this extends the rule to identifier on every collection.
+**Notes.** BF-141's fix (#8781) treats an empty treatment identity as absent; this extends the rule to identifier on every collection. ID-DUP-MEASURE found no stored identifier that is null, "" or non-string in the corpus, and every stored one is a UUID-shaped or Loop syncIdentifier value; the corpus has no v3 writer, so this does not bound what AndroidAPS stores.
 
 ### `ID-V1-LOOKUP` &mdash; Release 2 (minor): v1 GET and DELETE by any identifier, without the default time window
 
@@ -6755,9 +6759,10 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `docs/60-research/tenancy/identifier-duplicates-2026-10-17.md`
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Whether the index would build on stored data is ID-DUP-MEASURE. The pre-flight report is what decides on a real site.
+**Notes.** ID-DUP-MEASURE: the index would build on every collection at every corpus site, but the corpus has almost no identifier (505 documents) and no v3 writer; if Loop sent syncIdentifier as identifier it would not build at 2 of 12 sites. The pre-flight report is what decides on a real site.
 
 ### `BFQ-66` &mdash; BF-66 - the deployment's own tokens fail its own tenant check
 
