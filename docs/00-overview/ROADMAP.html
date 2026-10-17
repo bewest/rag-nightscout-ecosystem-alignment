@@ -2248,7 +2248,7 @@
 
 
 <h1 id="roadmap--what-comes-next-and-in-what-order">Roadmap — what comes next, and in what order<a class="headerlink" href="#roadmap--what-comes-next-and-in-what-order" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-16 at <code>66403e0f</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>b52f5b90</code>.</em></p>
 <p><em>Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. Contributor-facing. Living document: prose dated
 2026-10-08 against cgm-remote-monitor <code>official/dev</code> <code>fade2299</code> and <code>official/master</code> <code>92d08342</code>
 (tag <code>15.0.8</code>). The two order tables are generated from <code>queue/work-queue.yaml</code>, and
@@ -2648,6 +2648,13 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
+<td><code>ID-V3-IMMUTABLE-DECISION</code></td>
+<td>Decide: on an identifier match, may date, device or eventType change?</td>
+<td><code>needs-decision</code></td>
+<td><code>LOOP-ID-REPLY</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
 <td><code>T30-WIRING</code></td>
 <td>T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT</td>
 <td><code>not-started</code></td>
@@ -2662,6 +2669,13 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
+<td><code>WC-STEP-PATCH</code></td>
+<td>Release 1 (patch): one write step for every v1, v3 and socket path, today's beha</td>
+<td><code>blocked</code></td>
+<td><code>SEAM-REFRESH</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
 <td><code>WRITE-CONTRACT</code></td>
 <td>One write step behind the storage interface: _id form, srv dates, soft delete, r</td>
 <td><code>blocked</code></td>
@@ -2673,6 +2687,34 @@ Until then, the order below is the order of development, not of release.</p>
 <td>CAP-02 - no importer, and no Mongo to PostgreSQL loader</td>
 <td><code>not-started</code></td>
 <td><code>T30-SCHEMA-CONFIG</code>, <code>WRITE-CONTRACT</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>ID-BATCH-RESULTS</code></td>
+<td>Release 2 (minor): per-item results in v1 batch replies; one bad item no longer</td>
+<td><code>blocked</code></td>
+<td><code>WC-STEP-PATCH</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>ID-FIRST-MATCH</code></td>
+<td>Release 2 (minor): identifier-first matching for entries, devicestatus and socke</td>
+<td><code>blocked</code></td>
+<td><code>WC-STEP-PATCH</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>ID-V1-LOOKUP</code></td>
+<td>Release 2 (minor): v1 GET and DELETE by any identifier, without the default time</td>
+<td><code>blocked</code></td>
+<td><code>WC-STEP-PATCH</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>ID-VALIDATE</code></td>
+<td>Release 2 (minor): validate identifier on every collection; empty and null mean</td>
+<td><code>blocked</code></td>
+<td><code>WC-STEP-PATCH</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">4</td>
@@ -2722,6 +2764,13 @@ Until then, the order below is the order of development, not of release.</p>
 <td>BF-66 - the deployment's own tokens fail its own tenant check</td>
 <td><code>blocked</code></td>
 <td><code>T30-WIRING</code>, <code>T31-REM</code>, <code>SEAM-REFRESH</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td><code>ID-UNIQUE-INDEX</code></td>
+<td>Partial unique index on identifier, retry-as-update on duplicate key, start-up s</td>
+<td><code>blocked</code></td>
+<td><code>ID-FIRST-MATCH</code>, <code>ID-BATCH-RESULTS</code>, <code>ID-V3-IMMUTABLE-DECISION</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">6</td>

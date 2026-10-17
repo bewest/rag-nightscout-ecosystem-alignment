@@ -4984,7 +4984,7 @@
 
   <h1>Reply.body</h1>
 
-<p><em>Living document, last changed 2026-10-17 at <code>da1a0f02</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>d1f05f63</code>.</em></p>
 <p><strong>Re: client-supplied identifiers for Nightscout</strong></p>
 <p>Thank you for writing this up. We agree with the ask. We decided the same rule for our own design
 work on 2026-10-16, and much of what you need is partly in place. This reply says where each part
@@ -5262,10 +5262,26 @@ it points the other way.</p>
 <h2 id="6-what-we-propose-to-do-next">6. What we propose to do next<a class="headerlink" href="#6-what-we-propose-to-do-next" title="Permanent link">&para;</a></h2>
 <p>In order:</p>
 <ol>
-<li><strong>Loop sends <code>identifier</code> on treatments, entries and device status.</strong> On 15.0.8 this already
-   works for treatments over v1 and for every collection over API v3. Over v1, entries and device
-   status store it and do not yet match on it, so sending it changes nothing until the server side
-   lands, and loses nothing.</li>
+<li><strong>Loop sends <code>identifier</code> on treatments, entries and device status.</strong> Nothing on the server
+   blocks this today. A server older than 15.0.7 stores the field and ignores it. On 15.0.7 and
+   later it already works for treatments over v1, including <code>DELETE /treatments/&lt;uuid&gt;</code>, which is
+   how Loop deletes overrides now. It also works for every collection over API v3. Two cautions:<ul>
+<li><strong>Each <code>identifier</code> must name exactly one Nightscout record.</strong> In our 12-site corpus, 13 of
+  the 255,811 <code>syncIdentifier</code> values on Loop treatments are each on 2 to 4 records. For
+  example, a Suspend Pump and a Temp Basal at the same instant share one value
+  (<a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/tenancy/identifier-duplicates-2026-10-17.html#22-syncidentifier-on-treatments-as-a-proxy-m">identifier duplicates §2.2</a>).
+  Sent as <code>identifier</code> to a 15.0.7+ server, the second upload would replace the first, because
+  treatments match on <code>identifier</code> first and replace the whole stored record. Where one
+  <code>syncIdentifier</code> becomes several treatments, each needs its own <code>identifier</code>. We have not
+  read which Loop path produces these pairs.</li>
+<li><strong>Entries are not matched on <code>identifier</code> yet.</strong> Until the server side lands, a phone backfill
+  with the same <code>identifier</code> and a different time is stored as a second record. We measured
+  this on v1 at 15.0.8 and <code>dev</code>
+  (<a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.html">lab results</a>).
+  Keep the phone's skip-the-watch-period approach until then. Device status stores the field
+  and does not match on it, so sending it changes nothing there yet.</li>
+</ul>
+</li>
 <li><strong>We turn your three questions, and the <code>date</code> question above, into decision rows</strong> beside rule
    5 and the write contract's §6.1, with a link to your proposal. We would like you to review
    them before they are marked decided.</li>
