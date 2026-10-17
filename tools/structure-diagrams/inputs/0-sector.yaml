@@ -10,14 +10,14 @@ groups:
   - {id: dev, label: "Development"}
   - {id: ops, label: "Operations"}
 nodes:
-  - {id: gov, label: "Legislatures and\nsovereign governments", kind: authority, level: 0, column: 1}
-  - {id: reg, label: "Regulatory authorities", kind: authority, level: 1, column: 1}
-  - {id: companies, label: "Device and software\ncompanies", kind: org, level: 2, column: 0, group: dev}
-  - {id: care, label: "Clinicians and\ncare teams", kind: org, level: 2, column: 2, group: ops}
-  - {id: commons, label: "Shared infrastructure commons\n(foundation, specifications, hubs)", kind: commons, level: 3, column: 1, zoom: 1·proposed}
-  - {id: projects, label: "Open-source projects\n(maintainers)", kind: org, level: 4, column: 0, group: dev}
-  - {id: users, label: "People building and\nrunning AID", kind: human, level: 5, column: 2, group: ops}
-  - {id: system, label: "AID system in daily use", kind: process, level: 6, column: 1}
+  - {id: gov, label: "Legislatures and\nsovereign governments", kind: authority, level: 0, column: 1, icon: landmark}
+  - {id: reg, label: "Regulatory authorities", kind: authority, level: 1, column: 1, icon: scale}
+  - {id: companies, label: "Device and software\ncompanies", kind: org, level: 2, column: 0, group: dev, icon: factory}
+  - {id: care, label: "Clinicians and\ncare teams", kind: org, level: 2, column: 2, group: ops, icon: stethoscope}
+  - {id: commons, label: "Shared infrastructure commons\n(foundation, specifications, hubs)", kind: commons, level: 3, column: 1, zoom: 1·proposed, icon: network}
+  - {id: projects, label: "Open-source projects\n(maintainers)", kind: org, level: 4, column: 0, group: dev, icon: git-branch}
+  - {id: users, label: "People building and\nrunning AID", kind: human, level: 5, column: 2, group: ops, icon: users}
+  - {id: system, label: "AID system in daily use", kind: process, level: 6, column: 1, icon: repeat}
 edges:
   - {from: gov, to: reg, kind: control, label: "statutes, mandates"}
   - {from: reg, to: gov, kind: feedback, label: "reports"}

@@ -3,14 +3,14 @@
 # or the foundation to a manufacturer, and no complaint route reaches a manufacturer or a regulator.
 title: "1·today · The ecosystem today: what joins the parts"
 nodes:
-  - {id: reg, label: "Regulatory authorities", kind: authority, level: 0, column: 1}
-  - {id: mfr, label: "Pump and CGM\nmanufacturers", kind: org, level: 1, column: 0}
-  - {id: fdn, label: "Nightscout Foundation\n501(c)(3)", kind: entity, level: 1, column: 2}
-  - {id: projects, label: "Open-source projects\n(each decides its own\nmerges and releases)", kind: org, level: 2, column: 1}
-  - {id: hosts, label: "Hosted Nightscout\nproviders (nine listed)", kind: org, level: 2, column: 2}
-  - {id: people, label: "People with diabetes\nand caregivers", kind: human, level: 3, column: 1}
-  - {id: devices, label: "Pumps, CGMs and\nmanufacturer clouds", kind: process, level: 4, column: 0}
-  - {id: sites, label: "Nightscout sites", kind: process, level: 4, column: 2}
+  - {id: reg, label: "Regulatory authorities", kind: authority, level: 0, column: 1, icon: scale}
+  - {id: mfr, label: "Pump and CGM\nmanufacturers", kind: org, level: 1, column: 0, icon: factory}
+  - {id: fdn, label: "Nightscout Foundation\n501(c)(3)", kind: entity, level: 1, column: 2, icon: hand-heart}
+  - {id: projects, label: "Open-source projects\n(each decides its own\nmerges and releases)", kind: org, level: 2, column: 1, icon: git-branch}
+  - {id: hosts, label: "Hosted Nightscout\nproviders (nine listed)", kind: org, level: 2, column: 2, icon: building-2}
+  - {id: people, label: "People with diabetes\nand caregivers", kind: human, level: 3, column: 1, icon: users}
+  - {id: devices, label: "Pumps, CGMs and\nmanufacturer clouds", kind: process, level: 4, column: 0, icon: activity}
+  - {id: sites, label: "Nightscout sites", kind: process, level: 4, column: 2, icon: server}
 edges:
   - {from: reg, to: mfr, kind: control, label: "clearance,\nenforcement"}
   - {from: mfr, to: reg, kind: feedback, label: "submissions,\nadverse events"}

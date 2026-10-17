@@ -5,13 +5,13 @@
 # The controller box is L1; the hub box opens into the per-collection view (L2a, proposed).
 title: "3·hub-sync · Hub and spoke: who writes, who reads"
 nodes:
-  - {id: caregiver, label: "Caregiver or person\n(watching remotely)", kind: human, level: 0, column: 1}
-  - {id: followers, label: "Follower apps\n(LoopFollow, nightguard,\nxDrip+ follower, LoopCaregiver)", kind: entity, level: 1, column: 0}
-  - {id: webui, label: "Nightscout web UI,\ncareportal, plugins", kind: entity, level: 1, column: 2}
-  - {id: hub, label: "Nightscout hub\n(entries, treatments,\ndevicestatus, profile)", kind: commons, level: 2, column: 1}
-  - {id: reports, label: "Reports and\nresearch tools", kind: entity, level: 1, column: 3}
-  - {id: uploader, label: "CGM uploaders\n(xDrip+, connectors,\nvendor bridges)", kind: entity, level: 3, column: 0}
-  - {id: app, label: "Controller app\n(Loop, Trio, AAPS)", kind: org, level: 3, column: 2, zoom: 3·controller}
+  - {id: caregiver, label: "Caregiver or person\n(watching remotely)", kind: human, level: 0, column: 1, icon: user}
+  - {id: followers, label: "Follower apps\n(LoopFollow, nightguard,\nxDrip+ follower, LoopCaregiver)", kind: entity, level: 1, column: 0, icon: monitor-smartphone}
+  - {id: webui, label: "Nightscout web UI,\ncareportal, plugins", kind: entity, level: 1, column: 2, icon: chart-line}
+  - {id: hub, label: "Nightscout hub\n(entries, treatments,\ndevicestatus, profile)", kind: commons, level: 2, column: 1, icon: server}
+  - {id: reports, label: "Reports and\nresearch tools", kind: entity, level: 1, column: 3, icon: database}
+  - {id: uploader, label: "CGM uploaders\n(xDrip+, connectors,\nvendor bridges)", kind: entity, level: 3, column: 0, icon: upload}
+  - {id: app, label: "Controller app\n(Loop, Trio, AAPS)", kind: org, level: 3, column: 2, zoom: 3·controller, icon: smartphone}
 edges:
   - {from: caregiver, to: webui, kind: control, label: "careportal entries"}
   - {from: webui, to: hub, kind: control, label: "requested: treatments\n(carbs, temp target,\nprofile switch)"}

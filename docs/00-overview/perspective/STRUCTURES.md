@@ -21,6 +21,14 @@ is a loop whose controller cannot see the result of what it does.
 
 ![Legend: control, feedback, funding and data edges; public authority, legal entity, shared commons, organisation and proposed nodes](diagrams/legend.svg)
 
+An icon at the left of each box says what the box does: a factory for a manufacturer, a civic
+building for a legislature, scales for a regulator, one figure for a person and two for people, a
+key for a credential authority, a phone for an app. The key lists every icon. The icons are from
+[Lucide](https://lucide.dev) (ISC licence), copied into
+[`tools/structure-diagrams/icons/`](../../../tools/structure-diagrams/icons/) with their licence.
+
+![Icon key: each icon and the role it marks, from legislature, regulator and court to app, insulin pump, sensor, the body's glucose and the Nightscout hub](diagrams/icon-key.svg)
+
 Every drawing is labelled *level · subject*. The level is where the drawing sits in the
 hierarchy, from society down to software and devices; the subject is a short name that stays the
 same as drawings are added beside it.

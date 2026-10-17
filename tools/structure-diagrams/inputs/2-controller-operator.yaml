@@ -11,15 +11,15 @@ bands:
   - {label: "Social", levels: [1, 2, 3]}
   - {label: "Technical", levels: [4, 5]}
 nodes:
-  - {id: reg, label: "Regulatory authority", kind: authority, level: 0, column: 1}
-  - {id: pumpmfr, label: "Pump manufacturer\n(ACE pump)", kind: org, level: 1, column: 0}
-  - {id: cgmmfr, label: "CGM manufacturer\n(iCGM)", kind: org, level: 1, column: 2}
-  - {id: op, label: "Controller operator:\nthe legal manufacturer\nof the controller", kind: entity, level: 2, column: 1, status: proposed}
-  - {id: project, label: "Open-source project\n(DIY track continues)", kind: org, level: 3, column: 0}
-  - {id: person, label: "Person or caregiver", kind: human, level: 3, column: 1}
-  - {id: app, label: "Cleared controller app\n(one validated release)", kind: org, level: 4, column: 1, zoom: 3·controller}
-  - {id: pump, label: "ACE pump", kind: process, level: 5, column: 0}
-  - {id: cgm, label: "iCGM", kind: process, level: 5, column: 2}
+  - {id: reg, label: "Regulatory authority", kind: authority, level: 0, column: 1, icon: scale}
+  - {id: pumpmfr, label: "Pump manufacturer\n(ACE pump)", kind: org, level: 1, column: 0, icon: factory}
+  - {id: cgmmfr, label: "CGM manufacturer\n(iCGM)", kind: org, level: 1, column: 2, icon: factory}
+  - {id: op, label: "Controller operator:\nthe legal manufacturer\nof the controller", kind: entity, level: 2, column: 1, status: proposed, icon: building-2}
+  - {id: project, label: "Open-source project\n(DIY track continues)", kind: org, level: 3, column: 0, icon: git-branch}
+  - {id: person, label: "Person or caregiver", kind: human, level: 3, column: 1, icon: user}
+  - {id: app, label: "Cleared controller app\n(one validated release)", kind: org, level: 4, column: 1, zoom: 3·controller, icon: smartphone}
+  - {id: pump, label: "ACE pump", kind: process, level: 5, column: 0, icon: syringe}
+  - {id: cgm, label: "iCGM", kind: process, level: 5, column: 2, icon: activity}
 edges:
   - {from: reg, to: op, kind: control, label: "iAGC clearance,\nspecial controls", status: proposed}
   - {from: op, to: reg, kind: feedback, label: "submissions,\nadverse events"}

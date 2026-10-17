@@ -21,6 +21,9 @@ Layout, in the order it happens:
      near it grow and the layout is redone.
 
 Optional YAML additions (all backwards compatible):
+  node `icon`: a file name in icons/ without .svg (Lucide, ISC licence), drawn at the box's left
+               to say what the box does: factory for a manufacturer, landmark for a legislature,
+               scale for a regulator, user / users for a person / people
   bands:  [{label: "Legal", levels: [0, 1]}, ...]   horizontal bands behind the rows, labelled
   edge `route`: straight | z | l | corridor            restrict the route shape
   edge `via`: N          z: the gap below level N; corridor: the gap left of column N
@@ -48,6 +51,17 @@ NODE = {"authority": "#dfe7f2", "entity": "#e3f0e3", "org": "#ffffff", "commons"
 GREY = "#c8c8c8"
 FONT = "Helvetica, Arial, sans-serif"
 NFS, NLH = 11, 13.5          # node font size, line height
+ICON, ICON_W = 16, 22        # icon size, and the width it adds to a box
+ICONS = Path(__file__).resolve().parent / "icons"
+
+
+def icon_body(name):
+    """The drawing elements of one Lucide icon, without its <svg> wrapper or licence comment."""
+    import re
+    t = (ICONS / f"{name}.svg").read_text()
+    t = re.sub(r"<!--.*?-->", "", t, flags=re.S)
+    t = re.sub(r"^\s*<svg[^>]*>|</svg>\s*$", "", t.strip(), flags=re.S)
+    return " ".join(t.split())
 EFS, ELH = 10, 12            # edge label font size, line height
 PS = PSS = TS = 16       # one spacing for ports (top/bottom and sides) and gap tracks, so pairs stay parallel
 
@@ -145,7 +159,9 @@ class Grid:
         for n in m["nodes"]:
             lines = node_lines(n)
             self.N[n["id"]] = {"id": n["id"], "r": self.levels.index(n["level"]), "c": self.cols.index(n["column"]),
-                               "lines": lines, "tw": max(tw(s, NFS) for s in lines) + 26, "th": len(lines) * NLH + 14}
+                               "lines": lines, "icon": n.get("icon"),
+                               "tw": max(tw(s, NFS) for s in lines) + 26 + (ICON_W if n.get("icon") else 0),
+                               "th": max(len(lines) * NLH, ICON + 4 if n.get("icon") else 0) + 14}
         self.E = [dict(e) for e in m["edges"]]
         self.grow_r = {g: 0 for g in range(-1, self.R)}
         self.grow_c = {k: 0 for k in range(self.C + 1)}
@@ -596,6 +612,9 @@ def svg(m, G, view=None, data_ids=True):
     for col in sorted({k["color"] for k in EDGE.values()} | {GREY}):
         o.append(f'<marker id="ah{col[1:]}" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" '
                  f'orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="{col}"/></marker>')
+    for name in sorted({n["icon"] for n in m["nodes"] if n.get("icon")}):
+        o.append(f'<symbol id="icon-{name}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+                 f'stroke-linecap="round" stroke-linejoin="round">{icon_body(name)}</symbol>')
     o.append("</defs>")
     o.append(f'<rect x="0" y="0" width="{W:.0f}" height="{H:.0f}" fill="#ffffff"/>')
     if title:
@@ -642,8 +661,14 @@ def svg(m, G, view=None, data_ids=True):
         o.append(f'<g class="node" data-id="{n["id"]}"><rect x="{f(g["x"])}" y="{f(g["y"])}" width="{f(g["w"])}" '
                  f'height="{f(g["h"])}" rx="5" fill="{fill}" stroke="{stroke}" stroke-width="{sw}"{dash}/>')
         y0 = g["cy"] - (len(g["lines"]) - 1) * NLH / 2 + 4
+        tx = g["cx"]
+        if g.get("icon"):
+            tx = g["cx"] + ICON_W / 2
+            ix, iy = g["x"] + 9, g["cy"] - ICON / 2
+            o.append(f'<use href="#icon-{g["icon"]}" x="{f(ix)}" y="{f(iy)}" width="{ICON}" height="{ICON}" '
+                     f'color="{"#3a4656" if lit else "#b8b8b8"}"/>')
         for i, s in enumerate(g["lines"]):
-            o.append(f'<text x="{f(g["cx"])}" y="{f(y0 + i * NLH)}" font-size="{NFS}" text-anchor="middle" '
+            o.append(f'<text x="{f(tx)}" y="{f(y0 + i * NLH)}" font-size="{NFS}" text-anchor="middle" '
                      f'fill="{"#111111" if lit else "#a0a0a0"}">{esc(s)}</text>')
         o.append("</g>")
     for k, (_, (x, y, w, h), side) in sorted(G.labels.items()):
@@ -687,6 +712,41 @@ def legend():
     return "\n".join(o) + "\n"
 
 
+ICON_KEY = [
+    ("landmark", "legislature or government"), ("scale", "regulator"), ("gavel", "court"),
+    ("factory", "manufacturer or device company"), ("hand-heart", "nonprofit foundation"),
+    ("building-2", "operator or company"), ("building", "other organisation"), ("network", "shared commons"),
+    ("git-branch", "open-source project"), ("key-round", "credential authority"), ("clipboard-list", "registry"),
+    ("clipboard-check", "technical oversight"), ("badge-check", "conformance tests"),
+    ("message-square-warning", "complaint intake"), ("stethoscope", "clinicians"), ("user", "a person"),
+    ("users", "people"), ("users-round", "a governing board"), ("bot", "an automated agent"),
+    ("smartphone", "app on a phone"), ("monitor-smartphone", "remote or follower app"), ("syringe", "insulin pump"),
+    ("activity", "sensor or device data"), ("droplet", "the body's glucose"), ("server", "Nightscout hub or site"),
+    ("upload", "uploader"), ("bell-ring", "push or SMS channel"), ("chart-line", "web view and reports"),
+    ("database", "data store or releases"), ("store", "app platform"), ("repeat", "a system in daily use"),
+]
+
+
+def icon_key(cols=3):
+    """One SVG listing every icon and what it marks."""
+    cw, rh, pad = 230, 26, 14
+    rows = -(-len(ICON_KEY) // cols)
+    W, H = cols * cw + 2 * pad, rows * rh + 2 * pad
+    o = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" font-family="{FONT}">',
+         "<title>Icon key</title><defs>"]
+    for name, _ in ICON_KEY:
+        o.append(f'<symbol id="icon-{name}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+                 f'stroke-linecap="round" stroke-linejoin="round">{icon_body(name)}</symbol>')
+    o.append(f'</defs><rect width="{W}" height="{H}" fill="#ffffff"/>')
+    for i, (name, label) in enumerate(ICON_KEY):
+        c, r = i // rows, i % rows
+        x, y = pad + c * cw, pad + r * rh
+        o.append(f'<use href="#icon-{name}" x="{x}" y="{y + 3}" width="{ICON}" height="{ICON}" color="#3a4656"/>'
+                 f'<text x="{x + ICON + 8}" y="{y + 15}" font-size="11" fill="#111111">{esc(label)}</text>')
+    o.append("</svg>")
+    return "\n".join(o) + "\n"
+
+
 def render(path, outdir, data_ids=False):
     m = load(path)
     G = Grid(m)
@@ -711,6 +771,7 @@ def main():
         for w in render(p, out):
             print(w)
     (out / "legend.svg").write_text(legend())
+    (out / "icon-key.svg").write_text(icon_key())
 
 
 if __name__ == "__main__":

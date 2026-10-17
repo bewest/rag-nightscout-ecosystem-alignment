@@ -2,14 +2,14 @@
 # TOC process, software conformance and KCSP pages, read 2026-09-29 and 2026-10-01).
 title: "2·cncf · Precedent, CNCF: many vendors, one upstream, the same public tests"
 nodes:
-  - {id: lf, label: "Linux Foundation\n501(c)(6)", kind: entity, level: 0, column: 1}
-  - {id: board, label: "CNCF governing board\n(budget)", kind: entity, level: 1, column: 0}
-  - {id: toc, label: "Technical oversight\ncommittee", kind: org, level: 1, column: 2}
-  - {id: members, label: "Member companies", kind: org, level: 2, column: 0}
-  - {id: projects, label: "Projects\n(own governance;\nmaintainers employed\nby members)", kind: org, level: 2, column: 2}
-  - {id: tests, label: "Open-source\nconformance tests", kind: commons, level: 3, column: 1}
-  - {id: offerings, label: "Certified vendor offerings\nand service providers", kind: org, level: 4, column: 0}
-  - {id: users, label: "End users", kind: human, level: 5, column: 1}
+  - {id: lf, label: "Linux Foundation\n501(c)(6)", kind: entity, level: 0, column: 1, icon: hand-heart}
+  - {id: board, label: "CNCF governing board\n(budget)", kind: entity, level: 1, column: 0, icon: users-round}
+  - {id: toc, label: "Technical oversight\ncommittee", kind: org, level: 1, column: 2, icon: clipboard-check}
+  - {id: members, label: "Member companies", kind: org, level: 2, column: 0, icon: building-2}
+  - {id: projects, label: "Projects\n(own governance;\nmaintainers employed\nby members)", kind: org, level: 2, column: 2, icon: git-branch}
+  - {id: tests, label: "Open-source\nconformance tests", kind: commons, level: 3, column: 1, icon: badge-check}
+  - {id: offerings, label: "Certified vendor offerings\nand service providers", kind: org, level: 4, column: 0, icon: building-2}
+  - {id: users, label: "End users", kind: human, level: 5, column: 1, icon: users}
 edges:
   - {from: lf, to: board, kind: control, label: "directed fund"}
   - {from: members, to: board, kind: funding, label: "dues"}

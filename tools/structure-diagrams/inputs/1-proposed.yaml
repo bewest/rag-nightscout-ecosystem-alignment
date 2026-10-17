@@ -9,15 +9,15 @@ bands:
   - {label: "Legal", levels: [0]}
   - {label: "Social", levels: [1, 2, 3, 4, 5]}
 nodes:
-  - {id: reg, label: "Regulatory authorities", kind: authority, level: 0, column: 1}
-  - {id: mfr, label: "Pump and CGM\nmanufacturers", kind: org, level: 1, column: 0}
-  - {id: fdn, label: "Nightscout Foundation\n501(c)(3): sponsors;\nsignatory for tier A", kind: entity, level: 2, column: 1}
-  - {id: cred, label: "Credential authority\noperator", kind: entity, level: 3, column: 0, status: proposed, zoom: 2·agreement}
-  - {id: ops, label: "Shared operations:\nregistry, conformance,\ncomplaint intake,\nsecurity response", kind: commons, level: 3, column: 1, status: proposed}
-  - {id: projects, label: "Open-source projects\n(DIY track continues)", kind: org, level: 4, column: 0}
-  - {id: nsaas, label: "Nightscout-as-a-service\noperators", kind: entity, level: 4, column: 1}
-  - {id: laas, label: "Regulated controller\noperator (as Tidepool\ndid for Loop)", kind: entity, level: 4, column: 2, status: proposed, zoom: 2·controller-operator}
-  - {id: people, label: "People with diabetes\nand caregivers", kind: human, level: 5, column: 1, zoom: 3·controller}
+  - {id: reg, label: "Regulatory authorities", kind: authority, level: 0, column: 1, icon: scale}
+  - {id: mfr, label: "Pump and CGM\nmanufacturers", kind: org, level: 1, column: 0, icon: factory}
+  - {id: fdn, label: "Nightscout Foundation\n501(c)(3): sponsors;\nsignatory for tier A", kind: entity, level: 2, column: 1, icon: hand-heart}
+  - {id: cred, label: "Credential authority\noperator", kind: entity, level: 3, column: 0, status: proposed, zoom: 2·agreement, icon: key-round}
+  - {id: ops, label: "Shared operations:\nregistry, conformance,\ncomplaint intake,\nsecurity response", kind: commons, level: 3, column: 1, status: proposed, icon: network}
+  - {id: projects, label: "Open-source projects\n(DIY track continues)", kind: org, level: 4, column: 0, icon: git-branch}
+  - {id: nsaas, label: "Nightscout-as-a-service\noperators", kind: entity, level: 4, column: 1, icon: building-2}
+  - {id: laas, label: "Regulated controller\noperator (as Tidepool\ndid for Loop)", kind: entity, level: 4, column: 2, status: proposed, zoom: 2·controller-operator, icon: building-2}
+  - {id: people, label: "People with diabetes\nand caregivers", kind: human, level: 5, column: 1, zoom: 3·controller, icon: users}
 edges:
   - {from: reg, to: mfr, kind: control, label: "clearance"}
   - {from: mfr, to: reg, kind: feedback, label: "adverse events"}

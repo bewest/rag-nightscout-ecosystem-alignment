@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="811" height="495" viewBox="0 0 811 495" font-family="Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="481" viewBox="0 0 840 481" font-family="Helvetica, Arial, sans-serif">
 <title>3·controller · The controller loop on the phone</title>
 <defs>
 <marker id="ah1f5fa8" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f5fa8"/></marker>
@@ -7,91 +7,103 @@
 <marker id="ah888888" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#888888"/></marker>
 <marker id="ahb5541b" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b5541b"/></marker>
 <marker id="ahc8c8c8" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c8c8c8"/></marker>
+<symbol id="icon-activity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2" /></symbol>
+<symbol id="icon-droplet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z" /></symbol>
+<symbol id="icon-server" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="8" x="2" y="2" rx="2" ry="2" /> <rect width="20" height="8" x="2" y="14" rx="2" ry="2" /> <line x1="6" x2="6.01" y1="6" y2="6" /> <line x1="6" x2="6.01" y1="18" y2="18" /></symbol>
+<symbol id="icon-smartphone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2" /> <path d="M12 18h.01" /></symbol>
+<symbol id="icon-syringe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 2 4 4" /> <path d="m17 7 3-3" /> <path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5" /> <path d="m9 11 4 4" /> <path d="m5 19-3 3" /> <path d="m14 4 6 6" /></symbol>
+<symbol id="icon-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /> <circle cx="12" cy="7" r="4" /></symbol>
 </defs>
-<rect x="0" y="0" width="811" height="495" fill="#ffffff"/>
-<text x="405.5" y="22" font-size="13" text-anchor="middle" fill="#111">3·controller · The controller loop on the phone</text>
+<rect x="0" y="0" width="840" height="481" fill="#ffffff"/>
+<text x="419.9" y="22" font-size="13" text-anchor="middle" fill="#111">3·controller · The controller loop on the phone</text>
 <g transform="translate(0.0,0.0)">
-<rect class="band" x="0.0" y="34.0" width="811" height="118.5" fill="#f3f5f8"/>
-<line x1="0.0" x2="811" y1="34.0" y2="34.0" stroke="#b9c0ca" stroke-width="0.8"/>
-<text class="band" x="16.0" y="93.2" font-size="10" fill="#555" text-anchor="middle" font-weight="bold" transform="rotate(-90 16.0 93.2)">Social</text>
-<rect class="band" x="0.0" y="152.5" width="811" height="342.5" fill="#fafafa"/>
-<line x1="0.0" x2="811" y1="152.5" y2="152.5" stroke="#b9c0ca" stroke-width="0.8"/>
-<text class="band" x="16.0" y="323.8" font-size="10" fill="#555" text-anchor="middle" font-weight="bold" transform="rotate(-90 16.0 323.8)">Technical</text>
-<g class="edge"><path class="edge" d="M337.5,106.5 L337.5,198.5" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
-<g class="edge"><path class="edge" d="M353.5,198.5 L353.5,106.5" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
-<g class="edge"><path class="edge" d="M266.0,217.8 L108.0,217.8 L108.0,331.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
-<g class="edge"><path class="edge" d="M124.0,331.0 L124.0,233.8 L266.0,233.8" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
-<g class="edge"><path class="edge" d="M557.0,331.0 L557.0,233.8 L425.0,233.8" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
-<g class="edge"><path class="edge" d="M108.0,372.0 L108.0,456.5 L283.0,456.5" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
-<g class="edge"><path class="edge" d="M408.0,464.5 L557.0,464.5 L557.0,372.0" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
-<g class="edge"><path class="edge" d="M408.0,448.5 L461.0,448.5 L461.0,79.2 L409.5,79.2" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
-<g class="edge"><path class="edge" d="M281.4,79.2 L92.0,79.2 L92.0,331.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
-<g class="edge"><path class="edge" d="M425.0,217.8 L733.0,217.8 L733.0,99.8" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="1.5,3" stroke-linecap="round" marker-end="url(#ah555555)"/></g>
-<g class="node" data-id="person"><rect x="281.4" y="52.0" width="128.1" height="54.5" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
-<text x="345.5" y="69.8" font-size="11" text-anchor="middle" fill="#111111">Person with diabetes</text>
-<text x="345.5" y="83.2" font-size="11" text-anchor="middle" fill="#111111">or caregiver at hand</text>
-<text x="345.5" y="96.8" font-size="11" text-anchor="middle" fill="#111111">(supervisor)</text>
+<rect class="band" x="0.0" y="34.0" width="840" height="111.5" fill="#f3f5f8"/>
+<line x1="0.0" x2="840" y1="34.0" y2="34.0" stroke="#b9c0ca" stroke-width="0.8"/>
+<text class="band" x="16.0" y="89.8" font-size="10" fill="#555" text-anchor="middle" font-weight="bold" transform="rotate(-90 16.0 89.8)">Social</text>
+<rect class="band" x="0.0" y="145.5" width="840" height="335.5" fill="#fafafa"/>
+<line x1="0.0" x2="840" y1="145.5" y2="145.5" stroke="#b9c0ca" stroke-width="0.8"/>
+<text class="band" x="16.0" y="313.2" font-size="10" fill="#555" text-anchor="middle" font-weight="bold" transform="rotate(-90 16.0 313.2)">Technical</text>
+<g class="edge"><path class="edge" d="M334.5,106.5 L334.5,184.5" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M350.5,184.5 L350.5,106.5" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
+<g class="edge"><path class="edge" d="M252.0,203.8 L108.0,203.8 L108.0,317.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M124.0,317.0 L124.0,219.8 L252.0,219.8" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
+<g class="edge"><path class="edge" d="M565.0,317.0 L565.0,219.8 L433.0,219.8" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
+<g class="edge"><path class="edge" d="M108.0,358.0 L108.0,442.5 L269.0,442.5" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M416.0,450.5 L565.0,450.5 L565.0,358.0" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
+<g class="edge"><path class="edge" d="M416.0,434.5 L469.0,434.5 L469.0,79.2 L417.5,79.2" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
+<g class="edge"><path class="edge" d="M267.4,79.2 L92.0,79.2 L92.0,317.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M433.0,203.8 L751.4,203.8 L751.4,99.8" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="1.5,3" stroke-linecap="round" marker-end="url(#ah555555)"/></g>
+<g class="node" data-id="person"><rect x="267.4" y="52.0" width="150.1" height="54.5" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+<use href="#icon-user" x="276.4" y="71.2" width="16" height="16" color="#3a4656"/>
+<text x="353.5" y="69.8" font-size="11" text-anchor="middle" fill="#111111">Person with diabetes</text>
+<text x="353.5" y="83.2" font-size="11" text-anchor="middle" fill="#111111">or caregiver at hand</text>
+<text x="353.5" y="96.8" font-size="11" text-anchor="middle" fill="#111111">(supervisor)</text>
 </g>
-<g class="node" data-id="hub"><rect x="673.0" y="58.8" width="120.0" height="41.0" rx="5" fill="#f3e7d3" stroke="#333333" stroke-width="1"/>
-<text x="733.0" y="76.5" font-size="11" text-anchor="middle" fill="#111111">Nightscout hub</text>
-<text x="733.0" y="90.0" font-size="11" text-anchor="middle" fill="#111111">[zoom: 3·hub-sync]</text>
+<g class="node" data-id="hub"><rect x="681.0" y="58.8" width="140.9" height="41.0" rx="5" fill="#f3e7d3" stroke="#333333" stroke-width="1"/>
+<use href="#icon-server" x="690.0" y="71.2" width="16" height="16" color="#3a4656"/>
+<text x="762.4" y="76.5" font-size="11" text-anchor="middle" fill="#111111">Nightscout hub</text>
+<text x="762.4" y="90.0" font-size="11" text-anchor="middle" fill="#111111">[zoom: 3·hub-sync]</text>
 </g>
-<g class="node" data-id="app"><rect x="266.0" y="198.5" width="159.0" height="54.5" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
-<text x="345.5" y="216.2" font-size="11" text-anchor="middle" fill="#111111">Controller app</text>
-<text x="345.5" y="229.8" font-size="11" text-anchor="middle" fill="#111111">(Loop, Trio or AAPS:</text>
-<text x="345.5" y="243.2" font-size="11" text-anchor="middle" fill="#111111">algorithm + process model)</text>
+<g class="node" data-id="app"><rect x="252.0" y="184.5" width="181.0" height="54.5" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+<use href="#icon-smartphone" x="261.0" y="203.8" width="16" height="16" color="#3a4656"/>
+<text x="353.5" y="202.2" font-size="11" text-anchor="middle" fill="#111111">Controller app</text>
+<text x="353.5" y="215.8" font-size="11" text-anchor="middle" fill="#111111">(Loop, Trio or AAPS:</text>
+<text x="353.5" y="229.2" font-size="11" text-anchor="middle" fill="#111111">algorithm + process model)</text>
 </g>
-<g class="node" data-id="pump"><rect x="48.0" y="331.0" width="120.0" height="41.0" rx="5" fill="#e8e8e8" stroke="#333333" stroke-width="1"/>
-<text x="108.0" y="348.8" font-size="11" text-anchor="middle" fill="#111111">Insulin pump</text>
-<text x="108.0" y="362.2" font-size="11" text-anchor="middle" fill="#111111">(actuator)</text>
+<g class="node" data-id="pump"><rect x="48.0" y="317.0" width="120.0" height="41.0" rx="5" fill="#e8e8e8" stroke="#333333" stroke-width="1"/>
+<use href="#icon-syringe" x="57.0" y="329.5" width="16" height="16" color="#3a4656"/>
+<text x="119.0" y="334.8" font-size="11" text-anchor="middle" fill="#111111">Insulin pump</text>
+<text x="119.0" y="348.2" font-size="11" text-anchor="middle" fill="#111111">(actuator)</text>
 </g>
-<g class="node" data-id="cgm"><rect x="497.0" y="331.0" width="120.0" height="41.0" rx="5" fill="#e8e8e8" stroke="#333333" stroke-width="1"/>
-<text x="557.0" y="348.8" font-size="11" text-anchor="middle" fill="#111111">CGM</text>
-<text x="557.0" y="362.2" font-size="11" text-anchor="middle" fill="#111111">(sensor)</text>
+<g class="node" data-id="cgm"><rect x="505.0" y="317.0" width="120.0" height="41.0" rx="5" fill="#e8e8e8" stroke="#333333" stroke-width="1"/>
+<use href="#icon-activity" x="514.0" y="329.5" width="16" height="16" color="#3a4656"/>
+<text x="576.0" y="334.8" font-size="11" text-anchor="middle" fill="#111111">CGM</text>
+<text x="576.0" y="348.2" font-size="11" text-anchor="middle" fill="#111111">(sensor)</text>
 </g>
-<g class="node" data-id="body"><rect x="283.0" y="436.0" width="125.0" height="41.0" rx="5" fill="#e8e8e8" stroke="#333333" stroke-width="1"/>
-<text x="345.5" y="453.8" font-size="11" text-anchor="middle" fill="#111111">Glucose-insulin</text>
-<text x="345.5" y="467.2" font-size="11" text-anchor="middle" fill="#111111">dynamics (the body)</text>
+<g class="node" data-id="body"><rect x="269.0" y="422.0" width="147.0" height="41.0" rx="5" fill="#e8e8e8" stroke="#333333" stroke-width="1"/>
+<use href="#icon-droplet" x="278.0" y="434.5" width="16" height="16" color="#3a4656"/>
+<text x="353.5" y="439.8" font-size="11" text-anchor="middle" fill="#111111">Glucose-insulin</text>
+<text x="353.5" y="453.2" font-size="11" text-anchor="middle" fill="#111111">dynamics (the body)</text>
 </g>
 <g class="elabel" data-k="0">
-<text x="330.5" y="143.5" font-size="10" text-anchor="end" fill="#1f5fa8">settings, limits, meals,</text>
-<text x="330.5" y="155.5" font-size="10" text-anchor="end" fill="#1f5fa8">boluses, overrides,</text>
-<text x="330.5" y="167.5" font-size="10" text-anchor="end" fill="#1f5fa8">closed / open loop</text>
+<text x="327.5" y="136.5" font-size="10" text-anchor="end" fill="#1f5fa8">settings, limits, meals,</text>
+<text x="327.5" y="148.5" font-size="10" text-anchor="end" fill="#1f5fa8">boluses, overrides,</text>
+<text x="327.5" y="160.5" font-size="10" text-anchor="end" fill="#1f5fa8">closed / open loop</text>
 </g>
 <g class="elabel" data-k="1">
-<text x="360.5" y="149.5" font-size="10" text-anchor="start" fill="#b5541b">glucose, predictions,</text>
-<text x="360.5" y="161.5" font-size="10" text-anchor="start" fill="#b5541b">loop status, alerts</text>
+<text x="357.5" y="142.5" font-size="10" text-anchor="start" fill="#b5541b">glucose, predictions,</text>
+<text x="357.5" y="154.5" font-size="10" text-anchor="start" fill="#b5541b">loop status, alerts</text>
 </g>
 <g class="elabel" data-k="2">
-<text x="187.0" y="185.8" font-size="10" text-anchor="middle" fill="#1f5fa8">temp basal (≤30 min),</text>
-<text x="187.0" y="197.8" font-size="10" text-anchor="middle" fill="#1f5fa8">automatic bolus / SMB,</text>
-<text x="187.0" y="209.8" font-size="10" text-anchor="middle" fill="#1f5fa8">manual bolus, suspend</text>
+<text x="158.4" y="171.8" font-size="10" text-anchor="middle" fill="#1f5fa8">temp basal (≤30 min),</text>
+<text x="158.4" y="183.8" font-size="10" text-anchor="middle" fill="#1f5fa8">automatic bolus / SMB,</text>
+<text x="158.4" y="195.8" font-size="10" text-anchor="middle" fill="#1f5fa8">manual bolus, suspend</text>
 </g>
 <g class="elabel" data-k="3">
-<text x="131.0" y="273.4" font-size="10" text-anchor="start" fill="#b5541b">accepted / failed,</text>
-<text x="131.0" y="285.4" font-size="10" text-anchor="start" fill="#b5541b">history, reservoir,</text>
-<text x="131.0" y="297.4" font-size="10" text-anchor="start" fill="#b5541b">suspended, uncertain</text>
+<text x="131.0" y="259.4" font-size="10" text-anchor="start" fill="#b5541b">accepted / failed,</text>
+<text x="131.0" y="271.4" font-size="10" text-anchor="start" fill="#b5541b">history, reservoir,</text>
+<text x="131.0" y="283.4" font-size="10" text-anchor="start" fill="#b5541b">suspended, uncertain</text>
 </g>
 <g class="elabel" data-k="4">
-<text x="510.8" y="247.8" font-size="10" text-anchor="middle" fill="#b5541b">glucose readings</text>
-<text x="510.8" y="259.8" font-size="10" text-anchor="middle" fill="#b5541b">(~5 min)</text>
+<text x="518.8" y="233.8" font-size="10" text-anchor="middle" fill="#b5541b">glucose readings</text>
+<text x="518.8" y="245.8" font-size="10" text-anchor="middle" fill="#b5541b">(~5 min)</text>
 </g>
 <g class="elabel" data-k="5">
-<text x="195.5" y="448.5" font-size="10" text-anchor="middle" fill="#1f5fa8">insulin</text>
+<text x="188.5" y="434.5" font-size="10" text-anchor="middle" fill="#1f5fa8">insulin</text>
 </g>
 <g class="elabel" data-k="6">
-<text x="482.5" y="478.5" font-size="10" text-anchor="middle" fill="#b5541b">interstitial glucose</text>
+<text x="490.5" y="464.5" font-size="10" text-anchor="middle" fill="#b5541b">interstitial glucose</text>
 </g>
 <g class="elabel" data-k="7">
-<text x="454.0" y="316.3" font-size="10" text-anchor="end" fill="#b5541b">symptoms,</text>
-<text x="454.0" y="328.3" font-size="10" text-anchor="end" fill="#b5541b">fingerstick</text>
+<text x="462.0" y="253.9" font-size="10" text-anchor="end" fill="#b5541b">symptoms,</text>
+<text x="462.0" y="265.9" font-size="10" text-anchor="end" fill="#b5541b">fingerstick</text>
 </g>
 <g class="elabel" data-k="8">
-<text x="186.7" y="59.2" font-size="10" text-anchor="middle" fill="#1f5fa8">on-pump actions</text>
-<text x="186.7" y="71.2" font-size="10" text-anchor="middle" fill="#1f5fa8">(pump-dependent)</text>
+<text x="179.7" y="59.2" font-size="10" text-anchor="middle" fill="#1f5fa8">on-pump actions</text>
+<text x="179.7" y="71.2" font-size="10" text-anchor="middle" fill="#1f5fa8">(pump-dependent)</text>
 </g>
 <g class="elabel" data-k="9">
-<text x="579.0" y="197.8" font-size="10" text-anchor="middle" fill="#555555">status and records</text>
-<text x="579.0" y="209.8" font-size="10" text-anchor="middle" fill="#555555">(applied state)</text>
+<text x="592.2" y="183.8" font-size="10" text-anchor="middle" fill="#555555">status and records</text>
+<text x="592.2" y="195.8" font-size="10" text-anchor="middle" fill="#555555">(applied state)</text>
 </g>
 </g></svg>

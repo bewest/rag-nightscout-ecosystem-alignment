@@ -8,6 +8,11 @@
   a `group` and a `zoom` label naming the drawing that opens the box up. Edges have a `kind`
   (`control`, `feedback`, `funding`, `data`) and optionally `status: proposed`. `views` lists
   stakeholder views: the same drawing with everything not touching `focus` greyed.
+- Optional `icon` on a node: a file name in `icons/` without `.svg`, drawn at the box's left to say
+  what the box does (factory, landmark, scale, user, users, key-round, smartphone, syringe, …).
+  `icons/` holds only the Lucide icons in use, copied from `lucide-static` 0.460.0 with its ISC
+  `LICENSE`; to add one, copy its SVG from that package and add a line to `ICON_KEY` in
+  `render.py`, which also writes `icon-key.svg`.
 - Optional layout keys: `bands` (horizontal bands behind rows, e.g. legal / organisational /
   technical), and per edge `route` (`straight`, `z`, `l`, `corridor`), `via` and `label_side`. Use
   them to move a line that crosses the middle of a drawing; see the docstring of `render.py`.

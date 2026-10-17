@@ -4,11 +4,11 @@
 # architect and developers".
 title: "2·sqlite · Precedent, SQLite: companies buy assurance, the developers keep control"
 nodes:
-  - {id: buyers, label: "Companies with quality\nand legal obligations", kind: org, level: 0, column: 0}
-  - {id: free, label: "Everyone else\n(free users)", kind: human, level: 0, column: 2}
-  - {id: hwaci, label: "Hwaci\n(small company)", kind: entity, level: 1, column: 0}
-  - {id: devs, label: "SQLite architect\nand developers", kind: org, level: 2, column: 1}
-  - {id: sqlite, label: "SQLite releases\n(public domain;\n100% MC/DC tested)", kind: process, level: 3, column: 1}
+  - {id: buyers, label: "Companies with quality\nand legal obligations", kind: org, level: 0, column: 0, icon: factory}
+  - {id: free, label: "Everyone else\n(free users)", kind: human, level: 0, column: 2, icon: users}
+  - {id: hwaci, label: "Hwaci\n(small company)", kind: entity, level: 1, column: 0, icon: building}
+  - {id: devs, label: "SQLite architect\nand developers", kind: org, level: 2, column: 1, icon: git-branch}
+  - {id: sqlite, label: "SQLite releases\n(public domain;\n100% MC/DC tested)", kind: process, level: 3, column: 1, icon: database}
 edges:
   - {from: buyers, to: hwaci, kind: funding, label: "consortium, support,\ntest runs, warranty of title"}
   - {from: hwaci, to: buyers, kind: data, label: "back-ported fixes,\ntests in their configuration,\nindemnity"}

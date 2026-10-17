@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="565" height="490" viewBox="0 0 565 490" font-family="Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="623" height="511" viewBox="0 0 623 511" font-family="Helvetica, Arial, sans-serif">
 <title>3·person-loop · One person's loop: where a credential touches it</title>
 <defs>
 <marker id="ah1f5fa8" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f5fa8"/></marker>
@@ -7,64 +7,76 @@
 <marker id="ah888888" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#888888"/></marker>
 <marker id="ahb5541b" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b5541b"/></marker>
 <marker id="ahc8c8c8" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c8c8c8"/></marker>
+<symbol id="icon-activity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2" /></symbol>
+<symbol id="icon-droplet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z" /></symbol>
+<symbol id="icon-key-round" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /> <circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></symbol>
+<symbol id="icon-smartphone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2" /> <path d="M12 18h.01" /></symbol>
+<symbol id="icon-syringe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 2 4 4" /> <path d="m17 7 3-3" /> <path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5" /> <path d="m9 11 4 4" /> <path d="m5 19-3 3" /> <path d="m14 4 6 6" /></symbol>
+<symbol id="icon-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /> <circle cx="12" cy="7" r="4" /></symbol>
 </defs>
-<rect x="0" y="0" width="565" height="490" fill="#ffffff"/>
-<text x="282.5" y="22" font-size="13" text-anchor="middle" fill="#111">3·person-loop · One person's loop: where a credential touches it</text>
+<rect x="0" y="0" width="623" height="511" fill="#ffffff"/>
+<text x="311.5" y="22" font-size="13" text-anchor="middle" fill="#111">3·person-loop · One person's loop: where a credential touches it</text>
 <g transform="translate(0.0,0.0)">
-<g class="edge"><path class="edge" d="M84.5,106.5 L84.5,197.8 L208.0,197.8" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-dasharray="6,4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
-<g class="edge"><path class="edge" d="M260.0,93.0 L260.0,170.5" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
-<g class="edge"><path class="edge" d="M276.0,170.5 L276.0,93.0" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
-<g class="edge"><path class="edge" d="M252.0,225.0 L252.0,340.0 L144.5,340.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
-<g class="edge"><path class="edge" d="M144.5,356.0 L268.0,356.0 L268.0,225.0" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
-<g class="edge"><path class="edge" d="M427.0,348.0 L284.0,348.0 L284.0,225.0" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
-<g class="edge"><path class="edge" d="M144.5,372.0 L260.0,372.0 L260.0,445.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
-<g class="edge"><path class="edge" d="M276.0,445.0 L276.0,364.0 L427.0,364.0" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
-<g class="node" data-id="cred"><rect x="18.0" y="52.0" width="133.0" height="54.5" rx="5" fill="#e3f0e3" stroke="#333333" stroke-width="1" stroke-dasharray="5,3"/>
-<text x="84.5" y="69.8" font-size="11" text-anchor="middle" fill="#111111">Credential authority</text>
-<text x="84.5" y="83.2" font-size="11" text-anchor="middle" fill="#111111">(may be unreachable)</text>
-<text x="84.5" y="96.8" font-size="11" text-anchor="middle" fill="#111111">(proposed)</text>
+<g class="edge"><path class="edge" d="M95.5,106.5 L95.5,197.8 L232.9,197.8" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-dasharray="6,4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M293.0,96.2 L293.0,170.5" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M309.0,170.5 L309.0,96.2" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
+<g class="edge"><path class="edge" d="M285.0,225.0 L285.0,354.0 L158.9,354.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M158.9,370.0 L301.0,370.0 L301.0,225.0" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
+<g class="edge"><path class="edge" d="M485.0,370.0 L317.0,370.0 L317.0,225.0" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
+<g class="edge"><path class="edge" d="M158.9,386.0 L301.0,386.0 L301.0,459.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M361.7,476.0 L545.0,476.0 L545.0,387.0" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
+<g class="node" data-id="cred"><rect x="18.0" y="52.0" width="155.0" height="54.5" rx="5" fill="#e3f0e3" stroke="#333333" stroke-width="1" stroke-dasharray="5,3"/>
+<use href="#icon-key-round" x="27.0" y="71.2" width="16" height="16" color="#3a4656"/>
+<text x="106.5" y="69.8" font-size="11" text-anchor="middle" fill="#111111">Credential authority</text>
+<text x="106.5" y="83.2" font-size="11" text-anchor="middle" fill="#111111">(may be unreachable)</text>
+<text x="106.5" y="96.8" font-size="11" text-anchor="middle" fill="#111111">(proposed)</text>
 </g>
-<g class="node" data-id="person"><rect x="207.0" y="65.5" width="122.0" height="27.5" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
-<text x="268.0" y="83.2" font-size="11" text-anchor="middle" fill="#111111">Person or caregiver</text>
+<g class="node" data-id="person"><rect x="229.0" y="62.2" width="144.0" height="34.0" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+<use href="#icon-user" x="238.0" y="71.2" width="16" height="16" color="#3a4656"/>
+<text x="312.0" y="83.2" font-size="11" text-anchor="middle" fill="#111111">Person or caregiver</text>
 </g>
-<g class="node" data-id="app"><rect x="208.0" y="170.5" width="120.0" height="54.5" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
-<text x="268.0" y="188.2" font-size="11" text-anchor="middle" fill="#111111">Controller app</text>
-<text x="268.0" y="201.8" font-size="11" text-anchor="middle" fill="#111111">(holds a bounded,</text>
-<text x="268.0" y="215.2" font-size="11" text-anchor="middle" fill="#111111">offline-valid grant)</text>
+<g class="node" data-id="app"><rect x="232.9" y="170.5" width="136.1" height="54.5" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+<use href="#icon-smartphone" x="241.9" y="189.8" width="16" height="16" color="#3a4656"/>
+<text x="312.0" y="188.2" font-size="11" text-anchor="middle" fill="#111111">Controller app</text>
+<text x="312.0" y="201.8" font-size="11" text-anchor="middle" fill="#111111">(holds a bounded,</text>
+<text x="312.0" y="215.2" font-size="11" text-anchor="middle" fill="#111111">offline-valid grant)</text>
 </g>
-<g class="node" data-id="pump"><rect x="24.5" y="331.0" width="120.0" height="50.0" rx="5" fill="#e8e8e8" stroke="#333333" stroke-width="1"/>
-<text x="84.5" y="360.0" font-size="11" text-anchor="middle" fill="#111111">Pump (actuator)</text>
+<g class="node" data-id="pump"><rect x="32.1" y="345.0" width="126.9" height="50.0" rx="5" fill="#e8e8e8" stroke="#333333" stroke-width="1"/>
+<use href="#icon-syringe" x="41.1" y="362.0" width="16" height="16" color="#3a4656"/>
+<text x="106.5" y="374.0" font-size="11" text-anchor="middle" fill="#111111">Pump (actuator)</text>
 </g>
-<g class="node" data-id="cgm"><rect x="427.0" y="339.0" width="120.0" height="34.0" rx="5" fill="#e8e8e8" stroke="#333333" stroke-width="1"/>
-<text x="487.0" y="360.0" font-size="11" text-anchor="middle" fill="#111111">CGM (sensor)</text>
+<g class="node" data-id="cgm"><rect x="485.0" y="353.0" width="120.0" height="34.0" rx="5" fill="#e8e8e8" stroke="#333333" stroke-width="1"/>
+<use href="#icon-activity" x="494.0" y="362.0" width="16" height="16" color="#3a4656"/>
+<text x="556.0" y="374.0" font-size="11" text-anchor="middle" fill="#111111">CGM (sensor)</text>
 </g>
-<g class="node" data-id="body"><rect x="208.0" y="445.0" width="120.0" height="27.5" rx="5" fill="#e8e8e8" stroke="#333333" stroke-width="1"/>
-<text x="268.0" y="462.8" font-size="11" text-anchor="middle" fill="#111111">Body (glucose)</text>
+<g class="node" data-id="body"><rect x="240.3" y="459.0" width="121.4" height="34.0" rx="5" fill="#e8e8e8" stroke="#333333" stroke-width="1"/>
+<use href="#icon-droplet" x="249.3" y="468.0" width="16" height="16" color="#3a4656"/>
+<text x="312.0" y="480.0" font-size="11" text-anchor="middle" fill="#111111">Body (glucose)</text>
 </g>
 <g class="elabel" data-k="0">
-<text x="146.2" y="177.8" font-size="10" text-anchor="middle" fill="#1f5fa8">grant, renew,</text>
-<text x="146.2" y="189.8" font-size="10" text-anchor="middle" fill="#1f5fa8">revoke</text>
+<text x="164.2" y="177.8" font-size="10" text-anchor="middle" fill="#1f5fa8">grant, renew,</text>
+<text x="164.2" y="189.8" font-size="10" text-anchor="middle" fill="#1f5fa8">revoke</text>
 </g>
 <g class="elabel" data-k="1">
-<text x="253.0" y="134.8" font-size="10" text-anchor="end" fill="#1f5fa8">settings, boluses</text>
+<text x="286.0" y="136.4" font-size="10" text-anchor="end" fill="#1f5fa8">settings, boluses</text>
 </g>
 <g class="elabel" data-k="2">
-<text x="283.0" y="134.8" font-size="10" text-anchor="start" fill="#b5541b">alerts, status</text>
+<text x="316.0" y="136.4" font-size="10" text-anchor="start" fill="#b5541b">alerts, status</text>
 </g>
 <g class="elabel" data-k="3">
-<text x="245.0" y="279.5" font-size="10" text-anchor="end" fill="#1f5fa8">authenticated</text>
-<text x="245.0" y="291.5" font-size="10" text-anchor="end" fill="#1f5fa8">commands</text>
+<text x="278.0" y="286.5" font-size="10" text-anchor="end" fill="#1f5fa8">authenticated</text>
+<text x="278.0" y="298.5" font-size="10" text-anchor="end" fill="#1f5fa8">commands</text>
 </g>
 <g class="elabel" data-k="4">
-<text x="275.0" y="293.5" font-size="10" text-anchor="start" fill="#b5541b">delivery status</text>
+<text x="308.0" y="300.5" font-size="10" text-anchor="start" fill="#b5541b">delivery status</text>
 </g>
 <g class="elabel" data-k="5">
-<text x="355.5" y="340.0" font-size="10" text-anchor="middle" fill="#b5541b">glucose readings</text>
+<text x="401.0" y="362.0" font-size="10" text-anchor="middle" fill="#b5541b">glucose readings</text>
 </g>
 <g class="elabel" data-k="6">
-<text x="202.2" y="386.0" font-size="10" text-anchor="middle" fill="#1f5fa8">insulin</text>
+<text x="229.9" y="400.0" font-size="10" text-anchor="middle" fill="#1f5fa8">insulin</text>
 </g>
 <g class="elabel" data-k="7">
-<text x="351.5" y="378.0" font-size="10" text-anchor="middle" fill="#b5541b">interstitial glucose</text>
+<text x="453.3" y="468.0" font-size="10" text-anchor="middle" fill="#b5541b">interstitial glucose</text>
 </g>
 </g></svg>

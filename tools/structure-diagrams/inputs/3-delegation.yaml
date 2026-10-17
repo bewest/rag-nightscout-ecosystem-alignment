@@ -6,13 +6,13 @@
 # The controller box opens into L3a (per-controller validation pipeline, proposed).
 title: "3·delegation · Delegation: remote commands to the controller"
 nodes:
-  - {id: primary, label: "Person or primary\ncaregiver (grants\nthe credential)", kind: human, level: 0, column: 0}
-  - {id: sender, label: "Caregiver or\nautomated agent", kind: human, level: 1, column: 2}
-  - {id: remote, label: "Remote app\n(LoopCaregiver, LoopFollow,\ncareportal, AAPSClient)", kind: entity, level: 2, column: 2}
-  - {id: hub, label: "Nightscout hub", kind: commons, level: 3, column: 1}
-  - {id: relay, label: "Push or SMS\nchannel (APNs, SMS)", kind: entity, level: 4, column: 3}
-  - {id: app, label: "Controller app\n(validates, enacts)", kind: org, level: 5, column: 1}
-  - {id: pump, label: "Pump", kind: process, level: 6, column: 1}
+  - {id: primary, label: "Person or primary\ncaregiver (grants\nthe credential)", kind: human, level: 0, column: 0, icon: user}
+  - {id: sender, label: "Caregiver or\nautomated agent", kind: human, level: 1, column: 2, icon: bot}
+  - {id: remote, label: "Remote app\n(LoopCaregiver, LoopFollow,\ncareportal, AAPSClient)", kind: entity, level: 2, column: 2, icon: monitor-smartphone}
+  - {id: hub, label: "Nightscout hub", kind: commons, level: 3, column: 1, icon: server}
+  - {id: relay, label: "Push or SMS\nchannel (APNs, SMS)", kind: entity, level: 4, column: 3, icon: bell-ring}
+  - {id: app, label: "Controller app\n(validates, enacts)", kind: org, level: 5, column: 1, icon: smartphone}
+  - {id: pump, label: "Pump", kind: process, level: 6, column: 1, icon: syringe}
 edges:
   - {from: primary, to: app, kind: control, label: "enable remote; OTP seed,\nshared secret, allowed\nnumbers, pairing"}
   - {from: primary, to: sender, kind: control, label: "shares credential\n(QR, secret, token)"}
