@@ -30,7 +30,7 @@ edges:
   - {from: mfr, to: cloud, kind: control, label: "runs"}
   - {from: mfr, to: ca, kind: control, label: "runs", in: [actual, emerging]}
   - {from: ca, to: aidapp, kind: discretion, label: "issues, renews, revokes",
-     labels: {actual: "issues, renews, revokes:\nOmnipod 5 (read from\nthe driver's file names)",
+     labels: {actual: "issues, renews, revokes:\nOmnipod 5 (read from file\nnames); Eversense 365,\nthrough the person's account",
               emerging: "issues, renews, revokes;\nwithout it, no access"}}
   - {from: mfr, to: sensor, kind: discretion, label: "new generations;\nolder devices leave sale",
      in: [actual, emerging]}
