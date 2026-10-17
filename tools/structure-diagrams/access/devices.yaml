@@ -11,7 +11,11 @@
 #                  no network calls), AccuChekKit 4f8c3a8 (6-digit PIN from the sensor's twist cap;
 #                  the manufacturer-certificate code is present but commented out), EversenseKit
 #                  e1bb6fa (E3: no link security; 365: a device certificate fetched from the
-#                  manufacturer's service after signing in with the person's own account)
+#                  manufacturer's service after signing in with the person's own account),
+#                  CGMBLEKit ea224e7 (G6: transmitter ID only), pumpX2 6fa9459 (Tandem: pairing code
+#                  only), xdripswift c268542 (G7: code, then a certificate exchange with fixed client
+#                  certificate material), Juggluco 75399d7 and LibreLoop 150d2b1 (Libre 3: NFC, then
+#                  app credentials, fixed in Juggluco's source and downloaded separately by LibreLoop)
 #   cloud        - connectors: nightscout-connect 04102f9 (dexcomshare, librelinkup, minimedcarelink);
 #                  tconnectsync 7c4b2f4 (Tandem); evidence §5 (breakages since 2020)
 #   outside      - vendor note §1.1-§1.9 (published routes for outside developers), read 2026-10-17
@@ -21,14 +25,14 @@
 #           device itself); no manufacturer involvement
 #       B = the manufacturer's own app has to run alongside (a mode, listed under `modes`)
 #       C = a credential the manufacturer's service issues to the person's own account
-#       D = a credential the manufacturer issues, with a check of the app
+#       D = the device checks the app's credential (open apps present one not issued to them, or none)
 #       E = readings sealed end to end for the manufacturer's cloud
 #       null = not determined from the census
 rungs:
   - {id: A, title: "Protocol, plus what the person has", needs: "a code, a serial or the device itself; no manufacturer involvement"}
   - {id: B, title: "The manufacturer's own app alongside", needs: "the open app listens beside the vendor's app, which keeps the pairing"}
   - {id: C, title: "A credential through the person's account", needs: "the open app signs in to the manufacturer's service as the person to get the device's certificate"}
-  - {id: D, title: "A credential for an approved app", needs: "the device checks that the app is one the manufacturer approved"}
+  - {id: D, title: "The device checks the app", needs: "the device asks the app for a client credential; open apps work only with one the manufacturer did not issue to them"}
   - {id: E, title: "Sealed for the manufacturer's cloud", needs: "the phone only relays readings it cannot read; no app on the phone can use them"}
 modes:
   B:
@@ -38,7 +42,7 @@ modes:
   E: []
 notes:
   C: "read from EversenseKit's code; the service can refuse or change at the manufacturer's choice"
-  D: "Omnipod 5 is read from the driver's file names; who issues the credential is not checked"
+  D: "G7 and Libre 3: fixed credentials carried by the open code; Omnipod 5 read from file names, credential source not checked"
   E: "none found; the census did not look for it"
 devices:
   - {name: "Omnipod Eros", type: pump, rung: A, open: 3, cloud: none found, outside: none published, realtime: none published}
@@ -50,9 +54,9 @@ devices:
   - {name: "Dana RS / i", type: pump, rung: A, open: 2, cloud: not checked, outside: not read, realtime: not read}
   - {name: "Medtrum Nano", type: pump, rung: A, open: 2, cloud: not checked, outside: none published, realtime: none published}
   - {name: "Dexcom G6", type: cgm, rung: A, open: 5, cloud: "Share follower", outside: "API, 1-3 h delay", realtime: by invitation}
-  - {name: "Dexcom G7 / ONE+", type: cgm, rung: A, open: 4, cloud: "Share follower", outside: "API, 1-3 h delay", realtime: by invitation}
+  - {name: "Dexcom G7 / ONE+", type: cgm, rung: D, open: 4, cloud: "Share follower", outside: "API, 1-3 h delay", realtime: by invitation}
   - {name: "Libre 1 / 2", type: cgm, rung: A, open: 5, cloud: "LibreLinkUp follower", outside: none published, realtime: none published}
-  - {name: "Libre 3", type: cgm, rung: A, open: 3, cloud: "LibreLinkUp follower", outside: none published, realtime: none published}
+  - {name: "Libre 3", type: cgm, rung: D, open: 3, cloud: "LibreLinkUp follower", outside: none published, realtime: none published}
   - {name: "Eversense E3", type: cgm, rung: A, open: 2, cloud: not checked, outside: not read, realtime: not read}
   - {name: "Eversense 365", type: cgm, rung: C, open: 1, open_note: "EversenseKit", cloud: not checked, outside: not read, realtime: not read}
   - {name: "Accu-Chek SmartGuide", type: cgm, rung: A, open: 2, open_note: "standard sensors", cloud: not checked, outside: partner-only, realtime: not stated}

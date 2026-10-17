@@ -2,7 +2,8 @@
 # works today, and as it is emerging. One layout, three scenarios. Sources:
 #   believed  - DIGITAL-RIGHTS "Overview"; data rights primer (access, export, share, delegate, audit)
 #   actual    - device-layer census §2-§3 (pairing families and open implementations per device:
-#               G6 transmitter id, G7 and Tandem pairing codes, Libre 3 by NFC; DASH, Eros, Dana,
+#               G6 transmitter id; G7 and Libre 3 code or NFC plus an app check met by a fixed client
+#               credential (xdripswift c268542, Juggluco 75399d7, LibreLoop 150d2b1); Tandem code; DASH, Eros, Dana,
 #               Medtronic 5xx/7xx by protocol; Omnipod 5 certificate store and App Attest, read from
 #               the driver's file names); vendor note §1.2 (Dexcom terms §5.11), §1.9 (no real-time
 #               route for outsiders); evidence §5 (connector breakages since 2020)
@@ -39,7 +40,7 @@ edges:
      labels: {emerging: "readings sealed end to end;\nthe phone only relays them"}}
   - {from: sensor, to: aidapp, kind: data, label: "readings",
      labels: {believed: "readings, to anyone\nwho knows the protocol",
-              actual: "readings: a code or the sensor\nthe person holds (G6, G7, Libre 3);\n4 open G7 implementations",
+              actual: "readings: G6 with its ID; G7 and\nLibre 3 also check the app, met\nby a fixed credential not issued\nto the open implementations",
               emerging: "on newer sensors, readings only\nto an app the manufacturer has\nchecked, or none if sealed"}}
   - {from: aidapp, to: pump, kind: control, label: "commands",
      labels: {believed: "commands, to anyone\nwho knows the protocol",

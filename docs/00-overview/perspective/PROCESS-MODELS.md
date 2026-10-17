@@ -80,9 +80,10 @@ well as the person: the community's Omnipod 5 driver uses message signing with a
 and Apple's App Attest ([vendor note §1.6](../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md#16-insulet-omnipod)),
 which points to commands going through a credential the manufacturer issues. That is read from the
 driver's file names; who issues the credential, and whether the driver runs against a real pod,
-were not checked. Most authenticated pairing found still uses a secret the person holds, a code
-printed with the sensor or shown on the pump, and open implementations handle it (Dexcom G7,
-Libre 3, Tandem; [device-layer census](../../60-research/programme/stack-census-2026-09-30/device-layer.md)).
+were not checked. The app check is already on two CGM lines: Dexcom G7 and Libre 3 ask for a
+client credential after the person's code or NFC scan, and the open implementations carry a fixed
+one that the manufacturer did not issue to them (xdripswift `c268542`, Juggluco `75399d7`, LibreLoop `150d2b1`, read 2026-10-17). Tandem pairs with a code shown on the
+pump, and no app credential was found (pumpX2 `6fa9459`).
 Why device-level controls tighten and do not loosen is not settled by any source read. One reading,
 for counsel and regulatory review: §524B and the FDA's premarket cybersecurity guidance ask
 manufacturers to show how device interfaces authenticate those that connect, which leaves a
@@ -110,9 +111,11 @@ any one device or market.
 5. **Requirements flow down by contract.** Cybersecurity and quality duties sit with the
    manufacturer, and reach anyone holding its credentials through the agreement.
 6. **Authorisation becomes the binding constraint.** The engineering gets cheaper for everyone; who
-   is authorised to use it does not. This is a reading of the direction, drawn from one device
-   found (Omnipod 5). Where the person holds the pairing secret, engineering is still the
-   constraint, and it has been met.
+   is authorised to use it does not. This is a reading of the direction. Where the person holds the
+   pairing secret (Tandem, Dana, Medtrum, Dexcom G6), engineering is still the constraint, and it
+   has been met. Where the device checks the app (Dexcom G7, Libre 3, Omnipod 5), open access
+   today rests on credentials the manufacturer did not issue to the projects, which new sensors or
+   firmware could stop accepting.
 
 The characterisations of law here are summaries for discussion, drafts for counsel to review, and
 not legal advice.
@@ -296,14 +299,17 @@ the current HIPAA rule for directing records to a third party (45 CFR 164.524)
 person's to share ([DIGITAL-RIGHTS, overview](../../DIGITAL-RIGHTS.md#overview);
 [primer](../../10-domain/data-rights-primer.md#the-five-fundamental-diabetes-data-rights)).
 
-![1·access-paths as it works today: readings reach the open app with a code or the sensor the person holds (G6, G7, Libre 3); commands reach the pump by protocol (Eros, DASH, Dana, Medtronic) or a code on the pump (Tandem), while Omnipod 5 needs a credential from a manufacturer-run issuer; the connector logs in to the vendor cloud as the person, under terms that ban unauthorised apps; the manufacturer changes device generations and older devices leave sale](diagrams/1-access-paths--actual.svg)
+![1·access-paths as it works today: readings reach the open app with the transmitter ID for G6, while G7 and Libre 3 also check the app, met by a fixed credential not issued to the open implementations; commands reach the pump by protocol (Eros, DASH, Dana, Medtronic) or a code on the pump (Tandem), while Omnipod 5 needs a credential from a manufacturer-run issuer; the connector logs in to the vendor cloud as the person, under terms that ban unauthorised apps; the manufacturer changes device generations and older devices leave sale](diagrams/1-access-paths--actual.svg)
 
-**As it works today.** Most paths are open because the secret they need is one the person holds:
-a code printed with the sensor or shown on the pump, a serial, or the device itself
-([device-layer census](../../60-research/programme/stack-census-2026-09-30/device-layer.md)).
-Omnipod 5 is the one device found where the app itself is checked, read from the community
-driver's file names ([vendor note §1.6](../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md#16-insulet-omnipod)).
-Eversense 365 sits between the two: the open driver signs in to the manufacturer's service with
+**As it works today.** Pump paths are mostly open because the secret they need is one the person
+holds: a code shown on the pump, a serial, or the device itself
+([device-layer census](../../60-research/programme/stack-census-2026-09-30/device-layer.md);
+DanaKit `e157a86`, MedtrumKit `ef866fa`, pumpX2 `6fa9459`). The CGM paths split. Dexcom G6 needs
+only the transmitter's ID (CGMBLEKit `ea224e7`). Dexcom G7 and Libre 3 check the app as well, and
+the open implementations present a fixed client credential the manufacturer did not issue to them
+(xdripswift `c268542`, Juggluco `75399d7`, LibreLoop `150d2b1`, read 2026-10-17). Omnipod 5 checks the app too, read from the community driver's file names
+([vendor note §1.6](../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md#16-insulet-omnipod)).
+Eversense 365 takes a different route: the open driver signs in to the manufacturer's service with
 the person's own account to get the device's certificate, so the manufacturer's service is in the
 path though no check of the app was found (EversenseKit `e1bb6fa`; its predecessor, the E3, has no
 link security).
@@ -312,13 +318,14 @@ changes ([evidence §5](../observations/ECOSYSTEM-EVIDENCE.md#5-work-that-arrive
 
 ![1·access-paths as it is emerging: on newer sensors, readings reach only an app the manufacturer has checked, or none if they are sealed end to end for the cloud with the phone only relaying them; on newer pumps, commands need an issued credential; the credential issuer issues, renews and revokes, and without it there is no access; the cloud path carries an EU duty to share with a designated third party, with no US duty](diagrams/1-access-paths--emerging.svg)
 
-**As it is emerging.** Two closures are possible on the device side: an app check, and readings
-sealed end to end for the manufacturer's cloud. The second was not looked for in the census
+**As it is emerging.** Two closures are possible on the device side: an app check that stops
+accepting the credentials open software presents, and readings sealed end to end for the
+manufacturer's cloud. The second was not looked for in the census
 ([vendor note §5.1](../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md#51-blockers-what-is-removing-them-what-still-stands)).
 On the cloud side the EU Data Act adds a duty to share, and the US has none
 ([vendor note §3.1](../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md#31-eu-data-act)).
 
-![1·access-ladder: five rising steps of dependence on the manufacturer. A, protocol plus what the person has: Omnipod Eros and DASH, Medtronic 5xx/7xx, Tandem t:slim X2 and Mobi, Dana RS/i, Medtrum Nano, Dexcom G6 and G7, Libre 1/2 and 3, Eversense E3, Accu-Chek SmartGuide. B, the manufacturer's own app alongside: G7 passive mode, Medtronic 640G/670G and several CGMs through companion apps. C, a credential through the person's own account: Eversense 365. D, a credential for an approved app: Omnipod 5, read from file names. E, sealed for the cloud: none found, not looked for. Not placed: MiniMed 780G and SmartGuide advanced security](diagrams/1-access-ladder.svg)
+![1·access-ladder: five rising steps of dependence on the manufacturer. A, protocol plus what the person has: Omnipod Eros and DASH, Medtronic 5xx/7xx, Tandem t:slim X2 and Mobi, Dana RS/i, Medtrum Nano, Dexcom G6, Libre 1/2, Eversense E3, Accu-Chek SmartGuide. B, the manufacturer's own app alongside: G7 passive mode, Medtronic 640G/670G and several CGMs through companion apps. C, a credential through the person's own account: Eversense 365. D, the device checks the app: Dexcom G7 and Libre 3, met by fixed credentials not issued to the open implementations, and Omnipod 5, read from file names. E, sealed for the cloud: none found, not looked for. Not placed: MiniMed 780G and SmartGuide advanced security](diagrams/1-access-ladder.svg)
 
 *Interpretation.*
 
@@ -326,8 +333,13 @@ On the cloud side the EU Data Act adds a duty to share, and the US has none
    encrypted links, and open implementations work with all of them.
 2. **Each step up moves the key towards the manufacturer.** On step B the open app depends on the
    manufacturer's app staying installed; on C, on the manufacturer's service answering the person's
-   sign-in; on D, on the manufacturer approving the app itself; on E no app on the phone can read
-   the data at all.
+   sign-in; on D, on the device continuing to accept the credential the open app presents; on E no
+   app on the phone can read the data at all.
+4. **Step D is in use today, not only emerging.** Dexcom G7 and Libre 3 work with open software
+   only through fixed credentials the manufacturer did not issue. A sensor or firmware change that
+   stops accepting them would close the path for every open implementation at once, and whether
+   carrying such a credential is lawful is a question for counsel
+   ([vendor note §7](../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md#7-points-for-a-reviewer-to-verify)).
 3. **Loss on the device side and on the cloud side reach different people.** The device side stops
    automation for the person; the cloud side stops remote following for caregivers
    ([partner readiness §1](../PARTNER-READINESS.md#what-is-at-stake-on-each-path)).

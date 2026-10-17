@@ -1,8 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1084" height="607" viewBox="0 0 1084 607" font-family="Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1084" height="563" viewBox="0 0 1084 563" font-family="Helvetica, Arial, sans-serif">
 <title>1·access-ladder</title>
-<rect x="0" y="0" width="1084" height="607" fill="#ffffff"/>
+<rect x="0" y="0" width="1084" height="563" fill="#ffffff"/>
 <text x="542.0" y="26.0" font-size="14" fill="#111111" text-anchor="middle">1·access-ladder · How much an open app depends on the manufacturer</text>
-<rect x="18" y="172" width="200" height="368" rx="6" fill="#eef3fa" stroke="#c8c8c8"/>
+<rect x="18" y="172" width="200" height="324" rx="6" fill="#eef3fa" stroke="#c8c8c8"/>
 <text x="28.0" y="192.0" font-size="11.5" fill="#111111" text-anchor="start" font-weight="bold">A · Protocol, plus what the person</text>
 <text x="28.0" y="206.0" font-size="11.5" fill="#111111" text-anchor="start" font-weight="bold">has</text>
 <text x="28.0" y="224.0" font-size="10" fill="#555555" text-anchor="start">a code, a serial or the device itself; no</text>
@@ -29,21 +29,15 @@
 <text x="34.0" y="399.0" font-size="10.5" fill="#111111" text-anchor="start">Dexcom G6</text>
 <text x="202.0" y="399.0" font-size="9" fill="#555555" text-anchor="end">CGM</text>
 <rect x="28" y="408" width="180" height="18" rx="4" fill="#ffffff" stroke="#c8c8c8"/>
-<text x="34.0" y="421.0" font-size="10.5" fill="#111111" text-anchor="start">Dexcom G7 / ONE+</text>
+<text x="34.0" y="421.0" font-size="10.5" fill="#111111" text-anchor="start">Libre 1 / 2</text>
 <text x="202.0" y="421.0" font-size="9" fill="#555555" text-anchor="end">CGM</text>
 <rect x="28" y="430" width="180" height="18" rx="4" fill="#ffffff" stroke="#c8c8c8"/>
-<text x="34.0" y="443.0" font-size="10.5" fill="#111111" text-anchor="start">Libre 1 / 2</text>
+<text x="34.0" y="443.0" font-size="10.5" fill="#111111" text-anchor="start">Eversense E3</text>
 <text x="202.0" y="443.0" font-size="9" fill="#555555" text-anchor="end">CGM</text>
 <rect x="28" y="452" width="180" height="18" rx="4" fill="#ffffff" stroke="#c8c8c8"/>
-<text x="34.0" y="465.0" font-size="10.5" fill="#111111" text-anchor="start">Libre 3</text>
+<text x="34.0" y="465.0" font-size="10.5" fill="#111111" text-anchor="start">Accu-Chek SmartGuide</text>
 <text x="202.0" y="465.0" font-size="9" fill="#555555" text-anchor="end">CGM</text>
-<rect x="28" y="474" width="180" height="18" rx="4" fill="#ffffff" stroke="#c8c8c8"/>
-<text x="34.0" y="487.0" font-size="10.5" fill="#111111" text-anchor="start">Eversense E3</text>
-<text x="202.0" y="487.0" font-size="9" fill="#555555" text-anchor="end">CGM</text>
-<rect x="28" y="496" width="180" height="18" rx="4" fill="#ffffff" stroke="#c8c8c8"/>
-<text x="34.0" y="509.0" font-size="10.5" fill="#111111" text-anchor="start">Accu-Chek SmartGuide</text>
-<text x="202.0" y="509.0" font-size="9" fill="#555555" text-anchor="end">CGM</text>
-<rect x="230" y="142" width="200" height="398" rx="6" fill="#dce7f5" stroke="#c8c8c8"/>
+<rect x="230" y="142" width="200" height="354" rx="6" fill="#dce7f5" stroke="#c8c8c8"/>
 <text x="240.0" y="162.0" font-size="11.5" fill="#111111" text-anchor="start" font-weight="bold">B · The manufacturer's own app</text>
 <text x="240.0" y="176.0" font-size="11.5" fill="#111111" text-anchor="start" font-weight="bold">alongside</text>
 <text x="240.0" y="194.0" font-size="10" fill="#555555" text-anchor="start">the open app listens beside the vendor's</text>
@@ -57,7 +51,7 @@
 <rect x="240" y="292" width="180" height="30" rx="4" fill="#ffffff" stroke="#c8c8c8" stroke-dasharray="3,2"/>
 <text x="246.0" y="305.0" font-size="10" fill="#111111" text-anchor="start">Eversense, CareSens Air, Sibionics,</text>
 <text x="246.0" y="317.0" font-size="10" fill="#111111" text-anchor="start">Aidex through app-to-app receivers</text>
-<rect x="442" y="112" width="200" height="428" rx="6" fill="#c6d8ef" stroke="#c8c8c8"/>
+<rect x="442" y="112" width="200" height="384" rx="6" fill="#c6d8ef" stroke="#c8c8c8"/>
 <text x="452.0" y="132.0" font-size="11.5" fill="#111111" text-anchor="start" font-weight="bold">C · A credential through the</text>
 <text x="452.0" y="146.0" font-size="11.5" fill="#111111" text-anchor="start" font-weight="bold">person's account</text>
 <text x="452.0" y="164.0" font-size="10" fill="#555555" text-anchor="start">the open app signs in to the</text>
@@ -69,25 +63,32 @@
 <text x="452.0" y="238.0" font-size="9.5" fill="#555555" text-anchor="start">read from EversenseKit's code; the</text>
 <text x="452.0" y="250.0" font-size="9.5" fill="#555555" text-anchor="start">service can refuse or change at the</text>
 <text x="452.0" y="262.0" font-size="9.5" fill="#555555" text-anchor="start">manufacturer's choice</text>
-<rect x="654" y="82" width="200" height="458" rx="6" fill="#adc7e8" stroke="#c8c8c8"/>
-<text x="664.0" y="102.0" font-size="11.5" fill="#111111" text-anchor="start" font-weight="bold">D · A credential for an approved</text>
-<text x="664.0" y="116.0" font-size="11.5" fill="#111111" text-anchor="start" font-weight="bold">app</text>
-<text x="664.0" y="134.0" font-size="10" fill="#555555" text-anchor="start">the device checks that the app is one</text>
-<text x="664.0" y="146.0" font-size="10" fill="#555555" text-anchor="start">the manufacturer approved</text>
-<rect x="664" y="164" width="180" height="18" rx="4" fill="#ffffff" stroke="#c8c8c8"/>
-<text x="670.0" y="177.0" font-size="10.5" fill="#111111" text-anchor="start">Omnipod 5</text>
-<text x="838.0" y="177.0" font-size="9" fill="#555555" text-anchor="end">pump</text>
-<text x="664.0" y="196.0" font-size="9.5" fill="#555555" text-anchor="start">Omnipod 5 is read from the driver's file</text>
-<text x="664.0" y="208.0" font-size="9.5" fill="#555555" text-anchor="start">names; who issues the credential is not</text>
-<text x="664.0" y="220.0" font-size="9.5" fill="#555555" text-anchor="start">checked</text>
-<rect x="866" y="52" width="200" height="488" rx="6" fill="#93b5e0" stroke="#c8c8c8"/>
+<rect x="654" y="82" width="200" height="414" rx="6" fill="#adc7e8" stroke="#c8c8c8"/>
+<text x="664.0" y="102.0" font-size="11.5" fill="#111111" text-anchor="start" font-weight="bold">D · The device checks the app</text>
+<text x="664.0" y="120.0" font-size="10" fill="#555555" text-anchor="start">the device asks the app for a client</text>
+<text x="664.0" y="132.0" font-size="10" fill="#555555" text-anchor="start">credential; open apps work only with</text>
+<text x="664.0" y="144.0" font-size="10" fill="#555555" text-anchor="start">one the manufacturer did not issue to</text>
+<text x="664.0" y="156.0" font-size="10" fill="#555555" text-anchor="start">them</text>
+<rect x="664" y="174" width="180" height="18" rx="4" fill="#ffffff" stroke="#c8c8c8"/>
+<text x="670.0" y="187.0" font-size="10.5" fill="#111111" text-anchor="start">Omnipod 5</text>
+<text x="838.0" y="187.0" font-size="9" fill="#555555" text-anchor="end">pump</text>
+<rect x="664" y="196" width="180" height="18" rx="4" fill="#ffffff" stroke="#c8c8c8"/>
+<text x="670.0" y="209.0" font-size="10.5" fill="#111111" text-anchor="start">Dexcom G7 / ONE+</text>
+<text x="838.0" y="209.0" font-size="9" fill="#555555" text-anchor="end">CGM</text>
+<rect x="664" y="218" width="180" height="18" rx="4" fill="#ffffff" stroke="#c8c8c8"/>
+<text x="670.0" y="231.0" font-size="10.5" fill="#111111" text-anchor="start">Libre 3</text>
+<text x="838.0" y="231.0" font-size="9" fill="#555555" text-anchor="end">CGM</text>
+<text x="664.0" y="250.0" font-size="9.5" fill="#555555" text-anchor="start">G7 and Libre 3: fixed credentials carried</text>
+<text x="664.0" y="262.0" font-size="9.5" fill="#555555" text-anchor="start">by the open code; Omnipod 5 read from</text>
+<text x="664.0" y="274.0" font-size="9.5" fill="#555555" text-anchor="start">file names, credential source not checked</text>
+<rect x="866" y="52" width="200" height="444" rx="6" fill="#93b5e0" stroke="#c8c8c8"/>
 <text x="876.0" y="72.0" font-size="11.5" fill="#111111" text-anchor="start" font-weight="bold">E · Sealed for the manufacturer's</text>
 <text x="876.0" y="86.0" font-size="11.5" fill="#111111" text-anchor="start" font-weight="bold">cloud</text>
 <text x="876.0" y="104.0" font-size="10" fill="#555555" text-anchor="start">the phone only relays readings it cannot</text>
 <text x="876.0" y="116.0" font-size="10" fill="#555555" text-anchor="start">read; no app on the phone can use</text>
 <text x="876.0" y="128.0" font-size="10" fill="#555555" text-anchor="start">them</text>
 <text x="876.0" y="156.0" font-size="9.5" fill="#555555" text-anchor="start">none found; the census did not look for it</text>
-<text x="18.0" y="562.0" font-size="9.5" fill="#555555" text-anchor="start">Rising steps: more dependence on the manufacturer. Solid boxes are device lines; dashed boxes are modes, used</text>
-<text x="18.0" y="575.0" font-size="9.5" fill="#555555" text-anchor="start">where no direct implementation is in use. Not placed (custody not determined): MiniMed 780G (SAKE); SmartGuide "advanced security".</text>
-<text x="18.0" y="588.0" font-size="9.5" fill="#555555" text-anchor="start">Sources: device-layer census 2026-09-30 §2–§3; vendor note §1.6 and §5.1. Mechanism level only.</text>
+<text x="18.0" y="518.0" font-size="9.5" fill="#555555" text-anchor="start">Rising steps: more dependence on the manufacturer. Solid boxes are device lines; dashed boxes are modes, used</text>
+<text x="18.0" y="531.0" font-size="9.5" fill="#555555" text-anchor="start">where no direct implementation is in use. Not placed (custody not determined): MiniMed 780G (SAKE); SmartGuide "advanced security".</text>
+<text x="18.0" y="544.0" font-size="9.5" fill="#555555" text-anchor="start">Sources: device-layer census 2026-09-30 §2–§3; vendor note §1.6 and §5.1. Mechanism level only.</text>
 </svg>

@@ -29,16 +29,19 @@ manufacturer. This page is about being ready for that relationship.
 
 ### What is at stake on each path
 
-Encryption alone does not close a path. Dexcom G7, Libre 3 and Tandem's t:slim X2 and Mobi pair
-with a secret the person holds, a code printed with the sensor or shown on the pump, and open
-implementations work with each of them
-([device-layer census](../60-research/programme/stack-census-2026-09-30/device-layer.md)). A path
-closes when the device or cloud accepts only a client the manufacturer has approved, or when the
-data is sealed so that the phone cannot read it.
+Encryption alone does not close a path. Tandem's t:slim X2 and Mobi pair with a code shown on the
+pump, and open implementations work with them
+([device-layer census](../60-research/programme/stack-census-2026-09-30/device-layer.md); pumpX2
+`6fa9459`). Dexcom G7 and Libre 3 also check the app: after the person's code or NFC scan, the
+sensor asks for a client credential, and the open implementations work by carrying a fixed one
+that the manufacturer did not issue to them, in their source or as a separate download
+(xdripswift `c268542`, Juggluco `75399d7`, LibreLoop `150d2b1`, read 2026-10-17). That access lasts while new sensors and firmware keep accepting it. A path closes when a
+device stops accepting every credential open software can present, or when the data is sealed so
+that the phone cannot read it.
 
 | path | what it feeds | what would close it | what happens when it closes |
 |---|---|---|---|
-| sensor to phone, over the device's own radio link | the glucose input of an automated insulin delivery (AID) app; readers such as xDrip+ | a sensor that pairs only with an app the manufacturer has authenticated; readings encrypted end to end for the vendor's cloud, so the phone relays data it cannot read | automation stops. In Loop, no new dose is recommended once the newest reading is more than 15 minutes old, and the temporary basal rates Loop sets last at most 30 minutes, after which the pump returns to its programmed schedule (LoopAlgorithm `7d016fb`, `inputDataRecencyInterval`, `tempBasalDuration`). Other controllers: not verified here (§10) |
+| sensor to phone, over the device's own radio link | the glucose input of an automated insulin delivery (AID) app; readers such as xDrip+ | a sensor that stops accepting the client credential open apps present, or pairs only with an app the manufacturer has authenticated; readings encrypted end to end for the vendor's cloud, so the phone relays data it cannot read | automation stops. In Loop, no new dose is recommended once the newest reading is more than 15 minutes old, and the temporary basal rates Loop sets last at most 30 minutes, after which the pump returns to its programmed schedule (LoopAlgorithm `7d016fb`, `inputDataRecencyInterval`, `tempBasalDuration`). Other controllers: not verified here (§10) |
 | phone to pump, commands | automated and manual dosing from the open app | a pump that accepts commands only with a credential the manufacturer issues | the pump keeps running its own programmed delivery; automation and dosing from the open app stop, and the person needs the manufacturer's own controller for that pump |
 | vendor cloud to a connector | Nightscout sites, and the caregivers who follow them | login, bot-defence or terms changes, or a cloud that admits only approved apps | readings stop arriving at the site until a connector fix ships ([evidence §5](observations/ECOSYSTEM-EVIDENCE.md#5-work-that-arrives-on-other-organisations-calendars)); remote following and alerts through the site stop. The loop on the phone is not affected |
 | device generations in supply | which devices people can obtain | today's accessible devices leaving sale or insurance coverage | people move to newer devices, whose paths may be closed. No end-of-sale dates have been collected (§10) |
@@ -51,7 +54,7 @@ The paths are drawn as believed, today and emerging in
 with a ladder of how much each device makes an open app depend on its manufacturer. Device by
 device:
 
-![1·access-matrix: for each pump and CGM line, the device link, the number of open implementations, the vendor-cloud route connectors use, the manufacturer's route for outsiders, the real-time route for outsiders, and supply. Most device links are open (step A); Eversense 365 needs a certificate fetched through the person's own account (step C); Omnipod 5 needs a credential for an approved app (step D); MiniMed 780G and SmartGuide advanced security are not determined. Cloud routes exist for Dexcom, Libre, CareLink and Tandem Source, at the vendor's discretion. The only route for outsiders is Dexcom's API with a one-to-three-hour delay; every real-time route is by invitation or not published. Supply has not been collected for any device](perspective/diagrams/1-access-matrix.svg)
+![1·access-matrix: for each pump and CGM line, the device link, the number of open implementations, the vendor-cloud route connectors use, the manufacturer's route for outsiders, the real-time route for outsiders, and supply. Pump links are mostly open (step A); Dexcom G7, Libre 3 and Omnipod 5 check the app (step D), and G7 and Libre 3 are met today by fixed credentials not issued to the open implementations; Eversense 365 needs a certificate fetched through the person's own account (step C); MiniMed 780G and SmartGuide advanced security are not determined. Cloud routes exist for Dexcom, Libre, CareLink and Tandem Source, at the vendor's discretion. The only route for outsiders is Dexcom's API with a one-to-three-hour delay; every real-time route is by invitation or not published. Supply has not been collected for any device](perspective/diagrams/1-access-matrix.svg)
 
 The cells that read "not checked", "not read" or "not collected" are the list of what to find out
 next (§10).
