@@ -116,7 +116,8 @@ service is unreachable.
 [vendor note §5.2](../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md#52-the-maintainers-working-view-tested).*
 
 The requirements are the same for anyone who takes on an activity: in the US any organisation may
-meet them by fulfilling all of them, and in practice that means a company with contracts. The FDA
+meet them by fulfilling all of them, and in practice that means a legal entity with a quality
+system and contracts, usually a company. The FDA
 routes are open to any manufacturer that meets the special controls, and Tidepool, a nonprofit,
 took the same 510(k) route a company would ([precedents](PRECEDENTS.md#tidepool-loop-20202023)).
 Dexcom's agreement is standard and non-negotiable. Washington's health-data act does not exclude

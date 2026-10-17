@@ -449,8 +449,10 @@ already expects contracts that allocate complaint investigation and reporting.
 
 | blocker | kind | what is removing it | what still stands |
 |---|---|---|---|
-| device encryption and pairing | technical | community implementations exist for most current devices (device-layer census, 14 protocols with two or more implementations) | newer devices add authenticated pairing, message signing and app attestation (Omnipod 5, Dexcom G7, Libre 3, SmartGuide "advanced security" variants); nothing in law requires a manufacturer to issue a credential to a non-partner |
-| manufacturer-issued credentials | technical / commercial | none found for outsiders | where a device checks that the app is a genuine build the manufacturer approved, only the manufacturer can grant access (PARTNER-READINESS §7) |
+| device encryption and pairing with a secret the person holds | technical | community implementations exist for most current devices (device-layer census, 14 protocols with two or more implementations), including authenticated pairing on Dexcom G7, Libre 3 and Tandem | each new protocol has to be worked out again |
+| app attestation and manufacturer-issued client credentials | technical / commercial | none found for outsiders | found on Omnipod 5 (§1.6, read from the driver's file names); possibly SmartGuide "advanced security" variants (not determined); where a device checks that the app is a genuine build the manufacturer approved, only the manufacturer can grant access (PARTNER-READINESS §7), and nothing in law requires it to issue a credential to a non-partner |
+| readings encrypted end to end between the device and the vendor's cloud | technical | none | not looked for in the census; where it is used, the phone relays data it cannot read and no reader on the phone, passive or authenticated, can use the readings |
+| devices leaving supply | commercial | none | the devices open implementations support today leave sale and coverage over time; no dates collected (§6) |
 | cloud access for real-time data | technical / contract | EU Data Act Art. 4–5 (real-time "where relevant and technically feasible") | in the US, no law requires it; Dexcom's public API is 1–3 h delayed; other clouds publish no API; follower routes change about twice a year per vendor (cloud-layer §1.3) |
 | cloud terms of service | contract | Data Act Art. 7(2) voids terms that cut down the user's Data Act rights (EU only) | Dexcom terms forbid bots, scraping and "unauthorized third-party applications"; LibreLinkUp terms prompts stop connectors |
 | anti-circumvention | legal | (b)(7) data exemption, renewed since 2015, unopposed so far in this cycle | three-year renewals; no cover for trafficking, commands or contract; Data Act preserves copyright law and forbids abusing technical gaps |
@@ -479,10 +481,11 @@ software on their own Apple device are needed to protect data rights in diabetes
 
 **Not supported, or contradicted:**
 
-- **Device-level protections are increasing, not decreasing.** The newest devices authenticate the
-  app as well as the person (§1.6, device-layer census). Each new generation raises the cost of
-  independent access, and for a device that checks app attestation, knowledge of the protocol is not
-  enough.
+- **Device-level protections are increasing, not decreasing.** Each new generation raises the cost
+  of independent access. Most authenticated pairing found still uses a secret the person holds, and
+  open implementations handle it (Dexcom G7, Libre 3, Tandem; device-layer census). Omnipod 5 is the
+  one case found where the app itself is checked (§1.6), and for such a device knowledge of the
+  protocol is not enough.
 - **The removals run through channels that require being a company with a contract.** Every
   real-time vendor route, every interface specification and every cross-maker integration found is
   bilateral. No manufacturer publishes a route for a non-profit, an individual developer or an
@@ -521,9 +524,12 @@ projects, device connectivity among them. Tested against the same evidence:
   healthcare apps to come from "a legal entity that provides the services, and not … an individual
   developer", and its only non-profit concession is a fee waiver for organisations that sell
   nothing ([Apple note](apple-accountability.md) §1.3).
-- **A company is required in practice: supported.** Every real-time route and interface
-  specification found is a contract between legal entities (above); none is open to an individual
-  or an unincorporated project.
+- **A legal entity with contracts is required in practice: supported. "A company" is narrower
+  than the evidence.** Every real-time route and interface specification found is a contract
+  between legal entities (above); none is open to an individual or an unincorporated project.
+  Tidepool, a non-profit, took the same 510(k) route a company would (PRECEDENTS), so what is
+  required is an entity with a quality system and contracts. In practice that is usually a
+  company.
 - **The non-profit's role is oversight, not an advantage in meeting requirements: consistent with
   the precedents.** CNCF certifies vendors' offerings against one upstream with the same public
   tests, and the Open Home Foundation binds its commercial partners by contract to contribute a
@@ -599,6 +605,13 @@ is being an entity that meets them. That is the structure the
     Colorado statutes, and the status of the Vermont and Rhode Island bills.
 13. **Dexcom terms §5.11:** how the bans on automated access and "unauthorized third-party
     applications" interact with the DMCA (b)(7) exemption and, in the EU, with Data Act Art. 7(2).
+14. **§524B as the driver of device changes:** whether FD&C Act §524B and FDA's premarket
+    cybersecurity guidance expect a manufacturer to show that a device's interfaces authenticate and
+    authorise those that connect. If they do, that explains why device-level controls tighten and
+    do not loosen, independent of whether §524B reaches a DIY build.
+15. **Omnipod 5 credential:** who issues the credential behind the community driver's certificate
+    store and App Attest service, and whether that driver runs against a real pod. Read at mechanism
+    level only, under the device-layer census's disclosure rule; §1.6 is read from file names.
 
 ## Sources
 

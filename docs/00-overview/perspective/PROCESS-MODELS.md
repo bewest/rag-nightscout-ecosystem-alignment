@@ -77,7 +77,17 @@ read 2026-10-17).
 **As it is emerging.** Two changes are under way at once. Newer devices authenticate the app as
 well as the person: the community's Omnipod 5 driver uses message signing with a certificate store
 and Apple's App Attest ([vendor note §1.6](../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md#16-insulet-omnipod)),
-so commands go through a credential the manufacturer issues. And in the EU, the Data Act (applying
+which points to commands going through a credential the manufacturer issues. That is read from the
+driver's file names; who issues the credential, and whether the driver runs against a real pod,
+were not checked. Most authenticated pairing found still uses a secret the person holds, a code
+printed with the sensor or shown on the pump, and open implementations handle it (Dexcom G7,
+Libre 3, Tandem; [device-layer census](../../60-research/programme/stack-census-2026-09-30/device-layer.md)).
+Why device-level controls tighten and do not loosen is not settled by any source read. One reading,
+for counsel and regulatory review: §524B and the FDA's premarket cybersecurity guidance ask
+manufacturers to show how device interfaces authenticate those that connect, which leaves a
+manufacturer little reason to keep an unauthenticated path
+([vendor note §7](../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md#7-points-for-a-reviewer-to-verify)).
+And in the EU, the Data Act (applying
 since 2025-09-12) turns part of the data right from a defence into a duty: the manufacturer must
 share device data at the person's request, real-time where feasible, including with a third party
 the person designates ([vendor note §3.1](../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md#31-eu-data-act)).
@@ -86,8 +96,8 @@ any one device or market.
 
 *Interpretation.* Properties of the emerging landscape, read from the three drawings:
 
-1. **Access is bound to identity.** A credential is issued to a known party and can be renewed or
-   withdrawn; knowing the protocol is no longer enough.
+1. **Where a device checks the app, access is bound to identity.** A credential is issued to a
+   known party and can be renewed or withdrawn; knowing the protocol is no longer enough.
 2. **Authority is delegated, and its withdrawal is the issuer's.** Whether revocation follows a
    published process or the issuer's discretion is decided by the agreement
    ([partner readiness §4](../PARTNER-READINESS.md#4-what-the-ecosystem-needs-from-an-agreement)).
@@ -99,7 +109,9 @@ any one device or market.
 5. **Requirements flow down by contract.** Cybersecurity and quality duties sit with the
    manufacturer, and reach anyone holding its credentials through the agreement.
 6. **Authorisation becomes the binding constraint.** The engineering gets cheaper for everyone; who
-   is authorised to use it does not.
+   is authorised to use it does not. This is a reading of the direction, drawn from one device
+   found (Omnipod 5). Where the person holds the pairing secret, engineering is still the
+   constraint, and it has been met.
 
 The characterisations of law here are summaries for discussion, drafts for counsel to review, and
 not legal advice.
