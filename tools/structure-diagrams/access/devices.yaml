@@ -27,6 +27,9 @@
 #   cloud        - connectors: nightscout-connect 04102f9 (dexcomshare, librelinkup, minimedcarelink);
 #                  tconnectsync 7c4b2f4 (Tandem); evidence §5 (breakages since 2020)
 #   outside      - vendor note §1.1-§1.9 (published routes for outside developers), read 2026-10-17
+#   setup        - what the manufacturer's own app or controller needs at setup, per its public
+#                  documents (docs/60-research/structures-2026-10-17/cloud-pairing-census-2026-10-17.md);
+#                  it describes the manufacturer's system, not open access
 #   supply       - not collected (PARTNER-READINESS §10)
 #
 # rung: A = the open app needs only the protocol and what the person has (a code, a serial, the
@@ -54,19 +57,19 @@ notes:
   D: "G7, Libre 3, 780G: fixed credentials carried by the open code; Omnipod 5: controller certificate, source not described"
   E: "none found; the census did not look for it"
 devices:
-  - {name: "Omnipod Eros", type: pump, rung: A, open: 3, cloud: none found, outside: none published, realtime: none published}
-  - {name: "Omnipod DASH", type: pump, rung: A, open: 3, cloud: none found, outside: none published, realtime: none published}
-  - {name: "Omnipod 5", type: pump, rung: D, open: 1, cloud: none found, outside: none published, realtime: none published}
-  - {name: "Medtronic 5xx / 7xx", type: pump, rung: A, open: 3, cloud: none found, outside: none published, realtime: none published}
-  - {name: "MiniMed 780G", type: pump, rung: D, open: 2, open_note: "proofs of concept", cloud: "CareLink follower", outside: none published, realtime: none published}
-  - {name: "Tandem t:slim X2 / Mobi", type: pump, rung: A, open: 1, open_note: "pumpX2", cloud: "Tandem Source (tconnectsync)", outside: none published, realtime: none published}
-  - {name: "Dana RS / i", type: pump, rung: A, open: 2, cloud: not checked, outside: not read, realtime: not read}
-  - {name: "Medtrum Nano", type: pump, rung: A, open: 2, cloud: not checked, outside: none published, realtime: none published}
-  - {name: "Dexcom G6", type: cgm, rung: A, open: 5, cloud: "Share follower", outside: "API, 1-3 h delay", realtime: by invitation}
-  - {name: "Dexcom G7 / ONE+", type: cgm, rung: D, open: 4, cloud: "Share follower", outside: "API, 1-3 h delay", realtime: by invitation}
-  - {name: "Libre 1 / 2", type: cgm, rung: A, open: 5, cloud: "LibreLinkUp follower", outside: none published, realtime: none published}
-  - {name: "Libre 3", type: cgm, rung: D, open: 3, cloud: "LibreLinkUp follower", outside: none published, realtime: none published}
-  - {name: "Eversense E3", type: cgm, rung: A, open: 2, cloud: not checked, outside: not read, realtime: not read}
-  - {name: "Eversense 365", type: cgm, rung: C, open: 1, open_note: "EversenseKit", cloud: not checked, outside: not read, realtime: not read}
-  - {name: "Accu-Chek SmartGuide", type: cgm, rung: A, open: 2, open_note: "standard sensors", cloud: not checked, outside: partner-only, realtime: not stated}
-  - {name: "SmartGuide \"advanced security\"", type: cgm, rung: null, open: 0, cloud: not checked, outside: partner-only, realtime: not stated}
+  - {name: "Omnipod Eros", type: pump, rung: A, open: 3, cloud: none found, outside: none published, realtime: none published, setup: "not stated"}
+  - {name: "Omnipod DASH", type: pump, rung: A, open: 3, cloud: none found, outside: none published, realtime: none published, setup: "not stated"}
+  - {name: "Omnipod 5", type: pump, rung: D, open: 1, cloud: none found, outside: none published, realtime: none published, setup: "account"}
+  - {name: "Medtronic 5xx / 7xx", type: pump, rung: A, open: 3, cloud: none found, outside: none published, realtime: none published, setup: "not stated"}
+  - {name: "MiniMed 780G", type: pump, rung: D, open: 2, open_note: "proofs of concept", cloud: "CareLink follower", outside: none published, realtime: none published, setup: "account"}
+  - {name: "Tandem t:slim X2 / Mobi", type: pump, rung: A, open: 1, open_note: "pumpX2", cloud: "Tandem Source (tconnectsync)", outside: none published, realtime: none published, setup: "account"}
+  - {name: "Dana RS / i", type: pump, rung: A, open: 2, cloud: not checked, outside: not read, realtime: not read, setup: "not stated"}
+  - {name: "Medtrum Nano", type: pump, rung: A, open: 2, cloud: not checked, outside: none published, realtime: none published, setup: "not stated"}
+  - {name: "Dexcom G6", type: cgm, rung: A, open: 5, cloud: "Share follower", outside: "API, 1-3 h delay", realtime: by invitation, setup: "account"}
+  - {name: "Dexcom G7 / ONE+", type: cgm, rung: D, open: 4, cloud: "Share follower", outside: "API, 1-3 h delay", realtime: by invitation, setup: "account (ONE+: online)"}
+  - {name: "Libre 1 / 2", type: cgm, rung: A, open: 5, cloud: "LibreLinkUp follower", outside: none published, realtime: none published, setup: "account (app)"}
+  - {name: "Libre 3", type: cgm, rung: D, open: 3, cloud: "LibreLinkUp follower", outside: none published, realtime: none published, setup: "account (app)"}
+  - {name: "Eversense E3", type: cgm, rung: A, open: 2, cloud: not checked, outside: not read, realtime: not read, setup: "account"}
+  - {name: "Eversense 365", type: cgm, rung: C, open: 1, open_note: "EversenseKit", cloud: not checked, outside: not read, realtime: not read, setup: "online pairing"}
+  - {name: "Accu-Chek SmartGuide", type: cgm, rung: A, open: 2, open_note: "standard sensors", cloud: not checked, outside: partner-only, realtime: not stated, setup: "account"}
+  - {name: "SmartGuide \"advanced security\"", type: cgm, rung: null, open: 0, cloud: not checked, outside: partner-only, realtime: not stated, setup: "not stated"}

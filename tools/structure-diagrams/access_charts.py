@@ -29,6 +29,7 @@ STATE = {   # tint, stripe, glyph, legend text
     "closed": ("#f7dede", "#d03b3b", "○", "not available to open software"),
     "unknown": ("#eeeeee", "#8a8a8a", "?", "not checked, not read or not collected"),
 }
+INFO = ("#ffffff", "#c8c8c8", "")   # a fact about the manufacturer's own system, not a state of open access
 
 
 def esc(s):
@@ -131,13 +132,15 @@ def states(x):
             return "closed"
         return "cond"
     return [(rl, r), (ot, op), (x["cloud"], cls(x["cloud"])), (x["outside"], cls(x["outside"])),
-            (x["realtime"], cls(x["realtime"])), ("not collected", "unknown")]
+            (x["realtime"], cls(x["realtime"])), (x.get("setup", "not stated"), "info"),
+            ("not collected", "unknown")]
 
 
 def matrix(d):
     heads = ["device link", "open implementations", "vendor cloud route\nused by connectors",
-             "manufacturer's route\nfor outsiders", "real-time route\nfor outsiders", "supply"]
-    cw = [230, 120, 190, 150, 130, 100]
+             "manufacturer's route\nfor outsiders", "real-time route\nfor outsiders",
+             "manufacturer's own setup\nneeds (public docs)", "supply"]
+    cw = [230, 120, 190, 150, 130, 160, 100]
     namew, rh, m, hh = 236, 24, 18, 38
     w = m * 2 + namew + sum(cw)
     body = [text(w / 2, 26, "1·access-matrix · Each device line, path by path", 14, anchor="middle")]
@@ -157,7 +160,7 @@ def matrix(d):
         body.append(text(m + 8, y + 16, dv["name"], 10.5))
         x = m + namew
         for (t, st), c in zip(states(dv), cw):
-            tint, stripe, glyph, _ = STATE[st]
+            tint, stripe, glyph = INFO if st == "info" else STATE[st][:3]
             body.append(f'<rect x="{x + 1}" y="{y + 1}" width="{c - 2}" height="{rh - 2}" fill="{tint}"/>')
             body.append(f'<rect x="{x + 1}" y="{y + 1}" width="3" height="{rh - 2}" fill="{stripe}"/>')
             body.append(text(x + 10, y + 16, glyph, 10, stripe))
@@ -174,7 +177,8 @@ def matrix(d):
     y += 52
     foot = ["Sources: device-layer census 2026-09-30 §2–§3; nightscout-connect 04102f9; tconnectsync 7c4b2f4;",
             "vendor note §1 (read 2026-10-17). Open implementation counts are the census's, counting a port as one.",
-            "Device link letters are the rungs of 1·access-ladder. Supply dates have not been collected."]
+            "Device link letters are the rungs of 1·access-ladder. The setup column (no colour) is what the manufacturer's own",
+            "app or controller needs, per its public documents (cloud-pairing census 2026-10-17). Supply dates have not been collected."]
     for j, ln in enumerate(foot):
         body.append(text(m, y + j * 13, ln, 9.5, MUTED))
     return svg(w, int(y + len(foot) * 13 + 6), "1·access-matrix", body)
