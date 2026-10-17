@@ -6,7 +6,9 @@ commit named in the census table; written against this repository at `df5e2ade`.
 in §6 are **estimates** with their assumptions stated, not measurements. The legal and regulatory
 texts in the cloud annex are quoted for counsel and a regulatory professional to review; nothing
 here is a legal or regulatory conclusion. The proposal that uses this record is
-[QUALITY-SYSTEM](../../00-overview/QUALITY-SYSTEM.md).*
+[QUALITY-SYSTEM](../../00-overview/QUALITY-SYSTEM.md). Device simulators, G7SensorKit's
+`next-dev` and faketandem's own codec are brought up to date, with corrections, in
+the [device-simulators record of 2026-10-17](device-simulators-2026-10-17.md).*
 
 ## 1. What this measures
 
@@ -114,6 +116,8 @@ controllable clock, a pump-side request log, fault injection, and an integration
 It was built from the `pod` simulator (its README: "based on the 'pod' OmniPod simulator"). `pod`
 (Omnipod DASH) and dana-simulator (Dana, no commits since 2024-10-01) are Raspberry Pi BLE rigs with
 2 and 0 tests. No simulator exists for any Dexcom, Libre or Medtronic-over-RileyLink device.
+*Correction: the `pod` figures are for the fork loopandlearn/pod; its upstream LoopKit/pod was 9
+commits ahead on this date and ran its tests in CI from 2026-05-23 (the [device-simulators record of 2026-10-17](device-simulators-2026-10-17.md#5-the-census-picture-updated)).*
 
 **Not found anywhere in the device layer:** fuzzing harnesses, automated hardware-in-the-loop rigs,
 and per-release test reports.

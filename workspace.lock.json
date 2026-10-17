@@ -384,6 +384,33 @@
       "description": "LLM pump-settings advice study; Nightscout fetch and duplicate-entry analysis",
       "frozen_at": "2026-09-23T22:26:36.854216",
       "frozen_from": "main"
+    },
+    {
+      "alias": "g7sim",
+      "name": "g7sim",
+      "url": "https://github.com/LoopKit/g7sim.git",
+      "ref": "7c039de53831683ccb0461cb0f5ca9c38cef0407",
+      "description": "Dexcom G7 sensor emulator (Go): Linux BLE or iOS Simulator transport via ImpossiBLE; speaks G7SensorKit's direct-connection protocol",
+      "frozen_at": "2026-10-17T12:18:14.007702",
+      "frozen_from": "main"
+    },
+    {
+      "alias": "pod",
+      "name": "pod",
+      "url": "https://github.com/LoopKit/pod.git",
+      "ref": "a491a5ea7171b629490ea5b98381354c72ccc31c",
+      "description": "Omnipod DASH pod simulator (Go): Linux BLE or iOS Simulator transport; control panel and JSON API for reservoir, alerts and faults",
+      "frozen_at": "2026-10-17T12:18:14.008665",
+      "frozen_from": "main"
+    },
+    {
+      "alias": "tth",
+      "name": "trio-test-harness",
+      "url": "https://github.com/jwoglom/trio-test-harness.git",
+      "ref": "c3c1bfe787dbc268586a026d2ffa994948245544",
+      "description": "Agent-driven harness to build, install, drive and screenshot Trio or Loop on the iOS Simulator or a phone, with HTML/PR reports",
+      "frozen_at": "2026-10-17T12:18:14.009525",
+      "frozen_from": "main"
     }
   ]
 }
