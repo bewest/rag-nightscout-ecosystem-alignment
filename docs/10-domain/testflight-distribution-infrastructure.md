@@ -5,6 +5,16 @@
 > **Source**: ios-mobile-platform.md #10  
 > **Related**: App Store Pathway Analysis (cycle 61)
 
+**Corrected 2026-10-17:** facts about Apple's programs were checked against Apple's pages, read on
+2026-10-17, and corrected in place: TestFlight limits, including the 90-day build expiry (§1.2);
+the fee, regional pricing and the nonprofit fee waiver, and the App Store requirements on health
+apps (§1.1); the Xcode version, the free-account limits and the first-launch check-in (§1.3);
+which entitlements need a paid membership (§3.1, §3.2); the certificate-expiry figure and what
+happens when a membership expires (§4.3); and an open question for counsel on certificate custody
+(§1.2). The findings and sources are in [Apple accountability §7.1](../60-research/structures-2026-10-17/apple-accountability.md#7-corrections-to-existing-repository-pages).
+Apple changes these pages often; re-read the source before quoting a figure. The descriptions of
+Apple's agreements are a non-lawyer's reading, to be checked by counsel.
+
 ---
 
 ## Executive Summary
@@ -38,10 +48,33 @@ This document surveys TestFlight and distribution infrastructure across the Nigh
 - **DiaBLE** - Free on App Store
 
 **Requirements:**
-- Apple Developer Program ($99/year)
+- Apple Developer Program ($99/year; Apple says "Prices may vary by region"). A nonprofit that is
+  a legal entity recognised by a relevant authority (in the US, the IRS), enrolling as an
+  organisation, may apply for a fee waiver if it does not offer paid apps or in-app purchases and
+  does not otherwise sell digital goods or services through its apps
+  ([fee waivers](https://developer.apple.com/help/account/membership/fee-waivers/), read
+  2026-10-17). Individuals and sole proprietors are not eligible.
 - App Store review approval
 - Privacy policy, support URL
-- No therapeutic claims
+- Apple's App Review Guidelines on health apps
+  ([guidelines](https://developer.apple.com/app-store/review/guidelines/), read 2026-10-17). Apple
+  does not use the phrase "no therapeutic claims"; the relevant guidelines are:
+  - 1.4.1: medical apps "may be reviewed with greater scrutiny"; apps must disclose data and
+    methodology behind health-measurement accuracy claims; if the app has regulatory clearance,
+    submit a link to that documentation.
+  - 1.4.2: drug dosage calculators must come from an approved kind of organisation (for example a
+    drug manufacturer, hospital or pharmacy) or be approved by the FDA or an international
+    counterpart.
+  - 5.1.1(ix): apps that provide services in highly regulated fields such as healthcare "should be
+    submitted by a legal entity that provides the services, and not by an individual developer."
+- A regulated medical device status declaration, for apps distributed in the EEA, UK or US in the
+  Health & Fitness or Medical categories (or that report frequent medical or treatment
+  information in the age rating). Required for new apps since March 26, 2026; existing apps "must
+  provide a status by early 2027", after which updates cannot be submitted
+  ([Apple news, 2026-03-26](https://developer.apple.com/news/?id=nyqbfz1y)).
+- A trader status declaration under the EU Digital Services Act (DSA). Every developer must declare
+  a status, "Even if you don't distribute apps in the EU"
+  ([DSA trader requirements](https://developer.apple.com/help/app-store-connect/manage-compliance-information/manage-european-union-digital-services-act-trader-requirements), read 2026-10-17).
 
 ### 1.2 TestFlight via Browser Build
 
@@ -65,15 +98,55 @@ FASTLANE_KEY        # App Store Connect API Key (base64)
 MATCH_PASSWORD      # Encryption password for certificates
 ```
 
+**TestFlight limits** (Apple's beta-testing service;
+[TestFlight overview](https://developer.apple.com/help/app-store-connect/test-a-beta-version/testflight-overview)
+and [TestFlight](https://developer.apple.com/testflight/), read 2026-10-17):
+- A build can be tested for up to 90 days; after 90 days it becomes unavailable to testers. This
+  is why the browser-build workflows rebuild on a schedule (§2.1).
+- Up to 100 internal testers, who must be App Store Connect users with a role on the team.
+- Up to 10,000 external testers. The first build added to a tester group is sent to App Review.
+- Up to 100 builds can be shared.
+
+**Certificate custody (open question for counsel).** In this pattern the distribution certificate
+is stored, encrypted, in the user's own private repository (the Match repository) and used by
+hosted CI runners (GitHub's build machines) for the user's own builds. Apple's Developer Program
+License Agreement (DPLA) §5.1 says the developer will "safeguard Your Apple Certificates and keys
+from compromise (e.g., You will not upload Your Apple Certificate for App Store distribution to a
+cloud repository for use by a third party)", and that certificates used for App Store distribution
+may not be provided or transferred to a Service Provider
+([DPLA](https://developer.apple.com/support/terms/apple-developer-program-license-agreement/), read
+2026-10-17). How that wording applies when developers store their own certificate for their own
+builds has not been reviewed. This is a question for counsel, not a finding that anyone is in breach
+([Apple accountability §8, item 3](../60-research/structures-2026-10-17/apple-accountability.md#8-points-for-a-reviewer-to-verify)).
+
 ### 1.3 Self-Build (Xcode)
 
 **All apps support** self-build with Xcode on macOS.
 
 **Requirements:**
-- Mac with Xcode 15+
-- Apple Developer account (free or paid)
+- Mac with a current Xcode. The minimum depends on each app's build instructions. For uploads to
+  App Store Connect, including TestFlight, Apple has required Xcode 26 or later since April 28, 2026
+  ([upcoming requirements](https://developer.apple.com/news/upcoming-requirements/), read
+  2026-10-17).
+- Apple Developer account (free or paid). A free account (Xcode calls it a "personal team") has
+  these limits ([developer account overview](https://developer.apple.com/help/account/basics/about-your-developer-account), read 2026-10-17):
+  - provisioning profiles (the signed files that let a self-built app install and run on a
+    device) expire 7 days after issue, so the app must be rebuilt and reinstalled every 7 days;
+  - up to 3 devices and up to 10 App IDs, each expiring after 7 days;
+  - up to 3 apps per device;
+  - no Push notifications, Time Sensitive Notifications or NFC Tag Reading
+    ([supported capabilities](https://developer.apple.com/help/account/reference/supported-capabilities-ios));
+  - no access to Certificates, Identifiers & Profiles, where Critical Alerts must be requested
+    ([capability requests](https://developer.apple.com/help/account/capabilities/capability-requests/)),
+    so a free account cannot get Critical Alerts;
+  - no TestFlight or App Store Connect.
 - Code signing certificate
 - Device registration
+- Internet access at first launch, for paid teams created after June 6, 2021: development- and
+  ad hoc-signed apps "check in with the PPQ service when the app is first launched … If the device
+  can't successfully make a connection, the app may not launch." An offline profile valid for 7
+  days is available
+  ([provisioning profile updates](https://developer.apple.com/help/account/provisioning-profiles/provisioning-profile-updates), read 2026-10-17).
 
 ---
 
@@ -162,16 +235,21 @@ end
 | NFC Tag Reading | ❌ | ❌ | ✅ | ❌ | ✅ |
 | Bluetooth Central | ✅ | ✅ | ✅ | ❌ | ✅ |
 
+NFC Tag Reading and Critical Alerts need a paid Apple Developer Program membership; a free account
+cannot use them (§1.3). HealthKit, background modes and App Groups are available to free accounts.
+
 ### 3.2 Special Entitlements
 
 **Critical Alerts** (`com.apple.developer.usernotifications.critical-alerts`):
-- Requires Apple approval
+- Requires Apple approval, requested by the team's Account Holder through Certificates,
+  Identifiers & Profiles; not available to free accounts
 - Bypasses Do Not Disturb
 - Essential for glucose alarms
 
 **NFC Tag Reading** (`com.apple.developer.nfc.readersession.formats`):
 - Required for Libre sensor scanning
 - Only xDrip4iOS and DiaBLE
+- Not available to free accounts
 
 ### 3.3 Certificate Types
 
@@ -205,7 +283,11 @@ end
 
 ### 4.3 Common Issues
 
-1. **Certificate expiration** - Certs expire after 1 year
+1. **Certificate expiration** - Certs expire after 1 year (not stated on the Apple pages read on
+   2026-10-17; unverified). Separately: TestFlight builds stop working after 90 days regardless of
+   certificates (§1.2), and when a paid membership expires, apps already installed from the App
+   Store keep working, but no new apps or updates can be submitted
+   ([renewal](https://developer.apple.com/help/account/membership/renewal), read 2026-10-17).
 2. **Provisioning profile mismatch** - App Group IDs must match
 3. **GitHub secrets misconfiguration** - Base64 encoding issues
 4. **TestFlight processing delays** - Can take 10-30 minutes

@@ -5,7 +5,8 @@
 page, assembled 2026-10-02 against this repository at `9b219f31`. It records dates and what
 happened; it gives no causes and makes no recommendation. People are named by role. Every row cites
 a primary source read on 2026-10-02 or a `git` command run on the clone named in §6, and a row that
-could not be established that way is listed in §5 rather than given a date.*
+could not be established that way is listed in §5 rather than given a date. The rows dated 2026-01-13
+and 2026-10-15 were added 2026-10-17, from sources read that day.*
 
 ## 1. Origins, 2012–2014
 
@@ -80,11 +81,13 @@ could not be established that way is listed in §5 rather than given a date.*
 |---|---|---|
 | 2025-05-08 | cgm-remote-monitor 15.0.3 is tagged, 561 days after 15.0.2 | tags |
 | 2025-11-17 | Nocturne, a second server implementing the Nightscout API, publishes its first commit, "Initial public release of Nocturne" | `git log --reverse`, `nightscout/nocturne` (`b0eeebe0c`) |
+| 2026-01-13 | Diabeloop and Sequel announce that Diabeloop's DBLG2 algorithm, cleared by the FDA as an interoperable automated glycemic controller on 2025-12-18, "will be integrated into Sequel's twiist Automated Insulin Delivery (AID) system"; the companies "anticipate product readiness by end of 2026 and launch in the US in 2027" | [Diabeloop](https://www.diabeloop.com/news/company/dbl-sequel-partnership-en) |
 | 2026-01-16 | this alignment workspace has its first commit | `git log --reverse` (`bdca28cb`) |
 | 2026-04-29 | cgm-remote-monitor 15.0.7 ships the MongoDB 5 driver (#8421); #7344 is closed as superseded on 2026-05-01 | tags; GitHub |
 | 2026-09-04 | cgm-remote-monitor 15.0.8 is tagged | tags |
 | 2026-09-24 | nightscout-connect 0.1.0 is released | tags |
 | 2026-09 to now | 15.0.9 is prepared as a release candidate on `dev`, not yet tagged; its current head and what it waits on are in [ROADMAP §1](../ROADMAP.md#1-the-next-release-1509), and how it was made in the [colophon](../../../releases/cgm-remote-monitor-15.0.9/colophon.md) | ROADMAP §1 |
+| 2026-10-15 | MiniMed announces "the completion of its separation from Medtronic plc", its "first day as a fully independent company" | [press release, SEC 8-K exhibit 99.1](https://www.sec.gov/Archives/edgar/data/0002062583/000110465926116441/tm2627653d1_ex99-1.htm) |
 
 The cross-project release and contributor record for these years is in
 [ECOSYSTEM-EVIDENCE §3](ECOSYSTEM-EVIDENCE.md#3-releases-and-contributors-across-the-main-projects).
@@ -115,4 +118,5 @@ entirely (only the Heroku add-on removal is sourced); Azure's free-tier history 
 
 `git` rows were run on the clones under `externals/stack/<owner>__<repo>` (`git log --reverse
 --format='%ad %h %s' --date=short | head`, and `git for-each-ref --sort=creatordate refs/tags`);
-`gh api` rows on 2026-10-02. Web sources were read with their text extracted on 2026-10-02.
+`gh api` rows on 2026-10-02. Web sources were read with their text extracted on 2026-10-02, except the
+2026-01-13 and 2026-10-15 rows, read 2026-10-17.

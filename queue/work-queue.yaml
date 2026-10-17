@@ -13539,7 +13539,7 @@ items:
     repo: rag-nightscout-ecosystem-alignment
     branch: main
     base: main
-    state: not-started
+    state: done
     pr: []
     blast_radius: >
       docs/10-domain/testflight-distribution-infrastructure.md,
@@ -13583,13 +13583,16 @@ items:
       Verified by this session against Apple's pages: 1.4.1, 1.4.2,
       5.1.1(ix) and the device-status announcement of 2026-03-26. Mark the
       page's date and what changed; do not rewrite its history.
+
+      Done 2026-10-17: all eleven corrections made, each read at Apple's own pages that day (TestFlight limits, free-account limits, health-app guidelines, device-status declaration, fee waivers, Xcode 26 minimum for uploads since 2026-04-28, DPLA §5.1 as a question for counsel, first-launch check-in); both pages carry a dated correction line.
+
   - id: DOCS-REMOTE-PATHS
     title: "Correct the remote-bolus comparison and the LoopFollow deep dive: who relays Trio commands, Loop's reply, LoopFollow's remote types"
     parcel: docs-truth
     repo: rag-nightscout-ecosystem-alignment
     branch: main
     base: main
-    state: not-started
+    state: done
     pr: []
     blast_radius: >
       docs/10-domain/remote-bolus-comparison.md,
@@ -13630,13 +13633,15 @@ items:
       (RemoteType cases, the APNs URL). Re-read the source revisions given
       in technical-loops.md §0 before editing; mark what changed and when.
 
+      Done 2026-10-17: corrected against LoopFollow 4a74b781, cgm-remote-monitor a8888f0d, LoopWorkspace 548b332 and Trio 0b29cd534; two further suspect statements queued as DOCS-REMOTE-FOLLOWUP.
+
   - id: DOCS-DATA-RIGHTS-LAW
     title: "Bring the data-rights pages up to date: EU Data Act, the current DMCA medical-device data exemption and the 2027 rulemaking, the Washington health-data act"
     parcel: docs-truth
     repo: rag-nightscout-ecosystem-alignment
     branch: main
     base: main
-    state: not-started
+    state: done
     pr: []
     blast_radius: >
       docs/DIGITAL-RIGHTS.md, docs/10-domain/data-rights-primer.md,
@@ -13684,13 +13689,16 @@ items:
       READINESS §9 q10: the Washington act has no non-profit exclusion.
       Each characterisation of law is marked as a draft for legal review,
       as the source note is; re-read the instruments before writing.
+
+      Done 2026-10-17: 37 CFR 201.40 read through the eCFR versioner API (current to 2026-10-15); the 2027 rulemaking and its oppositions from copyright.gov; the Data Act and EHDS from EUR-Lex; RCW 19.373; Minnesota 325E.72 and Directive 2024/1799. idea·designated-third-party embedded in DIGITAL-RIGHTS. Not made: the vendor note's unverified digital-omnibus item and Minnesota's effective date.
+
   - id: DOCS-VENDOR-FACTS
     title: "Update vendor facts across the repo: Abbott's partner list, MiniMed's separation from Medtronic, Diabeloop in twiist (verify each first)"
     parcel: docs-truth
     repo: rag-nightscout-ecosystem-alignment
     branch: main
     base: main
-    state: not-started
+    state: done
     pr: []
     blast_radius: >
       docs/60-research/programme/stack-census-2026-09-30/cloud-layer.md,
@@ -13730,6 +13738,8 @@ items:
       present. The HISTORY gate is the only one bound to a single page;
       the CareLink pages have no gate, because a grep cannot tell a
       historical mention from a present-tense one.
+
+      Done 2026-10-17: Abbott's integrations page, the SEC 8-K exhibit 99.1 (MiniMed separation 2026-10-15) and Diabeloop's announcement of 2026-01-13 read that day; historical "Medtronic CareLink" mentions kept; one present-tense mention annotated.
 
   - id: DOCS-REMOTE-FOLLOWUP
     title: "Re-check two remote-command statements found while correcting DOCS-REMOTE-PATHS: where Trio's shared secret is configured, and LoopFollow's remote carbs path"

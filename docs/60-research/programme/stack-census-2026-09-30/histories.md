@@ -2,6 +2,10 @@
 
 *Contributor-facing. Annex to the [stack census record of 2026-09-30](../stack-census-2026-09-30.md); a snapshot, not rewritten as the world moves. Prepared by research agents from the clones and pages named in it, and checked by the session that wrote the record.*
 
+**Updated 2026-10-17:** §B8's Tidepool Loop entries gain one later event: the 2026-01-13 announcement that
+Diabeloop's algorithm is to be integrated into twiist. The earlier entries stand. Evidence:
+[vendor programmes and data rights §1.7](../../structures-2026-10-17/vendor-programs-and-data-rights.md).
+
 Research notes for the maintainer, prepared 2026-09-30. Every source was read on 2026-09-30 unless a
 row says otherwise. Quotes are exact and kept short. This file does not repeat what the
 COLLABORATION-MODEL (§4, §4a), the SPONSORED-TEAM-PROPOSAL (§6) or the ECOSYSTEM-PROGRAMME already
@@ -305,6 +309,10 @@ already proposes a shared connector lab).
   [Tidepool blog](https://www.tidepool.org/blog/tidepool-loop-has-received-fda-clearance)
 - 2024-03-18: Sequel's twiist AID system "incorporates FDA-cleared Tidepool Loop technology".
   [press release](https://www.globenewswire.com/news-release/2024/03/18/2847675/0/en/Sequel-s-twiist-Automated-Insulin-Delivery-System-Receives-FDA-510-k-Clearance.html)
+- 2026-01-13 (added 2026-10-17, read that day): Diabeloop's DBLG2 algorithm, cleared as an
+  interoperable automated glycemic controller on 2025-12-18, "will be integrated into Sequel's twiist
+  Automated Insulin Delivery (AID) system"; the companies "anticipate product readiness by end of 2026
+  and launch in the US in 2027". [Diabeloop, 2026-01-13](https://www.diabeloop.com/news/company/dbl-sequel-partnership-en)
 
 **Lesson for Nightscout.** The ecosystem already has a precedent. A nonprofit took volunteer-written
 open-source dosing software through regulatory clearance. That took its own paid team, and real-world

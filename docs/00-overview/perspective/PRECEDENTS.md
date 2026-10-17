@@ -238,7 +238,10 @@ first appear on this site in [INFRASTRUCTURE-TRANSITION](INFRASTRUCTURE-TRANSITI
    clearance "can now become a predicate device".
 5. **Stayed with the community.** DIY Loop continued alongside.
 6. **Became paid.** The regulated track: Tidepool's team, and later Sequel's twiist system, which
-   incorporates the cleared technology.
+   incorporates the cleared technology. On 2026-01-13 Diabeloop and Sequel announced that Diabeloop's DBLG2
+   algorithm will also be integrated into twiist, with a US launch expected in 2027
+   ([Diabeloop, 2026-01-13](https://www.diabeloop.com/news/company/dbl-sequel-partnership-en), read 2026-10-17); Abbott's partner page still lists the "twiist Automated Insulin
+   Delivery (AID) System Powered by Tidepool" on 2026-10-17.
 7. **Still disputed or hard.** Not found in the sources read.
 8. **Transfers / does not.** Transfers: regulated and DIY tracks can coexist, each with its own label.
    Does not: a regulatory route is a choice for each project, not something a foundation does for

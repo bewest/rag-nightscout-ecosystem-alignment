@@ -64,6 +64,10 @@ These require credentials but don't provide identity services to Nightscout:
 
 #### Medtronic CareLink
 
+*Updated 2026-10-17: CareLink belongs to MiniMed (separated from Medtronic on 2026-10-15,
+[press release, SEC 8-K exhibit 99.1](https://www.sec.gov/Archives/edgar/data/0002062583/000110465926116441/tm2627653d1_ex99-1.htm)).
+The details below were read from the connector code for this page's date.*
+
 | Aspect | Details |
 |--------|---------|
 | **Auth Type** | SSO login → token cookie |

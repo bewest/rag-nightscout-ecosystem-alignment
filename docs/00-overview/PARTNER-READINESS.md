@@ -285,7 +285,10 @@ for its operator.
    confidence can be reconciled with the projects' open-source licences.
 9. Whether any selection criteria or exclusivity in an agreement raise competition-law concerns.
 10. Which privacy regimes apply to complaint records (HIPAA only through covered-entity relationships;
-    otherwise possibly the FTC Health Breach Notification Rule; GDPR for reporters in the EU).
+    otherwise possibly the FTC Health Breach Notification Rule; GDPR for reporters in the EU; for
+    reporters in Washington State, the My Health My Data Act, RCW 19.373, whose "regulated entity"
+    is "any legal entity" doing business there or targeting its consumers, with no exclusion for
+    non-profits, and which gives consent, access and deletion rights over consumer health data).
 
 ## 10. Points for reviewers to verify
 

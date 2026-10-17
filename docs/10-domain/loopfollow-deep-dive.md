@@ -2,7 +2,8 @@
 
 > **Source**: `externals/LoopFollow/`  
 > **Last Updated**: 2026-01-29  
-> **Version**: 2.x (maintained by Loop and Learn)
+> **Version**: 2.x (maintained by Loop and Learn)  
+> **Corrected 2026-10-17** against LoopFollow `4a74b781`: `RemoteType` has three cases (no `nightscout` case), Trio Remote Control sends to Apple Push Notification service (APNs) directly rather than through Nightscout, and the `Remote/Nightscout/` directory described before does not exist. See [technical control loops](../60-research/structures-2026-10-17/technical-loops.md) §4.
 
 ## Overview
 
@@ -77,7 +78,6 @@ LoopFollow/
 │   │           └── ...
 │   ├── Remote/                   # Remote command support
 │   │   ├── LoopAPNS/             # Loop APNS commands
-│   │   ├── Nightscout/           # NS-based commands (Trio)
 │   │   └── TRC/                  # Trio Remote Control
 │   ├── Helpers/
 │   │   └── NightscoutUtils.swift # API request utilities
@@ -98,7 +98,7 @@ LoopFollow/
 | `GET /api/v1/devicestatus.json` | AID status | `count=1` |
 | `GET /api/v1/profile/current.json` | Active profile | (none) |
 | `GET /api/v1/status.json` | Site status | (none) |
-| `POST /api/v2/notifications/loop` | Remote commands | Override payloads |
+| `POST /api/v2/notifications/loop` | Override enable/cancel (endpoint defined) | No caller found at `4a74b781`; remote commands go over APNs (see [Remote Command Support](#remote-command-support)) |
 
 **Source**: `LoopFollow/Helpers/NightscoutUtils.swift`
 
@@ -228,7 +228,6 @@ Extracts from OpenAPS/Trio devicestatus:
 ```swift
 enum RemoteType: String, Codable {
     case none = "None"
-    case nightscout = "Nightscout"
     case trc = "Trio Remote Control"
     case loopAPNS = "Loop APNS"
 }
@@ -246,17 +245,11 @@ Uses Apple Push Notification Service for remote commands:
 
 **Source**: `LoopFollow/Remote/TRC/`
 
-Uses Nightscout notifications endpoint for Trio:
-- `POST /api/v2/notifications/loop`
-- Sends override commands
-
-### Nightscout Commands (Trio)
-
-**Source**: `LoopFollow/Remote/Nightscout/`
-
-Direct Nightscout treatment posting for Trio:
-- Override enable/cancel
-- Temporary targets
+Sends commands to Trio directly over APNs; Nightscout does not relay them:
+- Posts to `api.push.apple.com` (or the sandbox host) for Trio's device token (`Remote/TRC/PushNotificationManager.swift:329-333`)
+- The command is AES-GCM encrypted with the shared secret and sent as `encrypted_data` (`Remote/TRC/SecureMessenger.swift:21-22`, `Remote/TRC/PushNotificationManager.swift:255-256`)
+- Each command can carry `return_notification` details, so Trio can send its response back to LoopFollow (`Remote/TRC/PushMessage.swift:46`)
+- Trio's device token is read from the Nightscout profile (`Controllers/Nightscout/ProfileManager.swift:111`)
 
 ---
 
@@ -393,7 +386,6 @@ Each instance is configured independently with its own Nightscout URL.
 - `LoopFollow/Remote/RemoteType.swift` - Remote type enum
 - `LoopFollow/Remote/LoopAPNS/` - Loop APNS support
 - `LoopFollow/Remote/TRC/` - Trio Remote Control
-- `LoopFollow/Remote/Nightscout/` - NS-based commands
 
 ---
 
@@ -405,7 +397,7 @@ Each instance is configured independently with its own Nightscout URL.
 | **Data Source** | Nightscout API v1, Dexcom Share |
 | **Collections** | entries, treatments, devicestatus, profile |
 | **AID Support** | Loop, OpenAPS, Trio |
-| **Remote** | APNS (Loop), TRC (Trio), Nightscout |
+| **Remote** | APNS (Loop), TRC (Trio) |
 | **Multi-User** | 3 instances supported |
 
 LoopFollow is a comprehensive caregiver app that successfully consumes data from multiple AID systems through Nightscout's unified API, demonstrating the value of Nightscout as a data aggregation layer.

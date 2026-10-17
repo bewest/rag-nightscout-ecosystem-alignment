@@ -347,8 +347,8 @@ responsibility ([partner readiness §5 and §6](../PARTNER-READINESS.md#6-compla
 In the EU since 2025-09-12, the person decides who receives their device data, and the data holder
 must send it there; the recipient is bound to the agreed purposes
 ([vendor note §3.1](../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md#31-eu-data-act)).
-This is a draft summary of the law for counsel to review, not legal advice; it will join the
-data-rights pages when they are brought up to date (queue `DOCS-DATA-RIGHTS-LAW`).
+This is a draft summary of the law for counsel to review, not legal advice. The drawing is also
+embedded in [DIGITAL-RIGHTS](../../DIGITAL-RIGHTS.md#eu-data-act), beside the Data Act entry.
 
 ## What the drawings do not show
 

@@ -170,11 +170,13 @@ The [Digital Rights and Legal Protections](../DIGITAL-RIGHTS.md) document covers
 
 | Data Right | Legal Mechanisms |
 |------------|------------------|
-| **Access** | GDPR data subject access, state privacy laws; in the US, the DMCA medical device data exemption (renewed each three-year cycle) |
-| **Export** | GDPR data portability, interoperability mandates |
+| **Access** | GDPR data subject access, state privacy laws; in the EU, the Data Act (since September 2025: the data holder must give the user their connected product's data, in real time where feasible); in Washington State, the My Health My Data Act (a right to confirm, access and delete consumer health data, and to the list of who it was shared with); in the US, the DMCA medical device data exemption (renewed each three-year cycle) |
+| **Export** | GDPR data portability, interoperability mandates; the EU Data Act (data in a "structured, commonly used and machine-readable format", and shared on the user's request with a third party they choose); the Washington act's access right gives a copy, not a machine-readable or real-time feed |
 | **Share** | User-controlled consent, privacy preferences |
-| **Delegate** | Emerging frameworks (not fully addressed in current law); the DMCA data exemption covers access "on behalf of" a patient |
+| **Delegate** | Emerging frameworks (not fully addressed in current law); the DMCA data exemption covers access "on behalf of" a patient. The first legal forms found: the EU Data Act lets "a party acting on behalf of a user" request sharing, and the European Health Data Space requires proxy services through which a person authorises someone else to access their health records (applying from 2029 for the first categories of records) |
 | **Audit** | Audit log requirements, transparency obligations |
+
+*Updated 2026-10-17: Data Act, Washington and European Health Data Space entries added, read in the primary texts that day; the research is in [Vendor programmes and data rights](../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md) §3. Like the rest of this table, they are a non-lawyer's summary for review by counsel, not legal advice; the limits of each law (for example the Data Act's health-and-safety and trade-secret restrictions, and its exclusion of derived data) are in [Digital Rights](../DIGITAL-RIGHTS.md#eu-data-act-regulation-eu-20232854).*
 
 **Note:** The Right to Delegate is the least developed in current legal frameworks. As remote control and agent-based features become central to safe automated insulin delivery, we need frameworks that clearly define and enforce: Who can see what? Who can act on what? Under what rules or revocable permissions?
 

@@ -5,6 +5,15 @@
 > **Source**: ios-mobile-platform.md #3  
 > **Related**: [nightscoutkit-swift-sdk-design.md](../sdqctl-proposals/nightscoutkit-swift-sdk-design.md)
 
+**Corrected 2026-10-17:** checked against Apple's pages, read on 2026-10-17, and corrected in place:
+the safety guideline is 1.4 (Physical Harm), not 5.1 (which is Privacy), and its wording is now
+quoted; the reasons an AID app cannot be distributed now cite Apple's own texts (guidelines 1.4.1,
+1.4.2 and 5.1.1(ix), the Developer Program License Agreement §3.3.2 and the regulated medical
+device status declaration) instead of a paraphrase; the Critical Alerts approval likelihood is
+marked unverified. The findings and sources are in
+[Apple accountability §7.2](../60-research/structures-2026-10-17/apple-accountability.md#7-corrections-to-existing-repository-pages). The descriptions of
+Apple's terms are a non-lawyer's reading, to be checked by counsel.
+
 ---
 
 ## Executive Summary
@@ -102,9 +111,25 @@ Use it at your own risk!
 | **Pump Control** | Yes - doses insulin | Yes - doses insulin |
 
 **Why App Store Impossible**:
-1. **Guideline 5.1 Safety**: Apps that could harm users physically face rejection
+1. **Guideline 1.4 Physical Harm**: "If your app behaves in a way that risks physical harm, we may
+   reject it" ([App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/), read 2026-10-17)
 2. **FDA Regulation**: Automated insulin dosing is Class II/III medical device
-3. **Liability**: Apple won't distribute unapproved medical devices
+3. **Apple's own texts** (the page previously said "Apple won't distribute unapproved medical
+   devices", which is not Apple's wording):
+   - Guideline 1.4.1: medical apps "may be reviewed with greater scrutiny"; if a medical app "has
+     received regulatory clearance, please submit a link to that documentation with your app."
+   - Guideline 1.4.2: "Drug dosage calculators must come from the drug manufacturer, a hospital,
+     university, health insurance company, pharmacy or other approved entity, or receive approval
+     by the FDA or one of its international counterparts."
+   - Guideline 5.1.1(ix): apps in highly regulated fields such as healthcare "should be submitted
+     by a legal entity that provides the services, and not by an individual developer."
+   - Developer Program License Agreement §3.3.2: the developer must comply with FDA and other
+     regulatory requirements, and market an app "only for its cleared or approved intended use"
+     ([DPLA](https://developer.apple.com/support/terms/apple-developer-program-license-agreement/)).
+   - Regulated medical device status: apps in the Health & Fitness or Medical categories
+     distributed in the EEA, UK or US must declare whether they are a regulated medical device;
+     existing apps "must provide a status by early 2027"
+     ([Apple news, 2026-03-26](https://developer.apple.com/news/?id=nyqbfz1y)).
 
 **Source**: `externals/LoopWorkspace/Loop/README.md`, `externals/Trio/README.md`
 
@@ -147,9 +172,11 @@ Use it at your own risk!
 - Each app must serve genuinely different use case
 - Modular architecture with distinct App Store submissions is acceptable
 
-### Guideline 5.1: Safety
+### Guideline 1.4: Physical Harm
 
-> "Apps that could cause physical harm may be rejected."
+> "If your app behaves in a way that risks physical harm, we may reject it."
+> ([App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/), read 2026-10-17. Safety is section 1 of the guidelines; 5.1 is
+> Privacy.)
 
 **Implications**:
 - Display-only apps: ✅ Generally safe
@@ -181,8 +208,8 @@ Use it at your own risk!
 | **Dexcom Share API** | ✅ Yes | HTTP-based, documented |
 | **LibreLinkUp API** | ✅ Yes | HTTP-based, official |
 | **Nightscout upload** | ✅ Yes | HTTP API |
-| **Remote bolus commands** | ⚠️ Risky | Safety concerns (5.1) |
-| **Temp basal suggestions** | ⚠️ Risky | Medical advice (5.1) |
+| **Remote bolus commands** | ⚠️ Risky | Safety concerns (1.4) |
+| **Temp basal suggestions** | ⚠️ Risky | Medical advice (1.4.1, 1.4.2) |
 | **Automated dosing** | ❌ No | FDA Class II/III |
 | **Pump control** | ❌ No | Medical device regulation |
 
@@ -288,8 +315,9 @@ Both DiaBLE and Nightguard request Critical Alerts entitlement:
 2. Justify medical/safety need
 3. Apple manually reviews each request
 
-**Approval Likelihood**:
-- Glucose monitoring apps: ✅ Typically approved
+**Approval Likelihood** (unverified: Apple's approval criteria are not on any Apple page read on
+2026-10-17, and the request form needs sign-in):
+- Glucose monitoring apps: ✅ Typically approved (unverified)
 - Must demonstrate legitimate safety use case
 
 ---

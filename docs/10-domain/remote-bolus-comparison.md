@@ -3,6 +3,7 @@
 > **Sources**: Loop, AAPS, Trio, Nightscout  
 > **Last Updated**: 2026-01-28  
 > **Corrected 2026-10-09** against source; see [intent and workflow across the landscape](../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md) §11.  
+> **Corrected 2026-10-17** against source: the Trio architecture no longer routes commands through Nightscout, the Nightscout relay is shown sending to Loop only, and the summary table now shows Loop's optional response notification, matching GAP-REMOTE-004. Revisions read: cgm-remote-monitor `a8888f0d`, LoopWorkspace `548b332` (NightscoutService `2cef489`), Trio `0b29cd534`, LoopFollow `4a74b781`. See [technical control loops](../60-research/structures-2026-10-17/technical-loops.md) §4.  
 
 ## Overview
 
@@ -121,8 +122,10 @@ Example: `BOLUS 2.5 MEAL` (triggers temp target)
 ### Architecture
 
 ```
-Nightscout → APNs → Trio App → APSManager → Pump
+Sender app (e.g. LoopFollow) → APNs → Trio App → APSManager → Pump
 ```
+
+The sender pushes directly to Apple Push Notification service (APNs); Nightscout does not relay Trio commands. Trio expects an AES-GCM encrypted `encrypted_data` payload (`Trio/Sources/Models/CommandPayload.swift:3-9`, Trio `0b29cd534`), and Nightscout's relay builds only Loop's payload (see [Nightscout](#nightscout-server) below). The sender observed in source is LoopFollow's Trio Remote Control, which posts to APNs itself (`LoopFollow/Remote/TRC/PushNotificationManager.swift:329-333`, LoopFollow `4a74b781`). Nightscout's part is to hold the APNs device token that Trio uploads to its profile (`Trio/Sources/Services/Network/Nightscout/NightscoutManager.swift:838-853`), which a sender can read.
 
 ### Key Files
 
@@ -177,8 +180,10 @@ if totalRecentBolusAmount >= bolusAmount * 0.2 {
 ### Architecture
 
 ```
-Careportal UI → API → loop.sendNotification() → APNs → Loop/Trio
+Careportal UI → API → loop.sendNotification() → APNs → Loop
 ```
+
+`loop.sendNotification()` reads the device token and bundle identifier from the profile's `loopSettings` and builds Loop's payload keys only (`lib/server/loop.js:31-130`, cgm-remote-monitor `a8888f0d`). It does not build Trio's encrypted payload.
 
 ### Key Files
 
@@ -325,7 +330,7 @@ Authorization: Bearer <api-secret>
 | **Expiration** | 5 min | 15 min dist | Configurable | 5 min |
 | **Max Bolus Check** | ✅ Client | ✅ Client | ✅ Client | ❌ |
 | **IOB Safety** | ✅ | ✅ | ✅ Explicit | ❌ |
-| **Response Notification** | ❌ | ❌ | ✅ | ❌ |
+| **Response Notification** | ✅ Optional (only when the sender supplies return info) | ❌ | ✅ | ❌ |
 | **Rate Limiting** | Expiration | Distance | 20% rule | None |
 
 ---
