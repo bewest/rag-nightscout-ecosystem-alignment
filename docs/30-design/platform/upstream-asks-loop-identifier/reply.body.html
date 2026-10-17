@@ -4984,7 +4984,7 @@
 
   <h1>Reply.body</h1>
 
-<p><em>Living document, last changed 2026-10-17 at <code>ec7e1162</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>da1a0f02</code>.</em></p>
 <p><strong>Re: client-supplied identifiers for Nightscout</strong></p>
 <p>Thank you for writing this up. We agree with the ask. We decided the same rule for our own design
 work on 2026-10-16, and much of what you need is partly in place. This reply says where each part
@@ -5162,9 +5162,13 @@ plus rule 5:</p>
   as <code>g7:&lt;serial&gt;:&lt;seconds&gt;</code> is neither hex nor a UUID, so by-id routes find nothing
   (<a href="https://github.com/nightscout/cgm-remote-monitor/blob/92d0834219aa771b5837dbcbf1baeb839a200cf6/lib/server/query.js#L95-L144">query.js:33-36, 95-144</a>);</li>
 <li><strong>whether <code>date</code> may change on an <code>identifier</code> match.</strong> On API v3, <code>date</code>, <code>device</code> and
-  <code>eventType</code> are immutable. A re-send with the same <code>identifier</code> and a different <code>date</code> is
-  answered 400, not stored twice (read from the code, not run)
+  <code>eventType</code> are immutable. A re-send with the same <code>identifier</code> and a different <code>date</code>,
+  <code>device</code> or <code>eventType</code> is answered 400 ("Field date cannot be modified by the client") and the
+  stored record is left as it was, not stored twice; a <code>PUT</code> by identifier is answered the same.
+  We ran it on 15.0.8 and on <code>dev</code> (<code>fade2299</code>) for entries, treatments and device status, with an
+  identical re-send answered 200 as the control
   (<a href="https://github.com/nightscout/cgm-remote-monitor/blob/92d0834219aa771b5837dbcbf1baeb839a200cf6/lib/api3/generic/update/validate.js#L21-L43">update/validate.js:21-43</a>).
+  On v1 the same re-send updates the time on treatments and adds a second record on entries.
   Your watch-and-phone example (1.5 s apart, two <code>device</code> values) and an edited carb time both
   meet this rule. It needs a decision.</li>
 </ul>
@@ -5206,6 +5210,55 @@ would stay two records. Body comparison cannot do either. NightscoutKit's <code>
 has an <code>identifier</code> member; NightscoutService does not set it today. We would revisit the
 device status decision with you on that basis: <code>identifier</code> first, then the identical-body rule
 for clients that send none.</p>
+<p><strong>A question back to you: a re-send or an edit?</strong>
+Your watch-and-phone example could mean either of two things, and the proposal does not say
+which. Say the watch uploads a reading, and later the phone uploads the same reading with the same
+<code>identifier</code>, a different <code>device</code> and a <code>date</code> 1.5 s later. What should Nightscout do?</p>
+<table>
+<thead>
+<tr>
+<th>outcome</th>
+<th>what is stored</th>
+<th>what the phone sees</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>reject</td>
+<td>the watch's record</td>
+<td>an error (API v3 today: 400)</td>
+</tr>
+<tr>
+<td>update</td>
+<td>one record, now with the phone's <code>device</code> and <code>date</code></td>
+<td>success</td>
+</tr>
+<tr>
+<td>acknowledge</td>
+<td>the watch's record, unchanged</td>
+<td>success, with the stored ids</td>
+</tr>
+</tbody>
+</table>
+<p>Our decision of record is <strong>update</strong>. The write contract merges a matching re-send into the
+stored record on every path (decision Q1, 2026-10-12), and rule 5 matches on <code>identifier</code> first.
+So once built, the phone's upload would replace <code>device</code> and move <code>date</code> by 1.5 s. Today's
+servers do something different on every path: API v3 rejects it, v1 entries store a second
+record, and v1 treatments update it.</p>
+<p>The contrast matters for the backfill you describe. A rejection would stall the phone's upload of
+that data type, because NightscoutKit treats an error reply as a failed batch. An update rewrites
+which device uploaded the reading. An acknowledgement keeps the first upload and needs no
+coordination, but it cannot carry a correction.</p>
+<p>So, two cases:</p>
+<ol>
+<li><strong>The same reading, uploaded again by another device.</strong> Should Nightscout acknowledge it and
+   keep the first <code>device</code> and <code>date</code>, or overwrite them with the later upload's?</li>
+<li><strong>An intended edit</strong>, such as a carb's time or amount changed in Loop. Should a re-send with
+   the same <code>identifier</code> update the record? If both cases are wanted, how should Nightscout tell
+   them apart: by <code>POST</code> versus <code>PUT</code>, or by something in the record?</li>
+</ol>
+<p>Your answer becomes a decision row next to Q1, and we would revise Q1 for <code>identifier</code> matches if
+it points the other way.</p>
 <h2 id="6-what-we-propose-to-do-next">6. What we propose to do next<a class="headerlink" href="#6-what-we-propose-to-do-next" title="Permanent link">&para;</a></h2>
 <p>In order:</p>
 <ol>

@@ -4776,7 +4776,7 @@
 
 
 <h1 id="upstream-ask-the-loop-developers-identifier-proposal">Upstream ask: the Loop developers' <code>identifier</code> proposal<a class="headerlink" href="#upstream-ask-the-loop-developers-identifier-proposal" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-17 at <code>ec7e1162</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>da1a0f02</code>.</em></p>
 <p><em>Contributor-facing. </em><em>DRAFT, not yet sent. For maintainer review.</em><em> Queue item <code>LOOP-ID-REPLY</code>.
 Facts checked 2026-10-17 at cgm-remote-monitor <code>15.0.8</code> (<code>92d08342</code>) and <code>dev</code> <code>fade2299</code>, Loop at
 LoopWorkspace <code>548b332</code> (NightscoutService <code>2cef489</code>, LoopKit <code>d9f1437</code>) and NightscoutKit <code>4ec9fd1</code>,
@@ -4870,8 +4870,8 @@ Records without one keep today's rules.</p>
 </tr>
 <tr>
 <td>v3 re-send with same <code>identifier</code>, different <code>date</code>/<code>device</code></td>
-<td>400 immutable field; identifier itself may change in deduplication [R, not run]</td>
-<td><code>api3/generic/update/validate.js:21-43</code> @15.0.8; <code>:71-89</code> @dev</td>
+<td>400 immutable field, stored record unchanged, one copy; same for <code>eventType</code> on treatments and for <code>PUT</code> by identifier; identical re-send 200. Entries, treatments, device status [M, 15.0.8 and <code>fade2299</code>, MongoDB 7.0.43]. Only difference: on <code>dev</code> a record first written through v1 (no <code>date</code>/<code>device</code>) accepts a first <code>device</code> at the same time [M]. v1 contrast: treatments update the time, entries store a second record [M]</td>
+<td><code>api3/generic/update/validate.js:21-43</code> @15.0.8; <code>:71-91</code> @dev; <a href="../../../../tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.html">lab results 2026-10-17</a></td>
 </tr>
 <tr>
 <td>indexes on <code>identifier</code></td>
@@ -4938,7 +4938,7 @@ Records without one keep today's rules.</p>
 <p>Decisions cited: <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">D20 rule 5 and rule 7</a>
 (<code>18397441</code>, 2026-10-16); <a href="../../tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-10-12">write contract §3 (U4, U6) and §6.1</a>
 (2026-10-12); <a href="../nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">hub-sync design §3.7</a>
-(<code>write.ids</code>, <code>matchedBy</code>); cases in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/52a82ac811e713259e072991f463a1b88db73fbb/specs/sync/conformance/quirks"><code>specs/sync/conformance/quirks/</code></a>;
+(<code>write.ids</code>, <code>matchedBy</code>); cases in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/da1a0f02d4b7a825d50ceb7f80146e28ab02caa4/specs/sync/conformance/quirks"><code>specs/sync/conformance/quirks/</code></a>;
 <a href="../../../../traceability/sync-identity-gaps.html">GAP-SYNC-032</a> ("send <code>syncIdentifier</code> as
 <code>identifier</code>") and REQ-BATCH-003 (per-item results) in
 <a href="../../../../traceability/sync-identity-requirements.html">sync-identity-requirements</a>.</p>
@@ -4969,8 +4969,8 @@ send <code>identifier</code>) is the direction the reply takes.</p>
 <td>—</td>
 <td>to send</td>
 <td>not chosen</td>
-<td><a href="reply.body.html">reply.body.md</a></td>
-<td>—</td>
+<td><a href="reply.body.html">reply.body.md</a>; adds (2026-10-17) a question back: is the watch-and-phone case a re-send to acknowledge or an edit to apply? Our decision of record (write contract Q1, merge on match) answers "update"</td>
+<td><code>ID-V3-IMMUTABLE-DECISION</code> (queue), beside write contract §6.1 Q1</td>
 </tr>
 </tbody>
 </table>
@@ -4990,7 +4990,10 @@ decision row it produces.</p>
 <li><strong>Device status Q3.</strong> The reply offers to revisit the 2026-10-12 decision with <code>identifier</code>
   first. Confirm.</li>
 <li><strong>The <code>date</code> question.</strong> The reply raises v3's immutable <code>date</code>/<code>device</code> on an identifier match
-  as undecided. It is not yet a queue item.</li>
+  as undecided. Reproduced over HTTP on 2026-10-17 (queue item <code>LOOP-ID-V3-IMMUTABLE</code>,
+  <a href="../../../../tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.html">lab results</a>).
+  Recorded as an observation, not a backfix: the 400 is API v3's documented rule; what it should
+  be for a client-supplied identifier is not decided.</li>
 <li><strong>Push first.</strong> The reply links pages on the project site; the gh-pages build of 2026-10-17
   (<code>de66763c</code>) has every linked page and anchor. BF-169 is on an unlanded branch and is cited by
   number only.</li>
