@@ -13747,7 +13747,7 @@ items:
     repo: rag-nightscout-ecosystem-alignment
     branch: main
     base: main
-    state: not-started
+    state: done
     pr: []
     blast_radius: >
       docs/10-domain/remote-bolus-comparison.md (Trio "Shared Secret" line),
@@ -13786,6 +13786,9 @@ items:
       right, record that and retire the gate rather than editing the page.
       Describe paths only; nothing about how any command's protection could
       be bypassed.
+
+
+      Done 2026-10-17, both statements verified wrong in source and corrected: Trio generates and stores the shared secret (RemoteControlConfigStateModel.swift:7-37), reads it only to verify commands (TrioRemoteControl.swift:29), and uploads only its device token, bundle and team identifiers to Nightscout (NightscoutManager.swift:838-853), Trio 0b29cd534; LoopFollow 4a74b781 sends remote carbs via APNs for Loop (LoopAPNSCarbsView.swift:563-564) and Trio (TRC/MealView.swift:346), its only Nightscout call on the remote settings screen being a profile read (RemoteSettingsViewModel.swift:256).
 
 # ---------------------------------------------------------------------------
 # PARCEL: platform

@@ -3,7 +3,7 @@
 > **Source**: `externals/LoopFollow/`  
 > **Last Updated**: 2026-01-29  
 > **Version**: 2.x (maintained by Loop and Learn)  
-> **Corrected 2026-10-17** against LoopFollow `4a74b781`: `RemoteType` has three cases (no `nightscout` case), Trio Remote Control sends to Apple Push Notification service (APNs) directly rather than through Nightscout, and the `Remote/Nightscout/` directory described before does not exist. See [technical control loops](../60-research/structures-2026-10-17/technical-loops.md) §4.
+> **Corrected 2026-10-17** against LoopFollow `4a74b781`: `RemoteType` has three cases (no `nightscout` case), Trio Remote Control sends to Apple Push Notification service (APNs) directly rather than through Nightscout, and the `Remote/Nightscout/` directory described before does not exist. See [technical control loops](../60-research/structures-2026-10-17/technical-loops.md) §4. Also 2026-10-17 (DOCS-REMOTE-FOLLOWUP): remote carbs go via APNs for both Loop (`LoopAPNSCarbsView.swift:563-564`, `sendCarbsViaAPNS`) and Trio (`TRC/MealView.swift:346`, `sendMealPushNotification`), not via Nightscout.
 
 ## Overview
 
@@ -340,7 +340,7 @@ if (latestDate + 330) < now, IsNightscoutEnabled() {
 | **Loop Status** | ✅ | ✅ | ✅ |
 | **Predictions** | ✅ (single/multi) | ✅ | ✅ |
 | **Remote Bolus** | Via APNS | ✅ | ❌ |
-| **Remote Carbs** | Via NS | ✅ | ✅ |
+| **Remote Carbs** | Via APNS | ✅ | ✅ |
 | **Remote Override** | ✅ | ✅ | Limited |
 | **Dexcom Share** | ✅ | ❌ | Via bridge |
 | **Multi-Looper** | ✅ (3 instances) | ❌ | ✅ |

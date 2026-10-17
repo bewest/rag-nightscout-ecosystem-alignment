@@ -3,7 +3,7 @@
 > **Sources**: Loop, AAPS, Trio, Nightscout  
 > **Last Updated**: 2026-01-28  
 > **Corrected 2026-10-09** against source; see [intent and workflow across the landscape](../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md) §11.  
-> **Corrected 2026-10-17** against source: the Trio architecture no longer routes commands through Nightscout, the Nightscout relay is shown sending to Loop only, and the summary table now shows Loop's optional response notification, matching GAP-REMOTE-004. Revisions read: cgm-remote-monitor `a8888f0d`, LoopWorkspace `548b332` (NightscoutService `2cef489`), Trio `0b29cd534`, LoopFollow `4a74b781`. See [technical control loops](../60-research/structures-2026-10-17/technical-loops.md) §4.  
+> **Corrected 2026-10-17** against source: the Trio architecture no longer routes commands through Nightscout, the Nightscout relay is shown sending to Loop only, and the summary table now shows Loop's optional response notification, matching GAP-REMOTE-004. Revisions read: cgm-remote-monitor `a8888f0d`, LoopWorkspace `548b332` (NightscoutService `2cef489`), Trio `0b29cd534`, LoopFollow `4a74b781`. See [technical control loops](../60-research/structures-2026-10-17/technical-loops.md) §4. Also 2026-10-17 (DOCS-REMOTE-FOLLOWUP): Trio's shared secret is configured in Trio and the sending app, not in Nightscout.
 
 ## Overview
 
@@ -169,7 +169,7 @@ if totalRecentBolusAmount >= bolusAmount * 0.2 {
 ### Security Model
 
 - **Encryption**: AES-256 via `SecureMessenger`
-- **Shared Secret**: Configured in Nightscout + Trio
+- **Shared Secret**: generated and stored in Trio, and entered by hand in the sending app (e.g. LoopFollow); Trio does not upload it to Nightscout, which receives only Trio's device token, bundle and team identifiers in the profile (Trio `0b29cd534`: `RemoteControlConfigStateModel.swift:7-37`, `TrioRemoteControl.swift:29`, `NightscoutManager.swift:838-853`)
 - **Response Notifications**: Sends delivery status back via APNs
 - **Timestamp Validation**: Command includes `timestamp` for freshness
 
