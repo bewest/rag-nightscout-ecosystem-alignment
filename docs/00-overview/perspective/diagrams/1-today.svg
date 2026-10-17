@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="612" height="538" viewBox="0 0 612 538" font-family="Helvetica, Arial, sans-serif">
+<title>1·today · The ecosystem today: what joins the parts</title>
+<defs>
+<marker id="ah00796b" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#00796b"/></marker>
+<marker id="ah1f5fa8" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f5fa8"/></marker>
+<marker id="ah2e7d32" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2e7d32"/></marker>
+<marker id="ah555555" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#555555"/></marker>
+<marker id="ah7b3294" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7b3294"/></marker>
+<marker id="ah888888" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#888888"/></marker>
+<marker id="ahb5541b" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b5541b"/></marker>
+<marker id="ahc8c8c8" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c8c8c8"/></marker>
+<symbol id="icon-activity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2" /></symbol>
+<symbol id="icon-building-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" /> <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" /> <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" /> <path d="M10 6h4" /> <path d="M10 10h4" /> <path d="M10 14h4" /> <path d="M10 18h4" /></symbol>
+<symbol id="icon-factory" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" /> <path d="M17 18h1" /> <path d="M12 18h1" /> <path d="M7 18h1" /></symbol>
+<symbol id="icon-git-branch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" x2="6" y1="3" y2="15" /> <circle cx="18" cy="6" r="3" /> <circle cx="6" cy="18" r="3" /> <path d="M18 9a9 9 0 0 1-9 9" /></symbol>
+<symbol id="icon-hand-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 14h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 16" /> <path d="m7 20 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9" /> <path d="m2 15 6 6" /> <path d="M19.5 8.5c.7-.7 1.5-1.6 1.5-2.7A2.73 2.73 0 0 0 16 4a2.78 2.78 0 0 0-5 1.8c0 1.2.8 2 1.5 2.8L16 12Z" /></symbol>
+<symbol id="icon-scale" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" /> <path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" /> <path d="M7 21h10" /> <path d="M12 3v18" /> <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2" /></symbol>
+<symbol id="icon-server" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="8" x="2" y="2" rx="2" ry="2" /> <rect width="20" height="8" x="2" y="14" rx="2" ry="2" /> <line x1="6" x2="6.01" y1="6" y2="6" /> <line x1="6" x2="6.01" y1="18" y2="18" /></symbol>
+<symbol id="icon-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /> <circle cx="9" cy="7" r="4" /> <path d="M22 21v-2a4 4 0 0 0-3-3.87" /> <path d="M16 3.13a4 4 0 0 1 0 7.75" /></symbol>
+</defs>
+<rect x="0" y="0" width="612" height="538" fill="#ffffff"/>
+<text x="305.8" y="22" font-size="13" text-anchor="middle" fill="#111">1·today · The ecosystem today: what joins the parts</text>
+<g transform="translate(3.0,0.0)">
+<g class="edge"><path class="edge" d="M221.6,61.0 L83.8,61.0 L83.8,150.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M99.8,150.0 L99.8,77.0 L221.6,77.0" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
+<g class="edge"><path class="edge" d="M432.6,170.5 L299.1,170.5 L299.1,255.0" fill="none" stroke="#2e7d32" stroke-width="2.6" stroke-linecap="butt" marker-end="url(#ah2e7d32)"/></g>
+<g class="edge"><path class="edge" d="M291.1,309.5 L291.1,373.5" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M307.1,373.5 L307.1,309.5" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
+<g class="edge"><path class="edge" d="M373.9,394.0 L503.7,394.0 L503.7,302.8" fill="none" stroke="#2e7d32" stroke-width="2.6" stroke-linecap="butt" marker-end="url(#ah2e7d32)"/></g>
+<g class="edge"><path class="edge" d="M516.5,302.8 L516.5,482.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M79.8,191.0 L79.8,478.5" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M224.4,386.0 L105.4,386.0 L105.4,478.5" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M118.2,478.5 L118.2,402.0 L224.4,402.0" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
+<g class="edge"><path class="edge" d="M222.0,282.2 L92.6,282.2 L92.6,478.5" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="1.5,3" stroke-linecap="round" marker-end="url(#ah555555)"/></g>
+<g class="edge"><path class="edge" d="M165.6,499.0 L448.8,499.0" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="1.5,3" stroke-linecap="round" marker-end="url(#ah555555)"/></g>
+<g class="node" data-id="reg"><rect x="221.6" y="52.0" width="155.0" height="34.0" rx="5" fill="#dfe7f2" stroke="#333333" stroke-width="1"/>
+<use href="#icon-scale" x="230.6" y="61.0" width="16" height="16" color="#3a4656"/>
+<text x="310.1" y="73.0" font-size="11" text-anchor="middle" fill="#111111">Regulatory authorities</text>
+</g>
+<g class="node" data-id="mfr"><rect x="28.4" y="150.0" width="126.9" height="41.0" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+<use href="#icon-factory" x="37.4" y="162.5" width="16" height="16" color="#3a4656"/>
+<text x="102.8" y="167.8" font-size="11" text-anchor="middle" fill="#111111">Pump and CGM</text>
+<text x="102.8" y="181.2" font-size="11" text-anchor="middle" fill="#111111">manufacturers</text>
+</g>
+<g class="node" data-id="fdn"><rect x="432.6" y="150.0" width="158.1" height="41.0" rx="5" fill="#e3f0e3" stroke="#333333" stroke-width="1"/>
+<use href="#icon-hand-heart" x="441.6" y="162.5" width="16" height="16" color="#3a4656"/>
+<text x="522.7" y="167.8" font-size="11" text-anchor="middle" fill="#111111">Nightscout Foundation</text>
+<text x="522.7" y="181.2" font-size="11" text-anchor="middle" fill="#111111">501(c)(3)</text>
+</g>
+<g class="node" data-id="projects"><rect x="222.0" y="255.0" width="154.4" height="54.5" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+<use href="#icon-git-branch" x="231.0" y="274.2" width="16" height="16" color="#3a4656"/>
+<text x="310.1" y="272.8" font-size="11" text-anchor="middle" fill="#111111">Open-source projects</text>
+<text x="310.1" y="286.2" font-size="11" text-anchor="middle" fill="#111111">(each decides its own</text>
+<text x="310.1" y="299.8" font-size="11" text-anchor="middle" fill="#111111">merges and releases)</text>
+</g>
+<g class="node" data-id="hosts"><rect x="435.1" y="261.8" width="153.1" height="41.0" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+<use href="#icon-building-2" x="444.1" y="274.2" width="16" height="16" color="#3a4656"/>
+<text x="522.7" y="279.5" font-size="11" text-anchor="middle" fill="#111111">Hosted Nightscout</text>
+<text x="522.7" y="293.0" font-size="11" text-anchor="middle" fill="#111111">providers (nine listed)</text>
+</g>
+<g class="node" data-id="people"><rect x="224.4" y="373.5" width="149.5" height="41.0" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+<use href="#icon-users" x="233.4" y="386.0" width="16" height="16" color="#3a4656"/>
+<text x="310.1" y="391.2" font-size="11" text-anchor="middle" fill="#111111">People with diabetes</text>
+<text x="310.1" y="404.8" font-size="11" text-anchor="middle" fill="#111111">and caregivers</text>
+</g>
+<g class="node" data-id="devices"><rect x="18.0" y="478.5" width="147.6" height="41.0" rx="5" fill="#e8e8e8" stroke="#333333" stroke-width="1"/>
+<use href="#icon-activity" x="27.0" y="491.0" width="16" height="16" color="#3a4656"/>
+<text x="102.8" y="496.2" font-size="11" text-anchor="middle" fill="#111111">Pumps, CGMs and</text>
+<text x="102.8" y="509.8" font-size="11" text-anchor="middle" fill="#111111">manufacturer clouds</text>
+</g>
+<g class="node" data-id="sites"><rect x="448.8" y="482.0" width="125.6" height="34.0" rx="5" fill="#e8e8e8" stroke="#333333" stroke-width="1"/>
+<use href="#icon-server" x="457.8" y="491.0" width="16" height="16" color="#3a4656"/>
+<text x="522.7" y="503.0" font-size="11" text-anchor="middle" fill="#111111">Nightscout sites</text>
+</g>
+<g class="elabel" data-k="0">
+<text x="76.8" y="102.5" font-size="10" text-anchor="end" fill="#1f5fa8">clearance,</text>
+<text x="76.8" y="114.5" font-size="10" text-anchor="end" fill="#1f5fa8">enforcement</text>
+</g>
+<g class="elabel" data-k="1">
+<text x="106.8" y="110.5" font-size="10" text-anchor="start" fill="#b5541b">submissions,</text>
+<text x="106.8" y="122.5" font-size="10" text-anchor="start" fill="#b5541b">adverse events</text>
+</g>
+<g class="elabel" data-k="2">
+<text x="365.9" y="150.5" font-size="10" text-anchor="middle" fill="#2e7d32">resource requests,</text>
+<text x="365.9" y="162.5" font-size="10" text-anchor="middle" fill="#2e7d32">events, awards</text>
+</g>
+<g class="elabel" data-k="3">
+<text x="284.1" y="344.5" font-size="10" text-anchor="end" fill="#1f5fa8">releases, docs</text>
+</g>
+<g class="elabel" data-k="4">
+<text x="314.1" y="344.5" font-size="10" text-anchor="start" fill="#b5541b">issues, logs</text>
+</g>
+<g class="elabel" data-k="5">
+<text x="438.8" y="386.0" font-size="10" text-anchor="middle" fill="#2e7d32">subscriptions</text>
+</g>
+<g class="elabel" data-k="6">
+<text x="523.5" y="395.4" font-size="10" text-anchor="start" fill="#1f5fa8">run sites</text>
+</g>
+<g class="elabel" data-k="7">
+<text x="72.8" y="331.8" font-size="10" text-anchor="end" fill="#1f5fa8">firmware, cloud</text>
+<text x="72.8" y="343.8" font-size="10" text-anchor="end" fill="#1f5fa8">terms of use</text>
+</g>
+<g class="elabel" data-k="8">
+<text x="164.9" y="378.0" font-size="10" text-anchor="middle" fill="#1f5fa8">wear, configure</text>
+</g>
+<g class="elabel" data-k="9">
+<text x="125.2" y="443.2" font-size="10" text-anchor="start" fill="#b5541b">glucose, alarms</text>
+</g>
+<g class="elabel" data-k="10">
+<text x="99.6" y="347.9" font-size="10" text-anchor="start" fill="#555555">protocols worked out</text>
+<text x="99.6" y="359.9" font-size="10" text-anchor="start" fill="#555555">by volunteers</text>
+</g>
+<g class="elabel" data-k="11">
+<text x="307.2" y="491.0" font-size="10" text-anchor="middle" fill="#555555">uploads</text>
+</g>
+</g></svg>

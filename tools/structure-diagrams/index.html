@@ -1463,6 +1463,8 @@
       
         
       
+        
+      
     
     
     
@@ -2729,7 +2731,7 @@
 
 
 <h1 id="structure-diagrams--the-overviews-control-structure-drawings">structure-diagrams — the overview's control-structure drawings<a class="headerlink" href="#structure-diagrams--the-overviews-control-structure-drawings" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-16 at <code>8e175d41</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>1561c051</code>.</em></p>
 <p><em>Contributor-facing.</em> Sources and renderer for the drawings on
 <a href="../../docs/00-overview/perspective/STRUCTURES.html">Control structures, drawn</a>.</p>
 <ul>
@@ -2738,16 +2740,31 @@
   a <code>group</code> and a <code>zoom</code> label naming the drawing that opens the box up. Edges have a <code>kind</code>
   (<code>control</code>, <code>feedback</code>, <code>funding</code>, <code>data</code>) and optionally <code>status: proposed</code>. <code>views</code> lists
   stakeholder views: the same drawing with everything not touching <code>focus</code> greyed.</li>
+<li>Optional <code>icon</code> on a node: a file name in <code>icons/</code> without <code>.svg</code>, drawn at the box's left to say
+  what the box does (factory, landmark, scale, user, users, key-round, smartphone, syringe, …).
+  <code>icons/</code> holds only the Lucide icons in use, copied from <code>lucide-static</code> 0.460.0 with its ISC
+  <code>LICENSE</code>; to add one, copy its SVG from that package and add a line to <code>ICON_KEY</code> in
+  <code>render.py</code>, which also writes <code>icon-key.svg</code>.</li>
+<li>Scenarios: <code>scenarios: [believed, actual, emerging]</code>, <code>base: false</code> and one view per scenario
+  draw the same structure several times on one layout. An edge or node with <code>in: [...]</code> appears
+  only in those scenarios; <code>labels: {scenario: text}</code> changes an edge's label there. Edge kinds
+  <code>authority</code> (where a right to act comes from) and <code>discretion</code> (control exercised at the
+  controller's own choice) exist for these drawings. See <code>inputs/1-authority.yaml</code>.</li>
+<li>Optional layout keys: <code>bands</code> (horizontal bands behind rows, e.g. legal / organisational /
+  technical), and per edge <code>route</code> (<code>straight</code>, <code>z</code>, <code>l</code>, <code>corridor</code>), <code>via</code> and <code>label_side</code>. Use
+  them to move a line that crosses the middle of a drawing; see the docstring of <code>render.py</code>.</li>
 <li><code>render.py</code> writes <code>docs/00-overview/perspective/diagrams/&lt;name&gt;.svg</code>, one <code>&lt;name&gt;--&lt;view&gt;.svg</code>
-  per view, and <code>legend.svg</code>. It needs Graphviz (<code>sudo apt install graphviz</code>) and PyYAML.</li>
+  per view, and <code>legend.svg</code>. It needs only Python and PyYAML. It places every box on a
+  (column, level) grid and routes lines at right angles; chosen by
+  <a href="../lab/stpa-grid-style/index.html">the grid layout lab</a>, which keeps the Graphviz renderer it
+  replaced as <code>baseline_dot.py</code>.</li>
 </ul>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python3<span class="w"> </span>tools/structure-diagrams/render.py<span class="w">            </span><span class="c1"># every input</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python3<span class="w"> </span>tools/structure-diagrams/render.py<span class="w"> </span>tools/structure-diagrams/inputs/z2-agreement.yaml
 </code></pre></div>
 <p>The SVGs are committed so the drawings show on GitHub and on the site without a build step. Each
-sits on its own light card, so it reads the same in either colour scheme. Avoid edges between
-nodes on the same level: Graphviz routes them without the level constraint and their labels
-collide.</p>
+sits on its own light card, so it reads the same in either colour scheme. Keep each drawing to
+one idea and roughly 6–10 boxes; put detail in a drawing one zoom level down.</p>
 
 
 

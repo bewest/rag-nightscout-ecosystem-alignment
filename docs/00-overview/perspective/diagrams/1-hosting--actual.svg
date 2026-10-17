@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="841" height="614" viewBox="0 0 841 614" font-family="Helvetica, Arial, sans-serif">
+<title>1·hosting · Who answers for a site run for someone else — as it works today</title>
+<defs>
+<marker id="ah00796b" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#00796b"/></marker>
+<marker id="ah1f5fa8" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f5fa8"/></marker>
+<marker id="ah2e7d32" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2e7d32"/></marker>
+<marker id="ah555555" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#555555"/></marker>
+<marker id="ah7b3294" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7b3294"/></marker>
+<marker id="ah888888" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#888888"/></marker>
+<marker id="ahb5541b" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b5541b"/></marker>
+<marker id="ahc8c8c8" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c8c8c8"/></marker>
+<symbol id="icon-badge-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" /> <path d="m9 12 2 2 4-4" /></symbol>
+<symbol id="icon-building-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" /> <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" /> <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" /> <path d="M10 6h4" /> <path d="M10 10h4" /> <path d="M10 14h4" /> <path d="M10 18h4" /></symbol>
+<symbol id="icon-clipboard-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></symbol>
+<symbol id="icon-file-text" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /> <path d="M14 2v4a2 2 0 0 0 2 2h4" /> <path d="M10 9H8" /> <path d="M16 13H8" /> <path d="M16 17H8" /></symbol>
+<symbol id="icon-git-branch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" x2="6" y1="3" y2="15" /> <circle cx="18" cy="6" r="3" /> <circle cx="6" cy="18" r="3" /> <path d="M18 9a9 9 0 0 1-9 9" /></symbol>
+<symbol id="icon-landmark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" x2="21" y1="22" y2="22" /> <line x1="6" x2="6" y1="18" y2="11" /> <line x1="10" x2="10" y1="18" y2="11" /> <line x1="14" x2="14" y1="18" y2="11" /> <line x1="18" x2="18" y1="18" y2="11" /> <polygon points="12 2 20 7 4 7" /></symbol>
+<symbol id="icon-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" /> <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65" /> <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65" /></symbol>
+<symbol id="icon-server" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="8" x="2" y="2" rx="2" ry="2" /> <rect width="20" height="8" x="2" y="14" rx="2" ry="2" /> <line x1="6" x2="6.01" y1="6" y2="6" /> <line x1="6" x2="6.01" y1="18" y2="18" /></symbol>
+<symbol id="icon-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /> <circle cx="9" cy="7" r="4" /> <path d="M22 21v-2a4 4 0 0 0-3-3.87" /> <path d="M16 3.13a4 4 0 0 1 0 7.75" /></symbol>
+</defs>
+<rect x="0" y="0" width="841" height="614" fill="#ffffff"/>
+<text x="420.7" y="22" font-size="13" text-anchor="middle" fill="#111">1·hosting · Who answers for a site run for someone else — as it works today</text>
+<g transform="translate(18.0,0.0)">
+<rect class="band" x="-18.0" y="34.0" width="841" height="104.5" fill="#f3f5f8"/>
+<line x1="-18.0" x2="841" y1="34.0" y2="34.0" stroke="#b9c0ca" stroke-width="0.8"/>
+<text class="band" x="-2.0" y="86.2" font-size="10" fill="#555" text-anchor="middle" font-weight="bold" transform="rotate(-90 -2.0 86.2)">Legal</text>
+<rect class="band" x="-18.0" y="138.5" width="841" height="363.5" fill="#fafafa"/>
+<line x1="-18.0" x2="841" y1="138.5" y2="138.5" stroke="#b9c0ca" stroke-width="0.8"/>
+<text class="band" x="-2.0" y="320.2" font-size="10" fill="#555" text-anchor="middle" font-weight="bold" transform="rotate(-90 -2.0 320.2)">Social</text>
+<rect class="band" x="-18.0" y="502.0" width="841" height="112.5" fill="#f3f5f8"/>
+<line x1="-18.0" x2="841" y1="502.0" y2="502.0" stroke="#b9c0ca" stroke-width="0.8"/>
+<text class="band" x="-2.0" y="558.2" font-size="10" fill="#555" text-anchor="middle" font-weight="bold" transform="rotate(-90 -2.0 558.2)">Technical</text>
+<g class="edge"><path class="edge" d="M122.4,99.8 L122.4,177.2" fill="none" stroke="#00796b" stroke-width="1.6" stroke-dasharray="9,3" stroke-linecap="butt" marker-end="url(#ah00796b)"/></g>
+<g class="edge"><path class="edge" d="M114.4,218.2 L114.4,407.5" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M110.4,462.0 L110.4,548.8" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M126.4,548.8 L126.4,462.0" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
+<g class="edge"><path class="edge" d="M414.6,197.8 L521.7,197.8 L521.7,289.0" fill="none" stroke="#7b3294" stroke-width="1.6" stroke-dasharray="9,3,2,3" stroke-linecap="butt" marker-end="url(#ah7b3294)"/></g>
+<g class="edge"><path class="edge" d="M140.0,407.5 L140.0,324.2 L473.0,324.2" fill="none" stroke="#2e7d32" stroke-width="2.6" stroke-linecap="butt" marker-end="url(#ah2e7d32)"/></g>
+<g class="edge"><path class="edge" d="M473.0,308.2 L127.2,308.2 L127.2,407.5" fill="none" stroke="#7b3294" stroke-width="1.6" stroke-dasharray="9,3,2,3" stroke-linecap="butt" marker-end="url(#ah7b3294)"/></g>
+<g class="edge"><path class="edge" d="M529.7,343.5 L529.7,502.0 L139.2,502.0 L139.2,548.8" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M537.7,106.5 L537.7,289.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="node" data-id="licence"><rect x="48.0" y="58.8" width="148.9" height="41.0" rx="5" fill="#dfe7f2" stroke="#333333" stroke-width="1"/>
+<use href="#icon-file-text" x="57.0" y="71.2" width="16" height="16" color="#3a4656"/>
+<text x="133.4" y="76.5" font-size="11" text-anchor="middle" fill="#111111">Open-source licence</text>
+<text x="133.4" y="90.0" font-size="11" text-anchor="middle" fill="#111111">(AGPL-3.0)</text>
+</g>
+<g class="node" data-id="hdl"><rect x="470.6" y="52.0" width="134.2" height="54.5" rx="5" fill="#dfe7f2" stroke="#333333" stroke-width="1"/>
+<use href="#icon-landmark" x="479.6" y="71.2" width="16" height="16" color="#3a4656"/>
+<text x="548.7" y="69.8" font-size="11" text-anchor="middle" fill="#111111">Health-data law</text>
+<text x="548.7" y="83.2" font-size="11" text-anchor="middle" fill="#111111">(FTC breach rule,</text>
+<text x="548.7" y="96.8" font-size="11" text-anchor="middle" fill="#111111">state laws)</text>
+</g>
+<g class="node" data-id="project"><rect x="48.9" y="177.2" width="147.0" height="41.0" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+<use href="#icon-git-branch" x="57.9" y="189.8" width="16" height="16" color="#3a4656"/>
+<text x="133.4" y="195.0" font-size="11" text-anchor="middle" fill="#111111">cgm-remote-monitor</text>
+<text x="133.4" y="208.5" font-size="11" text-anchor="middle" fill="#111111">project (releases)</text>
+</g>
+<g class="node" data-id="docs"><rect x="252.9" y="177.2" width="161.7" height="41.0" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+<use href="#icon-clipboard-list" x="261.9" y="189.8" width="16" height="16" color="#3a4656"/>
+<text x="344.7" y="195.0" font-size="11" text-anchor="middle" fill="#111111">Shared documentation:</text>
+<text x="344.7" y="208.5" font-size="11" text-anchor="middle" fill="#111111">provider listing</text>
+</g>
+<g class="node" data-id="host"><rect x="473.0" y="289.0" width="129.3" height="54.5" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+<use href="#icon-building-2" x="482.0" y="308.2" width="16" height="16" color="#3a4656"/>
+<text x="548.7" y="306.8" font-size="11" text-anchor="middle" fill="#111111">Hosting operator</text>
+<text x="548.7" y="320.2" font-size="11" text-anchor="middle" fill="#111111">(runs sites for</text>
+<text x="548.7" y="333.8" font-size="11" text-anchor="middle" fill="#111111">other people)</text>
+</g>
+<g class="node" data-id="person"><rect x="58.7" y="407.5" width="127.5" height="54.5" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+<use href="#icon-users" x="67.7" y="426.8" width="16" height="16" color="#3a4656"/>
+<text x="133.4" y="425.2" font-size="11" text-anchor="middle" fill="#111111">Person or family</text>
+<text x="133.4" y="438.8" font-size="11" text-anchor="middle" fill="#111111">who relies on</text>
+<text x="133.4" y="452.2" font-size="11" text-anchor="middle" fill="#111111">the site</text>
+</g>
+<g class="node" data-id="site"><rect x="51.1" y="548.8" width="142.8" height="41.0" rx="5" fill="#e8e8e8" stroke="#333333" stroke-width="1"/>
+<use href="#icon-server" x="60.1" y="561.2" width="16" height="16" color="#3a4656"/>
+<text x="133.4" y="566.5" font-size="11" text-anchor="middle" fill="#111111">Nightscout site</text>
+<text x="133.4" y="580.0" font-size="11" text-anchor="middle" fill="#111111">(one person's data)</text>
+</g>
+<g class="elabel" data-k="0">
+<text x="129.4" y="135.5" font-size="10" text-anchor="start" fill="#00796b">provided as is,</text>
+<text x="129.4" y="147.5" font-size="10" text-anchor="start" fill="#00796b">no warranty</text>
+</g>
+<g class="elabel" data-k="1">
+<text x="121.4" y="287.5" font-size="10" text-anchor="start" fill="#1f5fa8">releases, upgrade notes</text>
+</g>
+<g class="elabel" data-k="2">
+<text x="103.4" y="502.4" font-size="10" text-anchor="end" fill="#1f5fa8">self-hosters run</text>
+<text x="103.4" y="514.4" font-size="10" text-anchor="end" fill="#1f5fa8">and upgrade it</text>
+</g>
+<g class="elabel" data-k="3">
+<text x="133.4" y="495.4" font-size="10" text-anchor="start" fill="#b5541b">glucose, alarms</text>
+</g>
+<g class="elabel" data-k="4">
+<text x="514.7" y="240.4" font-size="10" text-anchor="end" fill="#7b3294">listed by pull request;</text>
+<text x="514.7" y="252.4" font-size="10" text-anchor="end" fill="#7b3294">no criteria, no order rule</text>
+</g>
+<g class="elabel" data-k="5">
+<text x="147.0" y="368.9" font-size="10" text-anchor="start" fill="#2e7d32">subscription</text>
+</g>
+<g class="elabel" data-k="6">
+<text x="300.1" y="288.2" font-size="10" text-anchor="middle" fill="#7b3294">its own terms</text>
+<text x="300.1" y="300.2" font-size="10" text-anchor="middle" fill="#7b3294">(not read here)</text>
+</g>
+<g class="elabel" data-k="7">
+<text x="334.5" y="482.0" font-size="10" text-anchor="middle" fill="#1f5fa8">runs and upgrades</text>
+<text x="334.5" y="494.0" font-size="10" text-anchor="middle" fill="#1f5fa8">sites for others</text>
+</g>
+<g class="elabel" data-k="8">
+<text x="530.7" y="167.4" font-size="10" text-anchor="end" fill="#1f5fa8">in force; whether it</text>
+<text x="530.7" y="179.4" font-size="10" text-anchor="end" fill="#1f5fa8">reaches a host: counsel</text>
+</g>
+</g></svg>

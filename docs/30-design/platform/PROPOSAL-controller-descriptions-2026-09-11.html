@@ -3221,6 +3221,8 @@
       
         
       
+        
+      
     
     
     
@@ -4920,7 +4922,7 @@
 
 
 <h1 id="proposal-let-nightscout-describe-the-controllers-it-already-recognises">Proposal: let Nightscout describe the controllers it already recognises<a class="headerlink" href="#proposal-let-nightscout-describe-the-controllers-it-already-recognises" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-09 at <code>a6191372</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>27b338ba</code>.</em></p>
 <p><em>Contributor-facing.</em> <strong>Snapshot, written 2026-09-11. Current: the only statement of the
 controller-description proposal.</strong> A proposal to the named projects, not adopted by any of them.
 §4 is superseded in part by <strong>D18</strong> (two-tier registration, 2026-10-09). Its §5 <code>decomposesTo</code> mechanism is the direction adopted for <code>devicestatus</code> storage by
@@ -5021,6 +5023,11 @@ writes down get silently dropped. Three measured consequences:</p>
 </table>
 <p>None of this is a bug in any project. It is the cost of the shape being
 tacit.</p>
+<p><em>Drawn 2026-10-17:</em> the loop whose record this proposal is about, common to Loop, Trio and
+AndroidAPS, read from their source (the
+<a href="../../60-research/structures-2026-10-17/technical-loops.html">technical loops note</a> §1 compares
+them). What the controller reports to the hub is the right-hand, dotted edge.</p>
+<p><img alt="3·controller: the person supervises the controller app; the app sends temporary basal rates and boluses to the pump and reads glucose from the CGM; the pump delivers insulin to the body, the CGM senses it; the app reports status and records to the Nightscout hub" src="../../00-overview/perspective/diagrams/3-controller.svg" /></p>
 <h2 id="2-the-proposal">2. The proposal<a class="headerlink" href="#2-the-proposal" title="Permanent link">&para;</a></h2>
 <p><strong>Write the description down, in the hub, on the controller's behalf.</strong></p>
 <pre class="mermaid"><code>graph LR
