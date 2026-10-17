@@ -60,8 +60,14 @@ trio-test-harness needs a Mac with Xcode.
 - **The app side of that join exists only on `next-dev` branches.** G7SensorKit's direct
   connection is on `next-dev` (`e17129d`), merged there as `7da3b69` (#67, 2026-09-20). OmnipodKit's
   ImpossiBLE detection (`e60e0ab`) is on `next-dev` and `simulator-bluetooth`. LoopWorkspace
-  `next-dev` (`1561bff0`) pins both. LoopWorkspace `dev` and `main` and Trio `dev` and `main` pin
-  G7SensorKit `dd91f46` (passive) and OmnipodKit `4e923d7` (pod commands mocked in the Simulator).
+  `next-dev` (`1561bff0`) pins both. LoopWorkspace `dev` (`c1f55970`) and Trio `dev` (`bbb1c0e0`)
+  pin G7SensorKit `dd91f46` (passive; Trio takes it from the loopandlearn/G7SensorKit fork) and
+  OmnipodKit `928bb79`. The latest releases, Loop v3.14.9 (2026-10-05) and Trio v1.0.2 (2026-10-07),
+  pin G7SensorKit `dd91f46` and OmnipodKit `043b91d`. None of these contains `e60e0ab` or
+  G7SensorKit's Simulator bridge (`8fa9c73`, #89), so their Simulator builds mock the pod and cannot
+  pair with g7sim. In flight: Trio #1548 brings G7 direct connection to Trio `dev` from
+  loopandlearn/G7SensorKit `feat/trio-g7-direct`, which has the direct connection (`7da3b69`) but not
+  #89; LoopWorkspace #454 (`next-dev` into `dev`) has been open since 2026-06-04.
 - **trio-test-harness does not attach any of the external simulators.** It uses only the apps'
   built-in simulators, `simctl launch` passes no environment, and there is no reference to g7sim,
   pod or ImpossiBLE. A faketandem stress lane was added in `dd69a8d` and moved out of the
@@ -109,12 +115,15 @@ person's data**, which is the evidence that `traffic.js` and the mappings do not
 | no authentication vectors are shared across G7 implementations | g7sim and G7SensorKit `next-dev` share 8 test literals: G7SensorKit's 2 AES-challenge known-answer cases and 2 captured version replies. OpenSSL reproduces both AES cases | new since | g7sim `g7/jpake_test.go`; G7SensorKit `G7AuthCryptoTests.swift` |
 | no EC-JPAKE known-answer test | still none. g7sim's and G7SensorKit's EC-JPAKE tests check agreement against a client in the same repository. In g7sim that client reuses g7sim's own hashing, so breaking that hashing passes all 33 tests (checked in this record's ablation) | holds | g7sim deep dive §5.3 |
 | faketandem uses pumpX2's codec for parsing, so the two are not independent | faketandem carries a Go port held to pumpX2 by 7,961 recorded cases, with pumpX2 optional. The two now **check each other**, though the port is derived from pumpX2 | new since | `d60279c`, `9a12b49` (2026-10-14); §3 |
+| no CI covers OmnipodKit, MinimedKit, MedtrumKit or G7SensorKit; the kits' own tests are not run by any CI found | LoopKit/LoopWorkspace, which the census did not list, runs `xcodebuild test` in CircleCI on a scheme with the CGMBLEKit, G7SensorKit, MedtrumKit, MinimedKit, OmnipodKit (`OmniTests`) and RileyLinkBLEKit test targets, at the commits it pins. It is green on `dev` `c1f55970` and on `next-dev` `1561bff0`, which pins G7SensorKit's direct connection. Trio's "Trio Tests" scheme holds only `TrioTests` | **wrong on the day** (LoopWorkspace not in the manifest) | scheme at `f8412858` and at `dev`; commit statuses `ci/circleci: build_and_test` |
 | no automated hardware-in-the-loop rigs; no per-release test reports | both still hold. trio-test-harness is a **simulator-in-the-loop** and on-device UI rig with the apps' software simulators; no radio or driver transport is in its loop. It reports per PR, on demand, not per release | holds | trio-test-harness deep dive §13 |
 
 **What the census counter does not see in these repositories.** `sim_paths` counts paths named like
 simulators *inside* a repository, so a repository that is itself a simulator reads 0 (pod) or 1
 (g7sim). `ci_runs_tests` reads True for trio-test-harness because `test` appears in its workflow's
-name; the workflow tests the app, not the harness. faketandem's figure includes four lowercase Go
+name; the workflow tests the app, not the harness. It reads False for LoopKit/LoopWorkspace
+(`results/census-2026-10-17-loopworkspace.md`), because it reads GitHub workflows only and
+LoopWorkspace's tests run in CircleCI. faketandem's figure includes four lowercase Go
 helpers (`testBridge` ×2, `testHarness`, `testCapture`) that the Swift test pattern matches. Agent
 commits for trio-test-harness are 7 by author and 49 of 71 by `Co-Authored-By` trailer; the census
 counts authors only. The counter was not changed, so the 09-30 comparisons hold.

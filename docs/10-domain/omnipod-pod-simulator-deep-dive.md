@@ -40,7 +40,7 @@ nightscout/Trio `e41c9db37` (dev, 2026-09-22), LoopKit/g7sim `7c039de` (2026-10-
 - jwoglom/faketandem shares this repository's root commit. The mechanisms compare in §8.
 - `pod`'s own hex literals and test hex appear almost nowhere in the DASH driver test suites (§9).
 - The iOS Simulator path needs OmnipodKit's ImpossiBLE detection, which is on OmnipodKit `next-dev` and not in the
-  `4e923d7` that LoopWorkspace and Trio pin (§10).
+  OmnipodKit that LoopWorkspace and Trio pin: `928bb79` on their `dev`, `043b91d` in Loop v3.14.9 and Trio v1.0.2 (§10).
 
 ## 2. Lineage and which repository is canonical
 
@@ -338,7 +338,7 @@ DASH response corpus that OmnipodKit, OmniBLE and AAPS load in their decoder tes
 | Path | What is needed | State on 2026-10-17 |
 |---|---|---|
 | Phone ↔ Raspberry Pi over BLE | Loop or Trio with OmnipodKit (or older OmniBLE) on a phone; `pod` on a Pi with a BLE adapter (README: Pi 3B or 4) | Works with any OmnipodKit, as the phone sees a BLE peripheral |
-| App in the iOS Simulator on a Mac | An app built with ImpossiBLE injected (g7sim's `simulator/build-impossible.sh` builds the library), `pod -transport impossible`, and an OmnipodKit that uses the bridge instead of its Simulator mocks | OmnipodKit's detection (`mocksPod`: mock unless Eros, or unless `NSClassFromString("CBSPeripheral")` finds the bridge) arrived in `e60e0ab` (2026-10-12, "Talk to a simulated pod when the Simulator has Bluetooth"). It is on OmnipodKit `next-dev` (`c21a077`) and the `simulator-bluetooth` branch, not on `dev` (`928bb79`) or `main` (`4e923d7`). LoopWorkspace `f841285` and Trio dev `e41c9db37` both pin OmnipodKit `4e923d7`, whose Simulator code paths always mock pod commands |
+| App in the iOS Simulator on a Mac | An app built with ImpossiBLE injected (g7sim's `simulator/build-impossible.sh` builds the library), `pod -transport impossible`, and an OmnipodKit that uses the bridge instead of its Simulator mocks | OmnipodKit's detection (`mocksPod`: mock unless Eros, or unless `NSClassFromString("CBSPeripheral")` finds the bridge) arrived in `e60e0ab` (2026-10-12, "Talk to a simulated pod when the Simulator has Bluetooth"). It is on OmnipodKit `next-dev` (`c21a077`) and the `simulator-bluetooth` branch, not on `dev` (`928bb79`) or `main` (`4e923d7`). LoopWorkspace and Trio pin OmnipodKit `928bb79` on `dev` and `043b91d` in their latest releases (Loop v3.14.9, Trio v1.0.2), checked through the GitHub API on 2026-10-17; neither contains `e60e0ab`, so their Simulator builds mock pod commands |
 | `pod` alongside g7sim for one app | Separate sockets, joined by g7sim's `impossible-mux` (`-suspend` lets an advertisement wake the suspended app) | Documented in both READMEs |
 | AndroidAPS DASH driver | A phone with BLE and `pod` on a Pi | Not documented in `pod` and not tested here. The BLE path does not depend on the controller platform, so it may work (inference) |
 

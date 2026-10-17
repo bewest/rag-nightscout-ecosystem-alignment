@@ -43,6 +43,7 @@ device	xdrip-js/xdrip-js	Dexcom G5/G6 BLE in JavaScript for OpenAPS rigs
 device	openaps/decocare	Medtronic CareLink USB stick protocol (Python), historical
 device	ps2/rileylink	RileyLink hardware and firmware, historical
 controller	LoopKit/Loop	Loop iOS app
+controller	LoopKit/LoopWorkspace	Loop's build workspace: submodule pins, and CircleCI that runs Loop's and the kits' tests
 controller	LoopKit/LoopKit	LoopKit framework shared by Loop and Trio
 controller	LoopKit/LoopAlgorithm	Loop's algorithm as a package
 controller	nightscout/Trio	Trio iOS app (oref on iOS)
