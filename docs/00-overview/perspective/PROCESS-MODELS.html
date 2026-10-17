@@ -2699,7 +2699,7 @@
 
 
 <h1 id="what-we-believe-and-how-it-works">What we believe, and how it works<a class="headerlink" href="#what-we-believe-and-how-it-works" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-17 at <code>12f0eb4d</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>9815b9b7</code>.</em></p>
 <p><em>For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
 <strong>Perspective</strong> (part 2 of the overview; <a href="../index.html">how the overview is organised</a>). Living page,
 written 2026-10-17. Companion to <a href="STRUCTURES.html">Control structures, drawn</a>, whose conventions,
@@ -3015,6 +3015,10 @@ a code printed with the sensor or shown on the pump, a serial, or the device its
 (<a href="../../60-research/programme/stack-census-2026-09-30/device-layer.html">device-layer census</a>).
 Omnipod 5 is the one device found where the app itself is checked, read from the community
 driver's file names (<a href="../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.html#16-insulet-omnipod">vendor note §1.6</a>).
+Eversense 365 sits between the two: the open driver signs in to the manufacturer's service with
+the person's own account to get the device's certificate, so the manufacturer's service is in the
+path though no check of the app was found (EversenseKit <code>e1bb6fa</code>; its predecessor, the E3, has no
+link security).
 The cloud path runs on the person's own login and the vendor's tolerance, and breaks when the cloud
 changes (<a href="../observations/ECOSYSTEM-EVIDENCE.html#5-work-that-arrives-on-other-organisations-calendars">evidence §5</a>).</p>
 <p><img alt="1·access-paths as it is emerging: on newer sensors, readings reach only an app the manufacturer has checked, or none if they are sealed end to end for the cloud with the phone only relaying them; on newer pumps, commands need an issued credential; the credential issuer issues, renews and revokes, and without it there is no access; the cloud path carries an EU duty to share with a designated third party, with no US duty" src="diagrams/1-access-paths--emerging.svg" /></p>
@@ -3023,14 +3027,15 @@ sealed end to end for the manufacturer's cloud. The second was not looked for in
 (<a href="../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.html#51-blockers-what-is-removing-them-what-still-stands">vendor note §5.1</a>).
 On the cloud side the EU Data Act adds a duty to share, and the US has none
 (<a href="../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.html#31-eu-data-act">vendor note §3.1</a>).</p>
-<p><img alt="1·access-ladder: four rising steps of dependence on the manufacturer. A, protocol plus what the person has: Omnipod Eros and DASH, Medtronic 5xx/7xx, Tandem t:slim X2 and Mobi, Dana RS/i, Medtrum Nano, Dexcom G6 and G7, Libre 1/2 and 3, Eversense, Accu-Chek SmartGuide. B, the manufacturer's own app alongside: G7 passive mode, Medtronic 640G/670G and several CGMs through companion apps. C, a credential the manufacturer issues: Omnipod 5, read from file names. D, sealed for the cloud: none found, not looked for. Not placed: MiniMed 780G and SmartGuide advanced security" src="diagrams/1-access-ladder.svg" /></p>
+<p><img alt="1·access-ladder: five rising steps of dependence on the manufacturer. A, protocol plus what the person has: Omnipod Eros and DASH, Medtronic 5xx/7xx, Tandem t:slim X2 and Mobi, Dana RS/i, Medtrum Nano, Dexcom G6 and G7, Libre 1/2 and 3, Eversense E3, Accu-Chek SmartGuide. B, the manufacturer's own app alongside: G7 passive mode, Medtronic 640G/670G and several CGMs through companion apps. C, a credential through the person's own account: Eversense 365. D, a credential for an approved app: Omnipod 5, read from file names. E, sealed for the cloud: none found, not looked for. Not placed: MiniMed 780G and SmartGuide advanced security" src="diagrams/1-access-ladder.svg" /></p>
 <p><em>Interpretation.</em></p>
 <ol>
 <li><strong>The key, not the encryption, decides access.</strong> Every device on step A uses authenticated or
    encrypted links, and open implementations work with all of them.</li>
 <li><strong>Each step up moves the key towards the manufacturer.</strong> On step B the open app depends on the
-   manufacturer's app staying installed; on C, on a credential the manufacturer can withdraw; on D
-   no app on the phone can read the data at all.</li>
+   manufacturer's app staying installed; on C, on the manufacturer's service answering the person's
+   sign-in; on D, on the manufacturer approving the app itself; on E no app on the phone can read
+   the data at all.</li>
 <li><strong>Loss on the device side and on the cloud side reach different people.</strong> The device side stops
    automation for the person; the cloud side stops remote following for caregivers
    (<a href="../PARTNER-READINESS.html#what-is-at-stake-on-each-path">partner readiness §1</a>).</li>
@@ -3236,7 +3241,7 @@ from the hub-assigned <code>_id</code> (<a href="../../30-design/platform/nights
 An agent would register its own instance; role types are open "so roles such as proposing versus
 acting can be added for agents" (D19 rule 5). <strong>Open:</strong> the command API (<code>SPEC-REG-COMMANDS</code>), the
 contract per tenancy mode (<code>SPEC-REG-MODES</code>), the first hub (<code>HUB-REG-CRM</code>), the proposals to
-Nocturne and the controllers, all not started (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0202e2ceda356e28a153abce826dad0a88d75af7/queue/work-queue.yaml">queue</a>); and how an
+Nocturne and the controllers, all not started (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/29f1a78abd141cdd8b038e142f7572db8440d245/queue/work-queue.yaml">queue</a>); and how an
 agent is scoped, limited and revoked, which no decision covers.</p>
 <p><em>Interpretation.</em> Properties the three panels show:</p>
 <ol>
@@ -3313,7 +3318,7 @@ security contact, complaint workflow, SBOM or build-provenance record was found
 (<a href="../PARTNER-READINESS.html#3-what-a-manufacturer-will-need-to-see">partner readiness §3</a>). The
 conformance suite lives in this repository: 85 vector files, an oref0 runner, and AndroidAPS and
 Loop runners not implemented (<a href="../../../conformance/index.html"><code>conformance/</code></a>;
-<code>tools/conformance_suite.py:43-55</code>). This repository's <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0202e2ceda356e28a153abce826dad0a88d75af7/.github/workflows/ci.yml">CI</a> runs
+<code>tools/conformance_suite.py:43-55</code>). This repository's <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/29f1a78abd141cdd8b038e142f7572db8440d245/.github/workflows/ci.yml">CI</a> runs
 Python syntax and spec validation; the suite and the <a href="../../../queue/index.html">queue gates</a> run by
 <code>make</code>, outside CI. The 15.0.9 run records are the nearest thing to release evidence
 (<a href="../QUALITY-SYSTEM.html#41-the-record-every-run-leaves">quality system §4.1</a>).</p>

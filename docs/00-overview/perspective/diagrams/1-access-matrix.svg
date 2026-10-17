@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1192" height="603" viewBox="0 0 1192 603" font-family="Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1192" height="627" viewBox="0 0 1192 627" font-family="Helvetica, Arial, sans-serif">
 <title>1·access-matrix</title>
-<rect x="0" y="0" width="1192" height="603" fill="#ffffff"/>
+<rect x="0" y="0" width="1192" height="627" fill="#ffffff"/>
 <text x="596.0" y="26.0" font-size="14" fill="#111111" text-anchor="middle">1·access-matrix · Each device line, path by path</text>
 <text x="262.0" y="62.0" font-size="10" fill="#555555" text-anchor="start" font-weight="bold">device link</text>
 <text x="492.0" y="62.0" font-size="10" fill="#555555" text-anchor="start" font-weight="bold">open implementations</text>
@@ -66,7 +66,7 @@
 <rect x="255" y="157" width="228" height="22" fill="#f7dede"/>
 <rect x="255" y="157" width="3" height="22" fill="#d03b3b"/>
 <text x="264.0" y="172.0" font-size="10" fill="#d03b3b" text-anchor="start">○</text>
-<text x="276.0" y="172.0" font-size="10" fill="#111111" text-anchor="start">C · issued credential</text>
+<text x="276.0" y="172.0" font-size="10" fill="#111111" text-anchor="start">D · approved app only</text>
 <rect x="485" y="157" width="118" height="22" fill="#fdf0d2"/>
 <rect x="485" y="157" width="3" height="22" fill="#c98a00"/>
 <text x="494.0" y="172.0" font-size="10" fill="#c98a00" text-anchor="start">◆</text>
@@ -313,7 +313,7 @@
 <rect x="1075" y="395" width="3" height="22" fill="#8a8a8a"/>
 <text x="1084.0" y="410.0" font-size="10" fill="#8a8a8a" text-anchor="start">?</text>
 <text x="1096.0" y="410.0" font-size="10" fill="#111111" text-anchor="start">not collected</text>
-<text x="26.0" y="434.0" font-size="10.5" fill="#111111" text-anchor="start">Eversense</text>
+<text x="26.0" y="434.0" font-size="10.5" fill="#111111" text-anchor="start">Eversense E3</text>
 <rect x="255" y="419" width="228" height="22" fill="#e2f3e2"/>
 <rect x="255" y="419" width="3" height="22" fill="#0ca30c"/>
 <text x="264.0" y="434.0" font-size="10" fill="#0ca30c" text-anchor="start">●</text>
@@ -338,40 +338,40 @@
 <rect x="1075" y="419" width="3" height="22" fill="#8a8a8a"/>
 <text x="1084.0" y="434.0" font-size="10" fill="#8a8a8a" text-anchor="start">?</text>
 <text x="1096.0" y="434.0" font-size="10" fill="#111111" text-anchor="start">not collected</text>
-<text x="26.0" y="458.0" font-size="10.5" fill="#111111" text-anchor="start">Accu-Chek SmartGuide</text>
-<rect x="255" y="443" width="228" height="22" fill="#e2f3e2"/>
-<rect x="255" y="443" width="3" height="22" fill="#0ca30c"/>
-<text x="264.0" y="458.0" font-size="10" fill="#0ca30c" text-anchor="start">●</text>
-<text x="276.0" y="458.0" font-size="10" fill="#111111" text-anchor="start">A · protocol and what the person has</text>
-<rect x="485" y="443" width="118" height="22" fill="#e2f3e2"/>
-<rect x="485" y="443" width="3" height="22" fill="#0ca30c"/>
-<text x="494.0" y="458.0" font-size="10" fill="#0ca30c" text-anchor="start">●</text>
-<text x="506.0" y="458.0" font-size="10" fill="#111111" text-anchor="start">2 (standard sensors)</text>
+<text x="26.0" y="458.0" font-size="10.5" fill="#111111" text-anchor="start">Eversense 365</text>
+<rect x="255" y="443" width="228" height="22" fill="#fdf0d2"/>
+<rect x="255" y="443" width="3" height="22" fill="#c98a00"/>
+<text x="264.0" y="458.0" font-size="10" fill="#c98a00" text-anchor="start">◆</text>
+<text x="276.0" y="458.0" font-size="10" fill="#111111" text-anchor="start">C · credential via own account</text>
+<rect x="485" y="443" width="118" height="22" fill="#fdf0d2"/>
+<rect x="485" y="443" width="3" height="22" fill="#c98a00"/>
+<text x="494.0" y="458.0" font-size="10" fill="#c98a00" text-anchor="start">◆</text>
+<text x="506.0" y="458.0" font-size="10" fill="#111111" text-anchor="start">1 (EversenseKit)</text>
 <rect x="605" y="443" width="188" height="22" fill="#eeeeee"/>
 <rect x="605" y="443" width="3" height="22" fill="#8a8a8a"/>
 <text x="614.0" y="458.0" font-size="10" fill="#8a8a8a" text-anchor="start">?</text>
 <text x="626.0" y="458.0" font-size="10" fill="#111111" text-anchor="start">not checked</text>
-<rect x="795" y="443" width="148" height="22" fill="#f7dede"/>
-<rect x="795" y="443" width="3" height="22" fill="#d03b3b"/>
-<text x="804.0" y="458.0" font-size="10" fill="#d03b3b" text-anchor="start">○</text>
-<text x="816.0" y="458.0" font-size="10" fill="#111111" text-anchor="start">partner-only</text>
+<rect x="795" y="443" width="148" height="22" fill="#eeeeee"/>
+<rect x="795" y="443" width="3" height="22" fill="#8a8a8a"/>
+<text x="804.0" y="458.0" font-size="10" fill="#8a8a8a" text-anchor="start">?</text>
+<text x="816.0" y="458.0" font-size="10" fill="#111111" text-anchor="start">not read</text>
 <rect x="945" y="443" width="128" height="22" fill="#eeeeee"/>
 <rect x="945" y="443" width="3" height="22" fill="#8a8a8a"/>
 <text x="954.0" y="458.0" font-size="10" fill="#8a8a8a" text-anchor="start">?</text>
-<text x="966.0" y="458.0" font-size="10" fill="#111111" text-anchor="start">not stated</text>
+<text x="966.0" y="458.0" font-size="10" fill="#111111" text-anchor="start">not read</text>
 <rect x="1075" y="443" width="98" height="22" fill="#eeeeee"/>
 <rect x="1075" y="443" width="3" height="22" fill="#8a8a8a"/>
 <text x="1084.0" y="458.0" font-size="10" fill="#8a8a8a" text-anchor="start">?</text>
 <text x="1096.0" y="458.0" font-size="10" fill="#111111" text-anchor="start">not collected</text>
-<text x="26.0" y="482.0" font-size="10.5" fill="#111111" text-anchor="start">SmartGuide "advanced security"</text>
-<rect x="255" y="467" width="228" height="22" fill="#eeeeee"/>
-<rect x="255" y="467" width="3" height="22" fill="#8a8a8a"/>
-<text x="264.0" y="482.0" font-size="10" fill="#8a8a8a" text-anchor="start">?</text>
-<text x="276.0" y="482.0" font-size="10" fill="#111111" text-anchor="start">not determined</text>
-<rect x="485" y="467" width="118" height="22" fill="#f7dede"/>
-<rect x="485" y="467" width="3" height="22" fill="#d03b3b"/>
-<text x="494.0" y="482.0" font-size="10" fill="#d03b3b" text-anchor="start">○</text>
-<text x="506.0" y="482.0" font-size="10" fill="#111111" text-anchor="start">0</text>
+<text x="26.0" y="482.0" font-size="10.5" fill="#111111" text-anchor="start">Accu-Chek SmartGuide</text>
+<rect x="255" y="467" width="228" height="22" fill="#e2f3e2"/>
+<rect x="255" y="467" width="3" height="22" fill="#0ca30c"/>
+<text x="264.0" y="482.0" font-size="10" fill="#0ca30c" text-anchor="start">●</text>
+<text x="276.0" y="482.0" font-size="10" fill="#111111" text-anchor="start">A · protocol and what the person has</text>
+<rect x="485" y="467" width="118" height="22" fill="#e2f3e2"/>
+<rect x="485" y="467" width="3" height="22" fill="#0ca30c"/>
+<text x="494.0" y="482.0" font-size="10" fill="#0ca30c" text-anchor="start">●</text>
+<text x="506.0" y="482.0" font-size="10" fill="#111111" text-anchor="start">2 (standard sensors)</text>
 <rect x="605" y="467" width="188" height="22" fill="#eeeeee"/>
 <rect x="605" y="467" width="3" height="22" fill="#8a8a8a"/>
 <text x="614.0" y="482.0" font-size="10" fill="#8a8a8a" text-anchor="start">?</text>
@@ -388,19 +388,44 @@
 <rect x="1075" y="467" width="3" height="22" fill="#8a8a8a"/>
 <text x="1084.0" y="482.0" font-size="10" fill="#8a8a8a" text-anchor="start">?</text>
 <text x="1096.0" y="482.0" font-size="10" fill="#111111" text-anchor="start">not collected</text>
-<rect x="18" y="506" width="16" height="13" fill="#e2f3e2" stroke="#0ca30c"/>
-<text x="22.0" y="516.5" font-size="9.5" fill="#0ca30c" text-anchor="start">●</text>
-<text x="42.0" y="516.5" font-size="10" fill="#111111" text-anchor="start">available without the manufacturer's permission</text>
-<rect x="438" y="506" width="16" height="13" fill="#fdf0d2" stroke="#c98a00"/>
-<text x="442.0" y="516.5" font-size="9.5" fill="#c98a00" text-anchor="start">◆</text>
-<text x="462.0" y="516.5" font-size="10" fill="#111111" text-anchor="start">available on conditions or at the manufacturer's discretion</text>
-<rect x="18" y="524" width="16" height="13" fill="#f7dede" stroke="#d03b3b"/>
-<text x="22.0" y="534.5" font-size="9.5" fill="#d03b3b" text-anchor="start">○</text>
-<text x="42.0" y="534.5" font-size="10" fill="#111111" text-anchor="start">not available to open software</text>
-<rect x="438" y="524" width="16" height="13" fill="#eeeeee" stroke="#8a8a8a"/>
-<text x="442.0" y="534.5" font-size="9.5" fill="#8a8a8a" text-anchor="start">?</text>
-<text x="462.0" y="534.5" font-size="10" fill="#111111" text-anchor="start">not checked, not read or not collected</text>
-<text x="18.0" y="558.0" font-size="9.5" fill="#555555" text-anchor="start">Sources: device-layer census 2026-09-30 §2–§3; nightscout-connect 04102f9; tconnectsync 7c4b2f4;</text>
-<text x="18.0" y="571.0" font-size="9.5" fill="#555555" text-anchor="start">vendor note §1 (read 2026-10-17). Open implementation counts are the census's, counting a port as one.</text>
-<text x="18.0" y="584.0" font-size="9.5" fill="#555555" text-anchor="start">Device link letters are the rungs of 1·access-ladder. Supply dates have not been collected.</text>
+<text x="26.0" y="506.0" font-size="10.5" fill="#111111" text-anchor="start">SmartGuide "advanced security"</text>
+<rect x="255" y="491" width="228" height="22" fill="#eeeeee"/>
+<rect x="255" y="491" width="3" height="22" fill="#8a8a8a"/>
+<text x="264.0" y="506.0" font-size="10" fill="#8a8a8a" text-anchor="start">?</text>
+<text x="276.0" y="506.0" font-size="10" fill="#111111" text-anchor="start">not determined</text>
+<rect x="485" y="491" width="118" height="22" fill="#f7dede"/>
+<rect x="485" y="491" width="3" height="22" fill="#d03b3b"/>
+<text x="494.0" y="506.0" font-size="10" fill="#d03b3b" text-anchor="start">○</text>
+<text x="506.0" y="506.0" font-size="10" fill="#111111" text-anchor="start">0</text>
+<rect x="605" y="491" width="188" height="22" fill="#eeeeee"/>
+<rect x="605" y="491" width="3" height="22" fill="#8a8a8a"/>
+<text x="614.0" y="506.0" font-size="10" fill="#8a8a8a" text-anchor="start">?</text>
+<text x="626.0" y="506.0" font-size="10" fill="#111111" text-anchor="start">not checked</text>
+<rect x="795" y="491" width="148" height="22" fill="#f7dede"/>
+<rect x="795" y="491" width="3" height="22" fill="#d03b3b"/>
+<text x="804.0" y="506.0" font-size="10" fill="#d03b3b" text-anchor="start">○</text>
+<text x="816.0" y="506.0" font-size="10" fill="#111111" text-anchor="start">partner-only</text>
+<rect x="945" y="491" width="128" height="22" fill="#eeeeee"/>
+<rect x="945" y="491" width="3" height="22" fill="#8a8a8a"/>
+<text x="954.0" y="506.0" font-size="10" fill="#8a8a8a" text-anchor="start">?</text>
+<text x="966.0" y="506.0" font-size="10" fill="#111111" text-anchor="start">not stated</text>
+<rect x="1075" y="491" width="98" height="22" fill="#eeeeee"/>
+<rect x="1075" y="491" width="3" height="22" fill="#8a8a8a"/>
+<text x="1084.0" y="506.0" font-size="10" fill="#8a8a8a" text-anchor="start">?</text>
+<text x="1096.0" y="506.0" font-size="10" fill="#111111" text-anchor="start">not collected</text>
+<rect x="18" y="530" width="16" height="13" fill="#e2f3e2" stroke="#0ca30c"/>
+<text x="22.0" y="540.5" font-size="9.5" fill="#0ca30c" text-anchor="start">●</text>
+<text x="42.0" y="540.5" font-size="10" fill="#111111" text-anchor="start">available without the manufacturer's permission</text>
+<rect x="438" y="530" width="16" height="13" fill="#fdf0d2" stroke="#c98a00"/>
+<text x="442.0" y="540.5" font-size="9.5" fill="#c98a00" text-anchor="start">◆</text>
+<text x="462.0" y="540.5" font-size="10" fill="#111111" text-anchor="start">available on conditions or at the manufacturer's discretion</text>
+<rect x="18" y="548" width="16" height="13" fill="#f7dede" stroke="#d03b3b"/>
+<text x="22.0" y="558.5" font-size="9.5" fill="#d03b3b" text-anchor="start">○</text>
+<text x="42.0" y="558.5" font-size="10" fill="#111111" text-anchor="start">not available to open software</text>
+<rect x="438" y="548" width="16" height="13" fill="#eeeeee" stroke="#8a8a8a"/>
+<text x="442.0" y="558.5" font-size="9.5" fill="#8a8a8a" text-anchor="start">?</text>
+<text x="462.0" y="558.5" font-size="10" fill="#111111" text-anchor="start">not checked, not read or not collected</text>
+<text x="18.0" y="582.0" font-size="9.5" fill="#555555" text-anchor="start">Sources: device-layer census 2026-09-30 §2–§3; nightscout-connect 04102f9; tconnectsync 7c4b2f4;</text>
+<text x="18.0" y="595.0" font-size="9.5" fill="#555555" text-anchor="start">vendor note §1 (read 2026-10-17). Open implementation counts are the census's, counting a port as one.</text>
+<text x="18.0" y="608.0" font-size="9.5" fill="#555555" text-anchor="start">Device link letters are the rungs of 1·access-ladder. Supply dates have not been collected.</text>
 </svg>

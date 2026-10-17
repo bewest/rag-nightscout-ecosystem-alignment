@@ -2919,7 +2919,7 @@
 
 
 <h1 id="control-structures-drawn">Control structures, drawn<a class="headerlink" href="#control-structures-drawn" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-17 at <code>db17172b</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>022da04e</code>.</em></p>
 <p><em>For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
 <strong>Perspective</strong> (part 2 of the overview; <a href="../index.html">how the overview is organised</a>). Living page,
 written 2026-10-16, relabelled 2026-10-17. Drawings to follow and discuss the overview's proposals with: who controls
@@ -2940,7 +2940,7 @@ is a loop whose controller cannot see the result of what it does.</p>
 building for a legislature, scales for a regulator, one figure for a person and two for people, a
 key for a credential authority, a phone for an app. The key lists every icon. The icons are from
 <a href="https://lucide.dev">Lucide</a> (ISC licence), copied into
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/0202e2ceda356e28a153abce826dad0a88d75af7/tools/structure-diagrams/icons"><code>tools/structure-diagrams/icons/</code></a> with their licence.</p>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/29f1a78abd141cdd8b038e142f7572db8440d245/tools/structure-diagrams/icons"><code>tools/structure-diagrams/icons/</code></a> with their licence.</p>
 <p><img alt="Icon key: each icon and the role it marks, from legislature, regulator and court to app, insulin pump, sensor, the body's glucose and the Nightscout hub" src="diagrams/icon-key.svg" /></p>
 <p>Every drawing is labelled <em>level · subject</em>. The level is where the drawing sits in the
 hierarchy, from society down to software and devices; the subject is a short name that stays the
@@ -3151,8 +3151,9 @@ carbs, a temporary target, an override) to the controller. Measured gaps (note �
 no record of a command with an id and an acknowledgement, except in AAPS's development branch; a
 reply reaches the sender only where the sender supplied a return path; "success" means the pump
 accepted the command, not that delivery finished; and an automated agent looks the same as
-whoever shared the credential with it. The dashed edges are the proposed command record and
-acknowledgement.</p>
+whoever shared the credential with it. The proposed command record and acknowledgement are drawn
+in <a href="PROCESS-MODELS.html#3registration-who-writes-to-the-hub-and-where-a-command-goes">3·registration</a>,
+as proposed.</p>
 <h2 id="3person-loop">3·person-loop<a class="headerlink" href="#3person-loop" title="Permanent link">&para;</a></h2>
 <p><img alt="3·person-loop: a credential authority grants the controller app a bounded offline grant; the person sets the app, the app commands the pump, the CGM reports glucose, the pump delivers insulin to the body" src="diagrams/3-person-loop.svg" /></p>
 <p>Source: <a href="../PARTNER-READINESS.html#7-credentials-for-devices-that-require-them">partner readiness §7</a>,
@@ -3282,7 +3283,7 @@ data-rights pages when they are brought up to date (queue <code>DOCS-DATA-RIGHTS
 </ul>
 <h2 id="changing-a-drawing">Changing a drawing<a class="headerlink" href="#changing-a-drawing" title="Permanent link">&para;</a></h2>
 <p>The drawings are generated. Each one's source is a YAML file in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/0202e2ceda356e28a153abce826dad0a88d75af7/tools/structure-diagrams/inputs"><code>tools/structure-diagrams/inputs/</code></a>, with nodes placed
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/29f1a78abd141cdd8b038e142f7572db8440d245/tools/structure-diagrams/inputs"><code>tools/structure-diagrams/inputs/</code></a>, with nodes placed
 by level and column, edges typed as control, feedback, funding or data, and optional stakeholder
 views. Edit the YAML and run <code>python3 tools/structure-diagrams/render.py</code>. The renderer places
 every box on a grid and routes lines at right angles, with each control and feedback pair drawn as

@@ -7106,7 +7106,7 @@
 
 
 <h1 id="vendor-programmes-and-data-rights-what-is-open-to-whom-and-under-what-law">Vendor programmes and data rights: what is open, to whom, and under what law<a class="headerlink" href="#vendor-programmes-and-data-rights-what-is-open-to-whom-and-under-what-law" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-17 at <code>1d159e9b</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>9815b9b7</code>.</em></p>
 <p><em>For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
 <strong>Research note, 2026-10-17.</strong> Every external fact below carries its source and was read on
 2026-10-17 unless it says otherwise. Facts carried over from the
@@ -7798,7 +7798,7 @@ already expects contracts that allocate complaint investigation and reporting.</
 <td>app attestation and manufacturer-issued client credentials</td>
 <td>technical / commercial</td>
 <td>none found for outsiders</td>
-<td>found on Omnipod 5 (§1.6, read from the driver's file names); possibly SmartGuide "advanced security" variants (not determined); where a device checks that the app is a genuine build the manufacturer approved, only the manufacturer can grant access (PARTNER-READINESS §7), and nothing in law requires it to issue a credential to a non-partner</td>
+<td>found on Omnipod 5 (§1.6, read from the driver's file names); possibly SmartGuide "advanced security" variants (not determined; AccuChekKit <code>4f8c3a8</code> carries manufacturer-certificate code, all of it commented out). Eversense 365 takes a device certificate from the manufacturer's service through the person's own account, with no app check found (EversenseKit <code>e1bb6fa</code>); where a device checks that the app is a genuine build the manufacturer approved, only the manufacturer can grant access (PARTNER-READINESS §7), and nothing in law requires it to issue a credential to a non-partner</td>
 </tr>
 <tr>
 <td>readings encrypted end to end between the device and the vendor's cloud</td>
