@@ -2,6 +2,8 @@
 
 *Contributor- and maintainer-facing. **Living plan**, started 2026-10-02 against this repository at
 `0f3ca59a`. It records the plan for reorganising `docs/00-overview` and the progress of each step.
+§8 onward, added 2026-10-17, plans the second phase: drawings, and a thesis that has matured since
+the first.
 The maintainer asked for it on 2026-10-02. Decisions in it are the maintainer's unless a row says
 "proposed".*
 
@@ -97,3 +99,91 @@ Corrected in step 6 by pointing at the one home of each figure, not by copying t
 - SPONSORED-TEAM-PROPOSAL §3: "144 of the 172 items … route review to the maintainer" (measured
   2026-09-27); PROGRAMME-STATUS's generated table now reads 149 of 183.
 - ECOSYSTEM-PROGRAMME §3: "138 of 172"; and §2a: "measured 63 repositories" (62 distinct).
+
+## 8. Phase 2 (2026-10-17): the thesis, its documents and its drawings
+
+Since phase 1 the overview has gained a line of argument the three parts did not plan for: which
+legal entities the ecosystem needs in order to hold agreements with manufacturers, what each
+entity's activities oblige it to do, and how to draw it. The maintainer asked on 2026-10-17 for an
+overview of the objectives and documents, so that the drawings' labelling serves the whole, and to
+consolidate rather than add pages.
+
+### 8.1 Objectives, and the page that carries each
+
+| objective | the claim, in one line | part | home page | drawings it needs |
+|---|---|---|---|---|
+| O1. Show what exists | the ecosystem today, with no agreement joining it to any manufacturer | 1 | GOVERNANCE-TODAY, ECOSYSTEM-EVIDENCE, HISTORY | Z1 today |
+| O2. Show how others met it | precedents, and when a DIY ecosystem becomes infrastructure | 2 | PRECEDENTS, INFRASTRUCTURE-TRANSITION | P1 SQLite, P2 CNCF, P3 Apple |
+| O3. What each activity brings | the pillars an activity triggers, for any entity; the same requirements for anyone; the nonprofit as an oversight layer | 2 | ACCOUNTABILITY-THRESHOLDS ("What each activity brings") | the single-idea drawings in §8.3 |
+| O4. Which entities to muster | sponsor by default; named operators hold agreements; one codebase | 3 | ECOSYSTEM-PROGRAMME §2b, PARTNER-READINESS | Z0, Z1 proposed with views, Z2, Z2b |
+| O5. What a manufacturer agreement carries | tiers A–C, data-rights terms, complaints in both directions, credentials | 3 | PARTNER-READINESS | Z2, Z3 |
+| O6. Data rights | access, export, share, delegate, audit; the law that now reaches device data | 1 and 3 | DIGITAL-RIGHTS, data rights primer (queue DOCS-DATA-RIGHTS-LAW) | a "person designates a third party" drawing (§8.3) |
+| O7. The technical loops | controller, hub-and-spoke sync, delegation, with requested kept apart from applied | design | 30-design hub-sync and registration pages | L1–L3 from the technical-loops note |
+
+STRUCTURES ("Control structures, drawn") is the gallery: every drawing appears there once, with
+its source, and the page that argues from a drawing embeds or links it by its label.
+
+### 8.2 Labelling
+
+The labels so far mix two axes: Z0–Z3 is a zoom level, P1–P3 a kind (precedent), and the research
+note's L1–L3 a topic (technical loops). Z2b exists because two drawings share a level.
+
+**Proposed** (for the maintainer, §8.5 point 1): one label per drawing of the form *level ·
+subject*, where the level is the Leveson hierarchy the drawing sits at, and the subject is a short
+name that stays stable when drawings are added beside it:
+
+| level | what sits at it | drawings, relabelled |
+|---|---|---|
+| 0 · society | legislatures, regulators, the sector | 0·sector |
+| 1 · ecosystem | the organisations and how they connect | 1·today, 1·proposed (+ six views) |
+| 2 · organisation or agreement | one entity, one agreement, one programme | 2·agreement, 2·controller-operator, P1–P3 as 2·sqlite, 2·cncf, 2·apple |
+| 3 · technical process | one loop in software and devices | 3·person-loop, 3·controller, 3·hub-sync, 3·delegation |
+| idea | a single idea from the argument, drawn small | idea·sponsor-or-operate, idea·one-codebase, … (§8.3) |
+
+The file name carries the same label (`2-agreement.yaml`), captions say "Drawing 2·agreement", and
+zoom markers name the label they open into. Views keep the base label plus the stakeholder
+("1·proposed, manufacturer's view"). Precedents keep their "P" names in the text, where a reader
+meets them as precedents. Bands, when used, name the same levels.
+
+### 8.3 Drawings of single ideas
+
+Leveson's figures are crisp partly because each carries one idea. The overview's argument has
+several ideas that are now buried in Z1 and Z2; each could be a drawing of 3–6 boxes:
+
+| idea | what it shows | page that would embed it |
+|---|---|---|
+| sponsor or operate | the same service under the foundation as sponsor (a funding edge) and as operator (control, feedback and liability edges) | ECOSYSTEM-PROGRAMME §2b |
+| one codebase, two uses | one project's releases going to people who build their own and to an operator; the return edge | ECOSYSTEM-PROGRAMME, STRUCTURES Z2b |
+| oversight layer | a nonprofit above several companies: criteria and certification down, conformance results up; the companies' own regulator beside it | What each activity brings §5 |
+| the same requirements for anyone | three kinds of entity (company, nonprofit, individual) facing the same requirements box; only a legal entity passes | What each activity brings §5 |
+| a credential's lifetime | issue, renew, expire or revoke, and the safe state at each | PARTNER-READINESS §7 |
+| complaints in both directions | person, intake, manufacturer, regulator | PARTNER-READINESS §6 |
+| a person designates a third party | the person instructs the manufacturer; data goes to the third party they chose | DIGITAL-RIGHTS |
+| tiers A, B, C | the same relationship drawn three times with more edges each time | PARTNER-READINESS §2 |
+
+### 8.4 The trim pass
+
+Measured 2026-10-17 from the inputs: 0·sector has 9 boxes and 19 edges, 1·proposed 10 and 21,
+2·controller-operator (Z2b) 10 and 19, 2·agreement 8 and 14; the rest have 12 or fewer edges.
+Rule for the pass: one idea per drawing; at most about 12 edges; an edge that a lower drawing
+carries is cut from the higher one and replaced by the zoom marker; an edge that only restates a
+label is cut.
+
+### 8.5 Open points for the maintainer
+
+1. **Labelling** (§8.2): adopt *level · subject*, keep Z/P/L, or another scheme.
+2. **Bands**: name the horizontal bands (for example legal, organisational, technical) or leave them
+   off.
+3. **Which single-idea drawings first** (§8.3).
+4. **Where L1–L3 live**: in the overview gallery, or with the design pages they serve.
+
+### 8.6 Steps and progress
+
+| step | what | state | commit |
+|---|---|---|---|
+| 12 | Research notes: Apple's program, vendor programmes and data rights, technical loops | done | `8869dd3b`, `ffd5e2f4`, `59688c6f` |
+| 13 | ACCOUNTABILITY-THRESHOLDS widened into "What each activity brings"; Apple and Dexcom in PRECEDENTS | done | `3996bd65` |
+| 14 | Grid renderer replaces Graphviz for every drawing | done | `e7566100` |
+| 15 | This phase plan | done | this commit |
+| 16 | Trim pass (§8.4) | next | |
+| 17 | Relabel (§8.2) and single-idea drawings (§8.3), after the maintainer's answers | waiting | |
