@@ -13533,6 +13533,103 @@ items:
       it since 9318a577) are stale. Mark them as snapshots, with a pointer
       to the current state; do not rewrite their history.
 
+  - id: DOCS-TESTFLIGHT-APPLE
+    title: "Correct the TestFlight and App Store pathway pages against Apple's current terms (TestFlight limits, free-tier limits, health-app guidelines, device-status declaration)"
+    parcel: docs-truth
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main
+    state: not-started
+    pr: []
+    blast_radius: >
+      docs/10-domain/testflight-distribution-infrastructure.md,
+      docs/10-domain/app-store-pathway-analysis.md.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: programme documentation
+    register: []
+    gates:
+      - run: grep -q "90 days" docs/10-domain/testflight-distribution-infrastructure.md
+        kind: static
+        describe: >
+          FAILS until the TestFlight page states that TestFlight builds
+          expire after 90 days (correction 1 of 8). RED on 2026-10-17.
+      - run: sh -c '! grep -q "Guideline 5.1. Safety" docs/10-domain/app-store-pathway-analysis.md'
+        kind: static
+        describe: >
+          FAILS while the pathway page still numbers Safety as guideline
+          5.1 (Safety is section 1, physical harm 1.4; 5.1 is Privacy).
+          RED on 2026-10-17.
+    blocks_on: []
+    evidence:
+      - docs/60-research/structures-2026-10-17/apple-accountability.md
+    notes: >
+      The corrections are listed in apple-accountability.md §7, read from
+      Apple's pages on 2026-10-17. TestFlight page (§7.1, eight): TestFlight
+      limits (90-day builds, tester and build counts, review of the first
+      external build); the free-account limits (7-day profiles, 3 devices, 3
+      apps per device, 10 App IDs; no push, Time Sensitive, NFC or Critical
+      Alerts); "certs expire after 1 year" unsourced; App Store
+      requirements to cite guidelines 1.4.1, 1.4.2 and 5.1.1(ix), the
+      regulated medical device declaration due "by early 2027" and the DSA
+      trader declaration, in place of "no therapeutic claims"; fee waivers
+      and regional prices; the Xcode version; certificate custody under
+      DPLA §5.1 (a question for counsel, to be written as one, not as a
+      finding); first-launch check-in for development and ad hoc builds.
+      Pathway page (§7.2, three): the 5.1 numbering; "won't distribute
+      unapproved medical devices" is not Apple's wording; the Critical
+      Alerts approval criteria are unverified (the form needs sign-in).
+      Verified by this session against Apple's pages: 1.4.1, 1.4.2,
+      5.1.1(ix) and the device-status announcement of 2026-03-26. Mark the
+      page's date and what changed; do not rewrite its history.
+  - id: DOCS-REMOTE-PATHS
+    title: "Correct the remote-bolus comparison and the LoopFollow deep dive: who relays Trio commands, Loop's reply, LoopFollow's remote types"
+    parcel: docs-truth
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main
+    state: not-started
+    pr: []
+    blast_radius: >
+      docs/10-domain/remote-bolus-comparison.md,
+      docs/10-domain/loopfollow-deep-dive.md.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: programme documentation
+    register: []
+    gates:
+      - run: sh -c '! grep -q "Nightscout → APNs → Trio App" docs/10-domain/remote-bolus-comparison.md'
+        kind: static
+        describe: >
+          FAILS while the comparison still routes Trio commands through
+          Nightscout; the hub relay builds only Loop's payload. RED on
+          2026-10-17.
+      - run: sh -c '! grep -q "case nightscout = " docs/10-domain/loopfollow-deep-dive.md'
+        kind: static
+        describe: >
+          FAILS while the deep dive still lists a nightscout RemoteType;
+          the enum is {none, trc, loopAPNS}. RED on 2026-10-17.
+    blocks_on: []
+    evidence:
+      - docs/60-research/structures-2026-10-17/technical-loops.md
+    notes: >
+      Listed in technical-loops.md §4. The comparison's Trio architecture
+      shows Nightscout → APNs → Trio, but lib/server/loop.js:31-130 builds
+      only the Loop payload from loopSettings, Trio expects an AES-GCM
+      encrypted_data payload, and the sender seen in source is LoopFollow
+      over direct APNs. Its summary marks Loop's response notification ❌,
+      but Loop replies when the sender supplies return info
+      (NightscoutService.swift:462-484), as its own GAP-REMOTE-004 says.
+      The deep dive lists a nightscout RemoteType and has Trio Remote
+      Control post to /api/v2/notifications/loop; LoopFollow's
+      Remote/RemoteType.swift has {none, trc, loopAPNS} and
+      Remote/TRC/PushNotificationManager.swift posts to APNs directly.
+      Verified by this session on 2026-10-17 against externals/LoopFollow
+      (RemoteType cases, the APNs URL). Re-read the source revisions given
+      in technical-loops.md §0 before editing; mark what changed and when.
+
 # ---------------------------------------------------------------------------
 # PARCEL: platform
 

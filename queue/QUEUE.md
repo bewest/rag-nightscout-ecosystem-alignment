@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 214 |
-| runnable gates | 265 |
+| items | 216 |
+| runnable gates | 269 |
 | explicit `no-gate:` markers | 262 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 262 of the 527 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 262 of the 531 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 65 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `not-started` | 67 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -6551,7 +6551,7 @@ alarm-readiness items, and the seam branch refresh.
 
 ## Document-truth sweeps
 
-`parcel: docs-truth` &mdash; 10 items
+`parcel: docs-truth` &mdash; 12 items
 
 Rule 6 work. Agents read SECTIONS, not documents, so a fact stated twice and
 differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
@@ -6568,6 +6568,8 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 | `DOC-VIEWS` | A reviewer-facing surface over the queue: three overview pages and a packet per PR | `done` | `main` | n/a | 2 run + 3 no-gate |
 | `DOC-LINKS` | Every path the programme's documents and tooling cite must resolve | `done` | `main` | n/a | 1 run + 2 no-gate |
 | `OID-DOCS` | Mark the MongoDB upgrade reports as 2026-01 snapshots: no release shipped mongodb-legacy | `not-started` | `main` | n/a | 1 run |
+| `DOCS-TESTFLIGHT-APPLE` | Correct the TestFlight and App Store pathway pages against Apple's current terms (TestFlight limits, free-tier limits, health-app guidelines, device-status declaration) | `not-started` | `main` | n/a | 2 run |
+| `DOCS-REMOTE-PATHS` | Correct the remote-bolus comparison and the LoopFollow deep dive: who relays Trio commands, Loop's reply, LoopFollow's remote types | `not-started` | `main` | n/a | 2 run |
 
 ### `DOC-SEQUENCING` &mdash; phase0-pr-sequencing contradicts itself on the branch count
 
@@ -6881,6 +6883,68 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 - `docs/10-domain/mongodb-storage-layer-analysis.md`
 
 **Notes.** Measured 2026-09-24 from tag package.json files: 15.0.3 to 15.0.6 use mongodb ^3.6.0 (locked 3.7.3); mongodb-legacy ^5.0.0 was on dev only, 93ffb251 (2023-06-01) to 69b620dd (2026-04-19), and was never tagged; 15.0.7 went to native mongodb ^5.9.2 with lib/storage/run-with-callback.js. The driver upgrade, REQ-SYNC-072 and UUID_HANDLING first shipped in 15.0.7. The reports' phase tables (Phase 2 next, Phase 5 pending) and "no insertMany usage" (dev uses it since 9318a577) are stale. Mark them as snapshots, with a pointer to the current state; do not rewrite their history.
+
+### `DOCS-TESTFLIGHT-APPLE` &mdash; Correct the TestFlight and App Store pathway pages against Apple's current terms (TestFlight limits, free-tier limits, health-app guidelines, device-status declaration)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** docs/10-domain/testflight-distribution-infrastructure.md, docs/10-domain/app- store-pathway-analysis.md.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** programme documentation
+
+**Gates.**
+
+- `[static]` `grep -q "90 days" docs/10-domain/testflight-distribution-infrastructure.md`
+  - FAILS until the TestFlight page states that TestFlight builds expire after 90 days (correction 1 of 8). RED on 2026-10-17.
+- `[static]` `sh -c '! grep -q "Guideline 5.1. Safety" docs/10-domain/app-store-pathway-analysis.md'`
+  - FAILS while the pathway page still numbers Safety as guideline 5.1 (Safety is section 1, physical harm 1.4; 5.1 is Privacy). RED on 2026-10-17.
+
+**Evidence.**
+
+- `docs/60-research/structures-2026-10-17/apple-accountability.md`
+
+**Notes.** The corrections are listed in apple-accountability.md §7, read from Apple's pages on 2026-10-17. TestFlight page (§7.1, eight): TestFlight limits (90-day builds, tester and build counts, review of the first external build); the free-account limits (7-day profiles, 3 devices, 3 apps per device, 10 App IDs; no push, Time Sensitive, NFC or Critical Alerts); "certs expire after 1 year" unsourced; App Store requirements to cite guidelines 1.4.1, 1.4.2 and 5.1.1(ix), the regulated medical device declaration due "by early 2027" and the DSA trader declaration, in place of "no therapeutic claims"; fee waivers and regional prices; the Xcode version; certificate custody under DPLA §5.1 (a question for counsel, to be written as one, not as a finding); first-launch check-in for development and ad hoc builds. Pathway page (§7.2, three): the 5.1 numbering; "won't distribute unapproved medical devices" is not Apple's wording; the Critical Alerts approval criteria are unverified (the form needs sign-in). Verified by this session against Apple's pages: 1.4.1, 1.4.2, 5.1.1(ix) and the device-status announcement of 2026-03-26. Mark the page's date and what changed; do not rewrite its history.
+
+### `DOCS-REMOTE-PATHS` &mdash; Correct the remote-bolus comparison and the LoopFollow deep dive: who relays Trio commands, Loop's reply, LoopFollow's remote types
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** docs/10-domain/remote-bolus-comparison.md, docs/10-domain/loopfollow-deep- dive.md.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** programme documentation
+
+**Gates.**
+
+- `[static]` `sh -c '! grep -q "Nightscout → APNs → Trio App" docs/10-domain/remote-bolus-comparison.md'`
+  - FAILS while the comparison still routes Trio commands through Nightscout; the hub relay builds only Loop's payload. RED on 2026-10-17.
+- `[static]` `sh -c '! grep -q "case nightscout = " docs/10-domain/loopfollow-deep-dive.md'`
+  - FAILS while the deep dive still lists a nightscout RemoteType; the enum is {none, trc, loopAPNS}. RED on 2026-10-17.
+
+**Evidence.**
+
+- `docs/60-research/structures-2026-10-17/technical-loops.md`
+
+**Notes.** Listed in technical-loops.md §4. The comparison's Trio architecture shows Nightscout → APNs → Trio, but lib/server/loop.js:31-130 builds only the Loop payload from loopSettings, Trio expects an AES-GCM encrypted_data payload, and the sender seen in source is LoopFollow over direct APNs. Its summary marks Loop's response notification ❌, but Loop replies when the sender supplies return info (NightscoutService.swift:462-484), as its own GAP-REMOTE-004 says. The deep dive lists a nightscout RemoteType and has Trio Remote Control post to /api/v2/notifications/loop; LoopFollow's Remote/RemoteType.swift has {none, trc, loopAPNS} and Remote/TRC/PushNotificationManager.swift posts to APNs directly. Verified by this session on 2026-10-17 against externals/LoopFollow (RemoteType cases, the APNs URL). Re-read the source revisions given in technical-loops.md §0 before editing; mark what changed and when.
 
 ---
 

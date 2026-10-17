@@ -1,0 +1,24 @@
+# L1 · The controller loop on the phone (Loop, Trio, AAPS drawn as one structure).
+# Source and per-controller differences: ../technical-loops.md §1.
+# The controller app box opens into L1a (inside the controller: algorithm, CGM manager,
+# pump manager / command queue, dose and glucose stores, uploader); L1a is proposed, not drawn here.
+# The hub node is a pointer to L2 and is the only off-phone node in this drawing.
+title: "L1 · The controller loop on the phone"
+nodes:
+  - {id: person, label: "Person with diabetes\nor caregiver at hand\n(supervisor)", kind: human, level: 0, column: 1}
+  - {id: app, label: "Controller app\n(Loop, Trio or AAPS:\nalgorithm + process model)", kind: org, level: 1, column: 1, zoom: L1a}
+  - {id: hub, label: "Nightscout hub\n(see L2)", kind: commons, level: 0, column: 3, zoom: L2}
+  - {id: pump, label: "Insulin pump\n(actuator)", kind: process, level: 2, column: 0}
+  - {id: cgm, label: "CGM\n(sensor)", kind: process, level: 2, column: 2}
+  - {id: body, label: "Glucose-insulin\ndynamics (the body)", kind: process, level: 3, column: 1}
+edges:
+  - {from: person, to: app, kind: control, label: "settings, limits, meals,\nboluses, overrides,\nclosed / open loop"}
+  - {from: app, to: person, kind: feedback, label: "glucose, predictions,\nloop status, alerts"}
+  - {from: app, to: pump, kind: control, label: "temp basal (≤30 min),\nautomatic bolus / SMB,\nmanual bolus, suspend"}
+  - {from: pump, to: app, kind: feedback, label: "accepted / failed,\nhistory, reservoir,\nsuspended, uncertain"}
+  - {from: cgm, to: app, kind: feedback, label: "glucose readings\n(~5 min)"}
+  - {from: pump, to: body, kind: control, label: "insulin"}
+  - {from: body, to: cgm, kind: feedback, label: "interstitial glucose"}
+  - {from: body, to: person, kind: feedback, label: "symptoms,\nfingerstick"}
+  - {from: person, to: pump, kind: control, label: "on-pump actions\n(pump-dependent)"}
+  - {from: app, to: hub, kind: data, label: "status and records\n(applied state)"}

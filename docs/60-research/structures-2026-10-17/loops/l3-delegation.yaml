@@ -1,0 +1,31 @@
+# L3 · The delegation loop: a caregiver or an automated agent commands the controller.
+# Paths A–H and their authorisation are in ../technical-loops.md §3. The relay box covers APNs
+# (Loop, Trio) and SMS (AAPS 3.4.2.6); the hub box covers the Loop relay endpoint, entity downloads
+# (Trio, AAPS opt-in) and AAPS dev's signed documents in `settings`.
+# Proposed edges are the missing hub-visible command record and correlated acknowledgement.
+# The controller box opens into L3a (per-controller validation pipeline, proposed).
+title: "L3 · Delegation: remote commands to the controller"
+nodes:
+  - {id: primary, label: "Person or primary\ncaregiver (grants\nthe credential)", kind: human, level: 0, column: 0}
+  - {id: sender, label: "Caregiver or\nautomated agent", kind: human, level: 1, column: 2}
+  - {id: remote, label: "Remote app\n(LoopCaregiver, LoopFollow,\ncareportal, AAPSClient)", kind: entity, level: 2, column: 2}
+  - {id: hub, label: "Nightscout hub", kind: commons, level: 3, column: 1}
+  - {id: relay, label: "Push or SMS\nchannel (APNs, SMS)", kind: entity, level: 4, column: 3}
+  - {id: app, label: "Controller app\n(validates, enacts)", kind: org, level: 5, column: 1, zoom: L3a}
+  - {id: pump, label: "Pump", kind: process, level: 6, column: 1}
+edges:
+  - {from: primary, to: app, kind: control, label: "enable remote; OTP seed,\nshared secret, allowed\nnumbers, pairing"}
+  - {from: primary, to: sender, kind: control, label: "shares credential\n(QR, secret, token)"}
+  - {from: sender, to: remote, kind: control, label: "command"}
+  - {from: remote, to: hub, kind: control, label: "relay request, or\nentity written\nas a command"}
+  - {from: remote, to: relay, kind: control, label: "direct APNs\nor SMS"}
+  - {from: hub, to: relay, kind: control, label: "APNs (Loop only)"}
+  - {from: relay, to: app, kind: control, label: "notification\nor SMS"}
+  - {from: hub, to: app, kind: control, label: "downloaded entity,\nsigned envelope (AAPS dev)"}
+  - {from: app, to: pump, kind: control, label: "bolus; target,\noverride applied"}
+  - {from: pump, to: app, kind: feedback, label: "accepted / failed"}
+  - {from: app, to: relay, kind: feedback, label: "reply (if sender\ngave a return path)"}
+  - {from: app, to: hub, kind: feedback, label: "resulting record;\nfailure Note"}
+  - {from: remote, to: sender, kind: feedback, label: "status shown"}
+  - {from: remote, to: hub, kind: control, label: "command record\nwith id", status: proposed}
+  - {from: app, to: hub, kind: feedback, label: "ack: accepted, applied,\nrejected (correlated)", status: proposed}
