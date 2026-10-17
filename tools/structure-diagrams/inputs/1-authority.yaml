@@ -8,7 +8,7 @@
 #               HISTORY 2019-05-17 (FDA warning); vendor note §1.2 (Dexcom consumer terms §5.11);
 #               Apple note §1.1 (free tier: 7-day profiles, revocable licence);
 #               FDA cybersecurity page (FD&C Act §524B in effect 2023-03-29), read 2026-10-17
-#   emerging  - vendor note §1.6 (Omnipod 5 message signing and App Attest), §3.1 (EU Data Act, applies
+#   emerging  - vendor note §1.6 (Omnipod 5 controller certificates), §3.1 (EU Data Act, applies
 #               since 2025-09-12); PARTNER-READINESS §7 (issued credentials, revocation by process)
 title: "1·authority · Where the authority to act comes from"
 base: false

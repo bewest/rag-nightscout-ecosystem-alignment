@@ -4,7 +4,9 @@
 #   actual    - device-layer census §2-§3 (pairing families and open implementations per device:
 #               G6 transmitter id; G7 and Libre 3 code or NFC plus an app check met by a fixed client
 #               credential (xdripswift c268542, Juggluco 75399d7, LibreLoop 150d2b1); Tandem code; DASH, Eros, Dana,
-#               Medtronic 5xx/7xx by protocol; Omnipod 5 certificate store and App Attest, read from
+#               Medtronic 5xx/7xx by protocol; 780G by the manufacturer's mobile-app key database
+#               (OpenMinimed Documentation 73a7811); Omnipod 5 controller certificate, source not
+#               described (OmnipodKit 928bb79); formerly read from
 #               the driver's file names); vendor note §1.2 (Dexcom terms §5.11), §1.9 (no real-time
 #               route for outsiders); evidence §5 (connector breakages since 2020)
 #   emerging  - vendor note §1.6 and §5.1 (app attestation; end-to-end encryption to the cloud is
@@ -31,7 +33,7 @@ edges:
   - {from: mfr, to: cloud, kind: control, label: "runs"}
   - {from: mfr, to: ca, kind: control, label: "runs", in: [actual, emerging]}
   - {from: ca, to: aidapp, kind: discretion, label: "issues, renews, revokes",
-     labels: {actual: "issues, renews, revokes:\nOmnipod 5 (read from file\nnames); Eversense 365,\nthrough the person's account",
+     labels: {actual: "issues, renews, revokes:\nEversense 365 certificates,\nthrough the person's account",
               emerging: "issues, renews, revokes;\nwithout it, no access"}}
   - {from: mfr, to: sensor, kind: discretion, label: "new generations;\nolder devices leave sale",
      in: [actual, emerging]}
@@ -40,11 +42,11 @@ edges:
      labels: {emerging: "readings sealed end to end;\nthe phone only relays them"}}
   - {from: sensor, to: aidapp, kind: data, label: "readings",
      labels: {believed: "readings, to anyone\nwho knows the protocol",
-              actual: "readings: G6 with its ID; G7 and\nLibre 3 also check the app, met\nby a fixed credential not issued\nto the open implementations",
+              actual: "readings: G6 with its ID;\nG7 and Libre 3 also check\nthe app (a fixed credential)",
               emerging: "on newer sensors, readings only\nto an app the manufacturer has\nchecked, or none if sealed"}}
   - {from: aidapp, to: pump, kind: control, label: "commands",
      labels: {believed: "commands, to anyone\nwho knows the protocol",
-              actual: "commands: protocol (Eros, DASH,\nDana, Medtronic) or a code on\nthe pump (Tandem); Omnipod 5\nneeds an issued credential",
+              actual: "commands: protocol (Eros, DASH,\nDana, older Medtronic) or a code\non the pump (Tandem); 780G and\nOmnipod 5 check the app",
               emerging: "on newer pumps, commands\nonly with an issued credential"}}
   - {from: cloud, to: site, kind: data, label: "follower feed",
      labels: {believed: "follower feed, the\nperson's to share",

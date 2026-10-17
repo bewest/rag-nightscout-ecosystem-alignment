@@ -4,7 +4,9 @@
 #
 # Sources:
 #   rung, open   - device-layer census 2026-09-30, §2 (implementations per device) and §3 (counts);
-#                  Omnipod 5 from OmnipodKit file names (O5CertificateStore, O5AppAttestService);
+#                  Omnipod 5 from OmnipodKit 928bb79 (controller certificate; source not described); MiniMed 780G from OpenMinimed Documentation 73a7811
+#                  (SAKE with the manufacturer's mobile-app key database; pairing started on the pump)
+#                  and the PythonPumpConnector README (proof of concept, not for therapy);
 #                  SmartGuide "advanced security" from AccuChekKit's README.
 #                  Checked in code 2026-10-17: DanaKit e157a86 (Dana RS v3 pins entered from the
 #                  pump's display; no network calls), MedtrumKit ef866fa (pump base serial entered;
@@ -49,14 +51,14 @@ modes:
 notes:
   A: "Libre 2 and DASH use fixed protocol keys that the manufacturer's own app shares; no client credential"
   C: "read from EversenseKit's code; the service can refuse or change at the manufacturer's choice"
-  D: "G7 and Libre 3: fixed credentials carried by the open code; Omnipod 5 read from file names, credential source not checked"
+  D: "G7, Libre 3, 780G: fixed credentials carried by the open code; Omnipod 5: controller certificate, source not described"
   E: "none found; the census did not look for it"
 devices:
   - {name: "Omnipod Eros", type: pump, rung: A, open: 3, cloud: none found, outside: none published, realtime: none published}
   - {name: "Omnipod DASH", type: pump, rung: A, open: 3, cloud: none found, outside: none published, realtime: none published}
   - {name: "Omnipod 5", type: pump, rung: D, open: 1, cloud: none found, outside: none published, realtime: none published}
   - {name: "Medtronic 5xx / 7xx", type: pump, rung: A, open: 3, cloud: none found, outside: none published, realtime: none published}
-  - {name: "MiniMed 780G", type: pump, rung: null, open: 2, open_note: "SAKE", cloud: "CareLink follower", outside: none published, realtime: none published}
+  - {name: "MiniMed 780G", type: pump, rung: D, open: 2, open_note: "proofs of concept", cloud: "CareLink follower", outside: none published, realtime: none published}
   - {name: "Tandem t:slim X2 / Mobi", type: pump, rung: A, open: 1, open_note: "pumpX2", cloud: "Tandem Source (tconnectsync)", outside: none published, realtime: none published}
   - {name: "Dana RS / i", type: pump, rung: A, open: 2, cloud: not checked, outside: not read, realtime: not read}
   - {name: "Medtrum Nano", type: pump, rung: A, open: 2, cloud: not checked, outside: none published, realtime: none published}
