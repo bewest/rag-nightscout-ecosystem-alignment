@@ -229,6 +229,35 @@ So, two cases:
 Your answer becomes a decision row next to Q1, and we would revise Q1 for `identifier` matches if
 it points the other way.
 
+**A proposal on format: UUID recommended, not required.**
+Your proposal says "an opaque client string with a published length limit". We agree, and propose
+this for the decision row:
+
+| rule | proposal |
+|---|---|
+| type | a non-empty string, with a length limit and character set still to decide |
+| recommended form | a UUID: v5 of a source-derived key when several devices must agree, v4 created once for a manual entry |
+| server | never depends on the shape |
+| uniqueness | one `identifier` names one record; the client is responsible for it |
+
+Why not require a UUID: your watch-and-phone case needs a value both devices derive on their own,
+like `g7:<serial>:<seconds since activation>`. A random UUID cannot do that. Other clients key on
+other things, such as AndroidAPS's pump event ids.
+
+Why recommend one anyway: today's v1 by-id routes recognise only UUID-shaped values
+([query.js:12](https://github.com/nightscout/cgm-remote-monitor/blob/fade229909e6f3a0b5459230bc7273fe85de4f32/lib/server/query.js#L12)),
+and a UUID v5 turns any source key into that shape. API v3 already does exactly this when no
+identifier is sent: `uuid.v5(device + "_" + date [+ "_" + eventType], "NightscoutRocks!")`
+([operationTools.js:6, 106](https://github.com/nightscout/cgm-remote-monitor/blob/92d0834219aa771b5837dbcbf1baeb839a200cf6/lib/api3/shared/operationTools.js#L106)).
+
+Two points for you:
+
+- **Case.** Stored identifiers are compared exactly. Loop sends upper-case UUIDs for overrides
+  (Swift's `uuidString`); many other libraries write lower case. A client should send the same string every time; whether
+  the server should compare UUIDs without regard to case is part of the decision.
+- **Existing identifiers stay as they are.** Changing the form of a value a client has already
+  sent would stop it matching the records it stored.
+
 ## 6. What we propose to do next
 
 In order:
