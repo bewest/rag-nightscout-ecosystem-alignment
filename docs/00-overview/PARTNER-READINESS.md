@@ -27,13 +27,40 @@ Where a device accepts commands only from a client holding a credential the manu
 knowing the protocol is no longer enough: access then depends on an authorised relationship with the
 manufacturer. This page is about being ready for that relationship.
 
+### What is at stake on each path
+
+Encryption alone does not close a path. Dexcom G7, Libre 3 and Tandem's t:slim X2 and Mobi pair
+with a secret the person holds, a code printed with the sensor or shown on the pump, and open
+implementations work with each of them
+([device-layer census](../60-research/programme/stack-census-2026-09-30/device-layer.md)). A path
+closes when the device or cloud accepts only a client the manufacturer has approved, or when the
+data is sealed so that the phone cannot read it.
+
+| path | what it feeds | what would close it | what happens when it closes |
+|---|---|---|---|
+| sensor to phone, over the device's own radio link | the glucose input of an automated insulin delivery (AID) app; readers such as xDrip+ | a sensor that pairs only with an app the manufacturer has authenticated; readings encrypted end to end for the vendor's cloud, so the phone relays data it cannot read | automation stops. In Loop, no new dose is recommended once the newest reading is more than 15 minutes old, and the temporary basal rates Loop sets last at most 30 minutes, after which the pump returns to its programmed schedule (LoopAlgorithm `7d016fb`, `inputDataRecencyInterval`, `tempBasalDuration`). Other controllers: not verified here (§10) |
+| phone to pump, commands | automated and manual dosing from the open app | a pump that accepts commands only with a credential the manufacturer issues | the pump keeps running its own programmed delivery; automation and dosing from the open app stop, and the person needs the manufacturer's own controller for that pump |
+| vendor cloud to a connector | Nightscout sites, and the caregivers who follow them | login, bot-defence or terms changes, or a cloud that admits only approved apps | readings stop arriving at the site until a connector fix ships ([evidence §5](observations/ECOSYSTEM-EVIDENCE.md#5-work-that-arrives-on-other-organisations-calendars)); remote following and alerts through the site stop. The loop on the phone is not affected |
+| device generations in supply | which devices people can obtain | today's accessible devices leaving sale or insurance coverage | people move to newer devices, whose paths may be closed. No end-of-sale dates have been collected (§10) |
+| build and signing platform | every self-built app | signing and declaration policy (Apple, Google) | the app stops running when its certificate or build expires ([evidence §5](observations/ECOSYSTEM-EVIDENCE.md#5-work-that-arrives-on-other-organisations-calendars)) |
+
+How many people each closure would reach is not counted anywhere today (§6).
+
+**Keeping access has running costs, with or without an agreement.** Without one, connectors follow
+each vendor-cloud change ([evidence §5](observations/ECOSYSTEM-EVIDENCE.md#5-work-that-arrives-on-other-organisations-calendars)),
+the US copyright exemption for device data needs evidence at each three-yearly renewal
+([vendor note §3.4](../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md#34-dmca-1201-exemptions-37-cfr-20140)),
+and each new phone operating system needs app releases. With one, continued access depends on the
+terms in §4, which are the ecosystem's requests. Nothing in this repository yet shows what would
+lead a manufacturer to accept them.
+
 ## 2. Three tiers of access, and which to ask for first
 
 The tiers are this page's terms for technical risk. They are not FDA classifications.
 
 | tier | what the integration may do | relative risk |
 |---|---|---|
-| **A — observe and export** | read glucose, device status, delivery history and alarms; export them | lowest |
+| **A — observe and export** | read glucose, device status, delivery history and alarms; export them. The agreement states the path (the device's own radio link, or the vendor's cloud) and the maximum delay | lowest |
 | **B — configure and coordinate** | limited, confirmed settings changes, with an audit trail and device-specific limits | higher |
 | **C — control insulin delivery** | authenticated dosing or delivery commands | highest; needs device-specific validation and a regulatory pathway |
 
@@ -42,6 +69,14 @@ delivers the five rights in the [data rights primer](../10-domain/data-rights-pr
 export, share, delegate, audit — for one device line, and it does not wait on anyone obtaining
 permission for a closed loop. Tiers B and C can follow under the same framework, each as its own
 agreement.
+
+**What tier A protects depends on its path and delay.** An AID app needs readings on the phone
+within minutes (Loop stops recommending at 15, §1). A tier A agreement for a delayed cloud feed,
+such as Dexcom's public API, which runs one hour behind in the US and three elsewhere
+([vendor note §1.2](../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md#12-dexcom)),
+secures display, export, sharing and research. It does not secure automated insulin delivery. For
+that, tier A has to cover real-time reads over the device's own link, and the pump side needs
+tier C.
 
 The same relationship at each tier, drawn ([idea·tiers](perspective/STRUCTURES.md#ideatiers)):
 
@@ -255,3 +290,9 @@ for its operator.
   search for one specifically. A targeted search should confirm it per project.
 - **The tiers** (§2) are a proposal. A manufacturer's own categories may differ, and the agreement
   should use whichever both parties can apply.
+- **What happens when a path closes** (§1). The Loop row was read from LoopAlgorithm `7d016fb`, not
+  run. AndroidAPS, Trio and iAPS should be read or run for the same case (stale glucose, lost pump
+  link) before the table is given to anyone outside the ecosystem.
+- **Device supply** (§1). End-of-sale and coverage dates for the devices the open implementations
+  support today (Omnipod Eros and DASH, the older Medtronic pumps, Dana, Dexcom G6) have not been
+  collected.
