@@ -1,0 +1,49 @@
+# Device access: one record per device line, drawn as the key-custody ladder and the device x path
+# matrix by ../access_charts.py. Mechanism level only (device-layer census disclosure rule): no keys,
+# constants, command sequences or bypass steps belong here.
+#
+# Sources:
+#   rung, open   - device-layer census 2026-09-30, §2 (implementations per device) and §3 (counts);
+#                  Omnipod 5 from OmnipodKit file names (O5CertificateStore, O5AppAttestService);
+#                  SmartGuide "advanced security" from AccuChekKit's README
+#   cloud        - connectors: nightscout-connect 04102f9 (dexcomshare, librelinkup, minimedcarelink);
+#                  tconnectsync 7c4b2f4 (Tandem); evidence §5 (breakages since 2020)
+#   outside      - vendor note §1.1-§1.9 (published routes for outside developers), read 2026-10-17
+#   supply       - not collected (PARTNER-READINESS §10)
+#
+# rung: A = the open app needs only the protocol and what the person has (a code, a serial, the
+#           device itself); no manufacturer involvement
+#       B = the manufacturer's own app has to run alongside (a mode, listed under `modes`)
+#       C = a credential the manufacturer issues, with a check of the app
+#       D = readings sealed end to end for the manufacturer's cloud
+#       null = not determined from the census
+rungs:
+  - {id: A, title: "Protocol, plus what the person has", needs: "a code, a serial or the device itself; no manufacturer involvement"}
+  - {id: B, title: "The manufacturer's own app alongside", needs: "the open app listens beside the vendor's app, which keeps the pairing"}
+  - {id: C, title: "A credential the manufacturer issues", needs: "the device checks that the app is one the manufacturer approved"}
+  - {id: D, title: "Sealed for the manufacturer's cloud", needs: "the phone only relays readings it cannot read; no app on the phone can use them"}
+modes:
+  B:
+    - "Dexcom G7 passive mode (G7SensorKit on main)"
+    - "Medtronic 640G / 670G through companion apps"
+    - "Eversense, CareSens Air, Sibionics, Aidex through app-to-app receivers"
+  D: []
+notes:
+  D: "none found; the census did not look for it"
+  C: "Omnipod 5 is read from the driver's file names; who issues the credential is not checked"
+devices:
+  - {name: "Omnipod Eros", type: pump, rung: A, open: 3, cloud: none found, outside: none published, realtime: none published}
+  - {name: "Omnipod DASH", type: pump, rung: A, open: 3, cloud: none found, outside: none published, realtime: none published}
+  - {name: "Omnipod 5", type: pump, rung: C, open: 1, cloud: none found, outside: none published, realtime: none published}
+  - {name: "Medtronic 5xx / 7xx", type: pump, rung: A, open: 3, cloud: none found, outside: none published, realtime: none published}
+  - {name: "MiniMed 780G", type: pump, rung: null, open: 2, open_note: "SAKE", cloud: "CareLink follower", outside: none published, realtime: none published}
+  - {name: "Tandem t:slim X2 / Mobi", type: pump, rung: A, open: 1, open_note: "pumpX2", cloud: "Tandem Source (tconnectsync)", outside: none published, realtime: none published}
+  - {name: "Dana RS / i", type: pump, rung: A, open: 2, cloud: not checked, outside: not read, realtime: not read}
+  - {name: "Medtrum Nano", type: pump, rung: A, open: 2, cloud: not checked, outside: none published, realtime: none published}
+  - {name: "Dexcom G6", type: cgm, rung: A, open: 5, cloud: "Share follower", outside: "API, 1-3 h delay", realtime: by invitation}
+  - {name: "Dexcom G7 / ONE+", type: cgm, rung: A, open: 4, cloud: "Share follower", outside: "API, 1-3 h delay", realtime: by invitation}
+  - {name: "Libre 1 / 2", type: cgm, rung: A, open: 5, cloud: "LibreLinkUp follower", outside: none published, realtime: none published}
+  - {name: "Libre 3", type: cgm, rung: A, open: 3, cloud: "LibreLinkUp follower", outside: none published, realtime: none published}
+  - {name: "Eversense", type: cgm, rung: A, open: 2, cloud: not checked, outside: not read, realtime: not read}
+  - {name: "Accu-Chek SmartGuide", type: cgm, rung: A, open: 2, open_note: "standard sensors", cloud: not checked, outside: partner-only, realtime: not stated}
+  - {name: "SmartGuide \"advanced security\"", type: cgm, rung: null, open: 0, cloud: not checked, outside: partner-only, realtime: not stated}

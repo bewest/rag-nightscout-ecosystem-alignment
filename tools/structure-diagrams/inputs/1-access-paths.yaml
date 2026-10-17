@@ -1,0 +1,57 @@
+# How data and commands reach the open apps, and who holds the key on each path: as believed, as it
+# works today, and as it is emerging. One layout, three scenarios. Sources:
+#   believed  - DIGITAL-RIGHTS "Overview"; data rights primer (access, export, share, delegate, audit)
+#   actual    - device-layer census §2-§3 (pairing families and open implementations per device:
+#               G6 transmitter id, G7 and Tandem pairing codes, Libre 3 by NFC; DASH, Eros, Dana,
+#               Medtronic 5xx/7xx by protocol; Omnipod 5 certificate store and App Attest, read from
+#               the driver's file names); vendor note §1.2 (Dexcom terms §5.11), §1.9 (no real-time
+#               route for outsiders); evidence §5 (connector breakages since 2020)
+#   emerging  - vendor note §1.6 and §5.1 (app attestation; end-to-end encryption to the cloud is
+#               a risk, not looked for in the census), §3.1 (EU Data Act Art. 4-5); PARTNER-READINESS
+#               §1 (what happens when a path closes) and §7 (issued credentials)
+title: "1·access-paths · Who holds the key on each path"
+base: false
+scenarios: [believed, actual, emerging]
+bands:
+  - {label: "Manufacturer", levels: [0, 1]}
+  - {label: "Phone and server", levels: [2]}
+  - {label: "Devices", levels: [3]}
+nodes:
+  - {id: mfr, label: "Pump and CGM\nmanufacturers", kind: org, level: 0, column: 0, icon: factory}
+  - {id: cloud, label: "Vendor cloud", kind: process, level: 1, column: 0, icon: cloud}
+  - {id: ca, label: "Manufacturer\ncredential issuer", kind: entity, level: 1, column: 1, icon: key-round, in: [actual, emerging]}
+  - {id: vendorapp, label: "Manufacturer's\nown app", kind: org, level: 2, column: 0, icon: smartphone}
+  - {id: aidapp, label: "Open AID app\non the person's phone", kind: org, level: 2, column: 1, icon: smartphone}
+  - {id: site, label: "Nightscout site", kind: process, level: 2, column: 2, icon: server}
+  - {id: caregiver, label: "Caregivers\nfollowing", kind: human, level: 2, column: 3, icon: users}
+  - {id: sensor, label: "CGM sensor", kind: process, level: 3, column: 0, icon: activity}
+  - {id: pump, label: "Insulin pump", kind: process, level: 3, column: 1, icon: syringe}
+edges:
+  - {from: mfr, to: cloud, kind: control, label: "runs"}
+  - {from: mfr, to: ca, kind: control, label: "runs", in: [actual, emerging]}
+  - {from: ca, to: aidapp, kind: discretion, label: "issues, renews, revokes",
+     labels: {actual: "issues, renews, revokes:\nOmnipod 5 (read from\nthe driver's file names)",
+              emerging: "issues, renews, revokes;\nwithout it, no access"}}
+  - {from: mfr, to: sensor, kind: discretion, label: "new generations;\nolder devices leave sale",
+     in: [actual, emerging]}
+  - {from: sensor, to: vendorapp, kind: data, label: "readings"}
+  - {from: vendorapp, to: cloud, kind: data, label: "upload",
+     labels: {emerging: "readings sealed end to end;\nthe phone only relays them"}}
+  - {from: sensor, to: aidapp, kind: data, label: "readings",
+     labels: {believed: "readings, to anyone\nwho knows the protocol",
+              actual: "readings: a code or the sensor\nthe person holds (G6, G7, Libre 3);\n4 open G7 implementations",
+              emerging: "on newer sensors, readings only\nto an app the manufacturer has\nchecked, or none if sealed"}}
+  - {from: aidapp, to: pump, kind: control, label: "commands",
+     labels: {believed: "commands, to anyone\nwho knows the protocol",
+              actual: "commands: protocol (Eros, DASH,\nDana, Medtronic) or a code on\nthe pump (Tandem); Omnipod 5\nneeds an issued credential",
+              emerging: "on newer pumps, commands\nonly with an issued credential"}}
+  - {from: cloud, to: site, kind: data, label: "follower feed",
+     labels: {believed: "follower feed, the\nperson's to share",
+              actual: "connector logs in as the person;\nterms ban unauthorised apps;\nbreaks when the cloud changes",
+              emerging: "EU: duty to share with a\ndesignated third party, real-time\nwhere feasible; US: no duty"}}
+  - {from: aidapp, to: site, kind: data, label: "uploads"}
+  - {from: site, to: caregiver, kind: data, label: "following, alerts"}
+views:
+  - {id: believed, title: "as believed", scenario: believed}
+  - {id: actual, title: "as it works today", scenario: actual}
+  - {id: emerging, title: "as it is emerging", scenario: emerging}

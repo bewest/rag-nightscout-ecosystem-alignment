@@ -34,6 +34,7 @@ choice (terms, enforcement, revocation). The other lines and the icons are as in
 | [1·authority](#1authority-where-the-authority-to-act-comes-from) | where DIY and open-source authority to act comes from | believed, actual, emerging |
 | [0·diy-status](#0diy-status-under-what-status-a-diy-build-runs) | under what regulatory status a DIY build runs | believed, actual, emerging |
 | [1·data-rights](#1data-rights-getting-data-out-and-letting-others-in) | how data gets out, and how others are let in | believed, actual, emerging |
+| [1·access-paths](#1access-paths-who-holds-the-key-on-each-path) | who holds the key on each path between device, phone, cloud and site | believed, actual, emerging; and a ladder |
 | [1·hosting](#1hosting-who-answers-for-a-site-run-for-someone-else) | who answers for a site run for someone else | believed, actual, emerging |
 | [3·identity](#3identity-who-is-who-on-a-hub-and-who-may-do-what) | who is who on a hub, and who may do what | believed, actual, proposed |
 | [1·federation](#1federation-one-sign-in-across-regional-zones) | one sign-in across regional zones, with zero-trust access | believed, actual, proposed |
@@ -286,6 +287,48 @@ not legal advice. Points to check: whether CGM values are in the Data Act's scop
 Art. 4(2) health-and-safety carve-out; whether a US non-profit can be a designated third party; and
 the current HIPAA rule for directing records to a third party (45 CFR 164.524)
 ([vendor note §7](../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md#7-points-for-a-reviewer-to-verify)).
+
+### 1·access-paths: who holds the key on each path
+
+![1·access-paths as believed: the sensor sends readings to the manufacturer's app and to the open AID app, to anyone who knows the protocol; the open app sends commands to the pump the same way; the vendor cloud's follower feed reaches the Nightscout site, the person's to share; the site serves caregivers](diagrams/1-access-paths--believed.svg)
+
+**As believed.** Every path is open to software that knows the protocol, and the data is the
+person's to share ([DIGITAL-RIGHTS, overview](../../DIGITAL-RIGHTS.md#overview);
+[primer](../../10-domain/data-rights-primer.md#the-five-fundamental-diabetes-data-rights)).
+
+![1·access-paths as it works today: readings reach the open app with a code or the sensor the person holds (G6, G7, Libre 3); commands reach the pump by protocol (Eros, DASH, Dana, Medtronic) or a code on the pump (Tandem), while Omnipod 5 needs a credential from a manufacturer-run issuer; the connector logs in to the vendor cloud as the person, under terms that ban unauthorised apps; the manufacturer changes device generations and older devices leave sale](diagrams/1-access-paths--actual.svg)
+
+**As it works today.** Most paths are open because the secret they need is one the person holds:
+a code printed with the sensor or shown on the pump, a serial, or the device itself
+([device-layer census](../../60-research/programme/stack-census-2026-09-30/device-layer.md)).
+Omnipod 5 is the one device found where the app itself is checked, read from the community
+driver's file names ([vendor note §1.6](../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md#16-insulet-omnipod)).
+The cloud path runs on the person's own login and the vendor's tolerance, and breaks when the cloud
+changes ([evidence §5](../observations/ECOSYSTEM-EVIDENCE.md#5-work-that-arrives-on-other-organisations-calendars)).
+
+![1·access-paths as it is emerging: on newer sensors, readings reach only an app the manufacturer has checked, or none if they are sealed end to end for the cloud with the phone only relaying them; on newer pumps, commands need an issued credential; the credential issuer issues, renews and revokes, and without it there is no access; the cloud path carries an EU duty to share with a designated third party, with no US duty](diagrams/1-access-paths--emerging.svg)
+
+**As it is emerging.** Two closures are possible on the device side: an app check, and readings
+sealed end to end for the manufacturer's cloud. The second was not looked for in the census
+([vendor note §5.1](../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md#51-blockers-what-is-removing-them-what-still-stands)).
+On the cloud side the EU Data Act adds a duty to share, and the US has none
+([vendor note §3.1](../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md#31-eu-data-act)).
+
+![1·access-ladder: four rising steps of dependence on the manufacturer. A, protocol plus what the person has: Omnipod Eros and DASH, Medtronic 5xx/7xx, Tandem t:slim X2 and Mobi, Dana RS/i, Medtrum Nano, Dexcom G6 and G7, Libre 1/2 and 3, Eversense, Accu-Chek SmartGuide. B, the manufacturer's own app alongside: G7 passive mode, Medtronic 640G/670G and several CGMs through companion apps. C, a credential the manufacturer issues: Omnipod 5, read from file names. D, sealed for the cloud: none found, not looked for. Not placed: MiniMed 780G and SmartGuide advanced security](diagrams/1-access-ladder.svg)
+
+*Interpretation.*
+
+1. **The key, not the encryption, decides access.** Every device on step A uses authenticated or
+   encrypted links, and open implementations work with all of them.
+2. **Each step up moves the key towards the manufacturer.** On step B the open app depends on the
+   manufacturer's app staying installed; on C, on a credential the manufacturer can withdraw; on D
+   no app on the phone can read the data at all.
+3. **Loss on the device side and on the cloud side reach different people.** The device side stops
+   automation for the person; the cloud side stops remote following for caregivers
+   ([partner readiness §1](../PARTNER-READINESS.md#what-is-at-stake-on-each-path)).
+
+The drawing and ladder are at mechanism level only. The ladder's data and generator are
+`tools/structure-diagrams/access/devices.yaml` and `access_charts.py`.
 
 ### 1·hosting: who answers for a site run for someone else
 
