@@ -13731,6 +13731,52 @@ items:
       the CareLink pages have no gate, because a grep cannot tell a
       historical mention from a present-tense one.
 
+  - id: DOCS-REMOTE-FOLLOWUP
+    title: "Re-check two remote-command statements found while correcting DOCS-REMOTE-PATHS: where Trio's shared secret is configured, and LoopFollow's remote carbs path"
+    parcel: docs-truth
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main
+    state: not-started
+    pr: []
+    blast_radius: >
+      docs/10-domain/remote-bolus-comparison.md (Trio "Shared Secret" line),
+      docs/10-domain/loopfollow-deep-dive.md (summary table "Remote Carbs" row).
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: programme documentation
+    register: []
+    gates:
+      - run: sh -c '! grep -q "Configured in Nightscout + Trio" docs/10-domain/remote-bolus-comparison.md'
+        kind: static
+        describe: >
+          FAILS while the comparison says Trio's shared secret is configured
+          in Nightscout and Trio. RED on 2026-10-17.
+      - run: sh -c '! grep -qE "^\| \*\*Remote Carbs\*\* \| Via NS \|" docs/10-domain/loopfollow-deep-dive.md'
+        kind: static
+        describe: >
+          FAILS while the deep dive's summary table says LoopFollow sends
+          remote carbs "Via NS". RED on 2026-10-17.
+    blocks_on: []
+    evidence:
+      - docs/60-research/structures-2026-10-17/technical-loops.md
+    notes: >
+      Found by the DOCS-REMOTE-PATHS correction on 2026-10-17 and left out of
+      that item's scope; both are read-derived suspicions, not yet verified.
+      (1) remote-bolus-comparison.md:172 says Trio's shared secret is
+      "Configured in Nightscout + Trio"; in source the sender (e.g.
+      LoopFollow) holds the secret and Trio uploads only its device token to
+      Nightscout (Trio 0b29cd534 NightscoutManager.swift:838-853,
+      SecureMessenger.swift:30; LoopFollow 4a74b781 SecureMessenger.swift).
+      (2) loopfollow-deep-dive.md:343 lists LoopFollow's remote carbs as
+      "Via NS", while LoopFollow's RemoteType has no Nightscout path
+      (Remote/RemoteType.swift). Re-read both at the pinned revisions in
+      workspace.lock.json before editing; if either statement turns out to be
+      right, record that and retire the gate rather than editing the page.
+      Describe paths only; nothing about how any command's protection could
+      be bypassed.
+
 # ---------------------------------------------------------------------------
 # PARCEL: platform
 

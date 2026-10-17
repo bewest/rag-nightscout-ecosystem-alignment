@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 219 |
-| runnable gates | 276 |
+| items | 220 |
+| runnable gates | 278 |
 | explicit `no-gate:` markers | 262 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 262 of the 538 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 262 of the 540 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 69 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `not-started` | 70 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -6551,7 +6551,7 @@ alarm-readiness items, and the seam branch refresh.
 
 ## Document-truth sweeps
 
-`parcel: docs-truth` &mdash; 14 items
+`parcel: docs-truth` &mdash; 15 items
 
 Rule 6 work. Agents read SECTIONS, not documents, so a fact stated twice and
 differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
@@ -6572,6 +6572,7 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 | `DOCS-REMOTE-PATHS` | Correct the remote-bolus comparison and the LoopFollow deep dive: who relays Trio commands, Loop's reply, LoopFollow's remote types | `not-started` | `main` | n/a | 2 run |
 | `DOCS-DATA-RIGHTS-LAW` | Bring the data-rights pages up to date: EU Data Act, the current DMCA medical-device data exemption and the 2027 rulemaking, the Washington health-data act | `not-started` | `main` | n/a | 3 run |
 | `DOCS-VENDOR-FACTS` | Update vendor facts across the repo: Abbott's partner list, MiniMed's separation from Medtronic, Diabeloop in twiist (verify each first) | `not-started` | `main` | n/a | 2 run |
+| `DOCS-REMOTE-FOLLOWUP` | Re-check two remote-command statements found while correcting DOCS-REMOTE-PATHS: where Trio's shared secret is configured, and LoopFollow's remote carbs path | `not-started` | `main` | n/a | 2 run |
 
 ### `DOC-SEQUENCING` &mdash; phase0-pr-sequencing contradicts itself on the branch count
 
@@ -7011,6 +7012,37 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 - `docs/60-research/structures-2026-10-17/vendor-programs-and-data-rights.md`
 
 **Notes.** From vendor-programs-and-data-rights.md §4 and §1.3, §1.4, §1.7. Abbott's partner list read 2026-10-17 has eleven integrations, including Tandem, Beta Bionics, twiist and Omada. MiniMed Group's separation from Medtronic plc on 2026-10-15 and Diabeloop-in-twiist for a 2027 US launch were read through search summaries only, so verify each against the primary source (the SEC 8-K exhibit; a Sequel or Diabeloop announcement) before editing. Do not rename historical statements: "Medtronic CareLink" stays correct for dates before the separation; add the change where a page describes the present. The HISTORY gate is the only one bound to a single page; the CareLink pages have no gate, because a grep cannot tell a historical mention from a present-tense one.
+
+### `DOCS-REMOTE-FOLLOWUP` &mdash; Re-check two remote-command statements found while correcting DOCS-REMOTE-PATHS: where Trio's shared secret is configured, and LoopFollow's remote carbs path
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** docs/10-domain/remote-bolus-comparison.md (Trio "Shared Secret" line), docs/10-domain/loopfollow-deep-dive.md (summary table "Remote Carbs" row).
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** programme documentation
+
+**Gates.**
+
+- `[static]` `sh -c '! grep -q "Configured in Nightscout + Trio" docs/10-domain/remote-bolus-comparison.md'`
+  - FAILS while the comparison says Trio's shared secret is configured in Nightscout and Trio. RED on 2026-10-17.
+- `[static]` `sh -c '! grep -qE "^\| \*\*Remote Carbs\*\* \| Via NS \|" docs/10-domain/loopfollow-deep-dive.md'`
+  - FAILS while the deep dive's summary table says LoopFollow sends remote carbs "Via NS". RED on 2026-10-17.
+
+**Evidence.**
+
+- `docs/60-research/structures-2026-10-17/technical-loops.md`
+
+**Notes.** Found by the DOCS-REMOTE-PATHS correction on 2026-10-17 and left out of that item's scope; both are read-derived suspicions, not yet verified. (1) remote- bolus-comparison.md:172 says Trio's shared secret is "Configured in Nightscout + Trio"; in source the sender (e.g. LoopFollow) holds the secret and Trio uploads only its device token to Nightscout (Trio 0b29cd534 NightscoutManager.swift:838-853, SecureMessenger.swift:30; LoopFollow 4a74b781 SecureMessenger.swift). (2) loopfollow-deep-dive.md:343 lists LoopFollow's remote carbs as "Via NS", while LoopFollow's RemoteType has no Nightscout path (Remote/RemoteType.swift). Re-read both at the pinned revisions in workspace.lock.json before editing; if either statement turns out to be right, record that and retire the gate rather than editing the page. Describe paths only; nothing about how any command's protection could be bypassed.
 
 ---
 
