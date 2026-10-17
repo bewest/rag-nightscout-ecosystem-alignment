@@ -6,10 +6,10 @@
       "alias": "loop",
       "name": "LoopWorkspace",
       "url": "https://github.com/LoopKit/LoopWorkspace.git",
-      "ref": "f8412858c59278d93b72f2905a9915b5101c9d82",
+      "ref": "548b33245198eaae165c094c9c68fe333cb69c05",
       "description": "Loop iOS app workspace with all dependencies",
       "submodules": true,
-      "frozen_at": "2026-09-23T22:10:19.188163",
+      "frozen_at": "2026-10-17T13:25:05.904077",
       "frozen_from": "main"
     },
     {
@@ -43,11 +43,11 @@
       "alias": "trio",
       "name": "Trio",
       "url": "https://github.com/nightscout/Trio.git",
-      "ref": "e41c9db37fa946f14047f5b07cfcd3aa5dd9ef6b",
+      "ref": "0b29cd53415e7f0e668677749cad8daf81c68c2f",
       "description": "Trio iOS closed-loop system",
       "submodules": true,
-      "frozen_at": "2026-09-23T22:10:20.334764",
-      "frozen_from": "dev"
+      "frozen_at": "2026-10-17T13:25:05.904077",
+      "frozen_from": "main"
     },
     {
       "alias": "ns-reporter",
