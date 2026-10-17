@@ -1,0 +1,22 @@
+# One idea: a nonprofit as an oversight layer above companies that build on a commons, without carrying
+# their regulatory duties. Sources: ACCOUNTABILITY-THRESHOLDS §5 (the nonprofit's role is oversight,
+# not an advantage in meeting requirements); PRECEDENTS (CNCF certifies vendors against one upstream
+# with the same public tests; the Open Home Foundation binds partners by contract; TEFCA's one Common
+# Agreement; eduGAIN's steering group); COLLABORATION-MODEL rule 3 (listing on published criteria).
+title: "idea·oversight-layer · Oversight, not operation"
+nodes:
+  - {id: rega, label: "The hosting\ncompany's regulators", kind: authority, level: 0, column: 0, icon: scale}
+  - {id: fdn, label: "Nonprofit: published\ncriteria, listing,\ncertification", kind: entity, level: 0, column: 1, icon: hand-heart}
+  - {id: regb, label: "The device\ncompany's regulators", kind: authority, level: 0, column: 2, icon: scale}
+  - {id: a, label: "A hosting\ncompany", kind: org, level: 1, column: 0, icon: building-2}
+  - {id: b, label: "A device or\nsoftware company", kind: org, level: 1, column: 2, icon: factory}
+  - {id: commons, label: "Shared commons\n(code, specifications,\npublic tests)", kind: commons, level: 2, column: 1, icon: network}
+edges:
+  - {from: rega, to: a, kind: control, label: "its own legal and\nregulatory duties"}
+  - {from: regb, to: b, kind: control, label: "its own legal and\nregulatory duties"}
+  - {from: fdn, to: a, kind: control, label: "the same criteria"}
+  - {from: fdn, to: b, kind: control, label: "the same criteria"}
+  - {from: a, to: fdn, kind: feedback, label: "conformance\nresults (public)"}
+  - {from: b, to: fdn, kind: feedback, label: "conformance\nresults (public)"}
+  - {from: a, to: commons, kind: funding, label: "builds on,\ncontributes"}
+  - {from: b, to: commons, kind: funding, label: "builds on,\ncontributes"}

@@ -1,0 +1,27 @@
+# One idea: one codebase serves both the people who build their own and an operator, and fixes come
+# back. Second panel: what the return edge prevents, a second upstream.
+# Sources: ECOSYSTEM-PROGRAMME "One codebase, two uses" (the same releases serve people who build their
+# own and companies; no separate commercial edition; SQLite's and CNCF's models); STRUCTURES
+# 2·controller-operator (the cleared release as a validated build of the shared releases, the
+# proposed return edge, and the risk "without it the regulated track becomes a second upstream").
+title: "idea·one-codebase · One codebase, two uses"
+base: false
+scenarios: [one, two]
+nodes:
+  - {id: project, label: "Open-source project\n(one codebase)", kind: org, level: 0, column: 1, icon: git-branch}
+  - {id: diy, label: "People who build\nand run their own", kind: human, level: 1, column: 0, icon: user}
+  - {id: op, label: "Operator", kind: entity, level: 1, column: 2, icon: building-2,
+     labels: {one: "Operator: a validated\nbuild of the same\nreleases",
+              two: "Operator with its own\nfork: a second\nupstream"}}
+  - {id: users, label: "People using the\noperator's release", kind: human, level: 2, column: 2, icon: users}
+edges:
+  - {from: project, to: diy, kind: control, label: "releases"}
+  - {from: diy, to: project, kind: feedback, label: "issues, fixes"}
+  - {from: project, to: op, kind: control, label: "releases",
+     labels: {one: "the same releases", two: "forked once"}}
+  - {from: op, to: project, kind: feedback, label: "fixes and validation\nevidence returned", in: [one], status: proposed}
+  - {from: op, to: users, kind: control, label: "its release",
+     labels: {one: "a validated build\nof the shared release", two: "its own release;\nfixes stay in the fork"}}
+views:
+  - {id: one, title: "one codebase, with fixes returned", scenario: one}
+  - {id: two, title: "a second upstream (what the return edge prevents)", scenario: two}

@@ -1,0 +1,18 @@
+# One idea: the person designates a third party, and the data holder must send it there.
+# Sources: vendor note §3.1 (EU Data Act, applies since 2025-09-12: user access, real-time where
+# feasible, Art. 4; sharing with a third party at the request of "a user, or a party acting on behalf
+# of a user", free to the user, Art. 5; the third party may use the data only for the agreed purposes
+# and may not share it on, Art. 6) and §5.3 (what the third party has to be or have). EU only.
+title: "idea·designated-third-party · The person designates who receives their data"
+nodes:
+  - {id: law, label: "EU Data Act", kind: authority, level: 0, column: 1, icon: landmark}
+  - {id: mfr, label: "Manufacturer\n(data holder)", kind: org, level: 1, column: 0, icon: factory}
+  - {id: person, label: "The person\n(the user)", kind: human, level: 2, column: 1, icon: user}
+  - {id: third, label: "The third party\nthe person chose", kind: entity, level: 3, column: 2, icon: building-2}
+edges:
+  - {from: law, to: mfr, kind: control, label: "share at the user's\nrequest; real-time\nwhere feasible"}
+  - {from: law, to: person, kind: authority, label: "a right to access\nand designate"}
+  - {from: law, to: third, kind: control, label: "agreed purposes only;\nno onward sharing", route: corridor, via: 3}
+  - {from: person, to: mfr, kind: control, label: "send my data to\nthe party I choose"}
+  - {from: mfr, to: third, kind: data, label: "the same data,\nfree to the user"}
+  - {from: third, to: person, kind: control, label: "the service the\nperson chose"}

@@ -66,6 +66,12 @@ show they track the same contract with the same public conformance suite (CNCF's
 separate commercial edition. Neither use carries a clinical or regulatory claim for the other
 (COLLABORATION-MODEL rules 6 and 8).
 
+Drawn ([idea·one-codebase](perspective/STRUCTURES.md#ideaone-codebase)): with fixes returned, and the second upstream the return edge prevents.
+
+![One codebase: the project's releases go to people who build their own and, as the same releases, to an operator whose validated build reaches its users; fixes and validation evidence return to the project](perspective/diagrams/idea-one-codebase--one.svg)
+
+![A second upstream: the operator forks once and its fixes stay in the fork](perspective/diagrams/idea-one-codebase--two.svg)
+
 ## 2a. The stack
 
 Measured by the [stack census of 2026-09-30](../60-research/programme/stack-census-2026-09-30.md)

@@ -1,0 +1,18 @@
+# One idea: the requirements are the same for anyone; meeting them in practice takes a legal entity.
+# Sources: ACCOUNTABILITY-THRESHOLDS §5 (FDA routes open to any manufacturer; Tidepool, a nonprofit,
+# took the same 510(k) route; Dexcom's standard, non-negotiable agreement; Washington's act does not
+# exclude nonprofits; Apple's only nonprofit concession is a fee waiver; Apple guideline 5.1.1(ix):
+# healthcare apps "submitted by a legal entity ... and not by an individual developer").
+title: "idea·same-requirements · The same requirements for anyone"
+nodes:
+  - {id: req, label: "The same requirements:\nregulatory, contract,\nprivacy, security", kind: authority, level: 0, column: 1, icon: clipboard-check}
+  - {id: company, label: "A company", kind: entity, level: 1, column: 0, icon: building-2}
+  - {id: npo, label: "A nonprofit", kind: entity, level: 1, column: 1, icon: hand-heart}
+  - {id: indiv, label: "An individual or\ninformal project", kind: human, level: 1, column: 2, icon: user}
+  - {id: access, label: "An agreement or\nauthorisation (a clearance,\na manufacturer's credential)", kind: process, level: 2, column: 1, icon: key-round}
+edges:
+  - {from: req, to: company, kind: control, label: "same criteria"}
+  - {from: req, to: npo, kind: control, label: "same criteria;\nno exemption"}
+  - {from: req, to: indiv, kind: control, label: "same criteria;\nusually requires\na legal entity"}
+  - {from: company, to: access, kind: control, label: "meets them;\nsigns"}
+  - {from: npo, to: access, kind: control, label: "meets them;\nsigns"}

@@ -1,0 +1,21 @@
+# One idea: complaints in both directions, through one intake, to the party legally responsible.
+# Sources: PARTNER-READINESS §6 (three streams, one intake; the lifecycle ends in corrective action, a
+# regression test and an answer to the reporter; referral to the responsible manufacturer; intake is
+# not legal responsibility; anyone can report to FDA through MedWatch; manufacturers' reporting under
+# 21 CFR Part 803) and §5 ("complaints in both directions": what each party forwards to the other).
+title: "idea·complaints · Complaints in both directions"
+nodes:
+  - {id: reg, label: "Regulator", kind: authority, level: 0, column: 1, icon: scale}
+  - {id: mfr, label: "Manufacturer (keeps its\nown quality system)", kind: org, level: 1, column: 1, icon: factory}
+  - {id: intake, label: "Shared intake: support,\ncomplaints, security\n(not legal responsibility)", kind: commons, level: 2, column: 1, icon: message-square-warning, status: proposed}
+  - {id: projects, label: "Open-source\nprojects", kind: org, level: 3, column: 0, icon: git-branch}
+  - {id: person, label: "Person who\nreports", kind: human, level: 3, column: 2, icon: user}
+edges:
+  - {from: mfr, to: reg, kind: feedback, label: "reports some events\n(21 CFR Part 803)"}
+  - {from: intake, to: mfr, kind: feedback, label: "referral of\nreportable events"}
+  - {from: mfr, to: intake, kind: control, label: "what it forwards,\nby agreement"}
+  - {from: person, to: intake, kind: feedback, label: "a report"}
+  - {from: intake, to: person, kind: control, label: "an answer"}
+  - {from: intake, to: projects, kind: control, label: "linked reports,\na regression test"}
+  - {from: projects, to: intake, kind: feedback, label: "fix, disposition"}
+  - {from: person, to: reg, kind: feedback, label: "MedWatch, directly", route: corridor, via: 3}

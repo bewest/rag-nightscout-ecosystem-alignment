@@ -1,0 +1,30 @@
+# One idea: three tiers of access, each its own agreement, each adding lines. Three panels.
+# Source: PARTNER-READINESS §2 (tier A observe and export: read glucose, device status, delivery history
+# and alarms, and export them; tier B configure and coordinate: limited, confirmed settings changes with
+# an audit trail and device-specific limits; tier C control insulin delivery: authenticated dosing or
+# delivery commands, needing device-specific validation and a regulatory pathway; the tiers are this
+# repository's terms for technical risk, not FDA classifications; ask for tier A first, separately).
+title: "idea·tiers · Three tiers of access, three agreements"
+base: false
+scenarios: [a, b, c]
+nodes:
+  - {id: mfr, label: "Manufacturer", kind: org, level: 0, column: 1, icon: factory}
+  - {id: integ, label: "Integration", kind: entity, level: 1, column: 1, icon: building-2,
+     labels: {a: "Integration under\na tier A agreement", b: "Integration under\na tier B agreement",
+              c: "Integration under\na tier C agreement"}}
+  - {id: app, label: "Client app", kind: org, level: 2, column: 1, icon: smartphone}
+  - {id: device, label: "Device line", kind: process, level: 3, column: 1, icon: activity}
+edges:
+  - {from: mfr, to: integ, kind: control, label: "agreement",
+     labels: {a: "tier A: observe\nand export", b: "tier B: configure and\ncoordinate, with an\naudit trail",
+              c: "tier C: control insulin\ndelivery; device validation\nand a regulatory pathway"}}
+  - {from: integ, to: mfr, kind: feedback, label: "evidence",
+     labels: {a: "readiness evidence", b: "the audit trail", c: "validation,\ncomplaints"}}
+  - {from: integ, to: app, kind: control, label: "access", labels: {a: "read access", b: "read and limited\nconfiguration", c: "read, configure\nand command"}}
+  - {from: device, to: app, kind: feedback, label: "glucose, status,\nhistory, alarms"}
+  - {from: app, to: device, kind: control, label: "commands", in: [b, c],
+     labels: {b: "limited, confirmed\nsettings changes", c: "authenticated dosing\nand delivery commands"}}
+views:
+  - {id: a, title: "tier A, observe and export (ask first)", scenario: a}
+  - {id: b, title: "tier B, configure and coordinate", scenario: b}
+  - {id: c, title: "tier C, control insulin delivery", scenario: c}

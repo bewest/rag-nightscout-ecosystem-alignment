@@ -43,6 +43,14 @@ export, share, delegate, audit — for one device line, and it does not wait on 
 permission for a closed loop. Tiers B and C can follow under the same framework, each as its own
 agreement.
 
+The same relationship at each tier, drawn ([idea·tiers](perspective/STRUCTURES.md#ideatiers)):
+
+![Tier A: the manufacturer's agreement gives the integration read access; the device line reports glucose, status, history and alarms to the client app; readiness evidence goes back](perspective/diagrams/idea-tiers--a.svg)
+
+![Tier B: the agreement adds limited, confirmed settings changes from the app to the device, with an audit trail back to the manufacturer](perspective/diagrams/idea-tiers--b.svg)
+
+![Tier C: the agreement adds authenticated dosing and delivery commands, with device validation, a regulatory pathway, and validation and complaints back to the manufacturer](perspective/diagrams/idea-tiers--c.svg)
+
 ## 3. What a manufacturer will need to see
 
 A manufacturer weighs whether a relationship creates technical, security, legal, regulatory and
@@ -128,6 +136,8 @@ it does not by itself give every project the duties of a manufacturer. Whether o
 any duty for the foundation is a question for counsel (§9, question 7). Anyone can also report a
 device problem directly to FDA through MedWatch.
 
+![Complaints in both directions: a person reports to the shared intake and gets an answer; the intake sends linked reports and a regression test to projects and gets fixes back; it refers reportable events to the manufacturer, which forwards what the agreement says and reports some events to the regulator; the person can also report to the regulator directly](perspective/diagrams/idea-complaints.svg)
+
 **What the records are for.**
 
 - **Across projects.** A firmware change that breaks one CGM's link in Nightscout, AndroidAPS, Loop
@@ -174,7 +184,14 @@ without it does not supply revocation, accountability or a contract.
 **No single point of failure for therapy.** A shared identity or credential service must not be able
 to stop someone's insulin delivery by being unreachable. Previously authorised, safely bounded local
 operation should continue without a connection. The permitted offline behaviour, the expiry rules
-and the safe states are defined and validated with each manufacturer.
+and the safe states are defined and validated with each manufacturer. Drawn as three states of one
+credential ([idea·credential-lifetime](perspective/STRUCTURES.md#ideacredential-lifetime)):
+
+![Issued and renewed: the credential authority issues and renews the app's grant; the app sends authenticated commands to the pump](perspective/diagrams/idea-credential-lifetime--normal.svg)
+
+![The authority is unreachable: previously authorised, safely bounded operation continues and the person is told the grant's expiry is ahead](perspective/diagrams/idea-credential-lifetime--unreachable.svg)
+
+![Revoked: by process, with published grounds, notice and appeal, at once only for a security incident; commands stop, the pump enters its defined safe state, and the person is told why and how to appeal](perspective/diagrams/idea-credential-lifetime--revoked.svg)
 
 **Separating request from effect.** Identity answers who is asking; authorisation, whether they may;
 capability, whether this device and firmware can; and execution evidence, whether it happened. The

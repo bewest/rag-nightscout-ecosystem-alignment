@@ -39,7 +39,7 @@ same as drawings are added beside it.
 | 1 · ecosystem | the ecosystem's organisations and how they connect | 1·today, 1·proposed (and six stakeholder views); 1·authority\*, 1·data-rights\*, 1·hosting\*, 1·federation\* |
 | 2 · one organisation or agreement | one entity, one agreement, one programme | 2·agreement, 2·controller-operator; the precedents 2·sqlite, 2·cncf, 2·apple; 2·data-commons\*, 2·shared-infra\* |
 | 3 · technical process | one loop in software and devices | 3·controller, 3·hub-sync, 3·delegation, 3·person-loop; 3·identity\*, 3·registration\* |
-| idea | one idea from the argument, drawn small | idea·sponsor-or-operate |
+| idea | one idea from the argument, drawn small | idea·sponsor-or-operate, idea·one-codebase, idea·same-requirements, idea·oversight-layer, idea·tiers, idea·credential-lifetime, idea·complaints, idea·designated-third-party |
 
 \* Drawn three times on one layout (believed, actual, and emerging or proposed) on the companion
 page [What we believe, and how it works](PROCESS-MODELS.md).
@@ -270,6 +270,84 @@ that the foundation **sponsors by default and operates only by a recorded decisi
 operator, its contract, insurance and successor
 ([programme §2b](../ECOSYSTEM-PROGRAMME.md#2b-sponsoring-and-operating)); the duties that
 operating brings are listed in [what each activity brings §3](ACCOUNTABILITY-THRESHOLDS.md#3-activities-and-the-pillars-they-trigger).
+
+### idea·one-codebase
+
+![idea·one-codebase, one codebase: the project's releases go to people who build their own and, as the same releases, to an operator whose validated build reaches its users; fixes and validation evidence return to the project](diagrams/idea-one-codebase--one.svg)
+
+![idea·one-codebase, a second upstream: the operator forks once, its own release reaches its users, and fixes stay in the fork](diagrams/idea-one-codebase--two.svg)
+
+One project's releases serve both people who build their own and an operator, with no separate
+edition ([programme, "One codebase, two uses"](../ECOSYSTEM-PROGRAMME.md#2-the-picture); SQLite's
+and CNCF's models in [precedents](PRECEDENTS.md)). The second panel is what the proposed return edge
+prevents: a fork, after which the open project and the operator compete for the same fixes and the
+same maintainers' time (2·controller-operator).
+
+### idea·same-requirements
+
+![idea·same-requirements: one set of regulatory, contract, privacy and security requirements applies to a company, a nonprofit and an individual or informal project alike; the company and the nonprofit meet them and sign an agreement or authorisation; for an individual it usually requires a legal entity](diagrams/idea-same-requirements.svg)
+
+The requirements do not change with the kind of organisation; meeting them usually takes a legal
+entity. Evidence: the FDA routes are open to any manufacturer and Tidepool, a nonprofit, took the
+same 510(k) route; Dexcom's agreement is standard and non-negotiable; Washington's health-data act
+does not exclude nonprofits; Apple asks healthcare apps to come from a legal entity
+([what each activity brings §5](ACCOUNTABILITY-THRESHOLDS.md#5-the-same-requirements-for-anyone)).
+
+### idea·oversight-layer
+
+![idea·oversight-layer: a nonprofit applies the same published criteria to a hosting company and a device company and receives their public conformance results; each company answers to its own regulators; both build on and contribute to the shared commons](diagrams/idea-oversight-layer.svg)
+
+A nonprofit's role is oversight: published criteria, listing and certification, applied the same
+way to every company, with results returned in public. Each company keeps its own legal and
+regulatory duties; the nonprofit does not take them over (CNCF, the Open Home Foundation, TEFCA and
+eduGAIN in [precedents](PRECEDENTS.md); [what each activity brings §5](ACCOUNTABILITY-THRESHOLDS.md#5-the-same-requirements-for-anyone)).
+
+### idea·tiers
+
+![idea·tiers, tier A: the manufacturer's agreement gives read access; the device reports to the client app; readiness evidence returns](diagrams/idea-tiers--a.svg)
+
+![idea·tiers, tier B: limited, confirmed settings changes are added, with an audit trail](diagrams/idea-tiers--b.svg)
+
+![idea·tiers, tier C: authenticated dosing and delivery commands are added, with device validation and a regulatory pathway](diagrams/idea-tiers--c.svg)
+
+The same relationship three times, one agreement per tier, each adding lines: observe and export;
+configure and coordinate; control insulin delivery. The tiers are this repository's terms for
+technical risk, not FDA classifications; the recommendation is to ask for tier A first and
+separately ([partner readiness §2](../PARTNER-READINESS.md#2-three-tiers-of-access-and-which-to-ask-for-first)).
+
+### idea·credential-lifetime
+
+![idea·credential-lifetime, issued and renewed: the authority issues and renews the app's grant; the app sends authenticated commands](diagrams/idea-credential-lifetime--normal.svg)
+
+![idea·credential-lifetime, the authority is unreachable: previously authorised, safely bounded operation continues, and the person is told the grant's expiry is ahead](diagrams/idea-credential-lifetime--unreachable.svg)
+
+![idea·credential-lifetime, revoked: by process, with published grounds, notice and appeal, at once only for a security incident; commands stop and the pump enters its defined safe state; the person is told why and how to appeal](diagrams/idea-credential-lifetime--revoked.svg)
+
+One credential in three states, each with a defined safe state. A credential service must not be
+able to stop insulin delivery by being unreachable; revocation follows a published process, and
+must leave a person's devices in a defined safe state
+([partner readiness §4 and §7](../PARTNER-READINESS.md#7-credentials-for-devices-that-require-them)).
+The bounds and safe states are for each manufacturer to define and validate; the drawing states
+requirements, not the behaviour of any released system.
+
+### idea·complaints
+
+![idea·complaints: a person reports to the shared intake and gets an answer; the intake sends linked reports and a regression test to projects and gets fixes back; it refers reportable events to the manufacturer, which forwards what the agreement says and reports some events to the regulator; the person can also report to the regulator directly](diagrams/idea-complaints.svg)
+
+One intake for support, complaints and security, routing each report to the party legally
+responsible. It closes two loops: regression tests back to the projects, and referrals out to the
+manufacturer, whose own reporting duties stay its own (21 CFR Part 803). Intake is not legal
+responsibility ([partner readiness §5 and §6](../PARTNER-READINESS.md#6-complaint-incident-and-support-handling)).
+
+### idea·designated-third-party
+
+![idea·designated-third-party: under the EU Data Act the person may access their data and designate a third party; the manufacturer must share at the person's request, real-time where feasible; the same data goes to the chosen third party, free to the person; the third party may use it only for the agreed purposes and may not share it on](diagrams/idea-designated-third-party.svg)
+
+In the EU since 2025-09-12, the person decides who receives their device data, and the data holder
+must send it there; the recipient is bound to the agreed purposes
+([vendor note §3.1](../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md#31-eu-data-act)).
+This is a draft summary of the law for counsel to review, not legal advice; it will join the
+data-rights pages when they are brought up to date (queue `DOCS-DATA-RIGHTS-LAW`).
 
 ## What the drawings do not show
 

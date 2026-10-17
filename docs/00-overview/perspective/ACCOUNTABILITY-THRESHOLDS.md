@@ -136,6 +136,12 @@ authorised to use one: device authentication, app attestation and issued credent
 an entity and its agreements, which is the structure drawn in
 [1·proposed, 2·agreement and 2·controller-operator](STRUCTURES.md).
 
+Both ideas, drawn small ([single ideas](STRUCTURES.md#single-ideas)):
+
+![The same requirements for anyone: one set of regulatory, contract, privacy and security requirements applies to a company, a nonprofit and an individual alike; the company and the nonprofit meet them and sign; an individual usually needs a legal entity](diagrams/idea-same-requirements.svg)
+
+![Oversight, not operation: a nonprofit applies the same published criteria to a hosting company and a device company and receives their public conformance results; each company answers to its own regulators and builds on the shared commons](diagrams/idea-oversight-layer.svg)
+
 ## 6. A US nonprofit's own thresholds
 
 The money and staffing conditions that bring the foundation itself new filing, tax and employment
