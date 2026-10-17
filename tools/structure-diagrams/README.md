@@ -27,8 +27,13 @@
   [the grid layout lab](../lab/stpa-grid-style/README.md), which keeps the Graphviz renderer it
   replaced as `baseline_dot.py`.
 
+- `access_charts.py` draws two charts that are not control structures, `1-access-ladder.svg` and
+  `1-access-matrix.svg`, from `access/devices.yaml` (one record per device line, mechanism level
+  only). It reuses `render.py`'s font and text measure.
+
 ```sh
 python3 tools/structure-diagrams/render.py            # every input
+python3 tools/structure-diagrams/access_charts.py     # the access ladder and matrix
 python3 tools/structure-diagrams/render.py tools/structure-diagrams/inputs/z2-agreement.yaml
 ```
 

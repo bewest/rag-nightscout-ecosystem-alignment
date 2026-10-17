@@ -46,6 +46,16 @@ data is sealed so that the phone cannot read it.
 
 How many people each closure would reach is not counted anywhere today (§6).
 
+The paths are drawn as believed, today and emerging in
+[1·access-paths](perspective/PROCESS-MODELS.md#1access-paths-who-holds-the-key-on-each-path),
+with a ladder of how much each device makes an open app depend on its manufacturer. Device by
+device:
+
+![1·access-matrix: for each pump and CGM line, the device link, the number of open implementations, the vendor-cloud route connectors use, the manufacturer's route for outsiders, the real-time route for outsiders, and supply. Most device links are open (step A); Omnipod 5 needs an issued credential; MiniMed 780G and SmartGuide advanced security are not determined. Cloud routes exist for Dexcom, Libre, CareLink and Tandem Source, at the vendor's discretion. The only route for outsiders is Dexcom's API with a one-to-three-hour delay; every real-time route is by invitation or not published. Supply has not been collected for any device](perspective/diagrams/1-access-matrix.svg)
+
+The cells that read "not checked", "not read" or "not collected" are the list of what to find out
+next (§10).
+
 **Keeping access has running costs, with or without an agreement.** Without one, connectors follow
 each vendor-cloud change ([evidence §5](observations/ECOSYSTEM-EVIDENCE.md#5-work-that-arrives-on-other-organisations-calendars)),
 the US copyright exemption for device data needs evidence at each three-yearly renewal
