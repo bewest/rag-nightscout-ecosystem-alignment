@@ -4984,7 +4984,7 @@
 
   <h1>Reply.body</h1>
 
-<p><em>Living document, last changed 2026-10-17 at <code>d1f05f63</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>395c318b</code>.</em></p>
 <p><strong>Re: client-supplied identifiers for Nightscout</strong></p>
 <p>Thank you for writing this up. We agree with the ask. We decided the same rule for our own design
 work on 2026-10-16, and much of what you need is partly in place. This reply says where each part
@@ -5259,6 +5259,51 @@ coordination, but it cannot carry a correction.</p>
 </ol>
 <p>Your answer becomes a decision row next to Q1, and we would revise Q1 for <code>identifier</code> matches if
 it points the other way.</p>
+<p><strong>A proposal on format: UUID recommended, not required.</strong>
+Your proposal says "an opaque client string with a published length limit". We agree, and propose
+this for the decision row:</p>
+<table>
+<thead>
+<tr>
+<th>rule</th>
+<th>proposal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>type</td>
+<td>a non-empty string, with a length limit and character set still to decide</td>
+</tr>
+<tr>
+<td>recommended form</td>
+<td>a UUID: v5 of a source-derived key when several devices must agree, v4 created once for a manual entry</td>
+</tr>
+<tr>
+<td>server</td>
+<td>never depends on the shape</td>
+</tr>
+<tr>
+<td>uniqueness</td>
+<td>one <code>identifier</code> names one record; the client is responsible for it</td>
+</tr>
+</tbody>
+</table>
+<p>Why not require a UUID: your watch-and-phone case needs a value both devices derive on their own,
+like <code>g7:&lt;serial&gt;:&lt;seconds since activation&gt;</code>. A random UUID cannot do that. Other clients key on
+other things, such as AndroidAPS's pump event ids.</p>
+<p>Why recommend one anyway: today's v1 by-id routes recognise only UUID-shaped values
+(<a href="https://github.com/nightscout/cgm-remote-monitor/blob/fade229909e6f3a0b5459230bc7273fe85de4f32/lib/server/query.js#L12">query.js:12</a>),
+and a UUID v5 turns any source key into that shape. API v3 already does exactly this when no
+identifier is sent: <code>uuid.v5(device + "_" + date [+ "_" + eventType], "NightscoutRocks!")</code>
+(<a href="https://github.com/nightscout/cgm-remote-monitor/blob/92d0834219aa771b5837dbcbf1baeb839a200cf6/lib/api3/shared/operationTools.js#L106">operationTools.js:6, 106</a>).</p>
+<p>Two points for you:</p>
+<ul>
+<li><strong>Case.</strong> Stored identifiers are compared exactly. Loop sends upper-case UUIDs for overrides
+  (Swift's <code>uuidString</code>); many other libraries write lower case. A client should send the same string every time; whether
+  the server should compare UUIDs without regard to case is part of the decision.</li>
+<li><strong>Existing identifiers stay as they are.</strong> Changing the form of a value a client has already
+  sent would stop it matching the records it stored.</li>
+</ul>
 <h2 id="6-what-we-propose-to-do-next">6. What we propose to do next<a class="headerlink" href="#6-what-we-propose-to-do-next" title="Permanent link">&para;</a></h2>
 <p>In order:</p>
 <ol>
