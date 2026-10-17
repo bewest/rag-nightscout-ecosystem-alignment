@@ -8,4 +8,5 @@ Interpretation is labelled as interpretation.
 |---|---|
 | [When a DIY ecosystem becomes infrastructure](INFRASTRUCTURE-TRANSITION.md) | the conditions under which other communities changed how their work was organised, which can be measured here, and what the frame does not show |
 | [Precedents](PRECEDENTS.md) | the organisations the proposals cite: funding, staffing, rules, histories, and transitions on one template |
+| [What each activity brings](ACCOUNTABILITY-THRESHOLDS.md) | the pillars of duty each asset and activity brings to any organisation in the structure, how mature programmes put them in place, and a US nonprofit's own thresholds |
 | [Control structures, drawn](STRUCTURES.md) | the ecosystem and the proposals as STPA control structures, at four zoom levels and from each stakeholder's side, with SQLite, CNCF and the Apple Developer Program mapped onto them |
