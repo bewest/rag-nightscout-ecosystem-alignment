@@ -52,6 +52,16 @@ def site_href(target: str) -> str:
     return rel + ("#" + frag if frag else "")
 
 
+def site_src(target: str) -> str:
+    """An image in the markdown -> the same tracked file on the site, relative to site/pages/."""
+    if re.match(r"^[a-z]+:", target):
+        return target
+    repo_path = posixpath.normpath(posixpath.join(posixpath.dirname(SRC), target))
+    if repo_path not in set(git("ls-files", "--", repo_path).splitlines()):
+        sys.exit(f"render: image {repo_path} is not a tracked file; fix the source")
+    return posixpath.relpath(repo_path, PAGE_DIR)
+
+
 FIGURE = """<figure class="layers" aria-label="The stack and the shared commons">
 <div class="side"><div class="cap">the stack: built and run by each project</div>
 <div class="L"><span class="n">6</span>Reports and decision support</div>
@@ -140,6 +150,7 @@ def main():
     content = md.convert(body)
     content = content.replace("<p>FIGURE_PLACEHOLDER</p>", FIGURE)
     content = re.sub(r'href="([^"]+)"', lambda m: 'href="%s"' % html.escape(site_href(html.unescape(m.group(1))), quote=True), content)
+    content = re.sub(r'<img([^>]*?) src="([^"]+)"', lambda m: '<img%s src="%s"' % (m.group(1), html.escape(site_src(html.unescape(m.group(2))), quote=True)), content)
     content = re.sub(r"<table>", '<div class="tw"><table>', content)
     content = content.replace("</table>", "</table></div>")
     # the opening italic paragraph is the document's status note
