@@ -2012,7 +2012,7 @@ oref0's core innovation is deviation analysis:
 | System | API Version | Primary ID | Secondary ID | Update Method |
 |--------|-------------|-----------|--------------|---------------|
 | **Nightscout v1** | v1 | `_id` (MongoDB ObjectId) | N/A | PUT to `/{collection}/{_id}` |
-| **Nightscout v3** | v3 | `identifier` (server-assigned) | `_id` (internal) | PUT/PATCH to `/{collection}/{identifier}` |
+| **Nightscout v3** | v3 | `identifier` (kept as sent by the client, or computed by the server when absent) | `_id` (internal) | PUT/PATCH to `/{collection}/{identifier}` |
 | **AAPS** | v3 | `identifier` | `interfaceIDs.nightscoutId` | PATCH via SDK |
 | **Loop** | v1 | `_id` | `syncIdentifier` | POST (no upsert) |
 | **Trio** | v1 | `_id` | `syncIdentifier` | POST (no upsert) |
@@ -2022,7 +2022,7 @@ oref0's core innovation is deviation analysis:
 
 | Feature | Description | Used By |
 |---------|-------------|---------|
-| `identifier` | Server-assigned immutable document ID | AAPS |
+| `identifier` | Immutable document ID: kept as sent by the client, or computed by the server from `device` + `date` (+ `eventType`) when absent (`lib/api3/shared/operationTools.js` `resolveIdentifier`, 15.0.8 and `dev` `fade2299`); AAPS sends none | AAPS |
 | `history/{timestamp}` | Incremental sync since timestamp | AAPS |
 | `isValid` | Soft-delete flag (false = deleted) | AAPS |
 | `isDeduplication` | Response flag indicating duplicate | AAPS |

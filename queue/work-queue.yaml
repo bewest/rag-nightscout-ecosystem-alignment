@@ -13832,11 +13832,11 @@ items:
     repo: rag-nightscout-ecosystem-alignment
     branch: records/loop-identifier-2026-10-17
     base: main@5a6cef4d
-    state: not-started
+    state: done
     pr: []
     blast_radius: >
       docs/30-design/remedial/nightscout-backfix-register.md (BF-116 severity
-      cell); living mapping and domain pages that say the API v3 identifier is
+      cell and detail section); living mapping and domain pages that say the API v3 identifier is
       server-assigned: mapping/nightscout/v3-treatments-schema.md,
       mapping/cross-project/terminology-matrix.md,
       docs/10-domain/nightscout-api-comparison.md,
@@ -13848,22 +13848,22 @@ items:
     semver_reason: programme documentation
     register: []
     gates:
-      - run: sh -c '! grep -qF "(Loop sends " docs/30-design/remedial/nightscout-backfix-register.md'
+      - run: sh -c '! grep -qE "\(Loop sends |Loop sends .identifier. \(NightscoutKit" docs/30-design/remedial/nightscout-backfix-register.md'
         kind: static
         describe: >
-          FAILS while BF-116's severity cell says Loop sends identifier on
-          devicestatus. RED on 2026-10-17.
+          FAILS while BF-116's severity cell or its detail section says Loop
+          sends identifier on devicestatus. RED on 2026-10-17; GREEN after the fix.
       - run: sh -c '! grep -nE "server-assigned\)|Primary key \(UUID\), server-assigned|Server-assigned immutable document ID|The .identifier. field is server-assigned" mapping/nightscout/v3-treatments-schema.md mapping/cross-project/terminology-matrix.md docs/10-domain/nightscout-api-comparison.md traceability/nightscout-api-gaps.md docs/60-research/cgm-remote-monitor-source-synthesis.md'
         kind: static
         describe: >
           FAILS while any of the five living pages calls the v3 identifier
           server-assigned without saying a client-supplied one is kept. RED on
-          2026-10-17 (6 lines).
+          2026-10-17 (6 lines); GREEN after the fix.
       - run: sh -c '! grep -A3 "^### 4.2 API v3" docs/10-domain/nightscout-api-comparison.md | grep -q "Server-assigned on insert"'
         kind: static
         describe: >
           FAILS while the API comparison's v3 identifier section says
-          "Server-assigned on insert". RED on 2026-10-17.
+          "Server-assigned on insert". RED on 2026-10-17; GREEN after the fix.
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
@@ -13880,6 +13880,21 @@ items:
       Dated snapshot reports and archives are left as written; pages that
       describe AndroidAPS's own model (it sends none, so the server computes
       one) are accurate for that client and are left.
+
+      Done 2026-10-17: BF-116's severity cell and detail section now say no
+      AID uploader sends identifier on devicestatus (NightscoutKit 4ec9fd12
+      re-read); the five living pages say the identifier is kept as sent or
+      computed when absent, citing resolveIdentifier at 15.0.8 and fade2299.
+      Left as written: dated snapshots and archives
+      (nightscout-hub-sync-architecture-2026-09-11.md, docs/archive/,
+      docs/backlogs/archive/), AndroidAPS-model pages
+      (mapping/aaps/nsclient-schema.md, profile-client-patterns.md quoting
+      AAPS's RemoteProfileStore.kt, mongodb-modernization-impact-assessment.md
+      §1.4, conformance/assertions/client-upload-behaviors.yaml), the
+      controller-registration draft proposal (a design for a new collection),
+      and statements that the identifier is immutable on PUT and PATCH, which
+      are true. No living page dates treatments' identifier handling to
+      15.0.8.
 
 # ---------------------------------------------------------------------------
 # PARCEL: platform

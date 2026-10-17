@@ -40,7 +40,7 @@ See [gaps.md](gaps.md) for the index.
 
 **Scenario**: Cross-API document identity
 
-**Description**: API v1 uses `_id` (MongoDB ObjectId), API v3 uses `identifier` (server-assigned). Documents may have both fields with different values, causing confusion when tracking document identity across API versions.
+**Description**: API v1 uses `_id` (MongoDB ObjectId), API v3 uses `identifier` (kept as sent by the client, or computed by the server when absent). Documents may have both fields with different values, causing confusion when tracking document identity across API versions.
 
 **Impact**:
 - Clients using different APIs cannot reliably reference the same document

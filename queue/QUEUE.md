@@ -41,7 +41,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 68 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LOOP-ID-RECORDS, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, LOOP-ID-REPLY |
+| `not-started` | 67 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, LOOP-ID-REPLY |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -49,7 +49,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 87 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 6 | RT-0, T30-RESEARCH, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164 |
-| `done` | 19 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, LAB-HUB-ACTIVE-STATE |
+| `done` | 20 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, LAB-HUB-ACTIVE-STATE |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
 | `answered` | 2 | RT-D3, RT-PROPAGATION |
@@ -6605,7 +6605,7 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 | `DOCS-DATA-RIGHTS-LAW` | Bring the data-rights pages up to date: EU Data Act, the current DMCA medical-device data exemption and the 2027 rulemaking, the Washington health-data act | `done` | `main` | n/a | 3 run |
 | `DOCS-VENDOR-FACTS` | Update vendor facts across the repo: Abbott's partner list, MiniMed's separation from Medtronic, Diabeloop in twiist (verify each first) | `done` | `main` | n/a | 2 run |
 | `DOCS-REMOTE-FOLLOWUP` | Re-check two remote-command statements found while correcting DOCS-REMOTE-PATHS: where Trio's shared secret is configured, and LoopFollow's remote carbs path | `done` | `main` | n/a | 2 run |
-| `LOOP-ID-RECORDS` | Correct BF-116's claim that Loop sends identifier on devicestatus, and the docs that call the v3 identifier server-assigned | `not-started` | `records/loop-identifier-2026-10-17` | n/a | 3 run |
+| `LOOP-ID-RECORDS` | Correct BF-116's claim that Loop sends identifier on devicestatus, and the docs that call the v3 identifier server-assigned | `done` | `records/loop-identifier-2026-10-17` | n/a | 3 run |
 
 ### `DOC-SEQUENCING` &mdash; phase0-pr-sequencing contradicts itself on the branch count
 
@@ -7081,7 +7081,7 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `done` |
 | repo | `rag-nightscout-ecosystem-alignment` |
 | branch | `records/loop-identifier-2026-10-17` |
 | base | `main@5a6cef4d` |
@@ -7089,7 +7089,7 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 | semver | `n/a` |
 | review | maintainer |
 
-**Blast radius.** docs/30-design/remedial/nightscout-backfix-register.md (BF-116 severity cell); living mapping and domain pages that say the API v3 identifier is server- assigned: mapping/nightscout/v3-treatments-schema.md, mapping/cross- project/terminology-matrix.md, docs/10-domain/nightscout-api-comparison.md, traceability/nightscout-api-gaps.md, docs/60-research/cgm-remote-monitor- source-synthesis.md.
+**Blast radius.** docs/30-design/remedial/nightscout-backfix-register.md (BF-116 severity cell and detail section); living mapping and domain pages that say the API v3 identifier is server-assigned: mapping/nightscout/v3-treatments-schema.md, mapping/cross-project/terminology-matrix.md, docs/10-domain/nightscout-api- comparison.md, traceability/nightscout-api-gaps.md, docs/60-research/cgm- remote-monitor-source-synthesis.md.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -7097,19 +7097,19 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 
 **Gates.**
 
-- `[static]` `sh -c '! grep -qF "(Loop sends " docs/30-design/remedial/nightscout-backfix-register.md'`
-  - FAILS while BF-116's severity cell says Loop sends identifier on devicestatus. RED on 2026-10-17.
+- `[static]` `sh -c '! grep -qE "\(Loop sends |Loop sends .identifier. \(NightscoutKit" docs/30-design/remedial/nightscout-backfix-register.md'`
+  - FAILS while BF-116's severity cell or its detail section says Loop sends identifier on devicestatus. RED on 2026-10-17; GREEN after the fix.
 - `[static]` `sh -c '! grep -nE "server-assigned\)|Primary key \(UUID\), server-assigned|Server-assigned immutable document ID|The .identifier. field is server-assigned" mapping/nightscout/v3-treatments-schema.md mapping/cross-project/terminology-matrix.md docs/10-domain/nightscout-api-comparison.md traceability/nightscout-api-gaps.md docs/60-research/cgm-remote-monitor-source-synthesis.md'`
-  - FAILS while any of the five living pages calls the v3 identifier server-assigned without saying a client-supplied one is kept. RED on 2026-10-17 (6 lines).
+  - FAILS while any of the five living pages calls the v3 identifier server-assigned without saying a client-supplied one is kept. RED on 2026-10-17 (6 lines); GREEN after the fix.
 - `[static]` `sh -c '! grep -A3 "^### 4.2 API v3" docs/10-domain/nightscout-api-comparison.md | grep -q "Server-assigned on insert"'`
-  - FAILS while the API comparison's v3 identifier section says "Server-assigned on insert". RED on 2026-10-17.
+  - FAILS while the API comparison's v3 identifier section says "Server-assigned on insert". RED on 2026-10-17; GREEN after the fix.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `reports/consumer-impact-15.0.9/clients-8758.md`
 
-**Notes.** Found 2026-10-17 while checking the Loop maintainers' identifier proposal. API v3 keeps a client-supplied identifier and computes one from device + date (+ eventType) only when none is sent (lib/api3/shared/operationTools.js resolveIdentifier, 15.0.8 and fade2299). Loop does not set identifier on devicestatus: NightscoutKit 4ec9fd12 Models/DeviceStatus.swift:60-61 writes it only if set, and NightscoutService StoredDosingDecision.swift:149 builds the status without it (consumer-impact report clients-8758.md, Loop item (a)). Dated snapshot reports and archives are left as written; pages that describe AndroidAPS's own model (it sends none, so the server computes one) are accurate for that client and are left.
+**Notes.** Found 2026-10-17 while checking the Loop maintainers' identifier proposal. API v3 keeps a client-supplied identifier and computes one from device + date (+ eventType) only when none is sent (lib/api3/shared/operationTools.js resolveIdentifier, 15.0.8 and fade2299). Loop does not set identifier on devicestatus: NightscoutKit 4ec9fd12 Models/DeviceStatus.swift:60-61 writes it only if set, and NightscoutService StoredDosingDecision.swift:149 builds the status without it (consumer-impact report clients-8758.md, Loop item (a)). Dated snapshot reports and archives are left as written; pages that describe AndroidAPS's own model (it sends none, so the server computes one) are accurate for that client and are left. Done 2026-10-17: BF-116's severity cell and detail section now say no AID uploader sends identifier on devicestatus (NightscoutKit 4ec9fd12 re-read); the five living pages say the identifier is kept as sent or computed when absent, citing resolveIdentifier at 15.0.8 and fade2299. Left as written: dated snapshots and archives (nightscout-hub-sync- architecture-2026-09-11.md, docs/archive/, docs/backlogs/archive/), AndroidAPS-model pages (mapping/aaps/nsclient-schema.md, profile-client- patterns.md quoting AAPS's RemoteProfileStore.kt, mongodb-modernization- impact-assessment.md §1.4, conformance/assertions/client-upload- behaviors.yaml), the controller-registration draft proposal (a design for a new collection), and statements that the identifier is immutable on PUT and PATCH, which are true. No living page dates treatments' identifier handling to 15.0.8.
 
 ---
 

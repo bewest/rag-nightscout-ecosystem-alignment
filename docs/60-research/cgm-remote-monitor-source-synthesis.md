@@ -219,7 +219,7 @@ Failed authentication attempts trigger progressive delays per IP address.
 
 ### 4.1 Identifier Generation
 
-The `identifier` field is server-assigned. For documents without `identifier`:
+The server computes `identifier` from `device` + `date` (+ `eventType`) when the client sends none; a client-supplied `identifier` is kept (`lib/api3/shared/operationTools.js` `resolveIdentifier`, 15.0.8 and `dev` `fade2299`). The swagger's sentence that the client should not create it does not match this (BF-169). For documents stored without `identifier`:
 - Fallback to internal `_id` for addressing
 - Deduplication uses collection-specific rules
 

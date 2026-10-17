@@ -20,7 +20,7 @@ Nightscout maintains two parallel API versions:
 | **API_SECRET Auth** | ✅ Yes | ❌ Entry-point blocks | ✅ Yes | ❌ No |
 | **JWT Token Auth** | ✅ Yes | ✅ Required (Bearer) | ✅ Yes | ❌ No |
 | **Access Token Auth** | ✅ Yes | ❌ No (Bearer JWT only) | ✅ Yes | ✅ Yes (only method) |
-| **Document ID** | `_id` (MongoDB ObjectId) | `identifier` (server-assigned) | N/A | N/A |
+| **Document ID** | `_id` (MongoDB ObjectId) | `identifier` (kept as sent by the client, or computed by the server when absent) | N/A | N/A |
 | **Sync Method** | Poll with date filters | Incremental history | Push (alarms) | Push (storage changes) |
 | **Deletion** | Hard delete | Soft delete (`isValid=false`) | N/A | N/A |
 
@@ -323,7 +323,7 @@ notifications:*:ack               // Acknowledge notifications
 ### 4.2 API v3: `identifier`
 
 - **Format:** String (typically UUID-like or hash-based)
-- **Assignment:** Server-assigned on insert
+- **Assignment:** kept as sent when the client supplies one; otherwise computed by the server on insert from `device` + `date` (+ `eventType`) (`lib/api3/shared/operationTools.js` `resolveIdentifier`, 15.0.8 and `dev` `fade2299`)
 - **Immutability:** Yes, except during v1→v3 deduplication migration
 - **Usage:** Primary addressing key for all operations
 

@@ -36,7 +36,7 @@ All documents inherit from `DocumentBase`.
 
 | Field | Type | Mutable | Description |
 |-------|------|---------|-------------|
-| `identifier` | string | ❌ | Primary key (UUID), server-assigned |
+| `identifier` | string | ❌ | Primary key. Kept as sent when the client supplies one; otherwise the server computes a UUID v5 from `device` + `date` (+ `eventType`) (`lib/api3/shared/operationTools.js` `resolveIdentifier`, 15.0.8 and `dev` `fade2299`) |
 | `date` | integer | ❌ | Timestamp (Unix ms, seconds, or ISO-8601) |
 | `utcOffset` | integer | ❌ | UTC offset in minutes (parsed from date) |
 | `app` | string | ❌ | Source application |
