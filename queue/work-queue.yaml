@@ -5100,6 +5100,328 @@ items:
       being read to say what the same-key pairs are, for a possible later
       merge change.
 
+  # --- Client-supplied identifier (Loop proposal, 2026-10-17) -------------
+  # cgm-remote-monitor work that follows from LOOP-ID-REPLY. WRITE-CONTRACT
+  # stays the umbrella; WC-STEP-PATCH is its first release (spec Q6 (a)) and
+  # the ID-* items are the identifier part of its second.
+
+  - id: ID-DUP-MEASURE
+    title: "Measure duplicate identifier values across the 12-site ns-data corpus"
+    parcel: tenancy
+    repo: rag-nightscout-ecosystem-alignment
+    branch: records/loop-identifier-2026-10-17
+    base: main@52a82ac8
+    state: not-started
+    pr: []
+    blast_radius: >
+      A research note under docs/60-research/tenancy/ and the script that
+      produced it, following write-contract-null-and-keys-2026-10-12 (same
+      corpus, same pseudonymous site labels, aggregate counts only). No
+      corpus data is committed. Nothing in cgm-remote-monitor changes.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: research in this repository; ships nothing
+    register: []
+    gates:
+      - no-gate: >
+          Not started. Done when the note reports, per site and collection,
+          documents with a non-empty string identifier, with null, "" or a
+          non-string one, and without; identifier values held by more than
+          one document, split by same or different natural key and by client
+          class; and whether a partial unique index would build.
+    blocks_on: []
+    evidence:
+      - docs/60-research/tenancy/write-contract-null-and-keys-2026-10-12.md
+    notes: >
+      Input to ID-UNIQUE-INDEX. The corpus (externals/ns-data, 12 sites) was
+      fetched through API v1 GET only and cannot see indexes or server-side
+      state.
+
+  - id: WC-STEP-PATCH
+    title: "Release 1 (patch): one write step for every v1, v3 and socket path, today's behaviour pinned; BF-165's _id in every reply"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ""
+    base: seam/t1-2-storage-interface@81a1f6ce
+    worktree: externals/work/crm-seam
+    state: blocked
+    pr: []
+    blast_radius: >
+      As WRITE-CONTRACT: lib/storage gains the write step (spec section 2.3,
+      lib/storage/write-step.js inside collectionFor); the v1 server modules
+      (lib/server/{entries, treatments, devicestatus, profile, food,
+      activity}.js), the API v3 generic operations over lib/api3/storage and
+      lib/server/websocket.js route through it. No stored result changes
+      except BF-165: lib/server/treatments.js's fallback-key re-send reply
+      and data-update document carry the stored _id.
+    review: maintainer, plus a second human - every write path moves
+    operator_visible: >
+      Nothing should look different. One fix: a treatment that an app
+      re-sends after a lost reply is answered with its Nightscout id, so the
+      app (Loop in particular) can later edit or delete it.
+    semver: patch
+    semver_reason: >
+      Spec Q6 (a), decided 2026-10-12: the step lands with today's
+      write-contract matrix pinned (gate G1, "no cell changed"); BF-165 adds
+      a field a client already expects.
+    register: [BF-165]
+    gates:
+      - no-gate: >
+          Not started; waits on SEAM-REFRESH like WRITE-CONTRACT. Its gate is
+          spec G1: tools/qc/write-contract-matrix.js run through every path
+          with every cell equal to the pinned dev matrix except BF-165's two
+          cells (treatments v1/inproc resend-identity gain _id); control:
+          each of the spec's six one-line ablations turns its predicted cells
+          red.
+    blocks_on: [SEAM-REFRESH]
+    evidence:
+      - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - tools/qc/write-contract-matrix.js
+    notes: >
+      WRITE-CONTRACT has no sub-items: it is one item covering both releases
+      of spec Q6 (a). This item is its first release, split out so the
+      identifier items can block on it; WRITE-CONTRACT stays the umbrella
+      and is not duplicated. BFQ-165 (BF-165) can still land on dev first as
+      a narrow fix; if it does, this item keeps it pinned rather than
+      re-making it. BFQ-169 (the v3 swagger text about identifier) is
+      documentation only and independent; it is linked because the identifier
+      items below make the corrected text a promise.
+
+  - id: ID-FIRST-MATCH
+    title: "Release 2 (minor): identifier-first matching for entries, devicestatus and socket dbAdd, with the Q1 adoption rule"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ""
+    base: seam/t1-2-storage-interface@81a1f6ce
+    worktree: externals/work/crm-seam
+    state: blocked
+    pr: []
+    blast_radius: >
+      The write step's match rule, applied on: lib/server/entries.js
+      upsertQueryFor (today sysTime+type unless identifier is present after
+      UUID normalisation); lib/server/devicestatus.js create (insertMany
+      becomes an upsert on identifier when one is present);
+      lib/server/websocket.js dbAdd; lib/server/treatments.js upsertQueryFor
+      gains the adoption rule.
+    review: maintainer, plus a second human - re-send behaviour clients see changes
+    operator_visible: >
+      An app that labels each record with its own id can re-send it without
+      creating a second copy, for glucose readings, treatments and loop
+      status alike. An existing record without such a label can be claimed
+      by the first labelled re-send of the same reading or treatment; a
+      record already labelled by a different id is never overwritten.
+    semver: minor
+    semver_reason: >
+      Re-sends that create a second record today (entries, devicestatus,
+      socket) become matches; v1 treatments change from "identifier match or
+      fallback key" to the Q1 rule, so a labelled re-send no longer
+      overwrites a stored record that carries a different identifier.
+    register: []
+    gates:
+      - no-gate: >
+          Not started. Gate to write: the write-contract matrix extended with
+          identifier cells per collection and path: (1) same identifier,
+          re-send -> one record; (2) identifier, stored record on the natural
+          key with no identifier -> adopted, one record; (3) identifier,
+          stored record on the natural key with a different identifier -> a
+          second record, the first untouched. Control: drop the identifier
+          clause from one path and cell (1) goes red there.
+    blocks_on: [WC-STEP-PATCH]
+    evidence:
+      - docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md
+      - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
+    notes: >
+      Q1 rule as proposed in LOOP-ID-REPLY: an identified write that finds no
+      identifier match may adopt a stored record with NO identifier on the
+      natural key; never one with a different identifier.
+
+  - id: ID-BATCH-RESULTS
+    title: "Release 2 (minor): per-item results in v1 batch replies; one bad item no longer fails the batch"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ""
+    base: seam/t1-2-storage-interface@81a1f6ce
+    worktree: externals/work/crm-seam
+    state: blocked
+    pr: []
+    blast_radius: >
+      The v1 POST handlers for entries, treatments and devicestatus
+      (lib/api/{entries, treatments, devicestatus}/index.js) and the
+      corresponding lib/server create functions: the reply is one element
+      per submitted item, in order, carrying the stored _id and identifier or
+      a per-item error.
+    review: maintainer, plus a second human - the reply body changes
+    operator_visible: >
+      When an app uploads a batch and one record in it is malformed, the
+      other records are saved and the app is told which one failed, instead
+      of the whole upload failing and being retried.
+    semver: minor
+    semver_reason: >
+      Spec U6: a 5xx for one item becomes a 2xx with a per-item body; the
+      body shape changes for error items. NightscoutKit requires the reply
+      array to be the same length as the request, so success items keep
+      today's shape and position.
+    register: []
+    gates:
+      - no-gate: >
+          Not started. Gate to write: a v1 batch of three with the middle item
+          invalid answers 200 with a three-element array, items 1 and 3 stored
+          with _id, item 2 an error object; control: today's handler answers
+          a whole-batch error for the same request.
+    blocks_on: [WC-STEP-PATCH]
+    evidence:
+      - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
+      - docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md
+    notes: >
+      U6 in spec section 3. The error item's shape is not decided; it must not
+      break NightscoutKit's same-length check (read, not run).
+
+  - id: ID-VALIDATE
+    title: "Release 2 (minor): validate identifier on every collection; empty and null mean absent"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ""
+    base: seam/t1-2-storage-interface@81a1f6ce
+    worktree: externals/work/crm-seam
+    state: blocked
+    pr: []
+    blast_radius: >
+      The write step's input check, for all six collections on every path:
+      identifier must be a non-empty string within a length limit and
+      charset (both to be decided); "" and null are treated as absent, as
+      BF-141's fix does for treatment identities.
+    review: maintainer
+    operator_visible: >
+      A record with a malformed record label is refused with a clear message
+      instead of being stored with a label that cannot be found again.
+    semver: minor
+    semver_reason: >
+      Writes accepted today (any type, any length) can be refused; "" and
+      null stop being stored as identifiers.
+    register: []
+    gates:
+      - no-gate: >
+          Not started; the length limit and charset need a decision row
+          first. Gate to write: per collection and path, identifier 7, "",
+          null and an over-long string are refused or treated as absent as
+          decided; control: today's dev stores each.
+    blocks_on: [WC-STEP-PATCH]
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      BF-141's fix (#8781) treats an empty treatment identity as absent;
+      this extends the rule to identifier on every collection.
+
+  - id: ID-V1-LOOKUP
+    title: "Release 2 (minor): v1 GET and DELETE by any identifier, without the default time window"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ""
+    base: seam/t1-2-storage-interface@81a1f6ce
+    worktree: externals/work/crm-seam
+    state: blocked
+    pr: []
+    blast_radius: >
+      lib/server/query.js: updateIdQuery maps an identifier beyond UUID_RE
+      (today only UUID-shaped values, and only with uuidHandling); find[identifier]
+      and find[identifier][$in] accepted; the default deltaAgo window
+      (TWO_DAYS * 2) lifted when the find names identifier. The v1 GET and
+      DELETE routes for entries, treatments and devicestatus.
+    review: maintainer
+    operator_visible: >
+      An app can look up or delete a record by its own label, however old
+      the record is.
+    semver: minor
+    semver_reason: new query forms; a query naming identifier returns records older than four days that it does not return today
+    register: []
+    gates:
+      - no-gate: >
+          Not started. Gate to write: a record 30 days old with a non-UUID
+          identifier is returned by GET ?find[identifier]=<id> and removed by
+          DELETE with the same find, and $in over two identifiers returns
+          both; control: dev returns none (window and UUID_RE).
+    blocks_on: [WC-STEP-PATCH]
+    evidence:
+      - docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md
+    notes: >
+      Read at dev fade2299: lib/server/query.js UUID_RE at line 7, the
+      deltaAgo default at 35-36, updateIdQuery at 96 [R].
+
+  - id: ID-V3-IMMUTABLE-DECISION
+    title: "Decide: on an identifier match, may date, device or eventType change?"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@fade2299
+    state: needs-decision
+    pr: []
+    blast_radius: >
+      A decision row, no code. Its answer sets the write step's rule for
+      lib/api3/generic/update/validate.js (immutable fields) and for the v1
+      paths.
+    review: maintainer, after the Loop maintainers answer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: a decision; the code that follows is classed in ID-FIRST-MATCH
+    register: []
+    gates:
+      - no-gate: >
+          A decision, not measurable. Today, measured 2026-10-17
+          (tools/lab/v3-identifier-immutable): API v3 answers 400 and keeps
+          one record; v1 treatments update created_at on the identifier
+          match; v1 entries store a second record.
+    blocks_on: [LOOP-ID-REPLY]
+    evidence:
+      - tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md
+      - docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md
+    notes: >
+      The three paths disagree today. The reply asks Loop whether an
+      identified record's time can be corrected by a re-send.
+
+  - id: ID-UNIQUE-INDEX
+    title: "Partial unique index on identifier, retry-as-update on duplicate key, start-up safe on existing duplicates"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ""
+    base: seam/t1-2-storage-interface@81a1f6ce
+    worktree: externals/work/crm-seam
+    state: blocked
+    pr: []
+    blast_radius: >
+      lib/storage/mongo-storage.js ensureIndexes (211-219 at dev fade2299)
+      and the per-collection index lists in lib/server/{entries,
+      treatments, devicestatus}.js: today's non-unique identifier index is
+      replaced by a partial unique index {identifier: {$type: "string", $gt:
+      ""}} (not sparse: a sparse index still indexes null). The same key
+      pattern conflicts with the existing index, so it is dropped and
+      rebuilt. The write step retries an E11000 as an update. A pre-flight
+      duplicate report (admin tool). The PostgreSQL seam needs the
+      equivalent partial unique index (WHERE identifier IS NOT NULL AND
+      identifier <> '').
+    review: maintainer, plus a second human - it changes indexes on every site
+    operator_visible: >
+      Nightscout makes sure no two records share a label. If an old database
+      already has such duplicates, the site still starts, logs that the check
+      could not be switched on, and a report lists the duplicates.
+    semver: minor
+    semver_reason: a write that would duplicate an identifier becomes an update; index change on start-up
+    register: []
+    gates:
+      - no-gate: >
+          Not started. Gates to write: (1) two concurrent writes with one new
+          identifier store one record; control: today's non-unique index
+          stores two. (2) a database seeded with a duplicate identifier
+          starts, logs the failed index build and serves reads (cf. BF-115);
+          control: an ensureIndexes that throws on the build stops start-up.
+    blocks_on: [ID-DUP-MEASURE, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-V3-IMMUTABLE-DECISION]
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Whether the index would build on stored data is ID-DUP-MEASURE. The
+      pre-flight report is what decides on a real site.
+
 
 # ---------------------------------------------------------------------------
 # PARCEL: docs-truth
@@ -15413,7 +15735,7 @@ items:
     repo: rag-nightscout-ecosystem-alignment
     branch: main
     base: main@5a6cef4d
-    state: not-started
+    state: in-progress
     pr: []
     blast_radius: >
       A drafted message in docs/30-design/platform/upstream-asks-loop-identifier/
@@ -15427,9 +15749,10 @@ items:
     register: []
     gates:
       - no-gate: >
-          Not started. Done when the draft is in the directory above with its
-          facts checked at named refs; whether it is sent cannot be checked
-          from here.
+          Drafted, not sent: draft committed ec7e1162, published 52a82ac8.
+          Done when the draft is in the directory above with its facts
+          checked at named refs; whether it is sent cannot be checked from
+          here.
     blocks_on: [LOOP-ID-RECORDS, BFQ-169]
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
@@ -15443,6 +15766,10 @@ items:
       path (treatments' identifier-first upsert arrived in 15.0.7: e78a5bc6,
       reaching dev through PR #8421's merge cdef1e7c, which GitHub lists as
       the commit's PR); Loop does not send identifier on devicestatus today.
+
+      Draft committed ec7e1162, published 52a82ac8; not sent. The queue has
+      no state for "drafted, not sent", so it stays in-progress until the
+      maintainer sends it. ID-V3-IMMUTABLE-DECISION waits on the answer.
 
   - id: LOOP-ID-V3-IMMUTABLE
     title: "Reproduce over HTTP that API v3 answers a re-send with the same identifier and a different date, device or eventType with 400"
