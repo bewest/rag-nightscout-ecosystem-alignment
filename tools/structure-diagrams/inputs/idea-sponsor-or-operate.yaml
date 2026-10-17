@@ -1,0 +1,31 @@
+# One idea: sponsoring a shared service is not running it. Two panels on one layout; the change is
+# who sits in the operator's box.
+# Sources: ECOSYSTEM-PROGRAMME §2b (sponsor by default; operate only by a recorded decision that names
+# the operator, its contract, its insurance and its successor; the operator may be a specialist the
+# foundation contracts with or one a manufacturer appoints; paying gives no control over any
+# project's roadmap, COLLABORATION-MODEL rule 2); ACCOUNTABILITY-THRESHOLDS §3 (operating a service
+# that people's data or therapy depends on brings availability, security and incident duties and a
+# continuity plan; technology errors and omissions and cyber cover usually considered).
+title: "idea·sponsor-or-operate · Paying for a service is not running it"
+base: false
+scenarios: [sponsor, operate]
+nodes:
+  - {id: fdn, label: "Nightscout Foundation\n(the board)", kind: entity, level: 0, column: 1, icon: hand-heart}
+  - {id: op, label: "Operator", kind: entity, level: 1, column: 1, icon: building-2,
+     labels: {sponsor: "A named operator, with its\nown contract, insurance\nand successor",
+              operate: "The foundation itself,\nas operator"}}
+  - {id: svc, label: "A shared service people\ndepend on (credentials,\ncomplaint intake, hosting)", kind: process, level: 2, column: 1, icon: server}
+  - {id: people, label: "People who\nrely on it", kind: human, level: 3, column: 1, icon: users}
+edges:
+  - {from: fdn, to: op, kind: funding, label: "pays for and scopes\nthe work; no say over\nhow it is run", in: [sponsor]}
+  - {from: fdn, to: op, kind: control, label: "a recorded decision naming\nthe contract, insurance\nand successor", in: [operate]}
+  - {from: op, to: fdn, kind: feedback, label: "reports",
+     labels: {sponsor: "reports on the work\nit was paid for",
+              operate: "every incident is\nthe foundation's"}}
+  - {from: op, to: svc, kind: control, label: "runs it and answers for\navailability, security,\nincidents"}
+  - {from: svc, to: op, kind: feedback, label: "uptime, incidents"}
+  - {from: svc, to: people, kind: control, label: "the service"}
+  - {from: people, to: op, kind: feedback, label: "complaints, claims"}
+views:
+  - {id: sponsor, title: "the foundation sponsors (the default)", scenario: sponsor}
+  - {id: operate, title: "the foundation operates (only by recorded decision)", scenario: operate}

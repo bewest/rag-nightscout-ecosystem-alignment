@@ -24,7 +24,8 @@ Optional YAML additions (all backwards compatible):
   `scenarios`: [believed, actual, ...] with `base: false`: one drawing per scenario on one layout.
                An edge or node with `in: [...]` appears only in those scenarios; an edge's
                `labels: {scenario: text}` replaces its label there. Layout uses every edge and
-               the longest label variant, so the scenarios line up box for box.
+               the longest label variant, so the scenarios line up box for box. A node's
+               `labels: {scenario: text}` changes who or what sits in a box per scenario.
   node `icon`: a file name in icons/ without .svg (Lucide, ISC licence), drawn at the box's left
                to say what the box does: factory for a manufacturer, landmark for a legislature,
                scale for a regulator, user / users for a person / people
@@ -149,6 +150,12 @@ def load(path):
         variants = [e["label"]] + list((e.get("labels") or {}).values())
         # lay out with the widest variant, so every scenario's text fits the same place
         e["label"] = max(variants, key=lambda t: (max(tw(x, EFS) for x in t.split("\n")), t.count("\n")))
+    for n in m["nodes"]:
+        n["label_base"] = n["label"]
+        if n.get("labels"):
+            # size the box for the longest variant, so every scenario's text fits the same box
+            n["label"] = max([n["label"]] + list(n["labels"].values()),
+                             key=lambda t: (max(tw(x, NFS) for x in t.split("\n")), t.count("\n")))
     m["byid"] = {n["id"]: n for n in m["nodes"]}
     m["nodes"] = sorted(m["nodes"], key=lambda n: (n["level"], n["column"]))
     return m
@@ -682,14 +689,15 @@ def svg(m, G, view=None, data_ids=True):
         dash = ' stroke-dasharray="5,3"' if n.get("status") == "proposed" else ""
         o.append(f'<g class="node" data-id="{n["id"]}"><rect x="{f(g["x"])}" y="{f(g["y"])}" width="{f(g["w"])}" '
                  f'height="{f(g["h"])}" rx="5" fill="{fill}" stroke="{stroke}" stroke-width="{sw}"{dash}/>')
-        y0 = g["cy"] - (len(g["lines"]) - 1) * NLH / 2 + 4
+        lines = node_lines({**n, "label": (n.get("labels") or {}).get(scen, n["label_base"])})
+        y0 = g["cy"] - (len(lines) - 1) * NLH / 2 + 4
         tx = g["cx"]
         if g.get("icon"):
             tx = g["cx"] + ICON_W / 2
             ix, iy = g["x"] + 9, g["cy"] - ICON / 2
             o.append(f'<use href="#icon-{g["icon"]}" x="{f(ix)}" y="{f(iy)}" width="{ICON}" height="{ICON}" '
                      f'color="{"#3a4656" if lit else "#b8b8b8"}"/>')
-        for i, s in enumerate(g["lines"]):
+        for i, s in enumerate(lines):
             o.append(f'<text x="{f(tx)}" y="{f(y0 + i * NLH)}" font-size="{NFS}" text-anchor="middle" '
                      f'fill="{"#111111" if lit else "#a0a0a0"}">{esc(s)}</text>')
         o.append("</g>")

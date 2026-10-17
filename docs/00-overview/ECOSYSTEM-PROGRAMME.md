@@ -105,6 +105,13 @@ manufacturer appoints; the foundation sponsoring the work does not make it the o
 a shared service also gives no control over any project's roadmap
 ([COLLABORATION-MODEL](COLLABORATION-MODEL.md) rule 2).
 
+The difference, drawn: the same service with a named operator in the operator's box, and with the
+foundation in it ([idea·sponsor-or-operate](perspective/STRUCTURES.md#ideasponsor-or-operate)).
+
+![Sponsoring: the foundation pays for and scopes the work; a named operator runs the service and receives uptime, incidents, complaints and claims](perspective/diagrams/idea-sponsor-or-operate--sponsor.svg)
+
+![Operating: by a recorded decision the foundation itself runs the service, and every incident, complaint and claim is the foundation's](perspective/diagrams/idea-sponsor-or-operate--operate.svg)
+
 ## 2c. Shared operations the commons depend on
 
 The four commons name technical assets. Four kinds of shared operation run underneath them, and

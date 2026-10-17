@@ -39,6 +39,7 @@ same as drawings are added beside it.
 | 1 · ecosystem | the ecosystem's organisations and how they connect | 1·today, 1·proposed (and six stakeholder views); 1·authority\*, 1·data-rights\*, 1·hosting\*, 1·federation\* |
 | 2 · one organisation or agreement | one entity, one agreement, one programme | 2·agreement, 2·controller-operator; the precedents 2·sqlite, 2·cncf, 2·apple; 2·data-commons\*, 2·shared-infra\* |
 | 3 · technical process | one loop in software and devices | 3·controller, 3·hub-sync, 3·delegation, 3·person-loop; 3·identity\*, 3·registration\* |
+| idea | one idea from the argument, drawn small | idea·sponsor-or-operate |
 
 \* Drawn three times on one layout (believed, actual, and emerging or proposed) on the companion
 page [What we believe, and how it works](PROCESS-MODELS.md).
@@ -249,6 +250,26 @@ Source: [TestFlight distribution infrastructure](../../10-domain/testflight-dist
 person who builds; App Store apps put one account on the publisher. That is the trade a credential
 authority in 2·agreement makes too: who holds the credential decides who answers for it and whose renewal
 can lapse.
+
+## Single ideas
+
+Leveson's figures are crisp partly because each carries one idea. These drawings take one idea from
+the overview's argument and draw it with as few boxes as it needs, in two or three panels on one
+layout.
+
+### idea·sponsor-or-operate
+
+![idea·sponsor-or-operate, sponsoring: the foundation's board pays for and scopes the work, with no say over how it is run; a named operator with its own contract, insurance and successor runs the shared service and answers for availability, security and incidents; uptime, incidents, complaints and claims go to the operator](diagrams/idea-sponsor-or-operate--sponsor.svg)
+
+![idea·sponsor-or-operate, operating: the board's recorded decision names the contract, insurance and successor; the foundation itself sits in the operator's box, runs the service and answers for it; every incident, complaint and claim is the foundation's](diagrams/idea-sponsor-or-operate--operate.svg)
+
+The same service, drawn twice. The only change is who sits in the operator's box, and with it where
+uptime, incidents, complaints and claims arrive. Sponsoring passes money down and reports up;
+operating passes control down and makes every incident the foundation's. The programme proposes
+that the foundation **sponsors by default and operates only by a recorded decision** naming the
+operator, its contract, insurance and successor
+([programme §2b](../ECOSYSTEM-PROGRAMME.md#2b-sponsoring-and-operating)); the duties that
+operating brings are listed in [what each activity brings §3](ACCOUNTABILITY-THRESHOLDS.md#3-activities-and-the-pillars-they-trigger).
 
 ## What the drawings do not show
 

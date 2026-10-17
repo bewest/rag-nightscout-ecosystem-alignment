@@ -15,7 +15,8 @@
   `render.py`, which also writes `icon-key.svg`.
 - Scenarios: `scenarios: [believed, actual, emerging]`, `base: false` and one view per scenario
   draw the same structure several times on one layout. An edge or node with `in: [...]` appears
-  only in those scenarios; `labels: {scenario: text}` changes an edge's label there. Edge kinds
+  only in those scenarios; `labels: {scenario: text}` changes an edge's label there, and on a node changes who or what sits
+  in that box (see `inputs/idea-sponsor-or-operate.yaml`). Edge kinds
   `authority` (where a right to act comes from) and `discretion` (control exercised at the
   controller's own choice) exist for these drawings. See `inputs/1-authority.yaml`.
 - Optional layout keys: `bands` (horizontal bands behind rows, e.g. legal / organisational /
