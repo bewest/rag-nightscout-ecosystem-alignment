@@ -160,7 +160,7 @@ handling); each client's file has the full table.
 | nightscout-reporter | `518d61f` (the retired AngularDart app) | none in the frozen code; the maintained Angular successor is not in the corpus |
 | nightscout-roles-gateway | `replit` `90840ac` | no data-path change; behind a TLS-terminating proxy a wrong `TRUST_PROXY` loops redirects |
 | GlycemicGPT, oref-digital-twin, nightscout-cgm-skill | tips in the lockfile | none |
-| osaid-keymanager, trio-telemetry, babelbetes, glooko2nightscout, openaps, xdrip-js, GlookoServiceKit | tips in the lockfile | no Nightscout requests (positive controls in each file) |
+| trio-telemetry, babelbetes, glooko2nightscout, openaps, xdrip-js, GlookoServiceKit, and one private repository not described here | tips in the lockfile | no Nightscout requests (positive controls in each file) |
 
 ## 6. nocturne parity
 

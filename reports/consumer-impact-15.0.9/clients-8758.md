@@ -81,7 +81,7 @@ a cell marked with a replay id was measured.
 | GlycemicGPT `d1a9adb73e` | – | – | – | – | – (Q6) | – | B | – | – | – | – | – | – | – |
 | nightscout-reporter `518d61fb1d` | – | – | – | – | – | – | B | – | – | – | – | – | – | – |
 | oref-digital-twin `a2e8610d5f`, nightscout-cgm-skill `91a53ea167`, GluPredKit `e5bd6357a6`, nightscout-roles-gateway `90840acee1` | – | – | – | – | – | – | – (Q7) | – | – | – | – | – | – | – |
-| babelbetes `07a7f07278`, osaid-keymanager `e9c3b738aa`, trio-telemetry `681ea86752` (no Nightscout requests) | – | – | – | – | – | – | – | – | – | – | – | – | – | – |
+| babelbetes `07a7f07278`, trio-telemetry `681ea86752`, one private repository not described here (no Nightscout requests) | – | – | – | – | – | – | – | – | – | – | – | – | – | – |
 | nocturne `42275c812d` (server reimplementation) | n/a | n/a | n/a | ? | parity differs | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a |
 
 ## Candidate defects
@@ -867,12 +867,12 @@ whether `LegacyId` was stored in that case (cannot tell from reading). Probe R-3
 | C79 | unaffected | it never deletes a subject; if the proposed create lands, a subject posted without `_id` gets an ObjectId on every build |
 | others | unaffected | — |
 
-### babelbetes, osaid-keymanager, trio-telemetry
+### babelbetes, trio-telemetry, and one private repository
 
 | repo | HEAD | finding | anchor |
 |---|---|---|---|
 | babelbetes | `07a7f07278` (`develop`), staged 0, dirty 0 | no Nightscout requests; one notebook reads archived exports from files | `notebooks/understand-dana-dataset/2024-05-15 - LoadingLoopDataFromNightScout.ipynb` (loader cells) |
-| osaid-keymanager | `e9c3b738aa` (`main`), staged 0, dirty 0 | no Nightscout requests, no subjects or roles (its ids are App Attest key ids) | `app/attest/verify.py:82-187` (positive control: the search reaches its code) |
+| one private repository | not described here | no Nightscout requests, no subjects or roles | positive control held outside this repository |
 | trio-telemetry | `681ea86752` (`master`), staged 0, dirty 0 | no Nightscout requests; `nightscoutPaired` is a boolean the Trio app reports | prior map `trio-telemetry.md:18` |
 
 All C-ids: unaffected.
@@ -888,7 +888,7 @@ All C-ids: unaffected.
 | nightscout-reporter | – | – | – | – | – | – | better | – | – | – | – | – | – | – |
 | nocturne (parity) | n/a | n/a | n/a | cannot tell | parity differs by design | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a |
 | nightscout-roles-gateway | – | – | – | – | – | – | – | – | – | – | – | – | – | – |
-| babelbetes, osaid-keymanager, trio-telemetry | – | – | – | – | – | – | – | – | – | – | – | – | – | – |
+| babelbetes, trio-telemetry, one private repository | – | – | – | – | – | – | – | – | – | – | – | – | – | – |
 
 `–` = unaffected. No reader is in "could be worse".
 
