@@ -16,6 +16,12 @@
 #                  only), xdripswift c268542 (G7: code, then a certificate exchange with fixed client
 #                  certificate material), Juggluco 75399d7 and LibreLoop 150d2b1 (Libre 3: NFC, then
 #                  app credentials, fixed in Juggluco's source and downloaded separately by LibreLoop)
+#                  LibreTransmitter 4110512 (Libre 1/2: sensor ID read by NFC, an unlock code the app
+#                  chooses, fixed protocol keys every app shares), OmniKit 2b4253b (Eros: no
+#                  cryptography; pairing values from the pod), OmniBLE 29358d5 (DASH: a fresh key pair
+#                  per pairing plus a fixed protocol constant), MinimedKit a7b2685 (Medtronic 5xx/7xx:
+#                  pump ID entered; no cryptography). None of these makes network calls or presents a
+#                  client credential
 #   cloud        - connectors: nightscout-connect 04102f9 (dexcomshare, librelinkup, minimedcarelink);
 #                  tconnectsync 7c4b2f4 (Tandem); evidence §5 (breakages since 2020)
 #   outside      - vendor note §1.1-§1.9 (published routes for outside developers), read 2026-10-17
@@ -41,6 +47,7 @@ modes:
     - "Eversense, CareSens Air, Sibionics, Aidex through app-to-app receivers"
   E: []
 notes:
+  A: "Libre 2 and DASH use fixed protocol keys that the manufacturer's own app shares; no client credential"
   C: "read from EversenseKit's code; the service can refuse or change at the manufacturer's choice"
   D: "G7 and Libre 3: fixed credentials carried by the open code; Omnipod 5 read from file names, credential source not checked"
   E: "none found; the census did not look for it"
