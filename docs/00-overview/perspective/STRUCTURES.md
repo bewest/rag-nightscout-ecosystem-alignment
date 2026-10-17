@@ -211,8 +211,9 @@ carbs, a temporary target, an override) to the controller. Measured gaps (note �
 no record of a command with an id and an acknowledgement, except in AAPS's development branch; a
 reply reaches the sender only where the sender supplied a return path; "success" means the pump
 accepted the command, not that delivery finished; and an automated agent looks the same as
-whoever shared the credential with it. The dashed edges are the proposed command record and
-acknowledgement.
+whoever shared the credential with it. The proposed command record and acknowledgement are drawn
+in [3·registration](PROCESS-MODELS.md#3registration-who-writes-to-the-hub-and-where-a-command-goes),
+as proposed.
 
 ## 3·person-loop
 

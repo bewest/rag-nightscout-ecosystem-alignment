@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="863" height="805" viewBox="0 0 863 805" font-family="Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="837" height="770" viewBox="0 0 837 770" font-family="Helvetica, Arial, sans-serif">
 <title>3·delegation · Delegation: remote commands to the controller</title>
 <defs>
 <marker id="ah00796b" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#00796b"/></marker>
@@ -17,115 +17,101 @@
 <symbol id="icon-syringe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 2 4 4" /> <path d="m17 7 3-3" /> <path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5" /> <path d="m9 11 4 4" /> <path d="m5 19-3 3" /> <path d="m14 4 6 6" /></symbol>
 <symbol id="icon-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /> <circle cx="12" cy="7" r="4" /></symbol>
 </defs>
-<rect x="0" y="0" width="863" height="805" fill="#ffffff"/>
-<text x="431.4" y="22" font-size="13" text-anchor="middle" fill="#111">3·delegation · Delegation: remote commands to the controller</text>
+<rect x="0" y="0" width="837" height="770" fill="#ffffff"/>
+<text x="418.4" y="22" font-size="13" text-anchor="middle" fill="#111">3·delegation · Delegation: remote commands to the controller</text>
 <g transform="translate(0.0,0.0)">
-<g class="edge"><path class="edge" d="M77.7,106.5 L77.7,668.5 L223.4,668.5" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
-<g class="edge"><path class="edge" d="M93.7,106.5 L93.7,191.0 L474.0,191.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
-<g class="edge"><path class="edge" d="M531.3,211.5 L531.3,275.5" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
-<g class="edge"><path class="edge" d="M444.7,294.8 L284.0,294.8 L284.0,394.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
-<g class="edge"><path class="edge" d="M633.9,302.8 L767.4,302.8 L767.4,520.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
-<g class="edge"><path class="edge" d="M316.0,428.0 L316.0,529.0 L689.9,529.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
-<g class="edge"><path class="edge" d="M689.9,545.0 L308.8,545.0 L308.8,648.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
-<g class="edge"><path class="edge" d="M264.0,428.0 L264.0,648.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
-<g class="edge"><path class="edge" d="M284.0,689.0 L284.0,753.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
-<g class="edge"><path class="edge" d="M300.0,753.0 L300.0,689.0" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
-<g class="edge"><path class="edge" d="M324.0,648.0 L324.0,561.0 L689.9,561.0" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
-<g class="edge"><path class="edge" d="M280.0,648.0 L280.0,428.0" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
-<g class="edge"><path class="edge" d="M547.3,275.5 L547.3,211.5" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
-<g class="edge"><path class="edge" d="M444.7,310.8 L300.0,310.8 L300.0,394.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-dasharray="6,4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
-<g class="edge"><path class="edge" d="M296.0,648.0 L296.0,428.0" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
+<g class="edge"><path class="edge" d="M77.7,106.5 L77.7,633.5 L209.4,633.5" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M93.7,106.5 L93.7,191.0 L448.0,191.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M505.3,211.5 L505.3,275.5" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M418.7,302.8 L278.0,302.8 L278.0,394.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M607.9,302.8 L741.4,302.8 L741.4,492.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M294.8,428.0 L294.8,512.5 L663.9,512.5" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M741.4,533.0 L741.4,573.0 L382.7,573.0 L382.7,633.5 L346.7,633.5" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M266.0,428.0 L266.0,613.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M270.0,654.0 L270.0,718.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M286.0,718.0 L286.0,654.0" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
+<g class="edge"><path class="edge" d="M282.0,613.0 L282.0,428.0" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
+<g class="edge"><path class="edge" d="M521.3,275.5 L521.3,211.5" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
 <g class="node" data-id="primary"><rect x="18.0" y="52.0" width="135.4" height="54.5" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
 <use href="#icon-user" x="27.0" y="71.2" width="16" height="16" color="#3a4656"/>
 <text x="96.7" y="69.8" font-size="11" text-anchor="middle" fill="#111111">Person or primary</text>
 <text x="96.7" y="83.2" font-size="11" text-anchor="middle" fill="#111111">caregiver (grants</text>
 <text x="96.7" y="96.8" font-size="11" text-anchor="middle" fill="#111111">the credential)</text>
 </g>
-<g class="node" data-id="sender"><rect x="474.0" y="170.5" width="130.6" height="41.0" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
-<use href="#icon-bot" x="483.0" y="183.0" width="16" height="16" color="#3a4656"/>
-<text x="550.3" y="188.2" font-size="11" text-anchor="middle" fill="#111111">Caregiver or</text>
-<text x="550.3" y="201.8" font-size="11" text-anchor="middle" fill="#111111">automated agent</text>
+<g class="node" data-id="sender"><rect x="448.0" y="170.5" width="130.6" height="41.0" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+<use href="#icon-bot" x="457.0" y="183.0" width="16" height="16" color="#3a4656"/>
+<text x="524.3" y="188.2" font-size="11" text-anchor="middle" fill="#111111">Caregiver or</text>
+<text x="524.3" y="201.8" font-size="11" text-anchor="middle" fill="#111111">automated agent</text>
 </g>
-<g class="node" data-id="remote"><rect x="444.7" y="275.5" width="189.2" height="54.5" rx="5" fill="#e3f0e3" stroke="#333333" stroke-width="1"/>
-<use href="#icon-monitor-smartphone" x="453.7" y="294.8" width="16" height="16" color="#3a4656"/>
-<text x="550.3" y="293.2" font-size="11" text-anchor="middle" fill="#111111">Remote app</text>
-<text x="550.3" y="306.8" font-size="11" text-anchor="middle" fill="#111111">(LoopCaregiver, LoopFollow,</text>
-<text x="550.3" y="320.2" font-size="11" text-anchor="middle" fill="#111111">careportal, AAPSClient)</text>
+<g class="node" data-id="remote"><rect x="418.7" y="275.5" width="189.2" height="54.5" rx="5" fill="#e3f0e3" stroke="#333333" stroke-width="1"/>
+<use href="#icon-monitor-smartphone" x="427.7" y="294.8" width="16" height="16" color="#3a4656"/>
+<text x="524.3" y="293.2" font-size="11" text-anchor="middle" fill="#111111">Remote app</text>
+<text x="524.3" y="306.8" font-size="11" text-anchor="middle" fill="#111111">(LoopCaregiver, LoopFollow,</text>
+<text x="524.3" y="320.2" font-size="11" text-anchor="middle" fill="#111111">careportal, AAPSClient)</text>
 </g>
-<g class="node" data-id="hub"><rect x="231.3" y="394.0" width="121.4" height="34.0" rx="5" fill="#f3e7d3" stroke="#333333" stroke-width="1"/>
-<use href="#icon-server" x="240.3" y="403.0" width="16" height="16" color="#3a4656"/>
-<text x="303.0" y="415.0" font-size="11" text-anchor="middle" fill="#111111">Nightscout hub</text>
+<g class="node" data-id="hub"><rect x="217.3" y="394.0" width="121.4" height="34.0" rx="5" fill="#f3e7d3" stroke="#333333" stroke-width="1"/>
+<use href="#icon-server" x="226.3" y="403.0" width="16" height="16" color="#3a4656"/>
+<text x="289.0" y="415.0" font-size="11" text-anchor="middle" fill="#111111">Nightscout hub</text>
 </g>
-<g class="node" data-id="relay"><rect x="689.9" y="520.0" width="155.0" height="50.0" rx="5" fill="#e3f0e3" stroke="#333333" stroke-width="1"/>
-<use href="#icon-bell-ring" x="698.9" y="537.0" width="16" height="16" color="#3a4656"/>
-<text x="778.4" y="542.2" font-size="11" text-anchor="middle" fill="#111111">Push or SMS</text>
-<text x="778.4" y="555.8" font-size="11" text-anchor="middle" fill="#111111">channel (APNs, SMS)</text>
+<g class="node" data-id="relay"><rect x="663.9" y="492.0" width="155.0" height="41.0" rx="5" fill="#e3f0e3" stroke="#333333" stroke-width="1"/>
+<use href="#icon-bell-ring" x="672.9" y="504.5" width="16" height="16" color="#3a4656"/>
+<text x="752.4" y="509.8" font-size="11" text-anchor="middle" fill="#111111">Push or SMS</text>
+<text x="752.4" y="523.2" font-size="11" text-anchor="middle" fill="#111111">channel (APNs, SMS)</text>
 </g>
-<g class="node" data-id="app"><rect x="223.4" y="648.0" width="137.3" height="41.0" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
-<use href="#icon-smartphone" x="232.4" y="660.5" width="16" height="16" color="#3a4656"/>
-<text x="303.0" y="665.8" font-size="11" text-anchor="middle" fill="#111111">Controller app</text>
-<text x="303.0" y="679.2" font-size="11" text-anchor="middle" fill="#111111">(validates, enacts)</text>
+<g class="node" data-id="app"><rect x="209.4" y="613.0" width="137.3" height="41.0" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+<use href="#icon-smartphone" x="218.4" y="625.5" width="16" height="16" color="#3a4656"/>
+<text x="289.0" y="630.8" font-size="11" text-anchor="middle" fill="#111111">Controller app</text>
+<text x="289.0" y="644.2" font-size="11" text-anchor="middle" fill="#111111">(validates, enacts)</text>
 </g>
-<g class="node" data-id="pump"><rect x="232.0" y="753.0" width="120.0" height="34.0" rx="5" fill="#e8e8e8" stroke="#333333" stroke-width="1"/>
-<use href="#icon-syringe" x="241.0" y="762.0" width="16" height="16" color="#3a4656"/>
-<text x="303.0" y="774.0" font-size="11" text-anchor="middle" fill="#111111">Pump</text>
+<g class="node" data-id="pump"><rect x="218.0" y="718.0" width="120.0" height="34.0" rx="5" fill="#e8e8e8" stroke="#333333" stroke-width="1"/>
+<use href="#icon-syringe" x="227.0" y="727.0" width="16" height="16" color="#3a4656"/>
+<text x="289.0" y="739.0" font-size="11" text-anchor="middle" fill="#111111">Pump</text>
 </g>
 <g class="elabel" data-k="0">
-<text x="84.7" y="378.5" font-size="10" text-anchor="start" fill="#1f5fa8">enable remote; OTP seed,</text>
-<text x="84.7" y="390.5" font-size="10" text-anchor="start" fill="#1f5fa8">shared secret, allowed</text>
-<text x="84.7" y="402.5" font-size="10" text-anchor="start" fill="#1f5fa8">numbers, pairing</text>
+<text x="84.7" y="361.0" font-size="10" text-anchor="start" fill="#1f5fa8">enable remote; OTP seed,</text>
+<text x="84.7" y="373.0" font-size="10" text-anchor="start" fill="#1f5fa8">shared secret, allowed</text>
+<text x="84.7" y="385.0" font-size="10" text-anchor="start" fill="#1f5fa8">numbers, pairing</text>
 </g>
 <g class="elabel" data-k="1">
-<text x="283.8" y="171.0" font-size="10" text-anchor="middle" fill="#1f5fa8">shares credential</text>
-<text x="283.8" y="183.0" font-size="10" text-anchor="middle" fill="#1f5fa8">(QR, secret, token)</text>
+<text x="270.8" y="171.0" font-size="10" text-anchor="middle" fill="#1f5fa8">shares credential</text>
+<text x="270.8" y="183.0" font-size="10" text-anchor="middle" fill="#1f5fa8">(QR, secret, token)</text>
 </g>
 <g class="elabel" data-k="2">
-<text x="524.3" y="246.5" font-size="10" text-anchor="end" fill="#1f5fa8">command</text>
+<text x="498.3" y="246.5" font-size="10" text-anchor="end" fill="#1f5fa8">command</text>
 </g>
 <g class="elabel" data-k="3">
-<text x="277.0" y="335.4" font-size="10" text-anchor="end" fill="#1f5fa8">relay request, or</text>
-<text x="277.0" y="347.4" font-size="10" text-anchor="end" fill="#1f5fa8">entity written</text>
-<text x="277.0" y="359.4" font-size="10" text-anchor="end" fill="#1f5fa8">as a command</text>
+<text x="348.3" y="270.8" font-size="10" text-anchor="middle" fill="#1f5fa8">relay request, or</text>
+<text x="348.3" y="282.8" font-size="10" text-anchor="middle" fill="#1f5fa8">entity written</text>
+<text x="348.3" y="294.8" font-size="10" text-anchor="middle" fill="#1f5fa8">as a command</text>
 </g>
 <g class="elabel" data-k="4">
-<text x="760.4" y="408.4" font-size="10" text-anchor="end" fill="#1f5fa8">direct APNs</text>
-<text x="760.4" y="420.4" font-size="10" text-anchor="end" fill="#1f5fa8">or SMS</text>
+<text x="734.4" y="394.4" font-size="10" text-anchor="end" fill="#1f5fa8">direct APNs</text>
+<text x="734.4" y="406.4" font-size="10" text-anchor="end" fill="#1f5fa8">or SMS</text>
 </g>
 <g class="elabel" data-k="5">
-<text x="615.1" y="521.0" font-size="10" text-anchor="middle" fill="#1f5fa8">APNs (Loop only)</text>
+<text x="479.4" y="504.5" font-size="10" text-anchor="middle" fill="#1f5fa8">APNs (Loop only)</text>
 </g>
 <g class="elabel" data-k="6">
-<text x="499.4" y="525.0" font-size="10" text-anchor="middle" fill="#1f5fa8">notification</text>
-<text x="499.4" y="537.0" font-size="10" text-anchor="middle" fill="#1f5fa8">or SMS</text>
+<text x="562.0" y="553.0" font-size="10" text-anchor="middle" fill="#1f5fa8">notification</text>
+<text x="562.0" y="565.0" font-size="10" text-anchor="middle" fill="#1f5fa8">or SMS</text>
 </g>
 <g class="elabel" data-k="7">
-<text x="257.0" y="535.0" font-size="10" text-anchor="end" fill="#1f5fa8">downloaded entity,</text>
-<text x="257.0" y="547.0" font-size="10" text-anchor="end" fill="#1f5fa8">signed envelope (AAPS dev)</text>
+<text x="259.0" y="517.5" font-size="10" text-anchor="end" fill="#1f5fa8">downloaded entity,</text>
+<text x="259.0" y="529.5" font-size="10" text-anchor="end" fill="#1f5fa8">signed envelope (AAPS dev)</text>
 </g>
 <g class="elabel" data-k="8">
-<text x="277.0" y="718.0" font-size="10" text-anchor="end" fill="#1f5fa8">bolus; target,</text>
-<text x="277.0" y="730.0" font-size="10" text-anchor="end" fill="#1f5fa8">override applied</text>
+<text x="263.0" y="683.0" font-size="10" text-anchor="end" fill="#1f5fa8">bolus; target,</text>
+<text x="263.0" y="695.0" font-size="10" text-anchor="end" fill="#1f5fa8">override applied</text>
 </g>
 <g class="elabel" data-k="9">
-<text x="307.0" y="724.0" font-size="10" text-anchor="start" fill="#b5541b">accepted / failed</text>
+<text x="293.0" y="689.0" font-size="10" text-anchor="start" fill="#b5541b">accepted / failed</text>
 </g>
 <g class="elabel" data-k="10">
-<text x="331.0" y="601.5" font-size="10" text-anchor="start" fill="#b5541b">reply (if sender</text>
-<text x="331.0" y="613.5" font-size="10" text-anchor="start" fill="#b5541b">gave a return path)</text>
+<text x="289.0" y="539.2" font-size="10" text-anchor="start" fill="#b5541b">the resulting</text>
+<text x="289.0" y="551.2" font-size="10" text-anchor="start" fill="#b5541b">record, or a</text>
+<text x="289.0" y="563.2" font-size="10" text-anchor="start" fill="#b5541b">failure Note</text>
 </g>
 <g class="elabel" data-k="11">
-<text x="273.0" y="568.0" font-size="10" text-anchor="end" fill="#b5541b">resulting record;</text>
-<text x="273.0" y="580.0" font-size="10" text-anchor="end" fill="#b5541b">failure Note</text>
-</g>
-<g class="elabel" data-k="12">
-<text x="554.3" y="246.5" font-size="10" text-anchor="start" fill="#b5541b">status shown</text>
-</g>
-<g class="elabel" data-k="13">
-<text x="372.3" y="324.8" font-size="10" text-anchor="middle" fill="#1f5fa8">command record</text>
-<text x="372.3" y="336.8" font-size="10" text-anchor="middle" fill="#1f5fa8">with id</text>
-</g>
-<g class="elabel" data-k="14">
-<text x="303.0" y="502.0" font-size="10" text-anchor="start" fill="#b5541b">ack: accepted, applied,</text>
-<text x="303.0" y="514.0" font-size="10" text-anchor="start" fill="#b5541b">rejected (correlated)</text>
+<text x="528.3" y="246.5" font-size="10" text-anchor="start" fill="#b5541b">status shown</text>
 </g>
 </g></svg>
