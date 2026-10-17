@@ -526,6 +526,16 @@ of the compatibility backlog; `SPEC-REG-AMEND` applies them to the contract and 
 | 11 | `HUB-REG-CRM` | stays **one item** |
 | 12 | migrating an `api-secret` binding | binds to the **tenant's root credential**, a new credential kind (`SPEC-REG-MODES`, `SPEC-REG-MIGRATE`); the etag changes with `boundTo` |
 
+**Decided 2026-10-17 (maintainer)**, on four choices `SPEC-REG-AMEND` made beyond the table above;
+`SPEC-REG-AMEND-2` applies them.
+
+| # | point | decision |
+|---|---|---|
+| 13 | an unlisted slot | the **product's own channel** (`<vendor>/<product>/<slot>`): instances of one product contend on it, as built |
+| 14 | a command for an unshared slot | the hub **infers the product when exactly one product on the site declares that slot**; when more than one does, the command is refused as ambiguous (the owner's `slotNameObservations` shows why) and naming the product resolves it. The inference is never a guess between candidates |
+| 15 | simulated command-sink claims | **exempt** from row 7's binding rule: any permitted subject's simulator may hold a `simulated` command-sink; it never receives commands routed to the `device` holder |
+| 16 | a rebind | **when a product's `boundTo` changes, `device` command-sink roles held by instances that no longer match it are dropped at once**, except roles the owner granted by `transfer-role`; a command sent before the new instance claims the role is refused `no-command-destination` |
+
 *(2026-10-16: `SPEC-REG-AMEND` is done — rows 1–9 applied to the
 [hub-sync design §3.5–§3.7](../platform/nightscout-hub-sync-architecture-2026-09-11.md#37-version-scoped-quirks-and-the-two-ids),
 the schemas, the reference and the cases: `legacyIdForm` and the two `opaque` cases removed; a

@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 214 |
+| items | 215 |
 | runnable gates | 265 |
-| explicit `no-gate:` markers | 262 |
+| explicit `no-gate:` markers | 263 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 262 of the 527 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 263 of the 528 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 65 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `not-started` | 66 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, SPEC-REG-AMEND-2, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -6976,7 +6976,7 @@ flag rule: versioning policy section 5.7.
 
 ## Controller registration and intent observability
 
-`parcel: platform` &mdash; 16 items
+`parcel: platform` &mdash; 17 items
 
 D18 (maintainer, 2026-10-09): two-tier controller registration - well-known
 declarations for backwards compatibility, controller-owned typed registrations
@@ -6994,6 +6994,7 @@ reproduced ones.
 | `SPEC-REG-INSTANCE` | Registration definitions and instances: content-addressed definitions, leased instances, channel roles with provenance, labels (D19) | `done` | `main` | n/a | 1 run |
 | `SPEC-REG-QUIRKS` | Version-scoped quirks, the shared slot list and the two-id rule (D20) | `done` | `main` | n/a | 1 run |
 | `SPEC-REG-AMEND` | Registration contract amended by the 2026-10-16 walk-through: 24-hex legacy ids everywhere, explicit slot sharing, command-sink binding, no delivery deadline | `done` | `main` | n/a | 2 run |
+| `SPEC-REG-AMEND-2` | Registration contract: rows 13-16 of the walk-through (own-product slots, inferred command destination, simulated command-sink exempt, rebind drops command-sink) | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `HUB-REG-CRM` | cgm-remote-monitor: accept registrations and derive typed storage, validation and query from them, single-tenant first | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `SPEC-REG-MODES` | Registration contract in single and multi mode: storage key, credential kinds, owner listener, capability document scope, legacy id form | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `HUB-REG-CRM-SEAM` | cgm-remote-monitor: carry the registration store onto the storage seam, so single (MongoDB, PostgreSQL) and multi serve one contract | `not-started` | `-` | n/a | 0 run + 1 no-gate |
@@ -7231,6 +7232,35 @@ reproduced ones.
 
 **Notes.** The decisions are the table "Decided in the 2026-10-16 walk-through" in the execution plan §2.6.3, rows 1-9; rows 10-12 need no contract change here (12 belongs to SPEC-REG-MODES and SPEC-REG-MIGRATE). Done 2026-10-16; hub-sync design §3.5-§3.7. Choices made beyond the table, for the maintainer to confirm: an unlisted slot is the product's own channel under its slot name (instances of one product still contend on it), not an element-path channel; a command for a channel that is not shared names its product (request.identity); the observation is computed on the listing from stored definitions (current registrations and stored definitions, any state), member slotNameObservations [{slot, products}], absent when empty; the command-sink binding check applies to simulated claims too, runs after the channel checks and before role-held, compares the instance's binding with the product's boundTo (so a released product grants no new command-sink role), and keeps a command-sink role the instance already holds on renewal (so a transfer survives and a product transfer does not strip existing holders); the binding event is a stored member bindingEvent (only next-writer for now, kept by updates under the same binding, cleared by release and transfer, not in the etag), and the owner's listing gains registrations, every stored product's summary; normalise_sent_id and projected_ids lost their capability argument.
 
+### `SPEC-REG-AMEND-2` &mdash; Registration contract: rows 13-16 of the walk-through (own-product slots, inferred command destination, simulated command-sink exempt, rebind drops command-sink)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main@4eccd873` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `SPEC-REG-AMEND` |
+
+**Blast radius.** Expected: instances.py routing infers the product for an unshared slot when exactly one product declares it and refuses an ambiguous command; the row 7 binding check skips simulated claims (instance-create-other-subject returns to accepted); a change of a product's boundTo drops non-matching device command- sink roles at once, except roles granted by transfer-role; cases and §3.6/§3.7 text. Ships nothing.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** specification in this repository; ships nothing
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started. The gate will be the tools/nsschema suites with each of rows 13-16 tested against a control and weakened to red for the right reason, every changed case called out in its file, and other cases unchanged in meaning.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+
+**Notes.** Rows 13-16 of the execution plan §2.6.3 walk-through tables (maintainer, 2026-10-17).
+
 ### `HUB-REG-CRM` &mdash; cgm-remote-monitor: accept registrations and derive typed storage, validation and query from them, single-tenant first
 
 | | |
@@ -7242,7 +7272,7 @@ reproduced ones.
 | worktree | `-` |
 | semver | `minor` |
 | review | maintainer |
-| blocks on | `SPEC-REG-DECISIONS`, `SPEC-REG-INSTANCE`, `SPEC-REG-QUIRKS`, `SPEC-REG-AMEND` |
+| blocks on | `SPEC-REG-DECISIONS`, `SPEC-REG-INSTANCE`, `SPEC-REG-QUIRKS`, `SPEC-REG-AMEND`, `SPEC-REG-AMEND-2` |
 
 **Blast radius.** Single-tenant first (maintainer, 2026-10-16). Built on origin/dev, which has no TENANCY_MODE, no storage interface and no tenant scope: measured at official/dev fade2299, lib/server/env.js reads no TENANCY_MODE and lib/storage/ holds only assert-no-query-javascript.js, mongo-storage.js and run-with-callback.js; the mode, the seam and tenant-scope.js exist only on the local seam chain (seam/t1-2-storage-interface 81a1f6ce). Expected, behind a feature flag that is off by default: GET /.well-known/nightscout/sync (hub- sync design §3.5) advertising `submit` and `instances`, serving 24-hex hub- assigned `_id` values on v1 and v3 (walk-through row 2, 2026-10-16; the capability member `legacyIdForm` was dropped); the product, definition and instance resources of §3.5 and §3.6 on the `single` listener, for a subject's token or API_SECRET; the owner's actions (retire, block, unblock, release, transfer, free-namespaces, transfer-role, pin-version, unpin-version, the instance listing) with API_SECRET on `single`; typed writes for accepted elements, read selection, the projected read-only view (D19 rule 8) with a stored hub-assigned ObjectId `_id` and the typed id as `identifier` (D20 rule 8); new MongoDB collections for registrations, definitions, instances, pins and recorded mappings. Writers that do not register change in nothing. The conformance harness lives in this repository (D12), requires the shipping modules by path, and takes a mode parameter from its first commit, with only `single` on MongoDB implemented here.
 
@@ -7433,7 +7463,7 @@ reproduced ones.
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer |
-| blocks on | `SPEC-REG-DECISIONS`, `SPEC-REG-INSTANCE`, `SPEC-REG-QUIRKS`, `SPEC-REG-AMEND` |
+| blocks on | `SPEC-REG-DECISIONS`, `SPEC-REG-INSTANCE`, `SPEC-REG-QUIRKS`, `SPEC-REG-AMEND`, `SPEC-REG-AMEND-2` |
 
 **Blast radius.** A proposal packet in this repository for the Nocturne maintainers: the grammar, the capability document, the conformance fixtures, and the LAB-HUB- ACTIVE-STATE record set and results. Nothing is filed or sent by an agent; the maintainer sends it.
 
@@ -7465,7 +7495,7 @@ reproduced ones.
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer |
-| blocks on | `SPEC-REG-DECISIONS`, `SPEC-REG-INSTANCE`, `SPEC-REG-QUIRKS`, `SPEC-REG-AMEND` |
+| blocks on | `SPEC-REG-DECISIONS`, `SPEC-REG-INSTANCE`, `SPEC-REG-QUIRKS`, `SPEC-REG-AMEND`, `SPEC-REG-AMEND-2` |
 
 **Blast radius.** A proposal packet in this repository for the Loop, Trio, AAPS and iAPS maintainers: what a controller gains (typed extensions, per-kind versions, no lockstep with hub releases), the generated well-known registration for their controller as a starting definition, the instance and fallback rules, and a namespace conventions list. Nothing is filed or sent by an agent; the maintainer sends it.
 

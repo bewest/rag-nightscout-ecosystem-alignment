@@ -14344,6 +14344,40 @@ items:
       registrations, every stored product's summary; normalise_sent_id and
       projected_ids lost their capability argument.
 
+  - id: SPEC-REG-AMEND-2
+    title: "Registration contract: rows 13-16 of the walk-through (own-product slots, inferred command destination, simulated command-sink exempt, rebind drops command-sink)"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main@4eccd873
+    state: not-started
+    pr: []
+    blast_radius: >
+      Expected: instances.py routing infers the product for an unshared
+      slot when exactly one product declares it and refuses an ambiguous
+      command; the row 7 binding check skips simulated claims
+      (instance-create-other-subject returns to accepted); a change of a
+      product's boundTo drops non-matching device command-sink roles at
+      once, except roles granted by transfer-role; cases and §3.6/§3.7
+      text. Ships nothing.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: specification in this repository; ships nothing
+    register: []
+    gates:
+      - no-gate: >
+          Not started. The gate will be the tools/nsschema suites with each
+          of rows 13-16 tested against a control and weakened to red for
+          the right reason, every changed case called out in its file, and
+          other cases unchanged in meaning.
+    blocks_on: [SPEC-REG-AMEND]
+    evidence:
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
+    notes: >
+      Rows 13-16 of the execution plan §2.6.3 walk-through tables
+      (maintainer, 2026-10-17).
+
   - id: HUB-REG-CRM
     title: "cgm-remote-monitor: accept registrations and derive typed storage, validation and query from them, single-tenant first"
     parcel: platform
@@ -14413,7 +14447,7 @@ items:
           refusal, instance-required) is removed in turn and must turn its
           cases red, and one cell of the write matrix is perturbed and must
           turn the second control red.
-    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND]
+    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2]
     evidence:
       - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
       - specs/sync/registration-submit.schema.json
@@ -14794,7 +14828,7 @@ items:
           Not started. The amended contract and D19 are specified
           (SPEC-REG-DECISIONS and SPEC-REG-INSTANCE, 2026-10-15). Done when the
           maintainer has sent the packet; that cannot be checked from here.
-    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND]
+    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2]
     evidence:
       - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
       - specs/sync/registration-submit.schema.json
@@ -14841,7 +14875,7 @@ items:
           Not started. The amended contract and D19 are specified
           (SPEC-REG-DECISIONS and SPEC-REG-INSTANCE, 2026-10-15). Done when the
           maintainer has sent the packet; that cannot be checked from here.
-    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND]
+    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2]
     evidence:
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
       - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
