@@ -116,9 +116,9 @@ def ladder(d):
 
 
 def states(x):
-    r = {"A": "open", "B": "cond", "C": "cond", "D": "closed", "E": "closed", None: "unknown"}[x["rung"]]
+    r = {"A": "open", "B": "cond", "C": "cond", "D": "cond", "E": "closed", None: "unknown"}[x["rung"]]
     rl = {"A": "A · protocol and what the person has", "B": "B · vendor app alongside",
-          "C": "C · credential via own account", "D": "D · approved app only", "E": "E · sealed",
+          "C": "C · credential via own account", "D": "D · app check", "E": "E · sealed",
           None: "not determined"}[x["rung"]]
     o = x["open"]
     op = "open" if o >= 2 else "cond" if o == 1 else "closed"
