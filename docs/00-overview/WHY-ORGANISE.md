@@ -38,6 +38,11 @@ read in the drivers' code on 2026-10-17 and is recorded in
 | D | the device checks the app | Dexcom G7, Libre 3, MiniMed 780G, Omnipod 5 | no one; open apps present credentials the manufacturer did not issue to them |
 | E | readings sealed for the manufacturer's cloud | none found; not looked for | — |
 
+Open Omnipod 5 support currently depends on a community-run certificate service. No agreement
+with the manufacturer stands behind it, and no named operator, contract or successor of the kind
+[programme §2b](ECOSYSTEM-PROGRAMME.md#2b-sponsoring-and-operating) asks of a service that
+therapy depends on.
+
 Beside the devices, the vendor-cloud path that Nightscout's connectors use logs in as the person,
 under terms that ban unauthorised apps, and it breaks when the cloud changes
 ([evidence §5](observations/ECOSYSTEM-EVIDENCE.md#5-work-that-arrives-on-other-organisations-calendars)).
