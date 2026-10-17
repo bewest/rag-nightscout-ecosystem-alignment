@@ -723,6 +723,17 @@ def test_a_rebind_drops_device_command_sinks_that_no_longer_match():
     assert holder_keep["boundTo"] == drop["request"]["transferTo"] == keep["request"]["transferTo"]
     assert keep["expected"]["stateAfter"]["instances"] == keep["hubState"]["instances"]
     assert _roles_by_instance(keep["expected"]["stateAfter"])[I_A][SINK] == ("granted", [])
+    # Another product's instance, bound to the same old subject and holding a
+    # device command-sink, is untouched by this product's rebind, against the
+    # dropped holder above.
+    other_case = copy.deepcopy(drop)
+    other = copy.deepcopy(instances.find_instance(other_case["hubState"], I_A))
+    other["instanceId"] = "00000000-0000-4000-8000-0000000000b1"
+    other["identity"] = {"vendor": "Example", "product": "ControllerB"}
+    other_case["hubState"]["instances"].append(other)
+    after = instances.run_case(other_case, GRAMMAR)["stateAfter"]
+    assert instances.find_instance(after, other["instanceId"]) == other
+    assert _roles_by_instance(after)[I_A][SINK] == ("refused", ["not-registration-owner"])
 
 
 def test_a_transfer_role_grant_survives_a_rebind():
