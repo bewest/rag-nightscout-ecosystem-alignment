@@ -184,7 +184,8 @@ answer.
 ## 7. Research, analysis and test tools
 
 Measured 2026-10-16 against this repository at `66403e0f` and the clones in `externals/` (last
-commit dates from `git -C externals/<repo> log -1 --format=%cs`). Listed by kind, not ranked.
+commit dates from `git -C externals/<repo> log -1 --format=%cs`); the g7sim, pod and trio-test-harness rows on
+2026-10-17 (detail in the [device-simulators record](../../60-research/programme/device-simulators-2026-10-17.md)). Listed by kind, not ranked.
 
 ### 7.1 Research tools elsewhere in the ecosystem
 
@@ -198,6 +199,9 @@ commit dates from `git -C externals/<repo> log -1 --format=%cs`). Listed by kind
 | [clinical-advice-analysis](https://github.com/tim2000s/clinical-advice-analysis) | a study of how five large language models recommend pump settings from seven days of data | MIT | 2026-09-21 |
 | [GluPredKit](https://github.com/replicahealth/GluPredKit) | a framework for glucose prediction: data handling, training and evaluation, with a command line | MIT | 2026-01-13 |
 | [cgmsim-lib](https://github.com/lsandini/cgmsim-lib) | a TypeScript library simulating CGM, insulin and patient scenarios | Apache-2.0 | 2026-05-14 |
+| [g7sim](https://github.com/LoopKit/g7sim) | a Dexcom G7 sensor emulator for CGM software under development, over Bluetooth on Linux or for an app in the iOS Simulator; simulated data only | MIT | 2026-10-12 |
+| [pod](https://github.com/LoopKit/pod) | an Omnipod DASH pod simulator, over Bluetooth on a Raspberry Pi or for an app in the iOS Simulator, with a control panel for reservoir, alerts and faults | GPL-3.0 | 2026-10-12 |
+| [trio-test-harness](https://github.com/jwoglom/trio-test-harness) | builds, installs, drives and screenshots Trio or Loop from any branch or PR on the iOS Simulator or a phone, with HTML or PR-comment reports | none | 2026-10-17 |
 | [babelbetes](https://github.com/nudgebg/babelbetes) | standardises publicly available clinical diabetes trial data | MIT (in `setup.py`) | 2026-07-21 |
 | [nightscout-cgm-skill](https://github.com/shanselman/nightscout-cgm-skill) | an agent skill for analysing Nightscout CGM data | MIT | 2026-06-07 |
 | [GlycemicGPT](https://github.com/GlycemicGPT/GlycemicGPT) | an open-source AI diabetes platform connecting to CGM and pump; its README opens with a safety warning | GPL | 2026-08-18 |

@@ -14542,6 +14542,130 @@ items:
       registrations, every stored product's summary; normalise_sent_id and
       projected_ids lost their capability argument.
 
+  - id: SPEC-REG-AMEND-2
+    title: "Registration contract: rows 13-16 of the walk-through (own-product slots, inferred command destination, simulated command-sink exempt, rebind drops command-sink)"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main@4eccd873
+    state: done
+    pr: []
+    blast_radius: >
+      instances.py: route_command infers the product for a channel that is
+      not shared when the command names none and exactly one product
+      declares it, and refuses 409 ambiguous-command-destination when more
+      than one does; command_sink_permitted exempts simulated claims and
+      keeps a held device command-sink on renewal only when it carries
+      grantedBy transfer-role or the instance matches the binding;
+      transfer_role stores grantedBy on the moved role; drop_on_rebind
+      drops non-matching device command-sink roles when a product's boundTo
+      changes (owner release or transfer, and a next-writer bind), so the
+      instance etag changes; run_case runs the owner's release and transfer.
+      registration-submit.schema.json gains the reason code, roleResult's
+      grantedBy and the instance-case requests release and transfer (with
+      transferTo). 13 instance cases added (103); instance-create-other-
+      subject back to accepted; command-no-destination-simulated gains the
+      shared list; owner-transfer-role, owner-transfer-role-other-subject
+      and instance-renew-transferred-command-sink gain grantedBy. Hub-sync
+      design §3.6-§3.7 and the execution plan §2.6.3 status amended with
+      dated notes. Ships nothing.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: specification in this repository; ships nothing
+    register: []
+    gates:
+      - run: python -m pytest -q tools/nsschema/test_registration_negotiation.py tools/nsschema/test_registration_instances.py tools/nsschema/test_registration_quirks.py
+        kind: unit
+        describe: >
+          Baseline at main d7bdbb01 in the item's worktree: negotiation 453,
+          instances 569, quirks 185 passed; tools/nsschema 1571 passed, 1
+          failed, 15 skipped (the failure and skips need the gitignored
+          externals/ checkout). GREEN on 2026-10-17: negotiation 453 (54
+          cases, unchanged), instances 643 (103 cases), quirks 185 (29
+          cases), grammar 46; tools/nsschema 1645 passed, the same 1 failed
+          and 15 skipped; sync_model --check green. Row 13: stated as decided;
+          a second instance of one product refused role-held on an unlisted
+          slot, against instance-create. Row 14: command-inferred-one-product
+          (routed); command-ambiguous-destination (409
+          ambiguous-command-destination) against command-named-product, which
+          differs only in request.identity; command-unknown-slot (409
+          no-command-destination, as before); command-routed (shared slot,
+          no product named) unchanged. Row 15: instance-create-other-subject
+          accepted again, its expectation identical to dd02d8ed^;
+          instance-command-sink-not-registration-owner (device) still
+          refused and the released-product test of 62551dcd kept;
+          command-not-routed-to-other-subject-simulator routes to the device
+          holder, and without it is refused no-command-destination. Row 16:
+          rebind-transfer-drops-command-sink against
+          rebind-transfer-keeps-matching-instance;
+          rebind-release-drops-command-sink; rebind-keeps-transferred-role;
+          command-after-rebind-no-destination against
+          command-after-rebind-routed after rebind-new-holder-claims;
+          listing-shows-rebind-drop; each dropped role changes its instance's
+          etag and kept roles keep theirs. Changed existing cases, each called
+          out in its file: instance-create-other-subject (expectation back to
+          accepted, control removed); command-no-destination-simulated
+          (input: wellKnown.slots [override]; expectation unchanged);
+          owner-transfer-role and owner-transfer-role-other-subject
+          (stateAfter: grantedBy on the moved role); instance-renew-
+          transferred-command-sink (input and expectation: grantedBy;
+          description amended). Changed tests: the instance-binding test
+          (accepted, all simulated roles granted), the command-sink binding
+          test (a renewal without grantedBy refused; the bound-holder check
+          limited to device holders), the case count 90 to 103, the required
+          cases and the reason codes; seven tests added. Non-vacuity: 14
+          weakenings, one at a time, each red by assertion and reverted (red
+          counts): infer even when two products match (1); never infer (1);
+          no inference and no ambiguity, the SPEC-REG-AMEND tenant-wide
+          search (1); the binding rule applied to simulated claims (1); the
+          binding rule skipped for device claims (2); no drop on rebind (3);
+          dropping transfer-role grants too (1); dropping source roles too
+          (3); dropping on rebind without changing the etag (2); renewal
+          keeping any held device command-sink (1); transfer-role recording
+          no grantedBy (2); renewal not carrying grantedBy (1); dropping
+          simulated command-sinks too (3); the reason code removed from the
+          schema (2). Restored: 1281 passed.
+      - run: make schema-quirks-check
+        kind: static
+        describe: >
+          With NSSCHEMA_CORPUS pointed at the main checkout's 2026-04-01
+          and 2026-04-26 snapshots: every registry claim holds;
+          reports/schema-census/quirks.json unchanged.
+    blocks_on: [SPEC-REG-AMEND]
+    evidence:
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
+      - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
+    notes: >
+      Rows 13-16 of the execution plan §2.6.3 walk-through tables
+      (maintainer, 2026-10-17).
+
+      Done 2026-10-17; hub-sync design §3.6-§3.7. Choices made beyond the
+      rows, for the maintainer to confirm: a transfer-role grant is recorded
+      on the stored role result as grantedBy: transfer-role, also returned
+      in the instance's renewal role results, not in the etag, set on any
+      role transfer-role moves (source too), kept on renewal while the role
+      stays granted and gone when the role is moved away; "declares" for
+      row 14 reads every product's current registration and stored
+      definitions in any state (the set slotNameObservations reads), is not
+      limited to channels that accept commands, and applies to element
+      channels too; the ambiguous refusal is 409 with path channel and
+      lists no candidates; an inferred route's response has no inference
+      marker; a dropped role is stored refused not-registration-owner (what
+      the next renewal answers), with no distinct code, so the listing
+      shows it as refused; the drop covers the product's stored instances
+      whether or not their lease is live; the drop also runs on a
+      next-writer bind, where in a reachable state nothing is left to drop;
+      the owner's release and transfer responses do not list dropped roles;
+      release and transfer are modelled as instance-case requests; for row
+      13 the channel's wire name stays the bare slot name, scoped to the
+      product; command-no-destination-simulated keeps its meaning by
+      listing override (as its control does) rather than naming the
+      product; rebind-transfer-keeps-matching-instance's prior state (the
+      new subject's instance holding an unmarked device command-sink while
+      the product is bound to another subject) is constructed and is not
+      reachable under rows 7 and 16.
+
   - id: HUB-REG-CRM
     title: "cgm-remote-monitor: accept registrations and derive typed storage, validation and query from them, single-tenant first"
     parcel: platform
@@ -14591,12 +14715,14 @@ items:
           SPEC-REG-QUIRKS is not. The behaviour gate will be the conformance
           cases of SPEC-REG-NEGOTIATE and SPEC-REG-DECISIONS
           (specs/sync/conformance/, 54 cases after SPEC-REG-AMEND),
-          SPEC-REG-INSTANCE (specs/sync/conformance/instances/, 90) and
+          SPEC-REG-INSTANCE (specs/sync/conformance/instances/, 103 after
+          SPEC-REG-AMEND-2) and
           SPEC-REG-QUIRKS (specs/sync/conformance/quirks/, 29), run by the harness against a booted single-tenant
           server (TENANCY_MODE unset, MongoDB), comparing each expected
           response and stored state. It is red when any case's response or
-          stored state differs. 22 cases name a listener a single-tenant
-          server does not have: the 20 naming ns-tenant-admin run on
+          stored state differs. 30 cases name a listener a single-tenant
+          server does not have (counted 2026-10-17): the 28 naming
+          ns-tenant-admin run on
           `single` with API_SECRET, as §3.5 states ("or single with
           API_SECRET"); owner-action-on-data-listener and
           owner-transfer-role-data-listener name ns-api and have no
@@ -14611,7 +14737,7 @@ items:
           refusal, instance-required) is removed in turn and must turn its
           cases red, and one cell of the write matrix is perturbed and must
           turn the second control red.
-    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND]
+    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2]
     evidence:
       - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
       - specs/sync/registration-submit.schema.json
@@ -14688,7 +14814,7 @@ items:
       - no-gate: >
           Not started. The gate will be the tools/nsschema registration
           suites run per mode: every case runs in each mode it declares;
-          the 22 cases that name ns-tenant-admin or ns-api carry a mode or a
+          the 30 cases (2026-10-17) that name ns-tenant-admin or ns-api carry a mode or a
           stated mapping; each of points 1 to 5 has a case in each mode, the
           other mode's case as its control. Red when a mode rule is
           weakened, one at a time, for the right reason (for example
@@ -14862,7 +14988,9 @@ items:
     blast_radius: >
       Expected: the command request, its routing (already specified in
       §3.6: the live device command-sink holder, else
-      no-command-destination) and its transport, for both modes, in the
+      no-command-destination; since 2026-10-17 an unshared slot's product
+      is inferred when one product declares it, else
+      ambiguous-command-destination) and its transport, for both modes, in the
       hub-sync design with conformance cases. §3.6 says "The command API
       itself is not specified here." Ships nothing.
     review: maintainer
@@ -14992,7 +15120,7 @@ items:
           Not started. The amended contract and D19 are specified
           (SPEC-REG-DECISIONS and SPEC-REG-INSTANCE, 2026-10-15). Done when the
           maintainer has sent the packet; that cannot be checked from here.
-    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND]
+    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2]
     evidence:
       - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
       - specs/sync/registration-submit.schema.json
@@ -15039,7 +15167,7 @@ items:
           Not started. The amended contract and D19 are specified
           (SPEC-REG-DECISIONS and SPEC-REG-INSTANCE, 2026-10-15). Done when the
           maintainer has sent the packet; that cannot be checked from here.
-    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND]
+    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2]
     evidence:
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
       - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md

@@ -9,6 +9,10 @@
 #   instances of ControllerA and ControllerB contend on `override`, so its hub lists that slot
 #   to keep testing that contention. Without the list each product's `override` is its own
 #   channel (quirks/equal-names-unlisted-do-not-contend).
+# CHANGED 2026-10-17 (SPEC-REG-AMEND-2, walk-through row 16; execution plan §2.6.3):
+#   EXPECTATION CHANGED. The moved role is stored with `grantedBy: transfer-role` on the `to`
+#   instance in stateAfter, so a later rebind of its product keeps it. The response, both
+#   etags and every other member are unchanged (`grantedBy` is not in the etag).
 id: owner-transfer-role
 title: The owner transfers a role from its holder to a claimant
 description: 'Rule 6, handoff by owner transfer: command-sink on the override slot moves from ControllerB''s
@@ -431,6 +435,7 @@ expected:
         role: command-sink
         provenance: device
         result: granted
+        grantedBy: transfer-role
       - *id007
       instance: *id008
     - identity:

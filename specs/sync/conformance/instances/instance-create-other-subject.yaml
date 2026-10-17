@@ -10,12 +10,18 @@
 #   refused `not-registration-owner`: outcome `partial` (was `accepted`), with `control:
 #   instance-create`. Its source roles are still granted and the instance is still created
 #   and bound to its creator, which is what this case shows.
+# CHANGED 2026-10-17 (SPEC-REG-AMEND-2, walk-through row 15; execution plan §2.6.3):
+#   EXPECTATION RESTORED. Simulated command-sink claims are exempt from row 7's binding rule,
+#   so this development build's simulated `override` command-sink claim is granted again: outcome
+#   `accepted`, the instance etag and stored roles as before 2026-10-16 (identical to this file at
+#   dd02d8ed^). `control: instance-create` is removed (the case refuses nothing). Inputs unchanged.
+#   A device command-sink claim by another subject is still refused
+#   (instance-command-sink-not-registration-owner).
 id: instance-create-other-subject
 title: A second credential runs another copy of a registered product
 description: 'D19: a development build with its own subject creates an instance of ControllerA (running
   DA2, simulated roles). Creating an instance needs the permission, not the product''s binding; the instance
   is bound to its creator.'
-control: instance-create
 cell: newer-controller/newer-hub
 now: '2026-10-15T12:00:00Z'
 capabilities:
@@ -305,14 +311,14 @@ expected:
     apiVersion: nightscout.dev/sync/v1
     kind: InstanceResponse
     status: 201
-    outcome: partial
+    outcome: accepted
     noop: false
     instance:
       vendor: Example
       product: ControllerA
       instanceId: 00000000-0000-4000-8000-00000000000d
       definitionId: sha256:c792772f18009a5c9cc884f0da9efa1c8040c183ba8bd3790049e47fe08d2944
-      etag: sha256:dc510b901438cb4a339512f58ae6d5ecfc9d4b0e9bf701615571ffee2005df4b
+      etag: sha256:74bc5ae54471f132b216db4d6d76a5711ce231998e417412481ea00cecf25a7d
       leaseExpiresAt: '2026-10-15T12:15:00Z'
       live: true
       boundTo:
@@ -327,10 +333,7 @@ expected:
     - channel: override
       role: command-sink
       provenance: simulated
-      result: refused
-      reasons:
-      - code: not-registration-owner
-        path: roles.1
+      result: granted
     - channel: Example/ControllerA/extensions/com.example.controllera.targets
       role: source
       provenance: simulated
@@ -539,7 +542,7 @@ expected:
         vendor: Example
         product: ControllerA
       instanceId: 00000000-0000-4000-8000-00000000000d
-      etag: sha256:dc510b901438cb4a339512f58ae6d5ecfc9d4b0e9bf701615571ffee2005df4b
+      etag: sha256:74bc5ae54471f132b216db4d6d76a5711ce231998e417412481ea00cecf25a7d
       boundTo:
         kind: subject
         subject: subject-test-dev-build
@@ -553,10 +556,7 @@ expected:
       - channel: override
         role: command-sink
         provenance: simulated
-        result: refused
-        reasons:
-        - code: not-registration-owner
-          path: roles.1
+        result: granted
       - channel: Example/ControllerA/extensions/com.example.controllera.targets
         role: source
         provenance: simulated

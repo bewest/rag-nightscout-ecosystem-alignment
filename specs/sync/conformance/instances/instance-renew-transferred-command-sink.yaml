@@ -4,13 +4,20 @@
 # Checked by tools/nsschema/test_registration_instances.py; `detail` strings are
 # not compared.
 # ADDED 2026-10-16 (SPEC-REG-AMEND; the maintainer's walk-through, execution plan §2.6.3, row 7).
+# CHANGED 2026-10-17 (SPEC-REG-AMEND-2, walk-through row 16; execution plan §2.6.3):
+#   INPUT AND EXPECTATION CHANGED. A held device command-sink role now survives renewal only when
+#   the owner granted it by `transfer-role` or the instance matches the product's binding (it read:
+#   any role the instance already holds). The stored transferred role in hubState gains
+#   `grantedBy: transfer-role`, as owner-transfer-role-other-subject now stores it, and the renewal's
+#   role result and stored role keep it. Outcome, status, etag and lease unchanged. Description
+#   amended to match.
 id: instance-renew-transferred-command-sink
 title: A command-sink role the owner transferred is kept on renewal
 description: 'Walk-through row 7. After owner-transfer-role-other-subject, the development build''s instance
   renews with its current etag, dropping its `override` source claim (which ControllerB''s instance holds):
   the command-sink role the owner transferred to it stays granted, though its subject is not ControllerA''s
-  binding. A role an instance already holds is kept on renewal; the binding is checked when the role is
-  granted.'
+  binding. *(Amended 2026-10-17, row 16:)* a held device command-sink role survives renewal when the owner
+  granted it by `transfer-role` (stored as `grantedBy`) or the instance matches the binding.'
 cell: newer-controller/newer-hub
 now: '2026-10-15T12:00:00Z'
 capabilities:
@@ -333,6 +340,7 @@ hubState:
       role: command-sink
       provenance: device
       result: granted
+      grantedBy: transfer-role
     - channel: Example/ControllerA/extensions/com.example.controllera.targets
       role: source
       provenance: device
@@ -451,6 +459,7 @@ expected:
       role: command-sink
       provenance: device
       result: granted
+      grantedBy: transfer-role
     - channel: Example/ControllerA/extensions/com.example.controllera.targets
       role: source
       provenance: device
@@ -670,6 +679,7 @@ expected:
         role: command-sink
         provenance: device
         result: granted
+        grantedBy: transfer-role
       - channel: Example/ControllerA/extensions/com.example.controllera.targets
         role: source
         provenance: device

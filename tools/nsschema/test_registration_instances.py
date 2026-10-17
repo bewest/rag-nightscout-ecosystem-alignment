@@ -13,6 +13,14 @@ the shared slot list or `sameAs`, so the cases whose instances of two products
 contend on `override` list that slot; a command-sink role needs the product's
 binding or the owner's transfer; the owner's listing shows each product's
 binding event and credential kind. Each changed test says so.
+
+Amended 2026-10-17 (SPEC-REG-AMEND-2; execution plan §2.6.3, rows 13-16): an
+unlisted slot is the product's own channel (as built); a command naming no
+product for an unshared channel goes to the one product that declares it, and
+is refused `ambiguous-command-destination` when more than one does; simulated
+command-sink claims need no binding; a change of a product's `boundTo` drops
+`device` command-sink roles of instances that no longer match it, except roles
+the owner granted by `transfer-role` (`grantedBy`). Each changed test says so.
 """
 
 import copy
@@ -58,6 +66,16 @@ REQUIRED = {
     "instance-renew-transferred-command-sink",
     # the binding event on the owner's listing (row 9, 2026-10-16)
     "listing-shows-binding-event",
+    # an unshared slot's command destination is inferred only from one product (row 14, 2026-10-17)
+    "command-inferred-one-product", "command-ambiguous-destination", "command-named-product",
+    "command-unknown-slot",
+    # another subject's simulated command-sink: granted, never routed to (row 15, 2026-10-17)
+    "instance-create-other-subject", "command-not-routed-to-other-subject-simulator",
+    # a rebind drops non-matching device command-sinks, except transfers (row 16, 2026-10-17)
+    "rebind-transfer-drops-command-sink", "rebind-transfer-keeps-matching-instance",
+    "rebind-release-drops-command-sink", "rebind-keeps-transferred-role",
+    "command-after-rebind-no-destination", "rebind-new-holder-claims", "command-after-rebind-routed",
+    "listing-shows-rebind-drop",
     # one destination per command channel
     "command-routed", "command-no-destination-simulated",
     # labels
@@ -497,9 +515,15 @@ def test_an_instance_is_bound_to_its_creator_not_to_the_product():
     # ADDED 2026-10-16 (SPEC-REG-AMEND, row 7): the case's outcome is now
     # `partial`; its source roles are granted to another subject's instance,
     # its command-sink claim is not.
+    # CHANGED 2026-10-17 (SPEC-REG-AMEND-2, row 15): simulated command-sink
+    # claims are exempt from the binding rule, so the case is `accepted` again
+    # with every (simulated) role granted, as before 2026-10-16. It asserted
+    # the command-sink refused `not-registration-owner`.
     roles = _role_results("instance-create-other-subject")
-    assert roles[("override", '"command-sink"')] == ("refused", ["not-registration-owner"])
-    assert all(v == ("granted", []) for k, v in roles.items() if k[1] == '"source"')
+    assert _response("instance-create-other-subject")["outcome"] == "accepted"
+    assert all(v == ("granted", []) for v in roles.values())
+    assert {r["provenance"] for r in CASES["instance-create-other-subject"]["body"]["roles"]} == \
+        {"simulated"}
 
 
 def test_a_command_sink_role_needs_the_product_binding_or_the_owners_transfer():
@@ -552,14 +576,214 @@ def test_a_command_sink_role_needs_the_product_binding_or_the_owners_transfer():
     assert [(r["role"], r["result"], _codes(r)) for r in response["roles"]
             if r["role"] == "command-sink"] == \
         [("command-sink", "refused", ["not-registration-owner"])]
+    # ADDED 2026-10-17 (SPEC-REG-AMEND-2, row 16): a held device command-sink
+    # survives renewal only by the owner's transfer or the binding. The same
+    # role still granted but without `grantedBy` is refused on renewal,
+    # against the control above (SPEC-REG-AMEND kept any held role).
+    case = copy.deepcopy(CASES["instance-renew-transferred-command-sink"])
+    mine = instances.find_instance(case["hubState"], move["to"])
+    [held] = [r for r in mine["roles"] if r["role"] == "command-sink"]
+    assert (held["result"], held.pop("grantedBy")) == ("granted", "transfer-role")
+    response = instances.run_case(case, GRAMMAR)["response"]
+    assert [(r["result"], _codes(r)) for r in response["roles"] if r["role"] == "command-sink"] == \
+        [("refused", ["not-registration-owner"])]
     # command-routed and the existing transfer cases keep their meaning: every
     # command-sink holder there is its product's bound subject's instance.
+    # CHANGED 2026-10-17 (SPEC-REG-AMEND-2, row 15): device holders only; a
+    # simulated command-sink needs no binding.
     for cid in ("command-routed", "owner-transfer-role", "instance-renew-after-transfer"):
         state = CASES[cid]["hubState"]
         for stored in state["instances"]:
-            if any(g["role"] == "command-sink" for g in instances.granted(stored)):
+            if any(g["role"] == "command-sink" and g["provenance"] == "device"
+                   for g in instances.granted(stored)):
                 bound = negotiate._find(state, instances._ident(stored["identity"]))["boundTo"]
                 assert stored["boundTo"] == bound, (cid, stored["instanceId"])
+
+
+# ── walk-through rows 13 to 16 (maintainer, 2026-10-17) ───────────────
+
+def test_an_unlisted_slot_is_the_products_own_channel():
+    # Row 13, as built by SPEC-REG-AMEND: on a hub that lists no shared
+    # slots, `override` is ControllerA's own channel, and a second instance of
+    # ControllerA contends with the first on it. Equal unlisted names of two
+    # products do not contend (quirks case equal-names-unlisted-do-not-contend).
+    case = CASES["instance-create"]
+    assert not case["capabilities"]["wellKnown"].get("slots")
+    scope = instances.scope_of(case["capabilities"], "override", ("Example", "ControllerA"))
+    assert scope == ("Example", "ControllerA")
+    second = copy.deepcopy(case)
+    second["hubState"] = copy.deepcopy(case["expected"]["stateAfter"])
+    second["request"]["instanceId"] = "00000000-0000-4000-8000-0000000000e1"
+    roles = {(r["channel"], r["role"]): (r["result"], _codes(r))
+             for r in instances.run_case(second, GRAMMAR)["response"]["roles"]}
+    assert roles[("override", "source")] == ("refused", ["role-held"])
+    # Control: the first instance, alone, is granted it.
+    assert _role_results("instance-create")[("override", '"source"')] == ("granted", [])
+
+
+def test_a_command_for_an_unshared_slot_infers_its_one_product():
+    # Row 14. Inferred: one product declares `override`.
+    inferred, named = CASES["command-inferred-one-product"], CASES["command-named-product"]
+    assert "identity" not in inferred["request"]
+    caps, wk = inferred["capabilities"], inferred["wellKnownRegistrations"]
+    assert not caps["wellKnown"].get("slots")
+    assert instances.declaring_products(caps, inferred["hubState"], wk, "override") == \
+        [("Example", "ControllerA")]
+    assert _response("command-inferred-one-product")["destination"]["instanceId"] == \
+        "00000000-0000-4000-8000-00000000000a"
+    # Ambiguous: two products declare it; refused, never a guess between them,
+    # though only one of them has a holder.
+    ambiguous = CASES["command-ambiguous-destination"]
+    assert instances.declaring_products(caps, ambiguous["hubState"], wk, "override") == \
+        [("Example", "ControllerA"), ("Example", "ControllerB")]
+    assert instances.holder(ambiguous["hubState"], "override", "command-sink", ambiguous["now"]) \
+        == "00000000-0000-4000-8000-00000000000a"
+    assert (_response("command-ambiguous-destination")["status"],
+            _codes(_response("command-ambiguous-destination"))) == \
+        (409, ["ambiguous-command-destination"])
+    # Control: the same request naming the product.
+    assert ambiguous["control"] == "command-named-product"
+    assert {k: v for k, v in ambiguous.items() if k not in
+            ("id", "title", "description", "control", "request", "expected")} == \
+        {k: v for k, v in named.items() if k not in
+         ("id", "title", "description", "control", "request", "expected")}
+    assert {k: v for k, v in named["request"].items() if k != "identity"} == ambiguous["request"]
+    assert _response("command-named-product")["outcome"] == "routed"
+    # The owner's listing shows why: the slot name observation.
+    observed = instances.slot_name_observations(caps, ambiguous["hubState"], wk)
+    assert [o["slot"] for o in observed] == ["override"]
+    # An unknown slot is refused as before.
+    assert _codes(_response("command-unknown-slot")) == ["no-command-destination"]
+    # Shared slots are unchanged: command-routed names no product and its hub
+    # lists `override`, with both products declaring it.
+    assert "identity" not in CASES["command-routed"]["request"]
+    assert _response("command-routed")["outcome"] == "routed"
+
+
+def test_a_simulated_command_sink_needs_no_binding_and_never_receives_a_command():
+    # Row 15. Another subject's simulated claim is granted
+    # (instance-create-other-subject); its device claim is refused
+    # (instance-command-sink-not-registration-owner, kept).
+    assert _role_results("instance-create-other-subject")[("override", '"command-sink"')] == \
+        ("granted", [])
+    assert _role_results("instance-command-sink-not-registration-owner")[
+        ("override", '"command-sink"')] == ("refused", ["not-registration-owner"])
+    case = CASES["command-not-routed-to-other-subject-simulator"]
+    sim = instances.find_instance(case["hubState"], "00000000-0000-4000-8000-00000000000d")
+    product = negotiate._find(case["hubState"], ("Example", "ControllerA"))
+    assert sim["boundTo"] != product["boundTo"]
+    assert {"channel": "override", "role": "command-sink", "provenance": "simulated"} in \
+        instances.granted(sim)
+    assert _response(case["id"])["destination"]["instanceId"] == \
+        "00000000-0000-4000-8000-00000000000a"
+    # Without the device holder the simulator still receives nothing.
+    alone = copy.deepcopy(case)
+    alone["hubState"]["instances"] = [i for i in alone["hubState"]["instances"]
+                                      if i["instanceId"] == sim["instanceId"]]
+    response = instances.run_case(alone, GRAMMAR)["response"]
+    assert (response["status"], _codes(response)) == (409, ["no-command-destination"])
+
+
+def _roles_by_instance(state):
+    return {s["instanceId"]: {(r["channel"], r["role"], r["provenance"]): (r["result"], _codes(r))
+                              for r in s["roles"]}
+            for s in state["instances"]}
+
+
+SINK = ("override", "command-sink", "device")
+I_A, I_D, I_E = ("00000000-0000-4000-8000-00000000000" + c for c in "ade")
+
+
+def test_a_rebind_drops_device_command_sinks_that_no_longer_match():
+    # Row 16. Transfer: the old subject's device command-sink is dropped, its
+    # etag changes; source and simulated roles and their etags are untouched.
+    for cid in ("rebind-transfer-drops-command-sink", "rebind-release-drops-command-sink"):
+        case = CASES[cid]
+        before, after = case["hubState"], case["expected"]["stateAfter"]
+        assert _response(cid)["outcome"] == "applied"
+        new_bound = negotiate._find(after, ("Example", "ControllerA"))["boundTo"]
+        assert new_bound != negotiate._find(before, ("Example", "ControllerA"))["boundTo"]
+        old, new = _roles_by_instance(before), _roles_by_instance(after)
+        assert old[I_A][SINK] == ("granted", [])
+        assert new[I_A][SINK] == ("refused", ["not-registration-owner"]), cid
+        assert {k: v for k, v in new[I_A].items() if k != SINK} == \
+            {k: v for k, v in old[I_A].items() if k != SINK}, cid
+        assert any(k[1] == "source" and v[0] == "granted" for k, v in new[I_A].items())
+        assert new[I_D] == old[I_D] and new[I_D][("override", "command-sink", "simulated")][0] == \
+            "granted"
+        a_before, a_after = (instances.find_instance(s, I_A) for s in (before, after))
+        assert a_after["etag"] != a_before["etag"], cid
+        assert a_after["etag"] == instances.instance_etag(
+            a_after["instance"], a_after["boundTo"], instances.granted(a_after))
+        assert instances.find_instance(after, I_D) == instances.find_instance(before, I_D)
+    # Control: the same transfer with the holder created by the new subject.
+    keep = CASES["rebind-transfer-keeps-matching-instance"]
+    drop = CASES["rebind-transfer-drops-command-sink"]
+    holder_keep = instances.find_instance(keep["hubState"], I_A)
+    assert holder_keep["boundTo"] == drop["request"]["transferTo"] == keep["request"]["transferTo"]
+    assert keep["expected"]["stateAfter"]["instances"] == keep["hubState"]["instances"]
+    assert _roles_by_instance(keep["expected"]["stateAfter"])[I_A][SINK] == ("granted", [])
+    # Another product's instance, bound to the same old subject and holding a
+    # device command-sink, is untouched by this product's rebind, against the
+    # dropped holder above.
+    other_case = copy.deepcopy(drop)
+    other = copy.deepcopy(instances.find_instance(other_case["hubState"], I_A))
+    other["instanceId"] = "00000000-0000-4000-8000-0000000000b1"
+    other["identity"] = {"vendor": "Example", "product": "ControllerB"}
+    other_case["hubState"]["instances"].append(other)
+    after = instances.run_case(other_case, GRAMMAR)["stateAfter"]
+    assert instances.find_instance(after, other["instanceId"]) == other
+    assert _roles_by_instance(after)[I_A][SINK] == ("refused", ["not-registration-owner"])
+
+
+def test_a_transfer_role_grant_survives_a_rebind():
+    case = CASES["rebind-keeps-transferred-role"]
+    before, after = case["hubState"], case["expected"]["stateAfter"]
+    mine = instances.find_instance(before, I_A)
+    product = negotiate._find(before, ("Example", "ControllerA"))
+    assert mine["boundTo"] != product["boundTo"]
+    assert SINK[:2] + ("device",) in {(r["channel"], r["role"], r["provenance"])
+                                      for r in mine["roles"] if r.get("grantedBy")}
+    assert negotiate._find(after, ("Example", "ControllerA"))["boundTo"] == \
+        case["request"]["transferTo"]
+    assert instances.find_instance(after, I_A) == mine
+    # Against the control: without `grantedBy` the same rebind drops it.
+    bare = copy.deepcopy(case)
+    for r in instances.find_instance(bare["hubState"], I_A)["roles"]:
+        r.pop("grantedBy", None)
+    computed = instances.run_case(bare, GRAMMAR)["stateAfter"]
+    assert _roles_by_instance(computed)[I_A][SINK] == ("refused", ["not-registration-owner"])
+
+
+def test_a_command_between_the_drop_and_the_new_claim_has_no_destination():
+    state = CASES["rebind-transfer-drops-command-sink"]["expected"]["stateAfter"]
+    assert CASES["command-after-rebind-no-destination"]["hubState"] == state
+    assert (_response("command-after-rebind-no-destination")["status"],
+            _codes(_response("command-after-rebind-no-destination"))) == \
+        (409, ["no-command-destination"])
+    # The same command before the drop went to the former holder.
+    response = _run("command-after-rebind-no-destination",
+                    hubState=CASES["rebind-transfer-drops-command-sink"]["hubState"])
+    assert response["destination"]["instanceId"] == I_A
+    claim = CASES["rebind-new-holder-claims"]
+    assert claim["hubState"] == state
+    assert _role_results("rebind-new-holder-claims")[("override", '"command-sink"')] == \
+        ("granted", [])
+    assert CASES["command-after-rebind-routed"]["hubState"] == claim["expected"]["stateAfter"]
+    assert _response("command-after-rebind-routed")["destination"]["instanceId"] == I_E
+
+
+def test_the_owners_listing_shows_the_drop():
+    listed = _response("listing-shows-rebind-drop")
+    before = CASES["rebind-transfer-drops-command-sink"]
+    assert CASES["listing-shows-rebind-drop"]["hubState"] == before["expected"]["stateAfter"]
+    entry = {i["instanceId"]: i for i in listed["instances"]}[I_A]
+    sink = [r for r in entry["roles"] if (r["channel"], r["role"], r["provenance"]) == SINK]
+    assert [(r["result"], _codes(r)) for r in sink] == [("refused", ["not-registration-owner"])]
+    assert entry["etag"] != instances.find_instance(before["hubState"], I_A)["etag"]
+    product = {(r["vendor"], r["product"]): r for r in listed["registrations"]}[
+        ("Example", "ControllerA")]
+    assert product["boundTo"] == before["request"]["transferTo"]
 
 
 def test_the_owners_listing_shows_each_binding_event_and_credential_kind():
@@ -937,5 +1161,7 @@ def test_the_new_reason_codes_are_shared_values():
     validator = _def(SUBMIT_SCHEMA, "reason")
     for code in ("version-conflict", "unknown-well-known-kind", "definition-id-mismatch",
                  "role-held", "instance-required", "no-command-destination",
-                 "projected-read-only", "definition-referenced", "unknown-provenance"):
+                 "projected-read-only", "definition-referenced", "unknown-provenance",
+                 # ADDED 2026-10-17 (SPEC-REG-AMEND-2, row 14)
+                 "ambiguous-command-destination"):
         assert not _errors(validator, {"code": code}), code

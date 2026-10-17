@@ -245,7 +245,7 @@
   },
   "reason": {
    "type": "object",
-   "description": "Why a registration, an element or a typed write was not accepted, or why a request changed nothing. `code` is an open vocabulary (rule 3): a hub uses `other` with its own `term` for a reason not listed, and a controller treats any reason it does not know as not accepted. `not-registration-owner` (403): the registration is bound to another credential. `blocked-by-owner`: the tenant owner blocked the identity (403 to the controller; 409 to an owner retiring a blocked registration). `not-retired` (409): only a retired registration's namespaces are freed. D19 (SPEC-REG-INSTANCE, hub-sync design §3.6): `version-conflict` (an element typed differently at a version a stored definition of the product already types), `unknown-well-known-kind` (a `wellKnownRef` to a kind the catalogue does not have at that version), `definition-id-mismatch` (422: the body's hash is not the path id), `product-retired` (409), `unknown-definition`, `invalid-instance-id`, `invalid-instance`, `invalid-label` (422), per-role `unknown-channel`, `not-a-command-channel`, `unsupported-role`, `unknown-provenance`, `role-held`; `role-not-granted`, `role-not-claimed`, `not-live` (409); `instance-required` (422, a definite typed-write refusal); `no-command-destination`, `no-carrier-mapping`, `projected-read-only` (409); `unknown-version` (422, a pin); `definition-referenced`, `definition-in-use`, `definition-current` (why a definition is not eligible for removal). D20 (SPEC-REG-QUIRKS, §3.7): `unknown-shared-slot` (an element's `sameAs` names a slot the hub's shared slot list does not have).",
+   "description": "Why a registration, an element or a typed write was not accepted, or why a request changed nothing. `code` is an open vocabulary (rule 3): a hub uses `other` with its own `term` for a reason not listed, and a controller treats any reason it does not know as not accepted. `not-registration-owner` (403): the registration is bound to another credential. `blocked-by-owner`: the tenant owner blocked the identity (403 to the controller; 409 to an owner retiring a blocked registration). `not-retired` (409): only a retired registration's namespaces are freed. D19 (SPEC-REG-INSTANCE, hub-sync design §3.6): `version-conflict` (an element typed differently at a version a stored definition of the product already types), `unknown-well-known-kind` (a `wellKnownRef` to a kind the catalogue does not have at that version), `definition-id-mismatch` (422: the body's hash is not the path id), `product-retired` (409), `unknown-definition`, `invalid-instance-id`, `invalid-instance`, `invalid-label` (422), per-role `unknown-channel`, `not-a-command-channel`, `unsupported-role`, `unknown-provenance`, `role-held`; `role-not-granted`, `role-not-claimed`, `not-live` (409); `instance-required` (422, a definite typed-write refusal); `no-command-destination`, `no-carrier-mapping`, `projected-read-only` (409); `unknown-version` (422, a pin); `definition-referenced`, `definition-in-use`, `definition-current` (why a definition is not eligible for removal). D20 (SPEC-REG-QUIRKS, §3.7): `unknown-shared-slot` (an element's `sameAs` names a slot the hub's shared slot list does not have). Walk-through row 14 (maintainer, 2026-10-17; SPEC-REG-AMEND-2): `ambiguous-command-destination` (409: a command names no product for a channel that is not shared and more than one product on the site declares it; naming the product resolves it).",
    "required": [
     "code"
    ],
@@ -299,6 +299,7 @@
       "definition-in-use",
       "definition-current",
       "unknown-shared-slot",
+      "ambiguous-command-destination",
       "other"
      ]
     },
@@ -1228,6 +1229,10 @@
      "items": {
       "$ref": "#/$defs/reason"
      }
+    },
+    "grantedBy": {
+     "const": "transfer-role",
+     "description": "Walk-through row 16 (maintainer, 2026-10-17; SPEC-REG-AMEND-2): present on a granted role the owner moved to this instance with `transfer-role`, and kept on its renewals while the role stays granted. A change of the product's `boundTo` drops `device` command-sink roles held by instances whose binding no longer matches it, except roles carrying this member. Not in the instance etag (the transfer that sets it already changes the granted roles)."
     }
    },
    "allOf": [
@@ -1271,6 +1276,25 @@
       "not": {
        "required": [
         "reasons"
+       ]
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "result": {
+        "const": "refused"
+       }
+      },
+      "required": [
+       "result"
+      ]
+     },
+     "then": {
+      "not": {
+       "required": [
+        "grantedBy"
        ]
       }
      }
@@ -1563,7 +1587,7 @@
   },
   "instanceRequest": {
    "type": "object",
-   "description": "One D19 request or hub decision, as the instance cases model it. Controller requests on the data listener: `submit` (the §3.5 product PUT, here to show it stores and compares definitions), `put-definition` (`PUT <…>/definitions/<definitionId>`, If-None-Match: * only), `put-instance` (`PUT <…>/instances/<instanceId>`: If-None-Match: * creates, If-Match renews or changes), `delete-instance` (If-Match). Owner actions on ns-tenant-admin (or API_SECRET on single): `transfer-role` (If-Match the etag of the instance the role is moved from), `pin-version` and `unpin-version` (If-None-Match: * when the product has no pins, else If-Match the pins etag), `list-instances`. Hub decisions (`actor: hub`), modelled so both hubs can be tested on them: `route-command`, `select-versions`, `project`, `write` and `retention-check`. Paths are proposals. Closed, like the §3.5 request.",
+   "description": "One D19 request or hub decision, as the instance cases model it. Controller requests on the data listener: `submit` (the §3.5 product PUT, here to show it stores and compares definitions), `put-definition` (`PUT <…>/definitions/<definitionId>`, If-None-Match: * only), `put-instance` (`PUT <…>/instances/<instanceId>`: If-None-Match: * creates, If-Match renews or changes), `delete-instance` (If-Match). Owner actions on ns-tenant-admin (or API_SECRET on single): `transfer-role` (If-Match the etag of the instance the role is moved from), `pin-version` and `unpin-version` (If-None-Match: * when the product has no pins, else If-Match the pins etag), `list-instances`; *(2026-10-17, walk-through row 16)* §3.5's `release` and `transfer` of a product (If-Match the product etag), modelled here because a change of `boundTo` drops `device` command-sink roles of instances that no longer match it. Hub decisions (`actor: hub`), modelled so both hubs can be tested on them: `route-command`, `select-versions`, `project`, `write` and `retention-check`. Paths are proposals. Closed, like the §3.5 request.",
    "required": [
     "action"
    ],
@@ -1582,7 +1606,9 @@
       "select-versions",
       "project",
       "write",
-      "retention-check"
+      "retention-check",
+      "release",
+      "transfer"
      ]
     },
     "actor": {
@@ -1782,6 +1808,10 @@
        }
       }
      }
+    },
+    "transferTo": {
+     "$ref": "#/$defs/binding",
+     "description": "With `transfer`: the binding the product takes (§3.5)."
     }
    },
    "allOf": [
@@ -1793,7 +1823,9 @@
          "transfer-role",
          "pin-version",
          "unpin-version",
-         "list-instances"
+         "list-instances",
+         "release",
+         "transfer"
         ]
        }
       },
@@ -1913,6 +1945,41 @@
      "then": {
       "required": [
        "write"
+      ]
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "action": {
+        "const": "transfer"
+       }
+      },
+      "required": [
+       "action"
+      ]
+     },
+     "then": {
+      "required": [
+       "transferTo",
+       "identity"
+      ]
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "action": {
+        "const": "release"
+       }
+      },
+      "required": [
+       "action"
+      ]
+     },
+     "then": {
+      "required": [
+       "identity"
       ]
      }
     }

@@ -1,6 +1,6 @@
 # layer	repo	role
 # layer: device = BLE/radio drivers, simulators, reverse-engineering and crypto for CGMs and pumps
-#        controller = AID controllers and algorithms
+#        controller = AID controllers and algorithms, and the harnesses that build and drive them
 #        cloud = connectors that bring vendor-cloud or third-party data out
 #        server = Nightscout-compatible servers and gateways
 #        follower = remote-monitoring and caregiver apps
@@ -14,11 +14,13 @@ device	loopandlearn/AccuChekKit	Accu-Chek pump driver (Swift), fork
 device	loopandlearn/LibreCRKit	Libre CGM driver (Swift), fork
 device	loopandlearn/LibreLoop	Libre plugin for Loop, fork
 device	loopandlearn/dana-simulator	Dana pump BLE simulator (Go), fork
-device	loopandlearn/pod	Omnipod simulator (Go), fork
+device	loopandlearn/pod	Omnipod simulator (Go), fork of LoopKit/pod
+device	LoopKit/pod	Omnipod DASH simulator (Go), LoopKit fork; upstream of loopandlearn/pod
 device	LoopKit/OmniBLE	Omnipod DASH driver, predecessor of OmnipodKit
 device	LoopKit/OmniKit	Omnipod Eros driver, predecessor of OmnipodKit
 device	LoopKit/CGMBLEKit	Dexcom G5/G6 BLE driver
 device	LoopKit/G7SensorKit	Dexcom G7 / ONE+ BLE driver
+device	LoopKit/g7sim	Dexcom G7 sensor BLE simulator (Go)
 device	LoopKit/RileyLinkKit	RileyLink radio bridge for Eros and Medtronic
 device	LoopKit/MinimedKit	Medtronic 5xx/7xx pump driver over RileyLink
 device	LoopKit/LibreTransmitter	Libre 1/2 via transmitters and NFC
@@ -41,9 +43,11 @@ device	xdrip-js/xdrip-js	Dexcom G5/G6 BLE in JavaScript for OpenAPS rigs
 device	openaps/decocare	Medtronic CareLink USB stick protocol (Python), historical
 device	ps2/rileylink	RileyLink hardware and firmware, historical
 controller	LoopKit/Loop	Loop iOS app
+controller	LoopKit/LoopWorkspace	Loop's build workspace: submodule pins, and CircleCI that runs Loop's and the kits' tests
 controller	LoopKit/LoopKit	LoopKit framework shared by Loop and Trio
 controller	LoopKit/LoopAlgorithm	Loop's algorithm as a package
 controller	nightscout/Trio	Trio iOS app (oref on iOS)
+controller	jwoglom/trio-test-harness	build, drive and screenshot harness for Trio and Loop (Python)
 controller	nightscout/AndroidAPS	AndroidAPS, with pump and CGM drivers in-tree
 controller	openaps/oref0	oref0 reference algorithm and rig tooling
 controller	Artificial-Pancreas/iAPS	iAPS iOS app
