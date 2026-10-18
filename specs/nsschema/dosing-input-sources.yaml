@@ -207,8 +207,12 @@ inputs:
     sources: []
     note: >-
       A dosing *safety limit*. Loop records its equivalents in
-      profile.loopSettings; no oref0 derivative records maxIob anywhere in
-      Nightscout. A replay must assume it.
+      profile.loopSettings. The corpus holds no maxIob from any oref0
+      derivative, so a replay of corpus data must assume it. oref0's own rig
+      uploads its preferences file, max_iob included, as
+      devicestatus.preferences (oref0 d219baf9 bin/ns-status.js:40-49,175-177,
+      called with --preferences by bin/oref0-ns-loop.sh:221-227); the corpus
+      has no oref0 rig. Trio and AndroidAPS upload no equivalent.
     confidence: high
   - input: profile.maxBasal
     algorithm: oref0

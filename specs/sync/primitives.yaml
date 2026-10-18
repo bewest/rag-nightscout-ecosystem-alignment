@@ -1470,8 +1470,8 @@ proposed_not_carried_by_any_primitive:
   algorithm: oref0
   status_today: absent
   evidence: proposed
-  why: A dosing *safety limit*. Loop records its equivalents in profile.loopSettings; no oref0 derivative
-    records maxIob anywhere in Nightscout. A replay must assume i
+  why: 'A dosing *safety limit*. Loop records its equivalents in profile.loopSettings. The corpus
+    holds no maxIob from any oref0 derivative, so a replay of corpus data '
 - field: mealData.mealCOB
   algorithm: oref0
   status_today: absent
