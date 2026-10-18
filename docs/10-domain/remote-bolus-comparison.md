@@ -21,7 +21,7 @@ Remote bolus commands allow caregivers to trigger insulin delivery from outside 
 | **Nightscout** | HTTP→APNs | API secret | TLS | 5 minutes |
 
 The sequence below shows, for a remote bolus, which channel carries the request and where an
-acknowledgement comes back. Solid arrows are requests and records; dashed arrows are replies.
+acknowledgement comes back. Solid arrows are requests and records; dashed arrows are replies and reads.
 
 ```mermaid
 sequenceDiagram

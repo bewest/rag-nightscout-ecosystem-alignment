@@ -3,7 +3,7 @@
 
     python tools/site/mermaid_check.py [files...]      (make diagrams-check)
 
-The mermaid version is the one mkdocs.yml pins under extra_javascript, so the
+The mermaid version is the one tools/site/overrides/main.html pins, so the
 check and the site use the same parser. Each block goes through
 `mermaid.parse()` in headless Chrome (`--dump-dom` on a generated local page;
 no node packages). A failure prints `file:line` (the line inside the block the
@@ -33,7 +33,7 @@ import urllib.request
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-MKDOCS = REPO / "mkdocs.yml"
+PIN_FILE = REPO / "tools" / "site" / "overrides" / "main.html"
 
 # npm `dist.integrity` per pinned version (npm view mermaid@<v> dist.integrity)
 INTEGRITY = {
@@ -45,9 +45,9 @@ PIN = re.compile(r"mermaid@(\d+\.\d+\.\d+)/dist/mermaid\.min\.js")
 
 
 def pinned_version() -> str:
-    found = PIN.findall(MKDOCS.read_text(encoding="utf-8"))
+    found = PIN.findall(PIN_FILE.read_text(encoding="utf-8"))
     if len(set(found)) != 1:
-        sys.exit(f"mkdocs.yml: expected one pinned mermaid@X.Y.Z URL, found {sorted(set(found)) or 'none'}")
+        sys.exit(f"{PIN_FILE.relative_to(REPO)}: expected one pinned mermaid@X.Y.Z URL, found {sorted(set(found)) or 'none'}")
     return found[0]
 
 

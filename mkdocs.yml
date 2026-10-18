@@ -92,11 +92,3 @@ markdown_extensions:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
-
-# Mermaid runtime, pinned. mkdocs-material 9.7.7 loads
-# https://unpkg.com/mermaid@11/dist/mermaid.min.js (a floating major) only when
-# no global `mermaid` exists; a script here defines it first, so this exact
-# version is the one used. tools/site/mermaid_check.py (make diagrams-check)
-# reads this URL and parses every mermaid block with the same version.
-extra_javascript:
-  - https://unpkg.com/mermaid@11.17.2/dist/mermaid.min.js

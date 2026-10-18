@@ -94,7 +94,7 @@ help:
 	@echo "  make site-clean    - Remove the site build output"
 	@echo "  make site-publish  - Build, check, and commit build/site on top of origin/gh-pages"
 	@echo "  make diagrams-check - Parse every mermaid block in tracked docs with the"
-	@echo "                        mermaid version mkdocs.yml pins (headless Chrome)"
+	@echo "                        mermaid version the site pins (headless Chrome)"
 	@echo "                        in ../rag-alignment-gh-pages; prints a plain push command."
 	@echo "                        DRY_RUN=1 stages without committing; PURGE=1 makes a fresh"
 	@echo "                        one-commit orphan instead (needs a force-push, with a lease)"
@@ -1069,7 +1069,8 @@ site-clean:
 	rm -rf build/site-src build/site build/site-nav.yaml build/site-report.json build/site-mkdocs.log
 
 .PHONY: diagrams-check
-# Parse every ```mermaid block in tracked *.md with the version mkdocs.yml pins;
+# Parse every ```mermaid block in tracked *.md with the version the site pins
+# (tools/site/overrides/main.html);
 # fails with file:line. Needs Chrome; the first run per version downloads the
 # npm tarball once (integrity-checked) into ~/.cache/nightscout-alignment/.
 diagrams-check:
