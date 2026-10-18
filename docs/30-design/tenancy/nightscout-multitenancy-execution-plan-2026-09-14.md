@@ -556,6 +556,13 @@ the reason code `ambiguous-command-destination`, with four new cases; row 15's e
 §3.5's `release` and `transfer` modelled as instance-case requests, and eight new cases. 103
 instance cases. The choices made beyond the rows are listed in the queue item.)*
 
+**Decided 2026-10-18 (maintainer)**, on how an agent is recorded as initiator (D18's initiator
+vocabularies; [intent landscape](../platform/nightscout-intent-workflow-landscape-2026-10-09.md) P5).
+
+| # | point | decision |
+|---|---|---|
+| 17 | an agent as initiator | **no `agent` value is added.** An agent initiator is written in the open-vocabulary form `{value: other, controllerTerm}` (addendum rule 3), as §3.6 of the hub-sync design does for an agent's roles; no controller records an agent as initiator today, so there is no cowpath to name. The grammar's `initiators` element lists strings in each controller's own vocabulary, with no shared list and no `other` form; applying the form there is not yet specified. Map: [agents in the ecosystem](../platform/agent-trust-boundaries-2026-10-18.md) |
+
 ### 2.7 D12 — what each repository is for
 
 | repository | role |
