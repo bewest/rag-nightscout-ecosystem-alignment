@@ -38,10 +38,10 @@ update key is `(dataSource, syncIdentifier)`). It is not unique per record in st
 13 Loop values each appear on 2 to 4 treatments ([identifier duplicates](../../../60-research/tenancy/identifier-duplicates-2026-10-17.md)).
 A controller may send it as `identifier`.
 
-**Natural key.** The fields the write contract proposes to match a re-send on when it carries no
-id, one key per collection on every write path: entries `date`+`type`, devicestatus
-`created_at`+`device`, profile `created_at`; food and activity by id only. Today the key differs by
-path. [WC §3](../../tenancy/write-contract-spec-2026-10-07.md#3-the-unified-re-send-rule) U4.
+**Natural key.** The fields a re-send without an id is matched on, one key per collection on every
+write path: entries `date`+`type`, profile `created_at`, treatments `created_at`+`eventType`;
+devicestatus `created_at`+`device` for an identical body only; food and activity by id only. Today
+the key differs by path. [Identity §3](identity.md#3-match-order-per-collection).
 
 **Definition id.** `sha256:` and the hex SHA-256 of the RFC 8785 canonical JSON of a definition as
 submitted. Equal content gives an equal id. [HS §3.6](../nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances).
@@ -178,8 +178,10 @@ container the series uses for observed state over time.
 deciding `_id` form, target, outcome (insert, merge, replace, unchanged, refused), server dates and
 one change event. [WC §2](../../tenancy/write-contract-spec-2026-10-07.md#2-the-proposed-write-step).
 
-**Re-send rule.** An identical re-send stores nothing and is answered with the stored ids; a
-differing re-send merges; an explicit update replaces. [WC §3](../../tenancy/write-contract-spec-2026-10-07.md#3-the-unified-re-send-rule).
+**Re-send rule.** A re-send that matches a stored record stores no second copy and is answered with
+the stored ids. A differing re-send merges into the match (JSON Merge Patch: a `null` removes the
+field); an explicit update replaces. An identical re-send is rewritten on API v1, v3 and in-process
+and answered unchanged on the socket and for devicestatus (decided 2026-10-12, [WC §6.1](../../tenancy/write-contract-spec-2026-10-07.md#61-decided-2026-10-12)). Match order: [identity §3](identity.md#3-match-order-per-collection).
 
 **Etag, precondition.** `sha256:` over the canonical JSON of a resource's content, state and
 binding. Creates send `If-None-Match: *`; updates send `If-Match`. A missing precondition is 428 and

@@ -39,13 +39,14 @@ in `tools/nsschema/`, which checks the cases but is not a hub. *Implemented*: a 
 
 | | |
 |---|---|
-| **Spec today** | [hub-sync §3.7](nightscout-hub-sync-architecture-2026-09-11.md#37-version-scoped-quirks-and-the-two-ids) rules 5, 6 and 8 (two ids, the 24-hex legacy id form, projected ids); [write contract §3](../tenancy/write-contract-spec-2026-10-07.md#3-the-unified-re-send-rule) (natural keys, both ids in every reply); [hub-sync §3.6](nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances) (definition id, instance id) |
+| **Spec** | [spec/identity.md](spec/identity.md): rules I1–I9, contract ids, match order per collection, the proposed `identifier` format, open decisions, today's cgm-remote-monitor behaviour, 20 cases |
+| **Drawn from** | [hub-sync §3.7](nightscout-hub-sync-architecture-2026-09-11.md#37-version-scoped-quirks-and-the-two-ids) rules 5–8; [write contract](../tenancy/write-contract-spec-2026-10-07.md) §2.2, §3 and §6.1; [hub-sync §3.6](nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances) |
 | **Evidence** | [identifier format](../../60-research/tenancy/identifier-format-2026-10-17.md) (UUID not required; constraints C1–C7); [identifier duplicates](../../60-research/tenancy/identifier-duplicates-2026-10-17.md); [Loop identifier ask](upstream-asks-loop-identifier/README.md) |
 | **Schemas, cases** | `specs/sync/registration-submit.schema.json` (`write.ids`, `matchedBy`); `specs/quirks/`; 29 cases in `specs/sync/conformance/quirks/` |
 | **Decisions** | [D20](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16) |
 | **Open** | `ID-FORMAT-DECISION`, `ID-CLIENT-OID-DECISION`, `ID-V3-IMMUTABLE-DECISION` (needs decision); `ID-SIMPLE-MATCH`, `ID-VALIDATE`, `ID-FIRST-MATCH`, `ID-V1-LOOKUP`, `ID-UNIQUE-INDEX` (blocked) |
 | **Audit** | every write reply returns `identifier` and `_id` and says which one matched; an assigned ObjectId's time is the hub's receipt time, never the record's time |
-| **Status** | specified; the v1 `identifier` match for entries and devicestatus is queued for cgm-remote-monitor after 15.0.9 |
+| **Status** | specified (`SPEC-ID`); the v1 `identifier` match for entries and devicestatus is queued for cgm-remote-monitor after 15.0.9 |
 
 ## L1 Records
 
@@ -88,7 +89,7 @@ in `tools/nsschema/`, which checks the cases but is not a hub. *Implemented*: a 
 | **Spec today** | [write contract](../tenancy/write-contract-spec-2026-10-07.md) §2–§3 (one write step, the re-send rule, every path's writes reaching the storage socket); [hub-sync §3.2](nightscout-hub-sync-architecture-2026-09-11.md#32-the-contract-the-hub-returns) (cursor envelope and batch write); [replay-fidelity proposal §1](PROPOSAL-replay-fidelity-changes-2026-09-11.md#1-sync-cost-should-be-o1-in-the-number-of-resources) (one history read across collections on API v3); §3.5's fallback and load-versus-definite refusal rule; [D6](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions) (the change feed under multi) |
 | **Evidence** | [hub-sync §2](nightscout-hub-sync-architecture-2026-09-11.md#2-what-sync-costs-now) (`make schema-sync-cost`: up to 5,760, 2,016 and 1,440 requests a day for AndroidAPS, Loop and Trio against 576 for two requests a cycle; source-derived upper bounds, not traffic); the write contract's measured matrix |
 | **Open** | `WRITE-CONTRACT`, `WC-STEP-PATCH`, `ID-BATCH-RESULTS` (blocked). Not specified anywhere: socket delivery of typed records, cursor semantics under concurrent writers, and migrating stored typed records when a definition changes version (rule 4 of the D18 addendum converts nothing without a declared mapping) |
-| **Audit** | one change event per write; an identical re-send stores nothing and is answered with the stored ids; each mapping the hub applies is recorded as `quirksApplied` |
+| **Audit** | one change event per write call; a matched re-send stores no second copy and is answered with the stored ids; each mapping the hub applies is recorded as `quirksApplied` |
 | **Status** | the write matrix is evidenced; the write step is specified; the typed sync transport is not |
 
 ## L5 Authority
@@ -110,6 +111,8 @@ why the contract exists, then hub-sync §3.5–§3.7 for the contract itself.
 
 ## Planned layout
 
-The living specification for each layer will move into its own undated file under `spec/`
-(`identity`, `registration`, `state-intent`, `sync-transport`, `authority`). The dated documents
+Each layer's living specification has, or will have, its own undated file under `spec/`:
+[identity](spec/identity.md) is written; `registration`, `state-intent`, `sync-transport` and
+`authority` are queued as `SPEC-REGISTRATION`, `SPEC-STATE-INTENT`, `SPEC-SYNC-TRANSPORT` and
+`SPEC-AUTHORITY`. The dated documents
 above stay where they are as snapshots, and each moved section leaves a pointer to its new home.

@@ -1249,7 +1249,8 @@ collection date, so a re-run over the same corpus gives the same answer. *(Chang
 item: `check` skipped a `historical` entry and checked a `proposed` one like an active one.)*
 Declaration entries are measured by a hub's recorded mappings, which the corpus predates.
 
-**Rule 5: two ids, one rule.**
+**Rule 5: two ids, one rule.** *Rules 5–8 and the receipt-time rule are maintained in the
+[identity specification](spec/identity.md); the text here is the 2026-10-16 record.*
 
 - `identifier` is the sync identity the client assigns, stable across retries and devices; in the
   typed API it is the controller's record id. `_id` is the storage key the hub assigns.

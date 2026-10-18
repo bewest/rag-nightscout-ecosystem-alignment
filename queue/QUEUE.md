@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 237 |
-| runnable gates | 284 |
-| explicit `no-gate:` markers | 276 |
+| items | 242 |
+| runnable gates | 285 |
+| explicit `no-gate:` markers | 280 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 276 of the 560 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 280 of the 565 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 67 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `not-started` | 71 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY |
 | `in-progress` | 4 | BFQ-46, BFQ-ENV, OID-LAB, LOOP-ID-REPLY |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -49,7 +49,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 87 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 9 | RT-0, T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-V3-IMMUTABLE-DECISION, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164 |
-| `done` | 23 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-G7-SLOTS, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE |
+| `done` | 24 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-G7-SLOTS, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
 | `answered` | 2 | RT-D3, RT-PROPAGATION |
@@ -7581,7 +7581,7 @@ flag rule: versioning policy section 5.7.
 
 ## Controller registration and intent observability
 
-`parcel: platform` &mdash; 20 items
+`parcel: platform` &mdash; 25 items
 
 D18 (maintainer, 2026-10-09): two-tier controller registration - well-known
 declarations for backwards compatibility, controller-owned typed registrations
@@ -7612,6 +7612,11 @@ reproduced ones.
 | `LAB-HUB-ACTIVE-STATE` | Lab: cgm-remote-monitor and Nocturne answer 'what is active at t' for the same intent records | `done` | `main` | n/a | 1 run |
 | `LOOP-ID-REPLY` | Draft a reply to the Loop maintainers' proposal that Nightscout accept a client-supplied identifier | `in-progress` | `main` | n/a | 0 run + 1 no-gate |
 | `LOOP-ID-V3-IMMUTABLE` | Reproduce over HTTP that API v3 answers a re-send with the same identifier and a different date, device or eventType with 400 | `done` | `records/loop-identifier-2026-10-17` | n/a | 1 run + 1 no-gate |
+| `SPEC-ID` | Platform spec L0: the identity specification as one living document (two ids, contract ids, match order, identifier format, open decisions) | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 1 run |
+| `SPEC-REGISTRATION` | Platform spec L2: the registration specification (grammar, negotiation, definitions, instances, labels, read selection, projected views, quirks rules 1-4) as one living document | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `SPEC-STATE-INTENT` | Platform spec L3: the state and intent specification (kinds, slots, channels, states, end reasons, requested and applied, initiators, composition) | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `SPEC-SYNC-TRANSPORT` | Platform spec L4: the change and sync specification (write step, re-send rule, cursor, history, socket delivery, definition-version migration) | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `SPEC-AUTHORITY` | Platform spec L5: the authority specification (binding, credential kind, owner actions, roles and provenance, command routing; delegation and proposals as open design) | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 
 ### `LAB-G7-TWO-DISPLAY` &mdash; Lab: two displays on one real G7 sensor report the same seconds counter for each reading, live and backfill
 
@@ -8249,6 +8254,158 @@ reproduced ones.
 - `docs/30-design/platform/upstream-asks-loop-identifier/README.md`
 
 **Notes.** The reply's last "Not decided anywhere" bullet said, from reading lib/api3/generic/update/validate.js:21-43 at 15.0.8, that a v3 re-send with the same identifier and a different date is answered 400, not stored twice. POST reaches that check through create/operation.js: a match on identifier becomes replace(..., { isDeduplication: true }), and replace runs update/validate.js, which skips only `identifier` under deduplication. Done 2026-10-17, reproduced over HTTP with tools/lab/v3-identifier-immutable at 15.0.8 (92d08342) and dev fade2299, MongoDB 7.0.43 in a dedicated container, Node 22.23.2. On entries, treatments and devicestatus a v3 POST with a stored identifier and a different date, device or (treatments) eventType is 400 "Field <name> cannot be modified by the client", the stored record unchanged and single; PUT by identifier with a new date the same; the identical re-send (control) is 200. The refs differ only for a record first written through v1: dev accepts a first device and a date equal to created_at (isSameAsStored), 15.0.8 answers 400 date. v1 contrast: treatments update created_at on the identifier match; entries store a second record. Not filed as a backfix (documented v3 rule; the open question is in the reply). Reply passage and README evidence row updated.
+
+### `SPEC-ID` &mdash; Platform spec L0: the identity specification as one living document (two ids, contract ids, match order, identifier format, open decisions)
+
+| | |
+|---|---|
+| state (claimed) | `done` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `docs/platform-spec-index-2026-10-18` |
+| base | `main@5a9a49cc` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** docs/30-design/platform/spec/identity.md (new), with the platform index (docs/30-design/platform/README.md) and glossary (spec/glossary.md) it hangs from; one pointer sentence each in the hub-sync design §3.7 rule 5, the write contract's status block and the identifier format research's status block; the gate tools/queue/gates/platform-spec.js and its control platform-spec- control.sh. No rule changes and no conformance case changes: the spec restates D20 rules 5-8, walk-through rows 1-3 and the write contract's U1, U6 and §6.1 as current rules.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** specification in this repository; ships nothing
+
+**Gates.**
+
+- `[static]` `node tools/queue/gates/platform-spec.js identity`
+  - FAILS when the identity spec is missing, carries amendment narration (DEFINITION-OF-DONE criterion 1), names a conformance case that does not exist under specs/sync/conformance/, states a case count that differs from its table, or when the platform index or any of its three source documents does not link to it. GREEN on 2026-10-18: 34 checks, 20 cases.
+
+**Evidence.**
+
+- `docs/30-design/platform/spec/identity.md`
+- `docs/30-design/platform/README.md`
+- `docs/30-design/platform/spec/glossary.md`
+
+**Notes.** First extraction of the platform reorganisation the maintainer approved on 2026-10-18: six layers (L0 identity, L1 records, L2 definitions and instances, L3 state and intent, L4 change and sync, L5 authority), each with one undated living spec under docs/30-design/platform/spec/, the dated documents kept as snapshots with a pointer. Non-vacuity, run 2026-10-18 with platform-spec- control.sh in a scratch root, one break at a time, each red with exactly the one matching finding: an appended "(Withdrawn ...)" note; a cited case file renamed; the stated count changed to 999; the hub-sync design's link removed. Found while writing it: no conformance case covers rule I7 across two instances (typed-write-resend-same-ids re-sends from one instance), and the write contract's §3 U2 ("an identical re-send is unchanged") was dropped by §6.1 Q2 on 2026-10-12, which the first glossary draft had repeated; the glossary and index were corrected before commit.
+
+### `SPEC-REGISTRATION` &mdash; Platform spec L2: the registration specification (grammar, negotiation, definitions, instances, labels, read selection, projected views, quirks rules 1-4) as one living document
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main@5a9a49cc` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `SPEC-ID` |
+
+**Blast radius.** docs/30-design/platform/spec/registration.md (new) from the hub-sync design §3.1, §3.5, §3.6 and §3.7 rules 1-4; those sections reduced to a pointer and their 2026-10-16 record; the index row; a SOURCES entry in tools/queue/gates/platform-spec.js. No rule or case changes.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** specification in this repository; ships nothing
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started. The gate will be `node tools/queue/gates/platform-spec.js registration` (SOURCES gains the hub-sync design and the execution plan), red under platform-spec-control.sh for each of its four breaks, plus the three registration suites (tools/nsschema/test_registration_negotiation.py, test_registration_instances.py, test_registration_quirks.py) unchanged, showing no case moved.
+
+**Evidence.**
+
+- `docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md`
+- `docs/30-design/platform/README.md`
+
+**Notes.** The largest extraction: about 1,000 lines whose rules were amended in place through 2026-10-17 ("decided otherwise", "replacing"). The spec states each rule as decided, with the open §3.7 choices (2, 3, 4, 6, 7, 9, 10, 11, 12) and the §3.6 choices listed as open. SPEC-REG-MODES, SPEC-REG-MIGRATE and SPEC- REG-COMMANDS edit this spec rather than the hub-sync design once it exists.
+
+### `SPEC-STATE-INTENT` &mdash; Platform spec L3: the state and intent specification (kinds, slots, channels, states, end reasons, requested and applied, initiators, composition)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main@5a9a49cc` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `SPEC-REGISTRATION` |
+
+**Blast radius.** docs/30-design/platform/spec/state-intent.md (new) from the stateSpans grammar (hub-sync §3.1), slot sharing (§3.6, §3.7 rule 2), the intent and workflow landscape §9-§10 and the generated registrations; pointers in those documents; the index row; a SOURCES entry in the gate. No rule or case changes.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** specification in this repository; ships nothing
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started. The gate will be `node tools/queue/gates/platform-spec.js state-intent`, red under each control break, plus `make schema-sync-model --check` unchanged.
+
+**Evidence.**
+
+- `docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md`
+- `specs/sync/controller-state-model.schema.json`
+
+**Notes.** Lists what is undeclared rather than guessing it: iAPS has no registration; end-reason vocabularies for Trio override and temporary target and AndroidAPS profile switch, AndroidAPS initiator values and every command vocabulary (landscape §10). Carries the LAB-HUB-ACTIVE-STATE disagreements as the reason the hub records composition and active state as the controller reports them.
+
+### `SPEC-SYNC-TRANSPORT` &mdash; Platform spec L4: the change and sync specification (write step, re-send rule, cursor, history, socket delivery, definition-version migration)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main@5a9a49cc` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `SPEC-ID` |
+
+**Blast radius.** docs/30-design/platform/spec/sync-transport.md (new) from the write contract §2-§3 and §6.1, the hub-sync design §2-§3.2, the replay-fidelity proposal §1 and §3.5's fallback rule; pointers in those documents; the index row; a SOURCES entry in the gate. Unlike the other extractions it also has to specify what no document does yet: socket delivery of typed records, cursor semantics under concurrent writers, and migrating stored typed records when a definition changes version.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** specification in this repository; ships nothing
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started. The gate will be `node tools/queue/gates/platform-spec.js sync-transport`, red under each control break. The new parts need conformance cases of their own and a reference function, gated like the registration suites, each rejection paired with a passing control and each rule shown non-vacuous by a weakening; and any cost claim reproduced with `make schema-sync-cost` or measured, never quoted.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
+- `docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md`
+- `docs/30-design/platform/PROPOSAL-replay-fidelity-changes-2026-09-11.md`
+
+**Notes.** The cost-effectiveness goal (websocket plus REST, typed definitions, less work to fully sync) lands here. Constraint carried from the write contract: BF-164 (only API v3 writes reach the storage socket) is held out pending a lab measurement and the AndroidAPS authors' answer, so the spec states socket delivery for typed records without assuming that question's outcome.
+
+### `SPEC-AUTHORITY` &mdash; Platform spec L5: the authority specification (binding, credential kind, owner actions, roles and provenance, command routing; delegation and proposals as open design)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main@5a9a49cc` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `SPEC-REGISTRATION` |
+
+**Blast radius.** docs/30-design/platform/spec/authority.md (new) from the hub-sync design §3.5 (binding, owner actions, block) and §3.6 (roles, provenance, command-sink binding, routing), D13-D17 and configuration-and-delegation §5.4; pointers; the index row; a SOURCES entry in the gate. Delegation and proposals are stated as open, with what a design must provide, not specified here.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** specification in this repository; ships nothing
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started. The gate will be `node tools/queue/gates/platform-spec.js authority`, red under each control break, with the negotiation and instance suites unchanged.
+
+**Evidence.**
+
+- `docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md`
+- `docs/30-design/tenancy/nightscout-configuration-and-delegation-2026-09-10.md`
+
+**Notes.** Start from the agent trust-boundaries page once it lands on main and from the upstream agent control-plane RFC (issuerType agent, the suggest scope, DelegationGrant) rather than a new design. Whether delegation and proposals become a SPEC-REG-PROPOSALS item or fold into SPEC-REG-COMMANDS is the maintainer's open choice.
 
 ---
 
