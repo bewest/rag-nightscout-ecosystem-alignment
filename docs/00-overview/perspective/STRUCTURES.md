@@ -1,7 +1,7 @@
 # Control structures of the ecosystem and the proposals
 
 *What this is: a map (part 2 of the overview, perspective; [how the overview is organised](../README.md)), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after [accountability thresholds](ACCOUNTABILITY-THRESHOLDS.md); leads to [process models](PROCESS-MODELS.md). Living page,
-written 2026-10-16, relabelled 2026-10-17. Drawings to follow and discuss the overview's proposals with: who controls
+written 2026-10-16, relabelled 2026-10-17; 1·agents listed 2026-10-18. Drawings to follow and discuss the overview's proposals with: who controls
 whom, what comes back, and where money flows. Every node and edge comes from a page linked under
 the drawing; nothing here is a new finding. The drawings marked **proposed** show a proposal for
 discussion, not a decision.*
@@ -35,7 +35,7 @@ same as drawings are added beside it.
 | level | what sits at it | drawings |
 |---|---|---|
 | 0 · society | legislatures, regulators and the sector around AID in general | 0·sector; 0·diy-status\* |
-| 1 · ecosystem | the ecosystem's organisations and how they connect | 1·today, 1·proposed (and six stakeholder views); 1·authority\*, 1·data-rights\*, 1·hosting\*, 1·federation\* |
+| 1 · ecosystem | the ecosystem's organisations and how they connect | 1·today, 1·proposed (and six stakeholder views); 1·authority\*, 1·data-rights\*, 1·hosting\*, 1·federation\*; 1·agents (drawn on [agents in the ecosystem §1](../../30-design/platform/agent-trust-boundaries-2026-10-18.md#1-three-domains)) |
 | 2 · one organisation or agreement | one entity, one agreement, one programme | 2·agreement, 2·controller-operator; the precedents 2·sqlite, 2·cncf, 2·apple; 2·data-commons\*, 2·shared-infra\* |
 | 3 · technical process | one loop in software and devices | 3·controller, 3·hub-sync, 3·delegation, 3·person-loop; 3·identity\*, 3·registration\* |
 | idea | one idea from the argument, drawn small | idea·sponsor-or-operate, idea·one-codebase, idea·same-requirements, idea·oversight-layer, idea·tiers, idea·credential-lifetime, idea·complaints, idea·designated-third-party |
