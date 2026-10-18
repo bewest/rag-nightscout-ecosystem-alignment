@@ -2952,6 +2952,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#48-a-plan-approved-once-and-run-by-the-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.8 A plan, approved once and run by the controller
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -5640,6 +5651,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#48-a-plan-approved-once-and-run-by-the-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.8 A plan, approved once and run by the controller
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -5707,7 +5729,7 @@
 
 
 <h1 id="l2l5-control-loops-what-each-mechanism-controls-and-the-unsafe-control-actions-its-rules-prevent">L2–L5 Control loops: what each mechanism controls, and the unsafe control actions its rules prevent<a class="headerlink" href="#l2l5-control-loops-what-each-mechanism-controls-and-the-unsafe-control-actions-its-rules-prevent" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>c849615e2</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>8cb0b5ed9</code>.</em></p>
 <p><em>Contributor-facing. Living specification analysis, current at <code>main</code> <code>85c645c8</code> (2026-10-18).
 Covers layers L2–L5 of the <a href="../index.html">platform index</a>; terms are in the
 <a href="glossary.html">glossary</a>. Decisions: <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">D18 and D19</a>.
@@ -5725,8 +5747,8 @@ long or too short. Each answer is an <em>unsafe control action</em> (UCA). The s
 then read as the constraints that prevent them. Where no rule prevents one, the analysis names the
 gap and the specification lists it as open.</p>
 <p>Status: the loops are drawn from the specifications, which are proposed or specified and not
-implemented. Of 72 entries, 44 are covered by a rule and a case, 6 are the controller's
-responsibility (D18), 3 have a rule and no case, and 19 are gaps, each listed in its
+implemented. Of 103 entries, 68 are covered by a rule and a case, 11 are the controller's
+responsibility (D18), 3 have a rule and no case, and 21 are gaps, each listed in its
 specification's open items.</p>
 <h2 id="1-files">1. Files<a class="headerlink" href="#1-files" title="Permanent link">&para;</a></h2>
 <table>
@@ -6673,6 +6695,321 @@ enforces them on every other loop.</p>
 </table>
 <!-- END GENERATED: stpa-authority -->
 
+<h3 id="48-a-plan-approved-once-and-run-by-the-controller">4.8 A plan, approved once and run by the controller<a class="headerlink" href="#48-a-plan-approved-once-and-run-by-the-controller" title="Permanent link">&para;</a></h3>
+<p><a href="plans.html#3-the-plan-object-proposed">Plans §3–§7</a>. A proposer proposes a plan (CA-PLAN-PROPOSE),
+the person or a delegate approves its elements (CA-PLAN-APPROVE), the proposer confirms an
+occurrence under the plan's grant (CA-PLAN-CONFIRM), the person or a delegate approves an
+occurrence of a per-occurrence element (CA-PLAN-OCCURRENCE), the person, the approver or the
+proposer skips an occurrence or ends the plan (CA-PLAN-STOP), and the controller runs each
+occurrence (CA-PLAN-RUN). The hub's mirror is the feedback (FB-PLAN-MIRROR). This loop adds a
+level above the moment: the decision to dose is taken days ahead, and every check the moment
+loses has to be recorded with the plan and made again by the controller when the occurrence runs.</p>
+<pre class="mermaid"><code>flowchart LR
+  accTitle: The plan loop
+  accDescr: A proposer proposes a plan and confirms occurrences; the person or a delegate approves the plan and per-occurrence elements, and can skip an occurrence or end the plan; the hub records and mirrors; the controller holds the plan and runs each occurrence on the pump after its own checks, and reports to the mirror.
+  prop["Proposer"] -- "CA-PLAN-PROPOSE&lt;br/&gt;CA-PLAN-CONFIRM" --&gt; hub["Hub (mirror)"]
+  appr["Person or delegate"] -- "CA-PLAN-APPROVE&lt;br/&gt;CA-PLAN-OCCURRENCE&lt;br/&gt;CA-PLAN-STOP" --&gt; hub
+  hub -- "plan, confirmations,&lt;br/&gt;approvals, skips, end" --&gt; ctl["Controller"]
+  ctl -- "CA-PLAN-RUN" --&gt; pump["Pump"]
+  ctl -. "holds it, occurrence reports" .-&gt; hub
+  hub -. "FB-PLAN-MIRROR" .-&gt; appr</code></pre>
+<!-- BEGIN GENERATED: stpa-plan -->
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>type</th>
+<th>unsafe control action or feedback</th>
+<th>hazards</th>
+<th>severity</th>
+<th>prevented by</th>
+<th>status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UCA-PLAN-001</td>
+<td>provided</td>
+<td>A plan proposes standing insulin or carbs with no way to withdraw an occurrence the live data contradicts.</td>
+<td>HAZ-1</td>
+<td>S4</td>
+<td>PN4</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>UCA-PLAN-002</td>
+<td>provided</td>
+<td>A plan changes safety limits, or persistent settings on its own approval.</td>
+<td>HAZ-1</td>
+<td>S4</td>
+<td>PN4</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>UCA-PLAN-003</td>
+<td>provided</td>
+<td>A plan element of a kind the controller does not class is treated as harmless.</td>
+<td>HAZ-1</td>
+<td>S3</td>
+<td>PN3</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>UCA-PLAN-004</td>
+<td>duration</td>
+<td>A plan runs with no end date, or for longer than the operator allows.</td>
+<td>HAZ-1</td>
+<td>S3</td>
+<td>PN4, PN15</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>UCA-PLAN-005</td>
+<td>provided</td>
+<td>An agent's credential, or the agent that proposed it, approves a plan that doses.</td>
+<td>HAZ-1, HAZ-4</td>
+<td>S4</td>
+<td>PN6, CM14</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>UCA-PLAN-006</td>
+<td>provided</td>
+<td>A plan that doses is approved with no review from anyone but its proposer.</td>
+<td>HAZ-1</td>
+<td>S3</td>
+<td>PN6</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>UCA-PLAN-007</td>
+<td>provided</td>
+<td>An approval keeps standing carbs or insulin while declining the element that makes them safe, the standing insulin or the eating-soon companion.</td>
+<td>HAZ-1</td>
+<td>S4</td>
+<td>PN4, PN7</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>UCA-PLAN-008</td>
+<td>provided</td>
+<td>The controller receives an element that was declined, or content other than what was proposed and reviewed.</td>
+<td>HAZ-1</td>
+<td>S4</td>
+<td>PN5, PN8</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>UCA-PLAN-009</td>
+<td>provided</td>
+<td>A plan is approved after the controller's definition changed, so its elements mean something else on the phone.</td>
+<td>HAZ-1</td>
+<td>S3</td>
+<td>PN7</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>UCA-PLAN-010</td>
+<td>provided</td>
+<td>Two agents run by one operator review each other's plans, and their reviews count as independent.</td>
+<td>HAZ-1</td>
+<td>S3</td>
+<td>PN6</td>
+<td>gap: plans §9</td>
+</tr>
+<tr>
+<td>UCA-PLAN-011</td>
+<td>timing</td>
+<td>A plan is approved after the intents on its own channels changed from the ones it was drafted against.</td>
+<td>HAZ-1</td>
+<td>S3</td>
+<td>PN7</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>UCA-PLAN-012</td>
+<td>provided</td>
+<td>A subject other than the plan's proposer, or a proposer whose role was taken away, confirms an occurrence.</td>
+<td>HAZ-4, HAZ-1</td>
+<td>S3</td>
+<td>PN12, CM12</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>UCA-PLAN-013</td>
+<td>provided</td>
+<td>An agent's confirmation alone releases a dose.</td>
+<td>HAZ-1</td>
+<td>S4</td>
+<td>PN12, PN10</td>
+<td>controller</td>
+</tr>
+<tr>
+<td>UCA-PLAN-014</td>
+<td>timing</td>
+<td>An occurrence is confirmed too far ahead, after its time, or outside the plan's dates.</td>
+<td>HAZ-1</td>
+<td>S3</td>
+<td>PN12</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>UCA-PLAN-015</td>
+<td>provided</td>
+<td>An occurrence the person skipped is confirmed or approved again.</td>
+<td>HAZ-1</td>
+<td>S4</td>
+<td>PN12, PN14</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>UCA-PLAN-016</td>
+<td>provided</td>
+<td>A per-occurrence dose is approved by an agent's credential, the proposing agent or a follower.</td>
+<td>HAZ-1, HAZ-4</td>
+<td>S4</td>
+<td>PN13</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>UCA-PLAN-017</td>
+<td>timing</td>
+<td>An occurrence is approved more than the advance window before it, or after its time.</td>
+<td>HAZ-1</td>
+<td>S3</td>
+<td>PN13</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>UCA-PLAN-018</td>
+<td>provided</td>
+<td>A persistent settings occurrence is approved by a delegate rather than the person.</td>
+<td>HAZ-1</td>
+<td>S3</td>
+<td>PN13</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>UCA-PLAN-019</td>
+<td>provided</td>
+<td>An occurrence's meal bolus is approved after the person already dosed for the meal on the phone.</td>
+<td>HAZ-1</td>
+<td>S4</td>
+<td>PN10, CM23</td>
+<td>controller</td>
+</tr>
+<tr>
+<td>UCA-PLAN-020</td>
+<td>not-provided</td>
+<td>The person cannot stop a plan the controller may hold, because its command was never reported on, its end was lost, or someone cancelled the end.</td>
+<td>HAZ-1</td>
+<td>S4</td>
+<td>PN16</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>UCA-PLAN-021</td>
+<td>provided</td>
+<td>A skip or an end leaves confirmations and approvals queued for the occurrences it stops.</td>
+<td>HAZ-1</td>
+<td>S3</td>
+<td>PN14, PN16, CM25</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>UCA-PLAN-022</td>
+<td>timing</td>
+<td>A skip arrives after the controller already ran the occurrence, and the person believes it did not run.</td>
+<td>HAZ-3</td>
+<td>S2</td>
+<td>PN11, PN14</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>UCA-PLAN-023</td>
+<td>provided</td>
+<td>A subject who is not the person, the approver or the proposer skips an occurrence or ends a plan.</td>
+<td>HAZ-2</td>
+<td>S2</td>
+<td>PN14, PN16</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>UCA-PLAN-024</td>
+<td>provided</td>
+<td>An occurrence runs although live location or activity shows the meal is not happening.</td>
+<td>HAZ-1</td>
+<td>S4</td>
+<td>PN10, PN4</td>
+<td>controller</td>
+</tr>
+<tr>
+<td>UCA-PLAN-025</td>
+<td>provided</td>
+<td>An occurrence runs twice, once on its confirmation and again on its approval.</td>
+<td>HAZ-1</td>
+<td>S4</td>
+<td>PN17, CM21</td>
+<td>controller</td>
+</tr>
+<tr>
+<td>UCA-PLAN-026</td>
+<td>timing</td>
+<td>An occurrence runs after the plan's end date.</td>
+<td>HAZ-1</td>
+<td>S3</td>
+<td>PN15</td>
+<td>controller</td>
+</tr>
+<tr>
+<td>UCA-PLAN-027</td>
+<td>provided</td>
+<td>The hub sends an occurrence at its time, deciding when therapy changes.</td>
+<td>HAZ-1</td>
+<td>S4</td>
+<td>PN10</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>FB-PLAN-001</td>
+<td>incorrect</td>
+<td>The mirror shows a plan active that the controller refused, failed or never reported holding.</td>
+<td>HAZ-3</td>
+<td>S3</td>
+<td>PN9, PN11</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>FB-PLAN-002</td>
+<td>incorrect</td>
+<td>The mirror's occurrences are moved by someone other than the controller that holds the plan.</td>
+<td>HAZ-3</td>
+<td>S3</td>
+<td>PN11, CM7</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>FB-PLAN-003</td>
+<td>absent</td>
+<td>A caregiver looking at the bolus channel does not see a plan's pending bolus and sends one of their own.</td>
+<td>HAZ-3, HAZ-1</td>
+<td>S4</td>
+<td>PN18, CM24</td>
+<td>covered</td>
+</tr>
+<tr>
+<td>FB-PLAN-004</td>
+<td>absent</td>
+<td>An intent the controller started from a plan carries nothing that names the plan and occurrence, so a reader cannot tell a planned override from a manual one.</td>
+<td>HAZ-3, HAZ-5</td>
+<td>S2</td>
+<td>PN11, S8</td>
+<td>gap: plans §9</td>
+</tr>
+</tbody>
+</table>
+<!-- END GENERATED: stpa-plan -->
+
 <h2 id="5-control-loop-patterns-in-the-proposed-mechanics">5. Control-loop patterns in the proposed mechanics<a class="headerlink" href="#5-control-loop-patterns-in-the-proposed-mechanics" title="Permanent link">&para;</a></h2>
 <p>Several mechanics in the specifications are control loops in their own right, and STPA's
 vocabulary says what each one has to get right.</p>
@@ -6729,6 +7066,12 @@ vocabulary says what each one has to get right.</p>
 <td><a href="../index.html#ideas-borrowed-from-kubernetes">platform index</a>, D18</td>
 </tr>
 <tr>
+<td>Plans</td>
+<td>a loop above the moment: a decision taken days ahead, an occurrence run later by the controller</td>
+<td>the checks the moment would make (doses since, live data, who approves) are recorded with the plan and made again by the controller at the occurrence; a plan's grant to confirm never releases a dose; the person can always stop it</td>
+<td><a href="plans.html">plans</a>, UCA-PLAN-001, UCA-PLAN-013, UCA-PLAN-020, UCA-PLAN-024</td>
+</tr>
+<tr>
 <td>Process models</td>
 <td>each controller acts on what it believes; <a href="../../../00-overview/perspective/PROCESS-MODELS.html">process models</a> draws believed and actual designs</td>
 <td>the feedback rules in §3 are what keep a caregiver's or agent's belief close to what the controller did</td>
@@ -6737,7 +7080,7 @@ vocabulary says what each one has to get right.</p>
 </tbody>
 </table>
 <h2 id="6-what-the-analysis-found">6. What the analysis found<a class="headerlink" href="#6-what-the-analysis-found" title="Permanent link">&para;</a></h2>
-<p>19 gaps, each listed in its specification's open items:</p>
+<p>21 gaps, each listed in its specification's open items:</p>
 <ul>
 <li><strong>Commands</strong> (<a href="commands.html#9-open">§9</a>):</li>
 <li>a sender or approver sees a channel's outstanding commands (CM24) but nothing refuses a second
@@ -6761,15 +7104,21 @@ vocabulary says what each one has to get right.</p>
   proposal (UCA-AUTH-002); grants carry no expiry (UCA-AUTH-003); reads are neither scoped nor
   recorded (UCA-AUTH-004); revocation does not reach open socket subscriptions
   (UCA-SYNC-SERVE-005).</li>
+<li><strong>Plans</strong> (<a href="plans.html#9-open">§9</a>): whether two agents run by one operator review each other
+  independently (UCA-PLAN-010); nothing on an intent names the plan occurrence that started it
+  (FB-PLAN-004).</li>
 </ul>
 <p>3 rules have no case: the owner never edits a registration's content (UCA-DEF-004), AU3's
 per-tenant credential root (UCA-AUTH-001), and the socket's permission check
 (UCA-SYNC-SERVE-006).</p>
-<p>6 entries are the controller's: validating a remote command against its own limits and recent
+<p>11 entries are the controller's: validating a remote command against its own limits and recent
 local actions (UCA-CMD-010), assigning identifiers that are unique per record
 (UCA-SYNC-STORE-002), acting on its own state where the hub's lags (UCA-SYNC-SERVE-004,
-FB-STATE-006), its age limit for downloaded treatments (UCA-SYNC-DL-002), and failing a command
-it cannot deliver to a pump (UCA-ROUTE-008). These meet the controller-side constraints in the
+FB-STATE-006), its age limit for downloaded treatments (UCA-SYNC-DL-002), failing a command it
+cannot deliver to a pump (UCA-ROUTE-008), and, for plans, never dosing on a confirmation alone
+(UCA-PLAN-013), checking doses since at the occurrence (UCA-PLAN-019), evaluating the withdrawal
+criteria with fresh data (UCA-PLAN-024), running each occurrence once (UCA-PLAN-025) and nothing
+after the end date (UCA-PLAN-026). These meet the controller-side constraints in the
 ecosystem's earlier analysis, such as SC-REMOTE-002 (refuse a remote command after a recent local
 action) and the de-duplication constraints behind UCA-BOLUS-003 and UCA-CARB-001.</p>
 <h2 id="7-open">7. Open<a class="headerlink" href="#7-open" title="Permanent link">&para;</a></h2>
