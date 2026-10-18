@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/spec/glossary.html">
       
       
-        <link rel="prev" href="authority.html">
+        <link rel="prev" href="commands.html">
       
       
         <link rel="next" href="identity.html">
@@ -2722,6 +2722,8 @@
       
         
       
+        
+      
     
     
     
@@ -2791,6 +2793,34 @@
     
   
     Authority (L5)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="commands.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commands (L3, L5)
   
 
     
@@ -5277,7 +5307,7 @@
 
 
 <h1 id="platform-glossary">Platform glossary<a class="headerlink" href="#platform-glossary" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>27c3f991e</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>39a598616</code>.</em></p>
 <p><em>Contributor-facing. Living, current at <code>main</code> <code>5a9a49cc</code> (2026-10-18). Each term links to where
 it is specified; the definition here is a summary, and the linked section is the authority. Therapy
 terms (profile, override, temporary target) are in the <a href="../../../10-domain/glossary.html">domain glossary</a>.
@@ -5462,11 +5492,15 @@ holder.</p>
 <p><strong>Provenance.</strong> <code>device</code> or <code>simulated</code>, per role. Only <code>device</code>-provenance data is therapy data in
 default views and exports, and a <code>simulated</code> command sink never receives a routed command.</p>
 <p><strong>Command destination.</strong> The live <code>device</code> instance holding <code>command-sink</code> on a channel. With no
-holder the command is refused <code>no-command-destination</code>; the hub never guesses. The command API
-itself is not specified (<code>SPEC-REG-COMMANDS</code>).</p>
-<p><strong>Delegation, proposal.</strong> Not specified. A <em>delegation</em> would let a principal grant a caregiver,
-app or agent a scoped, expiring, revocable authority; a <em>proposal</em> would record an intended action
-for approval without granting authority to execute it. What a delegation design must provide is in
+holder the command is refused <code>no-command-destination</code>; the hub never guesses
+(<a href="commands.html#2-where-a-command-goes">commands §2</a>).</p>
+<p><strong>Command record, outcome.</strong> Proposed. The hub stores a command before it sends it, with the hash
+of its payload; only the destination reports the outcome, and <code>sent</code> or <code>fetched</code> is never success
+(<a href="commands.html#4-the-command-record-proposed">commands §4–§5</a>).</p>
+<p><strong>Delegation, proposal.</strong> A <em>delegation</em> would let a principal grant a caregiver, app or agent a
+scoped, expiring, revocable authority; it is not specified. A <em>proposal</em> records an intended
+change for approval without authority to execute it; an approval names the hash of one payload
+(proposed, <a href="commands.html#6-proposals-and-approvals-proposed">commands §6</a>). What a delegation design must provide is in
 <a href="../../tenancy/nightscout-configuration-and-delegation-2026-09-10.html#54-what-a-delegation-design-would-have-to-provide">configuration and delegation §5.4</a>.</p>
 
 

@@ -2722,6 +2722,8 @@
       
         
       
+        
+      
     
     
     
@@ -2791,6 +2793,34 @@
     
   
     Authority (L5)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="commands.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commands (L3, L5)
   
 
     
@@ -5399,7 +5429,7 @@
 
 
 <h1 id="state-and-intent-l3">State and intent (L3)<a class="headerlink" href="#state-and-intent-l3" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>a96f14935</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>57a6db95f</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>92a7d31b</code> (2026-10-18). Layer L3 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. The grammar members
 named here are part of the <a href="registration.html">registration specification</a> §3; how a hub accepts
@@ -5515,7 +5545,7 @@ read from Loop, Trio, iAPS and AndroidAPS source and measured where it says so.<
 </tr>
 <tr>
 <td>S11</td>
-<td><strong>The controller's command contract.</strong> <code>commands[]</code> declares each path by which commands reach the controller: <code>transport</code> (<code>apns</code>, <code>sms</code>, <code>nightscout-settings</code>, <code>nightscout-treatment</code>, or <code>{value: other, controllerTerm}</code>), <code>availability</code> (the AndroidAPS <code>nightscout-settings</code> path is dev-only), <code>hubInPath</code> (<code>no</code>, <code>optional</code>, <code>yes</code>), <code>authorisation</code>, <code>expiry</code>, <code>acknowledgement</code> (<code>states</code>, <code>replyChannel</code>, <code>correlationId</code>, <code>failureRecord</code>) and <code>evidence</code>. The hub's own command API and the proposal record in front of a command are <code>SPEC-REG-COMMANDS</code>.</td>
+<td><strong>The controller's command contract.</strong> <code>commands[]</code> declares each path by which commands reach the controller: <code>transport</code> (<code>apns</code>, <code>sms</code>, <code>nightscout-settings</code>, <code>nightscout-treatment</code>, or <code>{value: other, controllerTerm}</code>), <code>availability</code> (the AndroidAPS <code>nightscout-settings</code> path is dev-only), <code>hubInPath</code> (<code>no</code>, <code>optional</code>, <code>yes</code>), <code>authorisation</code>, <code>expiry</code>, <code>acknowledgement</code> (<code>states</code>, <code>replyChannel</code>, <code>correlationId</code>, <code>failureRecord</code>) and <code>evidence</code>. The hub's own command API and the proposal record in front of a command are the <a href="commands.html">commands specification</a>.</td>
 </tr>
 <tr>
 <td>S12</td>
@@ -5782,7 +5812,7 @@ instances and which are active; it never combines them (S1).</p>
 </tr>
 <tr>
 <td>A12</td>
-<td><strong>A state version.</strong> A product's state version at a time is <code>sha256:</code> over the RFC 8785 canonical JSON of its active rows with each instance's content. It changes when an instance starts, ends or is amended, including an amendment that changes only what the instance says. It versions the hub's record of what the controller reported, not the controller's own state: an approval bound to it (<code>SPEC-REG-COMMANDS</code>) is checked by the controller against its own state before it enacts anything (D18).</td>
+<td><strong>A state version.</strong> A product's state version at a time is <code>sha256:</code> over the RFC 8785 canonical JSON of its active rows with each instance's content. It changes when an instance starts, ends or is amended, including an amendment that changes only what the instance says. It versions the hub's record of what the controller reported, not the controller's own state: an approval bound to it is checked by the hub (<a href="commands.html#6-proposals-and-approvals-proposed">commands CM15</a>), and only the controller's own validation checks its own state (D18).</td>
 </tr>
 <tr>
 <td>A13</td>

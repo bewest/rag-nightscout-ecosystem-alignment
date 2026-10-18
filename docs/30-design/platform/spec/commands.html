@@ -1,0 +1,6590 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/spec/commands.html">
+      
+      
+        <link rel="prev" href="authority.html">
+      
+      
+        <link rel="next" href="glossary.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Commands (L3, L5) - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#commands-l3-l5" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Commands (L3, L5)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../site/pages/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24" id="__nav_5_24_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_24_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    30-design/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-telemetry-emitter-map-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor Telemetry Emitter Integration Map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-adoption-roadmap-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adoption roadmap: who builds what, in what order
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-integration-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Integration Guide for App Developers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-telemetry-backend-service-design-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Backend Service Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-telemetry-deployment-lifecycle-examples-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Deployment Lifecycle Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-telemetry-implementation-breakdown-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Implementation Breakdown
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-telemetry-lifecycle-policy-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Lifecycle Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-telemetry-local-integration-plan-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Local Integration Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-telemetry-scheduling-dedupe-model-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Scheduling and Dedupe Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ns2parquet-keyed-pseudonyms.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ns2parquet keyed pseudonyms: design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_13" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    platform/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24_13" id="__nav_5_24_13_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_24_13_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    platform/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROPOSAL-controller-descriptions-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: let Nightscout describe the controllers it already recognises
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROPOSAL-replay-fidelity-changes-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: the concrete changes that make Nightscout high-fidelity for replay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../agent-trust-boundaries-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agents in the ecosystem: develop, interpret, act
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../algorithm-audition-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auditioning a dosing algorithm: same inputs, shadow only
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-devicestatus-profile-fidelity-2026-09-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    devicestatus and profile: what survives, what is lost, and what was never written
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-effects-and-versioning-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Temporary effects, privacy-preserving projection, and which version this is
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-extensibility-models-2026-09-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extending the Nightscout document model: four designs, measured
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-hub-sync-architecture-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A hub-and-spoke sync model for AID controllers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-intent-workflow-landscape-2026-10-09.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intent, workflow and entity management across the AID controller landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-primitive-coverage-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Is there enough evidence for a unified primitive catalogue? A coverage assessment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-typed-schema-evidence-2026-09-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Typed schemas for Nightscout: what the documents actually contain
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_13_13" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    spec/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24_13_13" id="__nav_5_24_13_13_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_24_13_13_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24_13_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    spec/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="authority.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authority (L5)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commands (L3, L5)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="commands.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commands (L3, L5)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-where-a-command-goes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Where a command goes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-commands-today" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Commands today
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-command-record-proposed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The command record (proposed)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-outcomes-proposed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Outcomes (proposed)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-proposals-and-approvals-proposed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Proposals and approvals (proposed)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-delivery-in-each-mode-proposed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Delivery in each mode (proposed)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Open
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-conformance-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Conformance cases
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="glossary.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platform glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="identity.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Identity (L0)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="records.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Records (L1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="registration.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Registration (L2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="state-intent.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State and intent (L3)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sync-transport.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sync transport (L4)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../upstream-asks-device-simulators/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    upstream-asks-device-simulators/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../upstream-asks-loop-identifier/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    upstream-asks-loop-identifier/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../remedial/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tenancy/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../60-research/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../guides/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    guides/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../site/pages/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-where-a-command-goes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Where a command goes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-commands-today" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Commands today
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-command-record-proposed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The command record (proposed)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-outcomes-proposed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Outcomes (proposed)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-proposals-and-approvals-proposed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Proposals and approvals (proposed)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-delivery-in-each-mode-proposed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Delivery in each mode (proposed)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Open
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-conformance-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Conformance cases
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="commands-l3-l5">Commands (L3, L5)<a class="headerlink" href="#commands-l3-l5" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-10-18 at <code>57a6db95f</code>.</em></p>
+<p><em>Contributor-facing. Living specification, current at <code>main</code> <code>9736bd65</code> (2026-10-18). Layers L3
+and L5 of the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. Decisions:
+<a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">D18 and D19</a>
+and the maintainer's decisions of 2026-10-14 to 2026-10-18 recorded with them; the proposal
+record was folded into this item on 2026-10-18. Queue: <code>SPEC-REG-COMMANDS</code>.</em></p>
+<p>How a request to change therapy reaches a controller through a hub, what the hub records about it,
+how the controller's outcome comes back, and the proposal and approval that can stand in front of
+a command. The hub routes and records; it never decides whether a change is safe, never alters
+what was asked, and never doses (D18). Validation and enactment stay the controller's.</p>
+<p>§2 states where a command goes, which is specified. Everything from §4 on is proposed: no hub
+serves a command API, and no rule there is decided.</p>
+<h2 id="1-files">1. Files<a class="headerlink" href="#1-files" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>file</th>
+<th>what it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="registration.html#9-channels-roles-and-provenance">registration §9</a></td>
+<td>channels and the <code>command-sink</code> role a destination holds</td>
+</tr>
+<tr>
+<td><a href="authority.html#6-who-may-receive-a-command">authority §6</a></td>
+<td>which instance may hold a <code>device</code> command sink</td>
+</tr>
+<tr>
+<td><a href="state-intent.html#2-rules">state and intent S10, S11</a></td>
+<td>what a controller declares it accepts from a hub, and by which paths commands reach it</td>
+</tr>
+<tr>
+<td><a href="state-intent.html#61-rules">state and intent A12</a></td>
+<td>the state version a proposal can be based on</td>
+</tr>
+<tr>
+<td><a href="../agent-trust-boundaries-2026-10-18.html#43-what-a-proposal-lifecycle-would-add--proposed-not-specified">agents in the ecosystem §4.3</a></td>
+<td>the proposal lifecycle this specification takes up</td>
+</tr>
+<tr>
+<td><a href="../nightscout-intent-workflow-landscape-2026-10-09.html#6-the-remote-command-lifecycle">intent landscape §6</a></td>
+<td>command lifecycles per controller, read from source</td>
+</tr>
+<tr>
+<td><code>tools/nsschema/commands.py</code></td>
+<td>the reference decision function for §4–§7</td>
+</tr>
+<tr>
+<td><code>specs/sync/conformance/commands/</code></td>
+<td>the cases it is checked against, with <code>tools/nsschema/test_commands.py</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-where-a-command-goes">2. Where a command goes<a class="headerlink" href="#2-where-a-command-goes" title="Permanent link">&para;</a></h2>
+<p>A command names a channel (<a href="registration.html#9-channels-roles-and-provenance">registration §9</a>).
+It goes to the live <code>device</code> instance holding <code>command-sink</code> on that channel, on the command's
+tenant. A command that names no product for a channel that is not shared goes to the one product
+that declares that channel; when more than one product declares it, it is refused 409
+<code>ambiguous-command-destination</code>, and naming the product resolves it. "Declares" reads
+every product's current registration and stored definitions, in any state. With no holder, or a
+channel no product declares, the command is refused 409 <code>no-command-destination</code>. The hub never
+routes to a lapsed former holder, a <code>simulated</code> command sink, or the product's latest instance.
+Which instance may hold the sink is <a href="authority.html#6-who-may-receive-a-command">authority §6</a>.</p>
+<h2 id="3-commands-today">3. Commands today<a class="headerlink" href="#3-commands-today" title="Permanent link">&para;</a></h2>
+<p>Read from cgm-remote-monitor at the 15.0.8 release (<code>92d08342</code>), <code>dev</code> (<code>fade2299</code>) and the
+multitenancy seam branch (<code>81a1f6ce</code>), 2026-10-18; "run" marks what was executed.</p>
+<p><strong>One path carries a command.</strong> <code>POST /api/v2/notifications/loop</code> (<code>lib/api2/notifications-v2.js</code>,
+line 17 at 15.0.8, 21 on <code>dev</code>) hands a request to <code>lib/server/loop.js</code>, which sends an APNs push
+to Loop.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>what the hub does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>permission</td>
+<td><code>notifications:loop:push</code>; of the default roles only <code>admin</code> holds it, so a caller needs <code>API_SECRET</code>, an admin token or a custom role (<code>lib/authorization/storage.js:232-238</code> on <code>dev</code>)</td>
+</tr>
+<tr>
+<td>commands</td>
+<td>four <code>eventType</code> values: <code>Temporary Override</code>, <code>Temporary Override Cancel</code>, <code>Remote Carbs Entry</code>, <code>Remote Bolus Entry</code>; anything else is refused "Unhandled event type" (<code>loop.js:67-110</code> on <code>dev</code>; run)</td>
+</tr>
+<tr>
+<td>payload</td>
+<td>the command's fields, <code>remote-address</code>, <code>notes</code>, <code>entered-by</code>, <code>sent-at</code>, <code>expiration</code> five minutes ahead, and <code>otp</code> only when the sender gave one (<code>loop.js:61-126</code>); no command id, nonce or signature, and no limit on an amount beyond "greater than zero"</td>
+</tr>
+<tr>
+<td>the one-time password</td>
+<td>forwarded, never checked; checking it is the controller's</td>
+</tr>
+<tr>
+<td>destination</td>
+<td>the device token and bundle id in the latest profile's <code>loopSettings</code> (<code>loop.js:31-47</code>); Trio publishes its token at the profile's top level, so this path does not reach Trio</td>
+</tr>
+<tr>
+<td>credentials</td>
+<td>the deployment's <code>LOOP_APNS_KEY</code>, <code>LOOP_APNS_KEY_ID</code> and <code>LOOP_DEVELOPER_TEAM_ID</code>, read only when <code>ENABLE</code> includes <code>loop</code>; without it, or with it but no <code>LOOP_*</code> variable set, <code>extendedSettings.loop</code> is never created and the route fails with a TypeError at <code>loop.js:16</code> (run without <code>ENABLE</code>, all three commits; read for the second case, <code>lib/server/env.js:281</code> on <code>dev</code>)</td>
+</tr>
+<tr>
+<td>what is stored</td>
+<td>nothing: neither file writes to a store, and the careportal's submit hook replaces its treatment write, so no treatment is stored either</td>
+</tr>
+<tr>
+<td>response</td>
+<td>200 when APNs accepted the push (<code>loop.js:139-141</code> on <code>dev</code>); it says nothing about delivery, the password or enactment</td>
+</tr>
+<tr>
+<td>outcome</td>
+<td>none: no route, collection, socket event or field records that a controller received, accepted, refused or enacted a command</td>
+</tr>
+</tbody>
+</table>
+<p>Senders are the careportal's Loop plugin (<code>lib/plugins/loop.js:110-180</code> on <code>dev</code>) and the
+NightscoutKit fork LoopCaregiver uses, for overrides, bolus and carbs when its newer
+remote-command option is off; LoopCaregiver sends closed-loop and automatic-bolus changes to
+<code>/api/v2/remotecommands</code> whatever the option, a route no hub serves. Trio, LoopFollow and
+AndroidAPS do not call this route.</p>
+<p><strong>Everything else is data.</strong> <code>Temporary Target</code>, <code>Profile Switch</code> and <code>Announcement</code> treatments are
+stored and broadcast like any other record; a controller that downloads treatments may act on them
+by its own rules, and the hub does not know whether it did. AndroidAPS <code>dev</code> writes signed command
+envelopes and acknowledgements to the API v3 <code>settings</code> collection; the hub stores them as
+documents and reads none of them. What each controller does with these paths is in <a href="state-intent.html#7-commands-as-controllers-handle-them-today">state and
+intent §7</a>.</p>
+<p><strong>Under <code>TENANCY_MODE=multi</code>, on the seam branch:</strong></p>
+<ul>
+<li>the request is bound to its tenant (<code>lib/server/tenant-middleware.js:263-272</code>), but nothing on the
+  APNs path reads the binding: <code>ctx.loop</code> is built once per process (<code>lib/server/bootevent.js:229</code>),
+  so the key, team id and device lookup are the deployment's, against one process-wide copy of the
+  loaded data;</li>
+<li>multi requires PostgreSQL, and the PostgreSQL store at that commit implements only <code>entries</code>
+  (<code>lib/storage/postgres-storage.js:127-133</code>), so no tenant's profile or treatments can be stored;</li>
+<li>socket emissions go to the bound tenant's room and are withheld when no tenant is bound
+  (<code>lib/server/socket-tenancy.js:157-170,255-267</code>). The <code>dataUpdate</code> and alarm events come from the
+  process-wide load cycle and are withheld; storage events from an API v3 request reach their
+  tenant.</li>
+</ul>
+<p>CM19 and CM20 are written against these two facts: a push from the load cycle reaches no one under
+<code>multi</code>, and the only push credential today is the deployment's.</p>
+<h2 id="4-the-command-record-proposed">4. The command record (proposed)<a class="headerlink" href="#4-the-command-record-proposed" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CM1</td>
+<td><strong>The hub records a command before it sends it.</strong> A command the hub accepts is stored as a record: <code>commandId</code> (assigned by the hub), its tenant, <code>channel</code>, the product named or inferred, the destination's <code>instanceId</code> and <code>definitionId</code> as routed, the <code>payload</code> exactly as received, <code>payloadHash</code> (<code>sha256:</code> over the payload's RFC 8785 canonical JSON, the rule <a href="registration.html#54-etag-and-idempotency">D19</a> uses for definition ids), the <code>initiator</code> in the form <a href="state-intent.html#2-rules">state and intent S8</a> gives it, the subject that sent it, <code>proposalId</code> and the proposal's <code>basedOn</code> when it came from an approval (§6), <code>createdAt</code>, <code>expiresAt</code> and <code>state</code>. A command refused at routing (§2) is recorded as <code>not-routed</code>, with its reason, and never sent.</td>
+</tr>
+<tr>
+<td>CM2</td>
+<td><strong>Routed once.</strong> The destination is fixed when the command is accepted; it is never re-routed to a later holder, which would enact a request its sender addressed to another device. If the destination lapses or loses its role while the command is <code>pending</code>, nothing was handed over and the command becomes <code>undeliverable</code>. If that happens after it was <code>sent</code>, the controller may have it, and the command becomes <code>unconfirmed</code>.</td>
+</tr>
+<tr>
+<td>CM3</td>
+<td><strong>An expiry is required.</strong> A command without <code>expiresAt</code>, or with one not after the request's time, is refused 422 <code>expiry-required</code>; one more than the hub's <code>commands.maxExpirySeconds</code> after the request is refused 422 <code>expiry-too-long</code>. Times are the hub's. A command at or past its expiry is never sent or fetched. At its expiry a <code>pending</code> command becomes <code>expired</code>, because nothing was handed over; a <code>sent</code> or <code>fetched</code> command becomes <code>unconfirmed</code>, because the controller may have enacted it; an acknowledged command keeps the controller's state. A hub never reports a command that may have been enacted as <code>expired</code> or <code>undeliverable</code>, which a sender would read as safe to send again.</td>
+</tr>
+<tr>
+<td>CM4</td>
+<td><strong>Re-sending a request.</strong> A sender may give a <code>requestId</code>. Within a tenant and subject, a second command with the same <code>requestId</code>, <code>channel</code>, product as the request names it (naming none differs from naming the one that would be inferred) and <code>payloadHash</code> returns the first command and its current state; with any of them different it is refused 409 <code>request-id-reused</code>. Without a <code>requestId</code>, every request is a new command.</td>
+</tr>
+<tr>
+<td>CM5</td>
+<td><strong>The hub does not judge.</strong> The hub checks only that the channel accepts commands, the routing, the expiry, the size (a payload over the hub's <code>commands.maxPayloadBytes</code> of canonical JSON is refused 413 <code>payload-too-large</code>) and the sender's permission (403 <code>not-authorised</code> without <code>api:commands:create</code>). It never checks a dose, a limit or the therapy state, and it never changes the payload.</td>
+</tr>
+<tr>
+<td>CM6</td>
+<td><strong>Tenant isolation.</strong> A command's tenant is the tenant its request resolved to. Routing, sending, fetching, proposals, reports and reads see only that tenant: a command, proposal or instance from another tenant is 404, as one that does not exist is, so a request never reveals that it exists.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Order of checks.</strong> Where more than one refusal applies, the first wins: another tenant (404), then the sender's permission and ownership (403), then the request's own content (413, 422), then state (409). Among an approval's 409s the order is: the proposal's state (<code>proposal-expired</code>, <code>proposal-closed</code>), <code>hash-mismatch</code>, routing, <code>destination-changed</code>, <code>state-changed</code>. A push checks the binding (<code>withheld</code>) before the command's state, and applies only to a <code>pending</code> or <code>sent</code> command (<code>not-pending</code> otherwise).</p>
+<p><strong>States.</strong> The hub sets <code>pending</code>, <code>not-routed</code>, <code>sent</code>, <code>fetched</code>, <code>unconfirmed</code>, <code>undeliverable</code> and <code>expired</code>; only the
+destination sets <code>acknowledged</code>, <code>succeeded</code>, <code>failed</code> and <code>refused</code> (§5).</p>
+<table>
+<thead>
+<tr>
+<th>state</th>
+<th>set by</th>
+<th>means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pending</code></td>
+<td>hub</td>
+<td>accepted and routed; nothing sent yet</td>
+</tr>
+<tr>
+<td><code>not-routed</code></td>
+<td>hub</td>
+<td>refused at routing (§2); its reason is recorded</td>
+</tr>
+<tr>
+<td><code>sent</code></td>
+<td>hub</td>
+<td>handed to a push transport (§7); not a receipt</td>
+</tr>
+<tr>
+<td><code>fetched</code></td>
+<td>hub</td>
+<td>the destination instance read it with its own credential (§7); a receipt, not an outcome</td>
+</tr>
+<tr>
+<td><code>unconfirmed</code></td>
+<td>hub</td>
+<td>handed over, with no outcome: <code>sent</code>, then its expiry passed or its destination lost the role; or <code>fetched</code>, then its expiry passed. It may have been enacted (CM2, CM3)</td>
+</tr>
+<tr>
+<td><code>undeliverable</code></td>
+<td>hub</td>
+<td>the destination lapsed or lost its role before anything was handed over (CM2)</td>
+</tr>
+<tr>
+<td><code>expired</code></td>
+<td>hub</td>
+<td>its expiry passed before anything was handed over (CM3)</td>
+</tr>
+<tr>
+<td><code>acknowledged</code></td>
+<td>controller</td>
+<td>received; validating or enacting</td>
+</tr>
+<tr>
+<td><code>succeeded</code></td>
+<td>controller</td>
+<td>enacted</td>
+</tr>
+<tr>
+<td><code>failed</code></td>
+<td>controller</td>
+<td>accepted but not enacted, such as a pump that did not respond</td>
+</tr>
+<tr>
+<td><code>refused</code></td>
+<td>controller</td>
+<td>declined by the controller's own checks</td>
+</tr>
+</tbody>
+</table>
+<p><code>succeeded</code>, <code>failed</code>, <code>refused</code>, <code>not-routed</code>, <code>undeliverable</code> and <code>expired</code> are final; the hub sets the last
+three only for a command that was never handed over. <code>sent</code>, <code>fetched</code> and <code>unconfirmed</code> are never
+reported as success or as failure.</p>
+<h2 id="5-outcomes-proposed">5. Outcomes (proposed)<a class="headerlink" href="#5-outcomes-proposed" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CM7</td>
+<td><strong>Only the destination reports.</strong> An outcome report names the <code>commandId</code> and is accepted only from the bound subject of the destination the command was routed to, whether or not that instance still holds the role; any other subject is refused 403 <code>not-registration-owner</code>. The report carries <code>state</code> (<code>acknowledged</code>, <code>succeeded</code>, <code>failed</code> or <code>refused</code>; any other is 422 <code>invalid-state</code>), the <code>payloadHash</code> the controller computed over the payload it received, a <code>reason</code> when refused or failed, and, when enacted, the identity of the record that shows the effect (<a href="identity.html">identity</a>). A reported hash that differs from the command's is recorded as reported, with the record marked as a mismatch; the hub does not refuse it, because the report is evidence of what the controller did.</td>
+</tr>
+<tr>
+<td>CM8</td>
+<td><strong>Reasons.</strong> A refusal or failure reason is one of <code>hash-mismatch</code>, <code>expired</code>, <code>not-accepted</code> (the controller's acceptance preference is off, <a href="state-intent.html#2-rules">S10</a>), <code>limit</code> (a limit the controller enforces) or <code>{value: other, controllerTerm}</code>; a bare unknown string is refused 422 <code>invalid-reason</code>. The hub records the reason and does not interpret it.</td>
+</tr>
+<tr>
+<td>CM9</td>
+<td><strong>One outcome.</strong> After a final state, a further report is refused 409 <code>already-final</code>. A report on an <code>unconfirmed</code> command is accepted and replaces it: that state is the hub's inference, and the controller's report of what it did is better evidence. <code>acknowledged</code> may precede a final state and may be skipped.</td>
+</tr>
+<tr>
+<td>CM10</td>
+<td><strong>The controller checks the hash.</strong> Before enacting, the controller recomputes <code>payloadHash</code> over the payload it received and refuses <code>hash-mismatch</code> when it differs from the hash the command carries. It also refuses a command past <code>expiresAt</code> by its own clock. These checks are the controller's, as all validation is (D18). The controller receives the payload and the hash from the same hub, so the check detects a payload changed in transit or storage; it does not show that a hub, or anything acting as one, delivered what an approver approved, and it does not authenticate the sender. Binding an approval to a payload end to end needs a signature by the sender or approver. Authentication between sender and controller, such as Loop's one-time password, Trio's shared secret or AndroidAPS's per-client signature (§8), stays the controller's, and the hub carries it unread.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6-proposals-and-approvals-proposed">6. Proposals and approvals (proposed)<a class="headerlink" href="#6-proposals-and-approvals-proposed" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>propose → (evaluate) → approve | reject | withdraw | expire → command (§4) → outcome (§5)
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CM11</td>
+<td><strong>A proposal.</strong> A proposal names the proposing instance, the target <code>channel</code> and, when known, the target product and <code>instanceId</code>; the <code>payload</code> and its <code>payloadHash</code>, under CM5's size limit; <code>basedOn</code>, the <a href="state-intent.html#61-rules">state version</a> of the target product that the proposer read, required (422 <code>based-on-required</code>); and <code>expiresAt</code>, under the same limits as CM3. The hub routes the proposal when it is made (§2) and records the destination with its <code>definitionId</code>: a proposal with no destination is refused as a command would be, with nothing recorded; a named <code>instanceId</code> on another tenant, or none at all, is 404 (CM6); and one that is not the destination is refused 409 <code>destination-changed</code>. Its states are <code>open</code>, <code>approved</code>, <code>rejected</code>, <code>withdrawn</code> and <code>expired</code>; only <code>open</code> changes. A proposal is read by its tenant's subjects holding <code>api:proposals:read</code> or <code>api:commands:create</code>.</td>
+</tr>
+<tr>
+<td>CM12</td>
+<td><strong>Who may propose.</strong> The sender holds <code>api:proposals:create</code>, and the proposing instance is its own and holds a granted propose role on the channel: an <code>other</code> role that the hub's capability document lists as proposing (<a href="registration.html#9-channels-roles-and-provenance">registration §9</a>); a hub grants only roles it lists. Without the permission it is 403 <code>not-authorised</code>; an instance that is not the sender's is 403 <code>not-registration-owner</code>; without the role it is 403 <code>role-not-granted</code>. Reading confers neither: a <code>readable</code> credential, or a tool holding one, cannot propose.</td>
+</tr>
+<tr>
+<td>CM13</td>
+<td><strong>An approval binds to one payload.</strong> An approval names the <code>proposalId</code> and the <code>payloadHash</code> it approves. A hash that differs from the proposal's is refused 409 <code>hash-mismatch</code>; a proposal past its expiry is refused 409 <code>proposal-expired</code>; one that is not <code>open</code> is refused 409 <code>proposal-closed</code>. The approval routes again: with no destination it is refused as a command would be (§2), and when the destination differs from the one recorded at the proposal it is refused 409 <code>destination-changed</code>, because the proposer read one device's state and the change would reach another. A refused approval leaves the proposal <code>open</code> and creates no command. An accepted approval creates one command (CM1) whose payload is the proposal's, byte for byte, with the same hash, <code>proposalId</code> and <code>basedOn</code> set, and the proposal's <code>expiresAt</code>.</td>
+</tr>
+<tr>
+<td>CM14</td>
+<td><strong>Who may approve.</strong> The approver holds the permission to send the command itself (<code>api:commands:create</code>), else 403 <code>not-authorised</code>; approving is sending. The subject that proposed cannot approve its own proposal (403 <code>self-approval</code>). Rejecting needs the same permission; withdrawing is the proposer's alone; either by anyone else is 403 <code>not-authorised</code>.</td>
+</tr>
+<tr>
+<td>CM15</td>
+<td><strong>Based on.</strong> An approval is refused 409 <code>state-changed</code> when the target product's state version at the hub, at the time of approval, differs from the proposal's <code>basedOn</code>. This checks the hub's record of what the controller reported, the way an etag does; it does not tell the approver that the controller's own state is unchanged, which only the controller's own validation can (D18); the controller is given <code>basedOn</code> but cannot recompute it, because it versions the hub's record.</td>
+</tr>
+<tr>
+<td>CM16</td>
+<td><strong>Evaluations are evidence.</strong> Anyone who may read the proposal (CM11) may attach an evaluation: a risk check, a second model's opinion, a request for review. An evaluation never changes the proposal's state and never approves.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-delivery-in-each-mode-proposed">7. Delivery in each mode (proposed)<a class="headerlink" href="#7-delivery-in-each-mode-proposed" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CM17</td>
+<td><strong>The record is the command.</strong> A push transport may carry the payload and its hash, but the hub's record (CM1) is what states, outcomes and audit refer to.</td>
+</tr>
+<tr>
+<td>CM18</td>
+<td><strong>Fetch.</strong> The destination reads its <code>pending</code> and <code>sent</code> commands with its own credential. This works the same in both modes, because the request is bound to the tenant; it is the path a hub must offer. A fetch returns only commands whose destination is that instance; a fetch naming an instance that is not the credential's own is 403 <code>not-registration-owner</code>, and an instance that no longer holds the role gets an empty list.</td>
+</tr>
+<tr>
+<td>CM19</td>
+<td><strong>Push only inside a bound request.</strong> A push (a socket event to the destination, or a platform push such as APNs) is sent only inside a request already bound to the command's tenant, such as the request that accepted the command or approval, or a later request from the destination. Under <code>TENANCY_MODE=multi</code>, nothing is sent from a context with no tenant bound, such as the load cycle; an emission there, or one bound to another tenant, is withheld and the command stays <code>pending</code> until it is fetched. Under <code>single</code> the one tenant is always bound.</td>
+</tr>
+<tr>
+<td>CM20</td>
+<td><strong>Credentials for a platform push are the tenant's.</strong> A platform push uses credentials held by the command's tenant, never the deployment's.</td>
+</tr>
+</tbody>
+</table>
+<p>What a mode changes beyond these, such as the storage key and the credential kinds a command
+record names, is the registration contract per mode (<code>SPEC-REG-MODES</code>, not written).</p>
+<h2 id="8-compatibility">8. Compatibility<a class="headerlink" href="#8-compatibility" title="Permanent link">&para;</a></h2>
+<p>Read from Loop (<code>c30b5c89</code>, NightscoutService <code>2cef489</code>), Trio (<code>0b29cd534</code>), AndroidAPS
+(<code>7e1d537d49</code>, <code>dev</code>), LoopCaregiver (<code>2305718</code>) and LoopFollow (<code>4a74b781</code>), 2026-10-18; nothing
+was run.</p>
+<table>
+<thead>
+<tr>
+<th>path</th>
+<th>hub in the path</th>
+<th>sender authentication</th>
+<th>freshness</th>
+<th>correlation</th>
+<th>outcome today</th>
+<th>against §4–§7</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>careportal or LoopCaregiver → hub → Loop (APNs)</td>
+<td>yes</td>
+<td>one-time password for bolus and carbs, single use and kept by Loop; none for overrides</td>
+<td><code>expiration</code>, checked when present; the hub adds five minutes</td>
+<td>none; Loop's de-duplication on <code>sent-at</code> is in memory and lost on restart</td>
+<td>a <code>Note</code> with free text on failure; on success the resulting record (an override carries its remote trigger) and, to a direct sender that included encrypted return details, a reply push</td>
+<td>outside §4–§7: Loop registers no instance and holds no command sink, and these senders give no expiry, so the route has no record, no routing and a hub-set expiry. A hub keeps it as it is or retires it; bringing it under these rules needs Loop to register</td>
+</tr>
+<tr>
+<td>LoopCaregiver "Remote Commands 2" (experimental, off by default; closed-loop and automatic-bolus changes always)</td>
+<td>expects <code>/api/v2/remotecommands</code>, which no hub serves</td>
+<td>one-time password</td>
+<td>none on the record</td>
+<td>the record's <code>_id</code></td>
+<td><code>Pending</code> → <code>InProgress</code> → <code>Success</code> or <code>Error</code></td>
+<td>the closest to CM1 and CM7: its states map to <code>pending</code>, <code>acknowledged</code>, <code>succeeded</code>, and <code>failed</code> or <code>refused</code>; who may change a status is not stated, and no Loop build in the checkouts reads it</td>
+</tr>
+<tr>
+<td>LoopFollow → Loop or Trio (direct APNs)</td>
+<td>no; the device token is read from the hub's profile</td>
+<td>as above; Trio encrypts the whole payload with a shared secret</td>
+<td>Loop: as above; Trio: ±600 s around the sender's time, fixed, no expiry field</td>
+<td>none</td>
+<td>a reply push to the sender; a <code>Note</code> on failure</td>
+<td>outside the hub; a hub sees only the resulting records</td>
+</tr>
+<tr>
+<td>AndroidAPS client control (<code>dev</code>, not released)</td>
+<td>the <code>settings</code> collection carries it; the hub reads none of it</td>
+<td>HMAC per paired client, a strictly increasing counter</td>
+<td>±5 min and <code>validUntil</code> (unbounded by default; its senders set 8 s, 60 s or 5 min)</td>
+<td>the counter</td>
+<td>signed <code>Executing</code>, <code>Done</code> (<code>Ok</code>, <code>Failed</code>, <code>Expired</code>), and a late <code>Delivery</code> <code>Failed</code></td>
+<td>the only path whose outcome names its command; its doses are two-step, computed and capped on the controller between prepare and commit</td>
+</tr>
+<tr>
+<td>AndroidAPS SMS</td>
+<td>no</td>
+<td>allowed number, one-time password and PIN</td>
+<td>5 min to confirm</td>
+<td>the message thread</td>
+<td>an SMS reply</td>
+<td>outside the hub</td>
+</tr>
+</tbody>
+</table>
+<p>What in this table bears on the rules:</p>
+<ul>
+<li><strong>A late failure after success.</strong> AndroidAPS reports <code>Done</code> <code>Ok</code> when the pump queue accepts a
+  bolus and <code>Delivery</code> <code>Failed</code> if the pump later fails it; Trio replies "initiating bolus" before
+  it enacts and may reply failed after. CM9 as written refuses a report after <code>succeeded</code> (§9).</li>
+<li><strong>One command, part enacted.</strong> Trio's meal command stores the carbs before it validates the
+  bolus, so a refused bolus leaves carbs entered and the reply says failed. A single final state
+  cannot say which part happened (§9).</li>
+<li><strong>No controller computes a payload hash</strong> (CM10); each checks its own authentication instead.</li>
+<li><strong>Expiry is not uniform.</strong> Loop checks an <code>expiration</code> only when one is sent; Trio checks a
+  fixed window around the sender's time; AndroidAPS's <code>validUntil</code> is unbounded unless the sender
+  sets it; Remote Commands 2 records carry none. CM3 requires one of every command.</li>
+<li><strong>Sender authentication is end to end.</strong> Every controller that accepts a remote dose
+  authenticates the sender itself; a hub forwards that material and is not trusted with it.</li>
+</ul>
+<h2 id="9-open">9. Open<a class="headerlink" href="#9-open" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Choices for the maintainer:</strong></li>
+<li><strong>How a capability document marks a listed <code>other</code> role as proposing</strong> (CM12). Today it
+     lists role names only; nothing says which listed role may propose.</li>
+<li><strong>The command's expiry after an approval</strong> (CM13 proposes the proposal's <code>expiresAt</code>), or a
+     new one set at approval within the proposal's.</li>
+<li><strong>Refusing a stale approval</strong> (CM15), or only showing the approver that the state version
+     changed.</li>
+<li><strong>Recording refusals at routing</strong> (CM1) as <code>not-routed</code> commands, or answering them only.</li>
+<li><strong>Who may approve</strong> (CM14): today anyone who may send the command; a grant could narrow it
+     (<a href="authority.html#7-delegation-not-decided">authority §7</a>).</li>
+<li><strong>A controller check before approval.</strong> The proposal lifecycle drew <code>propose → validate →
+   (evaluate) → approve</code>; CM11–CM16 send nothing to the controller before approval, because no
+   controller offers a dry run of a remote command except AndroidAPS <code>dev</code>'s two-step prepare and
+   commit, which computes and caps a dose on the controller before it is committed.</li>
+<li><strong>The payload grammar.</strong> No definition declares the shape of a command's payload; the hub
+   stores it unread.</li>
+<li><strong>Outcomes that change after a final state:</strong> a late delivery failure after success (§8), and
+   a command enacted in part (§8). Either a further state (<code>failed</code> after <code>succeeded</code>, with the
+   record keeping both) or an outcome per part.</li>
+<li><strong>The grant</strong> that lets a person approve for someone else, and auto-approval: <a href="authority.html#7-delegation-not-decided">authority
+   §7</a>.</li>
+<li><strong>The registration contract per tenancy mode</strong> (<code>SPEC-REG-MODES</code>).</li>
+</ol>
+<h2 id="10-conformance-cases">10. Conformance cases<a class="headerlink" href="#10-conformance-cases" title="Permanent link">&para;</a></h2>
+<p>The routing cases are part of the registration suite (<code>tools/nsschema/test_registration_instances.py</code>);
+the rest are checked by <code>tools/nsschema/test_commands.py</code> against <code>tools/nsschema/commands.py</code>,
+which also checks on every case that nothing reaches another tenant, nothing is sent or fetched
+at or after its expiry, nothing is pushed unbound under <code>multi</code>, and an approved command carries
+the payload hash its approval named (the case's <code>received</code> payload stands for what was delivered). CM20 has no case; CM17 has one, <code>sent-and-fetched-are-not-success</code>.</p>
+<p>114 cases.</p>
+<!-- BEGIN GENERATED: commands-cases (tools/nsschema/spec_cases.py) -->
+<table>
+<thead>
+<tr>
+<th>case</th>
+<th>shows</th>
+<th>expected</th>
+<th>control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>instances/command-routed</code></td>
+<td>A command for a channel goes to its command-sink holder</td>
+<td>200 routed</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/command-unknown-slot</code></td>
+<td>A command for a slot no product declares has no destination</td>
+<td>409 rejected; no-command-destination</td>
+<td><code>command-inferred-one-product</code></td>
+</tr>
+<tr>
+<td><code>instances/command-ambiguous-destination</code></td>
+<td>A command naming no product for a slot two products declare is refused as ambiguous</td>
+<td>409 rejected; ambiguous-command-destination</td>
+<td><code>command-named-product</code></td>
+</tr>
+<tr>
+<td><code>instances/command-inferred-one-product</code></td>
+<td>A command naming no product goes to the one product that declares its slot</td>
+<td>200 routed</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/command-named-product</code></td>
+<td>Naming the product resolves a command for a slot two products declare</td>
+<td>200 routed</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/acknowledged-stays-past-expiry</code></td>
+<td>An acknowledged command with no further report stays acknowledged past expiry</td>
+<td>rules CM3</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/acknowledged-survives-expiry</code></td>
+<td>A command acknowledged before its expiry is not reported expired</td>
+<td>rules CM3, CM9</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/acknowledged-then-succeeded</code></td>
+<td>acknowledged may precede a final state</td>
+<td>rules CM9</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/approve-after-proposal-expiry</code></td>
+<td>An approval after the proposal's expiry is refused</td>
+<td>rules CM13</td>
+<td><code>approve-creates-command-with-proposal-payload</code></td>
+</tr>
+<tr>
+<td><code>commands/approve-after-sink-passed-unnamed</code></td>
+<td>An approval after the sink passed to another instance is refused, even with no instanceId named</td>
+<td>rules CM13</td>
+<td><code>approve-before-sink-passes</code></td>
+</tr>
+<tr>
+<td><code>commands/approve-before-sink-lapses</code></td>
+<td>An approval while the recorded destination still holds the sink is accepted</td>
+<td>rules CM13</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/approve-before-sink-passes</code></td>
+<td>An approval before the sink passes routes to the instance recorded at proposal</td>
+<td>rules CM13</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/approve-by-other-subject</code></td>
+<td>A subject other than the proposer approves</td>
+<td>rules CM14</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/approve-creates-command-with-proposal-payload</code></td>
+<td>An approval creates one command carrying the proposal's payload</td>
+<td>rules CM13, CM14, CM1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/approve-destination-changed</code></td>
+<td>An approval is refused when the named instance no longer holds the sink</td>
+<td>rules CM13</td>
+<td><code>approve-named-instance-still-holder</code></td>
+</tr>
+<tr>
+<td><code>commands/approve-hash-mismatch</code></td>
+<td>An approval naming a different payload's hash is refused</td>
+<td>rules CM13</td>
+<td><code>approve-creates-command-with-proposal-payload</code></td>
+</tr>
+<tr>
+<td><code>commands/approve-named-instance-still-holder</code></td>
+<td>An approval routes to the instance the proposal named while it holds the sink</td>
+<td>rules CM13</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/approve-no-holder</code></td>
+<td>An approval when no instance holds the sink any more is refused at routing</td>
+<td>rules CM13, CM1</td>
+<td><code>approve-before-sink-lapses</code></td>
+</tr>
+<tr>
+<td><code>commands/approve-rejected-proposal</code></td>
+<td>A rejected proposal cannot be approved</td>
+<td>rules CM13, CM14</td>
+<td><code>approve-creates-command-with-proposal-payload</code></td>
+</tr>
+<tr>
+<td><code>commands/approve-state-changed-named-product</code></td>
+<td>basedOn is checked against the product the proposal names</td>
+<td>rules CM15, CM11</td>
+<td><code>approve-state-unchanged-named-product</code></td>
+</tr>
+<tr>
+<td><code>commands/approve-state-changed</code></td>
+<td>An approval after the target's state version moved is refused</td>
+<td>rules CM15</td>
+<td><code>approve-state-unchanged</code></td>
+</tr>
+<tr>
+<td><code>commands/approve-state-unchanged-named-product</code></td>
+<td>An approval for a named product whose state version is unchanged is accepted</td>
+<td>rules CM15, CM11, CM13</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/approve-state-unchanged</code></td>
+<td>An approval while the target's state version equals basedOn is accepted</td>
+<td>rules CM15</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/approve-withdrawn-proposal</code></td>
+<td>A withdrawn proposal cannot be approved</td>
+<td>rules CM13, CM14</td>
+<td><code>approve-creates-command-with-proposal-payload</code></td>
+</tr>
+<tr>
+<td><code>commands/approve-without-command-permission</code></td>
+<td>Approving needs the permission to send the command</td>
+<td>rules CM14</td>
+<td><code>approve-creates-command-with-proposal-payload</code></td>
+</tr>
+<tr>
+<td><code>commands/approved-command-has-proposal-expiry</code></td>
+<td>The command an approval creates expires when the proposal would have</td>
+<td>rules CM13, CM3</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/command-without-permission</code></td>
+<td>A sender without api:commands:create is refused and not recorded</td>
+<td>rules CM5</td>
+<td><code>route-to-holder</code></td>
+</tr>
+<tr>
+<td><code>commands/enact-after-expiry-refused</code></td>
+<td>The controller refuses a command past expiresAt by its own clock</td>
+<td>rules CM10</td>
+<td><code>enact-identical-payload-succeeds</code></td>
+</tr>
+<tr>
+<td><code>commands/enact-hash-mismatch-refused</code></td>
+<td>The controller refuses a received payload whose hash differs</td>
+<td>rules CM10, CM7, CM8</td>
+<td><code>enact-identical-payload-succeeds</code></td>
+</tr>
+<tr>
+<td><code>commands/enact-identical-payload-succeeds</code></td>
+<td>The controller enacts a payload whose hash matches</td>
+<td>rules CM10</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/evaluate-by-command-sender</code></td>
+<td>A subject holding api:commands:create may read and so evaluate</td>
+<td>rules CM16, CM11</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/evaluate-without-read</code></td>
+<td>A subject that may not read the proposal cannot evaluate it</td>
+<td>rules CM16, CM11</td>
+<td><code>evaluation-does-not-change-proposal</code></td>
+</tr>
+<tr>
+<td><code>commands/evaluation-does-not-change-proposal</code></td>
+<td>An evaluation is evidence and never changes the proposal</td>
+<td>rules CM16</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/expiry-at-maximum</code></td>
+<td>An expiry exactly at the maximum is accepted</td>
+<td>rules CM3</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/expiry-at-request-time</code></td>
+<td>An expiry equal to the request's time is refused</td>
+<td>rules CM3</td>
+<td><code>expiry-one-second-after-request</code></td>
+</tr>
+<tr>
+<td><code>commands/expiry-one-second-after-request</code></td>
+<td>An expiry one second after the request is accepted</td>
+<td>rules CM3</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/expiry-required</code></td>
+<td>A command without expiresAt is refused and not recorded</td>
+<td>rules CM3</td>
+<td><code>route-to-holder</code></td>
+</tr>
+<tr>
+<td><code>commands/expiry-too-long</code></td>
+<td>An expiry beyond commands.maxExpirySeconds is refused</td>
+<td>rules CM3</td>
+<td><code>expiry-at-maximum</code></td>
+</tr>
+<tr>
+<td><code>commands/fetch-after-expiry-is-empty</code></td>
+<td>A command past its expiry is neither fetched nor pushed, and reads report expired</td>
+<td>rules CM3</td>
+<td><code>fetch-before-expiry</code></td>
+</tr>
+<tr>
+<td><code>commands/fetch-after-role-lost-is-empty</code></td>
+<td>An instance that no longer holds the role fetches an empty list</td>
+<td>rules CM18, CM2</td>
+<td><code>fetch-before-role-lost</code></td>
+</tr>
+<tr>
+<td><code>commands/fetch-before-expiry</code></td>
+<td>A command fetched before its expiry is delivered</td>
+<td>rules CM3</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/fetch-before-role-lost</code></td>
+<td>The same instance fetches while it holds the role</td>
+<td>rules CM18, CM2</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/fetch-instance-other-tenant-404</code></td>
+<td>A fetch naming an instance on another tenant is 404</td>
+<td>rules CM6, CM18</td>
+<td><code>fetch-instance-own-tenant</code></td>
+</tr>
+<tr>
+<td><code>commands/fetch-instance-own-tenant</code></td>
+<td>The destination fetches on its own tenant</td>
+<td>rules CM6, CM18</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/fetch-naming-another-instance</code></td>
+<td>A fetch naming an instance that is not the credential's own is refused</td>
+<td>rules CM18</td>
+<td><code>fetch-returns-own-commands</code></td>
+</tr>
+<tr>
+<td><code>commands/fetch-returns-own-commands</code></td>
+<td>A fetch returns only the fetching instance's own commands</td>
+<td>rules CM18</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/fetched-before-holder-changes</code></td>
+<td>A command fetched before the holder changes stays fetched</td>
+<td>rules CM2</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/fetched-then-expiry-unconfirmed</code></td>
+<td>A fetched command with no outcome becomes unconfirmed at its expiry</td>
+<td>rules CM3</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/hub-does-not-judge-payload</code></td>
+<td>The hub neither checks nor alters the payload</td>
+<td>rules CM5, CM10</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/no-request-id-two-commands</code></td>
+<td>Without a requestId, identical requests are two commands</td>
+<td>rules CM4</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/outcome-before-expiry-stays</code></td>
+<td>An outcome reported before expiry is still the state after it</td>
+<td>rules CM3, CM9</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/payload-too-large</code></td>
+<td>A payload over maxPayloadBytes is refused and not recorded</td>
+<td>rules CM5</td>
+<td><code>payload-within-limit</code></td>
+</tr>
+<tr>
+<td><code>commands/payload-within-limit</code></td>
+<td>A payload under maxPayloadBytes is accepted</td>
+<td>rules CM5</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/pending-expires-report-refused</code></td>
+<td>A pending command expires, and a report after expired is refused</td>
+<td>rules CM3, CM9</td>
+<td><code>report-on-unconfirmed-after-expiry-accepted</code></td>
+</tr>
+<tr>
+<td><code>commands/proposal-expiry-required</code></td>
+<td>A proposal without expiresAt is refused</td>
+<td>rules CM11, CM3</td>
+<td><code>propose-with-permission-and-role</code></td>
+</tr>
+<tr>
+<td><code>commands/proposal-expiry-too-long</code></td>
+<td>A proposal's expiry is under the command limits</td>
+<td>rules CM11, CM3</td>
+<td><code>propose-with-permission-and-role</code></td>
+</tr>
+<tr>
+<td><code>commands/propose-by-instance-owner</code></td>
+<td>The instance's own subject proposes</td>
+<td>rules CM12</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/propose-instance-other-tenant-404</code></td>
+<td>A proposal naming a proposing instance on another tenant is 404</td>
+<td>rules CM6, CM12</td>
+<td><code>propose-instance-own-tenant</code></td>
+</tr>
+<tr>
+<td><code>commands/propose-instance-own-tenant</code></td>
+<td>The proposing instance's own subject proposes on its own tenant</td>
+<td>rules CM6, CM12</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/propose-named-instance-is-destination</code></td>
+<td>A proposal naming the destination is accepted</td>
+<td>rules CM11</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/propose-named-instance-not-destination</code></td>
+<td>A proposal naming an instance that is not the destination is refused</td>
+<td>rules CM11</td>
+<td><code>propose-named-instance-is-destination</code></td>
+</tr>
+<tr>
+<td><code>commands/propose-named-instance-other-tenant-404</code></td>
+<td>A proposal naming a target instance on another tenant is 404</td>
+<td>rules CM6, CM11</td>
+<td><code>propose-named-instance-is-destination</code></td>
+</tr>
+<tr>
+<td><code>commands/propose-no-holder</code></td>
+<td>A proposal on a channel no instance holds is refused as a command would be</td>
+<td>rules CM11, CM1</td>
+<td><code>propose-with-permission-and-role</code></td>
+</tr>
+<tr>
+<td><code>commands/propose-payload-too-large</code></td>
+<td>A proposal whose payload is over maxPayloadBytes is refused</td>
+<td>rules CM11, CM5</td>
+<td><code>propose-payload-within-limit</code></td>
+</tr>
+<tr>
+<td><code>commands/propose-payload-within-limit</code></td>
+<td>A proposal whose payload is under maxPayloadBytes is accepted</td>
+<td>rules CM11, CM5</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/propose-with-another-subjects-instance</code></td>
+<td>A sender cannot propose as an instance that is not its own</td>
+<td>rules CM12</td>
+<td><code>propose-by-instance-owner</code></td>
+</tr>
+<tr>
+<td><code>commands/propose-with-permission-and-role</code></td>
+<td>A sender with the permission and the propose role proposes</td>
+<td>rules CM11, CM12</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/propose-without-based-on</code></td>
+<td>A proposal without basedOn is refused</td>
+<td>rules CM11</td>
+<td><code>propose-with-permission-and-role</code></td>
+</tr>
+<tr>
+<td><code>commands/propose-without-permission</code></td>
+<td>A credential that can only read cannot propose</td>
+<td>rules CM12</td>
+<td><code>propose-with-permission-and-role</code></td>
+</tr>
+<tr>
+<td><code>commands/propose-without-role</code></td>
+<td>The permission without a propose role on the channel is refused</td>
+<td>rules CM12</td>
+<td><code>propose-with-permission-and-role</code></td>
+</tr>
+<tr>
+<td><code>commands/push-bound-other-tenant-withheld</code></td>
+<td>Under multi, a push bound to another tenant is withheld</td>
+<td>rules CM19, CM6</td>
+<td><code>push-bound-own-tenant-under-multi</code></td>
+</tr>
+<tr>
+<td><code>commands/push-bound-own-tenant-under-multi</code></td>
+<td>Under multi, a push bound to the command's own tenant is sent</td>
+<td>rules CM19</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/push-bound-sent-under-multi</code></td>
+<td>Under multi, a push inside a request bound to the command's tenant is sent</td>
+<td>rules CM19</td>
+<td><code>push-unbound-withheld-under-multi</code></td>
+</tr>
+<tr>
+<td><code>commands/push-unbound-sent-under-single</code></td>
+<td>Under single, the one tenant is always bound and the push is sent</td>
+<td>rules CM19, CM18</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/push-unbound-withheld-under-multi</code></td>
+<td>Under multi, a push with no tenant bound is withheld and fetch delivers</td>
+<td>rules CM19, CM18</td>
+<td><code>push-unbound-sent-under-single</code></td>
+</tr>
+<tr>
+<td><code>commands/pushed-then-lapse-unconfirmed</code></td>
+<td>A command handed to a push and then losing its destination is unconfirmed, and a report replaces it</td>
+<td>rules CM2, CM9</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/read-other-tenant-404</code></td>
+<td>A command id read from another tenant is 404</td>
+<td>rules CM6</td>
+<td><code>read-own-tenant</code></td>
+</tr>
+<tr>
+<td><code>commands/read-own-tenant</code></td>
+<td>A command id read on its own tenant is found</td>
+<td>rules CM6</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/reject-proposal</code></td>
+<td>A subject that may send the command rejects a proposal</td>
+<td>rules CM14</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/reject-without-command-permission</code></td>
+<td>Rejecting needs api:commands:create</td>
+<td>rules CM14</td>
+<td><code>reject-proposal</code></td>
+</tr>
+<tr>
+<td><code>commands/report-after-final-refused</code></td>
+<td>A second outcome after a final state is refused</td>
+<td>rules CM9</td>
+<td><code>acknowledged-then-succeeded</code></td>
+</tr>
+<tr>
+<td><code>commands/report-after-undeliverable-refused</code></td>
+<td>A report after undeliverable is refused: the state is final</td>
+<td>rules CM2, CM9</td>
+<td><code>pushed-then-lapse-unconfirmed</code></td>
+</tr>
+<tr>
+<td><code>commands/report-from-destination-accepted</code></td>
+<td>The destination's bound subject reports an outcome</td>
+<td>rules CM7</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/report-from-other-subject-refused</code></td>
+<td>Another subject cannot report, even one that may send commands</td>
+<td>rules CM7</td>
+<td><code>report-from-destination-accepted</code></td>
+</tr>
+<tr>
+<td><code>commands/report-on-unconfirmed-after-expiry-accepted</code></td>
+<td>A report on a command unconfirmed at expiry is accepted and replaces it</td>
+<td>rules CM3, CM9</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/report-other-tenant-404</code></td>
+<td>A report for another tenant's command id is 404</td>
+<td>rules CM6, CM7</td>
+<td><code>report-from-destination-accepted</code></td>
+</tr>
+<tr>
+<td><code>commands/report-reason-bare-string-invalid</code></td>
+<td>A bare unknown reason string is invalid</td>
+<td>rules CM8</td>
+<td><code>report-reason-other-accepted</code></td>
+</tr>
+<tr>
+<td><code>commands/report-reason-other-accepted</code></td>
+<td>A controller-specific reason is given as other with its own term</td>
+<td>rules CM8</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/report-state-fetched-invalid</code></td>
+<td>A report with state fetched is refused</td>
+<td>rules CM7</td>
+<td><code>report-from-destination-accepted</code></td>
+</tr>
+<tr>
+<td><code>commands/report-state-sent-invalid</code></td>
+<td>A report with state sent is refused</td>
+<td>rules CM7</td>
+<td><code>report-from-destination-accepted</code></td>
+</tr>
+<tr>
+<td><code>commands/request-id-different-payload-refused</code></td>
+<td>The same requestId with a different payload is refused</td>
+<td>rules CM4</td>
+<td><code>request-id-same-payload-returns-first</code></td>
+</tr>
+<tr>
+<td><code>commands/request-id-other-channel-refused</code></td>
+<td>The same requestId and payload on another channel is refused</td>
+<td>rules CM4</td>
+<td><code>request-id-same-channel-returns-first</code></td>
+</tr>
+<tr>
+<td><code>commands/request-id-other-product-refused</code></td>
+<td>The same requestId and payload naming another product is refused</td>
+<td>rules CM4</td>
+<td><code>request-id-same-product-returns-first</code></td>
+</tr>
+<tr>
+<td><code>commands/request-id-reordered-keys-same-hash</code></td>
+<td>Key order does not change the payload hash a re-send is matched on</td>
+<td>rules CM1, CM4</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/request-id-same-channel-returns-first</code></td>
+<td>The same requestId, channel, product and payload returns the first command</td>
+<td>rules CM4</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/request-id-same-payload-returns-first</code></td>
+<td>Re-sending the same requestId and payload returns the first command</td>
+<td>rules CM4</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/request-id-same-product-returns-first</code></td>
+<td>The same requestId naming the same product returns the first command</td>
+<td>rules CM4</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/request-id-scoped-to-subject</code></td>
+<td>A requestId is matched within one subject</td>
+<td>rules CM4</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/route-ambiguous-declared-channel</code></td>
+<td>An unshared channel declared by two products needs a product</td>
+<td>rules CM1</td>
+<td><code>route-ambiguous-resolved-by-product</code></td>
+</tr>
+<tr>
+<td><code>commands/route-ambiguous-resolved-by-product</code></td>
+<td>Naming the product resolves an ambiguous channel</td>
+<td>rules CM1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/route-inferred-from-declaring-product</code></td>
+<td>A command naming no product goes to the one product declaring the channel</td>
+<td>rules CM1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/route-lapsed-holder-not-destination</code></td>
+<td>A lapsed former holder is never a destination</td>
+<td>rules CM1</td>
+<td><code>route-to-holder</code></td>
+</tr>
+<tr>
+<td><code>commands/route-latest-instance-not-destination</code></td>
+<td>The product's latest instance is not a destination unless it holds the sink</td>
+<td>rules CM1</td>
+<td><code>route-to-holder</code></td>
+</tr>
+<tr>
+<td><code>commands/route-no-holder</code></td>
+<td>No instance holds command-sink: refused and recorded as not-routed</td>
+<td>rules CM1</td>
+<td><code>route-to-holder</code></td>
+</tr>
+<tr>
+<td><code>commands/route-other-tenant-holder-not-used</code></td>
+<td>A holder on another tenant is never the destination</td>
+<td>rules CM1, CM6</td>
+<td><code>route-own-tenant-holder</code></td>
+</tr>
+<tr>
+<td><code>commands/route-own-tenant-holder</code></td>
+<td>The same command on the holder's own tenant is routed</td>
+<td>rules CM1, CM6</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/route-simulated-sink-not-destination</code></td>
+<td>A simulated command sink is never a destination</td>
+<td>rules CM1</td>
+<td><code>route-to-holder</code></td>
+</tr>
+<tr>
+<td><code>commands/route-to-holder</code></td>
+<td>A command naming the product goes to the instance holding command-sink</td>
+<td>rules CM1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/route-undeclared-channel</code></td>
+<td>A channel no product declares has no destination</td>
+<td>rules CM1</td>
+<td><code>route-inferred-from-declaring-product</code></td>
+</tr>
+<tr>
+<td><code>commands/self-approval-refused</code></td>
+<td>The proposer cannot approve its own proposal</td>
+<td>rules CM14</td>
+<td><code>approve-by-other-subject</code></td>
+</tr>
+<tr>
+<td><code>commands/sent-and-fetched-are-not-success</code></td>
+<td>A push and a fetch are receipts, not outcomes</td>
+<td>rules CM9, CM17</td>
+<td></td>
+</tr>
+<tr>
+<td><code>commands/undeliverable-not-rerouted</code></td>
+<td>A destination that stops holding before fetching makes the command undeliverable</td>
+<td>rules CM2</td>
+<td><code>fetched-before-holder-changes</code></td>
+</tr>
+<tr>
+<td><code>commands/withdraw-by-other-subject</code></td>
+<td>Only the proposer may withdraw</td>
+<td>rules CM14</td>
+<td><code>withdraw-by-proposer</code></td>
+</tr>
+<tr>
+<td><code>commands/withdraw-by-proposer</code></td>
+<td>The proposer withdraws its proposal</td>
+<td>rules CM14</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<!-- END GENERATED: commands-cases -->
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

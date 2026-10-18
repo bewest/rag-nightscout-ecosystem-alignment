@@ -2933,6 +2933,8 @@
       
         
       
+        
+      
     
     
     
@@ -5681,12 +5683,12 @@ time and a note against the proposal id — no payload hash and no state — and
 its source, 2026-10-18; not reproduced here). That is evidence for the binding requirement above
 and for its open question: an approval that names neither the payload nor the state does not
 bind to either, and an HTTP status says nothing about what the controller did.</p>
-<p><strong>Where it would be specified.</strong> Command delivery is <code>SPEC-REG-COMMANDS</code> in the
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0cc93a684c050751d9b1d2d209302451a58e64ca/queue/work-queue.yaml">work queue</a>: not started, blocked on <code>SPEC-REG-MODES</code>; the
-<a href="spec/registration.html#9-channels-roles-and-provenance">registration specification §9</a> leaves the command API to it. The proposal record is folded into that item
-(maintainer, 2026-10-18), with gate cases for an approval bound to one payload hash, an expired
-proposal, and a proposal from a credential with no propose role; the open question above is its
-first.</p>
+<p><strong>Where it is specified.</strong> The command record, outcomes, proposals and approvals are proposed in
+the <a href="spec/commands.html">commands specification</a> §4–§7 (<code>SPEC-REG-COMMANDS</code>; the proposal record
+was folded in by the maintainer on 2026-10-18), with cases for an approval bound to one payload
+hash, an expired proposal, and a proposal from a credential with no propose role. Its CM15 takes
+the open question above: an approval is refused when the hub's state version differs from the
+proposal's, which still says nothing about the controller's own state.</p>
 <h2 id="5-evaluating-an-algorithm-before-it-acts">5. Evaluating an algorithm before it acts<a class="headerlink" href="#5-evaluating-an-algorithm-before-it-acts" title="Permanent link">&para;</a></h2>
 <p>An agent that proposes a change, and a developer who changes an algorithm, both need to know what
 the algorithm does with the inputs it gets.</p>

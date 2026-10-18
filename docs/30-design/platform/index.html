@@ -2720,6 +2720,8 @@
       
         
       
+        
+      
     
     
     
@@ -4949,7 +4951,7 @@
 
 
 <h1 id="platform-contracts-where-each-piece-is-specified">Platform contracts: where each piece is specified<a class="headerlink" href="#platform-contracts-where-each-piece-is-specified" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>9736bd659</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>39a598616</code>.</em></p>
 <p><em>Contributor-facing. Living index, current at <code>main</code> <code>010e1661</code> (2026-10-18). Terms are defined in
 the <a href="spec/glossary.html">platform glossary</a>.</em></p>
 <p>This page maps the work on how controllers (Loop, Trio, AndroidAPS and others) and hubs
@@ -5069,11 +5071,11 @@ reader brings, and each has its own rules, conformance cases and gate.</p>
 <td><code>SPEC-STATE-INTENT</code></td>
 </tr>
 <tr>
-<td><code>commands</code></td>
+<td><a href="spec/commands.html">commands</a></td>
 <td>how does a request or a proposal reach a controller, and how does its outcome come back?</td>
 <td>L3, L5</td>
-<td>C</td>
-<td>queued</td>
+<td>CM1–CM20</td>
+<td>written</td>
 <td><code>SPEC-REG-COMMANDS</code></td>
 </tr>
 <tr>
@@ -5113,10 +5115,8 @@ stays in <em>state and intent</em> while it is a proposal.</p>
 proposal and acknowledgement lifecycle has its own cases and review, and from <em>authority</em>, which
 says who may rather than what happens. <em>Authority</em> is kept apart from <em>registration</em> so that
 binding, the owner's actions and delegation are read in one place.</p>
-<p><strong>What moves when the queued files are written:</strong>
-- command routing in registration §9 moves to <em>commands</em>;</p>
-<p>Each file should stay readable in a sitting. <em>Registration</em> is the largest; command routing in its §9 moves to <em>commands</em> when that
-specification is written.</p>
+<p>Each file should stay readable in a sitting. <em>Registration</em> is the largest; command routing has
+moved from its §9 to <em>commands</em> §2.</p>
 <p><strong>How they are kept.</strong></p>
 <ol>
 <li><strong>One home per rule.</strong> Other specifications link to it by section and never restate it.
@@ -5339,7 +5339,7 @@ specification is written.</p>
 </tr>
 <tr>
 <td><strong>Open</strong></td>
-<td><code>SPEC-REG-COMMANDS</code> (the command API and the proposal record, to be the <code>commands</code> specification); delegation (authority §7); D17 row 2; the owner choices in authority §9</td>
+<td>the choices in <a href="spec/commands.html#9-open">commands §9</a>; delegation (authority §7); D17 row 2; the owner choices in authority §9</td>
 </tr>
 <tr>
 <td><strong>Audit</strong></td>
@@ -5347,7 +5347,7 @@ specification is written.</p>
 </tr>
 <tr>
 <td><strong>Status</strong></td>
-<td>specified for registration, owners and command destinations (<code>SPEC-AUTHORITY</code>); delegation and the command API are not specified</td>
+<td>specified for registration, owners and command destinations (<code>SPEC-AUTHORITY</code>); the command record, outcomes and proposals are proposed in <a href="spec/commands.html">commands</a> (<code>SPEC-REG-COMMANDS</code>); delegation is not specified</td>
 </tr>
 </tbody>
 </table>

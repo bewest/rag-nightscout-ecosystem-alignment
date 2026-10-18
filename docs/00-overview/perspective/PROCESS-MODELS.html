@@ -2731,7 +2731,7 @@
 
 
 <h1 id="what-we-believe-and-how-it-works">What we believe, and how it works<a class="headerlink" href="#what-we-believe-and-how-it-works" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-17 at <code>b2465f140</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>57a6db95f</code>.</em></p>
 <p><em>For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
 </em><em>Perspective</em><em> (part 2 of the overview; <a href="../index.html">how the overview is organised</a>). Living page,
 written 2026-10-17. Companion to <a href="STRUCTURES.html">Control structures, drawn</a>, whose conventions,
@@ -3289,9 +3289,10 @@ transfer (<a href="../../30-design/tenancy/nightscout-multitenancy-execution-pla
 D20 scopes quirks to the versions that produce them and splits the client-assigned <code>identifier</code>
 from the hub-assigned <code>_id</code> (<a href="../../30-design/platform/nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">hub-sync §3.7</a>).
 An agent would register its own instance; role types are open "so roles such as proposing versus
-acting can be added for agents" (D19 rule 5). <strong>Open:</strong> the command API (<code>SPEC-REG-COMMANDS</code>), the
+acting can be added for agents" (D19 rule 5). <strong>Open:</strong> the command API, proposed in the
+<a href="../../30-design/platform/spec/commands.html">commands specification</a> and not decided, the
 contract per tenancy mode (<code>SPEC-REG-MODES</code>), the first hub (<code>HUB-REG-CRM</code>), the proposals to
-Nocturne and the controllers, all not started (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0cc93a684c050751d9b1d2d209302451a58e64ca/queue/work-queue.yaml">queue</a>); and how an
+Nocturne and the controllers, all not started (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/57a6db95f21fece4b1b8767339c3b77c02156968/queue/work-queue.yaml">queue</a>); and how an
 agent is scoped, limited and revoked, which no decision covers.</p>
 <p><em>Interpretation.</em> Properties the three panels show:</p>
 <ol>
@@ -3368,7 +3369,7 @@ security contact, complaint workflow, SBOM or build-provenance record was found
 (<a href="../PARTNER-READINESS.html#3-what-a-manufacturer-will-need-to-see">partner readiness §3</a>). The
 conformance suite lives in this repository: 85 vector files, an oref0 runner, and AndroidAPS and
 Loop runners not implemented (<a href="../../../conformance/index.html"><code>conformance/</code></a>;
-<code>tools/conformance_suite.py:43-55</code>). This repository's <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0cc93a684c050751d9b1d2d209302451a58e64ca/.github/workflows/ci.yml">CI</a> runs
+<code>tools/conformance_suite.py:43-55</code>). This repository's <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/57a6db95f21fece4b1b8767339c3b77c02156968/.github/workflows/ci.yml">CI</a> runs
 Python syntax and spec validation; the suite and the <a href="../../../queue/index.html">queue gates</a> run by
 <code>make</code>, outside CI. The 15.0.9 run records are the nearest thing to release evidence
 (<a href="../QUALITY-SYSTEM.html#41-the-record-every-run-leaves">quality system §4.1</a>).</p>

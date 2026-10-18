@@ -16,7 +16,7 @@
         <link rel="prev" href="index.html">
       
       
-        <link rel="next" href="glossary.html">
+        <link rel="next" href="commands.html">
       
       
         
@@ -2722,6 +2722,8 @@
       
         
       
+        
+      
     
     
     
@@ -2956,6 +2958,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="commands.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commands (L3, L5)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -5343,7 +5373,7 @@
 
 
 <h1 id="authority-l5">Authority (L5)<a class="headerlink" href="#authority-l5" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>9736bd659</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>39a598616</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>1b69c295</code> (2026-10-18). Layer L5 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. Decisions:
 <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">D7 and D13–D17</a>
@@ -5524,8 +5554,8 @@ instance's etag changes; roles with <code>grantedBy: transfer-role</code> are ke
 command-sink survives renewal only when the instance matches the binding or the role carries
 <code>grantedBy</code>.</p>
 <p>Where a command goes once a holder exists, and that the hub never routes to a guess, is
-<a href="registration.html#9-channels-roles-and-provenance">registration §9</a>. The command API and the
-proposal record in front of a command are <code>SPEC-REG-COMMANDS</code>.</p>
+<a href="commands.html#2-where-a-command-goes">commands §2</a>. The command record and the proposal in front of
+a command are proposed in <a href="commands.html#4-the-command-record-proposed">commands §4–§7</a>.</p>
 <h2 id="7-delegation-not-decided">7. Delegation (not decided)<a class="headerlink" href="#7-delegation-not-decided" title="Permanent link">&para;</a></h2>
 <p>Delegation lets a principal give a caregiver, an app or an agent a part of their authority. Nothing
 in Nightscout implements it, and no design is decided.</p>
@@ -5538,8 +5568,8 @@ in Nightscout implements it, and no design is decided.</p>
   <a href="state-intent.html#2-rules">state and intent S8</a>).</li>
 <li>A role for an agent, such as proposing or acting, is an <code>other</code> role a hub lists
   (<a href="registration.html#9-channels-roles-and-provenance">registration §9</a>).</li>
-<li>The proposal record in front of a command belongs to <code>SPEC-REG-COMMANDS</code> (maintainer,
-  2026-10-18).</li>
+<li>The proposal record in front of a command belongs to the <a href="commands.html">commands specification</a>
+  (maintainer, 2026-10-18).</li>
 <li>Third-party delegated access through an authorization server is deferred (AU1).</li>
 </ul>
 <p><strong>What a delegation design would have to provide</strong>, stated 2026-09-10 as requirements for
@@ -5641,7 +5671,7 @@ intents inside the hub is outside the hub's role (D18).</p>
 command are listed here; they are part of the registration suites
 (<code>tools/nsschema/test_registration_negotiation.py</code>, <code>test_registration_instances.py</code>). Delegation
 has no case.</p>
-<p>70 cases.</p>
+<p>65 cases.</p>
 <!-- BEGIN GENERATED: authority-cases (tools/nsschema/spec_cases.py) -->
 <table>
 <thead>
@@ -6026,24 +6056,6 @@ has no case.</p>
 <td></td>
 </tr>
 <tr>
-<td><code>instances/command-ambiguous-destination</code></td>
-<td>A command naming no product for a slot two products declare is refused as ambiguous</td>
-<td>409 rejected; ambiguous-command-destination</td>
-<td><code>command-named-product</code></td>
-</tr>
-<tr>
-<td><code>instances/command-inferred-one-product</code></td>
-<td>A command naming no product goes to the one product that declares its slot</td>
-<td>200 routed</td>
-<td></td>
-</tr>
-<tr>
-<td><code>instances/command-named-product</code></td>
-<td>Naming the product resolves a command for a slot two products declare</td>
-<td>200 routed</td>
-<td></td>
-</tr>
-<tr>
 <td><code>instances/command-no-destination-simulated</code></td>
 <td>A simulated command sink is never a command destination</td>
 <td>409 rejected; no-command-destination</td>
@@ -6054,18 +6066,6 @@ has no case.</p>
 <td>Another subject's simulated command sink is granted and never a command destination</td>
 <td>200 routed</td>
 <td></td>
-</tr>
-<tr>
-<td><code>instances/command-routed</code></td>
-<td>A command for a channel goes to its command-sink holder</td>
-<td>200 routed</td>
-<td></td>
-</tr>
-<tr>
-<td><code>instances/command-unknown-slot</code></td>
-<td>A command for a slot no product declares has no destination</td>
-<td>409 rejected; no-command-destination</td>
-<td><code>command-inferred-one-product</code></td>
 </tr>
 <tr>
 <td><code>instances/typed-write-attributed</code></td>

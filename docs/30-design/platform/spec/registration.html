@@ -2722,6 +2722,8 @@
       
         
       
+        
+      
     
     
     
@@ -2791,6 +2793,34 @@
     
   
     Authority (L5)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="commands.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commands (L3, L5)
   
 
     
@@ -5663,7 +5693,7 @@
 
 
 <h1 id="registration-l2">Registration (L2)<a class="headerlink" href="#registration-l2" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>27c3f991e</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>39a598616</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>8d2b93ed</code> (2026-10-18). Layer L2 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>; ids are defined in
 the <a href="identity.html">identity specification</a>. Specified, not implemented: no hub serves any of this.
@@ -6269,14 +6299,7 @@ Source roles are open to any permitted subject.</p>
 <p><strong>Handoff.</strong> A role passes when its holder drops it (a renewal without it, or <code>DELETE</code>), when the
 holder's lease lapses, or when the owner transfers it. A lapsed or dropped role is not
 auto-assigned: a claimant is granted it on its own next renewal, which re-evaluates every claim.</p>
-<p><strong>Command routing.</strong> A command for a channel goes to the live <code>device</code> instance holding
-<code>command-sink</code> on it. A command that names no product for a channel that is not shared goes to the
-one product that declares that channel; when more than one product declares it, it is refused 409
-<code>ambiguous-command-destination</code>, and naming the product (<code>request.identity</code>) resolves it.
-"Declares" reads every product's current registration and stored definitions, in any state. With
-no holder, or a channel no product declares, the command is refused <code>no-command-destination</code>; the
-hub never routes to a lapsed former holder, a <code>simulated</code> command sink or the product's latest
-instance. The command API itself is <code>SPEC-REG-COMMANDS</code>.</p>
+<p><strong>Command routing.</strong> Where a command for a channel goes, and its refusals, are <a href="commands.html#2-where-a-command-goes">commands §2</a>.</p>
 <p><strong>The hub never decides dosing.</strong> Exclusivity decides only which instance is the typed source of
 record for a channel and where a command for that channel is routed. A claimant refused a role keeps
 running and keeps writing its carriers; the hub records what each instance reports.
@@ -6465,7 +6488,7 @@ by any controller author:</p>
 <li><strong>Identity:</strong> two choices are listed in <a href="identity.html#5-open-decisions">identity §5</a>.</li>
 </ul>
 <p>Not yet specified: the contract per tenancy mode (<code>SPEC-REG-MODES</code>), the mechanics of registration
-state across a site's move into a tenant, whose binding rule <a href="authority.html#3-binding-and-credential-kind">authority §3</a> states (<code>SPEC-REG-MIGRATE</code>), and the command API (<code>SPEC-REG-COMMANDS</code>).</p>
+state across a site's move into a tenant, whose binding rule <a href="authority.html#3-binding-and-credential-kind">authority §3</a> states (<code>SPEC-REG-MIGRATE</code>). The command API is proposed in the <a href="commands.html">commands specification</a>.</p>
 <h2 id="19-conformance-cases">19. Conformance cases<a class="headerlink" href="#19-conformance-cases" title="Permanent link">&para;</a></h2>
 <p>186 cases, under <code>specs/sync/conformance/</code>: 54 for the product resource and negotiation at the
 top level, 103 under <code>instances/</code> and 29 under <code>quirks/</code>. Each refusal names the passing case that
