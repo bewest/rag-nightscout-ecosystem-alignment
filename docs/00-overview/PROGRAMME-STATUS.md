@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 153 | 44 | 7 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 154 | 45 | 7 |
 | **Modernization** | `release-train` | 33 | 5 | 1 |
 | **Multitenant** | `tenancy`, `platform` | 61 | 21 | 9 |
-| | **total** | **249** | **70** | **17** |
+| | **total** | **250** | **71** | **17** |
 
 <!-- END GENERATED: horizons -->
 
@@ -172,6 +172,7 @@ cover more than one `BF-`:
 | `BFQ-166` | `not-started` | BF-166 - a profile re-sent with its own _id answers 500 |
 | `BFQ-168` | `merged-upstream` | BF-168 - the context chart's window sometimes cannot be dragged back to now |
 | `BFQ-169` | `not-started` | BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a  |
+| `BFQ-170` | `not-started` | BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `in-progress` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `merged-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -207,7 +208,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 5 |  | 5 |  | 6 |  | 13 | 1 | 1 |  |  | 2 | **33** |
-| `register-open` | 34 | 3 | 1 | 1 | 11 | 1 | 55 | 4 |  |  | 3 |  | **113** |
+| `register-open` | 35 | 3 | 1 | 1 | 11 | 1 | 55 | 4 |  |  | 3 |  | **114** |
 | `tenancy` | 8 |  |  | 1 | 13 |  |  | 7 | 3 | 1 |  |  | **33** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 10 |  |  |  | **18** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
@@ -247,14 +248,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 214 | 86% |
+| Maintainer | 215 | 86% |
 | SECURITY reviewer | 16 | 6% |
 | Maintainer + a second human | 7 | 3% |
 | SAFETY reviewer | 6 | 2% |
 | Whoever edits it next | 3 | 1% |
 | Unassigned | 2 | 1% |
 | Upstream reviewers | 1 | 0% |
-| **total** | **249** | |
+| **total** | **250** | |
 
 <!-- END GENERATED: reviewer-load -->
 

@@ -172,8 +172,8 @@ both [M].
 API v3 does not read or convert `_id`; a POST that carries one is stored with it as sent, and a
 24-hex value becomes a **string** `_id`, on both refs [M]. v3 replies and reads never show `_id`
 [M], so the client cannot see this. On 15.0.8 a v1 `find[_id]` for that hex then misses the
-record (`query.js` converts to an ObjectId); dev's v1 lookups match both forms [R]. Not filed as
-a defect at the time of writing.
+record (`query.js` converts to an ObjectId); dev's v1 lookups match both forms [R]. Filed as
+BF-170 (2026-10-18).
 
 ## 3. `UUID_HANDLING`
 

@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 249 |
+| items | 250 |
 | runnable gates | 294 |
-| explicit `no-gate:` markers | 282 |
+| explicit `no-gate:` markers | 283 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 282 of the 576 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 283 of the 577 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 70 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-ACTIVE-STATE |
+| `not-started` | 71 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-ACTIVE-STATE |
 | `in-progress` | 4 | BFQ-46, BFQ-ENV, OID-LAB, LOOP-ID-REPLY |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -123,6 +123,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-166** BF-166 - a profile re-sent with its own _id answers 500
 - **BFQ-168** BF-168 - the context chart's window sometimes cannot be dragged back to now
 - **BFQ-169** BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a client-supplied one
+- **BFQ-170** BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent
 - **BFQ-134** BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 - **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
 - **BFQ-133** BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one (fixed by BF-146's #8784), merged for 15.0.9
@@ -2151,7 +2152,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 113 items
+`parcel: register-open` &mdash; 114 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2255,6 +2256,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-167` | BF-167 - devicestatus remove()'s filter is not pinned by any test | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `BFQ-168` | BF-168 - the context chart's window sometimes cannot be dragged back to now | `merged-upstream` | `bf/brush-extent` | patch | 2 run + 1 no-gate |
 | `BFQ-169` | BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a client-supplied one | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-170` | BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `merged-upstream` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -5412,6 +5414,38 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** Filed 2026-10-17 while checking the Loop maintainers' proposal that Nightscout accept a client-supplied identifier. The text "this field is immutable by the client (it cannot be updated or patched)" is accurate for PUT and PATCH and stays; only the "should not create ... the server automatically assigns it" sentence is wrong. lib/api3/doc/ and README.md do not repeat it (read at fade2299). Decided by the maintainer 2026-10-17: ships with ID-SIMPLE-MATCH, in the same PR, on dev after cut 1's rebase; not in 15.0.9. A docs-only change is a patch and could ride a re-cut 15.0.9 candidate if the RC is re-cut for another reason; that is the one exception worth weighing, not a plan.
+
+### `BFQ-170` &mdash; BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@fade2299` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-170` |
+
+**Blast radius.** lib/api3/generic/create/operation.js (or the v3 storage insertOne in lib/api3/storage/mongoCollection/modify.js): what v3 create does with a body _id. No v1, socket or read-path change.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `minor`.** Versioning policy section 2, question 10, for option (a): a record written with an upper-case 24-hex _id comes back from v1 with its _id in lower case, a differently-shaped body for the same query. Option (b), refusing a body _id with 400, would instead be question 3 (an accepted input narrowed) and a major under R1, though no corpus client sends one. The number follows the option the maintainer picks.
+
+**Gates.**
+
+- **NO GATE** &mdash; Filed only. Reproduced over HTTP by tools/lab/record-identity (results/record-identity-2026-10-18.md), cases "v3 treatments POST: 24-hex _id in body, no identifier" and "v3 treatments POST: identifier + 24-hex _id in body": stored _id:string=sent on 15.0.8 92d08342 and fade2299. A fix's gate is those two cells reading _id:oid=sent (option a) or 400 with nothing stored (option b) on the fix build, with fade2299 as the red control; the write-contract matrix cells <col> v3 resend-hex and v3 resend-upper cover the other collections.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `tools/lab/record-identity/results/record-identity-2026-10-18.md`
+- `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
+
+**Notes.** Candidate C1 of the write-contract note (section 7), filed 2026-10-18. On 15.0.8 a v1 find[_id] for the record misses it (query.js converts to an ObjectId); on dev v1 matches both forms (object-id-forms matchEitherForm), except an upper-case string asked for in lower case. Both read, not measured. No corpus client sends _id to v3; the Loop reply's rule 1 says a client ObjectId _id holds over v1 only. Natural vehicle for option (a): OID-STORAGE- HELPER, one storage-level rule for writes by _id, which would give v3 create the same toStoredId conversion v1 uses. C2 (a {"$oid": ...} body _id answers 500 on v3) is the same code path. ID-CLIENT-OID-DECISION's answer (may a client set _id) bears on whether option (b) is acceptable.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 

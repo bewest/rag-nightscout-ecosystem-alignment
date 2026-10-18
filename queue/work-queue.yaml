@@ -13036,6 +13036,59 @@ items:
       change is a patch and could ride a re-cut 15.0.9 candidate if the RC is
       re-cut for another reason; that is the one exception worth weighing,
       not a plan.
+  - id: BFQ-170
+    title: "BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@fade2299
+    state: not-started
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/api3/generic/create/operation.js (or the v3 storage insertOne in
+      lib/api3/storage/mongoCollection/modify.js): what v3 create does with a
+      body _id. No v1, socket or read-path change.
+    review: maintainer
+    operator_visible: ""
+    semver: minor
+    semver_reason: >
+      Versioning policy section 2, question 10, for option (a): a record
+      written with an upper-case 24-hex _id comes back from v1 with its _id in
+      lower case, a differently-shaped body for the same query. Option (b),
+      refusing a body _id with 400, would instead be question 3 (an accepted
+      input narrowed) and a major under R1, though no corpus client sends one.
+      The number follows the option the maintainer picks.
+    register: [BF-170]
+    gates:
+      - no-gate: >
+          Filed only. Reproduced over HTTP by tools/lab/record-identity
+          (results/record-identity-2026-10-18.md), cases "v3 treatments POST:
+          24-hex _id in body, no identifier" and "v3 treatments POST:
+          identifier + 24-hex _id in body": stored _id:string=sent on 15.0.8
+          92d08342 and fade2299. A fix's gate is those two cells reading
+          _id:oid=sent (option a) or 400 with nothing stored (option b) on the
+          fix build, with fade2299 as the red control; the write-contract
+          matrix cells <col> v3 resend-hex and v3 resend-upper cover the other
+          collections.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - tools/lab/record-identity/results/record-identity-2026-10-18.md
+      - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
+    notes: >
+      Candidate C1 of the write-contract note (section 7), filed 2026-10-18.
+      On 15.0.8 a v1 find[_id] for the record misses it (query.js converts to
+      an ObjectId); on dev v1 matches both forms (object-id-forms
+      matchEitherForm), except an upper-case string asked for in lower case.
+      Both read, not measured. No corpus client sends _id to v3; the Loop
+      reply's rule 1 says a client ObjectId _id holds over v1 only.
+
+      Natural vehicle for option (a): OID-STORAGE-HELPER, one storage-level
+      rule for writes by _id, which would give v3 create the same
+      toStoredId conversion v1 uses. C2 (a {"$oid": ...} body _id answers 500
+      on v3) is the same code path. ID-CLIENT-OID-DECISION's answer (may a
+      client set _id) bears on whether option (b) is acceptable.
   - id: RT-PR-8781
     title: "#8781 - treatment retries keep srvCreated, empty identities match, history clock survives a restart (AndyLow91; BF-141, BF-143, BF-144), merged for 15.0.9"
     parcel: release-train
