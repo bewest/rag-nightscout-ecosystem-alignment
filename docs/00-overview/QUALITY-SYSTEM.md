@@ -1,4 +1,4 @@
-# A quality system for the Nightscout ecosystem — proposal
+# A quality system for the Nightscout ecosystem
 
 *What this is: a proposal (part 3 of the overview, recommendations; [how the overview is organised](README.md)), for the maintainers of the ecosystem projects, the Nightscout Foundation board, the companies that host or build on Nightscout, and the community. Read after [working together](COLLABORATION-MODEL.md); leads to [partner readiness](PARTNER-READINESS.md). **DRAFT PROPOSAL for discussion, requiring review by
 the maintainers and by a quality-management professional before it is adopted.** Where it touches

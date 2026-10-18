@@ -438,9 +438,8 @@ Those are the two complaints this series started from.
   narrow and negative: **nothing in `lib/` or `tests/` references any of
   these documents**, the only mention outside the directory is one line in
   `docs/INDEX.md`, and all four questionnaire responses read *Pending*.
-  Drafted and parked is the reading. The defaults this work proposes for
-  each questionnaire answer are in the integration questionnaire defaults of
-  2026-10-18, beside the platform specifications.
+  Default answers for every question, read from each controller's source,
+  are in the [integration questionnaire defaults](platform/integration-questionnaire-defaults-2026-10-18.md).
 * **Whether the pump/CGM connectivity push has a shared bottleneck** that a
   data-layer proposal could relieve. Five projects widening device coverage
   in parallel is the ecosystem's revealed priority; nothing here tests

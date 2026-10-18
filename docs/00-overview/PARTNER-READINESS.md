@@ -1,4 +1,4 @@
-# Partner readiness: agreeing terms with a device manufacturer — proposal
+# Partner readiness: agreeing terms with a device manufacturer
 
 *What this is: a proposal (part 3 of the overview, recommendations; [how the overview is organised](README.md)), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after the [quality system](QUALITY-SYSTEM.md); leads to [why organise](WHY-ORGANISE.md). **DRAFT PROPOSAL for discussion.** Written 2026-10-16 against this repository at `faafc57c`. The
 facts it relies on are on the [governance](observations/GOVERNANCE-TODAY.md) and

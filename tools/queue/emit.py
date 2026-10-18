@@ -93,7 +93,7 @@ def render(doc):
     lines.append("| explicit `no-gate:` markers | %d |" % absent)
     lines.append("")
     lines.append("A `no-gate:` marker is not a gap in the bookkeeping; it is the "
-                 "bookkeeping. It records that nobody has yet built a way to measure "
+                 "bookkeeping. It records that no gate measures "
                  "the property, and it carries the reason. %d of the %d gate slots in "
                  "this queue are in that state." % (absent, runnable + absent))
     lines.append("")

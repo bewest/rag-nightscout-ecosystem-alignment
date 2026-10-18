@@ -7,7 +7,7 @@ specification](spec/registration.md).* **Snapshot, written 2026-09-11. Current: 
 controller-description proposal.** Status: proposed to the named projects; the proposal to the controller
 projects is `PROPOSAL-REG-CONTROLLERS`. **Corrected in place 2026-10-18:** §4 says what the proposal
 is and which ideas it takes from Kubernetes, mapped to D18–D20 as specified.
-§4 is superseded in part by **D18** (two-tier registration, 2026-10-09). Its §5 `decomposesTo` mechanism is the direction adopted for `devicestatus` storage by
+Its §5 `decomposesTo` mechanism is the direction adopted for `devicestatus` storage by
 **D11** — [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
 Measurements are over the 11-site corpus (snapshots 2026-04-01 and 2026-04-26). §2.2 was added
 2026-09-27, checked against Nocturne `42275c81`. **One page of proposal, then a worked example, then
@@ -236,11 +236,7 @@ corpus. A proposal Loop must act on is a proposal that does not happen.
 
 ## 4. What the proposal is, and what it takes from Kubernetes
 
-> **Corrected in place 2026-10-18.** This section said what the proposal is not, and set it against
-> Kubernetes. It now says what the proposal is and credits the ideas it takes from Kubernetes,
-> mapped to D18–D20 as the [registration](spec/registration.md), [identity](spec/identity.md),
-> [state and intent](spec/state-intent.md) and [authority](spec/authority.md) specifications state
-> them. Earlier text: [§4 at `85c645c8`](https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/85c645c8b003b61dc07ea31f8a7002711493b18a/docs/30-design/platform/PROPOSAL-controller-descriptions-2026-09-11.md#4-what-this-is-not).
+> Earlier text: [§4 at `85c645c8`](https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/85c645c8b003b61dc07ea31f8a7002711493b18a/docs/30-design/platform/PROPOSAL-controller-descriptions-2026-09-11.md#4-what-this-is-not).
 
 **Phase 1, the well-known tier.** A controller description is a file per *controller product*,
 generated from measurement, shipped with the hub, reviewed in a pull request and served at a

@@ -32,16 +32,16 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 250 |
-| runnable gates | 301 |
-| explicit `no-gate:` markers | 280 |
+| runnable gates | 304 |
+| explicit `no-gate:` markers | 279 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 280 of the 581 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 279 of the 583 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 68 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `not-started` | 67 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 4 | BFQ-46, BFQ-ENV, OID-LAB, LOOP-ID-REPLY |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -49,7 +49,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 87 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 12 | RT-0, T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164 |
-| `done` | 32 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
+| `done` | 33 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
 | `answered` | 2 | RT-D3, RT-PROPAGATION |
@@ -7767,7 +7767,7 @@ reproduced ones.
 | `SPEC-REG-MODES` | Registration contract in single and multi mode: storage key, credential kinds, owner listener, capability document scope, legacy id form | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `HUB-REG-CRM-SEAM` | cgm-remote-monitor: carry the registration store onto the storage seam, so single (MongoDB, PostgreSQL) and multi serve one contract | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `HUB-REG-CRM-ADMIN` | cgm-remote-monitor: the registration owner's actions on ns-tenant-admin under TENANCY_MODE=multi | `not-started` | `-` | n/a | 0 run + 1 no-gate |
-| `SPEC-REG-COMMANDS` | Hub command delivery to a command-sink instance, with the proposal record in front of it, specified for single and multi mode | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `SPEC-REG-COMMANDS` | Hub command delivery to a command-sink instance, with the proposal record in front of it, specified for single and multi mode | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 3 run |
 | `SPEC-REG-MIGRATE` | Registration state across a single-tenant site's move into a tenant, and back | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `HUB-REG-NOCTURNE` | Nocturne: propose the registration grammar and negotiation as a shared contract, with the hub active-state evidence | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `PROPOSAL-REG-CONTROLLERS` | Open-source AID controllers: propose registration, instances and negotiation, with pre-filled declarations | `not-started` | `main` | n/a | 0 run + 1 no-gate |
@@ -8204,16 +8204,15 @@ reproduced ones.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `done` |
 | repo | `rag-nightscout-ecosystem-alignment` |
-| branch | `main` |
-| base | `main@18397441` |
+| branch | `docs/platform-spec-index-2026-10-18` |
+| base | `main@9736bd65` |
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer |
-| blocks on | `SPEC-REG-MODES` |
 
-**Blast radius.** Expected: the command request, its routing (already specified in §3.6: the live device command-sink holder, else no-command-destination; since 2026-10-17 an unshared slot's product is inferred when one product declares it, else ambiguous-command-destination) and its transport, for both modes, in the hub- sync design with conformance cases. §3.6 says "The command API itself is not specified here." Since 2026-10-18 (maintainer: fold the proposal lifecycle in here) also the proposal record in front of a command, from agents in the ecosystem §4.3: propose → validate → (evaluate) → approve | reject → command → outcome. A proposal names the proposing instance and its propose role ({value: other, controllerTerm}), the target instanceId and definitionId, an expiry and the SHA-256 of the payload's RFC 8785 canonical JSON; an approval names that hash; the controller checks the hash before enacting and reports the outcome correlated to the proposal. Ships nothing.
+**Blast radius.** docs/30-design/platform/spec/commands.md (new): where a command goes (§2, moved from registration §9, which becomes a pointer); the hub's command path today, read at 15.0.8 92d08342, dev fade2299 and the seam 81a1f6ce; the proposed command record and states (CM1-CM6), outcomes reported by the destination only (CM7-CM10), proposals and approvals bound to one payload hash (CM11-CM16), delivery in each mode (CM17-CM20: fetch, push only inside a bound request, the tenant's push credentials); compatibility with Loop, LoopCaregiver, LoopFollow, Trio and AndroidAPS read from source; 114 cases (5 routing cases from the registration suite, 109 under specs/sync/conformance/commands/). tools/nsschema/commands.py is the reference; test_commands.py checks it and four invariants on every case. The authority case list drops the five routing cases (65). Pointers in registration §9 and §18, authority §6 and §7, the glossary, the agents page §4.3 and the index. The platform-spec gate's narration pattern for "withdrawn" is narrowed to amendment forms, because `withdrawn` is a proposal state. Ships nothing.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -8221,16 +8220,21 @@ reproduced ones.
 
 **Gates.**
 
-- **NO GATE** &mdash; Not started. The gate will be conformance cases for a command routed, refused no-command-destination, and delivered, in each mode. Red when a command produced with no tenant bound is reported delivered under multi (such emissions are withheld), with the control that the same producer delivers in single; and red when a command reaches a sink on another tenant, with the control of the same command on its own tenant. For proposals: red when an approval of payload hash A enacts payload B, with the control that the same approval enacts A; red when an expired proposal is approved, with the control of the same proposal before expiry; and red when a credential with no propose role (a `readable` token, or an MCP server holding one) creates a proposal, with the control of the same request from a propose-role holder.
+- `[static]` `node tools/queue/gates/platform-spec.js commands`
+  - FAILS when the spec is missing, carries amendment narration, names a case that does not exist, states a count that differs from its table, or when the registration spec, the authority spec or the agents page does not link to it. GREEN on 2026-10-18: 128 checks, 114 cases.
+- `[static]` `python3 -m tools.nsschema.spec_cases commands --check`
+  - FAILS when the case list differs from the case files the patterns select.
+- `[unit]` `python3 -m pytest -q tools/nsschema/test_commands.py`
+  - FAILS when the reference disagrees with a hand-authored expectation, or when on any case a command reaches another tenant, is sent or fetched at or after its expiry, is pushed unbound under multi, or an approved command carries a payload its approval did not name. GREEN on 2026-10-18: 728 tests.
 
 **Evidence.**
 
-- `docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md`
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
-- `docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md`
+- `docs/30-design/platform/spec/commands.md`
 - `docs/30-design/platform/agent-trust-boundaries-2026-10-18.md`
+- `docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md`
+- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
-**Notes.** Today's carriers, read-derived on crm-seam 81a1f6ce. Loop's remote commands go out as APNs pushes configured from env.extendedSettings.loop (lib/server/loop.js:14-56); T3.3 makes extendedSettings per tenant, and the configuration surface census classes LOOP_APNS_KEY, LOOP_APNS_KEY_ID and LOOP_DEVELOPER_TEAM_ID as per-tenant secrets (§B.4, TS). Socket emissions under multi go to the bound tenant's room and are withheld when no tenant is bound (lib/server/socket-tenancy.js:258-266; the call sites are lib/api3/alarmSocket.js:237, lib/server/websocket.js:47 and lib/api3/storageSocket.js:181), and the load cycle runs unbound, so alarms and live updates are off under multi (plan §7a). A command transport has to state which of these it uses and whether it runs inside a request. The hub routes a command; it never decides or composes dosing (D18, D19 rule 6). Proposals (folded in 2026-10-18): validation and enactment stay the controller's (D18), the hub routes and records and does not judge whether a change is safe, and read access never confers a propose or act role. Prior art is the upstream agent control-plane RFC's `suggest` scope ("can propose, human must approve") and `DelegationGrant`, mapped in agents in the ecosystem §4.2. First open question: what an approval binds "the state it was based on" to. D19's product and instance etags version the registration, not the controller's therapy state (active override, profile, insulin on board), so nothing yet tells an approver that the state the agent read is still the state the controller holds (§4.3). Evidence for both (read-derived, 2026-10-18; agents in the ecosystem §4.3): a commercial controller prototype of the RFC's client side binds an approval to the reviewer and the time only, with no payload hash or state, and reports a remote command's success as the HTTP 200 of its request, with no acknowledgement or outcome.
+**Notes.** The maintainer asked for this item on 2026-10-18 while SPEC-REG-MODES was not started; what a mode changes beyond fetch, push and push credentials (the storage key and credential kinds a record names) is left to that item, so blocks_on is cleared and the dependency is stated in commands §7 and §9. Everything from §4 on is proposed. The 87 command cases were hand-authored by an agent that read only the spec text, not the reference; the two sides first disagreed on 3 of 394 checks, each resolved in the spec text; 17 ambiguities it reported were settled in the rules (order of checks, CM2 covering sent, reports from a destination that lost its role, late reports replacing hub- inferred states, invalid-reason, payload-too-large, destination-changed). Adversarial review, 2026-10-18, applied: a command handed over and then past its expiry or its destination's lease reads `unconfirmed`, never `expired` or `undeliverable`, which a sender would read as safe to re-send (the high finding); the legacy Loop route is stated to be outside the rules; CM10 says the hash detects change in transit only; a proposal is routed when made and an approval refused when the destination changed, whether or not an instance was named; basedOn is required; a refused approval leaves the proposal open; the re-send key covers channel and product; proposals obey the size limit; 404 for another tenant's instance; A12 and S11 repointed; §8 cells corrected; the controller check before approval listed as open. The case author added 22 cases for these. Non-vacuity, 2026-10-18: 43 weakenings of commands.py, one per rule or check, each red (two first written were CONTROL-INVALID or an equivalent mutant and were rewritten); the narration, case, count and pointer breaks of the platform-spec control each red with their own finding, the test break CONTROL-INVALID. Compatibility findings that bear on the rules are listed in §8 and §9 (AndroidAPS's late delivery failure after success, Trio's part-enacted meal command). A credential-exposure mechanism found while reading controller source is kept out of this repository and reported to the maintainer directly.
 
 ### `SPEC-REG-MIGRATE` &mdash; Registration state across a single-tenant site's move into a tenant, and back
 
