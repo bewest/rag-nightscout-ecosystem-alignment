@@ -4,7 +4,8 @@
 the [platform index](../README.md); terms are in the [glossary](glossary.md); record ids are in the
 [identity specification](identity.md). Evidenced, not implemented: the catalogue is generated from
 a shipped typed model and the corpus, and no hub stores these records behind the registration
-contract yet. Decision: [D11](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#26-d11--devicestatus-is-a-decomposition-problem-not-a-column-selection-problem).
+contract yet. Decision: [D11](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#26-d11--devicestatus-is-a-decomposition-problem-not-a-column-selection-problem),
+for `devicestatus`; the rest of this page is proposed (§2).
 Queue: `SPEC-RECORDS`.*
 
 A controller sends what it has, in the shape it has it: a treatment, a device status, a profile.
@@ -34,9 +35,14 @@ decomposed, and what a settings snapshot must carry for a replay to be faithful.
 | R4 | **Every field carries an evidence grade.** `measured`: a wire path in the corpus populates it, or the shipped decomposer maps it from a path the corpus carries. `declared`: a typed model declares it and the corpus shows no source. `proposed`: this programme asks for it and no shipped model has it. A grade is evidence, not endorsement; a replay or a consumer treats a `declared` field as unverified. |
 | R5 | **Settings are a snapshot, effective-dated and versioned with the build.** A controller publishes a `ControllerSettings` snapshot on change, not per cycle, with `effectiveFrom` (and `effectiveUntil` when known) and the controller's `product` and `version`. A setting that changed mid-history invalidates a replay that assumed one value, and algorithm behaviour changes between releases. |
 | R6 | **Absent is not a default.** Every setting is optional. A setting a controller does not publish is recorded as not published and never filled with a default value, because "not published" is information a replay needs. |
-| R7 | **Configuration and per-cycle state are separate.** Settings hold configuration. Values a controller computes each cycle (the meal-detection slopes, `flatBGsDetected`, IOB components, the effective sensitivity and carb ratio) belong to the cycle's `ApsSnapshot`, and the scheduled forms to the schedule primitives. |
+| R7 | **Configuration and per-cycle state are separate.** Settings hold configuration. Values a controller computes each cycle (the meal-detection slopes, `flatBGsDetected`, IOB components, the effective sensitivity and carb ratio) are not settings; their place is the cycle's record, and the scheduled forms belong to the schedule primitives. `ApsSnapshot` does not carry the meal-detection slopes or `flatBGsDetected` today (§3, fields no primitive carries). |
 | R8 | **Replay inputs are declared with their status.** A registration lists every dosing input the controller could supply (`replayInputs`), with its status (`recorded`, `partial`, `derivable`, `absent`) and path; an input it has but does not publish has a null path. Completeness is then a published number per controller, not an estimate. A derived input is recomputed from stored history and is not the value the controller used; recorded and derivable are never reported as one figure. |
-| R9 | **Every field has a sensitivity label.** A field is labelled on two axes, a level and a category (§6). A field with no label is withheld by default. |
+| R9 | **Every field has a sensitivity label.** A field is labelled on two axes, a level and a category (§6). In the label assignment that generates the schemas, an unlabelled field is `identifying`: a field is argued down, never silently up. In a registration, a declared field with no label falls under `sensitivity.unlabelledPolicy`, `withhold` when absent ([registration G2](registration.md#3-the-grammar)). |
+
+**Status.** R2 and R3 are D11 for `devicestatus`, where D11 also says a known catalogue ships
+with Nightscout and a controller may publish or correct its own. Applying R1–R3 to every
+collection, and R4–R9, are proposed: the catalogue (`0.1-draft`), the settings schema and the
+sensitivity labels are drafts for the maintainer and the controller authors.
 
 ## 3. The catalogue
 
@@ -65,47 +71,51 @@ Sixteen primitives, each a typed class in Nocturne's V4 model. Generated from
 <!-- END GENERATED: records-primitives -->
 
 Field matching against the corpus is by leaf name and by the decomposer's own assignments, read
-from its source (`Iob = ds.OpenAps.Iob?.Iob`). A generic leaf name is flagged `low_confidence`
-rather than counted. The corpus was fetched through API v1, so fields only API v3 carries
+from its source (`Iob = ds.OpenAps.Iob?.Iob`). A `measured` grade that rests only on a generic leaf name is flagged
+`low_confidence` and still counted as measured; no field carries the flag in the catalogue as
+committed. The corpus was fetched through API v1, so fields only API v3 carries
 (`identifier`, `srvCreated`, `srvModified`) and the settings collection are not observable in it.
 
 **Where the evidence is weak.** `TherapySettings` and the four schedules, because settings mostly
 do not reach the corpus; the schedules' entry interiors are unexamined. Anything about AndroidAPS:
 the corpus has no AndroidAPS closed-loop site.
 
-**Fields no primitive carries.** Proposed, each a request to a controller's authors:
+**Fields no primitive carries.** Proposed, each a request to a controller's authors. "Input of" is
+the algorithm family whose dosing-input map names the input; Loop records the equivalents of three
+oref0 inputs (`profile.maxBasal`, `profile.suspendThreshold`, `profile.dosingStrategy`) under
+`profile.loopSettings`. The reason each is asked for is in `specs/sync/primitives.yaml`.
 
 <!-- BEGIN GENERATED: records-proposed (tools/nsschema/spec_cases.py) -->
-| field | algorithm | today | why it is asked for |
-|---|---|---|---|
-| `automaticBolusApplicationFactor` | loop | absent | The fraction of a recommended bolus that is actually delivered, defaulting to 0.4. It scales every automatic dose Loop gives, is user-adjustable in some builds, |
-| `iob.bolusSnooze` | oref0 | absent | a dosing input no controller publishes |
-| `carbAbsorptionModel` | loop | absent | Piecewise-linear versus nonlinear carb absorption changes the carb effect curve, and so the dose. |
-| `profile.dosingStrategy` | oref0 | partial | a dosing input no controller publishes |
-| `flatBGsDetected` | oref0 | absent | a dosing input no controller publishes |
-| `gradualTransitionsThreshold` | loop | absent | a dosing input no controller publishes |
-| `includePositiveVelocityAndRC` | loop | absent | a dosing input no controller publishes |
-| `maxActiveInsulinMultiplier` | loop | absent | Loop's IOB ceiling, as a multiple of maxBolus. Defaults to 2. |
-| `profile.maxBasal` | oref0 | partial | Loop records this as loopSettings.maximumBasalRatePerHour. AAPS and Trio record no equivalent. |
-| `profile.maxIob` | oref0 | absent | A dosing *safety limit*. Loop records its equivalents in profile.loopSettings; no oref0 derivative records maxIob anywhere in Nightscout. A replay must assume i |
-| `mealData.mealCOB` | oref0 | absent | a dosing input no controller publishes |
-| `microBolusAllowed` | oref0 | absent | Whether SMB was permitted on this run. Inferable after the fact from whether an SMB was enacted, which is not the same thing — a run that allowed SMB and chose |
-| `recommendationInsulinModel` | loop | absent | Which insulin activity curve the recommendation uses. `insulinType` on a treatment names the product, which is related but not the same choice. |
-| `recommendationType` | loop | partial | `dosingStrategy` distinguishes automaticBolus from tempBasalOnly, which covers the common case but is not the same enumeration. |
-| `mealData.slopeFromMaxDeviation` | oref0 | absent | oref0's unannounced-meal detection state. Not recorded anywhere; a replay must recompute it from the glucose series and may not agree. |
-| `mealData.slopeFromMinDeviation` | oref0 | absent | a dosing input no controller publishes |
-| `profile.suspendThreshold` | oref0 | partial | Loop-only, under the same subtree. oref0 derivatives write `openaps.suggested.threshold`, which is the computed threshold rather than the configured one. |
-| `useIntegralRetrospectiveCorrection` | loop | absent | Integral RC is a materially different correction behaviour and a user-facing toggle. |
-| `useMidAbsorptionISF` | loop | absent | a dosing input no controller publishes |
+| field | input of | recorded today |
+|---|---|---|
+| `automaticBolusApplicationFactor` | loop | absent |
+| `iob.bolusSnooze` | oref0 | absent |
+| `carbAbsorptionModel` | loop | absent |
+| `profile.dosingStrategy` | oref0 | partial |
+| `flatBGsDetected` | oref0 | absent |
+| `gradualTransitionsThreshold` | loop | absent |
+| `includePositiveVelocityAndRC` | loop | absent |
+| `maxActiveInsulinMultiplier` | loop | absent |
+| `profile.maxBasal` | oref0 | partial |
+| `profile.maxIob` | oref0 | absent |
+| `mealData.mealCOB` | oref0 | absent |
+| `microBolusAllowed` | oref0 | absent |
+| `recommendationInsulinModel` | loop | absent |
+| `recommendationType` | loop | partial |
+| `mealData.slopeFromMaxDeviation` | oref0 | absent |
+| `mealData.slopeFromMinDeviation` | oref0 | absent |
+| `profile.suspendThreshold` | oref0 | partial |
+| `useIntegralRetrospectiveCorrection` | loop | absent |
+| `useMidAbsorptionISF` | loop | absent |
 <!-- END GENERATED: records-proposed -->
 
 ## 4. Decomposition, measured
 
 | collection | what is known | source |
 |---|---|---|
-| `treatments` | Nocturne's routing places 99.86% of treatments by `eventType` alone and 0.13% by the data present; 22 documents are unroutable, all one `eventType` misspelled. Five leaf field names have no typed home | [hub-sync §3.3](../nightscout-hub-sync-architecture-2026-09-11.md#33-composite-on-the-wire-primitive-in-storage); [extensibility models §3](../nightscout-extensibility-models-2026-09-10.md#3-what-the-primitive-model-covers--measured) |
-| `devicestatus` | a typed model that reads only declared paths drops 56 of 166 observed paths, nine of them on 10 of 11 sites, because only the top level has an extension point; Loop's dose recommendation (`bolusVolume`, `tempBasalAdjustment`, 26% of statuses) and the majority pump shape (`pump.bolusing`, `pump.suspended`, 85.1%) are among them. Decomposition coverage is not measured | [devicestatus and profile fidelity §2](../nightscout-devicestatus-profile-fidelity-2026-09-10.md#2-what-a-typed-model-loses) |
-| `profile` | the typed model drops 1 of 66 observed paths; Loop's whole `loopSettings` subtree is undeclared in the census model. Decomposition coverage is not measured | same; [typed schema evidence §4.4](../nightscout-typed-schema-evidence-2026-09-10.md#44-profile--the-whole-loop-subtree-is-undeclared) |
+| `treatments` | Nocturne's routing places 99.86% of treatments by `eventType` alone and 0.13% by the data present. The 22 unroutable documents all carry `Suspend Pump`, Nightscout's documented spelling; Nocturne's V4 decomposition keys on `Pump Suspend`, the words reversed, so fixing that constant routes every treatment in the corpus. This measures which branch a document takes, not the records each branch writes. Five leaf field names have no typed home, among them `userEnteredAt` on 10 of 11 sites, so a named extension location is still needed | [hub-sync §3.3](../nightscout-hub-sync-architecture-2026-09-11.md#33-composite-on-the-wire-primitive-in-storage); [extensibility models §3](../nightscout-extensibility-models-2026-09-10.md#3-what-the-primitive-model-covers--measured) |
+| `devicestatus` | a typed model that reads only declared paths drops 56 of 166 observed paths, nine of them on 10 of 11 sites, because only the top level has an extension point; Loop's dose recommendation (`bolusVolume` on 26.1% of statuses, `tempBasalAdjustment` on 6.1%) and the majority pump shape (`pump.bolusing`, `pump.suspended`, 85.1%) are among them. Decomposition coverage is not measured | [devicestatus and profile fidelity §2](../nightscout-devicestatus-profile-fidelity-2026-09-10.md#2-what-a-typed-model-loses) |
+| `profile` | the typed model drops 1 of 66 observed paths; Loop's `loopSettings` subtree was undeclared in this repository's 2025.1.0 specs when measured (2026-09-10). Decomposition coverage is not measured | same; [typed schema evidence §4.4](../nightscout-typed-schema-evidence-2026-09-10.md#44-profile--the-whole-loop-subtree-is-undeclared) |
 | `entries` | the typed model drops 1 of 19 observed paths | devicestatus and profile fidelity §2 |
 
 Every loss above is a nested field. A composite document nested more than one level deep needs an
@@ -130,8 +140,10 @@ endpoint. Its nineteen settings, with their status in the corpus:
 | derivable | `maxDailyBasal` |
 | absent | `automaticBolusApplicationFactor`, `carbAbsorptionModel`, `gradualTransitionsThreshold`, `includePositiveVelocityAndRC`, `maxActiveInsulinMultiplier`, `maxIob`, `microBolusAllowed`, `recommendationInsulinModel`, `useIntegralRetrospectiveCorrection`, `useMidAbsorptionISF` |
 
-Dosing safety limits are recorded by Loop alone, as `profile.loopSettings.*`; no oref0-family
-controller records `maxIob` anywhere in Nightscout. A registration's `settings.fields` may name a
+Dosing safety limits reach Nightscout from Loop alone, as `profile.loopSettings.*`; no oref0-family
+controller records `maxIob` there. This is read from controller source together with the corpus:
+the corpus alone would credit Trio with limits it never writes, and every AndroidAPS statement on
+this page is read from source. A registration's `settings.fields` may name a
 setting or declare it typed, by `typeRef` to its `ControllerSettings` definition
 ([registration G2](registration.md#3-the-grammar)).
 
@@ -170,8 +182,11 @@ under any profile needs qualified review.
 - The `ScheduleEntry` interior of the four schedules.
 - Every AndroidAPS field, from data.
 - The proposed fields (§3), which only controller authors can publish (`PROPOSAL-REG-CONTROLLERS`).
-- `ControllerSettings` carries an untyped `x-aid-extensions` member; controller-specific settings
-  belong in typed registration extensions ([registration G2](registration.md#3-the-grammar)).
+- `ControllerSettings` is open: its `settings` object allows any additional member, and it carries
+  an untyped `x-aid-extensions` member. Controller-specific settings belong in typed registration
+  extensions ([registration G2](registration.md#3-the-grammar)).
+- `make schema-primitives` truncates a proposed field's reason at 160 characters and gives some
+  `partial` inputs the reason "a dosing input no controller publishes".
 
 ## 8. Checks
 
@@ -183,11 +198,11 @@ reads the corpus, which is not in this repository.
 |---|---|
 | `tools/nsschema/test_nsschema.py::test_every_named_primitive_is_defined` | every primitive a registration's `decomposesTo` names is in the catalogue |
 | `tools/nsschema/test_nsschema.py::test_catalogue_grades_every_field` | every field carries a grade (R4) |
-| `tools/nsschema/test_nsschema.py::test_decomposer_assignments_are_read_from_source` | grades come from the decomposer's own assignments (R4) |
+| `tools/nsschema/test_nsschema.py::test_decomposer_assignments_are_read_from_source` | the decomposer parser finds `Sgv` behind `Mgdl` and `Basal` behind `Entries`, the assignments R4's grades read |
 | `tools/nsschema/test_nsschema.py::test_treatments_route_to_their_primitive` | treatments route by `eventType` (§4) |
-| `tools/nsschema/test_nsschema.py::test_suspend_pump_is_unroutable_which_is_the_finding` | the unroutable documents are the misspelled `eventType` (§4) |
+| `tools/nsschema/test_nsschema.py::test_suspend_pump_is_unroutable_which_is_the_finding` | the documented `Suspend Pump` does not route through V4's reversed constant, and `Pump Suspend` does (§4) |
 | `tools/nsschema/test_nsschema.py::test_settings_schema_is_valid_and_accepts_a_partial_publication` | a partial settings snapshot validates (R6) |
 | `tools/nsschema/test_nsschema.py::test_settings_schema_requires_a_build_version` | a snapshot needs the build version (R5) |
 | `tools/nsschema/test_nsschema.py::test_per_cycle_state_is_kept_out_of_settings` | per-cycle state is not a setting (R7) |
 | `tools/nsschema/test_nsschema.py::test_dosing_input_map_loads_and_is_well_formed` | the dosing-input map is well formed (R8) |
-| `tools/nsschema/test_nsschema.py::test_completeness_is_reported_not_assumed` | completeness is computed from declared statuses (R8) |
+| `tools/nsschema/test_nsschema.py::test_completeness_is_reported_not_assumed` | Loop's recorded share is computed, strictly between 0 and 1, and its recorded-or-derivable share is no smaller (R8) |

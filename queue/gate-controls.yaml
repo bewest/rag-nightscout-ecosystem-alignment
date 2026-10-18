@@ -2146,3 +2146,31 @@ controls:
     proves: >
       run 2026-10-18: a copy with the generated row for
       quirks/names-alike-do-not-contend deleted is reported stale and exits 1.
+
+  - gate: |-
+      node tools/queue/gates/platform-spec.js records
+    cwd: .
+    control: |-
+      tools/queue/gates/platform-spec-control.sh records test
+    positive-control: |-
+      node tools/queue/gates/platform-spec.js records
+    control-kind: static
+    proves: >
+      run 2026-10-18: the test break renames the first cited test in a
+      scratch copy and the gate exits 1 with the one finding that
+      test_renamed_by_control_every_named_primitive_is_defined is not
+      defined. The narration, count and pointer breaks were run the same
+      day, each exiting 1 with exactly its own finding; the case break exits
+      90 CONTROL-INVALID because the spec cites no conformance case.
+
+  - gate: |-
+      python3 -m tools.nsschema.spec_cases records --check
+    cwd: .
+    control: |-
+      T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && sed '/^| `ApsSnapshot`/d' docs/30-design/platform/spec/records.md > "$T/r.md" && python3 -m tools.nsschema.spec_cases records --check --spec "$T/r.md"
+    positive-control: |-
+      python3 -m tools.nsschema.spec_cases records --check
+    control-kind: static
+    proves: >
+      run 2026-10-18: a copy of the spec with the generated ApsSnapshot row
+      deleted is reported stale and exits 1.

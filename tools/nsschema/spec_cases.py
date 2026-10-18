@@ -132,11 +132,10 @@ def primitive_rows(catalogue):
 
 
 def proposed_rows(catalogue):
-    out = ["| field | algorithm | today | why it is asked for |", "|---|---|---|---|"]
+    out = ["| field | input of | recorded today |", "|---|---|---|"]
     for item in yaml.safe_load(catalogue.read_text()).get("proposed_not_carried_by_any_primitive", []):
-        out.append("| `%s` | %s | %s | %s |" % (
-            item["field"], cell(item.get("algorithm", "")), cell(item.get("status_today", "")),
-            cell(item.get("why", ""))))
+        out.append("| `%s` | %s | %s |" % (
+            item["field"], cell(item.get("algorithm", "")), cell(item.get("status_today", ""))))
     return out
 
 

@@ -16584,39 +16584,71 @@ items:
     title: "Platform spec L1: the records specification (observation primitives, decomposition of today's documents, effective-dated settings snapshots)"
     parcel: platform
     repo: rag-nightscout-ecosystem-alignment
-    branch: main
-    base: main@010e1661
-    state: not-started
+    branch: docs/platform-spec-index-2026-10-18
+    base: main@92a7d31b
+    state: done
     pr: []
     blast_radius: >
-      docs/30-design/platform/spec/records.md (new) from
-      specs/sync/primitives.yaml, D11, the hub-sync design §3.3 and §4.3,
-      controller-settings.schema.json, sensitivity.yaml and the dated
-      evidence (typed schema evidence, primitive coverage, devicestatus and
-      profile fidelity); pointers in those documents; the index row; a
-      SOURCES entry in the gate.
+      docs/30-design/platform/spec/records.md (new): rules R1-R9, generated
+      tables of the 16 primitives with their evidence grades and of the 19
+      proposed fields (from specs/sync/primitives.yaml), decomposition
+      measured per collection, the settings snapshot and completeness,
+      sensitivity labels, and 10 named checks. Pointers in the coverage,
+      fidelity and hub-sync documents (§3.3, §4.3) and the execution plan's
+      D11; the coverage document's stale per-primitive table corrected in
+      place; index and glossary. tools/queue/gates/platform-spec.js accepts
+      named tests (`tools/...py::test_x`) as a spec's checks and verifies
+      each is defined; platform-spec-control.sh copies tools/nsschema into
+      its scratch root and refuses a break that does not apply.
+      spec_cases.py gains `primitives` and `proposed` blocks. No rule,
+      schema or test changes.
     review: maintainer
     operator_visible: ""
     semver: n/a
     semver_reason: specification in this repository; ships nothing
     register: []
     gates:
-      - no-gate: >
-          Not started. The gate will be `node tools/queue/gates/platform-spec.js
-          records`, red under each control break, plus a generated table of
-          the observation primitives with their evidence grades from
-          primitives.yaml (`spec_cases records --check`), so a regraded field
+      - run: node tools/queue/gates/platform-spec.js records
+        kind: static
+        describe: >
+          FAILS when the records spec is missing, carries amendment
+          narration, cites a test its file does not define, states a check
+          count that differs from its table, or when the index, the coverage
+          document, the hub-sync design, the fidelity document or the
+          execution plan does not link to it. GREEN on 2026-10-18: 25 checks.
+      - run: python3 -m tools.nsschema.spec_cases records --check
+        kind: static
+        describe: >
+          FAILS when the generated primitive or proposed-field tables differ
+          from what specs/sync/primitives.yaml produces, so a regraded field
           turns the table stale.
     blocks_on: [SPEC-ID]
     evidence:
+      - docs/30-design/platform/spec/records.md
       - specs/sync/primitives.yaml
       - docs/30-design/platform/nightscout-primitive-coverage-2026-09-11.md
     notes: >
-      Added 2026-10-18 when the specification set was settled: L1 had no
-      specification item. Carries what replay and audit need from a record:
-      which observation it is, its evidence grade, which composite document
-      it came from, and the settings in effect. Unmeasured and to be stated
-      as such: devicestatus and profile decomposition coverage.
+      Non-vacuity, run 2026-10-18 in a scratch root, each break red with
+      exactly its own finding: an appended "(Withdrawn ...)" note; the first
+      cited test renamed; the count changed to 999; the coverage document's
+      link removed; and, for the table gate, a copy with the ApsSnapshot row
+      deleted (--spec). The first run of the controls was red for the wrong
+      reason: the scratch root lacked tools/nsschema, so every test check
+      failed under every break; the control now copies it, and a break that
+      does not apply (a case break on a spec that cites no case) exits
+      CONTROL-INVALID instead of passing. The coverage document's §2 table
+      gave ApsSnapshot 14 measured and 11 declared; the catalogue as
+      committed gives 23 and 2, with unchanged totals (84, 50).
+      Fidelity audit (2026-10-18) applied before commit: the 22 unroutable
+      treatments carry Nightscout's documented `Suspend Pump`, which
+      Nocturne's V4 constant reverses (the draft blamed the data); D11 is
+      scoped to devicestatus and the other rules marked proposed; R9
+      states both unlabelled-field rules (identifying in the label
+      assignment, withhold in a registration); low_confidence fields are
+      still counted; routing is not decomposition; the bolusVolume and
+      tempBasalAdjustment shares; read-derived caveats; two check rows
+      narrowed to what their tests assert. The catalogue generator's
+      truncated and fallback reasons are kept out of the generated table.
 
   - id: SPEC-ACTIVE-STATE
     title: "Decide and specify what a hub reports as active at a time, and a therapy-state version an approval can bind to"
