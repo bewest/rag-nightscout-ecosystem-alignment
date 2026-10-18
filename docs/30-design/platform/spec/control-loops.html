@@ -5675,7 +5675,7 @@
 
 
 <h1 id="l2l5-control-loops-what-each-mechanism-controls-and-the-unsafe-control-actions-its-rules-prevent">L2–L5 Control loops: what each mechanism controls, and the unsafe control actions its rules prevent<a class="headerlink" href="#l2l5-control-loops-what-each-mechanism-controls-and-the-unsafe-control-actions-its-rules-prevent" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>dea0f1b2a</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>b081a15cf</code>.</em></p>
 <p><em>Contributor-facing. Living specification analysis, current at <code>main</code> <code>85c645c8</code> (2026-10-18).
 Covers layers L2–L5 of the <a href="../index.html">platform index</a>; terms are in the
 <a href="glossary.html">glossary</a>. Decisions: <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">D18 and D19</a>.
@@ -5693,8 +5693,8 @@ long or too short. Each answer is an <em>unsafe control action</em> (UCA). The s
 then read as the constraints that prevent them. Where no rule prevents one, the analysis names the
 gap and the specification lists it as open.</p>
 <p>Status: the loops are drawn from the specifications, which are proposed or specified and not
-implemented. Of 72 entries, 43 are covered by a rule and a case, 6 are the controller's
-responsibility (D18), 3 have a rule and no case, and 20 are gaps, each listed in its
+implemented. Of 72 entries, 44 are covered by a rule and a case, 6 are the controller's
+responsibility (D18), 3 have a rule and no case, and 19 are gaps, each listed in its
 specification's open items.</p>
 <h2 id="1-files">1. Files<a class="headerlink" href="#1-files" title="Permanent link">&para;</a></h2>
 <table>
@@ -5872,7 +5872,7 @@ the hub's is its record; only the controller knows what the pump did.</p>
 <td>A sender sends a second command for the same intent while the first is pending, sent, fetched or unconfirmed, and both are enacted.</td>
 <td>HAZ-1</td>
 <td>S4</td>
-<td>CM3, CM4</td>
+<td>CM3, CM4, CM24</td>
 <td>gap: commands §9</td>
 </tr>
 <tr>
@@ -6034,8 +6034,8 @@ the hub's is its record; only the controller knows what the pump did.</p>
 <td>A sender cannot cancel a pending command after the reason for it went away, such as a meal not eaten.</td>
 <td>HAZ-1</td>
 <td>S3</td>
-<td>CM3</td>
-<td>gap: commands §9</td>
+<td>CM3, CM25</td>
+<td>covered</td>
 </tr>
 </tbody>
 </table>
@@ -6731,16 +6731,14 @@ vocabulary says what each one has to get right.</p>
 </tbody>
 </table>
 <h2 id="6-what-the-analysis-found">6. What the analysis found<a class="headerlink" href="#6-what-the-analysis-found" title="Permanent link">&para;</a></h2>
-<p>20 gaps, each listed in its specification's open items:</p>
+<p>19 gaps, each listed in its specification's open items:</p>
 <ul>
 <li><strong>Commands</strong> (<a href="commands.html#9-open">§9</a>):</li>
-<li>a sender or approver does not see a channel's outstanding commands, so a second command, or
-    a second approval inside the controller's upload lag, is enacted as well (UCA-CMD-001,
-    UCA-PROP-007);</li>
+<li>a sender or approver sees a channel's outstanding commands (CM24) but nothing refuses a second
+    command, or a second approval inside the controller's upload lag (UCA-CMD-001, UCA-PROP-007);</li>
 <li>an approval does not check that the destination's definition is unchanged (UCA-PROP-008);</li>
 <li>another process holding the destination's credential can fetch or report a command
     (UCA-CMD-014);</li>
-<li>a sender cannot cancel a pending command (UCA-CMD-015);</li>
 <li>nothing limits open proposals (UCA-PROP-002) or the operator's maximum expiry (UCA-AUTH-006);</li>
 <li>no definition declares a payload's shape for an approver's display (UCA-PROP-004);</li>
 <li>a late failure after success, and a command enacted in part, cannot be recorded

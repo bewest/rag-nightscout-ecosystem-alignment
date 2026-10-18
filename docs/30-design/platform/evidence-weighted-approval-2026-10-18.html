@@ -5314,7 +5314,8 @@ decisions in §5) and the <a href="command-journeys-2026-10-18.html">command jou
 <a href="spec/commands.html">commands specification</a>, where the plan object, evidence records and approval
 paths would be written, and to <a href="spec/authority.html#7-delegation-not-decided">authority §7</a>, where
 standing approval becomes a grant.</em> <strong>Snapshot — describes 2026-10-18. Status: proposed; draft for
-clinical review.</strong> The risk classes (§2), the floors (§5) and the matrix (§4) are a draft that a
+clinical review.</strong> FL1 follows the maintainer's answer of 2026-10-18 that a bounded standing
+bolus is acceptable with predetermined withdrawal criteria and mitigations. The risk classes (§2), the floors (§5) and the matrix (§4) are a draft that a
 qualified clinician reviews before anything here is relied on, specified or implemented; §9 lists
 exactly what that review checks. Nothing here gives a dose, a target or a setting value.</p>
 <p><strong>The question.</strong> CM15 refuses an approval when the hub's whole-state version differs from the
@@ -5512,6 +5513,10 @@ approval counts); <strong>previewed</strong> is E3 with E4 (moment items).</p>
 <td>the item's required reviews (decision 3) are attached, then A</td>
 </tr>
 <tr>
+<td><strong>S standing, with withdrawal</strong></td>
+<td>an occurrence of an approved plan runs within its declared bounds unless a withdrawal criterion fires or the person cancels; the person is notified ahead; if a criterion cannot be evaluated with fresh data, the occurrence does not run</td>
+</tr>
+<tr>
 <td><strong>L local only</strong></td>
 <td>not through the hub at all; changed on the controller by the person</td>
 </tr>
@@ -5565,8 +5570,8 @@ human approving it.</p>
 <td>R4 insulin</td>
 <td>RA</td>
 <td>RA</td>
-<td>A</td>
-<td>A</td>
+<td>A, or S under FL1</td>
+<td>A, or S under FL1</td>
 </tr>
 <tr>
 <td>R5 persistent settings</td>
@@ -5585,8 +5590,8 @@ human approving it.</p>
 </tbody>
 </table>
 <p>Reading it: stronger evidence moves an item left in the paths, as the maintainer framed it, but
-the floors of §5 stop that movement at A for carbs and insulin, at RA for persistent
-settings, and at L for safety limits. A modifier (§2) moves the row down before the cell is read.</p>
+the floors of §5 stop that movement at A for carbs, at S under FL1's conditions for insulin, at
+RA for persistent settings, and at L for safety limits. A modifier (§2) moves the row down before the cell is read.</p>
 <h2 id="5-floors-evidence-cannot-lower-draft-for-clinical-review">5. Floors evidence cannot lower (draft for clinical review)<a class="headerlink" href="#5-floors-evidence-cannot-lower-draft-for-clinical-review" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5599,12 +5604,12 @@ settings, and at L for safety limits. A modifier (§2) moves the row down before
 <tbody>
 <tr>
 <td>FL1</td>
-<td><strong>Insulin is approved per occurrence by a human.</strong> An R4 element is never enacted on a standing approval, an agent's confirmation or a cancel window; each dose needs an approval by the person or a delegate holding the send permission, bound to its payload hash, with a short expiry.</td>
+<td><strong>Insulin runs on a standing approval only under conditions set when the plan is approved</strong> (maintainer, 2026-10-18; clinical review required). Otherwise each dose is approved per occurrence by the person or a delegate, bound to its payload hash, with a short expiry. The conditions, all recorded in the plan and checked by the controller: the dose stays within bounds the controller declares for the element kind; predetermined withdrawal criteria, such as live location or activity that contradicts the planned meal, withdraw the occurrence automatically, and an occurrence whose criteria cannot be evaluated with fresh data does not run; and at least one of: an eating-soon target with a reduced portion of the meal bolus, the rest left to a decision at the meal, or a human approval of that occurrence given within the 12 hours before it. An agent's confirmation alone never releases a dose (FL5).</td>
 <td>a delivered dose cannot be withdrawn; double and stale doses are S4 (UCA-CMD-001, UCA-PROP-007, UCA-PROP-012), and the hub's picture of doses lags the controller (UCA-SYNC-SERVE-004, FB-STATE-006)</td>
 </tr>
 <tr>
 <td>FL2</td>
-<td><strong>Carbs are approved per occurrence by a human</strong> while the controller may dose for announced carbs.</td>
+<td><strong>Carbs are approved per occurrence by a human</strong> while the controller may dose for announced carbs, except carbs that accompany an insulin element released under FL1, which then carry FL1's conditions with it.</td>
 <td>carbs not eaten leave insulin delivered for them (journey C2, UCA-CMD-015); a carb entry acts as a dose request (UCA-SYNC-DL-001)</td>
 </tr>
 <tr>
@@ -5665,9 +5670,9 @@ at the moment is the controller's.</p>
 <td>—</td>
 </tr>
 <tr>
-<td>the approver may send the command; not the proposer (CM14); the path's approval present per occurrence for R3–R4</td>
+<td>the approver may send the command; not the proposer (CM14); the path's approval present per occurrence for R3–R4, or FL1's recorded conditions met</td>
 <td>yes</td>
-<td><strong>also yes</strong>: a controller refuses an R3 or R4 element arriving without a per-occurrence approval, because the hub can be bypassed or misconfigured and CM10's hash does not authenticate the approver</td>
+<td><strong>also yes</strong>: a controller refuses an R3 or R4 element arriving without a per-occurrence approval or a plan whose FL1 conditions it holds and finds met, because the hub can be bypassed or misconfigured and CM10's hash does not authenticate the approver</td>
 </tr>
 <tr>
 <td><code>definitionId</code> unchanged since the proposal</td>
@@ -5809,8 +5814,8 @@ a confirmation outside the grant is refused at the hub and, for R3–R4, at the 
 <td>meal carbs and bolus</td>
 <td>R3, R4</td>
 <td>as above</td>
-<td>RA, accepted only as approve-each</td>
-<td>A each day, by the person</td>
+<td>RA, with FL1's conditions recorded</td>
+<td>S with withdrawal criteria and a reduced portion, or A within the 12 hours before</td>
 <td>doses and carbs since, at the controller</td>
 <td>FL1, FL2</td>
 </tr>
@@ -5876,17 +5881,22 @@ a confirmation outside the grant is refused at the hub and, for R3–R4, at the 
 </tr>
 </tbody>
 </table>
-<p>PL1's meal element is where the framework and the planning use case meet: the agent's morning
-confirmation answers "is lunch happening", and the person's one approval that day answers
-"give it"; the plan saves the drafting, not the approval.</p>
+<p>PL1's meal element is where the framework and the planning use case meet. The agent's morning
+confirmation answers "is lunch happening"; the withdrawal criteria answer "is it still happening"
+close to the meal, from live location or activity; and the person chooses, at plan approval,
+between a reduced standing portion with eating soon and an approval of each day's occurrence up
+to 12 hours ahead. Either way the plan moves the decision from the moment to the morning or the
+week, which is the policy experience the planning use cases ask for.</p>
 <h2 id="9-what-the-clinical-review-checks">9. What the clinical review checks<a class="headerlink" href="#9-what-the-clinical-review-checks" title="Permanent link">&para;</a></h2>
 <ol>
 <li>The class of each element kind in §2, in particular whether eating-soon and other lowered
    targets belong in R1 or R2, since they lead the algorithm to deliver more.</li>
 <li>Whether carbs belong at the insulin floor (FL2) for every controller, or only for those that
    dose automatically for announced carbs.</li>
-<li>FL1: that no evidence, including a controller preview, lowers insulin below a per-occurrence
-   human approval.</li>
+<li>FL1's conditions for insulin on a standing approval: the controller-declared bounds, which
+   withdrawal criteria are adequate and how fresh their data must be, the size of the reduced
+   portion relative to the planned bolus, whether 12 hours is the right outer window for an
+   advance approval, and whether the fail-closed rule (no fresh data, no dose) is sufficient.</li>
 <li>Whether a change that reduces insulin delivery may sit one class lower than one that increases
    it, given hyperglycaemia and ketoacidosis risk over long durations.</li>
 <li>The quantities this draft leaves unset: the short duration that triggers a modifier, freshness
@@ -5942,7 +5952,7 @@ confirmation answers "is lunch happening", and the person's one approval that da
 <td>commands CM8</td>
 </tr>
 <tr>
-<td>conformance cases: an R4 element on a standing approval refused at hub and controller; an evaluation by the proposer not counted as E3; stale E2 not counted; an undeclared kind treated as R4; a confirmation outside its grant refused</td>
+<td>conformance cases: an R4 element on a standing approval without FL1's conditions refused at hub and controller; an occurrence whose withdrawal criteria lack fresh data not run; an advance approval older than 12 hours not counted; an evaluation by the proposer not counted as E3; stale E2 not counted; an undeclared kind treated as R4; a confirmation outside its grant refused</td>
 <td>commands §10</td>
 </tr>
 </tbody>
@@ -5962,6 +5972,9 @@ confirmation answers "is lunch happening", and the person's one approval that da
 <li><strong>Who may make a path stricter:</strong> the person, a caregiver for a child, the care team, and how
    that setting is recorded.</li>
 <li><strong>Scoped <code>basedOn</code> or none</strong> at plan approval for R1–R2.</li>
+<li><strong>Where withdrawal criteria are evaluated:</strong> on the controller when it holds the data (a phone's
+   location and steps, as AndroidAPS automation reads them), or by the agent, which then cancels
+   the occurrence; and whether both must agree before a standing dose runs.</li>
 </ol>
 
 

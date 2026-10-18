@@ -5553,7 +5553,7 @@
 
 
 <h1 id="l5-authority-who-may-register-write-own-a-site-receive-a-command-and-act-for-someone-else">L5 Authority: who may register, write, own a site, receive a command, and act for someone else<a class="headerlink" href="#l5-authority-who-may-register-write-own-a-site-receive-a-command-and-act-for-someone-else" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>82c610add</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>36f1e85c1</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>1b69c295</code> (2026-10-18). Layer L5 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. Decisions:
 <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">D7 and D13–D17</a>
@@ -5589,7 +5589,7 @@ specified; §7 states delegation's requirements, and its design is open.</p>
 </tr>
 <tr>
 <td><a href="../agent-trust-boundaries-2026-10-18.html">agents in the ecosystem</a></td>
-<td>read access today, the upstream RFC's grant, a proposal lifecycle</td>
+<td>read access today, the earlier draft's grant, a proposal lifecycle</td>
 </tr>
 <tr>
 <td><a href="../../../10-domain/authority-model.html">authority model</a></td>
@@ -5811,11 +5811,14 @@ canonical payload (CM13); and the state a proposal was based on is the hub's sta
 (<a href="state-intent.html#61-rules">state and intent A12</a>), checked by the hub at approval (CM15). That
 version is the hub's record of what the controller reported, so it can tell an approver that the
 record changed, never that the controller's own state is unchanged.</p>
-<p><strong>Prior art.</strong> The upstream agent control-plane RFC's <code>agent</code> issuer type, its <code>suggest</code> scope
-("can propose, human must approve") and its <code>DelegationGrant</code> (who granted, to whom, scopes,
-constraints, expiry, revocation); the <a href="../../../10-domain/authority-model.html">authority model</a>; and
-<code>nightscout-roles-gateway</code>'s time-bounded policies. The RFC's rule that composes conflicting
-intents inside the hub is outside the hub's role (D18).</p>
+<p><strong>What this supersedes.</strong> This specification, with <a href="commands.html#6-proposals-and-approvals-proposed">commands §6</a>,
+is proposed to supersede the earlier draft of this work in cgm-remote-monitor's
+<code>docs/proposals/agent-control-plane-rfc.md</code>, which started in this repository. It keeps that
+draft's <code>agent</code> issuer type, its <code>suggest</code> scope ("can propose, human must approve") and its
+<code>DelegationGrant</code> (who granted, to whom, scopes, constraints, expiry, revocation), and replaces
+its rule that composes conflicting intents inside the hub, which D18 puts in the controller. The
+<a href="../../../10-domain/authority-model.html">authority model</a> and <code>nightscout-roles-gateway</code>'s
+time-bounded policies are prior art for grants.</p>
 <h2 id="8-what-is-recorded-for-audit">8. What is recorded for audit<a class="headerlink" href="#8-what-is-recorded-for-audit" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Current state, not history, on the owner's listing (§4):</strong> each product's binding, the kind of

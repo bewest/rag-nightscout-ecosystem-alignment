@@ -5553,13 +5553,13 @@
 
 
 <h1 id="l3-and-l5-commands-how-a-request-or-a-proposal-reaches-a-controller-and-how-its-outcome-comes-back">L3 and L5 Commands: how a request or a proposal reaches a controller, and how its outcome comes back<a class="headerlink" href="#l3-and-l5-commands-how-a-request-or-a-proposal-reaches-a-controller-and-how-its-outcome-comes-back" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>dea0f1b2a</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>b081a15cf</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>9736bd65</code> (2026-10-18). Layers L3
 and L5 of the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. Decisions:
 <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">D18 and D19</a>
 and the maintainer's decisions of 2026-10-14 to 2026-10-18 recorded with them; the proposal
 record was folded into this item on 2026-10-18. Queue: <code>SPEC-REG-COMMANDS</code>.</em></p>
-<p><em>Specification 5 of 7 in the <a href="../index.html#reading-order">reading order</a>; after state and intent, whose acceptance policy (S10, S11) it builds on, and before sync-transport. Expect where a command goes, the command path today, rules CM1–CM23 for the command record, outcomes, proposals and delivery in each mode, compatibility with each controller, and the conformance cases.</em></p>
+<p><em>Specification 5 of 7 in the <a href="../index.html#reading-order">reading order</a>; after state and intent, whose acceptance policy (S10, S11) it builds on, and before sync-transport. Expect where a command goes, the command path today, rules CM1–CM25 for the command record, outcomes, proposals and delivery in each mode, compatibility with each controller, and the conformance cases.</em></p>
 <p>How a request to change therapy reaches a controller through a hub, what the hub records about it,
 how the controller's outcome comes back, and the proposal and approval that can stand in front of
 a command. The hub routes and records; it never decides whether a change is safe, never alters
@@ -5731,10 +5731,18 @@ intent §7</a>.</p>
 <td>CM6</td>
 <td><strong>Tenant isolation.</strong> A command's tenant is the tenant its request resolved to. Routing, sending, fetching, proposals, reports and reads see only that tenant: a command, proposal or instance from another tenant is 404, as one that does not exist is, so a request never reveals that it exists.</td>
 </tr>
+<tr>
+<td>CM24</td>
+<td><strong>The outstanding list.</strong> For a channel, the hub lists every proposal that is <code>open</code> and every command that is not final, with its sender or proposer, initiator, <code>createdAt</code>, <code>expiresAt</code> and state, and the times of the dose and carb records for the channel's products that reached the hub since the earliest of them. A reply that accepts a command or an approval carries the list of the other items when there are any. Anyone holding <code>api:commands:read</code>, <code>api:commands:create</code> or <code>api:proposals:read</code> on the tenant may read it, so a follower can see the queue without acting on it; anyone else is 403 <code>not-authorised</code>.</td>
+</tr>
+<tr>
+<td>CM25</td>
+<td><strong>Cancel.</strong> The sender of a command, or the subject acting for the person (CM14), may cancel it; anyone else is 403 <code>not-authorised</code>. A <code>pending</code> command becomes <code>cancelled</code>, which is final, and is never sent or fetched. A command already handed over or acknowledged stays in its state with <code>cancelRequested</code> (202): the destination's next fetch carries the cancel, and the controller, deciding the command once (CM21), refuses it with reason <code>cancelled</code> if it has not decided it yet. A command with a final state is 409 <code>already-final</code>.</td>
+</tr>
 </tbody>
 </table>
 <p><strong>Order of checks.</strong> Where more than one refusal applies, the first wins: another tenant (404), then the sender's permission and ownership (403), then the request's own content (413, 422), then state (409). Among an approval's 409s the order is: the proposal's state (<code>proposal-expired</code>, <code>proposal-closed</code>), <code>hash-mismatch</code>, routing, <code>destination-changed</code>, <code>state-changed</code>, <code>doses-since</code>. A push checks the binding (<code>withheld</code>) before the command's state, and applies only to a <code>pending</code> or <code>sent</code> command (<code>not-pending</code> otherwise).</p>
-<p><strong>States.</strong> The hub sets <code>pending</code>, <code>not-routed</code>, <code>sent</code>, <code>fetched</code>, <code>unconfirmed</code>, <code>undeliverable</code> and <code>expired</code>; only the
+<p><strong>States.</strong> The hub sets <code>pending</code>, <code>not-routed</code>, <code>sent</code>, <code>fetched</code>, <code>unconfirmed</code>, <code>undeliverable</code>, <code>expired</code> and <code>cancelled</code>; only the
 destination sets <code>acknowledged</code>, <code>succeeded</code>, <code>failed</code> and <code>refused</code> (§5).</p>
 <table>
 <thead>
@@ -5781,6 +5789,11 @@ destination sets <code>acknowledged</code>, <code>succeeded</code>, <code>failed
 <td>its expiry passed before anything was handed over (CM3)</td>
 </tr>
 <tr>
+<td><code>cancelled</code></td>
+<td>hub</td>
+<td>its sender or the person cancelled it before anything was handed over (CM25)</td>
+</tr>
+<tr>
 <td><code>acknowledged</code></td>
 <td>controller</td>
 <td>received; validating or enacting</td>
@@ -5802,8 +5815,8 @@ destination sets <code>acknowledged</code>, <code>succeeded</code>, <code>failed
 </tr>
 </tbody>
 </table>
-<p><code>succeeded</code>, <code>failed</code>, <code>refused</code>, <code>not-routed</code>, <code>undeliverable</code> and <code>expired</code> are final; the hub sets the last
-three only for a command that was never handed over. <code>sent</code>, <code>fetched</code> and <code>unconfirmed</code> are never
+<p><code>succeeded</code>, <code>failed</code>, <code>refused</code>, <code>not-routed</code>, <code>undeliverable</code>, <code>expired</code> and <code>cancelled</code> are final; the hub
+sets the last four only for a command that was never handed over. <code>sent</code>, <code>fetched</code> and <code>unconfirmed</code> are never
 reported as success or as failure.</p>
 <h2 id="5-outcomes-proposed">5. Outcomes (proposed)<a class="headerlink" href="#5-outcomes-proposed" title="Permanent link">&para;</a></h2>
 <table>
@@ -5820,7 +5833,7 @@ reported as success or as failure.</p>
 </tr>
 <tr>
 <td>CM8</td>
-<td><strong>Reasons.</strong> A refusal or failure reason is one of <code>hash-mismatch</code>, <code>expired</code>, <code>not-accepted</code> (the controller's acceptance preference is off, <a href="state-intent.html#2-rules">S10</a>), <code>limit</code> (a limit the controller enforces), <code>doses-since</code> (CM23) or <code>{value: other, controllerTerm}</code>; a bare unknown string is refused 422 <code>invalid-reason</code>. The hub records the reason and does not interpret it.</td>
+<td><strong>Reasons.</strong> A refusal or failure reason is one of <code>hash-mismatch</code>, <code>expired</code>, <code>not-accepted</code> (the controller's acceptance preference is off, <a href="state-intent.html#2-rules">S10</a>), <code>limit</code> (a limit the controller enforces), <code>doses-since</code> (CM23), <code>cancelled</code> (CM25) or <code>{value: other, controllerTerm}</code>; a bare unknown string is refused 422 <code>invalid-reason</code>. The hub records the reason and does not interpret it.</td>
 </tr>
 <tr>
 <td>CM9</td>
@@ -6017,7 +6030,11 @@ was run.</p>
    commit, which computes and caps a dose on the controller before it is committed.</li>
 <li><strong>The payload grammar.</strong> No definition declares the shape of a command's payload; the hub
    stores it unread, and an approver's display has nothing to render its units or product from
-   (UCA-PROP-004).</li>
+   (UCA-PROP-004). A plan made of elements, and an approval that accepts some of them, belongs to
+   this grammar; the maintainer chose (2026-10-18) that the approval names each accepted element by
+   id and hash and the command carries one hash of the accepted subset, with approver signatures as
+   the next step, since only a signature lets a controller detect a hub that built the wrong subset
+   (<a href="../partial-acceptance-prototype-2026-10-18.html">partial acceptance prototype</a>).</li>
 <li><strong>Outcomes that change after a final state:</strong> a late delivery failure after success (§8), and
    a command enacted in part (§8). Either a further state (<code>failed</code> after <code>succeeded</code>, with the
    record keeping both) or an outcome per part (UCA-CMD-011, UCA-CMD-013).</li>
@@ -6025,11 +6042,12 @@ was run.</p>
    §7</a>.</li>
 <li><strong>The registration contract per tenancy mode</strong> (<code>SPEC-REG-MODES</code>).</li>
 <li><strong>Found by the <a href="control-loops.html">control-loop analysis</a>:</strong></li>
-<li><strong>Outstanding commands on a channel</strong> (UCA-CMD-001, UCA-PROP-007). A sender or approver is
-     not shown the channel's commands that are not final, and the state version changes only when
-     the controller's records arrive (A12), so two approvals in that window both pass CM15. The
-     choices: show them with each send and approval; refuse a second approval on a channel while
-     a command from an approval is not final; or include them in what CM15 compares.</li>
+<li><strong>A second command or approval while one is outstanding</strong> (UCA-CMD-001, UCA-PROP-007). CM24
+     shows the sender and approver what is outstanding, and nothing refuses a second one. The
+     state version changes only when the controller's records arrive (A12), so two approvals in
+     that window both pass CM15. The remaining choice: refuse a second approval on a channel while
+     a command from an approval is not final, or include outstanding commands in what CM15
+     compares.</li>
 <li><strong>The definition at approval</strong> (UCA-PROP-008). CM11 records the destination's
      <code>definitionId</code>; CM13 refuses <code>destination-changed</code> only when the instance differs, so an
      instance that renewed under a new definition receives a payload approved under the old one.</li>
@@ -6041,8 +6059,6 @@ was run.</p>
      subject, not the process: under <code>single</code> every holder of <code>API_SECRET</code> is one subject, so
      another app can fetch a command, which moves it to <code>fetched</code> and out of the controller's
      next fetch, or report its outcome.</li>
-<li><strong>Cancelling a command</strong> (UCA-CMD-015). A sender cannot cancel a <code>pending</code> command whose
-     reason went away. Cancelling before hand-over is safe; after it, a cancel can only ask.</li>
 <li><strong>Approving at once</strong> (UCA-PROP-013). CM13 lets only an <code>open</code> proposal change, and
      <code>approve-approved-proposal</code> shows a second approval refused; that the change from <code>open</code> to
      <code>approved</code> is atomic under concurrent approvals is not stated.</li>
@@ -6056,7 +6072,7 @@ which also checks on every case that nothing reaches another tenant, nothing is 
 at or after its expiry, nothing is pushed unbound under <code>multi</code>, an approved command carries
 the payload hash its approval named (the case's <code>received</code> payload stands for what was delivered),
 and no instance enacts a command twice (CM21). CM20 has no case; CM17 has one, <code>sent-and-fetched-are-not-success</code>.</p>
-<p>125 cases.</p>
+<p>133 cases.</p>
 <!-- BEGIN GENERATED: commands-cases (tools/nsschema/spec_cases.py) -->
 <table>
 <thead>
@@ -6249,6 +6265,36 @@ and no instance enacts a command twice (CM21). CM20 has no case; CM17 has one, <
 <td></td>
 </tr>
 <tr>
+<td><code>commands/cancel-after-fetch-is-a-request</code></td>
+<td>A cancel after hand-over is a request the controller decides</td>
+<td>rules CM25, CM21</td>
+<td><code>cancel-pending-is-final</code></td>
+</tr>
+<tr>
+<td><code>commands/cancel-after-outcome-refused</code></td>
+<td>A command already enacted cannot be cancelled</td>
+<td>rules CM25, CM9</td>
+<td><code>cancel-pending-is-final</code></td>
+</tr>
+<tr>
+<td><code>commands/cancel-by-other-subject-refused</code></td>
+<td>Another subject cannot cancel a command</td>
+<td>rules CM25</td>
+<td><code>cancel-by-person</code></td>
+</tr>
+<tr>
+<td><code>commands/cancel-by-person</code></td>
+<td>The person cancels a caregiver's pending command</td>
+<td>rules CM25</td>
+<td><code>cancel-by-other-subject-refused</code></td>
+</tr>
+<tr>
+<td><code>commands/cancel-pending-is-final</code></td>
+<td>A sender cancels a command before it is handed over</td>
+<td>rules CM25</td>
+<td><code>cancel-after-fetch-is-a-request</code></td>
+</tr>
+<tr>
 <td><code>commands/command-without-permission</code></td>
 <td>A sender without api:commands:create is refused and not recorded</td>
 <td>rules CM5</td>
@@ -6305,7 +6351,7 @@ and no instance enacts a command twice (CM21). CM20 has no case; CM17 has one, <
 <tr>
 <td><code>commands/enact-two-commands-same-payload</code></td>
 <td>Two commands with the same payload are two commands</td>
-<td>rules CM21, CM4</td>
+<td>rules CM21, CM4, CM24</td>
 <td><code>enact-push-then-fetch-once</code></td>
 </tr>
 <tr>
@@ -6425,7 +6471,7 @@ and no instance enacts a command twice (CM21). CM20 has no case; CM17 has one, <
 <tr>
 <td><code>commands/no-request-id-two-commands</code></td>
 <td>Without a requestId, identical requests are two commands</td>
-<td>rules CM4</td>
+<td>rules CM4, CM24</td>
 <td></td>
 </tr>
 <tr>
@@ -6433,6 +6479,24 @@ and no instance enacts a command twice (CM21). CM20 has no case; CM17 has one, <
 <td>An outcome reported before expiry is still the state after it</td>
 <td>rules CM3, CM9</td>
 <td></td>
+</tr>
+<tr>
+<td><code>commands/outstanding-excludes-final</code></td>
+<td>A command with a final outcome is not outstanding</td>
+<td>rules CM24</td>
+<td><code>outstanding-lists-open-items</code></td>
+</tr>
+<tr>
+<td><code>commands/outstanding-lists-open-items</code></td>
+<td>A follower reads a channel's open proposal, pending command and doses since</td>
+<td>rules CM24</td>
+<td><code>outstanding-excludes-final</code></td>
+</tr>
+<tr>
+<td><code>commands/outstanding-without-read-refused</code></td>
+<td>A subject with no read permission cannot list the queue</td>
+<td>rules CM24</td>
+<td><code>outstanding-lists-open-items</code></td>
 </tr>
 <tr>
 <td><code>commands/payload-too-large</code></td>
@@ -6713,7 +6777,7 @@ and no instance enacts a command twice (CM21). CM20 has no case; CM17 has one, <
 <tr>
 <td><code>commands/request-id-scoped-to-subject</code></td>
 <td>A requestId is matched within one subject</td>
-<td>rules CM4</td>
+<td>rules CM4, CM24</td>
 <td></td>
 </tr>
 <tr>

@@ -5204,6 +5204,9 @@ per tenant and per channel:</p>
 </tr>
 </tbody>
 </table>
+<p>List outstanding, cancel and enact once are now specified as
+<a href="spec/commands.html#4-the-command-record-proposed">CM24, CM25 and CM21</a>; the proposal limit is
+still open.</p>
 <p><strong>Not added:</strong> reordering (no precedent; a pump's command queue is the controller's own) and
 superseding one command by another (supersession is a property of intents, S3 and A7, and a
 superseding override is a new command).</p>
@@ -5488,10 +5491,13 @@ the plan runs. A hub-side "refuse if dosed since" check helps only the moment-le
 </ol>
 <p><strong>Answered later the same day:</strong> the self-approval refusal applies to agents only, and the
 person may withdraw any proposal (CM14); the hub refuses an approval when doses or carbs arrived
-since the proposal (CM22), and the controller checks doses since before it enacts (CM23). How a
-plan accepted in parts binds to its approval is prototyped in
-<a href="partial-acceptance-prototype-2026-10-18.html">partial acceptance</a>; what approval a plan needs, by
-risk and by evidence, is drafted in <a href="evidence-weighted-approval-2026-10-18.html">evidence-weighted approval</a>.</p>
+since the proposal (CM22), and the controller checks doses since before it enacts (CM23). A plan
+accepted in parts binds as the <a href="partial-acceptance-prototype-2026-10-18.html">partial acceptance prototype</a>
+recommends: the approval names each accepted element by id and hash, the command carries one hash
+of the subset, and approver signatures come next. A bounded standing bolus is acceptable with
+predetermined withdrawal criteria and mitigations (a reduced portion with eating soon, or an
+approval within the 12 hours before), drafted as FL1 of <a href="evidence-weighted-approval-2026-10-18.html">evidence-weighted approval</a>, which drafts what
+approval a plan needs by risk and by evidence for clinical review.</p>
 <p><strong>Still open:</strong></p>
 <ul>
 <li><strong>Out-of-band data:</strong> agents keep it; the hub receives proposals, confirmations and minimised
