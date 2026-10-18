@@ -448,3 +448,153 @@ def test_experimental_is_an_availability_and_others_are_not():
     assert _errors(doc)
     span["availability"] = "dev-only"
     assert _valid(doc)
+
+
+# ── state and intent: initiators, carrier durations, typed carrier paths ──
+#
+# docs/30-design/platform/spec/state-intent.md S6-S8 (queue item
+# SCHEMA-INTENT-GAPS). Each addition is additive: a registration that does
+# not use it validates and reads as before.
+
+def _span0(doc):
+    return doc["spec"]["stateSpans"][0]
+
+
+def test_fixture_exercises_the_intent_forms():
+    span = _span0(_fixture())
+    values = span["initiators"]["values"]
+    assert any(isinstance(v, str) for v in values)
+    assert {"value": "other", "controllerTerm": "example-agent"} in values
+    for carrier in ("wire", "requested", "applied"):
+        assert span[carrier]["durationField"] and span[carrier]["durationUnit"], carrier
+    paths = span["wire"]["paths"] + span["applied"]["paths"]
+    assert any(isinstance(p, str) for p in paths)
+    assert any(isinstance(p, dict) and "unit" in p and "type" in p for p in paths)
+    assert any(isinstance(p, dict) and "typeRef" in p for p in paths)
+    # Every new member is one the grammar defines: none is merely ignored.
+    assert sync_model.unknown_grammar_fields(_fixture(), SCHEMA) == [
+        "spec.futureGrammarMember", "spec.stateSpans.0.futureSpanMember"]
+
+
+def test_an_initiator_outside_the_vocabulary_takes_the_other_form():
+    doc = _fixture()
+    values = _span0(doc)["initiators"]["values"]
+    values[:] = ["phone", {"value": "other", "controllerTerm": "agent"}]
+    assert _valid(doc)
+    assert sync_model.unknown_grammar_fields(doc, SCHEMA) == [
+        "spec.futureGrammarMember", "spec.stateSpans.0.futureSpanMember"]
+    assert [sync_model.term_label(v) for v in values] == ["phone", "other: agent"]
+    # The controller's own vocabulary is free strings: any string is valid.
+    values[:] = ["anyControllerTerm", "other"]
+    assert _valid(doc)
+
+
+def test_an_initiator_object_must_be_the_other_form():
+    doc = _fixture()
+    values = _span0(doc)["initiators"]["values"]
+    for bad in ({"value": "other"}, {"value": "other", "controllerTerm": ""},
+                {"value": "agent", "controllerTerm": "x"}, {"controllerTerm": "x"}, 7):
+        values[:] = ["phone", bad]
+        assert _errors(doc), bad
+    # Control.
+    values[:] = ["phone", {"value": "other", "controllerTerm": "x"}]
+    assert _valid(doc)
+
+
+@pytest.mark.parametrize("carrier", ["wire", "requested", "applied"])
+def test_every_carrier_declares_a_duration_unit_from_one_list(carrier):
+    doc = _fixture()
+    node = _span0(doc)[carrier]
+    for unit in ("seconds", "minutes", "milliseconds"):
+        node["durationUnit"] = unit
+        assert _valid(doc), unit
+    for bad in ("hours", "Seconds", "ms", 60, None):
+        node["durationUnit"] = bad
+        assert _errors(doc), bad
+    node["durationUnit"] = "seconds"
+    node["durationField"] = 3
+    assert _errors(doc)
+
+
+def test_a_carrier_without_a_duration_reads_as_before():
+    doc = _fixture()
+    for carrier in ("requested", "applied"):
+        _span0(doc)[carrier].pop("durationField")
+        _span0(doc)[carrier].pop("durationUnit")
+    assert _valid(doc)
+
+
+def test_a_carrier_path_may_be_typed():
+    doc = _fixture()
+    paths = _span0(doc)["applied"]["paths"]
+    paths[:] = ["a.b",
+                {"path": "a.c"},
+                {"path": "a.d", "unit": "milliseconds"},
+                {"path": "a.e", "type": {"type": "integer", "minimum": 0}},
+                {"path": "a.f", "typeRef": "https://nightscout.dev/schemas/sync/"
+                 "controller-settings.json#/properties/settings/properties/maxIob"}]
+    assert _valid(doc)
+    assert sync_model.unknown_grammar_fields(doc, SCHEMA) == [
+        "spec.futureGrammarMember", "spec.stateSpans.0.futureSpanMember"]
+
+
+def test_a_typed_carrier_path_needs_its_path():
+    doc = _fixture()
+    paths = _span0(doc)["wire"]["paths"]
+    for bad in ({"unit": "milliseconds"}, {"path": "", "unit": "seconds"},
+                {"path": 5}, {"path": "a", "type": {"type": "object"}},
+                {"path": "a", "type": {"type": "string", "pattern": "^x"}},
+                {"path": "a", "type": {"type": "number"},
+                 "typeRef": "https://nightscout.dev/schemas/sync/"
+                 "controller-settings.json#/properties/settings/properties/maxIob"}):
+        paths[:] = ["reason", bad]
+        assert _errors(doc), bad
+    # Control: the bare string form is still valid, alone or mixed.
+    paths[:] = ["reason", "timeOffset"]
+    assert _valid(doc)
+    paths[:] = ["reason", {"path": "timeOffset", "unit": "milliseconds"}]
+    assert _valid(doc)
+
+
+def test_an_unknown_member_of_a_typed_path_is_ignored_not_rejected():
+    doc = _fixture()
+    paths = _span0(doc)["wire"]["paths"]
+    paths[:] = [{"path": "timeOffset", "unit": "milliseconds", "futurePathMember": 1}]
+    assert _valid(doc)
+    assert "spec.stateSpans.0.wire.paths.0.futurePathMember" in \
+        sync_model.unknown_grammar_fields(doc, SCHEMA)
+
+
+def test_generated_registrations_declare_the_established_units():
+    loop = _committed("loop")["spec"]["stateSpans"][0]
+    assert loop["kind"] == "TemporaryScheduleOverride"
+    assert (loop["applied"]["durationField"], loop["applied"]["durationUnit"]) == (
+        "override.duration", "seconds")
+    assert (loop["wire"]["durationField"], loop["wire"]["durationUnit"]) == (
+        "duration", "minutes")
+    aaps = _committed("androidaps")["spec"]["stateSpans"][0]
+    assert aaps["kind"] == "ProfileSwitch"
+    assert {"path": "timeshift", "unit": "milliseconds"} in aaps["wire"]["paths"]
+    assert {"path": "originalTimeshift", "unit": "milliseconds"} in aaps["applied"]["paths"]
+
+
+@pytest.mark.parametrize("key", GENERATED)
+def test_generated_registrations_without_the_intent_forms_still_validate(key):
+    # Projecting the additions away (path objects to strings, carrier units
+    # off requested and applied) yields a registration the grammar accepts.
+    registration = copy.deepcopy(_strip_x(_committed(key)))
+    for span in registration["spec"]["stateSpans"]:
+        for name in ("wire", "requested", "applied"):
+            carrier = span.get(name)
+            if not carrier:
+                continue
+            if "paths" in carrier:
+                carrier["paths"] = [p["path"] if isinstance(p, dict) else p
+                                    for p in carrier["paths"]]
+            if name != "wire":
+                carrier.pop("durationField", None)
+                carrier.pop("durationUnit", None)
+        for value in (span.get("initiators") or {}).get("values", []):
+            assert isinstance(value, str)
+    assert _valid(registration)
+    assert sync_model.unknown_grammar_fields(registration, SCHEMA) == []

@@ -16,6 +16,14 @@
 #   4 versions        stateSpans[0] serves 1 and 2, stores 2, no mapping
 #   5 horizons        documents, kinds, fields, extension; an experimental
 #                     aggregate-horizon kind (stateSpans[1])
+#
+# State and intent (docs/30-design/platform/spec/state-intent.md S6-S8):
+#   typed paths       stateSpans[0].wire.paths and .applied.paths mix bare
+#                     strings with {path, unit, type} and {path, typeRef}
+#   durations         wire, requested and applied each declare durationField
+#                     and durationUnit
+#   initiators        stateSpans[0].initiators.values mixes the controller's
+#                     strings with {value: other, controllerTerm}
 apiVersion: nightscout.dev/sync/v1
 kind: ControllerStateModel
 metadata:
@@ -72,12 +80,45 @@ spec:
       eventType: Temporary Override
       identity:
       - identifier
+      paths:
+      - reason
+      - path: timeOffset
+        unit: milliseconds
+        type:
+          type: integer
       durationField: duration
       durationUnit: minutes
       endedEncoding:
         value: other
         controllerTerm: tombstone-record
       endReasonPath: null
+    requested:
+      collection: treatments
+      eventType: Example Override Request
+      durationField: requestedDuration
+      durationUnit: minutes
+    applied:
+      collection: devicestatus
+      discriminator:
+        path: example.override
+        test: is-object
+      paths:
+      - example.override.name
+      - path: example.override.remaining
+        unit: seconds
+      - path: example.override.maxIob
+        typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/maxIob
+      durationField: example.override.remaining
+      durationUnit: seconds
+      linkToRequest: null
+    initiators:
+      vocabulary: ExampleTrigger
+      values:
+      - phone
+      - watch
+      - value: other
+        controllerTerm: example-agent
+      wirePath: null
   - category: ExampleAdaptationSummary
     kind: DailyAdaptation
     availability: experimental

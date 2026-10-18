@@ -161,7 +161,8 @@ spec:
       - profile
       - profileJson
       - percentage
-      - timeshift
+      - path: timeshift
+        unit: milliseconds
       - originalProfileName
       - durationInMilliseconds
       durationField: duration
@@ -186,7 +187,8 @@ spec:
       - originalProfileName
       - originalCustomizedName
       - originalPercentage
-      - originalTimeshift
+      - path: originalTimeshift
+        unit: milliseconds
       - originalDuration
       writtenWhen: only after the pump accepts the profile
       linkToRequest: null
@@ -220,6 +222,21 @@ spec:
       basis: read
     - claim: PS wire fields; duration minutes plus durationInMilliseconds
       source: AndroidAPS 7e1d537d49 core/nssdk/src/commonMain/kotlin/app/aaps/core/nssdk/mapper/TreatmentMapper.kt:517-541
+      basis: read
+    - claim: 'PS timeshift is milliseconds: set from hours by T.hours(h).msecs(), uploaded
+        unchanged as timeshift'
+      source: AndroidAPS 7e1d537d49 core/data/src/commonMain/kotlin/app/aaps/core/data/model/PS.kt:22;
+        implementation/src/commonMain/kotlin/app/aaps/implementation/profile/ProfileFunctionImpl.kt:218;
+        plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/extensions/ProfileSwitchExtension.kt:64;
+        core/nssdk/src/commonMain/kotlin/app/aaps/core/nssdk/mapper/TreatmentMapper.kt:540;
+        core/nssdk/src/commonMain/kotlin/app/aaps/core/nssdk/remotemodel/RemoteTreatment.kt:101
+      basis: read
+    - claim: EPS originalTimeshift is milliseconds, copied from the PS and uploaded unchanged
+      source: AndroidAPS 7e1d537d49 core/data/src/commonMain/kotlin/app/aaps/core/data/model/EPS.kt:24;
+        implementation/src/commonMain/kotlin/app/aaps/implementation/queue/CommandQueueImplementation.kt:202;
+        plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/extensions/EffectiveProfileSwitchExtension.kt:54;
+        core/nssdk/src/commonMain/kotlin/app/aaps/core/nssdk/mapper/TreatmentMapper.kt:510;
+        core/nssdk/src/commonMain/kotlin/app/aaps/core/nssdk/remotemodel/RemoteTreatment.kt:85
       basis: read
     - claim: 'percentage: basal x p/100, ISF and IC x 100/p'
       source: docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md §3.3

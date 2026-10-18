@@ -252,16 +252,6 @@
             },
             "description": "The fields that identify one instance across amendments."
            },
-           "durationField": {
-            "type": "string"
-           },
-           "durationUnit": {
-            "enum": [
-             "seconds",
-             "minutes",
-             "milliseconds"
-            ]
-           },
            "indefinite": {
             "type": "object",
             "description": "How an open-ended instance is written.",
@@ -353,8 +343,16 @@
          "values": {
           "type": "array",
           "items": {
-           "type": "string"
-          }
+           "anyOf": [
+            {
+             "type": "string"
+            },
+            {
+             "$ref": "#/$defs/otherTerm"
+            }
+           ]
+          },
+          "description": "The controller's own values, as strings; the controller's vocabulary is not a shared list, so any string is valid. A value outside that vocabulary, such as an agent, is written `{value: other, controllerTerm: <term>}` (D18 addendum rule 3; maintainer, 2026-10-18, execution plan §2.6.3 row 17: no `agent` value is added to any vocabulary)."
          },
          "wirePath": {
           "type": [
@@ -847,9 +845,28 @@
     "paths": {
      "type": "array",
      "items": {
-      "type": "string"
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "$ref": "#/$defs/carrierPath"
+       }
+      ]
      },
-     "description": "Dotted paths that carry the content."
+     "description": "Dotted paths that carry the content. Each is a path string, or a carrierPath object that also declares the field's unit or type."
+    },
+    "durationField": {
+     "type": "string",
+     "description": "The dotted path of the field that carries the duration."
+    },
+    "durationUnit": {
+     "enum": [
+      "seconds",
+      "minutes",
+      "milliseconds"
+     ],
+     "description": "The unit of `durationField`'s value."
     },
     "vocabularies": {
      "type": "object",
@@ -881,6 +898,26 @@
     },
     "description": {
      "type": "string"
+    }
+   }
+  },
+  "carrierPath": {
+   "type": "object",
+   "description": "Rule 2 applied to a carrier path: the dotted `path` with the typing members of a field declaration (fieldTyping), such as `unit`, and `type` or `typeRef` but not both. A path declared as an object with only `path` names the same field as the bare string.",
+   "required": [
+    "path"
+   ],
+   "$ref": "#/$defs/fieldTyping",
+   "not": {
+    "required": [
+     "type",
+     "typeRef"
+    ]
+   },
+   "properties": {
+    "path": {
+     "type": "string",
+     "minLength": 1
     }
    }
   },

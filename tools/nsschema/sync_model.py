@@ -106,10 +106,12 @@ _LOOP_SPANS = [
             "discriminator": {"path": "override", "test": "is-object"},
             "paths": ["override.active", "override.name", "override.multiplier",
                       "override.currentCorrectionRange", "override.duration"],
+            "durationField": "override.duration",
+            "durationUnit": "seconds",
             "linkToRequest": None,
             "description": "Written with each loop cycle's devicestatus; active is false "
                            "when no override is on. override.duration is the remaining "
-                           "time in seconds.",
+                           "time in seconds, absent for an indefinite override.",
         },
         "initiators": {
             "vocabulary": "EnactTrigger",
@@ -152,6 +154,11 @@ _LOOP_SPANS = [
                f"{NSSERVICE} NightscoutServiceKit/NightscoutService.swift:157-167"),
             ev("devicestatus override status; duration is seconds remaining",
                f"{NSSERVICE} NightscoutServiceKit/Extensions/StoredDosingDecision.swift:118-136"),
+            ev("override.duration: round(actualEndDate - now), a TimeInterval in seconds; "
+               "nil (field not written) for an indefinite override",
+               f"{NSSERVICE} NightscoutServiceKit/Extensions/StoredDosingDecision.swift:129"),
+            ev("OverrideStatus writes duration as the TimeInterval unchanged",
+               f"{NSKIT} Sources/NightscoutKit/Models/OverrideStatus.swift:17,44-46"),
             ev("preset fields uploaded in profile.loopSettings.overridePresets",
                f"{NSKIT} Sources/NightscoutKit/Models/TemporaryScheduleOverride.swift:28-49"),
             ev("_id survival depends on UUID_HANDLING", f"{LANDSCAPE} §3.1"),
@@ -373,7 +380,8 @@ _AAPS_SPANS = [
             "collection": "treatments",
             "eventType": "Profile Switch",
             "identity": ["identifier"],
-            "paths": ["profile", "profileJson", "percentage", "timeshift",
+            "paths": ["profile", "profileJson", "percentage",
+                      {"path": "timeshift", "unit": "milliseconds"},
                       "originalProfileName", "durationInMilliseconds"],
             "durationField": "duration",
             "durationUnit": "minutes",
@@ -393,7 +401,9 @@ _AAPS_SPANS = [
             "eventType": "Note",
             "discriminator": {"path": "originalProfileName", "test": "exists"},
             "paths": ["profileJson", "originalProfileName", "originalCustomizedName",
-                      "originalPercentage", "originalTimeshift", "originalDuration"],
+                      "originalPercentage",
+                      {"path": "originalTimeshift", "unit": "milliseconds"},
+                      "originalDuration"],
             "writtenWhen": "only after the pump accepts the profile",
             "linkToRequest": None,
             "description": "EffectiveProfileSwitch. Its profileJson is already scaled. A "
@@ -426,6 +436,24 @@ _AAPS_SPANS = [
             ev("PS wire fields; duration minutes plus durationInMilliseconds",
                f"{AAPS} core/nssdk/src/commonMain/kotlin/app/aaps/core/nssdk/mapper/"
                "TreatmentMapper.kt:517-541"),
+            ev("PS timeshift is milliseconds: set from hours by T.hours(h).msecs(), "
+               "uploaded unchanged as timeshift",
+               f"{AAPS} core/data/src/commonMain/kotlin/app/aaps/core/data/model/PS.kt:22; "
+               "implementation/src/commonMain/kotlin/app/aaps/implementation/profile/"
+               "ProfileFunctionImpl.kt:218; plugins/sync/src/commonMain/kotlin/app/aaps/"
+               "plugins/sync/nsclientV3/extensions/ProfileSwitchExtension.kt:64; "
+               "core/nssdk/src/commonMain/kotlin/app/aaps/core/nssdk/mapper/"
+               "TreatmentMapper.kt:540; core/nssdk/src/commonMain/kotlin/app/aaps/core/"
+               "nssdk/remotemodel/RemoteTreatment.kt:101"),
+            ev("EPS originalTimeshift is milliseconds, copied from the PS and uploaded "
+               "unchanged",
+               f"{AAPS} core/data/src/commonMain/kotlin/app/aaps/core/data/model/EPS.kt:24; "
+               "implementation/src/commonMain/kotlin/app/aaps/implementation/queue/"
+               "CommandQueueImplementation.kt:202; plugins/sync/src/commonMain/kotlin/app/"
+               "aaps/plugins/sync/nsclientV3/extensions/EffectiveProfileSwitchExtension.kt:54; "
+               "core/nssdk/src/commonMain/kotlin/app/aaps/core/nssdk/mapper/"
+               "TreatmentMapper.kt:510; core/nssdk/src/commonMain/kotlin/app/aaps/core/"
+               "nssdk/remotemodel/RemoteTreatment.kt:85"),
             ev("percentage: basal x p/100, ISF and IC x 100/p", f"{LANDSCAPE} §3.3"),
             ev("one PS at a time; end = shortened duration on the same identifier; "
                "invalidate = v3 soft delete", f"{LANDSCAPE} §4, §7"),
