@@ -4884,7 +4884,7 @@
 
   <h1>Reply.body</h1>
 
-<p><em>Living document, last changed 2026-10-17 at <code>509eabce1</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>cfddb6ff8</code>.</em></p>
 <p><strong>Re: client-supplied identifiers for Nightscout</strong></p>
 <p>Thank you for writing this up. We agree with the core of the ask, and most of what Loop needs
 already works. Much of the confusion comes from our API documentation, not the design: API v3's
@@ -4982,7 +4982,18 @@ UUID-shaped values only. API v3 and <code>find[identifier]=</code> take any stri
 would not serve (3) as it stands. It embeds each device's own activation estimate, as fractional
 hours, and the BLE name <code>DXCMxx</code> rather than the serial, and it falls back to <code>"invalid"</code>
 (G7SensorKit <code>dd91f46</code>, <code>G7CGMManager.swift:511-517</code>). Hashing it into a UUIDv5 would not help,
-because the input already differs between devices. Precedents: FHIR keeps
+because the input already differs between devices.</p>
+<p>For a G7, an identifier both devices can compute is <code>g7:&lt;serial&gt;:&lt;seconds&gt;</code>. <code>&lt;serial&gt;</code> is the
+sensor serial from the transmitter-version (<code>0x4A</code>) reply, which G7SensorKit <code>next-dev</code> reads.
+<code>&lt;seconds&gt;</code> is the sensor's seconds-since-activation counter for the reading: <code>messageTimestamp −
+age</code> for a live reading, the record's <code>timestamp</code> for backfill. Every G7 implementation we read
+(G7SensorKit, xDrip+, xDrip4iOS, Juggluco, DiaBLE) treats that counter as the sensor's own
+session clock, and backfill uses the same clock. We have not yet seen a capture with two
+displays on one sensor, so we would confirm with one before relying on it
+(<a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/tenancy/identifier-format-2026-10-17.html#7-is-the-g7-seconds-counter-shared-across-devices">identifier format §7</a>).
+G6 (<code>&lt;transmitterID&gt; &lt;timestamp&gt;</code>) and Libre 3 (<code>&lt;serial&gt;-&lt;lifeCount&gt;</code>) already key on a sensor-side
+counter; Loop's Libre 2 key uses the phone's clock.</p>
+<p>Precedents: FHIR keeps
 the server id apart from the business <code>identifier</code>, and its conditional create answers 200 with
 the existing record when the identifier already matches
 (<a href="https://www.health-samurai.io/docs/aidbox/api/rest-api/crud/create">Aidbox</a>). HealthKit pairs
