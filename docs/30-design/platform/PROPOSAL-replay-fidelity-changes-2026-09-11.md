@@ -1,7 +1,8 @@
 # Proposal: the concrete changes that make Nightscout high-fidelity for replay
 
 *Contributor-facing.* **Snapshot, written 2026-09-11. Current: the only statement of the
-replay-fidelity change list.** A proposal to each named project, none of which has agreed to anything.
+replay-fidelity change list.** Change A (§1) is carried, with its cursor rule, as rules T5–T7 of the
+[sync-transport specification](spec/sync-transport.md). A proposal to each named project, none of which has agreed to anything.
 Measurements are over the 11-site corpus (snapshots 2026-04-01 and 2026-04-26) and the source
 trees as of 2026-09-11. It is a **change list rather than an analysis.** Decisions it touches:
 [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).

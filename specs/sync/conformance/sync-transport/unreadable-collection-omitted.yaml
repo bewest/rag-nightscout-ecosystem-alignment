@@ -1,0 +1,37 @@
+# Synthetic. SPEC-SYNC-TRANSPORT; sync-transport §4. Steps are logical; expectations authored by hand.
+id: unreadable-collection-omitted
+title: A collection the credential cannot read is left out
+rules:
+- T5
+description: A collection the credential cannot read is left out.
+collections:
+- treatments
+- entries
+readable:
+- treatments
+writes:
+- collection: treatments
+  id: t1
+  srvModified: 10
+  takenAt: 0
+  committedAt: 0
+- collection: entries
+  id: e1
+  srvModified: 20
+  takenAt: 0
+  committedAt: 0
+calls:
+- kind: history
+  at: 1
+  limit: 5
+  cursor: 0
+expected:
+  calls:
+  - kind: history
+    collections:
+      treatments:
+      - t1
+    cursor: 20
+    complete: true
+  received:
+  - t1

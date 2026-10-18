@@ -1,0 +1,55 @@
+# Synthetic. SPEC-SYNC-TRANSPORT; sync-transport §4. Steps are logical; expectations authored by hand.
+id: in-flight-write-not-skipped
+title: The cursor stays below a write that has taken its srvModified and is not yet visible
+rules:
+- T9
+control: no-write-in-flight
+description: t2 takes srvModified 20 at step 0 and becomes visible at step 2; t3 takes 30 and is visible
+  at step 1. A cursor of 30 handed out at step 1 would skip t2 for good.
+collections:
+- treatments
+writes:
+- collection: treatments
+  id: t1
+  srvModified: 10
+  takenAt: 0
+  committedAt: 0
+- collection: treatments
+  id: t2
+  srvModified: 20
+  takenAt: 0
+  committedAt: 2
+- collection: treatments
+  id: t3
+  srvModified: 30
+  takenAt: 1
+  committedAt: 1
+calls:
+- kind: history
+  at: 1
+  limit: 5
+  cursor: 0
+- kind: history
+  at: 3
+  limit: 5
+  cursor: last
+expected:
+  calls:
+  - kind: history
+    collections:
+      treatments:
+      - t1
+      - t3
+    cursor: 19
+    complete: true
+  - kind: history
+    collections:
+      treatments:
+      - t2
+      - t3
+    cursor: 30
+    complete: true
+  received:
+  - t1
+  - t2
+  - t3

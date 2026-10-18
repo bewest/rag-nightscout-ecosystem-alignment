@@ -234,48 +234,48 @@ drift).
 | `quirks/catalogue-mapping-version-outside` | A catalogue mapping applies only to the versions it affects | 200 written |  |
 | `quirks/catalogue-mapping-version-unknown` | No mapping when the hub does not know the version | 200 written |  |
 | `quirks/same-as-typed-write-declared` | A typed write on a sameAs channel says the channel was declared | 200 written |  |
-| `active-state/applied-duration-in-declared-unit` | An applied sample is in effect from its own time, for its duration in the declared unit |  | `applied-duration-unit-minutes` |
-| `active-state/applied-duration-unit-minutes` | The same samples declared in minutes stay in effect for twenty hours |  |  |
-| `active-state/applied-inactive-sample-ends` | A sample saying the intent is not in effect ends the earlier sample |  | `applied-duration-in-declared-unit` |
-| `active-state/backfill-supersedes-by-start` | An earlier instance received later is still ended by the later-starting one |  | `in-order-same-result` |
-| `active-state/delete-after-start-withdraws` | A record deleted after its start and not re-posted is not reported |  |  |
-| `active-state/delete-and-repost-amends` | A delete followed by a re-post of the same identity amends the instance |  | `delete-after-start-withdraws` |
-| `active-state/delete-by-id-withdraws` | A delete that names only the record's _id removes it, as a DELETE by id does |  | `delete-and-repost-amends` |
-| `active-state/deleted-before-start-does-not-supersede` | A record deleted before its start ends nothing |  | `deleted-before-start` |
-| `active-state/deleted-before-start` | A record deleted before its start is listed as ended, deleted before start, and is never active |  | `scheduled-not-deleted` |
-| `active-state/different-identity-same-instant` | Different identities at one instant are two instances; the later received supersedes |  |  |
-| `active-state/different-identity-supersedes` | A different identity is a new instance, which supersedes the earlier one at its start |  |  |
-| `active-state/equal-identity-same-instant` | Two records with equal identity at one instant are one instance, as last received |  | `different-identity-same-instant` |
-| `active-state/equal-start-last-write-wins` | At an equal start, the instance whose last write was received later supersedes |  | `different-identity-same-instant` |
-| `active-state/exclusive-overlap-reported` | Overlapping instances of an exclusive kind that does not supersede are both reported, as an overlap |  | `exclusive-supersedes` |
-| `active-state/exclusive-supersedes` | The same records under a superseding kind: one instance |  |  |
-| `active-state/field-unit-from-declaration` | A field's unit is reported from its typed path |  | `field-unit-undeclared` |
-| `active-state/field-unit-undeclared` | A path with no declared unit carries none |  |  |
-| `active-state/forced-mode-is-applied-not-requested` | A constraint-forced mode is in the applied layer only, when the kind declares a requested carrier |  | `forced-mode-without-requested-carrier` |
-| `active-state/forced-mode-without-requested-carrier` | Without a requested carrier, the forced record is also taken as a request |  |  |
-| `active-state/in-order-same-result` | Received in time order, the same instances |  |  |
-| `active-state/marker-at-next-start` | An end marker at the instant the next target starts ends only the earlier one |  | `zero-duration-ends-instance` |
-| `active-state/no-end-marker` | Without an end marker the instance runs its duration |  |  |
-| `active-state/overlay-returns-to-open-ended` | A timed instance applies over an open-ended one, which applies again when it ends |  | `supersedes-without-overlay` |
-| `active-state/permanent-after-temporary-supersedes` | A permanent switch that starts during a temporary one supersedes it |  |  |
-| `active-state/permanent-profile-switch-returns` | A permanent profile switch (duration 0) stays active and applies again after a temporary one |  | `permanent-after-temporary-supersedes` |
-| `active-state/products-never-supersede-each-other` | Instances of two products on one slot are both reported; neither ends the other |  | `same-product-supersedes` |
-| `active-state/repost-before-delete` | A re-post received before the delete of the old record, and a delete that names only _id |  | `delete-and-repost-amends` |
-| `active-state/repost-same-identity-amends` | A re-post with the same identity amends the instance it names |  | `different-identity-supersedes` |
-| `active-state/requested-and-applied` | With the applied record, both layers are reported |  |  |
-| `active-state/requested-without-applied` | A request with no applied record is reported as requested only |  | `requested-and-applied` |
-| `active-state/running-mode-open-ended` | The same mode, not shortened, stays active |  |  |
-| `active-state/running-mode-original-duration` | A loop-disabled mode shortened in originalDuration ends, whatever its placeholder wire duration |  | `running-mode-open-ended` |
-| `active-state/same-product-supersedes` | The same records from one product: the later supersedes |  |  |
-| `active-state/sampled-state-latest-value` | A sampled-state kind is the latest sample's value, each sample holding until the next |  |  |
-| `active-state/scheduled-not-deleted` | The same scheduled record, not deleted, is active from its start |  |  |
-| `active-state/soft-delete-before-start` | A soft delete before the start is a deletion before start |  | `soft-delete-not-applied` |
-| `active-state/soft-delete-not-applied` | The same scheduled target, not deleted, is active |  |  |
-| `active-state/state-version-amended` | An amendment to an active instance changes the state version |  |  |
-| `active-state/state-version-content-changed` | An amendment that changes only what an active instance says changes the state version |  | `state-version-tracks-active-set` |
-| `active-state/state-version-tracks-active-set` | The state version is stable while the active set is, and changes when it changes |  | `state-version-amended` |
-| `active-state/supersedes-without-overlay` | Without overlay, a superseding kind ends the open-ended instance for good |  |  |
-| `active-state/unattributed-applied-is-not-an-instance` | Per-cycle values that name no intent are not an applied instance |  | `applied-duration-in-declared-unit` |
-| `active-state/undeclared-unit-kind-unreadable` | A kind whose duration has no declared unit yields nothing and is reported unreadable; other kinds still answer |  | `no-end-marker` |
-| `active-state/zero-duration-ends-instance` | A zero-duration record ends the instance active at its time and is not an instance |  | `no-end-marker` |
+| `active-state/applied-duration-in-declared-unit` | An applied sample is in effect from its own time, for its duration in the declared unit | rules A3, A10, A11 | `applied-duration-unit-minutes` |
+| `active-state/applied-duration-unit-minutes` | The same samples declared in minutes stay in effect for twenty hours | rules A11 |  |
+| `active-state/applied-inactive-sample-ends` | A sample saying the intent is not in effect ends the earlier sample | rules A10 | `applied-duration-in-declared-unit` |
+| `active-state/backfill-supersedes-by-start` | An earlier instance received later is still ended by the later-starting one | rules A7 | `in-order-same-result` |
+| `active-state/delete-after-start-withdraws` | A record deleted after its start and not re-posted is not reported | rules A6 |  |
+| `active-state/delete-and-repost-amends` | A delete followed by a re-post of the same identity amends the instance | rules A2, A6 | `delete-after-start-withdraws` |
+| `active-state/delete-by-id-withdraws` | A delete that names only the record's _id removes it, as a DELETE by id does | rules A6 | `delete-and-repost-amends` |
+| `active-state/deleted-before-start-does-not-supersede` | A record deleted before its start ends nothing | rules A6, A7 | `deleted-before-start` |
+| `active-state/deleted-before-start` | A record deleted before its start is listed as ended, deleted before start, and is never active | rules A6 | `scheduled-not-deleted` |
+| `active-state/different-identity-same-instant` | Different identities at one instant are two instances; the later received supersedes | rules A2, A7 |  |
+| `active-state/different-identity-supersedes` | A different identity is a new instance, which supersedes the earlier one at its start | rules A2, A7 |  |
+| `active-state/equal-identity-same-instant` | Two records with equal identity at one instant are one instance, as last received | rules A2 | `different-identity-same-instant` |
+| `active-state/equal-start-last-write-wins` | At an equal start, the instance whose last write was received later supersedes | rules A7 | `different-identity-same-instant` |
+| `active-state/exclusive-overlap-reported` | Overlapping instances of an exclusive kind that does not supersede are both reported, as an overlap | rules A9 | `exclusive-supersedes` |
+| `active-state/exclusive-supersedes` | The same records under a superseding kind: one instance | rules A7 |  |
+| `active-state/field-unit-from-declaration` | A field's unit is reported from its typed path | rules A11 | `field-unit-undeclared` |
+| `active-state/field-unit-undeclared` | A path with no declared unit carries none | rules A11 |  |
+| `active-state/forced-mode-is-applied-not-requested` | A constraint-forced mode is in the applied layer only, when the kind declares a requested carrier | rules A10 | `forced-mode-without-requested-carrier` |
+| `active-state/forced-mode-without-requested-carrier` | Without a requested carrier, the forced record is also taken as a request | rules A10 |  |
+| `active-state/in-order-same-result` | Received in time order, the same instances | rules A7 |  |
+| `active-state/marker-at-next-start` | An end marker at the instant the next target starts ends only the earlier one | rules A5 | `zero-duration-ends-instance` |
+| `active-state/no-end-marker` | Without an end marker the instance runs its duration | rules A5 |  |
+| `active-state/overlay-returns-to-open-ended` | A timed instance applies over an open-ended one, which applies again when it ends | rules A8 | `supersedes-without-overlay` |
+| `active-state/permanent-after-temporary-supersedes` | A permanent switch that starts during a temporary one supersedes it | rules A7, A8 |  |
+| `active-state/permanent-profile-switch-returns` | A permanent profile switch (duration 0) stays active and applies again after a temporary one | rules A4, A8 | `permanent-after-temporary-supersedes` |
+| `active-state/products-never-supersede-each-other` | Instances of two products on one slot are both reported; neither ends the other | rules A1 | `same-product-supersedes` |
+| `active-state/repost-before-delete` | A re-post received before the delete of the old record, and a delete that names only _id | rules A2, A6 | `delete-and-repost-amends` |
+| `active-state/repost-same-identity-amends` | A re-post with the same identity amends the instance it names | rules A2, A5 | `different-identity-supersedes` |
+| `active-state/requested-and-applied` | With the applied record, both layers are reported | rules A10 |  |
+| `active-state/requested-without-applied` | A request with no applied record is reported as requested only | rules A10 | `requested-and-applied` |
+| `active-state/running-mode-open-ended` | The same mode, not shortened, stays active | rules A4 |  |
+| `active-state/running-mode-original-duration` | A loop-disabled mode shortened in originalDuration ends, whatever its placeholder wire duration | rules A4, A5 | `running-mode-open-ended` |
+| `active-state/same-product-supersedes` | The same records from one product: the later supersedes | rules A7 |  |
+| `active-state/sampled-state-latest-value` | A sampled-state kind is the latest sample's value, each sample holding until the next | rules A13 |  |
+| `active-state/scheduled-not-deleted` | The same scheduled record, not deleted, is active from its start | rules A2 |  |
+| `active-state/soft-delete-before-start` | A soft delete before the start is a deletion before start | rules A6 | `soft-delete-not-applied` |
+| `active-state/soft-delete-not-applied` | The same scheduled target, not deleted, is active | rules A6 |  |
+| `active-state/state-version-amended` | An amendment to an active instance changes the state version | rules A12 |  |
+| `active-state/state-version-content-changed` | An amendment that changes only what an active instance says changes the state version | rules A12 | `state-version-tracks-active-set` |
+| `active-state/state-version-tracks-active-set` | The state version is stable while the active set is, and changes when it changes | rules A12 | `state-version-amended` |
+| `active-state/supersedes-without-overlay` | Without overlay, a superseding kind ends the open-ended instance for good | rules A7, A8 |  |
+| `active-state/unattributed-applied-is-not-an-instance` | Per-cycle values that name no intent are not an applied instance | rules A10 | `applied-duration-in-declared-unit` |
+| `active-state/undeclared-unit-kind-unreadable` | A kind whose duration has no declared unit yields nothing and is reported unreadable; other kinds still answer | rules A11 | `no-end-marker` |
+| `active-state/zero-duration-ends-instance` | A zero-duration record ends the instance active at its time and is not an instance | rules A5 | `no-end-marker` |
 <!-- END GENERATED: state-intent-cases -->

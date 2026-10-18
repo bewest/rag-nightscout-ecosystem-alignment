@@ -1,0 +1,43 @@
+# Synthetic. SPEC-SYNC-TRANSPORT; sync-transport §4. Steps are logical; expectations authored by hand.
+id: no-write-in-flight
+title: With nothing in flight the cursor reaches the latest value
+rules:
+- T9
+description: With nothing in flight the cursor reaches the latest value.
+collections:
+- treatments
+writes:
+- collection: treatments
+  id: t1
+  srvModified: 10
+  takenAt: 0
+  committedAt: 0
+- collection: treatments
+  id: t2
+  srvModified: 20
+  takenAt: 0
+  committedAt: 0
+- collection: treatments
+  id: t3
+  srvModified: 30
+  takenAt: 1
+  committedAt: 1
+calls:
+- kind: history
+  at: 1
+  limit: 5
+  cursor: 0
+expected:
+  calls:
+  - kind: history
+    collections:
+      treatments:
+      - t1
+      - t2
+      - t3
+    cursor: 30
+    complete: true
+  received:
+  - t1
+  - t2
+  - t3

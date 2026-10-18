@@ -43,6 +43,11 @@ const SOURCES = {
     'docs/30-design/platform/nightscout-devicestatus-profile-fidelity-2026-09-10.md',
     'docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md',
   ],
+  'sync-transport': [
+    'docs/30-design/tenancy/write-contract-spec-2026-10-07.md',
+    'docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md',
+    'docs/30-design/platform/PROPOSAL-replay-fidelity-changes-2026-09-11.md',
+  ],
   'state-intent': [
     'docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md',
     'docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md',

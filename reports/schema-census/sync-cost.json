@@ -5,38 +5,46 @@
  "cycles_per_day": 288,
  "clients": {
   "AndroidAPS": {
-   "source": "AndroidAPS/core/nssdk/src/main/kotlin/app/aaps/core/nssdk/networking/NightscoutRemoteService.kt",
+   "source": "AndroidAPS/core/nssdk/src/commonMain/kotlin/app/aaps/core/nssdk/networking/NightscoutApi.kt",
+   "commit": "7e1d537d49",
    "api_version": "v3",
    "endpoints": [
     "DELETE v3/entries/{identifier}",
-    "DELETE v3/food",
+    "DELETE v3/settings/{identifier}",
     "DELETE v3/treatments/{identifier}",
     "GET v3/devicestatus/history/{from}",
+    "GET v3/entries",
     "GET v3/entries/history/{from}",
-    "GET v3/entries?sort=date",
-    "GET v3/entries?sort\\$desc=date&type=sgv",
     "GET v3/food",
-    "GET v3/food/history/{from}",
     "GET v3/lastModified",
+    "GET v3/profile",
     "GET v3/profile/history/{from}",
-    "GET v3/profile?sort\\$desc=date&limit=1",
+    "GET v3/settings",
+    "GET v3/settings/history/{from}",
+    "GET v3/settings/{identifier}",
     "GET v3/status",
+    "GET v3/treatments",
     "GET v3/treatments/history/{from}",
-    "GET v3/treatments?sort=created_at",
+    "PATCH v3/entries/{identifier}",
+    "PATCH v3/settings/{identifier}",
+    "PATCH v3/treatments/{identifier}",
     "POST v3/devicestatus",
     "POST v3/entries",
     "POST v3/food",
     "POST v3/profile",
-    "POST v3/treatments"
+    "POST v3/settings",
+    "POST v3/treatments",
+    "PUT v3/settings/{identifier}"
    ],
-   "endpoint_count": 20,
+   "endpoint_count": 26,
    "has_watermark": true,
    "has_delta_endpoint": true,
-   "read_endpoints": 12,
-   "write_endpoints": 5
+   "read_endpoints": 13,
+   "write_endpoints": 10
   },
   "Loop/NightscoutKit": {
    "source": "NightscoutKit/Sources/NightscoutKit/NightscoutClient.swift",
+   "commit": "4ec9fd12a1",
    "api_version": "v1",
    "endpoints": [
     "/api/v1/devicestatus",
@@ -55,6 +63,7 @@
   },
   "Trio": {
    "source": "Trio/Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift",
+   "commit": "0b29cd5341",
    "api_version": "v1",
    "endpoints": [
     "/api/v1/devicestatus.json",
@@ -72,11 +81,11 @@
  },
  "against_a_batched_design": {
   "AndroidAPS": {
-   "requests_per_cycle_upper_bound": 20,
-   "requests_per_day_upper_bound": 5760,
+   "requests_per_cycle_upper_bound": 26,
+   "requests_per_day_upper_bound": 7488,
    "batched_requests_per_cycle": 2,
    "batched_requests_per_day": 576,
-   "reduction_factor": 10.0
+   "reduction_factor": 13.0
   },
   "Loop/NightscoutKit": {
    "requests_per_cycle_upper_bound": 7,

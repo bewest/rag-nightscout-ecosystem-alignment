@@ -16562,45 +16562,72 @@ items:
     title: "Platform spec L4: the change and sync specification (write step, re-send rule, cursor, history, socket delivery, definition-version migration)"
     parcel: platform
     repo: rag-nightscout-ecosystem-alignment
-    branch: main
-    base: main@5a9a49cc
-    state: not-started
+    branch: docs/platform-spec-index-2026-10-18
+    base: main@df621fa7
+    state: done
     pr: []
     blast_radius: >
-      docs/30-design/platform/spec/sync-transport.md (new) from the write
-      contract §2-§3 and §6.1, the hub-sync design §2-§3.2, the
-      replay-fidelity proposal §1 and §3.5's fallback rule; pointers in
-      those documents; the index row; a SOURCES entry in the gate. Unlike
-      the other extractions it also has to specify what no document does
-      yet: socket delivery of typed records, cursor semantics under
-      concurrent writers, and migrating stored typed records when a
-      definition changes version.
+      docs/30-design/platform/spec/sync-transport.md (new): the decided
+      write path (T1-T4, from the write contract and lib/server/srv-dates.js
+      on dev), the cost re-measured, and proposed rules for one read and one
+      write across collections, the merged cursor, one opaque cursor, a low
+      watermark, the socket as the fast path, typed records on the socket and
+      definition versions (T5-T15). tools/nsschema/sync_cursor.py and
+      test_sync_cursor.py (new), 9 hand-authored cases under
+      specs/sync/conformance/sync-transport/. tools/nsschema/sync_cost.py
+      reads AndroidAPS's Ktor client (NightscoutApi.kt) and records the
+      commit read; reports/schema-census/sync-cost.json regenerated. Pointers
+      in the write contract, hub-sync §3.2 and the replay-fidelity proposal;
+      index row. Ships nothing.
     review: maintainer
     operator_visible: ""
     semver: n/a
-    semver_reason: specification in this repository; ships nothing
+    semver_reason: specification and repository tooling; ships nothing
     register: []
     gates:
-      - no-gate: >
-          Not started. The gate will be `node tools/queue/gates/platform-spec.js
-          sync-transport`, red under each control break. The new parts need
-          conformance cases of their own and a reference function, gated
-          like the registration suites, each rejection paired with a passing
-          control and each rule shown non-vacuous by a weakening; and any
-          cost claim reproduced with `make schema-sync-cost` or measured,
-          never quoted.
+      - run: node tools/queue/gates/platform-spec.js sync-transport
+        kind: static
+        describe: >
+          FAILS when the spec is missing, carries amendment narration, names
+          a case that does not exist, states a count that differs from its
+          table, or when the index, the write contract, the hub-sync design
+          or the replay-fidelity proposal does not link to it. GREEN on
+          2026-10-18: 23 checks, 9 cases.
+      - run: python3 -m pytest -q tools/nsschema/test_sync_cursor.py
+        kind: unit
+        describe: >
+          FAILS when the cursor reference does not reproduce a case's
+          hand-authored calls and received records, or when a client reading
+          until complete misses a visible write. GREEN on 2026-10-18: 39
+          passed, 1 skipped (a case that starts past some writes).
+      - run: python3 -m tools.nsschema.spec_cases sync-transport --check
+        kind: static
+        describe: >
+          FAILS when the spec's case table differs from the case files.
     blocks_on: [SPEC-ID]
     evidence:
+      - docs/30-design/platform/spec/sync-transport.md
+      - reports/schema-census/sync-cost.json
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
-      - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
-      - docs/30-design/platform/PROPOSAL-replay-fidelity-changes-2026-09-11.md
     notes: >
-      The cost-effectiveness goal (websocket plus REST, typed definitions,
-      less work to fully sync) lands here. Constraint carried from the write
-      contract: BF-164 (only API v3 writes reach the storage socket) is held
-      out pending a lab measurement and the AndroidAPS authors' answer, so
-      the spec states socket delivery for typed records without assuming
-      that question's outcome.
+      Cost re-measured, not quoted: AndroidAPS dev 7e1d537d49 moved to a
+      Ktor client the tool did not read (it reported "source not present");
+      26 endpoints, upper bound 7,488 a day, including dev-only settings
+      calls; the dated documents' 20 was the earlier client. Loop
+      (NightscoutKit 4ec9fd12a1) 7 and Trio (0b29cd5341) 5 unchanged.
+      Reading history paging on dev found srv-dates.js already makes
+      srvModified unique and monotonic per process, because a tie at a page
+      boundary would lose records; the remaining in-flight window (a value
+      taken before the write commits) is stated as open, not measured. T10's
+      event cursor is the low watermark, not the record's srvModified: with
+      a write in flight, the record's own value would lose that write after
+      a reconnect (case event-carries-low-watermark). Non-vacuity, 2026-10-18:
+      five weakenings of sync_cursor.py, each red (cursor as the largest
+      value returned; in-flight writes ignored; event cursor as the record's
+      srvModified; readable collections ignored; always complete). The gate
+      breaks (narration, case, count, pointer) were each red with their own
+      finding; the test break is CONTROL-INVALID (the spec cites no test).
+      Proposed rules carry their choices in §8 for the maintainer.
 
   - id: SPEC-AUTHORITY
     title: "Platform spec L5: the authority specification (binding, credential kind, owner actions, roles and provenance, command routing; delegation and proposals as open design)"

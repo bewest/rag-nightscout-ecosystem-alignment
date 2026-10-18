@@ -8,7 +8,9 @@ decisions this builds on are in the
 [execution plan §4.1](nightscout-multitenancy-execution-plan-2026-09-14.md#41-the-write-contract-belongs-behind-the-seam)
 and the [storage seam interface §4.4, §5 and §10](nightscout-storage-seam-interface-2026-09-14.md).
 Item state: [`queue/QUEUE.md`](../../../queue/QUEUE.md). The match order per collection and the
-two-id reply are maintained in the [identity specification](../platform/spec/identity.md). Defect facts:
+two-id reply are maintained in the [identity specification](../platform/spec/identity.md); the write
+step, the re-send outcomes and the change event in the
+[sync-transport specification](../platform/spec/sync-transport.md) §2. Defect facts:
 [backfix register](../remedial/nightscout-backfix-register.md).
 
 Every claim carries one of two marks. **[M]** measured: by the commands in §1.1 and §8, on the refs

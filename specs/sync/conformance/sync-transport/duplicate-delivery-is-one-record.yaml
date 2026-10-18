@@ -1,0 +1,34 @@
+# Synthetic. SPEC-SYNC-TRANSPORT; sync-transport §4. Steps are logical; expectations authored by hand.
+id: duplicate-delivery-is-one-record
+title: A record received by event and by history is one record
+rules:
+- T10
+description: A record received by event and by history is one record.
+collections:
+- treatments
+writes:
+- collection: treatments
+  id: t1
+  srvModified: 10
+  takenAt: 0
+  committedAt: 0
+calls:
+- kind: event
+  id: t1
+- kind: history
+  at: 1
+  limit: 5
+  cursor: 0
+expected:
+  calls:
+  - kind: event
+    id: t1
+    cursor: 10
+  - kind: history
+    collections:
+      treatments:
+      - t1
+    cursor: 10
+    complete: true
+  received:
+  - t1

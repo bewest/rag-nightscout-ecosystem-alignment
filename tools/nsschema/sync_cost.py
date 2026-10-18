@@ -25,12 +25,22 @@ whichever API version it is on.
 import argparse
 import json
 import re
+import subprocess
 from pathlib import Path
 
 from . import corpus
 
-# (label, client source file, endpoint-extraction pattern, api version)
+# The Ktor client AndroidAPS moved to: each `suspend fun` names its method as
+# `HttpMethod.X` and its path as `nsUrl("v3", "entries", ...)`, where a bare
+# identifier is a path parameter.
+KTOR = "ktor"
+
+# (label, client source file, endpoint-extraction pattern, api version); the
+# first file present is read, so a release that still has the older client is
+# measured too.
 CLIENTS = [
+    ("AndroidAPS", "AndroidAPS/core/nssdk/src/commonMain/kotlin/app/aaps/core/nssdk/"
+     "networking/NightscoutApi.kt", KTOR, "v3"),
     ("AndroidAPS", "AndroidAPS/core/nssdk/src/main/kotlin/app/aaps/core/nssdk/"
      "networking/NightscoutRemoteService.kt",
      r'@(GET|POST|PUT|DELETE)\("([^"]+)"\)', "v3"),
@@ -46,10 +56,34 @@ CYCLE_MINUTES = 5
 CYCLES_PER_DAY = 24 * 60 // CYCLE_MINUTES
 
 
+def _ktor(text):
+    found = []
+    for body in re.split(r"\n\s*suspend fun ", text)[1:]:
+        method = re.search(r"HttpMethod\.(\w+)", body)
+        url = re.search(r"nsUrl\(([^)]*)\)", body)
+        if not method or not url:
+            continue  # declared but never sent
+        segments = [s.strip() for s in url.group(1).split(",") if s.strip()]
+        path = "/".join(s.strip('"') if s.startswith('"') else "{" + re.split(r"[.(]", s)[0] + "}"
+                        for s in segments)
+        found.append(f"{method.group(1).upper()} {path}")
+    return sorted(set(found))
+
+
+def _commit(path: Path):
+    try:
+        return subprocess.run(["git", "-C", str(path.parent), "rev-parse", "--short=10", "HEAD"],
+                              capture_output=True, text=True, check=True).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        return None
+
+
 def extract(root: Path, rel, pattern):
     path = root / "externals" / rel
     if not path.is_file():
         return None
+    if pattern == KTOR:
+        return _ktor(path.read_text(errors="replace"))
     found = []
     for match in re.finditer(pattern, path.read_text(errors="replace")):
         groups = [g for g in match.groups() if g]
@@ -65,14 +99,19 @@ def main(argv=None):
     root = corpus.repo_root()
     clients = {}
     for label, rel, pattern, version in CLIENTS:
+        if label in clients:
+            continue
         endpoints = extract(root, rel, pattern)
         if endpoints is None:
-            print(f"  {label:22s} source not present, skipped")
+            if not any(l == label and extract(root, r, p) is not None for l, r, p, _ in CLIENTS):
+                print(f"  {label:22s} source not present, skipped")
             continue
         reads = [e for e in endpoints if e.startswith("GET") or "/api/v1" in e]
-        writes = [e for e in endpoints if e.startswith("POST") or e.startswith("PUT")]
+        writes = [e for e in endpoints if e.startswith("POST") or e.startswith("PUT")
+                  or e.startswith("PATCH")]
         clients[label] = {
             "source": rel,
+            "commit": _commit(root / "externals" / rel),
             "api_version": version,
             "endpoints": endpoints,
             "endpoint_count": len(endpoints),

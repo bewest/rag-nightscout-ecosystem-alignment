@@ -1,0 +1,26 @@
+# Synthetic. SPEC-SYNC-TRANSPORT; sync-transport §4. Steps are logical; expectations authored by hand.
+id: nothing-new
+title: A read with nothing newer returns no records and keeps the cursor
+rules:
+- T6
+description: A read with nothing newer returns no records and keeps the cursor.
+collections:
+- treatments
+writes:
+- collection: treatments
+  id: t1
+  srvModified: 10
+  takenAt: 0
+  committedAt: 0
+calls:
+- kind: history
+  at: 1
+  limit: 5
+  cursor: 10
+expected:
+  calls:
+  - kind: history
+    collections: {}
+    cursor: 10
+    complete: true
+  received: []

@@ -33,6 +33,7 @@ PRIMITIVES = ROOT / "specs" / "sync" / "primitives.yaml"
 # Which cases each specification's table covers: whole directories, or a list.
 LAYERS = {
     "records": {"primitives": PRIMITIVES, "proposed": PRIMITIVES},
+    "sync-transport": {"cases": [("sync-transport/", CASES / "sync-transport")]},
     "registration": {"cases": [("", CASES), ("instances/", CASES / "instances"), ("quirks/", CASES / "quirks")]},
     "state-intent": {
         "kinds": ["loop", "trio", "androidaps"],
@@ -155,6 +156,8 @@ def rows(layer, block="cases"):
         reasons = sorted(codes(response, set()))
         if reasons:
             expected += "; " + ", ".join(reasons)
+        if not expected and case.get("rules"):
+            expected = "rules " + ", ".join(case["rules"])
         control = case.get("control")
         out.append("| `%s%s` | %s | %s | %s |" % (
             prefix, path.stem, cell(case.get("title", "")), cell(expected),

@@ -214,6 +214,8 @@ is least complete.
 
 ### 3.2 The contract the hub returns
 
+*The sync read, write and cursor rules are maintained in the [sync-transport specification](spec/sync-transport.md) §4; the measured cost in its §3.*
+
 Everything the hub offers is derived from the registration, so a controller
 never negotiates a query shape at request time:
 

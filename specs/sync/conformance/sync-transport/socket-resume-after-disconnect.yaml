@@ -1,0 +1,51 @@
+# Synthetic. SPEC-SYNC-TRANSPORT; sync-transport §4. Steps are logical; expectations authored by hand.
+id: socket-resume-after-disconnect
+title: A client that reconnects reads history from the cursor its last event carried
+rules:
+- T10
+description: A client that reconnects reads history from the cursor its last event carried.
+collections:
+- treatments
+writes:
+- collection: treatments
+  id: t1
+  srvModified: 10
+  takenAt: 0
+  committedAt: 0
+- collection: treatments
+  id: t2
+  srvModified: 20
+  takenAt: 1
+  committedAt: 1
+- collection: treatments
+  id: t3
+  srvModified: 30
+  takenAt: 3
+  committedAt: 3
+calls:
+- kind: event
+  id: t1
+- kind: event
+  id: t2
+- kind: history
+  at: 4
+  limit: 5
+  cursor: last
+expected:
+  calls:
+  - kind: event
+    id: t1
+    cursor: 10
+  - kind: event
+    id: t2
+    cursor: 20
+  - kind: history
+    collections:
+      treatments:
+      - t3
+    cursor: 30
+    complete: true
+  received:
+  - t1
+  - t2
+  - t3

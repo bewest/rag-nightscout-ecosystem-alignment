@@ -1,0 +1,44 @@
+# Synthetic. SPEC-SYNC-TRANSPORT; sync-transport §4. Steps are logical; expectations authored by hand.
+id: event-carries-low-watermark
+title: A socket event carries the low watermark, not its record's srvModified
+rules:
+- T9
+- T10
+control: socket-resume-after-disconnect
+description: t3 is emitted while t2 is still in flight. Had the event carried 30, the client would resume
+  from 30 after a disconnect and never receive t2.
+collections:
+- treatments
+writes:
+- collection: treatments
+  id: t2
+  srvModified: 20
+  takenAt: 0
+  committedAt: 2
+- collection: treatments
+  id: t3
+  srvModified: 30
+  takenAt: 1
+  committedAt: 1
+calls:
+- kind: event
+  id: t3
+- kind: history
+  at: 3
+  limit: 5
+  cursor: last
+expected:
+  calls:
+  - kind: event
+    id: t3
+    cursor: 19
+  - kind: history
+    collections:
+      treatments:
+      - t2
+      - t3
+    cursor: 30
+    complete: true
+  received:
+  - t2
+  - t3

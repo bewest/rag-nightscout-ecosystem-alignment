@@ -2174,3 +2174,54 @@ controls:
     proves: >
       run 2026-10-18: a copy of the spec with the generated ApsSnapshot row
       deleted is reported stale and exits 1.
+
+  - gate: |-
+      node tools/queue/gates/platform-spec.js sync-transport
+    cwd: .
+    control: |-
+      tools/queue/gates/platform-spec-control.sh sync-transport narration
+    positive-control: |-
+      node tools/queue/gates/platform-spec.js sync-transport
+    control-kind: static
+    proves: >
+      run 2026-10-18: the narration break exits 1 with the one finding "no
+      amendment narration /\bwithdrawn\b/i". The case, count and pointer
+      breaks were run the same day, each exiting 1 with exactly its own
+      finding; the test break exits 90 CONTROL-INVALID.
+
+  - gate: |-
+      python3 -m tools.nsschema.spec_cases sync-transport --check
+    cwd: .
+    control: |-
+      T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && sed '/sync-transport\/nothing-new/d' docs/30-design/platform/spec/sync-transport.md > "$T/s.md" && python3 -m tools.nsschema.spec_cases sync-transport --check --spec "$T/s.md"
+    positive-control: |-
+      python3 -m tools.nsschema.spec_cases sync-transport --check
+    control-kind: static
+    proves: >
+      run 2026-10-18: a copy with the generated row for
+      sync-transport/nothing-new deleted is reported stale and exits 1.
+
+  - gate: |-
+      python3 -m pytest -q tools/nsschema/test_sync_cursor.py
+    cwd: .
+    control: |-
+      tools/queue/gates/nsschema-weakened.sh sync_cursor.py "    complete = not truncated_at" "    complete = True" test_sync_cursor.py
+    positive-control: |-
+      python3 -m pytest -q tools/nsschema/test_sync_cursor.py
+    control-kind: unit
+    proves: >
+      run 2026-10-18: a scratch copy whose history reads always report
+      complete fails merged-cursor-min-over-truncated (exit 1). The script
+      exits 90 CONTROL-INVALID if its replaced text no longer occurs once.
+
+  - gate: |-
+      python3 -m pytest -q tools/nsschema/test_active_state.py
+    cwd: .
+    control: |-
+      tools/queue/gates/nsschema-weakened.sh active_state.py "    for at in markers:" "    for at in []:" test_active_state.py
+    positive-control: |-
+      python3 -m pytest -q tools/nsschema/test_active_state.py
+    control-kind: unit
+    proves: >
+      run 2026-10-18: a scratch copy that ignores zero-duration end markers
+      fails zero-duration-ends-instance and marker-at-next-start (exit 1).

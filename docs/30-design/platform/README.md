@@ -48,7 +48,7 @@ reader brings, and each has its own rules, conformance cases and gate.
 | [registration](spec/registration.md) | how does a controller declare what its data means, and how does a hub accept it and attribute what is written? | L2 | G1–G5, Q1–Q4 | written | `SPEC-REGISTRATION` |
 | [state and intent](spec/state-intent.md) | what was requested, applied and active, who started it, and why did it end? | L3 | S1–S12 | written | `SPEC-STATE-INTENT` |
 | `commands` | how does a request or a proposal reach a controller, and how does its outcome come back? | L3, L5 | C | queued | `SPEC-REG-COMMANDS` |
-| `sync-transport` | how are writes matched, ordered and delivered over REST and the socket, and at what cost? | L4 | T | queued | `SPEC-SYNC-TRANSPORT` |
+| [sync-transport](spec/sync-transport.md) | how are writes matched, ordered and delivered over REST and the socket, and at what cost? | L4 | T1–T15 | written | `SPEC-SYNC-TRANSPORT` |
 | `authority` | who may register, write, own, route or act for someone else? | L5 | A | queued | `SPEC-AUTHORITY` |
 
 **Why these boundaries.** Each boundary falls where the reader, the rate of change or the review
@@ -146,11 +146,11 @@ shrinks when §15 and routing move out.
 
 | | |
 |---|---|
-| **Spec today** | [write contract](../tenancy/write-contract-spec-2026-10-07.md) §2–§3 (one write step, the re-send rule, every path's writes reaching the storage socket); [hub-sync §3.2](nightscout-hub-sync-architecture-2026-09-11.md#32-the-contract-the-hub-returns) (cursor envelope and batch write); [replay-fidelity proposal §1](PROPOSAL-replay-fidelity-changes-2026-09-11.md#1-sync-cost-should-be-o1-in-the-number-of-resources) (one history read across collections on API v3); [registration §6](spec/registration.md#6-the-controllers-side-fallback-and-refused-writes) (fallback, load versus definite refusals); [D6](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions) (the change feed under multi) |
-| **Evidence** | [hub-sync §2](nightscout-hub-sync-architecture-2026-09-11.md#2-what-sync-costs-now) (`make schema-sync-cost`: up to 5,760, 2,016 and 1,440 requests a day for AndroidAPS, Loop and Trio against 576 for two requests a cycle; source-derived upper bounds, not traffic); the write contract's measured matrix |
-| **Open** | `WRITE-CONTRACT`, `WC-STEP-PATCH`, `ID-BATCH-RESULTS` (blocked). Not specified anywhere: socket delivery of typed records, cursor semantics under concurrent writers, and migrating stored typed records when a definition changes version (rule 4 of the D18 addendum converts nothing without a declared mapping) |
+| **Spec** | [spec/sync-transport.md](spec/sync-transport.md): rules T1–T15 (the write step, re-send outcomes, server write times, the change event; the measured cost; the sync read and write, the merged cursor, one opaque cursor, the low watermark, the socket as fast path; typed records on the socket; definitions and versions), 9 cases. Drawn from the [write contract](../tenancy/write-contract-spec-2026-10-07.md) §2–§3 and §6.1, [hub-sync §3.2](nightscout-hub-sync-architecture-2026-09-11.md#32-the-contract-the-hub-returns) and the [replay-fidelity proposal §1](PROPOSAL-replay-fidelity-changes-2026-09-11.md#1-sync-cost-should-be-o1-in-the-number-of-resources) |
+| **Evidence** | `make schema-sync-cost` on 2026-10-18: upper bounds of 7,488, 2,016 and 1,440 requests a day for AndroidAPS (`7e1d537d49`, 26 endpoints), Loop and Trio, against 576 for two requests a cycle (sync-transport §3; source-derived, not traffic); the write contract's measured matrix; `lib/server/srv-dates.js` on `dev` `fade2299` |
+| **Open** | `WRITE-CONTRACT`, `WC-STEP-PATCH`, `ID-BATCH-RESULTS` (blocked); BF-164 (which writes reach the socket); the choices in sync-transport §8; the in-flight window under `single` |
 | **Audit** | one change event per write call; a matched re-send stores no second copy and is answered with the stored ids; each mapping the hub applies is recorded as `quirksApplied` |
-| **Status** | the write matrix is evidenced; the write step is specified; the typed sync transport is not |
+| **Status** | the write path is decided and specified (T1–T4; T3 merged on `dev`); the sync read, cursor and socket rules are proposed and specified with cases (`SPEC-SYNC-TRANSPORT`); typed socket delivery and versions are proposed without cases |
 
 ## L5 Authority
 

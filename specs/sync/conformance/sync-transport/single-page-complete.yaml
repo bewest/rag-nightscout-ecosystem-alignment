@@ -1,0 +1,59 @@
+# Synthetic. SPEC-SYNC-TRANSPORT; sync-transport §4. Steps are logical; expectations authored by hand.
+id: single-page-complete
+title: With a large enough limit one page is complete
+rules:
+- T6
+description: With a large enough limit one page is complete.
+collections:
+- treatments
+- entries
+writes:
+- collection: treatments
+  id: t1
+  srvModified: 10
+  takenAt: 0
+  committedAt: 0
+- collection: treatments
+  id: t2
+  srvModified: 20
+  takenAt: 0
+  committedAt: 0
+- collection: treatments
+  id: t3
+  srvModified: 30
+  takenAt: 0
+  committedAt: 0
+- collection: entries
+  id: e1
+  srvModified: 15
+  takenAt: 0
+  committedAt: 0
+- collection: entries
+  id: e2
+  srvModified: 40
+  takenAt: 0
+  committedAt: 0
+calls:
+- kind: history
+  at: 1
+  limit: 10
+  cursor: 0
+expected:
+  calls:
+  - kind: history
+    collections:
+      treatments:
+      - t1
+      - t2
+      - t3
+      entries:
+      - e1
+      - e2
+    cursor: 40
+    complete: true
+  received:
+  - e1
+  - e2
+  - t1
+  - t2
+  - t3
