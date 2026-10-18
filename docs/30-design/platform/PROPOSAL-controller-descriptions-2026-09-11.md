@@ -1,16 +1,22 @@
-# Proposal: let Nightscout describe the controllers it already recognises
+# Controller descriptions: Nightscout describes the controllers it already recognises
 
-*Contributor-facing.* **Snapshot, written 2026-09-11. Current: the only statement of the
-controller-description proposal.** A proposal to the named projects, not adopted by any of them.
+*What this is: a proposal (contributor-facing). Read after the [hub-and-spoke sync
+sketch](nightscout-hub-sync-architecture-2026-09-11.md); leads to the [replay-fidelity
+changes](PROPOSAL-replay-fidelity-changes-2026-09-11.md) and the [registration
+specification](spec/registration.md).* **Snapshot, written 2026-09-11. Current: the only statement of the
+controller-description proposal.** Status: proposed to the named projects; the proposal to the controller
+projects is `PROPOSAL-REG-CONTROLLERS`. **Corrected in place 2026-10-18:** §4 says what the proposal
+is and which ideas it takes from Kubernetes, mapped to D18–D20 as specified.
 §4 is superseded in part by **D18** (two-tier registration, 2026-10-09). Its §5 `decomposesTo` mechanism is the direction adopted for `devicestatus` storage by
 **D11** — [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
 Measurements are over the 11-site corpus (snapshots 2026-04-01 and 2026-04-26). §2.2 was added
 2026-09-27, checked against Nocturne `42275c81`. **One page of proposal, then a worked example, then
 the evidence.**
 
-> **This is not Kubernetes.** There is no control plane, no admission
-> controller, no operator, no CRDs, and nothing a controller must call before
-> it is allowed to write. See [§4](#4-what-this-is-not).
+> **Phase 1 is a file a controller never has to call.** Descriptions are fetched, advisory and
+> generated from measurement; a controller writes as it does today. The controller-owned tier
+> that D18 adds takes several ideas from Kubernetes, credited in
+> [§4](#4-what-the-proposal-is-and-what-it-takes-from-kubernetes).
 
 ---
 
@@ -142,9 +148,9 @@ that disagrees overrides it by publishing its own. The precedence is the
 same three-way order in both places — controller-published, then
 operator-declared, then structurally inferred.
 
-**What this is still not:** a required endpoint. A hub that does not serve it
+**It is discovery.** The endpoint is optional: a hub that does not serve it
 behaves exactly as it does today, and a client that cannot fetch it falls back
-to what it does today. It is discovery, not dependency.
+to what it does today.
 
 ### 2.2 Two halves: who a controller is, and what its data means
 
@@ -175,7 +181,7 @@ Then one identifier connects both:
 | a new controller | registers itself with its `software_id` and the scopes it asks for | optionally publishes its description under that id (§3, "one POST, once per release") |
 | a reader | learns who wrote a document | learns what the document means, from the id the write carried |
 
-**What this keeps from §4.** Registration stays wherever a server already requires it, and nowhere
+**What this keeps from phase 1 (§4).** Registration stays wherever a server already requires it, and nowhere
 else. On cgm-remote-monitor, a controller still writes with a token and never has to call anything.
 The description stays advisory: fetched, not called; describing, not gating. A controller with no
 description is treated as it is today.
@@ -193,7 +199,7 @@ The [control-plane reconciliation](../tenancy/nightscout-control-plane-reconcili
 covers the authority questions this raises. No lab has yet run a synthetic controller or agent
 through both halves. That would be the first measurement.
 
-**What it would ask of each project** (none has been asked):
+**What it proposes to each project:**
 
 - **Nocturne:** let a known-app entry, or a registration, point to a description by `software_id`,
   and read the description where its detection strategies and decomposers now hard-code the shape.
@@ -228,32 +234,45 @@ concession to get adoption — it is forced by the evidence: Loop has made 24
 commits in six months, none touching Nightscout, and is 9 of 11 sites in the
 corpus. A proposal Loop must act on is a proposal that does not happen.
 
-## 4. What this is *not*
+## 4. What the proposal is, and what it takes from Kubernetes
 
-> **Superseded in part by D18** ([execution plan §2.6.1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md)),
-> 2026-10-09. The table below describes the **well-known** tier, which keeps every property listed.
-> D18 adds a **controller-owned** tier: dynamic, typed registrations a controller publishes for its
-> own features, from which the hub derives typed API. The "static, not CRD-style" and "no new
-> endpoints" rows do not apply to that tier.
+> **Corrected in place 2026-10-18.** This section said what the proposal is not, and set it against
+> Kubernetes. It now says what the proposal is and credits the ideas it takes from Kubernetes,
+> mapped to D18–D20 as the [registration](spec/registration.md), [identity](spec/identity.md),
+> [state and intent](spec/state-intent.md) and [authority](spec/authority.md) specifications state
+> them. Earlier text: [§4 at `85c645c8`](https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/85c645c8b003b61dc07ea31f8a7002711493b18a/docs/30-design/platform/PROPOSAL-controller-descriptions-2026-09-11.md#4-what-this-is-not).
 
-"Registration" is easy to misread as a control plane. Concretely:
+**Phase 1, the well-known tier.** A controller description is a file per *controller product*,
+generated from measurement, shipped with the hub, reviewed in a pull request and served at a
+`.well-known` path. It is advisory: readers fetch it, and it describes documents that already
+exist. A controller writes with a token as it does today and calls nothing first; a hub that serves
+no description, and a reader that cannot fetch one, behave as they do today. The closest everyday
+analogy is a browser's list of known user agents served at a `.well-known` path: a description of
+something that already exists, which the thing described may correct.
 
-| Not this | Actually this |
-|---|---|
-| A control plane that must be running | A file. If it is missing, everything works as it does today |
-| Something a controller must call before writing | Controllers never have to call anything |
-| Dynamic schema upload, CRD-style | Static descriptions, shipped in the repo, reviewed in a PR |
-| A new API version | No new endpoints in phase 1 |
-| A validator that rejects documents | It describes; it does not gate. Nothing is rejected that is not rejected today |
-| Per-tenant configuration | One file per *controller product*, not per user or per site |
+**The controller-owned tier ([D18](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#261-d18--two-tier-controller-registration)).**
+A controller that wants typed support for its own features submits a registration, and the hub
+derives typed API from it. Several ideas in that tier come from what Kubernetes does well for
+declared, typed resources:
 
-The closest familiar thing is not a Kubernetes CRD. It is **a browser's list
-of known user agents**, or **`.well-known`**: a description of something that
-already exists, kept where everyone can read it, which the thing described
-may correct but need not publish. §2.1 takes that from analogy to mechanism —
-the catalogue is *served* at a well-known path — but the properties that make
-it not-a-control-plane survive the change: it is fetched, not called; it is
-advisory, not gating; and its absence is indistinguishable from today.
+| idea | in Kubernetes | here |
+|---|---|---|
+| typed extension resources | CustomResourceDefinitions add typed kinds, each versioned, to the API | a registration declares typed kinds, extensions, settings and inputs; each kind and extension is versioned on its own, and readers ignore members they do not know (G1, G4, [registration §3](spec/registration.md#3-the-grammar)); definitions are content-addressed, so releases and builds coexist ([§7](spec/registration.md#7-definitions)) |
+| spec and status | `spec` is what is wanted, `status` what is observed | a controller declares where it records what was *requested* and where it reports what it *applied*, as separate carriers ([state and intent S7](spec/state-intent.md#2-rules)); a registration's response reports what the hub accepted, element by element ([registration §5.3](spec/registration.md#53-elements-and-their-results)) |
+| reconciliation | a controller drives observed state toward its spec | the controller reconciles, toward what it was asked, and reports the result; the hub observes and records what each instance reports, including composition, which it never computes (S1; D18: the hub is responsible for observability, the controller for syncing and reconciling) |
+| leases | a `coordination.k8s.io` Lease for liveness and leadership | each running copy is an instance holding a lease it renews; a lapsed instance holds no roles and is never a command destination ([registration §8](spec/registration.md#8-instances)) |
+| labels and selectors | key-value labels, chosen by selectors | instance labels, with `dev.nightscout/purpose`, `dev.nightscout/build` and `dev.nightscout/migration-group` reserved ([§10](spec/registration.md#10-labels)); a view with a label selector reads only matching instances ([§12](spec/registration.md#12-read-selection)) |
+| admission | requests are checked, in order, before anything is stored | a submission passes ordered checks (authorisation, preconditions, the registration as a whole, then each element) and each element is accepted or refused with a reason ([§5.2](spec/registration.md#52-order-of-checks)); a refused typed write goes to its carrier in today's shape ([§6](spec/registration.md#6-the-controllers-side-fallback-and-refused-writes), [§11](spec/registration.md#11-typed-writes-and-attribution)) |
+| discovery | the API server lists its groups, versions and resources | `GET /.well-known/nightscout/sync`, the capability document: grammar versions, the members the hub interprets, limits, the well-known catalogue and where to submit ([§4](spec/registration.md#4-the-capability-document)) |
+| owner and binding | RoleBindings tie permissions to subjects; owner references tie dependents to an owner | a registration is bound to the credential subject that wrote it, and an instance to the subject that created it ([authority §3](spec/authority.md#3-binding-and-credential-kind)); the tenant's owner can block, release or transfer ([authority §4](spec/authority.md#4-the-owners-actions)); records keep their instance and definition ids, and a definition stays while records reference it ([registration §14](spec/registration.md#14-retention)) |
+| object identity | `metadata.name` and `uid` | a product is `(vendor, product)`; instance ids are random UUIDs the controller supplies; a record carries its own `identifier` and the hub's `_id` ([identity §2](spec/identity.md#2-contract-ids), D20) |
+
+**Where the design differs, and what it does instead.** The hub schedules nothing and computes no
+dosing state. It records what controllers report, routes a command to the instance that holds the
+role ([commands](spec/commands.md), proposed), and refuses what its checks refuse; the controller decides, enacts and validates (D18).
+Version-scoped quirks record how stored documents from a given controller version deviate, and the
+mapping the hub applies to each ([D20](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16),
+[registration §16](spec/registration.md#16-version-scoped-quirks)).
 
 ## 5. Worked example
 
@@ -365,8 +384,8 @@ Every number above is reproducible from this repository:
   wrong shipped description is worse than none, which is why they are
   versioned, derived from measurement rather than assertion, and why a
   controller must always be able to disown one.
-* **No maintainer has been asked anything.** Every phase that names a project
-  is a proposal to that project, not a plan for it.
+* Every phase that names a project is a proposal to that project; the packet for the controller
+  projects is `PROPOSAL-REG-CONTROLLERS`.
 
 ## 9. Where to read more
 
@@ -378,6 +397,6 @@ Every number above is reproducible from this repository:
 | The sync contract, if descriptions are adopted | [Hub-and-spoke sync](./nightscout-hub-sync-architecture-2026-09-11.md) |
 | Who should do what, in what order | [Adoption roadmap](../nightscout-adoption-roadmap-2026-09-11.md) |
 | Whether the primitives are actually evidenced | [Primitive coverage](./nightscout-primitive-coverage-2026-09-11.md) |
-| Prior art for all of this in the hub's own tree | `cgm-remote-monitor/docs/proposals/` — `agent-control-plane-rfc.md`, `bridge-rules.md`, `conflict-resolution.md`, `integration-questionnaire.md`. See [hub-and-spoke sync](./nightscout-hub-sync-architecture-2026-09-11.md) §5.2 |
-| What to change in that prior art, and what it already gets right | [Reconciling the agentic control plane RFC](../tenancy/nightscout-control-plane-reconciliation-2026-09-11.md) — seven claims the corpus confirms, five it corrects, twelve proposed edits |
+| The earlier draft of all of this, in cgm-remote-monitor's `docs/proposals/` | `cgm-remote-monitor/docs/proposals/` — `agent-control-plane-rfc.md`, `bridge-rules.md`, `conflict-resolution.md`, `integration-questionnaire.md`. See [hub-and-spoke sync](./nightscout-hub-sync-architecture-2026-09-11.md) §5.2 |
+| What to change in that earlier draft, and what it already gets right | [Reconciling the agentic control plane RFC](../tenancy/nightscout-control-plane-reconciliation-2026-09-11.md) — seven claims the corpus confirms, five it corrects, twelve proposed edits |
 | The concrete changes that raise replay fidelity, per project | [Replay fidelity changes](./PROPOSAL-replay-fidelity-changes-2026-09-11.md) — five changes, measured before and after |
