@@ -3146,6 +3146,8 @@
       
         
       
+        
+      
     
     
     
@@ -3908,7 +3910,7 @@
 
   <h1>Profile temp cache</h1>
 
-<p><em>Living document, last changed 2026-10-02 at <code>593e3e60</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>593e3e607</code>.</em></p>
 <!-- Draft body, branch bf/profile-temp-cache at a06e75d6 (fix 2a64c500 on dev ca6fcfaf, merged with dev f105f688). Not pushed, no PR opened. This comment is hidden on GitHub. -->
 <p>An open Nightscout page could keep showing a temp basal after it had been cancelled or replaced (BF-94). The page's profile code remembered the last temp basal it had looked up, and that memory survived new data. This change resets it whenever the page receives new treatments, and makes it belong to one profile instance instead of the whole module. One commit on <code>dev</code> <code>ca6fcfaf</code>. The same defect is on 15.0.8 (<code>92d08342</code>), and it behaves the same way there.</p>
 <h2 id="what-changes-for-you">What changes for you<a class="headerlink" href="#what-changes-for-you" title="Permanent link">&para;</a></h2>

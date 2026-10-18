@@ -3218,6 +3218,8 @@
       
         
       
+        
+      
     
     
     
@@ -4052,7 +4054,7 @@
 
   <h1>Same time treatments</h1>
 
-<p><em>Living document, last changed 2026-09-26 at <code>55f506dc</code>.</em></p>
+<p><em>Living document, last changed 2026-09-26 at <code>55f506dcf</code>.</em></p>
 <!-- Draft body for branch bf/same-time-treatments at f55fd8d8 (fc821024 merged with dev 13f235e9), 2026-09-26. This comment is hidden on GitHub. Opened as #8780; merged into dev 2026-09-26 as ff93fa94; the live body matches this file apart from this comment and the footer. -->
 <p>Two treatments recorded at the same time are no longer stored as one (BF-121, issue #8185). One commit (<code>fc821024</code>, written on <code>dev</code> <code>e3adc91d</code>), merged with <code>dev</code> <code>13f235e9</code>, which includes #8775 (BF-122) and #8776 (BF-136). The merge conflicted only in <code>lib/server/websocket.js</code> (the <code>require</code> lines) and <code>tests/websocket.input-validation.test.js</code> (the exact-match selector now carries both the identity rule and <code>isValid: {$ne: false}</code>); full suite on the merge 3310 passing, 0 failing, 3 pending (Node 22, MongoDB 7). This is the design the maintainer chose on 2026-09-26 ("option 3"): identity-aware matching for API v1 and the websocket, and carbs and insulin in the match key for API v1 writes that carry no client identity. API v3 and the websocket's exact match keep their current key, so AndroidAPS behaves as before.</p>
 <h2 id="what-changes-for-you">What changes for you<a class="headerlink" href="#what-changes-for-you" title="Permanent link">&para;</a></h2>

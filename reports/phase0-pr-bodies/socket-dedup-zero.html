@@ -3185,6 +3185,8 @@
       
         
       
+        
+      
     
     
     
@@ -3986,7 +3988,7 @@
 
   <h1>Socket dedup zero</h1>
 
-<p><em>Living document, last changed 2026-10-02 at <code>7307d737</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>7307d7371</code>.</em></p>
 <!-- Draft body for branch bf/socket-dedup-zero at 7dff9f38 (one commit on dev ca6fcfaf), 2026-10-02. This comment is hidden on GitHub. Not opened. -->
 <p>A zero temp basal, a 100 % temp, a cancel, a zero bolus or a zero carb entry sent over the websocket within 2 seconds of another record is now kept, instead of being dropped as a copy of that record (BF-09). One commit (<code>7dff9f38</code>) on <code>dev</code> <code>ca6fcfaf</code>. It changes only the websocket <code>dbAdd</code> "similar" match; the exact match, API v1 and API v3 are unchanged. This is the handling the maintainer chose on 2026-10-02: a zero is a real value where it carries meaning (temp basals, cancels, a bolus or carb amount of zero), and a zero sent only as filler (<code>insulin: 0</code> on a carb entry) does not stop a re-send from being recognised.</p>
 <h2 id="what-changes-for-you">What changes for you<a class="headerlink" href="#what-changes-for-you" title="Permanent link">&para;</a></h2>

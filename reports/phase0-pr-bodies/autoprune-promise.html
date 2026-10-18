@@ -3196,6 +3196,8 @@
       
         
       
+        
+      
     
     
     
@@ -4008,7 +4010,7 @@
 
   <h1>Autoprune promise</h1>
 
-<p><em>Living document, last changed 2026-10-02 at <code>2ad2af01</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>2ad2af017</code>.</em></p>
 <!-- Draft body, branch bf/autoprune-promise at 8e4f7dce (one commit on dev ca6fcfaf). Local only: not pushed, no PR opened. This comment is hidden on GitHub. -->
 <p>API v3 auto-prune now handles the result of its delete (BF-156). Before this change, the code passed a callback to a storage method that returns a promise and never calls the callback. As a result the "Auto-pruned N documents" line was never logged, and a failed delete was an unhandled promise rejection, which stops the Nightscout server. One commit on <code>dev</code> <code>ca6fcfaf</code>, which changes <code>lib/api3/generic/collection.js</code> and adds one test file. Not a security issue.</p>
 <h2 id="what-changes-for-you">What changes for you<a class="headerlink" href="#what-changes-for-you" title="Permanent link">&para;</a></h2>

@@ -2237,6 +2237,8 @@
       
         
       
+        
+      
     
     
     
@@ -2920,7 +2922,7 @@
 
 
 <h1 id="android-clients--join-step-summary-from-the-agents-hand-back-saved-by-the-main-session">Android clients — join-step summary (from the agent's hand-back, saved by the main session)<a class="headerlink" href="#android-clients--join-step-summary-from-the-agents-hand-back-saved-by-the-main-session" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-09-23 at <code>64007ffc</code>.</em></p>
+<p><em>Living document, last changed 2026-09-23 at <code>64007ffce</code>.</em></p>
 <p>Refs: AndroidAPS master 598e2eb39c 2026-08-02 (3.4.2.6), dev 7e1d537d49 2026-09-23 (4.0.0-dev-c; v1 socket client removed by 30fe4591a7 "Eliminate NSCv1", v3 on Ktor). xDrip master 1ed760048 2026-09-18 (no dev branch). All read-derived.</p>
 <p>Ranked:
 1. AAPS v3 <code>/alarm</code> socket (master NSClientV3Service.kt:184-199,343-346; dev NsConnectHandler.kt:78-89): the candidate (alarmSocket.js@ef3404fd:141-153) sends alarms only to tokens with <code>api:*:read</code> and drops <code>ack</code> without <code>notifications:*:ack</code>; subscribe still replies success. Join: which token role do AAPS setup docs prescribe?

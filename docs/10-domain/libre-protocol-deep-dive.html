@@ -9271,7 +9271,7 @@
 
 
 <h1 id="libre-sensor-protocol-deep-dive">Libre Sensor Protocol Deep Dive<a class="headerlink" href="#libre-sensor-protocol-deep-dive" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-01-31 at <code>54324fb5</code>.</em></p>
+<p><em>Living document, last changed 2026-01-31 at <code>54324fb52</code>.</em></p>
 <p>This document provides a comprehensive specification of Abbott Libre sensor protocols (Libre 1, 2, 2+, 3, 3+), reverse-engineered from open-source implementations.</p>
 <h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
 <p>Abbott Libre continuous glucose monitors use NFC and/or Bluetooth Low Energy (BLE) to communicate with mobile devices. The protocol complexity varies significantly by sensor generation:</p>
@@ -9376,7 +9376,7 @@
 </tr>
 </tbody>
 </table>
-<p><strong>Conformance Assertions</strong>: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/395c318be8ab5cf53a7b889efd59316f08a22488/conformance/assertions/libre-protocol.yaml"><code>conformance/assertions/libre-protocol.yaml</code></a> — 16 assertions covering REQ-LIBRE-001 through REQ-LIBRE-006</p>
+<p><strong>Conformance Assertions</strong>: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/dd6febcc6496d41459d4ccb2f8de012e0c092b11/conformance/assertions/libre-protocol.yaml"><code>conformance/assertions/libre-protocol.yaml</code></a> — 16 assertions covering REQ-LIBRE-001 through REQ-LIBRE-006</p>
 <hr />
 <h2 id="sensor-type-detection">Sensor Type Detection<a class="headerlink" href="#sensor-type-detection" title="Permanent link">&para;</a></h2>
 <p>Sensor type is determined from the <code>patchInfo</code> returned by NFC command <code>0xA1</code>:</p>

@@ -7641,7 +7641,7 @@
 
 
 <h1 id="flexible-temporal-models--exp-1631-to-exp-1638">Flexible Temporal Models — EXP-1631 to EXP-1638<a class="headerlink" href="#flexible-temporal-models--exp-1631-to-exp-1638" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-04-09 at <code>a6a23a36</code>.</em></p>
+<p><em>Living document, last changed 2026-04-09 at <code>a6a23a36b</code>.</em></p>
 <h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
 <p>The current production pipeline uses a single-frequency sinusoidal model for circadian glucose patterns, capturing only <strong>51% of variance</strong> (mean R²=0.515). Multi-frequency harmonics (24h+12h+8h+6h) capture <strong>96%</strong> (mean R²=0.959) — a +44 percentage point improvement for all 11 patients. This is a pure analytical upgrade requiring no ML, no training data, and no personalization period. Day-of-week effects are universally non-significant (all η²&lt;0.01), confirming DOW features add no value.</p>
 <p><strong>Production recommendation</strong>: Replace sinusoidal with 4-harmonic model. The improvement is universal (+6% to +73% per patient) and the model is fully deterministic.</p>

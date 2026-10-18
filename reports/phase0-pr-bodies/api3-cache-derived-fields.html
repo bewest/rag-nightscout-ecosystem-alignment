@@ -3185,6 +3185,8 @@
       
         
       
+        
+      
     
     
     
@@ -3986,7 +3988,7 @@
 
   <h1>Api3 cache derived fields</h1>
 
-<p><em>Living document, last changed 2026-09-26 at <code>db691369</code>.</em></p>
+<p><em>Living document, last changed 2026-09-26 at <code>db691369e</code>.</em></p>
 <!-- Draft body for branch bf/api3-cache-derived-fields at d235bdf6 (two commits on dev 699eb5fa: db99bba4, d235bdf6), 2026-09-26. This comment is hidden on GitHub. Not opened; not pushed. -->
 <p>Treatments and device status written through API v3 now enter the server's in-memory data with the same time fields as those written through API v1 (BF-146). Two commits on <code>dev</code> <code>699eb5fa</code>: <code>db99bba4</code> (treatments) and <code>d235bdf6</code> (device status, added for consistency by the maintainer's decision of 2026-09-26). This also fixes BF-133 (the COB pill's "last carbs" line naming an older entry). The same code is in <code>v15.0.8</code>, so this is not a regression. Found by the 15.0.9 release-candidate soak (run 019). The maintainer decided on 2026-09-26 to fix it for 15.0.9. Nothing stored in MongoDB changes, and API v3 responses do not change.</p>
 <h2 id="what-changes-for-you">What changes for you<a class="headerlink" href="#what-changes-for-you" title="Permanent link">&para;</a></h2>

@@ -4984,7 +4984,7 @@
 
   <h1>Reply.body</h1>
 
-<p><em>Living document, last changed 2026-10-17 at <code>395c318b</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>dd6febcc6</code>.</em></p>
 <p><strong>Re: client-supplied identifiers for Nightscout</strong></p>
 <p>Thank you for writing this up. We agree with the ask. We decided the same rule for our own design
 work on 2026-10-16, and much of what you need is partly in place. This reply says where each part
@@ -5304,6 +5304,28 @@ identifier is sent: <code>uuid.v5(device + "_" + date [+ "_" + eventType], "Nigh
 <li><strong>Existing identifiers stay as they are.</strong> Changing the form of a value a client has already
   sent would stop it matching the records it stored.</li>
 </ul>
+<p><strong>Two more open questions: one field or two, and who may set <code>_id</code>.</strong>
+In follow-up discussion, two points came up that the rules above do not settle yet.</p>
+<ul>
+<li><strong>Which field decides uniqueness.</strong> You suggested that the server should name the one field
+  that decides whether two writes are the same record, and clients follow it. Rule 5 carries two:
+  <code>identifier</code> (the client's) and <code>_id</code> (storage). It says <code>identifier</code> is tried first. It does
+  not say what happens when a write carries both, and they match two <em>different</em> stored records.
+  The options are to refuse the write, to trust <code>identifier</code>, or to trust <code>_id</code>. We would like to
+  decide this with you.</li>
+<li><strong>Whether a client may set <code>_id</code>.</strong> A client that creates its own ObjectId and sends it as
+  <code>_id</code> needs no cache of server ids. ObjectIds were designed for exactly that: the drivers
+  create them on the client, without coordination. Nightscout has always accepted one, though before #8758 (in <code>dev</code>)
+  some paths stored it as a string rather than an ObjectId. Since #8758, a re-sent 24-hex <code>_id</code>
+  is matched instead of failing or being stored twice.
+  Our own decision does not yet say whether this is allowed. D20's 2026-10-16 walk-through says
+  every <code>_id</code> on the v1 and v3 APIs is one "the hub assigns". It also says an assigned ObjectId
+  carries the server's receipt time, and a client-made one would carry the client's.
+  A client-set <code>_id</code> also cannot serve your watch-and-phone case: two devices create two
+  different ObjectIds for one reading. So <code>identifier</code> is needed either way, and the question is
+  only whether <code>_id</code> may also come from the client.</li>
+</ul>
+<p>Both go into the decision record beside the format row.</p>
 <h2 id="6-what-we-propose-to-do-next">6. What we propose to do next<a class="headerlink" href="#6-what-we-propose-to-do-next" title="Permanent link">&para;</a></h2>
 <p>In order:</p>
 <ol>
