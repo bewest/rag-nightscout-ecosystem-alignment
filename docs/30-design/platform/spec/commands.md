@@ -222,7 +222,11 @@ What in this table bears on the rules:
    commit, which computes and caps a dose on the controller before it is committed.
 3. **The payload grammar.** No definition declares the shape of a command's payload; the hub
    stores it unread, and an approver's display has nothing to render its units or product from
-   (UCA-PROP-004).
+   (UCA-PROP-004). A plan made of elements, and an approval that accepts some of them, belongs to
+   this grammar; the maintainer chose (2026-10-18) that the approval names each accepted element by
+   id and hash and the command carries one hash of the accepted subset, with approver signatures as
+   the next step, since only a signature lets a controller detect a hub that built the wrong subset
+   ([partial acceptance prototype](../partial-acceptance-prototype-2026-10-18.md)).
 4. **Outcomes that change after a final state:** a late delivery failure after success (§8), and
    a command enacted in part (§8). Either a further state (`failed` after `succeeded`, with the
    record keeping both) or an outcome per part (UCA-CMD-011, UCA-CMD-013).

@@ -22,7 +22,7 @@ specified; §7 states delegation's requirements, and its design is open.
 | [registration specification](registration.md) | the resources these rules authorise: products, definitions, instances, roles |
 | `specs/sync/registration-submit.schema.json` | the binding, credential kind, owner actions and their reason codes |
 | [configuration and delegation §5](../../tenancy/nightscout-configuration-and-delegation-2026-09-10.md#5-new-data-and-delegation-between-agents) | what delegation would have to provide |
-| [agents in the ecosystem](../agent-trust-boundaries-2026-10-18.md) | read access today, the upstream RFC's grant, a proposal lifecycle |
+| [agents in the ecosystem](../agent-trust-boundaries-2026-10-18.md) | read access today, the earlier draft's grant, a proposal lifecycle |
 | [authority model](../../../10-domain/authority-model.md) | prior art for grants with scopes, constraints and expiry; designed, not implemented |
 
 ## 2. Principals and credentials
@@ -156,11 +156,14 @@ canonical payload (CM13); and the state a proposal was based on is the hub's sta
 version is the hub's record of what the controller reported, so it can tell an approver that the
 record changed, never that the controller's own state is unchanged.
 
-**Prior art.** The upstream agent control-plane RFC's `agent` issuer type, its `suggest` scope
-("can propose, human must approve") and its `DelegationGrant` (who granted, to whom, scopes,
-constraints, expiry, revocation); the [authority model](../../../10-domain/authority-model.md); and
-`nightscout-roles-gateway`'s time-bounded policies. The RFC's rule that composes conflicting
-intents inside the hub is outside the hub's role (D18).
+**What this supersedes.** This specification, with [commands §6](commands.md#6-proposals-and-approvals-proposed),
+is proposed to supersede the earlier draft of this work in cgm-remote-monitor's
+`docs/proposals/agent-control-plane-rfc.md`, which started in this repository. It keeps that
+draft's `agent` issuer type, its `suggest` scope ("can propose, human must approve") and its
+`DelegationGrant` (who granted, to whom, scopes, constraints, expiry, revocation), and replaces
+its rule that composes conflicting intents inside the hub, which D18 puts in the controller. The
+[authority model](../../../10-domain/authority-model.md) and `nightscout-roles-gateway`'s
+time-bounded policies are prior art for grants.
 
 ## 8. What is recorded for audit
 

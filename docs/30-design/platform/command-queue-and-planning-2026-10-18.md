@@ -185,10 +185,13 @@ the plan runs. A hub-side "refuse if dosed since" check helps only the moment-le
 
 **Answered later the same day:** the self-approval refusal applies to agents only, and the
 person may withdraw any proposal (CM14); the hub refuses an approval when doses or carbs arrived
-since the proposal (CM22), and the controller checks doses since before it enacts (CM23). How a
-plan accepted in parts binds to its approval is prototyped in
-[partial acceptance](partial-acceptance-prototype-2026-10-18.md); what approval a plan needs, by
-risk and by evidence, is drafted in [evidence-weighted approval](evidence-weighted-approval-2026-10-18.md).
+since the proposal (CM22), and the controller checks doses since before it enacts (CM23). A plan
+accepted in parts binds as the [partial acceptance prototype](partial-acceptance-prototype-2026-10-18.md)
+recommends: the approval names each accepted element by id and hash, the command carries one hash
+of the subset, and approver signatures come next. A bounded standing bolus is acceptable with
+predetermined withdrawal criteria and mitigations (a reduced portion with eating soon, or an
+approval within the 12 hours before), drafted as FL1 of [evidence-weighted approval](evidence-weighted-approval-2026-10-18.md), which drafts what
+approval a plan needs by risk and by evidence for clinical review.
 
 **Still open:**
 
