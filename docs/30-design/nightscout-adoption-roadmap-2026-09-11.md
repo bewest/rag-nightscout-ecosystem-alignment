@@ -429,12 +429,11 @@ Those are the two complaints this series started from.
   collected through `/api/v1/`.
 * **Nocturne's appetite for a shipped registration catalogue**, which would
   land mostly on the hub side.
-* **How much of `docs/proposals/` is live.** *Partly answered since this was
-  written.* The reconciliation is done —
-  [Reconciling the agentic control plane RFC](./tenancy/nightscout-control-plane-reconciliation-2026-09-11.md)
-  — and the overlap is as expected: registration versus the control-plane
-  RFC, the sync contract versus bridge rules, decomposition versus
-  multi-writer conflict resolution. What the tree can say about *live* is
+* **How much of `docs/proposals/` is live.** That set is the earlier draft,
+  from earlier versions of this repository, of what the
+  [platform specifications](platform/README.md) are proposed to supersede; the
+  [control-plane supersession map](./tenancy/nightscout-control-plane-reconciliation-2026-09-11.md)
+  names the specification rule that carries each part of it. What the tree can say about *live* is
   narrow and negative: **nothing in `lib/` or `tests/` references any of
   these documents**, the only mention outside the directory is one line in
   `docs/INDEX.md`, and all four questionnaire responses read *Pending*.

@@ -319,7 +319,7 @@ initiator vocabulary, its command contract, and which hub-originated intent it a
 **The role split decides one open design question.** Overlapping intents are combined by a
 controller-specific rule (Loop, Trio/iAPS and AAPS each differ, and the rule depends on algorithm
 settings), so the hub records the result the controller reports and never derives it. A hub-side
-composition rule, such as the upstream RFC's `conflict-resolution.md` override composition, is
+composition rule, such as the override composition in `conflict-resolution.md` of the earlier draft in cgm-remote-monitor's `docs/proposals`, is
 outside the hub's role.
 
 **What D18 supersedes:** [controller descriptions](../platform/PROPOSAL-controller-descriptions-2026-09-11.md)
@@ -411,15 +411,16 @@ separates the two.
 | **definition** | what the data means: kinds, settings, inputs, extensions, versions, carriers (D18 and its addendum) | the hash of its content; many per `(vendor, product)` | immutable; written by the controller |
 | **instance** | which copy is connected, which definition it runs, which channel roles it plays | opaque, issued by the hub or supplied by the controller | a lease the instance renews; it lapses without housekeeping |
 
-**Prior art.** cgm-remote-monitor's agent control plane RFC (`docs/proposals/agent-control-plane-rfc.md`,
-2026-01-01; read at official `b5ddd662`) already splits `ControllerKindDefinition` from
+**The earlier draft.** `docs/proposals/agent-control-plane-rfc.md`, part of the earlier draft in
+cgm-remote-monitor's `docs/proposals` (read at official `b5ddd662`), splits `ControllerKindDefinition` from
 `ControllerInstanceRegistration`, with `lastSeenAt` as liveness, and plans agents as a later
 phase. The [hub-sync design §5.2](../platform/nightscout-hub-sync-architecture-2026-09-11.md#52-liveness-and-channel-ownership--open-here-already-drafted-upstream)
-maps it and the [control-plane reconciliation](nightscout-control-plane-reconciliation-2026-09-11.md)
-§3.3 corrects it: instance identity must not come from the free-text `devicestatus.device`,
-which is recorded only as an observed alias. D19 adopts that split and correction, and fills the
-gap the reconciliation (§5) finds in both trees: what happens when two instances write to one
-site.
+maps it. Instance identity does not come from the free-text `devicestatus.device`, which is
+recorded only as an observed alias ([control-plane supersession map
+§3.3](nightscout-control-plane-reconciliation-2026-09-11.md#33-instance-identity-and-the-device-string)).
+D19 takes that split with that identity rule, and says what happens when two instances write to
+one site; the [supersession map](nightscout-control-plane-reconciliation-2026-09-11.md) names the
+specification rule proposed to supersede each object of the draft.
 
 **Rules.**
 

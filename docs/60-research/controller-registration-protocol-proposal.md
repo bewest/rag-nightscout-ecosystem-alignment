@@ -1,6 +1,6 @@
 # Proposal: Controller Registration Protocol
 
-**Status:** Draft v2  
+**Status:** Draft v2 (2026-01-17), proposed to be superseded by the [registration specification](../30-design/platform/spec/registration.md) and the [identity specification](../30-design/platform/spec/identity.md); the [control-plane supersession map](../30-design/tenancy/nightscout-control-plane-reconciliation-2026-09-11.md) names the rule that carries each object of the earlier draft.  
 **Author:** Agent  
 **Date:** 2026-01-17 (Updated)  
 **Target Repository:** `nightscout/cgm-remote-monitor` (Nightscout Core)  

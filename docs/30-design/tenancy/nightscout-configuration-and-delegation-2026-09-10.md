@@ -1,6 +1,6 @@
 # Settings, extensibility, new data, and delegated access: four open questions
 
-*Contributor-facing.* **Snapshot — describes 2026-09-10. Status: current as analysis; its auth-related framing predates D13–D17.** Current decisions: [execution plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+*Contributor-facing.* **Snapshot — describes 2026-09-10. Status: current as analysis; its auth-related framing predates D13–D17.** Current decisions: [execution plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). §5's delegation requirements are carried as DR1–DR7 in the [authority specification §7](../platform/spec/authority.md#7-delegation-not-decided), which is proposed to supersede the delegation parts of the earlier draft in cgm-remote-monitor's `docs/proposals`.
 
 Date: 2026-09-10. Fourth in a
 series with

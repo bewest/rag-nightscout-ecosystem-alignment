@@ -143,7 +143,7 @@ Nightscout has its **own authentication system** that is independent of external
 
 ### NRG Gateway OIDC Plugin
 
-An RFC exists for integrating OpenID Connect into Nightscout:
+The earlier draft in cgm-remote-monitor's `docs/proposals` includes a proposal for integrating OpenID Connect into Nightscout. The [authority specification AU1–AU4](../30-design/platform/spec/authority.md#2-principals-and-credentials) is proposed to supersede it ([control-plane supersession map §2.2](../30-design/tenancy/nightscout-control-plane-reconciliation-2026-09-11.md#22-rules)). As listed in that draft:
 
 | Component | Status | Description |
 |-----------|--------|-------------|
