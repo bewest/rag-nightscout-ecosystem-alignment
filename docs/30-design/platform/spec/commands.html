@@ -16,7 +16,7 @@
         <link rel="prev" href="state-intent.html">
       
       
-        <link rel="next" href="sync-transport.html">
+        <link rel="next" href="plans.html">
       
       
         
@@ -2456,6 +2456,8 @@
       
         
       
+        
+      
     
     
     
@@ -2524,7 +2526,7 @@
   <span class="md-ellipsis">
     
   
-    Platform glossary: the terms the seven specifications share, and where each is defined
+    Platform glossary: the terms the eight specifications share, and where each is defined
   
 
     
@@ -2830,6 +2832,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plans.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    L3 and L5 Plans: how a plan is proposed, approved in parts, held by the controller and mirrored by the hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -5555,13 +5585,13 @@
 
 
 <h1 id="l3-and-l5-commands-how-a-request-or-a-proposal-reaches-a-controller-and-how-its-outcome-comes-back">L3 and L5 Commands: how a request or a proposal reaches a controller, and how its outcome comes back<a class="headerlink" href="#l3-and-l5-commands-how-a-request-or-a-proposal-reaches-a-controller-and-how-its-outcome-comes-back" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>b081a15cf</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>13259e01d</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>9736bd65</code> (2026-10-18). Layers L3
 and L5 of the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. Decisions:
 <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">D18 and D19</a>
 and the maintainer's decisions of 2026-10-14 to 2026-10-18 recorded with them; the proposal
 record was folded into this item on 2026-10-18. Queue: <code>SPEC-REG-COMMANDS</code>.</em></p>
-<p><em>Specification 5 of 7 in the <a href="../index.html#reading-order">reading order</a>; after state and intent, whose acceptance policy (S10, S11) it builds on, and before sync-transport. Expect where a command goes, the command path today, rules CM1–CM25 for the command record, outcomes, proposals and delivery in each mode, compatibility with each controller, and the conformance cases.</em></p>
+<p><em>Specification 5 of 8 in the <a href="../index.html#reading-order">reading order</a>; after state and intent, whose acceptance policy (S10, S11) it builds on, and before plans, which builds on its proposals. Expect where a command goes, the command path today, rules CM1–CM25 for the command record, outcomes, proposals and delivery in each mode, compatibility with each controller, and the conformance cases.</em></p>
 <p>How a request to change therapy reaches a controller through a hub, what the hub records about it,
 how the controller's outcome comes back, and the proposal and approval that can stand in front of
 a command. The hub routes and records; it never decides whether a change is safe, never alters
@@ -6032,8 +6062,8 @@ was run.</p>
    commit, which computes and caps a dose on the controller before it is committed.</li>
 <li><strong>The payload grammar.</strong> No definition declares the shape of a command's payload; the hub
    stores it unread, and an approver's display has nothing to render its units or product from
-   (UCA-PROP-004). A plan made of elements, and an approval that accepts some of them, belongs to
-   this grammar; the maintainer chose (2026-10-18) that the approval names each accepted element by
+   (UCA-PROP-004). A plan made of elements, and an approval that accepts some of them, is
+   specified in <a href="plans.html">plans</a>; the maintainer chose (2026-10-18) that the approval names each accepted element by
    id and hash and the command carries one hash of the accepted subset, with approver signatures as
    the next step, since only a signature lets a controller detect a hub that built the wrong subset
    (<a href="../partial-acceptance-prototype-2026-10-18.html">partial acceptance prototype</a>).</li>

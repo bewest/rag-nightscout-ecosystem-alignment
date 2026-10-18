@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/spec/sync-transport.html">
       
       
-        <link rel="prev" href="commands.html">
+        <link rel="prev" href="plans.html">
       
       
         <link rel="next" href="authority.html">
@@ -2456,6 +2456,8 @@
       
         
       
+        
+      
     
     
     
@@ -2524,7 +2526,7 @@
   <span class="md-ellipsis">
     
   
-    Platform glossary: the terms the seven specifications share, and where each is defined
+    Platform glossary: the terms the eight specifications share, and where each is defined
   
 
     
@@ -2665,6 +2667,34 @@
     
   
     L3 and L5 Commands: how a request or a proposal reaches a controller, and how its outcome comes back
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plans.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    L3 and L5 Plans: how a plan is proposed, approved in parts, held by the controller and mirrored by the hub
   
 
     
@@ -5533,14 +5563,14 @@
 
 
 <h1 id="l4-sync-transport-how-writes-are-matched-ordered-and-delivered-over-rest-and-the-socket-and-at-what-cost">L4 Sync transport: how writes are matched, ordered and delivered over REST and the socket, and at what cost<a class="headerlink" href="#l4-sync-transport-how-writes-are-matched-ordered-and-delivered-over-rest-and-the-socket-and-at-what-cost" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>82c610add</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>13259e01d</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>df621fa7</code> (2026-10-18). Layer L4 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>; how a re-send is
 matched is in the <a href="identity.html">identity specification</a> §3. Decisions: the
 <a href="../../tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-10-12">write contract's §6.1</a>
 (2026-10-12) and <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">D6</a>
 (the change feed under multi). Queue: <code>SPEC-SYNC-TRANSPORT</code>.</em></p>
-<p><em>Specification 6 of 7 in the <a href="../index.html#reading-order">reading order</a>; after the layers whose records it moves, before authority. Expect the decided write path (T1–T4), each client's declared sync endpoints, the proposed read, cursor and socket rules (T5–T15), and the conformance cases.</em></p>
+<p><em>Specification 7 of 8 in the <a href="../index.html#reading-order">reading order</a>; after the layers whose records it moves, before authority. Expect the decided write path (T1–T4), each client's declared sync endpoints, the proposed read, cursor and socket rules (T5–T15), and the conformance cases.</em></p>
 <p>How writes are applied, ordered and delivered, over REST and the socket, and what a client pays to
 stay in sync. Status: the write path is decided, except re-sends of <code>devicestatus</code> (T2), and T3 is on <code>dev</code>;
 §3 is evidenced; §4–§6 are

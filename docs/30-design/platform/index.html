@@ -27,7 +27,7 @@
     
     
       
-        <title>Platform contracts: the index to six layers and seven specifications - Nightscout ecosystem alignment</title>
+        <title>Platform contracts: the index to six layers and eight specifications - Nightscout ecosystem alignment</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#platform-contracts-the-index-to-six-layers-and-seven-specifications" class="md-skip">
+        <a href="#platform-contracts-the-index-to-six-layers-and-eight-specifications" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Platform contracts: the index to six layers and seven specifications
+              Platform contracts: the index to six layers and eight specifications
             
           </span>
         </div>
@@ -2434,6 +2434,8 @@
       
         
           
+        
+      
         
       
         
@@ -5115,8 +5117,8 @@
 
 
 
-<h1 id="platform-contracts-the-index-to-six-layers-and-seven-specifications">Platform contracts: the index to six layers and seven specifications<a class="headerlink" href="#platform-contracts-the-index-to-six-layers-and-seven-specifications" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>b081a15cf</code>.</em></p>
+<h1 id="platform-contracts-the-index-to-six-layers-and-eight-specifications">Platform contracts: the index to six layers and eight specifications<a class="headerlink" href="#platform-contracts-the-index-to-six-layers-and-eight-specifications" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-10-18 at <code>7a1a09b5a</code>.</em></p>
 <p><em>Contributor-facing. Living index, current at <code>main</code> <code>010e1661</code> (2026-10-18). Terms are defined in
 the <a href="spec/glossary.html">platform glossary</a>.</em></p>
 <p>This page maps the work on how controllers (Loop, Trio, AndroidAPS and others) and hubs
@@ -5183,7 +5185,7 @@ with synthetic conformance cases and a reference decision function in <code>tool
 checks the cases but is not a hub. <em>Implemented</em>: a hub serves it. On 2026-10-18 the L2, L3 and L5
 contracts are specified and not implemented; the first hub implementation is <code>HUB-REG-CRM</code>.</p>
 <h2 id="the-specification-set">The specification set<a class="headerlink" href="#the-specification-set" title="Permanent link">&para;</a></h2>
-<p>Seven specifications and a glossary, one file each under <code>spec/</code>. Each answers one question a
+<p>Eight specifications and a glossary, one file each under <code>spec/</code>. Each answers one question a
 reader brings, and each has its own rules, conformance cases and gate.</p>
 <table>
 <thead>
@@ -5244,6 +5246,14 @@ reader brings, and each has its own rules, conformance cases and gate.</p>
 <td>CM1–CM25</td>
 <td>written</td>
 <td><code>SPEC-REG-COMMANDS</code></td>
+</tr>
+<tr>
+<td><a href="spec/plans.html">plans</a></td>
+<td>how is a plan proposed, approved in parts, held by the controller and mirrored by the hub?</td>
+<td>L3, L5</td>
+<td>PN1–PN18</td>
+<td>written</td>
+<td><code>SPEC-PLANS</code></td>
 </tr>
 <tr>
 <td><a href="spec/sync-transport.html">sync-transport</a></td>
@@ -5572,7 +5582,7 @@ acts on no therapy. It records, routes and refuses; the controller decides and e
 <h2 id="reading-order">Reading order<a class="headerlink" href="#reading-order" title="Permanent link">&para;</a></h2>
 <p>For someone new to the series: this page, then the <a href="spec/glossary.html">glossary</a>, then
 <a href="nightscout-intent-workflow-landscape-2026-10-09.html">intent and workflow landscape</a> §2 and §9 for
-why the contract exists, then the seven specifications in layer order:</p>
+why the contract exists, then the eight specifications in layer order:</p>
 <ol>
 <li><a href="spec/identity.html">identity</a> (L0): every other specification uses its ids;</li>
 <li><a href="spec/records.html">records</a> (L1): the typed observations a hub stores;</li>
@@ -5580,10 +5590,11 @@ why the contract exists, then the seven specifications in layer order:</p>
    the largest file;</li>
 <li><a href="spec/state-intent.html">state and intent</a> (L3): requested, applied and active state;</li>
 <li><a href="spec/commands.html">commands</a> (L3, L5): requests and proposals that reach a controller;</li>
+<li><a href="spec/plans.html">plans</a> (L3, L5): recurring intents approved once and held by the controller;</li>
 <li><a href="spec/sync-transport.html">sync-transport</a> (L4): how all of the above moves;</li>
 <li><a href="spec/authority.html">authority</a> (L5): who may do each of the above.</li>
 </ol>
-<p>Across the seven, <a href="spec/control-loops.html">control loops</a> is an STPA analysis: it draws the loops
+<p>Across the eight, <a href="spec/control-loops.html">control loops</a> is an STPA analysis: it draws the loops
 the specifications set up, lists each unsafe control action with the rule that prevents it, and
 names the gaps the specifications now carry as open.</p>
 
