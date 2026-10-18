@@ -36,6 +36,11 @@ const SOURCES = {
     'docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md',
     'docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md',
   ],
+  'state-intent': [
+    'docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md',
+    'docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md',
+    'docs/30-design/platform/nightscout-effects-and-versioning-2026-09-11.md',
+  ],
 };
 const NARRATION = [
   /decided otherwise/i,

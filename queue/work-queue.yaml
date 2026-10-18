@@ -16436,40 +16436,69 @@ items:
       SPEC-REG-* items.
 
   - id: SPEC-STATE-INTENT
-    title: "Platform spec L3: the state and intent specification (kinds, slots, channels, states, end reasons, requested and applied, initiators, composition)"
+    title: "Platform spec L3: the state and intent specification (kinds, slots, states, end reasons, requested and applied, initiators, composition)"
     parcel: platform
     repo: rag-nightscout-ecosystem-alignment
-    branch: main
-    base: main@5a9a49cc
-    state: not-started
+    branch: docs/platform-spec-index-2026-10-18
+    base: main@010e1661
+    state: done
     pr: []
     blast_radius: >
-      docs/30-design/platform/spec/state-intent.md (new) from the
-      stateSpans grammar (hub-sync §3.1), slot sharing (§3.6, §3.7 rule 2),
-      the intent and workflow landscape §9-§10 and the generated
-      registrations; pointers in those documents; the index row; a SOURCES
-      entry in the gate. No rule or case changes.
+      docs/30-design/platform/spec/state-intent.md (new): rules S1-S12 from
+      the stateSpans, composition and commands grammar and the intent and
+      workflow landscape, the declared kinds and listed cases as generated
+      tables, composition per controller, the TherapyEffect model as a
+      proposal, the active-state disagreements mapped to the declarations
+      that settle them and the gaps. Pointers in the landscape, the
+      hub-sync design §3.1 and the effects analysis; the platform index
+      gains the specification set (seven specifications and a glossary,
+      their boundaries and how they are kept); tools/nsschema/spec_cases.py
+      gains `kinds` blocks and listed cases; the gate's SOURCES entry; the
+      TherapyEffect schema's insulinNeedsScaleFactor and basalScaleFactor
+      descriptions corrected to MAP-AAPS-PROFILESWITCH. No rule or case
+      changes.
     review: maintainer
     operator_visible: ""
     semver: n/a
     semver_reason: specification in this repository; ships nothing
     register: []
     gates:
-      - no-gate: >
-          Not started. The gate will be `node tools/queue/gates/platform-spec.js
-          state-intent`, red under each control break, plus `make
-          schema-sync-model --check` unchanged.
+      - run: node tools/queue/gates/platform-spec.js state-intent
+        kind: static
+        describe: >
+          FAILS when the spec is missing, carries amendment narration, names
+          a case that does not exist, states a count that differs from its
+          table, or when the index, the landscape, the hub-sync design or
+          the effects analysis does not link to it. GREEN on 2026-10-18: 29
+          checks, 15 cases.
+      - run: python3 -m tools.nsschema.spec_cases state-intent --check
+        kind: static
+        describe: >
+          FAILS when the generated tables differ from what the well-known
+          registrations (declared kinds) and the listed case files produce.
     blocks_on: [SPEC-REGISTRATION]
     evidence:
+      - docs/30-design/platform/spec/state-intent.md
+      - docs/30-design/platform/README.md
       - docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md
-      - specs/sync/controller-state-model.schema.json
     notes: >
-      Lists what is undeclared rather than guessing it: iAPS has no
-      registration; end-reason vocabularies for Trio override and temporary
-      target and AndroidAPS profile switch, AndroidAPS initiator values and
-      every command vocabulary (landscape §10). Carries the
-      LAB-HUB-ACTIVE-STATE disagreements as the reason the hub records
-      composition and active state as the controller reports them.
+      The specification set was settled with this item (maintainer asked
+      for a number and composition that aids comprehension and
+      maintenance): identity, records, registration, state and intent,
+      commands, sync-transport, authority, plus the glossary; the index
+      gives the boundaries and what moves when the queued files are
+      written. Found while writing it: the TherapyEffect schema still
+      described the AndroidAPS profile-switch percentage as basal-only,
+      which the landscape corrected on 2026-10-09 (corrected here); the
+      grammar cannot yet carry the agent initiator form decided on
+      2026-10-18, a duration unit on requested or applied carriers, or a
+      typed carrier field (SCHEMA-INTENT-GAPS); and each measured
+      active-state disagreement maps to a declaration that already carries
+      most of the answer (SPEC-ACTIVE-STATE). Non-vacuity, run 2026-10-18,
+      each break red with exactly its own finding: an appended
+      "(Withdrawn ...)" note, a listed case file renamed, the count changed
+      to 999, the landscape's link removed; and a copy with one generated
+      case row deleted (--spec).
 
   - id: SPEC-SYNC-TRANSPORT
     title: "Platform spec L4: the change and sync specification (write step, re-send rule, cursor, history, socket delivery, definition-version migration)"
@@ -16550,3 +16579,125 @@ items:
       suggest scope, DelegationGrant) rather than a new design. Whether
       delegation and proposals become a SPEC-REG-PROPOSALS item or fold into
       SPEC-REG-COMMANDS is the maintainer's open choice.
+
+  - id: SPEC-RECORDS
+    title: "Platform spec L1: the records specification (observation primitives, decomposition of today's documents, effective-dated settings snapshots)"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main@010e1661
+    state: not-started
+    pr: []
+    blast_radius: >
+      docs/30-design/platform/spec/records.md (new) from
+      specs/sync/primitives.yaml, D11, the hub-sync design §3.3 and §4.3,
+      controller-settings.schema.json, sensitivity.yaml and the dated
+      evidence (typed schema evidence, primitive coverage, devicestatus and
+      profile fidelity); pointers in those documents; the index row; a
+      SOURCES entry in the gate.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: specification in this repository; ships nothing
+    register: []
+    gates:
+      - no-gate: >
+          Not started. The gate will be `node tools/queue/gates/platform-spec.js
+          records`, red under each control break, plus a generated table of
+          the observation primitives with their evidence grades from
+          primitives.yaml (`spec_cases records --check`), so a regraded field
+          turns the table stale.
+    blocks_on: [SPEC-ID]
+    evidence:
+      - specs/sync/primitives.yaml
+      - docs/30-design/platform/nightscout-primitive-coverage-2026-09-11.md
+    notes: >
+      Added 2026-10-18 when the specification set was settled: L1 had no
+      specification item. Carries what replay and audit need from a record:
+      which observation it is, its evidence grade, which composite document
+      it came from, and the settings in effect. Unmeasured and to be stated
+      as such: devicestatus and profile decomposition coverage.
+
+  - id: SPEC-ACTIVE-STATE
+    title: "Decide and specify what a hub reports as active at a time, and a therapy-state version an approval can bind to"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main@010e1661
+    state: not-started
+    pr: []
+    blast_radius: >
+      A section of docs/30-design/platform/spec/state-intent.md (§6) turned
+      from a gap into rules, with synthetic cases and a reference function
+      under tools/nsschema/ deciding "active at t" from records and a
+      registration's declarations; the hub active-state lab re-run against
+      the rules on both hubs. Ships nothing.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: specification in this repository; ships nothing
+    register: []
+    gates:
+      - no-gate: >
+          Not started. The gate will be a pytest suite over new cases, one per
+          measured disagreement (cancel encodings, a unit on an applied
+          carrier, overlay fallback, a field unit, equal identity, backfill
+          order), each paired with its control, and each rule shown
+          non-vacuous by a weakening that turns its case red.
+    blocks_on: [SPEC-STATE-INTENT, SCHEMA-INTENT-GAPS]
+    evidence:
+      - docs/30-design/platform/spec/state-intent.md
+      - tools/lab/hub-active-state/results/RESULTS.md
+    notes: >
+      Rules to decide, as state and intent §6 frames them: an end encoding
+      ends the instance it names and is not an instance; equal identity is
+      one instance amended; supersession orders by instance start, not
+      arrival; overlay returns to the open-ended instance; units come from
+      the declaration. Whether AndroidAPS returns to an earlier permanent
+      profile after a timed switch is not established and needs a source
+      read before overlay is declared for its profileSwitch. The therapy-state
+      version is the open question SPEC-REG-COMMANDS names for proposals
+      (D19's etags version the registration, not the active intents). Under
+      D18 the hub still never composes: this rule says which instances are
+      active, not what their combined effect is.
+
+  - id: SCHEMA-INTENT-GAPS
+    title: "Registration grammar: the initiators other form, duration units on requested and applied carriers, typed carrier fields"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main@010e1661
+    state: not-started
+    pr: []
+    blast_radius: >
+      specs/sync/controller-state-model.schema.json (additive, must-ignore):
+      initiators.values items take a string or {value: other,
+      controllerTerm}; the carrier definition gains durationField and
+      durationUnit wherever wire has them; carrier paths may carry a typed
+      field declaration (unit, type). The three generated registrations
+      regenerated (Loop's applied override carrier gains its unit), the
+      synthetic fixture extended, state and intent S6-S8 and §8 updated.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: specification in this repository; ships nothing
+    register: []
+    gates:
+      - no-gate: >
+          Not started. The gate will be tools/nsschema/test_registration_grammar.py
+          with a case per addition and its rejection control (a bare unknown
+          initiator string still rejected, an unknown unit rejected), `make
+          schema-sync-model --check` green, and the registration suites
+          unchanged.
+    blocks_on: [SPEC-STATE-INTENT]
+    evidence:
+      - specs/sync/controller-state-model.schema.json
+      - docs/30-design/platform/spec/state-intent.md
+    notes: >
+      The agent-initiator form was decided 2026-10-18 (execution plan row
+      17) and is recorded in the agents page §7 as not yet in the grammar.
+      The unit gaps are the two the hub active-state lab measured as
+      disagreements (Loop's devicestatus override duration, AndroidAPS
+      timeshift). Adding members is a minor change under must-ignore
+      (registration G1); no kind's meaning changes unless a registration
+      declares the new member.
