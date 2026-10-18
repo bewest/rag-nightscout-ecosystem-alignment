@@ -5,8 +5,8 @@ Covers layers L2–L5 of the [platform index](../README.md); terms are in the
 [glossary](glossary.md). Decisions: [D18 and D19](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#261-d18--two-tier-controller-registration).
 Queue: `SPEC-STPA-PLATFORM`.*
 
-*An analysis across the seven specifications in the [reading order](../README.md#reading-order);
-read it after [commands](commands.md), or after all seven. Expect the losses and hazards, the
+*An analysis across the eight specifications in the [reading order](../README.md#reading-order);
+read it after [commands](commands.md), or after all eight. Expect the losses and hazards, the
 control structure the specifications set up, one section per control loop with its unsafe control
 actions and the rule that prevents each, the patterns that apply to the proposed mechanics, what
 the analysis found, and the checks that hold it to the specifications.*

@@ -1,4 +1,4 @@
-# Platform glossary: the terms the seven specifications share, and where each is defined
+# Platform glossary: the terms the eight specifications share, and where each is defined
 
 *Contributor-facing. Living, current at `main` `5a9a49cc` (2026-10-18). Each term links to where
 it is specified; the definition here is a summary, and the linked section is the authority. Therapy
@@ -237,6 +237,12 @@ holder the command is refused `no-command-destination`; the hub never guesses
 **Command record, outcome.** Proposed. The hub stores a command before it sends it, with the hash
 of its payload; only the destination reports the outcome, and `sent` or `fetched` is never success
 ([commands §4–§5](commands.md#4-the-command-record-proposed)).
+
+**Plan, occurrence, mirror.** Proposed. A *plan* is a recurring intent with elements, a trigger,
+bounds and an end date, proposed and approved in parts, then held and run by the controller; an
+*occurrence* is one time it runs, confirmed, approved, skipped or reported by the controller; the
+*mirror* is the hub's read-only record of the plan and its occurrences, moved only by the
+controller's reports ([plans](plans.md)).
 
 **Delegation, proposal.** A *delegation* would let a principal grant a caregiver, app or agent a
 scoped, expiring, revocable authority; it is not specified. A *proposal* records an intended

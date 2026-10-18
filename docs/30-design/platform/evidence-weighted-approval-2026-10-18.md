@@ -235,7 +235,7 @@ week, which is the policy experience the planning use cases ask for.
 |---|---|
 | `riskClass`, `bounds`, `selfEnding`, `direction` per element kind, declared by the controller (S10, S11); the hub reads, never derives (CM5); undeclared is R4 | state and intent, registration §7 |
 | evidence fields on evaluations: `evidenceClass`, subject and instance, `boundTo` (payload hash, occurrence), `observedAt`, `countsUntil`, minimised summary | commands CM16 |
-| the plan object with elements, each with kind, class, bounds, end date and the path recorded at approval | commands §9 item 3 |
+| the plan object with elements, each with kind, class, bounds, end date and the path recorded at approval | [plans](spec/plans.md) PN1–PN8 |
 | the approval naming accepted elements, the path used and the evidence ids relied on | commands CM13, decision 4 |
 | required reviews and the refusal when missing; who may name them | commands, decision 3 |
 | a scoped `basedOn` beside CM15's whole-state version | state and intent A12, commands CM15 |

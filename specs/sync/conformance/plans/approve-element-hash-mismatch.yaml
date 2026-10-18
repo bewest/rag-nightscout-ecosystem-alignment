@@ -1,0 +1,127 @@
+# Synthetic. SPEC-PLANS; plans §4. Times are seconds; expectations authored by hand.
+id: approve-element-hash-mismatch
+title: An approval naming the wrong hash for an element is refused
+rules:
+- PN5
+description: 'soon is named with a hash that is not its own: 409 hash-mismatch; p1 stays open.'
+control: approve-one-of-two-elements
+mode: single
+maxExpirySeconds: 3600
+riskClasses:
+  ControllerA:
+    eatingSoon: R1
+    schoolOverride: R2
+    exerciseTarget: R3
+    mealBolus: R4
+    basalProfile: R5
+    maxBolus: R6
+channelVersions:
+  A:
+    ControllerA:
+      override:
+      - - 0
+        - v1
+      example/bolus:
+      - - 0
+        - b1
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      example/plans:
+      - 0
+      - null
+  i-agent:
+    tenant: A
+    subject: s-agent
+    product: AgentTool
+    definitionId: sha256:d-agent
+    sinks: {}
+    proposes:
+    - example/plans
+declares:
+  A:
+    example/plans:
+    - ControllerA
+subjects:
+  s-person:
+    tenant: A
+    person: true
+    permissions:
+    - api:commands:create
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+  s-agent:
+    tenant: A
+    permissions:
+    - api:proposals:create
+  s-risk:
+    tenant: A
+    permissions:
+    - api:proposals:read
+  s-follower:
+    tenant: A
+    permissions:
+    - api:commands:read
+  s-nobody:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: proposePlan
+  tenant: A
+  subject: s-agent
+  instance: i-agent
+  channel: example/plans
+  product: ControllerA
+  expiresAt: 5000
+  basedOn:
+    override: v1
+    example/bolus: b1
+  plan:
+    elements:
+    - id: soon
+      kind: eatingSoon
+      channel: override
+      path: standing
+      content:
+        target: eating-soon
+    - id: meal
+      kind: mealBolus
+      channel: example/bolus
+      path: per-occurrence
+      content:
+        bolus: usual-lunch
+    trigger:
+      weekdays: lunch
+    startsAt: 100
+    endsAt: 100000
+    requiredReviews: []
+- at: 30
+  kind: approvePlan
+  tenant: A
+  subject: s-person
+  proposal: p1
+  accepts:
+  - element: soon
+    hash: wrong
+expected:
+  calls:
+  - status: 201
+    proposalId: p1
+  - status: 409
+    code: hash-mismatch
+  commands: {}
+  proposals:
+    p1:
+      state: open
+  plans: {}

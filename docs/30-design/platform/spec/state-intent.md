@@ -8,7 +8,7 @@ them is there too. Decisions: [D18](../../tenancy/nightscout-multitenancy-execut
 initiators ([execution plan §2.6.3](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16)
 row 17). Queue: `SPEC-STATE-INTENT`.*
 
-*Specification 4 of 7 in the [reading order](../README.md#reading-order); after registration, whose grammar it uses, and before commands. Expect rules S1–S12 and A1–A13, the declared kinds per controller, composition, what is active at a time, and the conformance cases.*
+*Specification 4 of 8 in the [reading order](../README.md#reading-order); after registration, whose grammar it uses, and before commands. Expect rules S1–S12 and A1–A13, the declared kinds per controller, composition, what is active at a time, and the conformance cases.*
 
 A controller manages *intent*: a preset is activated, several intents run at once and combine, the
 controller applies something that may differ from what was asked, and the intent ends for a

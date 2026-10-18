@@ -16145,6 +16145,69 @@ items:
       uncased, 22 gaps). Non-vacuity: 18 weakenings of the analysis, its
       page and the specifications, each red.
 
+  - id: SPEC-PLANS
+    title: "Plans: a recurring intent proposed with elements, approved in parts, held by the controller and mirrored read-only by the hub"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: docs/plans-2026-10-18
+    base: main@b081a15c
+    state: in-progress
+    pr: []
+    blast_radius: >
+      docs/30-design/platform/spec/plans.md (new, specification 6 of 8):
+      rules PN1-PN16 for the plan object and its structural floors, the
+      approval that accepts elements by id and hash with required reviews,
+      definition and per-channel state checks, the command that carries the
+      accepted plan, the controller's hold and the hub's read-only mirror,
+      occurrence confirmation under the plan's grant, per-occurrence approval
+      inside an advance window, skip, and ending. tools/nsschema/plans.py is
+      the reference, built on commands.py; test_plans.py checks the cases
+      and five invariants. The index, glossary, placement lines of every
+      specification and the platform-spec gate gain plans. Ships nothing.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: specification in this repository; ships nothing
+    register: []
+    gates:
+      - run: node tools/queue/gates/platform-spec.js plans
+        kind: static
+        describe: >
+          FAILS when the specification is missing, carries amendment
+          narration, names a case that does not exist, states a count that
+          differs from its table, or when commands, the command-queue note or
+          the evidence-weighted approval framework does not link to it.
+      - run: python3 -m tools.nsschema.spec_cases plans --check
+        kind: static
+        describe: FAILS when the case table differs from the case files.
+      - run: python3 -m pytest -q tools/nsschema/test_plans.py
+        kind: unit
+        describe: >
+          FAILS when the reference disagrees with a hand-authored
+          expectation, or when on any case a command carries a declined
+          element, a command is made without a call, a standing R3 or R4
+          element lacks its conditions, an occurrence operation happens while
+          the controller does not hold the plan, or an occurrence approval
+          falls outside its window or comes from the proposing agent.
+    blocks_on: []
+    evidence:
+      - docs/30-design/platform/spec/plans.md
+      - docs/30-design/platform/command-queue-and-planning-2026-10-18.md
+      - docs/30-design/platform/evidence-weighted-approval-2026-10-18.md
+      - docs/30-design/platform/command-journeys-2026-10-18.md
+    notes: >
+      The maintainer asked for the plan object on 2026-10-18, after deciding
+      that plans run on the controller and the hub mirrors them, that a plan
+      may be accepted in parts, and that a bounded standing bolus is
+      acceptable under recorded conditions. 73 cases were written from the
+      specification text by an author who did not read the reference; they
+      agreed on every reply, and the one disagreement (the plan command's
+      proposalId) is settled in PN8; 11 ambiguities they reported are
+      settled in the text. One case (end-plan-twice) was added when a
+      weakening of PN16 stayed green; 20 weakenings of plans.py, each red.
+      Values for clinical review (the advance window, risk classes,
+      withdrawal signals, the reduced portion) are open in plans §9.
+
   - id: SPEC-COMPAT-APPS
     title: "One table of every listed app against every layer: today's behaviour, and what changes with a newer hub"
     parcel: platform

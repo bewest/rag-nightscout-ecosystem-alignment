@@ -6,7 +6,7 @@ and L5 of the [platform index](../README.md); terms are in the [glossary](glossa
 and the maintainer's decisions of 2026-10-14 to 2026-10-18 recorded with them; the proposal
 record was folded into this item on 2026-10-18. Queue: `SPEC-REG-COMMANDS`.*
 
-*Specification 5 of 7 in the [reading order](../README.md#reading-order); after state and intent, whose acceptance policy (S10, S11) it builds on, and before sync-transport. Expect where a command goes, the command path today, rules CM1–CM25 for the command record, outcomes, proposals and delivery in each mode, compatibility with each controller, and the conformance cases.*
+*Specification 5 of 8 in the [reading order](../README.md#reading-order); after state and intent, whose acceptance policy (S10, S11) it builds on, and before plans, which builds on its proposals. Expect where a command goes, the command path today, rules CM1–CM25 for the command record, outcomes, proposals and delivery in each mode, compatibility with each controller, and the conformance cases.*
 
 How a request to change therapy reaches a controller through a hub, what the hub records about it,
 how the controller's outcome comes back, and the proposal and approval that can stand in front of
@@ -225,8 +225,8 @@ What in this table bears on the rules:
    commit, which computes and caps a dose on the controller before it is committed.
 3. **The payload grammar.** No definition declares the shape of a command's payload; the hub
    stores it unread, and an approver's display has nothing to render its units or product from
-   (UCA-PROP-004). A plan made of elements, and an approval that accepts some of them, belongs to
-   this grammar; the maintainer chose (2026-10-18) that the approval names each accepted element by
+   (UCA-PROP-004). A plan made of elements, and an approval that accepts some of them, is
+   specified in [plans](plans.md); the maintainer chose (2026-10-18) that the approval names each accepted element by
    id and hash and the command carries one hash of the accepted subset, with approver signatures as
    the next step, since only a signature lets a controller detect a hub that built the wrong subset
    ([partial acceptance prototype](../partial-acceptance-prototype-2026-10-18.md)).

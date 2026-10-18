@@ -31,18 +31,18 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 253 |
-| runnable gates | 307 |
+| items | 254 |
+| runnable gates | 310 |
 | explicit `no-gate:` markers | 281 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 281 of the 588 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 281 of the 591 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 69 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
-| `in-progress` | 4 | BFQ-46, BFQ-ENV, OID-LAB, LOOP-ID-REPLY |
+| `in-progress` | 5 | BFQ-46, BFQ-ENV, OID-LAB, SPEC-PLANS, LOOP-ID-REPLY |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 30 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, WC-STEP-PATCH, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-72, BFQ-52, BFQ-93, BFQ-95, BFQ-67, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-152, BFQ-154, BFQ-156 |
@@ -7743,7 +7743,7 @@ flag rule: versioning policy section 5.7.
 
 ## Controller registration and intent observability
 
-`parcel: platform` &mdash; 31 items
+`parcel: platform` &mdash; 32 items
 
 D18 (maintainer, 2026-10-09): two-tier controller registration - well-known
 declarations for backwards compatibility, controller-owned typed registrations
@@ -7769,6 +7769,7 @@ reproduced ones.
 | `HUB-REG-CRM-ADMIN` | cgm-remote-monitor: the registration owner's actions on ns-tenant-admin under TENANCY_MODE=multi | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `SPEC-REG-COMMANDS` | Hub command delivery to a command-sink instance, with the proposal record in front of it, specified for single and multi mode | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 3 run |
 | `SPEC-STPA-PLATFORM` | STPA of the platform specifications: the control loops they set up, each unsafe control action and the rule that prevents it | `done` | `docs/stpa-commands-2026-10-18` | n/a | 3 run |
+| `SPEC-PLANS` | Plans: a recurring intent proposed with elements, approved in parts, held by the controller and mirrored read-only by the hub | `in-progress` | `docs/plans-2026-10-18` | n/a | 3 run |
 | `SPEC-COMPAT-APPS` | One table of every listed app against every layer: today's behaviour, and what changes with a newer hub | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `SPEC-DEV-GUIDES` | Two developer guides: adding a setting in a controller's next release, and adding a new controller | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `SPEC-REG-MIGRATE` | Registration state across a single-tenant site's move into a tenant, and back | `not-started` | `main` | n/a | 0 run + 1 no-gate |
@@ -8274,6 +8275,42 @@ reproduced ones.
 - `traceability/stpa/cross-project-patterns.md`
 
 **Notes.** The maintainer asked for this item on 2026-10-18, with the request to consider STPA-style controller and actuator loops for the proposed mechanics (control- loops §5). Severities follow the usage guide's S1-S4 scale and need review by a qualified clinician before they prioritise anything (control-loops §7). Adversarial review, 2026-10-18, applied: the treatment-download path, the owner's and operator's actions and command cancel were missing from the structure; the state version covers intents, not doses; identity §3 causes the resurrected-dose and natural-key merge entries; a process sharing the destination's credential under single; socket revocation; one case added. 72 entries (41 covered, 6 controller, 3 uncased, 22 gaps). Non-vacuity: 18 weakenings of the analysis, its page and the specifications, each red.
+
+### `SPEC-PLANS` &mdash; Plans: a recurring intent proposed with elements, approved in parts, held by the controller and mirrored read-only by the hub
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `docs/plans-2026-10-18` |
+| base | `main@b081a15c` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** docs/30-design/platform/spec/plans.md (new, specification 6 of 8): rules PN1-PN16 for the plan object and its structural floors, the approval that accepts elements by id and hash with required reviews, definition and per- channel state checks, the command that carries the accepted plan, the controller's hold and the hub's read-only mirror, occurrence confirmation under the plan's grant, per-occurrence approval inside an advance window, skip, and ending. tools/nsschema/plans.py is the reference, built on commands.py; test_plans.py checks the cases and five invariants. The index, glossary, placement lines of every specification and the platform-spec gate gain plans. Ships nothing.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** specification in this repository; ships nothing
+
+**Gates.**
+
+- `[static]` `node tools/queue/gates/platform-spec.js plans`
+  - FAILS when the specification is missing, carries amendment narration, names a case that does not exist, states a count that differs from its table, or when commands, the command-queue note or the evidence-weighted approval framework does not link to it.
+- `[static]` `python3 -m tools.nsschema.spec_cases plans --check`
+  - FAILS when the case table differs from the case files.
+- `[unit]` `python3 -m pytest -q tools/nsschema/test_plans.py`
+  - FAILS when the reference disagrees with a hand-authored expectation, or when on any case a command carries a declined element, a command is made without a call, a standing R3 or R4 element lacks its conditions, an occurrence operation happens while the controller does not hold the plan, or an occurrence approval falls outside its window or comes from the proposing agent.
+
+**Evidence.**
+
+- `docs/30-design/platform/spec/plans.md`
+- `docs/30-design/platform/command-queue-and-planning-2026-10-18.md`
+- `docs/30-design/platform/evidence-weighted-approval-2026-10-18.md`
+- `docs/30-design/platform/command-journeys-2026-10-18.md`
+
+**Notes.** The maintainer asked for the plan object on 2026-10-18, after deciding that plans run on the controller and the hub mirrors them, that a plan may be accepted in parts, and that a bounded standing bolus is acceptable under recorded conditions. 73 cases were written from the specification text by an author who did not read the reference; they agreed on every reply, and the one disagreement (the plan command's proposalId) is settled in PN8; 11 ambiguities they reported are settled in the text. One case (end-plan-twice) was added when a weakening of PN16 stayed green; 20 weakenings of plans.py, each red. Values for clinical review (the advance window, risk classes, withdrawal signals, the reduced portion) are open in plans §9.
 
 ### `SPEC-COMPAT-APPS` &mdash; One table of every listed app against every layer: today's behaviour, and what changes with a newer hub
 

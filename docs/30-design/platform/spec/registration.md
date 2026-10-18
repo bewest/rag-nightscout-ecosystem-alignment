@@ -10,7 +10,7 @@ and its [addendum](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-
 and the maintainer's decisions of 2026-10-14, 2026-10-16 and 2026-10-17 recorded there. Queue:
 `SPEC-REGISTRATION`.*
 
-*Specification 3 of 7 in the [reading order](../README.md#reading-order), and the largest; after records, before state and intent, which uses its grammar. Expect rules G1–G5 and Q1–Q4, the grammar, the capability document, products, definitions, instances, channels and roles, labels, typed writes, projected views, quirks, and the conformance cases.*
+*Specification 3 of 8 in the [reading order](../README.md#reading-order), and the largest; after records, before state and intent, which uses its grammar. Expect rules G1–G5 and Q1–Q4, the grammar, the capability document, products, definitions, instances, channels and roles, labels, typed writes, projected views, quirks, and the conformance cases.*
 
 A controller declares what its data means; the hub accepts the declaration element by element,
 stores typed records for what it accepts, and tells the controller to write everything else in

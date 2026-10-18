@@ -39,6 +39,7 @@ LAYERS = {
         "pattern:instances/command-ambiguous-destination",
         "pattern:instances/command-inferred-one-product", "pattern:instances/command-named-product",
         ("commands/", CASES / "commands")]},
+    "plans": {"cases": [("plans/", CASES / "plans")]},
     "authority": {"cases": [
         "pattern:owner-*", "pattern:blocked-*", "pattern:released-*", "pattern:retire",
         "pattern:retire-*", "pattern:update-accepted", "pattern:update-*not-registration-owner", "pattern:update-api-secret-*",

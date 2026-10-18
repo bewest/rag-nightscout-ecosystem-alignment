@@ -1,0 +1,169 @@
+# Synthetic. SPEC-PLANS; plans §5. Times are seconds; expectations authored by hand.
+id: plan-refused-by-controller
+title: A plan the controller refuses is mirrored refused
+rules:
+- PN9
+description: c1 is reported refused with reason limit; the mirror is refused.
+control: plan-held-active
+mode: single
+maxExpirySeconds: 3600
+riskClasses:
+  ControllerA:
+    eatingSoon: R1
+    schoolOverride: R2
+    exerciseTarget: R3
+    mealBolus: R4
+    basalProfile: R5
+    maxBolus: R6
+channelVersions:
+  A:
+    ControllerA:
+      override:
+      - - 0
+        - v1
+      example/bolus:
+      - - 0
+        - b1
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      example/plans:
+      - 0
+      - null
+  i-agent:
+    tenant: A
+    subject: s-agent
+    product: AgentTool
+    definitionId: sha256:d-agent
+    sinks: {}
+    proposes:
+    - example/plans
+declares:
+  A:
+    example/plans:
+    - ControllerA
+subjects:
+  s-person:
+    tenant: A
+    person: true
+    permissions:
+    - api:commands:create
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+  s-agent:
+    tenant: A
+    permissions:
+    - api:proposals:create
+  s-risk:
+    tenant: A
+    permissions:
+    - api:proposals:read
+  s-follower:
+    tenant: A
+    permissions:
+    - api:commands:read
+  s-nobody:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: proposePlan
+  tenant: A
+  subject: s-agent
+  instance: i-agent
+  channel: example/plans
+  product: ControllerA
+  expiresAt: 5000
+  basedOn:
+    override: v1
+    example/bolus: b1
+  plan:
+    elements:
+    - id: soon
+      kind: eatingSoon
+      channel: override
+      path: standing
+      content:
+        target: eating-soon
+    - id: meal
+      kind: mealBolus
+      channel: example/bolus
+      path: per-occurrence
+      content:
+        bolus: usual-lunch
+    trigger:
+      weekdays: lunch
+    startsAt: 100
+    endsAt: 100000
+    requiredReviews: []
+- at: 30
+  kind: approvePlan
+  tenant: A
+  subject: s-person
+  proposal: p1
+  accepts:
+  - element: soon
+    hash: element:soon
+  - element: meal
+    hash: element:meal
+- at: 40
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+- at: 50
+  kind: report
+  tenant: A
+  subject: s-ctl-a
+  command: c1
+  state: refused
+  reason: limit
+- at: 60
+  kind: readPlan
+  tenant: A
+  subject: s-follower
+  plan: p1
+expected:
+  calls:
+  - status: 201
+    proposalId: p1
+  - status: 201
+    commandId: c1
+    state: pending
+  - status: 200
+    commands:
+    - c1
+  - status: 200
+  - status: 200
+    state: refused
+    accepted:
+    - soon
+    - meal
+    declined: []
+    occurrences: {}
+  commands:
+    c1:
+      state: refused
+      destination: i-ctl-a
+      proposalId: p1
+  proposals:
+    p1:
+      state: approved
+  plans:
+    p1:
+      state: refused
+      accepted:
+      - soon
+      - meal
+      declined: []
+      occurrences: {}

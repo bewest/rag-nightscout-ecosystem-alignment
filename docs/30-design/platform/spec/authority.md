@@ -8,7 +8,7 @@ the [platform index](../README.md); terms are in the [glossary](glossary.md). De
 and the maintainer's decisions of 2026-10-14 to 2026-10-18 recorded with them. Queue:
 `SPEC-AUTHORITY`.*
 
-*Specification 7 of 7 in the [reading order](../README.md#reading-order); last, because it authorises what the others define. Expect rules AU1–AU5, binding and credential kinds, the owner's actions, namespaces, command destinations, delegation requirements DR1–DR7, what is recorded for audit, and the conformance cases.*
+*Specification 8 of 8 in the [reading order](../README.md#reading-order); last, because it authorises what the others define. Expect rules AU1–AU5, binding and credential kinds, the owner's actions, namespaces, command destinations, delegation requirements DR1–DR7, what is recorded for audit, and the conformance cases.*
 
 Who may register a controller's definitions, write under them, act as a site's owner, receive a
 command, and act for someone else. The hub routes and records; it never decides whether a change

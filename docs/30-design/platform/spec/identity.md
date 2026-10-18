@@ -7,7 +7,7 @@ specified, not implemented; §6, today's behaviour, is evidenced. Decisions:
 and the [write contract's §6.1](../../tenancy/write-contract-spec-2026-10-07.md#61-decided-2026-10-12).
 Queue: `SPEC-ID`.*
 
-*Specification 1 of 7 in the [reading order](../README.md#reading-order); every other specification uses these ids. Expect rules I1–I9, the contract ids, the match order per collection, the `identifier` format, today's behaviour in cgm-remote-monitor, and the conformance cases.*
+*Specification 1 of 8 in the [reading order](../README.md#reading-order); every other specification uses these ids. Expect rules I1–I9, the contract ids, the match order per collection, the `identifier` format, today's behaviour in cgm-remote-monitor, and the conformance cases.*
 
 This page defines how records, definitions, instances and subjects are identified, and how a hub
 decides that a write is a re-send of something it already stores. Every other layer uses these

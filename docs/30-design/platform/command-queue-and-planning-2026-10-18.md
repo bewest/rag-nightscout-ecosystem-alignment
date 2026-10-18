@@ -197,6 +197,9 @@ predetermined withdrawal criteria and mitigations (a reduced portion with eating
 approval within the 12 hours before), drafted as FL1 of [evidence-weighted approval](evidence-weighted-approval-2026-10-18.md), which drafts what
 approval a plan needs by risk and by evidence for clinical review.
 
+The plan object, its approval in parts, the controller's hold, the hub's mirror and the occurrence
+operations are specified in [plans](spec/plans.md) (PN1–PN16).
+
 **Still open:**
 
 - **Out-of-band data:** agents keep it; the hub receives proposals, confirmations and minimised

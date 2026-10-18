@@ -7,7 +7,7 @@ matched is in the [identity specification](identity.md) §3. Decisions: the
 (2026-10-12) and [D6](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions)
 (the change feed under multi). Queue: `SPEC-SYNC-TRANSPORT`.*
 
-*Specification 6 of 7 in the [reading order](../README.md#reading-order); after the layers whose records it moves, before authority. Expect the decided write path (T1–T4), each client's declared sync endpoints, the proposed read, cursor and socket rules (T5–T15), and the conformance cases.*
+*Specification 7 of 8 in the [reading order](../README.md#reading-order); after the layers whose records it moves, before authority. Expect the decided write path (T1–T4), each client's declared sync endpoints, the proposed read, cursor and socket rules (T5–T15), and the conformance cases.*
 
 How writes are applied, ordered and delivered, over REST and the socket, and what a client pays to
 stay in sync. Status: the write path is decided, except re-sends of `devicestatus` (T2), and T3 is on `dev`;
