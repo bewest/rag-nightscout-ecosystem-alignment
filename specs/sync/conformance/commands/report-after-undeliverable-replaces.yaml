@@ -1,0 +1,78 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §5. Times are seconds; expectations authored by hand.
+id: report-after-undeliverable-replaces
+title: A report after undeliverable is accepted and replaces it
+rules:
+- CM9
+- CM2
+description: c1 is pushed to i-ctl-a, which loses command-sink at 20 without fetching, so c1 reads undeliverable;
+  i-ctl-a's subject then reports succeeded, which is accepted and replaces undeliverable.
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - 20
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 600
+- at: 10
+  kind: push
+  bound: A
+  command: c1
+  via: socket
+- at: 25
+  kind: read
+  tenant: A
+  command: c1
+- at: 30
+  kind: report
+  tenant: A
+  subject: s-ctl-a
+  command: c1
+  state: succeeded
+- at: 35
+  kind: read
+  tenant: A
+  command: c1
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+  - sent: true
+  - status: 200
+    state: undeliverable
+  - status: 200
+  - status: 200
+    state: succeeded
+  commands:
+    c1:
+      state: succeeded
+      destination: i-ctl-a

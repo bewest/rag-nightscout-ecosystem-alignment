@@ -227,10 +227,15 @@ holder.
 default views and exports, and a `simulated` command sink never receives a routed command.
 
 **Command destination.** The live `device` instance holding `command-sink` on a channel. With no
-holder the command is refused `no-command-destination`; the hub never guesses. The command API
-itself is not specified (`SPEC-REG-COMMANDS`).
+holder the command is refused `no-command-destination`; the hub never guesses
+([commands §2](commands.md#2-where-a-command-goes)).
 
-**Delegation, proposal.** Not specified. A *delegation* would let a principal grant a caregiver,
-app or agent a scoped, expiring, revocable authority; a *proposal* would record an intended action
-for approval without granting authority to execute it. What a delegation design must provide is in
+**Command record, outcome.** Proposed. The hub stores a command before it sends it, with the hash
+of its payload; only the destination reports the outcome, and `sent` or `fetched` is never success
+([commands §4–§5](commands.md#4-the-command-record-proposed)).
+
+**Delegation, proposal.** A *delegation* would let a principal grant a caregiver, app or agent a
+scoped, expiring, revocable authority; it is not specified. A *proposal* records an intended
+change for approval without authority to execute it; an approval names the hash of one payload
+(proposed, [commands §6](commands.md#6-proposals-and-approvals-proposed)). What a delegation design must provide is in
 [configuration and delegation §5.4](../../tenancy/nightscout-configuration-and-delegation-2026-09-10.md#54-what-a-delegation-design-would-have-to-provide).

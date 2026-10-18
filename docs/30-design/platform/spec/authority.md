@@ -109,8 +109,8 @@ command-sink survives renewal only when the instance matches the binding or the 
 `grantedBy`.
 
 Where a command goes once a holder exists, and that the hub never routes to a guess, is
-[registration §9](registration.md#9-channels-roles-and-provenance). The command API and the
-proposal record in front of a command are `SPEC-REG-COMMANDS`.
+[commands §2](commands.md#2-where-a-command-goes). The command record and the proposal in front of
+a command are proposed in [commands §4–§7](commands.md#4-the-command-record-proposed).
 
 ## 7. Delegation (not decided)
 
@@ -126,8 +126,8 @@ in Nightscout implements it, and no design is decided.
   [state and intent S8](state-intent.md#2-rules)).
 - A role for an agent, such as proposing or acting, is an `other` role a hub lists
   ([registration §9](registration.md#9-channels-roles-and-provenance)).
-- The proposal record in front of a command belongs to `SPEC-REG-COMMANDS` (maintainer,
-  2026-10-18).
+- The proposal record in front of a command belongs to the [commands specification](commands.md)
+  (maintainer, 2026-10-18).
 - Third-party delegated access through an authorization server is deferred (AU1).
 
 **What a delegation design would have to provide**, stated 2026-09-10 as requirements for
@@ -198,7 +198,7 @@ command are listed here; they are part of the registration suites
 (`tools/nsschema/test_registration_negotiation.py`, `test_registration_instances.py`). Delegation
 has no case.
 
-70 cases.
+65 cases.
 
 <!-- BEGIN GENERATED: authority-cases (tools/nsschema/spec_cases.py) -->
 | case | shows | expected | control |
@@ -265,12 +265,7 @@ has no case.
 | `instances/instance-renew-after-transfer` | The former holder renews with its current etag | 200 partial; role-held | `owner-transfer-role` |
 | `instances/command-after-rebind-no-destination` | A command between the drop and the new holder's claim has no destination | 409 rejected; no-command-destination | `command-after-rebind-routed` |
 | `instances/command-after-rebind-routed` | After the new holder's claim, a command is routed to it | 200 routed |  |
-| `instances/command-ambiguous-destination` | A command naming no product for a slot two products declare is refused as ambiguous | 409 rejected; ambiguous-command-destination | `command-named-product` |
-| `instances/command-inferred-one-product` | A command naming no product goes to the one product that declares its slot | 200 routed |  |
-| `instances/command-named-product` | Naming the product resolves a command for a slot two products declare | 200 routed |  |
 | `instances/command-no-destination-simulated` | A simulated command sink is never a command destination | 409 rejected; no-command-destination | `command-routed` |
 | `instances/command-not-routed-to-other-subject-simulator` | Another subject's simulated command sink is granted and never a command destination | 200 routed |  |
-| `instances/command-routed` | A command for a channel goes to its command-sink holder | 200 routed |  |
-| `instances/command-unknown-slot` | A command for a slot no product declares has no destination | 409 rejected; no-command-destination | `command-inferred-one-product` |
 | `instances/typed-write-attributed` | A typed write by the source holder is accepted and attributed | 200 written |  |
 <!-- END GENERATED: authority-cases -->

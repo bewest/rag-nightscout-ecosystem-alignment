@@ -34,6 +34,11 @@ PRIMITIVES = ROOT / "specs" / "sync" / "primitives.yaml"
 LAYERS = {
     "records": {"primitives": PRIMITIVES, "proposed": PRIMITIVES},
     "sync-transport": {"cases": [("sync-transport/", CASES / "sync-transport")]},
+    "commands": {"cases": [
+        "pattern:instances/command-routed", "pattern:instances/command-unknown-slot",
+        "pattern:instances/command-ambiguous-destination",
+        "pattern:instances/command-inferred-one-product", "pattern:instances/command-named-product",
+        ("commands/", CASES / "commands")]},
     "authority": {"cases": [
         "pattern:owner-*", "pattern:blocked-*", "pattern:released-*", "pattern:retire",
         "pattern:retire-*", "pattern:update-accepted", "pattern:update-*not-registration-owner", "pattern:update-api-secret-*",
@@ -48,7 +53,9 @@ LAYERS = {
         "pattern:instances/instance-create-other-subject",
         "pattern:instances/instance-renew-transferred-command-sink",
         "pattern:instances/instance-renew-after-transfer*",
-        "pattern:instances/command-*", "pattern:instances/typed-write-attributed",
+        "pattern:instances/command-after-rebind-*", "pattern:instances/command-no-destination-simulated",
+        "pattern:instances/command-not-routed-to-other-subject-simulator",
+        "pattern:instances/typed-write-attributed",
     ]},
     "registration": {"cases": [("", CASES), ("instances/", CASES / "instances"), ("quirks/", CASES / "quirks")]},
     "state-intent": {

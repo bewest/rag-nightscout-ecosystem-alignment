@@ -1,0 +1,49 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §4. Times are seconds; expectations authored by hand.
+id: expiry-too-long
+title: An expiry beyond commands.maxExpirySeconds is refused
+rules:
+- CM3
+description: 'At 10 with a maximum of 3600 s, expiresAt 3611 is one second beyond the limit: 422 expiry-too-long,
+  no id.'
+control: expiry-at-maximum
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 3611
+expected:
+  calls:
+  - status: 422
+    code: expiry-too-long
+  commands: {}

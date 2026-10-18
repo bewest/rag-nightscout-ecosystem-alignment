@@ -1,0 +1,61 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §2. Times are seconds; expectations authored by hand.
+id: route-other-tenant-holder-not-used
+title: A holder on another tenant is never the destination
+rules:
+- CM1
+- CM6
+description: Tenant B has a ControllerA instance holding command-sink on `override`; tenant A has none.
+  A command on A is refused no-command-destination, not routed to B's holder.
+control: route-own-tenant-holder
+mode: multi
+maxExpirySeconds: 3600
+instances:
+  i-ctl-b:
+    tenant: B
+    subject: s-ctl-b
+    product: ControllerA
+    definitionId: sha256:d-b
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+declares:
+  A:
+    override:
+    - ControllerA
+  B:
+    override:
+    - ControllerA
+subjects:
+  s-care-a:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-care-b:
+    tenant: B
+    permissions:
+    - api:commands:create
+  s-ctl-b:
+    tenant: B
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care-a
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 600
+expected:
+  calls:
+  - status: 409
+    code: no-command-destination
+    commandId: c1
+  commands:
+    c1:
+      state: not-routed
+      destination: null

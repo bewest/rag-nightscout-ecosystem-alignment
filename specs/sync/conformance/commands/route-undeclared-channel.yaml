@@ -1,0 +1,50 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §2. Times are seconds; expectations authored by hand.
+id: route-undeclared-channel
+title: A channel no product declares has no destination
+rules:
+- CM1
+description: The instance holds command-sink on `override`, but no product declares `override` on this
+  tenant and the command names no product; refused 409 no-command-destination and recorded.
+control: route-inferred-from-declaring-product
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+declares:
+  A: {}
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  payload:
+    action: start
+    preset: example
+  expiresAt: 600
+expected:
+  calls:
+  - status: 409
+    code: no-command-destination
+    commandId: c1
+  commands:
+    c1:
+      state: not-routed
+      destination: null

@@ -1,0 +1,74 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §4. Times are seconds; expectations authored by hand.
+id: request-id-scoped-to-subject
+title: A requestId is matched within one subject
+rules:
+- CM4
+description: Two subjects on the same tenant use the same requestId with different payloads; each gets
+  its own command and neither is refused.
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-care-2:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 600
+  requestId: r1
+- at: 20
+  kind: command
+  tenant: A
+  subject: s-care-2
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: other
+  expiresAt: 600
+  requestId: r1
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+  - status: 201
+    commandId: c2
+    state: pending
+  commands:
+    c1:
+      state: pending
+      destination: i-ctl-a
+    c2:
+      state: pending
+      destination: i-ctl-a

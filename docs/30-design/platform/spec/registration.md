@@ -394,14 +394,7 @@ Source roles are open to any permitted subject.
 holder's lease lapses, or when the owner transfers it. A lapsed or dropped role is not
 auto-assigned: a claimant is granted it on its own next renewal, which re-evaluates every claim.
 
-**Command routing.** A command for a channel goes to the live `device` instance holding
-`command-sink` on it. A command that names no product for a channel that is not shared goes to the
-one product that declares that channel; when more than one product declares it, it is refused 409
-`ambiguous-command-destination`, and naming the product (`request.identity`) resolves it.
-"Declares" reads every product's current registration and stored definitions, in any state. With
-no holder, or a channel no product declares, the command is refused `no-command-destination`; the
-hub never routes to a lapsed former holder, a `simulated` command sink or the product's latest
-instance. The command API itself is `SPEC-REG-COMMANDS`.
+**Command routing.** Where a command for a channel goes, and its refusals, are [commands §2](commands.md#2-where-a-command-goes).
 
 **The hub never decides dosing.** Exclusivity decides only which instance is the typed source of
 record for a channel and where a command for that channel is routed. A claimant refused a role keeps
@@ -548,7 +541,7 @@ Rules the specification chose that await the maintainer's confirmation:
 - **Identity:** two choices are listed in [identity §5](identity.md#5-open-decisions).
 
 Not yet specified: the contract per tenancy mode (`SPEC-REG-MODES`), the mechanics of registration
-state across a site's move into a tenant, whose binding rule [authority §3](authority.md#3-binding-and-credential-kind) states (`SPEC-REG-MIGRATE`), and the command API (`SPEC-REG-COMMANDS`).
+state across a site's move into a tenant, whose binding rule [authority §3](authority.md#3-binding-and-credential-kind) states (`SPEC-REG-MIGRATE`). The command API is proposed in the [commands specification](commands.md).
 
 ## 19. Conformance cases
 

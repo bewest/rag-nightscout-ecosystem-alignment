@@ -2227,6 +2227,48 @@ controls:
       fails zero-duration-ends-instance and marker-at-next-start (exit 1).
 
   - gate: |-
+      node tools/queue/gates/platform-spec.js commands
+    cwd: .
+    control: |-
+      tools/queue/gates/platform-spec-control.sh commands pointer
+    positive-control: |-
+      node tools/queue/gates/platform-spec.js commands
+    control-kind: static
+    proves: >
+      run 2026-10-18: removing the registration spec's sibling link to
+      commands.md exits 1 with the one finding that registration.md does not
+      link to spec/commands.md. The narration, case and count breaks were run
+      the same day, each exiting 1 with its own finding.
+
+  - gate: |-
+      python3 -m tools.nsschema.spec_cases commands --check
+    cwd: .
+    control: |-
+      T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && sed '/commands\/approve-destination-changed`/d' docs/30-design/platform/spec/commands.md > "$T/a.md" && python3 -m tools.nsschema.spec_cases commands --check --spec "$T/a.md"
+    positive-control: |-
+      python3 -m tools.nsschema.spec_cases commands --check
+    control-kind: static
+    proves: >
+      run 2026-10-18: a copy with the generated row for
+      commands/approve-destination-changed deleted is reported stale and
+      exits 1.
+
+  - gate: |-
+      python3 -m pytest -q tools/nsschema/test_commands.py
+    cwd: .
+    control: |-
+      tools/queue/gates/nsschema-weakened.sh commands.py 'if payload_hash(call["approves"]) != p["payloadHash"]:' 'if False:' test_commands.py
+    positive-control: |-
+      python3 -m pytest -q tools/nsschema/test_commands.py
+    control-kind: unit
+    proves: >
+      run 2026-10-18: a scratch copy whose approvals never compare the
+      approved hash with the proposal's fails approve-hash-mismatch and the
+      approved-payload invariant (exit 1). 31 further weakenings, one per
+      rule or check, were each red the same day. The script exits 90
+      CONTROL-INVALID if its replaced text no longer occurs once.
+
+  - gate: |-
       node tools/queue/gates/platform-spec.js authority
     cwd: .
     control: |-

@@ -1,0 +1,93 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §6. Times are seconds; expectations authored by hand.
+calls:
+- at: 20
+  basedOn: v1
+  channel: override
+  expiresAt: 100
+  instance: i-agent
+  instanceId: i-ctl-a
+  kind: propose
+  payload:
+    action: start
+    preset: example
+  subject: s-agent
+  tenant: A
+- approves:
+    action: start
+    preset: example
+  at: 50
+  kind: approve
+  proposal: p1
+  subject: s-care
+  tenant: A
+declares:
+  A:
+    override:
+    - ControllerA
+description: p1 names i-ctl-a; at 30 the sink passes to i-ctl-b of the same product,
+  so the command would reach a device the proposer did not read. 409 destination-changed;
+  no command; the proposal stays open.
+expected:
+  calls:
+  - status: 201
+    proposalId: p1
+  - status: 409
+    code: destination-changed
+  proposals:
+    p1:
+      state: open
+  commands: {}
+id: approve-destination-changed
+instances:
+  i-agent:
+    definitionId: sha256:d-agent
+    product: AgentTool
+    proposes:
+    - override
+    sinks: {}
+    subject: s-agent
+    tenant: A
+  i-ctl-a:
+    definitionId: sha256:d-a
+    product: ControllerA
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - 30
+    subject: s-ctl-a
+    tenant: A
+  i-ctl-b:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 30
+      - null
+maxExpirySeconds: 3600
+mode: single
+rules:
+- CM13
+stateVersions:
+  A:
+    ControllerA:
+    - - 0
+      - v1
+subjects:
+  s-agent:
+    permissions:
+    - api:proposals:create
+    tenant: A
+  s-care:
+    permissions:
+    - api:commands:create
+    tenant: A
+  s-ctl-a:
+    permissions: []
+    tenant: A
+title: An approval is refused when the named instance no longer holds the sink
+control: approve-named-instance-still-holder
+end: 60

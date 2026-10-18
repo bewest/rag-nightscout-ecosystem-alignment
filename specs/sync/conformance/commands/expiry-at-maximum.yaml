@@ -1,0 +1,51 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §4. Times are seconds; expectations authored by hand.
+id: expiry-at-maximum
+title: An expiry exactly at the maximum is accepted
+rules:
+- CM3
+description: 'Control for expiry-too-long: expiresAt 3610 at time 10 is exactly maxExpirySeconds ahead.'
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 3610
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+  commands:
+    c1:
+      state: pending
+      destination: i-ctl-a

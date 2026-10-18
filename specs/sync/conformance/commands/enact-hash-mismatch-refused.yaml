@@ -1,0 +1,84 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §5. Times are seconds; expectations authored by hand.
+id: enact-hash-mismatch-refused
+title: The controller refuses a received payload whose hash differs
+rules:
+- CM10
+- CM7
+- CM8
+description: The payload received differs from the command's; the controller refuses hash-mismatch and
+  reports it, naming the hash of what it received; the hub accepts the report and marks the record a mismatch.
+control: enact-identical-payload-succeeds
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 100
+- at: 20
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+- at: 50
+  kind: enact
+  instance: i-ctl-a
+  command: c1
+  received:
+    action: start
+    preset: other
+- at: 55
+  kind: report
+  tenant: A
+  subject: s-ctl-a
+  command: c1
+  state: refused
+  reason: hash-mismatch
+  checked:
+    action: start
+    preset: other
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+  - status: 200
+    commands:
+    - c1
+  - state: refused
+    reason: hash-mismatch
+  - status: 200
+  commands:
+    c1:
+      state: refused
+      destination: i-ctl-a
+      hashMismatch: true

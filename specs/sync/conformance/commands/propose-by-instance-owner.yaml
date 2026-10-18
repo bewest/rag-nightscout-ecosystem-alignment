@@ -1,0 +1,73 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §6. Times are seconds; expectations authored by hand.
+id: propose-by-instance-owner
+title: The instance's own subject proposes
+rules:
+- CM12
+description: 'Control for propose-with-another-subjects-instance: the same setup, with s-agent proposing
+  as its own instance.'
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+  i-agent:
+    tenant: A
+    subject: s-agent
+    product: AgentTool
+    definitionId: sha256:d-agent
+    sinks: {}
+    proposes:
+    - override
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+  s-agent:
+    tenant: A
+    permissions:
+    - api:proposals:create
+  s-agent-2:
+    tenant: A
+    permissions:
+    - api:proposals:create
+stateVersions:
+  A:
+    ControllerA:
+    - - 0
+      - v1
+calls:
+- at: 20
+  kind: propose
+  tenant: A
+  subject: s-agent
+  instance: i-agent
+  channel: override
+  payload:
+    action: start
+    preset: example
+  basedOn: v1
+  expiresAt: 100
+expected:
+  calls:
+  - status: 201
+    proposalId: p1
+  proposals:
+    p1:
+      state: open
+  commands: {}

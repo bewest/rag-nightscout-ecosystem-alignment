@@ -1,0 +1,77 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §5. Times are seconds; expectations authored by hand.
+id: report-after-final-refused
+title: A second outcome after a final state is refused
+rules:
+- CM9
+description: 'c1 is reported succeeded, then failed: the second report is 409 already-final and the state
+  stays succeeded.'
+control: acknowledged-then-succeeded
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 600
+- at: 15
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+- at: 20
+  kind: report
+  tenant: A
+  subject: s-ctl-a
+  command: c1
+  state: succeeded
+- at: 25
+  kind: report
+  tenant: A
+  subject: s-ctl-a
+  command: c1
+  state: failed
+  reason: limit
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+  - status: 200
+    commands:
+    - c1
+  - status: 200
+  - status: 409
+    code: already-final
+  commands:
+    c1:
+      state: succeeded
+      destination: i-ctl-a

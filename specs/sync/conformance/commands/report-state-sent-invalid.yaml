@@ -1,0 +1,68 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §5. Times are seconds; expectations authored by hand.
+id: report-state-sent-invalid
+title: A report with state sent is refused
+rules:
+- CM7
+description: '`sent` is set by the hub, not reported: 422 invalid-state, and the state is unchanged.'
+control: report-from-destination-accepted
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 600
+- at: 15
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+- at: 20
+  kind: report
+  tenant: A
+  subject: s-ctl-a
+  command: c1
+  state: sent
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+  - status: 200
+    commands:
+    - c1
+  - status: 422
+    code: invalid-state
+  commands:
+    c1:
+      state: fetched
+      destination: i-ctl-a

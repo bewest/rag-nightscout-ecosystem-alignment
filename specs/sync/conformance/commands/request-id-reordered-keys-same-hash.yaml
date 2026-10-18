@@ -1,0 +1,68 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §4. Times are seconds; expectations authored by hand.
+id: request-id-reordered-keys-same-hash
+title: Key order does not change the payload hash a re-send is matched on
+rules:
+- CM1
+- CM4
+description: The re-send lists the payload's keys in the other order; RFC 8785 canonical JSON gives the
+  same payloadHash, so the first command is returned.
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 600
+  requestId: r1
+- at: 20
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    preset: example
+    action: start
+  expiresAt: 600
+  requestId: r1
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+  - status: 200
+    commandId: c1
+    state: pending
+  commands:
+    c1:
+      state: pending
+      destination: i-ctl-a

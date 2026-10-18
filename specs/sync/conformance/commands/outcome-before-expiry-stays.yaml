@@ -1,0 +1,74 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §4. Times are seconds; expectations authored by hand.
+id: outcome-before-expiry-stays
+title: An outcome reported before expiry is still the state after it
+rules:
+- CM3
+- CM9
+description: c1 succeeds at 30, before its expiry at 100; a read at 150 reports succeeded, not expired.
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 100
+- at: 20
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+- at: 30
+  kind: report
+  tenant: A
+  subject: s-ctl-a
+  command: c1
+  state: succeeded
+- at: 150
+  kind: read
+  tenant: A
+  command: c1
+end: 150
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+  - status: 200
+    commands:
+    - c1
+  - status: 200
+  - status: 200
+    state: succeeded
+  commands:
+    c1:
+      state: succeeded
+      destination: i-ctl-a

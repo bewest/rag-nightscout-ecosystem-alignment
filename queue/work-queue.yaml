@@ -15987,82 +15987,81 @@ items:
     title: "Hub command delivery to a command-sink instance, with the proposal record in front of it, specified for single and multi mode"
     parcel: platform
     repo: rag-nightscout-ecosystem-alignment
-    branch: main
-    base: main@18397441
-    state: not-started
+    branch: docs/platform-spec-index-2026-10-18
+    base: main@9736bd65
+    state: done
     pr: []
     blast_radius: >
-      Expected: the command request, its routing (already specified in
-      §3.6: the live device command-sink holder, else
-      no-command-destination; since 2026-10-17 an unshared slot's product
-      is inferred when one product declares it, else
-      ambiguous-command-destination) and its transport, for both modes, in the
-      hub-sync design with conformance cases. §3.6 says "The command API
-      itself is not specified here." Since 2026-10-18 (maintainer: fold
-      the proposal lifecycle in here) also the proposal record in front of
-      a command, from agents in the ecosystem §4.3: propose → validate →
-      (evaluate) → approve | reject → command → outcome. A proposal names
-      the proposing instance and its propose role ({value: other,
-      controllerTerm}), the target instanceId and definitionId, an expiry
-      and the SHA-256 of the payload's RFC 8785 canonical JSON; an approval
-      names that hash; the controller checks the hash before enacting and
-      reports the outcome correlated to the proposal. Ships nothing.
+      docs/30-design/platform/spec/commands.md (new): where a command goes
+      (§2, moved from registration §9, which becomes a pointer); the hub's
+      command path today, read at 15.0.8 92d08342, dev fade2299 and the seam
+      81a1f6ce; the proposed command record and states (CM1-CM6), outcomes
+      reported by the destination only (CM7-CM10), proposals and approvals
+      bound to one payload hash (CM11-CM16), delivery in each mode (CM17-CM20:
+      fetch, push only inside a bound request, the tenant's push
+      credentials); compatibility with Loop, LoopCaregiver, LoopFollow, Trio
+      and AndroidAPS read from source; 92 cases (5 routing cases from the
+      registration suite, 87 under specs/sync/conformance/commands/).
+      tools/nsschema/commands.py is the reference; test_commands.py checks
+      it and four invariants on every case. The authority case list drops
+      the five routing cases (65). Pointers in registration §9 and §18,
+      authority §6 and §7, the glossary, the agents page §4.3 and the index.
+      The platform-spec gate's narration pattern for "withdrawn" is narrowed
+      to amendment forms, because `withdrawn` is a proposal state. Ships
+      nothing.
     review: maintainer
     operator_visible: ""
     semver: n/a
     semver_reason: specification in this repository; ships nothing
     register: []
     gates:
-      - no-gate: >
-          Not started. The gate will be conformance cases for a command
-          routed, refused no-command-destination, and delivered, in each
-          mode. Red when a command produced with no tenant bound is reported
-          delivered under multi (such emissions are withheld), with the
-          control that the same producer delivers in single; and red when a
-          command reaches a sink on another tenant, with the control of the
-          same command on its own tenant. For proposals: red when an
-          approval of payload hash A enacts payload B, with the control that
-          the same approval enacts A; red when an expired proposal is
-          approved, with the control of the same proposal before expiry;
-          and red when a credential with no propose role (a `readable`
-          token, or an MCP server holding one) creates a proposal, with the
-          control of the same request from a propose-role holder.
-    blocks_on: [SPEC-REG-MODES]
+      - run: node tools/queue/gates/platform-spec.js commands
+        kind: static
+        describe: >
+          FAILS when the spec is missing, carries amendment narration, names
+          a case that does not exist, states a count that differs from its
+          table, or when the registration spec, the authority spec or the
+          agents page does not link to it. GREEN on 2026-10-18: 106 checks,
+          92 cases.
+      - run: python3 -m tools.nsschema.spec_cases commands --check
+        kind: static
+        describe: >
+          FAILS when the case list differs from the case files the patterns
+          select.
+      - run: python3 -m pytest -q tools/nsschema/test_commands.py
+        kind: unit
+        describe: >
+          FAILS when the reference disagrees with a hand-authored expectation,
+          or when on any case a command reaches another tenant, is sent or
+          fetched at or after its expiry, is pushed unbound under multi, or
+          an approved command carries a payload its approval did not name.
+          GREEN on 2026-10-18: 578 tests.
+    blocks_on: []
     evidence:
-      - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
-      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
-      - docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md
+      - docs/30-design/platform/spec/commands.md
       - docs/30-design/platform/agent-trust-boundaries-2026-10-18.md
+      - docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: >
-      Today's carriers, read-derived on crm-seam 81a1f6ce. Loop's remote
-      commands go out as APNs pushes configured from
-      env.extendedSettings.loop (lib/server/loop.js:14-56); T3.3 makes
-      extendedSettings per tenant, and the configuration surface census
-      classes LOOP_APNS_KEY, LOOP_APNS_KEY_ID and LOOP_DEVELOPER_TEAM_ID as
-      per-tenant secrets (§B.4, TS). Socket emissions under multi go to the
-      bound tenant's room and are withheld when no tenant is bound
-      (lib/server/socket-tenancy.js:258-266; the call sites are
-      lib/api3/alarmSocket.js:237, lib/server/websocket.js:47 and
-      lib/api3/storageSocket.js:181), and the load cycle runs unbound, so
-      alarms and live updates are off under multi (plan §7a). A command
-      transport has to state which of these it uses and whether it runs
-      inside a request. The hub routes a command; it never decides or
-      composes dosing (D18, D19 rule 6). Proposals (folded in 2026-10-18):
-      validation and enactment stay the controller's (D18), the hub routes
-      and records and does not judge whether a change is safe, and read
-      access never confers a propose or act role. Prior art is the upstream
-      agent control-plane RFC's `suggest` scope ("can propose, human must
-      approve") and `DelegationGrant`, mapped in agents in the ecosystem
-      §4.2. First open question: what an approval binds "the state it was
-      based on" to. D19's product and instance etags version the
-      registration, not the controller's therapy state (active override,
-      profile, insulin on board), so nothing yet tells an approver that the
-      state the agent read is still the state the controller holds (§4.3).
-      Evidence for both (read-derived, 2026-10-18; agents in the ecosystem
-      §4.3): a commercial controller prototype of the RFC's client side
-      binds an approval to the reviewer and the time only, with no payload
-      hash or state, and reports a remote command's success as the HTTP 200
-      of its request, with no acknowledgement or outcome.
+      Written before SPEC-REG-MODES at the maintainer's request (2026-10-18);
+      what a mode changes beyond fetch, push and push credentials (the
+      storage key and credential kinds a record names) is left to that item,
+      so blocks_on is cleared and the dependency is stated in commands §7
+      and §9. Everything from §4 on is proposed. The 87 command cases were
+      hand-authored by an agent that read only the spec text, not the
+      reference; the two sides first disagreed on 3 of 394 checks, each
+      resolved in the spec text; 17 ambiguities it reported were settled in
+      the rules (order of checks, CM2 covering sent, reports from a
+      destination that lost its role, late reports replacing hub-inferred
+      states, invalid-reason, payload-too-large, destination-changed).
+      Non-vacuity, 2026-10-18: 32 weakenings of commands.py, one per rule
+      or check, each red; the narration, case, count and pointer breaks of
+      the platform-spec control each red with their own finding, the test
+      break CONTROL-INVALID. Compatibility findings that bear on the rules
+      are listed in §8 and §9 (AndroidAPS's late delivery failure after
+      success, Trio's part-enacted meal command). A credential-exposure
+      mechanism found while reading controller source is kept out of this
+      repository and reported to the maintainer directly.
 
   - id: SPEC-REG-MIGRATE
     title: "Registration state across a single-tenant site's move into a tenant, and back"

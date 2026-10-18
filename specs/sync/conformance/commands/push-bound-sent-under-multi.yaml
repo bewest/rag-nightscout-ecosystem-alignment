@@ -1,0 +1,74 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §7. Times are seconds; expectations authored by hand.
+id: push-bound-sent-under-multi
+title: Under multi, a push inside a request bound to the command's tenant is sent
+rules:
+- CM19
+description: The push is made inside the request that accepted the command, bound to A; it is sent. A
+  later push after the fetch is not-pending.
+control: push-unbound-withheld-under-multi
+mode: multi
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 600
+- at: 10
+  kind: push
+  bound: A
+  command: c1
+  via: socket
+- at: 20
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+- at: 25
+  kind: push
+  bound: A
+  command: c1
+  via: socket
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+  - sent: true
+  - status: 200
+    commands:
+    - c1
+  - sent: false
+    reason: not-pending
+  commands:
+    c1:
+      state: fetched
+      destination: i-ctl-a

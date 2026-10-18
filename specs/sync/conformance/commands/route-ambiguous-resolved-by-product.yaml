@@ -1,0 +1,63 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §2. Times are seconds; expectations authored by hand.
+id: route-ambiguous-resolved-by-product
+title: Naming the product resolves an ambiguous channel
+rules:
+- CM1
+description: 'Control for route-ambiguous-declared-channel: the command names ControllerB and goes to
+  its holder.'
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+  i-ctl-b:
+    tenant: A
+    subject: s-ctl-b
+    product: ControllerB
+    definitionId: sha256:d-b
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+declares:
+  A:
+    override:
+    - ControllerA
+    - ControllerB
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerB
+  payload:
+    action: start
+    preset: example
+  expiresAt: 600
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+  commands:
+    c1:
+      state: pending
+      destination: i-ctl-b

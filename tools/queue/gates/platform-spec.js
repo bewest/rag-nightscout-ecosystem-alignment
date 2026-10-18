@@ -54,6 +54,11 @@ const SOURCES = {
     'docs/30-design/platform/agent-trust-boundaries-2026-10-18.md',
     'docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md',
   ],
+  commands: [
+    'docs/30-design/platform/spec/registration.md',
+    'docs/30-design/platform/spec/authority.md',
+    'docs/30-design/platform/agent-trust-boundaries-2026-10-18.md',
+  ],
   'state-intent': [
     'docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md',
     'docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md',
@@ -62,7 +67,8 @@ const SOURCES = {
 };
 const NARRATION = [
   /decided otherwise/i,
-  /\bwithdrawn\b/i,
+  // "withdrawn" as amendment narration, not a proposal's `withdrawn` state (commands CM11).
+  /\(withdrawn\b|\b(?:was|were|been|is now) withdrawn\b/i,
   /\((?:changed|corrected|amended|added|removed) 20\d\d-\d\d-\d\d/i,
   /\buntil 20\d\d-\d\d-\d\d/i,
   /\bno longer (?:applies|apply|open)\b/i,

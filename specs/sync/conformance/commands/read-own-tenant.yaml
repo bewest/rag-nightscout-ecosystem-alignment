@@ -1,0 +1,73 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §4. Times are seconds; expectations authored by hand.
+id: read-own-tenant
+title: A command id read on its own tenant is found
+rules:
+- CM6
+description: Control for read-other-tenant-404.
+mode: multi
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+  i-ctl-b:
+    tenant: B
+    subject: s-ctl-b
+    product: ControllerA
+    definitionId: sha256:d-b
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+declares:
+  A:
+    override:
+    - ControllerA
+  B:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+  s-ctl-b:
+    tenant: B
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 600
+- at: 20
+  kind: read
+  tenant: A
+  command: c1
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+  - status: 200
+    state: pending
+  commands:
+    c1:
+      state: pending
+      destination: i-ctl-a

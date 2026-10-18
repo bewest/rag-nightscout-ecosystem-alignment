@@ -1,0 +1,106 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §6. Times are seconds; expectations authored by hand.
+id: approve-state-unchanged-named-product
+title: An approval for a named product whose state version is unchanged is accepted
+rules:
+- CM15
+- CM11
+- CM13
+description: 'Control for approve-state-changed-named-product: ControllerA''s version moves at 70, after
+  the approval; the command goes to ControllerA''s holder.'
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+  i-agent:
+    tenant: A
+    subject: s-agent
+    product: AgentTool
+    definitionId: sha256:d-agent
+    sinks: {}
+    proposes:
+    - override
+  i-ctl-b:
+    tenant: A
+    subject: s-ctl-b
+    product: ControllerB
+    definitionId: sha256:d-b
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+declares:
+  A:
+    override:
+    - ControllerA
+    - ControllerB
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+  s-agent:
+    tenant: A
+    permissions:
+    - api:proposals:create
+  s-ctl-b:
+    tenant: A
+    permissions: []
+stateVersions:
+  A:
+    ControllerA:
+    - - 0
+      - v1
+    - - 70
+      - v2
+    ControllerB:
+    - - 0
+      - v1
+calls:
+- at: 20
+  kind: propose
+  tenant: A
+  subject: s-agent
+  instance: i-agent
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  basedOn: v1
+  expiresAt: 100
+- at: 50
+  kind: approve
+  tenant: A
+  subject: s-care
+  proposal: p1
+  approves:
+    action: start
+    preset: example
+expected:
+  calls:
+  - status: 201
+    proposalId: p1
+  - status: 201
+    commandId: c1
+    state: pending
+  proposals:
+    p1:
+      state: approved
+  commands:
+    c1:
+      state: pending
+      destination: i-ctl-a
+      proposalId: p1

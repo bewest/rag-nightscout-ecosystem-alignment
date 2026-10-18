@@ -1,0 +1,104 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §6. Times are seconds; expectations authored by hand.
+id: approved-command-has-proposal-expiry
+title: The command an approval creates expires when the proposal would have
+rules:
+- CM13
+- CM3
+description: p1 expires at 100 and is approved at 50; c1 is pending at 90 and expired at 110, and a fetch
+  at 110 returns nothing.
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+  i-agent:
+    tenant: A
+    subject: s-agent
+    product: AgentTool
+    definitionId: sha256:d-agent
+    sinks: {}
+    proposes:
+    - override
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+  s-agent:
+    tenant: A
+    permissions:
+    - api:proposals:create
+stateVersions:
+  A:
+    ControllerA:
+    - - 0
+      - v1
+calls:
+- at: 20
+  kind: propose
+  tenant: A
+  subject: s-agent
+  instance: i-agent
+  channel: override
+  payload:
+    action: start
+    preset: example
+  basedOn: v1
+  expiresAt: 100
+- at: 50
+  kind: approve
+  tenant: A
+  subject: s-care
+  proposal: p1
+  approves:
+    action: start
+    preset: example
+- at: 90
+  kind: read
+  tenant: A
+  command: c1
+- at: 110
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+- at: 110
+  kind: read
+  tenant: A
+  command: c1
+expected:
+  calls:
+  - status: 201
+    proposalId: p1
+  - status: 201
+    commandId: c1
+    state: pending
+  - status: 200
+    state: pending
+  - status: 200
+    commands: []
+  - status: 200
+    state: expired
+  proposals:
+    p1:
+      state: approved
+  commands:
+    c1:
+      state: expired
+      destination: i-ctl-a
+      proposalId: p1

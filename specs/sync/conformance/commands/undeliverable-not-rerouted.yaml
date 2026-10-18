@@ -1,0 +1,86 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §4. Times are seconds; expectations authored by hand.
+id: undeliverable-not-rerouted
+title: A destination that stops holding before fetching makes the command undeliverable
+rules:
+- CM2
+description: c1 is routed to i-ctl-a, which loses command-sink at 20 before fetching; i-ctl-a2 takes the
+  role. c1 becomes undeliverable and is never offered to i-ctl-a2.
+control: fetched-before-holder-changes
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - 20
+  i-ctl-a2:
+    tenant: A
+    subject: s-ctl-a2
+    product: ControllerA
+    definitionId: sha256:d-a2
+    simulated: false
+    sinks:
+      override:
+      - 20
+      - null
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+  s-ctl-a2:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 600
+- at: 25
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+- at: 30
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a2
+  instance: i-ctl-a2
+- at: 35
+  kind: read
+  tenant: A
+  command: c1
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+  - status: 200
+    commands: []
+  - status: 200
+    commands: []
+  - status: 200
+    state: undeliverable
+  commands:
+    c1:
+      state: undeliverable
+      destination: i-ctl-a

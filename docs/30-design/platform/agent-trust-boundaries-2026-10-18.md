@@ -222,12 +222,12 @@ its source, 2026-10-18; not reproduced here). That is evidence for the binding r
 and for its open question: an approval that names neither the payload nor the state does not
 bind to either, and an HTTP status says nothing about what the controller did.
 
-**Where it would be specified.** Command delivery is `SPEC-REG-COMMANDS` in the
-[work queue](../../../queue/work-queue.yaml): not started, blocked on `SPEC-REG-MODES`; the
-[registration specification §9](spec/registration.md#9-channels-roles-and-provenance) leaves the command API to it. The proposal record is folded into that item
-(maintainer, 2026-10-18), with gate cases for an approval bound to one payload hash, an expired
-proposal, and a proposal from a credential with no propose role; the open question above is its
-first.
+**Where it is specified.** The command record, outcomes, proposals and approvals are proposed in
+the [commands specification](spec/commands.md) §4–§7 (`SPEC-REG-COMMANDS`; the proposal record
+was folded in by the maintainer on 2026-10-18), with cases for an approval bound to one payload
+hash, an expired proposal, and a proposal from a credential with no propose role. Its CM15 takes
+the open question above: an approval is refused when the hub's state version differs from the
+proposal's, which still says nothing about the controller's own state.
 
 ## 5. Evaluating an algorithm before it acts
 

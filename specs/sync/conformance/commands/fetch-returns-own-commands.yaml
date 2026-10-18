@@ -1,0 +1,99 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §7. Times are seconds; expectations authored by hand.
+id: fetch-returns-own-commands
+title: A fetch returns only the fetching instance's own commands
+rules:
+- CM18
+description: Two controllers on tenant A hold command-sink on different channels; each fetch returns only
+  the command routed to that instance.
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+  i-ctl-b:
+    tenant: A
+    subject: s-ctl-b
+    product: ControllerB
+    definitionId: sha256:d-b
+    simulated: false
+    sinks:
+      target:
+      - 0
+      - null
+declares:
+  A:
+    override:
+    - ControllerA
+    target:
+    - ControllerB
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+  s-ctl-b:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 600
+- at: 11
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: target
+  product: ControllerB
+  payload:
+    action: start
+    preset: example
+  expiresAt: 600
+- at: 20
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+- at: 21
+  kind: fetch
+  tenant: A
+  subject: s-ctl-b
+  instance: i-ctl-b
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+  - status: 201
+    commandId: c2
+    state: pending
+  - status: 200
+    commands:
+    - c1
+  - status: 200
+    commands:
+    - c2
+  commands:
+    c1:
+      state: fetched
+      destination: i-ctl-a
+    c2:
+      state: fetched
+      destination: i-ctl-b

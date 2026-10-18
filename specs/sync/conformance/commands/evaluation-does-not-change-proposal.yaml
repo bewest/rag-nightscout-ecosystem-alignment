@@ -1,0 +1,79 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §6. Times are seconds; expectations authored by hand.
+id: evaluation-does-not-change-proposal
+title: An evaluation is evidence and never changes the proposal
+rules:
+- CM16
+description: A reader attaches an evaluation to p1; p1 stays open and no command is created.
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+  i-agent:
+    tenant: A
+    subject: s-agent
+    product: AgentTool
+    definitionId: sha256:d-agent
+    sinks: {}
+    proposes:
+    - override
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+  s-agent:
+    tenant: A
+    permissions:
+    - api:proposals:create
+  s-reader:
+    tenant: A
+    permissions:
+    - api:proposals:read
+stateVersions:
+  A:
+    ControllerA:
+    - - 0
+      - v1
+calls:
+- at: 20
+  kind: propose
+  tenant: A
+  subject: s-agent
+  instance: i-agent
+  channel: override
+  payload:
+    action: start
+    preset: example
+  basedOn: v1
+  expiresAt: 100
+- at: 30
+  kind: evaluate
+  tenant: A
+  subject: s-reader
+  proposal: p1
+  note: example risk check
+expected:
+  calls:
+  - status: 201
+    proposalId: p1
+  - status: 201
+  proposals:
+    p1:
+      state: open
+  commands: {}

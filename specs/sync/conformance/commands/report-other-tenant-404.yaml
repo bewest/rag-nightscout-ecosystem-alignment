@@ -1,0 +1,85 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §5. Times are seconds; expectations authored by hand.
+id: report-other-tenant-404
+title: A report for another tenant's command id is 404
+rules:
+- CM6
+- CM7
+description: The tenant-B controller reports on c1, a tenant-A command; the id does not exist on B, so
+  404, not 403.
+control: report-from-destination-accepted
+mode: multi
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+  i-ctl-b:
+    tenant: B
+    subject: s-ctl-b
+    product: ControllerA
+    definitionId: sha256:d-b
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+declares:
+  A:
+    override:
+    - ControllerA
+  B:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+  s-ctl-b:
+    tenant: B
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 600
+- at: 15
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+- at: 20
+  kind: report
+  tenant: B
+  subject: s-ctl-b
+  command: c1
+  state: succeeded
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+  - status: 200
+    commands:
+    - c1
+  - status: 404
+  commands:
+    c1:
+      state: fetched
+      destination: i-ctl-a
