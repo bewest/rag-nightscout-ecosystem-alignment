@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="1104" viewBox="0 0 720 1104" font-family="Helvetica, Arial, sans-serif" role="img">
+<title>A6 · Deletion</title>
+<desc>A6 · Deletion: A delete removes the write it names: by _id, as a delete by id carries no other field, or by identity. A soft delete (a write with isValid: false) removes its identity. An instance with no live write left is listed as ended deletedBeforeStart, and is never active and ends nothing, when the delete was received before its start; otherwise it is not reported, as a deleted document is not today. A re-post received before the delete of the record it replaces still amends the instance. Cases drawn: deleted-before-start: A record deleted before its start is listed as ended, deleted before start, and is never active; scheduled-not-deleted: The same scheduled record, not deleted, is active from its start; delete-after-start-withdraws: A record deleted after its start and not re-posted is not reported; delete-and-repost-amends: A delete followed by a re-post of the same identity amends the instance; soft-delete-before-start: A soft delete before the start is a deletion before start.</desc>
+<rect x="0" y="0" width="720" height="1104" fill="#ffffff"/>
+<text x="12" y="24" font-size="14" fill="#111111" font-weight="bold">A6 · Deletion</text>
+<text x="12" y="44" font-size="12" fill="#555555">Each panel is one conformance case: the records in the order the hub received them, the instances the case expects (blue), and</text>
+<text x="12" y="59" font-size="12" fill="#555555">what it expects to be active at each dashed line. A hollow dot is created_at, where the record's time comes from another declared</text>
+<text x="12" y="74" font-size="12" fill="#555555">field.</text>
+<rect x="12" y="97" width="696" height="176" rx="6" fill="#f4f4f4"/>
+<line x1="385.8" y1="141" x2="385.8" y2="243" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="18" y="115" font-size="12.5" fill="#111111" font-weight="bold">deleted-before-start — A record deleted before its start is listed as ended, deleted before start, and is never active</text>
+<text x="18" y="133" font-size="12" fill="#555555">rules A6 · control: scheduled-not-deleted</text>
+<text x="18" y="155" font-size="12" fill="#111111">#1 write</text>
+<circle cx="327.3" cy="151" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="335.3" y="145.4" width="101.4" height="12.6" fill="#f4f4f4"/><text x="336.3" y="155" font-size="12" fill="#111111">_id d1, duration 30</text>
+<text x="18" y="175" font-size="12" fill="#111111">#2 delete</text>
+<path d="M147.5,166.5 L156.5,175.5 M147.5,175.5 L156.5,166.5" stroke="#d03b3b" stroke-width="2" fill="none"/>
+<rect x="161" y="165.4" width="232.8" height="12.6" fill="#f4f4f4"/><text x="162" y="175" font-size="12" fill="#111111">delete received 10:30 of _id d1, duration 30</text>
+<rect x="18" y="185" width="684" height="1" fill="#c8c8c8"/>
+<text x="18" y="203" font-size="12" fill="#1f5fa8">instance</text>
+<path d="M322.8,194.5 L331.8,203.5 M322.8,203.5 L331.8,194.5" stroke="#d03b3b" stroke-width="2" fill="none"/>
+<rect x="336.3" y="193.4" width="145.1" height="12.6" fill="#f4f4f4"/><text x="337.3" y="203" font-size="12" fill="#111111">_id=d1, deletedBeforeStart</text>
+<rect x="18" y="213" width="684" height="1" fill="#c8c8c8"/>
+<text x="18" y="233" font-size="12" fill="#111111">active at</text>
+<rect x="366.4" y="219" width="38.7" height="20" rx="3" fill="#ffffff" stroke="#1f5fa8" stroke-width="1"/>
+<text x="385.8" y="233" font-size="12" fill="#111111" text-anchor="middle">none</text>
+<line x1="152" y1="247" x2="678" y2="247" stroke="#c8c8c8" stroke-width="1"/>
+<line x1="152" y1="247" x2="152" y2="251" stroke="#555555" stroke-width="1"/>
+<text x="152" y="264" font-size="12" fill="#555555" text-anchor="middle">10:30</text>
+<line x1="327.3" y1="247" x2="327.3" y2="251" stroke="#555555" stroke-width="1"/>
+<text x="327.3" y="264" font-size="12" fill="#555555" text-anchor="middle">11:00</text>
+<line x1="502.7" y1="247" x2="502.7" y2="251" stroke="#555555" stroke-width="1"/>
+<text x="502.7" y="264" font-size="12" fill="#555555" text-anchor="middle">11:30</text>
+<line x1="678" y1="247" x2="678" y2="251" stroke="#555555" stroke-width="1"/>
+<text x="678" y="264" font-size="12" fill="#555555" text-anchor="middle">12:00</text>
+<text x="18" y="264" font-size="12" fill="#555555">UTC</text>
+<rect x="12" y="283" width="696" height="156" rx="6" fill="#f4f4f4"/>
+<line x1="239.7" y1="327" x2="239.7" y2="409" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="18" y="301" font-size="12.5" fill="#111111" font-weight="bold">scheduled-not-deleted — The same scheduled record, not deleted, is active from its start</text>
+<text x="18" y="319" font-size="12" fill="#555555">rules A2</text>
+<text x="18" y="341" font-size="12" fill="#111111">#1 write</text>
+<circle cx="152" cy="337" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="160" y="331.4" width="101.4" height="12.6" fill="#f4f4f4"/><text x="161" y="341" font-size="12" fill="#111111">_id d1, duration 30</text>
+<rect x="18" y="351" width="684" height="1" fill="#c8c8c8"/>
+<text x="18" y="369" font-size="12" fill="#1f5fa8">instance</text>
+<rect x="152" y="359" width="263" height="12" rx="2" fill="#dce7f5" stroke="#1f5fa8" stroke-width="1"/>
+<text x="156" y="369" font-size="12" fill="#111111">_id=d1, expired</text>
+<rect x="18" y="379" width="684" height="1" fill="#c8c8c8"/>
+<text x="18" y="399" font-size="12" fill="#111111">active at</text>
+<rect x="215.5" y="385" width="48.4" height="20" rx="3" fill="#ffffff" stroke="#1f5fa8" stroke-width="1"/>
+<text x="239.7" y="399" font-size="12" fill="#111111" text-anchor="middle">_id=d1</text>
+<line x1="152" y1="413" x2="678" y2="413" stroke="#c8c8c8" stroke-width="1"/>
+<line x1="152" y1="413" x2="152" y2="417" stroke="#555555" stroke-width="1"/>
+<text x="152" y="430" font-size="12" fill="#555555" text-anchor="middle">11:00</text>
+<line x1="415" y1="413" x2="415" y2="417" stroke="#555555" stroke-width="1"/>
+<text x="415" y="430" font-size="12" fill="#555555" text-anchor="middle">11:30</text>
+<line x1="678" y1="413" x2="678" y2="417" stroke="#555555" stroke-width="1"/>
+<text x="678" y="430" font-size="12" fill="#555555" text-anchor="middle">12:00</text>
+<text x="18" y="430" font-size="12" fill="#555555">UTC</text>
+<rect x="12" y="449" width="696" height="176" rx="6" fill="#f4f4f4"/>
+<line x1="268.9" y1="493" x2="268.9" y2="595" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="18" y="467" font-size="12.5" fill="#111111" font-weight="bold">delete-after-start-withdraws — A record deleted after its start and not re-posted is not reported</text>
+<text x="18" y="485" font-size="12" fill="#555555">rules A6</text>
+<text x="18" y="507" font-size="12" fill="#111111">#1 write</text>
+<circle cx="152" cy="503" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="160" y="497.4" width="101.4" height="12.6" fill="#f4f4f4"/><text x="161" y="507" font-size="12" fill="#111111">_id o1, duration 60</text>
+<text x="18" y="527" font-size="12" fill="#111111">#2 delete</text>
+<path d="M293.6,518.5 L302.6,527.5 M293.6,527.5 L302.6,518.5" stroke="#d03b3b" stroke-width="2" fill="none"/>
+<rect x="307.1" y="517.4" width="232.8" height="12.6" fill="#f4f4f4"/><text x="308.1" y="527" font-size="12" fill="#111111">delete received 10:25 of _id o1, duration 60</text>
+<rect x="18" y="537" width="684" height="1" fill="#c8c8c8"/>
+<text x="18" y="555" font-size="12" fill="#1f5fa8">no instances</text>
+<rect x="18" y="565" width="684" height="1" fill="#c8c8c8"/>
+<text x="18" y="585" font-size="12" fill="#111111">active at</text>
+<rect x="249.5" y="571" width="38.7" height="20" rx="3" fill="#ffffff" stroke="#1f5fa8" stroke-width="1"/>
+<text x="268.9" y="585" font-size="12" fill="#111111" text-anchor="middle">none</text>
+<line x1="152" y1="599" x2="678" y2="599" stroke="#c8c8c8" stroke-width="1"/>
+<line x1="152" y1="599" x2="152" y2="603" stroke="#555555" stroke-width="1"/>
+<text x="152" y="616" font-size="12" fill="#555555" text-anchor="middle">10:00</text>
+<line x1="327.3" y1="599" x2="327.3" y2="603" stroke="#555555" stroke-width="1"/>
+<text x="327.3" y="616" font-size="12" fill="#555555" text-anchor="middle">10:30</text>
+<line x1="502.7" y1="599" x2="502.7" y2="603" stroke="#555555" stroke-width="1"/>
+<text x="502.7" y="616" font-size="12" fill="#555555" text-anchor="middle">11:00</text>
+<line x1="678" y1="599" x2="678" y2="603" stroke="#555555" stroke-width="1"/>
+<text x="678" y="616" font-size="12" fill="#555555" text-anchor="middle">11:30</text>
+<text x="18" y="616" font-size="12" fill="#555555">UTC</text>
+<rect x="12" y="635" width="696" height="220" rx="6" fill="#f4f4f4"/>
+<line x1="268.9" y1="679" x2="268.9" y2="825" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<line x1="327.3" y1="679" x2="327.3" y2="825" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="18" y="653" font-size="12.5" fill="#111111" font-weight="bold">delete-and-repost-amends — A delete followed by a re-post of the same identity amends the instance</text>
+<text x="18" y="671" font-size="12" fill="#555555">rules A2, A6 · control: delete-after-start-withdraws</text>
+<text x="18" y="693" font-size="12" fill="#111111">#1 write</text>
+<circle cx="152" cy="689" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="160" y="683.4" width="101.4" height="12.6" fill="#f4f4f4"/><text x="161" y="693" font-size="12" fill="#111111">_id o1, duration 60</text>
+<text x="18" y="713" font-size="12" fill="#111111">#2 delete</text>
+<path d="M293.6,704.5 L302.6,713.5 M293.6,713.5 L302.6,704.5" stroke="#d03b3b" stroke-width="2" fill="none"/>
+<rect x="307.1" y="703.4" width="232.8" height="12.6" fill="#f4f4f4"/><text x="308.1" y="713" font-size="12" fill="#111111">delete received 10:25 of _id o1, duration 60</text>
+<text x="18" y="733" font-size="12" fill="#111111">#3 write</text>
+<circle cx="152" cy="729" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="160" y="723.4" width="101.4" height="12.6" fill="#f4f4f4"/><text x="161" y="733" font-size="12" fill="#111111">_id o2, duration 25</text>
+<rect x="18" y="743" width="684" height="1" fill="#c8c8c8"/>
+<text x="18" y="761" font-size="12" fill="#1f5fa8">instance</text>
+<rect x="152" y="751" width="146.1" height="12" rx="2" fill="#dce7f5" stroke="#1f5fa8" stroke-width="1"/>
+<rect x="303.1" y="751.4" width="268.8" height="12.6" fill="#f4f4f4"/><text x="304.1" y="761" font-size="12" fill="#111111">created_at=10:00, eventType=Exercise, cancelled</text>
+<rect x="18" y="771" width="684" height="1" fill="#c8c8c8"/>
+<text x="18" y="791" font-size="12" fill="#111111">active at</text>
+<rect x="158.2" y="777" width="221.4" height="20" rx="3" fill="#ffffff" stroke="#1f5fa8" stroke-width="1"/>
+<text x="268.9" y="791" font-size="12" fill="#111111" text-anchor="middle">created_at=10:00, eventType=Exercise</text>
+<rect x="308" y="801" width="38.7" height="20" rx="3" fill="#ffffff" stroke="#1f5fa8" stroke-width="1"/>
+<text x="327.3" y="815" font-size="12" fill="#111111" text-anchor="middle">none</text>
+<line x1="152" y1="829" x2="678" y2="829" stroke="#c8c8c8" stroke-width="1"/>
+<line x1="152" y1="829" x2="152" y2="833" stroke="#555555" stroke-width="1"/>
+<text x="152" y="846" font-size="12" fill="#555555" text-anchor="middle">10:00</text>
+<line x1="327.3" y1="829" x2="327.3" y2="833" stroke="#555555" stroke-width="1"/>
+<text x="327.3" y="846" font-size="12" fill="#555555" text-anchor="middle">10:30</text>
+<line x1="502.7" y1="829" x2="502.7" y2="833" stroke="#555555" stroke-width="1"/>
+<text x="502.7" y="846" font-size="12" fill="#555555" text-anchor="middle">11:00</text>
+<line x1="678" y1="829" x2="678" y2="833" stroke="#555555" stroke-width="1"/>
+<text x="678" y="846" font-size="12" fill="#555555" text-anchor="middle">11:30</text>
+<text x="18" y="846" font-size="12" fill="#555555">UTC</text>
+<rect x="12" y="865" width="696" height="176" rx="6" fill="#f4f4f4"/>
+<line x1="385.8" y1="909" x2="385.8" y2="1011" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="18" y="883" font-size="12.5" fill="#111111" font-weight="bold">soft-delete-before-start — A soft delete before the start is a deletion before start</text>
+<text x="18" y="901" font-size="12" fill="#555555">rules A6 · control: soft-delete-not-applied</text>
+<text x="18" y="923" font-size="12" fill="#111111">#1 write</text>
+<circle cx="327.3" cy="919" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="335.3" y="913.4" width="130.1" height="12.6" fill="#f4f4f4"/><text x="336.3" y="923" font-size="12" fill="#111111">identifier s1, duration 30</text>
+<text x="18" y="943" font-size="12" fill="#111111">#2 write</text>
+<circle cx="327.3" cy="939" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="335.3" y="933.4" width="200.8" height="12.6" fill="#f4f4f4"/><text x="336.3" y="943" font-size="12" fill="#111111">identifier s1, duration 30, isValid false</text>
+<rect x="18" y="953" width="684" height="1" fill="#c8c8c8"/>
+<text x="18" y="971" font-size="12" fill="#1f5fa8">instance</text>
+<path d="M322.8,962.5 L331.8,971.5 M322.8,971.5 L331.8,962.5" stroke="#d03b3b" stroke-width="2" fill="none"/>
+<rect x="336.3" y="961.4" width="173.8" height="12.6" fill="#f4f4f4"/><text x="337.3" y="971" font-size="12" fill="#111111">identifier=s1, deletedBeforeStart</text>
+<rect x="18" y="981" width="684" height="1" fill="#c8c8c8"/>
+<text x="18" y="1001" font-size="12" fill="#111111">active at</text>
+<rect x="366.4" y="987" width="38.7" height="20" rx="3" fill="#ffffff" stroke="#1f5fa8" stroke-width="1"/>
+<text x="385.8" y="1001" font-size="12" fill="#111111" text-anchor="middle">none</text>
+<line x1="152" y1="1015" x2="678" y2="1015" stroke="#c8c8c8" stroke-width="1"/>
+<line x1="152" y1="1015" x2="152" y2="1019" stroke="#555555" stroke-width="1"/>
+<text x="152" y="1032" font-size="12" fill="#555555" text-anchor="middle">10:30</text>
+<line x1="327.3" y1="1015" x2="327.3" y2="1019" stroke="#555555" stroke-width="1"/>
+<text x="327.3" y="1032" font-size="12" fill="#555555" text-anchor="middle">11:00</text>
+<line x1="502.7" y1="1015" x2="502.7" y2="1019" stroke="#555555" stroke-width="1"/>
+<text x="502.7" y="1032" font-size="12" fill="#555555" text-anchor="middle">11:30</text>
+<line x1="678" y1="1015" x2="678" y2="1019" stroke="#555555" stroke-width="1"/>
+<text x="678" y="1032" font-size="12" fill="#555555" text-anchor="middle">12:00</text>
+<text x="18" y="1032" font-size="12" fill="#555555">UTC</text>
+<text x="12" y="1055" font-size="12" fill="#555555" font-style="italic">Rule A6, docs/30-design/platform/spec/state-intent.md §6.1; cases from specs/sync/conformance/active-state/</text>
+<text x="12" y="1070" font-size="12" fill="#555555" font-style="italic">(deleted-before-start, scheduled-not-deleted, delete-after-start-withdraws, delete-and-repost-amends, soft-delete-before-start).</text>
+<text x="12" y="1085" font-size="12" fill="#555555" font-style="italic">Synthetic; expectations authored by hand.</text>
+</svg>

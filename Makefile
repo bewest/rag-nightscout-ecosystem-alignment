@@ -930,6 +930,17 @@ packets: queue-validate
 packets-check:
 	@$(QUEUE)/emit_packets.py --check
 
+## diagrams-svg: draw the figures generated from data (lab results, registrations,
+## conformance cases) into docs/30-design/platform/diagrams/ (tools/diagrams/README.md)
+.PHONY: diagrams-svg diagrams-svg-check
+diagrams-svg:
+	@$(PY) tools/diagrams/build.py
+
+## diagrams-svg-check: fail naming each committed figure that differs from what its
+## sources generate; the tamper controls show the comparison sees each source
+diagrams-svg-check:
+	@$(PY) -m pytest tools/diagrams/test_diagrams.py -q
+
 ## docs-links: every path the groomed programme material and the live queue
 ## tooling cite must resolve. Three detection passes, because the 2026-09-16
 ## programme-subdirectory move was repaired by a rewrite that missed three

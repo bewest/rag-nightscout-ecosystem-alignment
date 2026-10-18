@@ -1,0 +1,258 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="1281" viewBox="0 0 720 1281" font-family="Helvetica, Arial, sans-serif" role="img">
+<title>Two hubs, one record set: temporary targets and overrides from treatments</title>
+<desc>Two hubs, one record set: temporary targets and overrides from treatments. c1-tt-cancel: 2 of 6 Nocturne readings differ from cgm-remote-monitor; c2-ov-cancel: 0 of 6 Nocturne readings differ from cgm-remote-monitor; c6-tt-same-ms: 0 of 4 Nocturne readings differ from cgm-remote-monitor; c7-ov-backfill: 1 of 4 Nocturne readings differ from cgm-remote-monitor. measured, tools/lab/hub-active-state, run 2026-10-12: cgm-remote-monitor fade2299 (15.0.9), Nocturne 42275c812. Synthetic records; T0 = 2026-01-15T00:00:00.000Z.</desc>
+<rect x="0" y="0" width="720" height="1281" fill="#ffffff"/>
+<text x="12" y="24" font-size="14" fill="#111111" font-weight="bold">Two hubs, one record set: temporary targets and overrides from treatments</text>
+<text x="12" y="44" font-size="12" fill="#555555">Each panel: the records as written (arrival order, top to bottom); the windows cgm-remote-monitor reported at the query times and</text>
+<text x="12" y="59" font-size="12" fill="#555555">the spans Nocturne stored; then what each hub reports as active at each query time. A red cell marked ≠ is a Nocturne reading</text>
+<text x="12" y="74" font-size="12" fill="#555555">that differs from cgm-remote-monitor's.</text>
+<rect x="8" y="99" width="704" height="272" rx="6" fill="#f4f4f4"/>
+<line x1="267.3" y1="151" x2="267.3" y2="337" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<line x1="374" y1="151" x2="374" y2="337" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<line x1="587.3" y1="151" x2="587.3" y2="337" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="12" y="117" font-size="12.5" fill="#111111" font-weight="bold">c1-tt-cancel · §5 row 1 — Timed temp target (60 min) followed by a cancel at +20 (careportal shape: duration 0)</text>
+<text x="267.3" y="145" font-size="12" fill="#555555" text-anchor="middle">T0+10</text>
+<text x="374" y="145" font-size="12" fill="#555555" text-anchor="middle">T0+30</text>
+<text x="587.3" y="145" font-size="12" fill="#555555" text-anchor="middle">T0+70</text>
+<rect x="12" y="151" width="696" height="1" fill="#c8c8c8"/>
+<text x="12" y="167" font-size="12" fill="#111111">written #1  c1-tt</text>
+<rect x="214" y="158" width="320" height="10" rx="2" fill="#e6e6e6" stroke="#c8c8c8" stroke-width="1"/>
+<circle cx="214" cy="163" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="221" y="157.4" width="164.7" height="12.6" fill="#f4f4f4"/><text x="222" y="167" font-size="12" fill="#111111">Temporary Target, duration 60</text>
+<text x="12" y="187" font-size="12" fill="#111111">written #2  c1-cancel</text>
+<circle cx="320.7" cy="183" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="327.7" y="177.4" width="158.1" height="12.6" fill="#f4f4f4"/><text x="328.7" y="187" font-size="12" fill="#111111">Temporary Target, duration 0</text>
+<rect x="12" y="195" width="696" height="1" fill="#c8c8c8"/>
+<text x="12" y="211" font-size="12" fill="#1f5fa8">cgm-remote-monitor  c1-tt</text>
+<rect x="214" y="201" width="106.7" height="12" rx="2" fill="#dce7f5" stroke="#1f5fa8" stroke-width="1"/>
+<text x="218" y="211" font-size="12" fill="#111111">window</text>
+<text x="12" y="231" font-size="12" fill="#b5541b">Nocturne span  c1-tt</text>
+<rect x="214" y="221" width="320" height="12" rx="2" fill="#f6e0d2" stroke="#b5541b" stroke-width="1"/>
+<text x="218" y="231" font-size="12" fill="#111111">Active</text>
+<text x="12" y="251" font-size="12" fill="#b5541b">Nocturne span  c1-cancel</text>
+<rect x="320.7" y="241" width="373.3" height="12" rx="2" fill="#f6e0d2" stroke="#b5541b" stroke-width="1"/>
+<path d="M694,244 L700,247 L694,250 Z" fill="#b5541b"/>
+<text x="324.7" y="251" font-size="12" fill="#111111">Cancelled, no end</text>
+<rect x="12" y="259" width="696" height="1" fill="#c8c8c8"/>
+<text x="12" y="278" font-size="12" fill="#111111">cgm-remote-monitor</text>
+<rect x="249.7" y="265" width="35.3" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="267.3" y="279" font-size="12" fill="#111111" text-anchor="middle">c1-tt</text>
+<rect x="354.7" y="265" width="38.7" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="374" y="279" font-size="12" fill="#111111" text-anchor="middle">none</text>
+<rect x="568" y="265" width="38.7" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="587.3" y="279" font-size="12" fill="#111111" text-anchor="middle">none</text>
+<text x="12" y="302" font-size="12" fill="#b5541b">Nocturne latest span</text>
+<rect x="249.7" y="289" width="35.3" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="267.3" y="303" font-size="12" fill="#111111" text-anchor="middle">c1-tt</text>
+<rect x="354.7" y="289" width="38.7" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="374" y="303" font-size="12" fill="#111111" text-anchor="middle">none</text>
+<rect x="568" y="289" width="38.7" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="587.3" y="303" font-size="12" fill="#111111" text-anchor="middle">none</text>
+<text x="12" y="326" font-size="12" fill="#b5541b">Nocturne list read</text>
+<rect x="249.7" y="313" width="35.3" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="267.3" y="327" font-size="12" fill="#111111" text-anchor="middle">c1-tt</text>
+<rect x="318.8" y="313" width="110.4" height="20" rx="3" fill="#f7dede" stroke="#d03b3b" stroke-width="1.5"/>
+<text x="374" y="327" font-size="12" fill="#111111" text-anchor="middle" font-weight="bold">≠ c1-cancel + c1-tt</text>
+<rect x="550.7" y="313" width="73.4" height="20" rx="3" fill="#f7dede" stroke="#d03b3b" stroke-width="1.5"/>
+<text x="587.3" y="327" font-size="12" fill="#111111" text-anchor="middle" font-weight="bold">≠ c1-cancel</text>
+<line x1="214" y1="341" x2="694" y2="341" stroke="#c8c8c8" stroke-width="1"/>
+<line x1="214" y1="341" x2="214" y2="345" stroke="#555555" stroke-width="1"/>
+<text x="214" y="358" font-size="12" fill="#555555" text-anchor="middle">+0</text>
+<line x1="294" y1="341" x2="294" y2="345" stroke="#555555" stroke-width="1"/>
+<text x="294" y="358" font-size="12" fill="#555555" text-anchor="middle">+15</text>
+<line x1="374" y1="341" x2="374" y2="345" stroke="#555555" stroke-width="1"/>
+<text x="374" y="358" font-size="12" fill="#555555" text-anchor="middle">+30</text>
+<line x1="454" y1="341" x2="454" y2="345" stroke="#555555" stroke-width="1"/>
+<text x="454" y="358" font-size="12" fill="#555555" text-anchor="middle">+45</text>
+<line x1="534" y1="341" x2="534" y2="345" stroke="#555555" stroke-width="1"/>
+<text x="534" y="358" font-size="12" fill="#555555" text-anchor="middle">+60</text>
+<line x1="614" y1="341" x2="614" y2="345" stroke="#555555" stroke-width="1"/>
+<text x="614" y="358" font-size="12" fill="#555555" text-anchor="middle">+75</text>
+<line x1="694" y1="341" x2="694" y2="345" stroke="#555555" stroke-width="1"/>
+<text x="694" y="358" font-size="12" fill="#555555" text-anchor="middle">+90</text>
+<text x="12" y="358" font-size="12" fill="#555555">minutes after T0</text>
+<rect x="8" y="377" width="704" height="252" rx="6" fill="#f4f4f4"/>
+<line x1="267.3" y1="429" x2="267.3" y2="595" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<line x1="374" y1="429" x2="374" y2="595" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<line x1="587.3" y1="429" x2="587.3" y2="595" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="12" y="395" font-size="12.5" fill="#111111" font-weight="bold">c2-ov-cancel · §5 row 2 — Temporary Override (60 min) followed by a stored Temporary Override Cancel at +20</text>
+<text x="267.3" y="423" font-size="12" fill="#555555" text-anchor="middle">T0+10</text>
+<text x="374" y="423" font-size="12" fill="#555555" text-anchor="middle">T0+30</text>
+<text x="587.3" y="423" font-size="12" fill="#555555" text-anchor="middle">T0+70</text>
+<rect x="12" y="429" width="696" height="1" fill="#c8c8c8"/>
+<text x="12" y="445" font-size="12" fill="#111111">written #1  c2-ov</text>
+<rect x="214" y="436" width="320" height="10" rx="2" fill="#e6e6e6" stroke="#c8c8c8" stroke-width="1"/>
+<circle cx="214" cy="441" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="221" y="435.4" width="176.1" height="12.6" fill="#f4f4f4"/><text x="222" y="445" font-size="12" fill="#111111">Temporary Override, duration 60</text>
+<text x="12" y="465" font-size="12" fill="#111111">written #2  c2-cancel</text>
+<circle cx="320.7" cy="461" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="327.7" y="455.4" width="150" height="12.6" fill="#f4f4f4"/><text x="328.7" y="465" font-size="12" fill="#111111">Temporary Override Cancel</text>
+<rect x="12" y="473" width="696" height="1" fill="#c8c8c8"/>
+<text x="12" y="489" font-size="12" fill="#1f5fa8">cgm-remote-monitor  c2-ov</text>
+<rect x="214" y="479" width="320" height="12" rx="2" fill="#dce7f5" stroke="#1f5fa8" stroke-width="1"/>
+<text x="218" y="489" font-size="12" fill="#111111">window</text>
+<text x="12" y="509" font-size="12" fill="#b5541b">Nocturne span  c2-ov</text>
+<rect x="214" y="499" width="320" height="12" rx="2" fill="#f6e0d2" stroke="#b5541b" stroke-width="1"/>
+<text x="218" y="509" font-size="12" fill="#111111">Custom</text>
+<rect x="12" y="517" width="696" height="1" fill="#c8c8c8"/>
+<text x="12" y="536" font-size="12" fill="#111111">cgm-remote-monitor</text>
+<rect x="246.7" y="523" width="41.3" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="267.3" y="537" font-size="12" fill="#111111" text-anchor="middle">c2-ov</text>
+<rect x="353.3" y="523" width="41.3" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="374" y="537" font-size="12" fill="#111111" text-anchor="middle">c2-ov</text>
+<rect x="568" y="523" width="38.7" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="587.3" y="537" font-size="12" fill="#111111" text-anchor="middle">none</text>
+<text x="12" y="560" font-size="12" fill="#b5541b">Nocturne latest span</text>
+<rect x="246.7" y="547" width="41.3" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="267.3" y="561" font-size="12" fill="#111111" text-anchor="middle">c2-ov</text>
+<rect x="353.3" y="547" width="41.3" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="374" y="561" font-size="12" fill="#111111" text-anchor="middle">c2-ov</text>
+<rect x="568" y="547" width="38.7" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="587.3" y="561" font-size="12" fill="#111111" text-anchor="middle">none</text>
+<text x="12" y="584" font-size="12" fill="#b5541b">Nocturne list read</text>
+<rect x="246.7" y="571" width="41.3" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="267.3" y="585" font-size="12" fill="#111111" text-anchor="middle">c2-ov</text>
+<rect x="353.3" y="571" width="41.3" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="374" y="585" font-size="12" fill="#111111" text-anchor="middle">c2-ov</text>
+<rect x="568" y="571" width="38.7" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="587.3" y="585" font-size="12" fill="#111111" text-anchor="middle">none</text>
+<line x1="214" y1="599" x2="694" y2="599" stroke="#c8c8c8" stroke-width="1"/>
+<line x1="214" y1="599" x2="214" y2="603" stroke="#555555" stroke-width="1"/>
+<text x="214" y="616" font-size="12" fill="#555555" text-anchor="middle">+0</text>
+<line x1="294" y1="599" x2="294" y2="603" stroke="#555555" stroke-width="1"/>
+<text x="294" y="616" font-size="12" fill="#555555" text-anchor="middle">+15</text>
+<line x1="374" y1="599" x2="374" y2="603" stroke="#555555" stroke-width="1"/>
+<text x="374" y="616" font-size="12" fill="#555555" text-anchor="middle">+30</text>
+<line x1="454" y1="599" x2="454" y2="603" stroke="#555555" stroke-width="1"/>
+<text x="454" y="616" font-size="12" fill="#555555" text-anchor="middle">+45</text>
+<line x1="534" y1="599" x2="534" y2="603" stroke="#555555" stroke-width="1"/>
+<text x="534" y="616" font-size="12" fill="#555555" text-anchor="middle">+60</text>
+<line x1="614" y1="599" x2="614" y2="603" stroke="#555555" stroke-width="1"/>
+<text x="614" y="616" font-size="12" fill="#555555" text-anchor="middle">+75</text>
+<line x1="694" y1="599" x2="694" y2="603" stroke="#555555" stroke-width="1"/>
+<text x="694" y="616" font-size="12" fill="#555555" text-anchor="middle">+90</text>
+<text x="12" y="616" font-size="12" fill="#555555">minutes after T0</text>
+<rect x="8" y="635" width="704" height="288" rx="6" fill="#f4f4f4"/>
+<line x1="294" y1="703" x2="294" y2="889" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<line x1="574" y1="703" x2="574" y2="889" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="12" y="653" font-size="12.5" fill="#111111" font-weight="bold">c6-tt-same-ms · §5 row 6 — Two temp targets with the same created_at: 60 min @140 arrives first, 30 min @100</text>
+<text x="12" y="669" font-size="12.5" fill="#111111" font-weight="bold">second</text>
+<text x="294" y="697" font-size="12" fill="#555555" text-anchor="middle">T0+10</text>
+<text x="574" y="697" font-size="12" fill="#555555" text-anchor="middle">T0+45</text>
+<rect x="12" y="703" width="696" height="1" fill="#c8c8c8"/>
+<text x="12" y="719" font-size="12" fill="#111111">written #1  c6-tt-a</text>
+<rect x="214" y="710" width="480" height="10" rx="2" fill="#e6e6e6" stroke="#c8c8c8" stroke-width="1"/>
+<circle cx="214" cy="715" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="221" y="709.4" width="164.7" height="12.6" fill="#f4f4f4"/><text x="222" y="719" font-size="12" fill="#111111">Temporary Target, duration 60</text>
+<text x="12" y="739" font-size="12" fill="#111111">written #2  c6-tt-b</text>
+<rect x="214" y="730" width="240" height="10" rx="2" fill="#e6e6e6" stroke="#c8c8c8" stroke-width="1"/>
+<circle cx="214" cy="735" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="221" y="729.4" width="164.7" height="12.6" fill="#f4f4f4"/><text x="222" y="739" font-size="12" fill="#111111">Temporary Target, duration 30</text>
+<rect x="12" y="747" width="696" height="1" fill="#c8c8c8"/>
+<text x="12" y="763" font-size="12" fill="#1f5fa8">cgm-remote-monitor  c6-tt-a</text>
+<rect x="214" y="753" width="480" height="12" rx="2" fill="#dce7f5" stroke="#1f5fa8" stroke-width="1"/>
+<text x="218" y="763" font-size="12" fill="#111111">window</text>
+<text x="12" y="783" font-size="12" fill="#b5541b">Nocturne span  c6-tt-a</text>
+<rect x="214" y="773" width="480" height="12" rx="2" fill="#f6e0d2" stroke="#b5541b" stroke-width="1"/>
+<text x="218" y="783" font-size="12" fill="#111111">Active</text>
+<text x="12" y="803" font-size="12" fill="#b5541b">Nocturne span  c6-tt-b</text>
+<rect x="214" y="793" width="240" height="12" rx="2" fill="#f6e0d2" stroke="#b5541b" stroke-width="1"/>
+<text x="218" y="803" font-size="12" fill="#111111">Active</text>
+<rect x="12" y="811" width="696" height="1" fill="#c8c8c8"/>
+<text x="12" y="830" font-size="12" fill="#111111">cgm-remote-monitor</text>
+<rect x="271" y="817" width="46" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="294" y="831" font-size="12" fill="#111111" text-anchor="middle">c6-tt-a</text>
+<rect x="551" y="817" width="46" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="574" y="831" font-size="12" fill="#111111" text-anchor="middle">c6-tt-a</text>
+<text x="12" y="854" font-size="12" fill="#b5541b">Nocturne latest span</text>
+<rect x="271" y="841" width="46" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="294" y="855" font-size="12" fill="#111111" text-anchor="middle">c6-tt-a</text>
+<rect x="551" y="841" width="46" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="574" y="855" font-size="12" fill="#111111" text-anchor="middle">c6-tt-a</text>
+<text x="12" y="878" font-size="12" fill="#b5541b">Nocturne list read</text>
+<rect x="271" y="865" width="46" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="294" y="879" font-size="12" fill="#111111" text-anchor="middle">c6-tt-a</text>
+<rect x="551" y="865" width="46" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="574" y="879" font-size="12" fill="#111111" text-anchor="middle">c6-tt-a</text>
+<line x1="214" y1="893" x2="694" y2="893" stroke="#c8c8c8" stroke-width="1"/>
+<line x1="214" y1="893" x2="214" y2="897" stroke="#555555" stroke-width="1"/>
+<text x="214" y="910" font-size="12" fill="#555555" text-anchor="middle">+0</text>
+<line x1="294" y1="893" x2="294" y2="897" stroke="#555555" stroke-width="1"/>
+<text x="294" y="910" font-size="12" fill="#555555" text-anchor="middle">+10</text>
+<line x1="374" y1="893" x2="374" y2="897" stroke="#555555" stroke-width="1"/>
+<text x="374" y="910" font-size="12" fill="#555555" text-anchor="middle">+20</text>
+<line x1="454" y1="893" x2="454" y2="897" stroke="#555555" stroke-width="1"/>
+<text x="454" y="910" font-size="12" fill="#555555" text-anchor="middle">+30</text>
+<line x1="534" y1="893" x2="534" y2="897" stroke="#555555" stroke-width="1"/>
+<text x="534" y="910" font-size="12" fill="#555555" text-anchor="middle">+40</text>
+<line x1="614" y1="893" x2="614" y2="897" stroke="#555555" stroke-width="1"/>
+<text x="614" y="910" font-size="12" fill="#555555" text-anchor="middle">+50</text>
+<line x1="694" y1="893" x2="694" y2="897" stroke="#555555" stroke-width="1"/>
+<text x="694" y="910" font-size="12" fill="#555555" text-anchor="middle">+60</text>
+<text x="12" y="910" font-size="12" fill="#555555">minutes after T0</text>
+<rect x="8" y="929" width="704" height="308" rx="6" fill="#f4f4f4"/>
+<line x1="334" y1="997" x2="334" y2="1203" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<line x1="574" y1="997" x2="574" y2="1203" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="12" y="947" font-size="12.5" fill="#111111" font-weight="bold">c7-ov-backfill · §12 / LAB item — Two indefinite Temporary Overrides, out of order: the +60 one arrives first, the +0</text>
+<text x="12" y="963" font-size="12.5" fill="#111111" font-weight="bold">one is backfilled after</text>
+<text x="334" y="991" font-size="12" fill="#555555" text-anchor="middle">T0+30</text>
+<text x="574" y="991" font-size="12" fill="#555555" text-anchor="middle">T0+90</text>
+<rect x="12" y="997" width="696" height="1" fill="#c8c8c8"/>
+<text x="12" y="1013" font-size="12" fill="#111111">written #1  c7-ov-later</text>
+<circle cx="454" cy="1009" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="461" y="1003.4" width="230.1" height="12.6" fill="#f4f4f4"/><text x="462" y="1013" font-size="12" fill="#111111">Temporary Override, durationType indefi…</text>
+<text x="12" y="1033" font-size="12" fill="#111111">written #2  c7-ov-earlier</text>
+<circle cx="214" cy="1029" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="221" y="1023.4" width="237.4" height="12.6" fill="#f4f4f4"/><text x="222" y="1033" font-size="12" fill="#111111">Temporary Override, durationType indefinite</text>
+<rect x="12" y="1041" width="696" height="1" fill="#c8c8c8"/>
+<text x="12" y="1057" font-size="12" fill="#1f5fa8">cgm-remote-monitor  c7-ov-earlier</text>
+<rect x="214" y="1047" width="480" height="12" rx="2" fill="#dce7f5" stroke="#1f5fa8" stroke-width="1"/>
+<path d="M694,1050 L700,1053 L694,1056 Z" fill="#1f5fa8"/>
+<text x="218" y="1057" font-size="12" fill="#111111">window, no end</text>
+<text x="12" y="1077" font-size="12" fill="#1f5fa8">cgm-remote-monitor  c7-ov-later</text>
+<rect x="454" y="1067" width="240" height="12" rx="2" fill="#dce7f5" stroke="#1f5fa8" stroke-width="1"/>
+<path d="M694,1070 L700,1073 L694,1076 Z" fill="#1f5fa8"/>
+<text x="458" y="1077" font-size="12" fill="#111111">window, no end</text>
+<text x="12" y="1097" font-size="12" fill="#b5541b">Nocturne span  c7-ov-earlier</text>
+<rect x="214" y="1087" width="480" height="12" rx="2" fill="#f6e0d2" stroke="#b5541b" stroke-width="1"/>
+<path d="M694,1090 L700,1093 L694,1096 Z" fill="#b5541b"/>
+<text x="218" y="1097" font-size="12" fill="#111111">Custom, no end</text>
+<text x="12" y="1117" font-size="12" fill="#b5541b">Nocturne span  c7-ov-later</text>
+<rect x="454" y="1107" width="240" height="12" rx="2" fill="#f6e0d2" stroke="#b5541b" stroke-width="1"/>
+<path d="M694,1110 L700,1113 L694,1116 Z" fill="#b5541b"/>
+<text x="458" y="1117" font-size="12" fill="#111111">Custom, no end</text>
+<rect x="12" y="1125" width="696" height="1" fill="#c8c8c8"/>
+<text x="12" y="1144" font-size="12" fill="#111111">cgm-remote-monitor</text>
+<rect x="294.7" y="1131" width="78.7" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="334" y="1145" font-size="12" fill="#111111" text-anchor="middle">c7-ov-earlier</text>
+<rect x="499.5" y="1131" width="149" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="574" y="1145" font-size="12" fill="#111111" text-anchor="middle">c7-ov-earlier + c7-ov-later</text>
+<text x="12" y="1168" font-size="12" fill="#b5541b">Nocturne latest span</text>
+<rect x="294.7" y="1155" width="78.7" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="334" y="1169" font-size="12" fill="#111111" text-anchor="middle">c7-ov-earlier</text>
+<rect x="534.7" y="1155" width="78.7" height="20" rx="3" fill="#f7dede" stroke="#d03b3b" stroke-width="1.5"/>
+<text x="574" y="1169" font-size="12" fill="#111111" text-anchor="middle" font-weight="bold">≠ c7-ov-later</text>
+<text x="12" y="1192" font-size="12" fill="#b5541b">Nocturne list read</text>
+<rect x="294.7" y="1179" width="78.7" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="334" y="1193" font-size="12" fill="#111111" text-anchor="middle">c7-ov-earlier</text>
+<rect x="499.5" y="1179" width="149" height="20" rx="3" fill="#ffffff" stroke="#c8c8c8" stroke-width="1"/>
+<text x="574" y="1193" font-size="12" fill="#111111" text-anchor="middle">c7-ov-earlier + c7-ov-later</text>
+<line x1="214" y1="1207" x2="694" y2="1207" stroke="#c8c8c8" stroke-width="1"/>
+<line x1="214" y1="1207" x2="214" y2="1211" stroke="#555555" stroke-width="1"/>
+<text x="214" y="1224" font-size="12" fill="#555555" text-anchor="middle">+0</text>
+<line x1="294" y1="1207" x2="294" y2="1211" stroke="#555555" stroke-width="1"/>
+<text x="294" y="1224" font-size="12" fill="#555555" text-anchor="middle">+20</text>
+<line x1="374" y1="1207" x2="374" y2="1211" stroke="#555555" stroke-width="1"/>
+<text x="374" y="1224" font-size="12" fill="#555555" text-anchor="middle">+40</text>
+<line x1="454" y1="1207" x2="454" y2="1211" stroke="#555555" stroke-width="1"/>
+<text x="454" y="1224" font-size="12" fill="#555555" text-anchor="middle">+60</text>
+<line x1="534" y1="1207" x2="534" y2="1211" stroke="#555555" stroke-width="1"/>
+<text x="534" y="1224" font-size="12" fill="#555555" text-anchor="middle">+80</text>
+<line x1="614" y1="1207" x2="614" y2="1211" stroke="#555555" stroke-width="1"/>
+<text x="614" y="1224" font-size="12" fill="#555555" text-anchor="middle">+100</text>
+<line x1="694" y1="1207" x2="694" y2="1211" stroke="#555555" stroke-width="1"/>
+<text x="694" y="1224" font-size="12" fill="#555555" text-anchor="middle">+120</text>
+<text x="12" y="1224" font-size="12" fill="#555555">minutes after T0</text>
+<text x="12" y="1247" font-size="12" fill="#555555" font-style="italic">measured, tools/lab/hub-active-state, run 2026-10-12: cgm-remote-monitor fade2299 (15.0.9), Nocturne 42275c812. Synthetic</text>
+<text x="12" y="1262" font-size="12" fill="#555555" font-style="italic">records; T0 = 2026-01-15T00:00:00.000Z.</text>
+</svg>

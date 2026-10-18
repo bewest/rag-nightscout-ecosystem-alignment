@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="563" viewBox="0 0 720 563" font-family="Helvetica, Arial, sans-serif" role="img">
+<title>A9 · Overlap is reported, not resolved</title>
+<desc>A9 · Overlap is reported, not resolved: For a kind that is exclusiveWithinSlot and declares neither supersedes nor overlay, overlapping instances are all reported active, each marked overlap. Cases drawn: exclusive-overlap-reported: Overlapping instances of an exclusive kind that does not supersede are both reported, as an overlap; exclusive-supersedes: The same records under a superseding kind: one instance.</desc>
+<rect x="0" y="0" width="720" height="563" fill="#ffffff"/>
+<text x="12" y="24" font-size="14" fill="#111111" font-weight="bold">A9 · Overlap is reported, not resolved</text>
+<text x="12" y="44" font-size="12" fill="#555555">Each panel is one conformance case: the records in the order the hub received them, the instances the case expects (blue), and</text>
+<text x="12" y="59" font-size="12" fill="#555555">what it expects to be active at each dashed line. A hollow dot is created_at, where the record's time comes from another declared</text>
+<text x="12" y="74" font-size="12" fill="#555555">field.</text>
+<rect x="12" y="97" width="696" height="212" rx="6" fill="#f4f4f4"/>
+<line x1="349.2" y1="157" x2="349.2" y2="279" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="18" y="115" font-size="12.5" fill="#111111" font-weight="bold">exclusive-overlap-reported — Overlapping instances of an exclusive kind that does not supersede are both</text>
+<text x="18" y="131" font-size="12.5" fill="#111111" font-weight="bold">reported, as an overlap</text>
+<text x="18" y="149" font-size="12" fill="#555555">rules A9 · control: exclusive-supersedes</text>
+<text x="18" y="171" font-size="12" fill="#111111">#1 write</text>
+<circle cx="152" cy="167" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="160" y="161.4" width="101.4" height="12.6" fill="#f4f4f4"/><text x="161" y="171" font-size="12" fill="#111111">_id p1, duration 60</text>
+<text x="18" y="191" font-size="12" fill="#111111">#2 write</text>
+<circle cx="283.5" cy="187" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="291.5" y="181.4" width="101.4" height="12.6" fill="#f4f4f4"/><text x="292.5" y="191" font-size="12" fill="#111111">_id p2, duration 60</text>
+<rect x="18" y="201" width="684" height="1" fill="#c8c8c8"/>
+<text x="18" y="219" font-size="12" fill="#1f5fa8">instance</text>
+<rect x="152" y="209" width="263" height="12" rx="2" fill="#dce7f5" stroke="#1f5fa8" stroke-width="1"/>
+<text x="156" y="219" font-size="12" fill="#111111">_id=p1, expired</text>
+<text x="18" y="239" font-size="12" fill="#1f5fa8">instance</text>
+<rect x="283.5" y="229" width="263" height="12" rx="2" fill="#dce7f5" stroke="#1f5fa8" stroke-width="1"/>
+<text x="287.5" y="239" font-size="12" fill="#111111">_id=p2, expired</text>
+<rect x="18" y="249" width="684" height="1" fill="#c8c8c8"/>
+<text x="18" y="269" font-size="12" fill="#111111">active at</text>
+<rect x="249.4" y="255" width="199.8" height="20" rx="3" fill="#ffffff" stroke="#1f5fa8" stroke-width="1"/>
+<text x="349.2" y="269" font-size="12" fill="#111111" text-anchor="middle">_id=p1 (overlap) + _id=p2 (overlap)</text>
+<line x1="152" y1="283" x2="678" y2="283" stroke="#c8c8c8" stroke-width="1"/>
+<line x1="152" y1="283" x2="152" y2="287" stroke="#555555" stroke-width="1"/>
+<text x="152" y="300" font-size="12" fill="#555555" text-anchor="middle">10:00</text>
+<line x1="283.5" y1="283" x2="283.5" y2="287" stroke="#555555" stroke-width="1"/>
+<text x="283.5" y="300" font-size="12" fill="#555555" text-anchor="middle">10:30</text>
+<line x1="415" y1="283" x2="415" y2="287" stroke="#555555" stroke-width="1"/>
+<text x="415" y="300" font-size="12" fill="#555555" text-anchor="middle">11:00</text>
+<line x1="546.5" y1="283" x2="546.5" y2="287" stroke="#555555" stroke-width="1"/>
+<text x="546.5" y="300" font-size="12" fill="#555555" text-anchor="middle">11:30</text>
+<line x1="678" y1="283" x2="678" y2="287" stroke="#555555" stroke-width="1"/>
+<text x="678" y="300" font-size="12" fill="#555555" text-anchor="middle">12:00</text>
+<text x="18" y="300" font-size="12" fill="#555555">UTC</text>
+<rect x="12" y="319" width="696" height="196" rx="6" fill="#f4f4f4"/>
+<line x1="349.2" y1="363" x2="349.2" y2="485" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="18" y="337" font-size="12.5" fill="#111111" font-weight="bold">exclusive-supersedes — The same records under a superseding kind: one instance</text>
+<text x="18" y="355" font-size="12" fill="#555555">rules A7</text>
+<text x="18" y="377" font-size="12" fill="#111111">#1 write</text>
+<circle cx="152" cy="373" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="160" y="367.4" width="101.4" height="12.6" fill="#f4f4f4"/><text x="161" y="377" font-size="12" fill="#111111">_id p1, duration 60</text>
+<text x="18" y="397" font-size="12" fill="#111111">#2 write</text>
+<circle cx="283.5" cy="393" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="291.5" y="387.4" width="101.4" height="12.6" fill="#f4f4f4"/><text x="292.5" y="397" font-size="12" fill="#111111">_id p2, duration 60</text>
+<rect x="18" y="407" width="684" height="1" fill="#c8c8c8"/>
+<text x="18" y="425" font-size="12" fill="#1f5fa8">instance</text>
+<rect x="152" y="415" width="131.5" height="12" rx="2" fill="#dce7f5" stroke="#1f5fa8" stroke-width="1"/>
+<text x="156" y="425" font-size="12" fill="#111111">_id=p1, superseded</text>
+<text x="18" y="445" font-size="12" fill="#1f5fa8">instance</text>
+<rect x="283.5" y="435" width="263" height="12" rx="2" fill="#dce7f5" stroke="#1f5fa8" stroke-width="1"/>
+<text x="287.5" y="445" font-size="12" fill="#111111">_id=p2, expired</text>
+<rect x="18" y="455" width="684" height="1" fill="#c8c8c8"/>
+<text x="18" y="475" font-size="12" fill="#111111">active at</text>
+<rect x="325.1" y="461" width="48.4" height="20" rx="3" fill="#ffffff" stroke="#1f5fa8" stroke-width="1"/>
+<text x="349.2" y="475" font-size="12" fill="#111111" text-anchor="middle">_id=p2</text>
+<line x1="152" y1="489" x2="678" y2="489" stroke="#c8c8c8" stroke-width="1"/>
+<line x1="152" y1="489" x2="152" y2="493" stroke="#555555" stroke-width="1"/>
+<text x="152" y="506" font-size="12" fill="#555555" text-anchor="middle">10:00</text>
+<line x1="283.5" y1="489" x2="283.5" y2="493" stroke="#555555" stroke-width="1"/>
+<text x="283.5" y="506" font-size="12" fill="#555555" text-anchor="middle">10:30</text>
+<line x1="415" y1="489" x2="415" y2="493" stroke="#555555" stroke-width="1"/>
+<text x="415" y="506" font-size="12" fill="#555555" text-anchor="middle">11:00</text>
+<line x1="546.5" y1="489" x2="546.5" y2="493" stroke="#555555" stroke-width="1"/>
+<text x="546.5" y="506" font-size="12" fill="#555555" text-anchor="middle">11:30</text>
+<line x1="678" y1="489" x2="678" y2="493" stroke="#555555" stroke-width="1"/>
+<text x="678" y="506" font-size="12" fill="#555555" text-anchor="middle">12:00</text>
+<text x="18" y="506" font-size="12" fill="#555555">UTC</text>
+<text x="12" y="529" font-size="12" fill="#555555" font-style="italic">Rule A9, docs/30-design/platform/spec/state-intent.md §6.1; cases from specs/sync/conformance/active-state/</text>
+<text x="12" y="544" font-size="12" fill="#555555" font-style="italic">(exclusive-overlap-reported, exclusive-supersedes). Synthetic; expectations authored by hand.</text>
+</svg>

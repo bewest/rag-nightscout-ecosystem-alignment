@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="784" viewBox="0 0 720 784" font-family="Helvetica, Arial, sans-serif" role="img">
+<title>A8 · Overlay</title>
+<desc>A8 · Overlay: Under overlay, a timed instance applies over an open-ended one without ending it; the open-ended one is not active while the timed one is, and is active again when it ends. Cases drawn: overlay-returns-to-open-ended: A timed instance applies over an open-ended one, which applies again when it ends; supersedes-without-overlay: Without overlay, a superseding kind ends the open-ended instance for good; permanent-after-temporary-supersedes: A permanent switch that starts during a temporary one supersedes it.</desc>
+<rect x="0" y="0" width="720" height="784" fill="#ffffff"/>
+<text x="12" y="24" font-size="14" fill="#111111" font-weight="bold">A8 · Overlay</text>
+<text x="12" y="44" font-size="12" fill="#555555">Each panel is one conformance case: the records in the order the hub received them, the instances the case expects (blue), and</text>
+<text x="12" y="59" font-size="12" fill="#555555">what it expects to be active at each dashed line. A hollow dot is created_at, where the record's time comes from another declared</text>
+<text x="12" y="74" font-size="12" fill="#555555">field.</text>
+<rect x="12" y="97" width="696" height="212" rx="6" fill="#f4f4f4"/>
+<line x1="257.2" y1="157" x2="257.2" y2="279" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<line x1="397.5" y1="157" x2="397.5" y2="279" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<line x1="502.7" y1="157" x2="502.7" y2="279" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="18" y="115" font-size="12.5" fill="#111111" font-weight="bold">overlay-returns-to-open-ended — A timed instance applies over an open-ended one, which applies again when it</text>
+<text x="18" y="131" font-size="12.5" fill="#111111" font-weight="bold">ends</text>
+<text x="18" y="149" font-size="12" fill="#555555">rules A8 · control: supersedes-without-overlay</text>
+<text x="18" y="171" font-size="12" fill="#111111">#1 write</text>
+<circle cx="152" cy="167" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="160" y="161.4" width="195.4" height="12.6" fill="#f4f4f4"/><text x="161" y="171" font-size="12" fill="#111111">identifier m1, durationType indefinite</text>
+<text x="18" y="191" font-size="12" fill="#111111">#2 write</text>
+<circle cx="362.4" cy="187" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="370.4" y="181.4" width="134.1" height="12.6" fill="#f4f4f4"/><text x="371.4" y="191" font-size="12" fill="#111111">identifier m2, duration 30</text>
+<rect x="18" y="201" width="684" height="1" fill="#c8c8c8"/>
+<text x="18" y="219" font-size="12" fill="#1f5fa8">instance</text>
+<rect x="152" y="209" width="526" height="12" rx="2" fill="#dce7f5" stroke="#1f5fa8" stroke-width="1"/>
+<path d="M678,212 L684,215 L678,218 Z" fill="#1f5fa8"/>
+<text x="156" y="219" font-size="12" fill="#111111">identifier=m1, open-ended</text>
+<text x="18" y="239" font-size="12" fill="#1f5fa8">instance</text>
+<rect x="362.4" y="229" width="105.2" height="12" rx="2" fill="#dce7f5" stroke="#1f5fa8" stroke-width="1"/>
+<rect x="472.6" y="229.4" width="117" height="12.6" fill="#f4f4f4"/><text x="473.6" y="239" font-size="12" fill="#111111">identifier=m2, expired</text>
+<rect x="18" y="249" width="684" height="1" fill="#c8c8c8"/>
+<text x="18" y="269" font-size="12" fill="#111111">active at</text>
+<rect x="216.7" y="255" width="81" height="20" rx="3" fill="#ffffff" stroke="#1f5fa8" stroke-width="1"/>
+<text x="257.2" y="269" font-size="12" fill="#111111" text-anchor="middle">identifier=m1</text>
+<rect x="357" y="255" width="81" height="20" rx="3" fill="#ffffff" stroke="#1f5fa8" stroke-width="1"/>
+<text x="397.5" y="269" font-size="12" fill="#111111" text-anchor="middle">identifier=m2</text>
+<rect x="462.2" y="255" width="81" height="20" rx="3" fill="#ffffff" stroke="#1f5fa8" stroke-width="1"/>
+<text x="502.7" y="269" font-size="12" fill="#111111" text-anchor="middle">identifier=m1</text>
+<line x1="152" y1="283" x2="678" y2="283" stroke="#c8c8c8" stroke-width="1"/>
+<line x1="152" y1="283" x2="152" y2="287" stroke="#555555" stroke-width="1"/>
+<text x="152" y="300" font-size="12" fill="#555555" text-anchor="middle">09:00</text>
+<line x1="257.2" y1="283" x2="257.2" y2="287" stroke="#555555" stroke-width="1"/>
+<text x="257.2" y="300" font-size="12" fill="#555555" text-anchor="middle">09:30</text>
+<line x1="362.4" y1="283" x2="362.4" y2="287" stroke="#555555" stroke-width="1"/>
+<text x="362.4" y="300" font-size="12" fill="#555555" text-anchor="middle">10:00</text>
+<line x1="467.6" y1="283" x2="467.6" y2="287" stroke="#555555" stroke-width="1"/>
+<text x="467.6" y="300" font-size="12" fill="#555555" text-anchor="middle">10:30</text>
+<line x1="572.8" y1="283" x2="572.8" y2="287" stroke="#555555" stroke-width="1"/>
+<text x="572.8" y="300" font-size="12" fill="#555555" text-anchor="middle">11:00</text>
+<line x1="678" y1="283" x2="678" y2="287" stroke="#555555" stroke-width="1"/>
+<text x="678" y="300" font-size="12" fill="#555555" text-anchor="middle">11:30</text>
+<text x="18" y="300" font-size="12" fill="#555555">UTC</text>
+<rect x="12" y="319" width="696" height="196" rx="6" fill="#f4f4f4"/>
+<line x1="502.7" y1="363" x2="502.7" y2="485" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="18" y="337" font-size="12.5" fill="#111111" font-weight="bold">supersedes-without-overlay — Without overlay, a superseding kind ends the open-ended instance for good</text>
+<text x="18" y="355" font-size="12" fill="#555555">rules A7, A8</text>
+<text x="18" y="377" font-size="12" fill="#111111">#1 write</text>
+<circle cx="152" cy="373" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="160" y="367.4" width="195.4" height="12.6" fill="#f4f4f4"/><text x="161" y="377" font-size="12" fill="#111111">identifier m1, durationType indefinite</text>
+<text x="18" y="397" font-size="12" fill="#111111">#2 write</text>
+<circle cx="362.4" cy="393" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="370.4" y="387.4" width="134.1" height="12.6" fill="#f4f4f4"/><text x="371.4" y="397" font-size="12" fill="#111111">identifier m2, duration 30</text>
+<rect x="18" y="407" width="684" height="1" fill="#c8c8c8"/>
+<text x="18" y="425" font-size="12" fill="#1f5fa8">instance</text>
+<rect x="152" y="415" width="210.4" height="12" rx="2" fill="#dce7f5" stroke="#1f5fa8" stroke-width="1"/>
+<text x="156" y="425" font-size="12" fill="#111111">identifier=m1, superseded</text>
+<text x="18" y="445" font-size="12" fill="#1f5fa8">instance</text>
+<rect x="362.4" y="435" width="105.2" height="12" rx="2" fill="#dce7f5" stroke="#1f5fa8" stroke-width="1"/>
+<rect x="472.6" y="435.4" width="117" height="12.6" fill="#f4f4f4"/><text x="473.6" y="445" font-size="12" fill="#111111">identifier=m2, expired</text>
+<rect x="18" y="455" width="684" height="1" fill="#c8c8c8"/>
+<text x="18" y="475" font-size="12" fill="#111111">active at</text>
+<rect x="483.3" y="461" width="38.7" height="20" rx="3" fill="#ffffff" stroke="#1f5fa8" stroke-width="1"/>
+<text x="502.7" y="475" font-size="12" fill="#111111" text-anchor="middle">none</text>
+<line x1="152" y1="489" x2="678" y2="489" stroke="#c8c8c8" stroke-width="1"/>
+<line x1="152" y1="489" x2="152" y2="493" stroke="#555555" stroke-width="1"/>
+<text x="152" y="506" font-size="12" fill="#555555" text-anchor="middle">09:00</text>
+<line x1="257.2" y1="489" x2="257.2" y2="493" stroke="#555555" stroke-width="1"/>
+<text x="257.2" y="506" font-size="12" fill="#555555" text-anchor="middle">09:30</text>
+<line x1="362.4" y1="489" x2="362.4" y2="493" stroke="#555555" stroke-width="1"/>
+<text x="362.4" y="506" font-size="12" fill="#555555" text-anchor="middle">10:00</text>
+<line x1="467.6" y1="489" x2="467.6" y2="493" stroke="#555555" stroke-width="1"/>
+<text x="467.6" y="506" font-size="12" fill="#555555" text-anchor="middle">10:30</text>
+<line x1="572.8" y1="489" x2="572.8" y2="493" stroke="#555555" stroke-width="1"/>
+<text x="572.8" y="506" font-size="12" fill="#555555" text-anchor="middle">11:00</text>
+<line x1="678" y1="489" x2="678" y2="493" stroke="#555555" stroke-width="1"/>
+<text x="678" y="506" font-size="12" fill="#555555" text-anchor="middle">11:30</text>
+<text x="18" y="506" font-size="12" fill="#555555">UTC</text>
+<rect x="12" y="525" width="696" height="196" rx="6" fill="#f4f4f4"/>
+<line x1="415" y1="569" x2="415" y2="691" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="18" y="543" font-size="12.5" fill="#111111" font-weight="bold">permanent-after-temporary-supersedes — A permanent switch that starts during a temporary one supersedes it</text>
+<text x="18" y="561" font-size="12" fill="#555555">rules A7, A8</text>
+<text x="18" y="583" font-size="12" fill="#111111">#1 write</text>
+<circle cx="152" cy="579" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="160" y="573.4" width="130.7" height="12.6" fill="#f4f4f4"/><text x="161" y="583" font-size="12" fill="#111111">identifier p1, duration 60</text>
+<text x="18" y="603" font-size="12" fill="#111111">#2 write</text>
+<circle cx="327.3" cy="599" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="335.3" y="593.4" width="124.1" height="12.6" fill="#f4f4f4"/><text x="336.3" y="603" font-size="12" fill="#111111">identifier p2, duration 0</text>
+<rect x="18" y="613" width="684" height="1" fill="#c8c8c8"/>
+<text x="18" y="631" font-size="12" fill="#1f5fa8">instance</text>
+<rect x="152" y="621" width="175.3" height="12" rx="2" fill="#dce7f5" stroke="#1f5fa8" stroke-width="1"/>
+<text x="156" y="631" font-size="12" fill="#111111">identifier=p1, superseded</text>
+<text x="18" y="651" font-size="12" fill="#1f5fa8">instance</text>
+<rect x="327.3" y="641" width="350.7" height="12" rx="2" fill="#dce7f5" stroke="#1f5fa8" stroke-width="1"/>
+<path d="M678,644 L684,647 L678,650 Z" fill="#1f5fa8"/>
+<text x="331.3" y="651" font-size="12" fill="#111111">identifier=p2, open-ended</text>
+<rect x="18" y="661" width="684" height="1" fill="#c8c8c8"/>
+<text x="18" y="681" font-size="12" fill="#111111">active at</text>
+<rect x="376.1" y="667" width="77.7" height="20" rx="3" fill="#ffffff" stroke="#1f5fa8" stroke-width="1"/>
+<text x="415" y="681" font-size="12" fill="#111111" text-anchor="middle">identifier=p2</text>
+<line x1="152" y1="695" x2="678" y2="695" stroke="#c8c8c8" stroke-width="1"/>
+<line x1="152" y1="695" x2="152" y2="699" stroke="#555555" stroke-width="1"/>
+<text x="152" y="712" font-size="12" fill="#555555" text-anchor="middle">10:00</text>
+<line x1="327.3" y1="695" x2="327.3" y2="699" stroke="#555555" stroke-width="1"/>
+<text x="327.3" y="712" font-size="12" fill="#555555" text-anchor="middle">10:30</text>
+<line x1="502.7" y1="695" x2="502.7" y2="699" stroke="#555555" stroke-width="1"/>
+<text x="502.7" y="712" font-size="12" fill="#555555" text-anchor="middle">11:00</text>
+<line x1="678" y1="695" x2="678" y2="699" stroke="#555555" stroke-width="1"/>
+<text x="678" y="712" font-size="12" fill="#555555" text-anchor="middle">11:30</text>
+<text x="18" y="712" font-size="12" fill="#555555">UTC</text>
+<text x="12" y="735" font-size="12" fill="#555555" font-style="italic">Rule A8, docs/30-design/platform/spec/state-intent.md §6.1; cases from specs/sync/conformance/active-state/</text>
+<text x="12" y="750" font-size="12" fill="#555555" font-style="italic">(overlay-returns-to-open-ended, supersedes-without-overlay, permanent-after-temporary-supersedes). Synthetic; expectations</text>
+<text x="12" y="765" font-size="12" fill="#555555" font-style="italic">authored by hand.</text>
+</svg>
