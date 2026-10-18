@@ -199,7 +199,7 @@ propose → validate → (evaluate) → approve | reject → command → outcome
 | propose | an agent instance holding a propose role (`{value: other, controllerTerm}`) | the exact change; the controller instance it is for (D19 `instanceId` and `definitionId`); the state it was based on; an expiry; the SHA-256 of the payload's RFC 8785 canonical JSON, the rule D19 already uses for definition ids and etags |
 | validate | the controller (D18) | its own checks, as today on every remote path ([technical loops §3.3](../../60-research/structures-2026-10-17/technical-loops.md#33-paths-compared)); a proposal the controller would refuse goes no further |
 | evaluate | optional; any checker | a risk check may request human review; it never grants authority. A probabilistic check — a classifier or a second model — is evidence for the approver, not a decision |
-| approve or reject | a person holding the grant | an approval names the payload hash, so it binds to that exact change and no other; an expired proposal cannot be approved |
+| approve or reject | a subject that may send the command itself, never the one that proposed it ([commands CM14](spec/commands.md#6-proposals-and-approvals-proposed)) | an approval names the payload hash, so it binds to that exact change and no other; an expired proposal cannot be approved |
 | command | the hub routes to the live `device` command-sink, as specified in registration §9 | the approved payload and its hash; the controller checks the hash before enacting |
 | outcome | the controller | accepted or refused, applied effect (P3), correlated to the proposal |
 
@@ -230,7 +230,9 @@ the [commands specification](spec/commands.md) §4–§7 (`SPEC-REG-COMMANDS`; t
 was folded in by the maintainer on 2026-10-18), with cases for an approval bound to one payload
 hash, an expired proposal, and a proposal from a credential with no propose role. Its CM15 takes
 the open question above: an approval is refused when the hub's state version differs from the
-proposal's, which still says nothing about the controller's own state.
+proposal's, which still says nothing about the controller's own state. What controllers do with
+outstanding commands, enacting each once (CM21), and plans confirmed in advance are in the
+[command queue and planning](command-queue-and-planning-2026-10-18.md) design note.
 
 ## 5. Evaluating an algorithm before it acts
 
