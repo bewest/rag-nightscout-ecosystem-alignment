@@ -7,8 +7,8 @@ matters for retrospective analysis, for conformance testing against real
 history, and for anyone asking "why did it do that".
 
 The input set is evidence-based: the union of ``input.*`` paths across the
-385 replay vectors in ``conformance/``, captured from real AAPS and Loop
-runs. ``specs/nsschema/dosing-input-sources.yaml`` maps each to the
+385 replay vector files in ``conformance/`` (308 distinct inputs), mostly
+captured from real AAPS and Loop runs. ``specs/nsschema/dosing-input-sources.yaml`` maps each to the
 Nightscout paths that could carry it, classified ``recorded``,
 ``derivable``, ``partial`` or ``absent``.
 

@@ -3,8 +3,9 @@
 # Two algorithms, two input sets, and they are not interchangeable.
 #
 # The oref0 set is the union of `input.*` paths across the 385 replay
-# vectors in `conformance/` — real inputs captured from AAPS and Loop phone
-# runs. Note that the Loop vectors there are Loop *data* replayed through the
+# vector files in `conformance/`, which hold 308 distinct inputs: most are
+# inputs captured from AAPS and Loop phone runs; one adapter's end-to-end set
+# of 100 repeats 77 of the others and adds synthetic cases. Note that the Loop vectors there are Loop *data* replayed through the
 # oref0 harness for cross-validation, so they describe oref0's input shape,
 # not Loop's.
 #

@@ -43,7 +43,7 @@ to its code. An audition is about the first two; it must never change the third 
 ### 1.2 What D19 covers, and what it does not
 
 D19 ([execution plan §2.6.2](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#262-d19--definitions-and-instances-maintainer-2026-10-14);
-specified in [hub-sync §3.6](nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances),
+specified in [registration specification §7–§9](spec/registration.md#7-definitions),
 not implemented) has the same three-way split, for **controllers**:
 
 | Algorithm object | Nearest D19 element | Fit |

@@ -154,7 +154,7 @@ An explanation is only as right as the numbers under it. Two layers come before 
 | An automated agent has no path of its own: it holds a caregiver's credential and is indistinguishable from that caregiver (path H) | [technical loops §3](../../60-research/structures-2026-10-17/technical-loops.md#3-the-delegation-loop) | read-derived |
 | `issuerType: human \| controller \| agent`; scopes `read`, `suggest` (`override.suggest # Can propose, human must approve`), `activate`, `deliver`, `admin`; `DelegationGrant {grantId, grantedBy, grantedTo, scopes, constraints {maxOverrideDuration, allowedOverrideTypes, requireConfirmation, expiresAt}, grantedAt, revokedAt}`; append-only audit | upstream `docs/proposals/agent-control-plane-rfc.md` (draft v1.0, January 2026; read at official `b5ddd662`) | proposal, not implemented |
 | Authority levels (agent 50) and a grant with rate limits and time windows | [authority model](../../10-domain/authority-model.md) | designed, **not implemented** |
-| D19 instances with leases, roles `source` / `command-sink` / `{value: other, controllerTerm}` "for roles such as an agent's propose and act", required provenance `device` or `simulated`, a `device` command-sink only for the product's bound subject or by the owner's transfer (`grantedBy`), and routing that refuses rather than guesses (`no-command-destination`, 409 `ambiguous-command-destination`) | [hub-sync §3.6](nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances) | Specified, not implemented: no hub serves any of this |
+| D19 instances with leases, roles `source` / `command-sink` / `{value: other, controllerTerm}` ("any other role, such as an agent's"), required provenance `device` or `simulated`, a `device` command-sink only for the product's bound subject or by the owner's transfer (`grantedBy`), and routing that refuses rather than guesses (`no-command-destination`, 409 `ambiguous-command-destination`) | [registration specification §8–§9](spec/registration.md#9-channels-roles-and-provenance) | Specified, not implemented: no hub serves any of this |
 | An earlier controller registration protocol | [controller registration protocol proposal](../../60-research/controller-registration-protocol-proposal.md) | draft v2, 2026-01-17 |
 
 ### 4.2 The upstream RFC under D18
@@ -174,7 +174,7 @@ Read against that:
 
 **An agent as initiator** (maintainer, 2026-10-18). No `agent` value is added to any initiator
 vocabulary. An agent initiator is written in the open-vocabulary form `{value: other,
-controllerTerm}`, as hub-sync §3.6 does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. Recorded in the [execution
+controllerTerm}`, as the [registration specification §9](spec/registration.md#9-channels-roles-and-provenance) does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. Recorded in the [execution
 plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16)
 (row 17). The registration grammar's `initiators` element today lists strings in the controller's
 own vocabulary (`specs/sync/controller-state-model.schema.json`), with no shared list and no
@@ -195,7 +195,7 @@ propose → validate → (evaluate) → approve | reject → command → outcome
 | validate | the controller (D18) | its own checks, as today on every remote path ([technical loops §3.3](../../60-research/structures-2026-10-17/technical-loops.md#33-paths-compared)); a proposal the controller would refuse goes no further |
 | evaluate | optional; any checker | a risk check may request human review; it never grants authority. A probabilistic check — a classifier or a second model — is evidence for the approver, not a decision |
 | approve or reject | a person holding the grant | an approval names the payload hash, so it binds to that exact change and no other; an expired proposal cannot be approved |
-| command | the hub routes to the live `device` command-sink, as specified in §3.6 | the approved payload and its hash; the controller checks the hash before enacting |
+| command | the hub routes to the live `device` command-sink, as specified in registration §9 | the approved payload and its hash; the controller checks the hash before enacting |
 | outcome | the controller | accepted or refused, applied effect (P3), correlated to the proposal |
 
 Three constraints carry over unchanged. Validation and enactment stay the controller's (D18). Read
@@ -206,7 +206,7 @@ minimum permissions, and human approval of high-impact actions.
 
 **"The state it was based on" has no home yet.** What D19 versions is the registration: the
 product's etag and the instance's etag cover the declaration, the binding and the granted roles
-([hub-sync §3.5–§3.6](nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances)).
+([registration specification §5.4 and §8](spec/registration.md#54-etag-and-idempotency)).
 Neither covers the controller's therapy state — which override is active, which profile, what is
 on board — so neither tells an approver that the state the agent read is still the state the
 controller holds.
@@ -221,8 +221,8 @@ and for its open question: an approval that names neither the payload nor the st
 bind to either, and an HTTP status says nothing about what the controller did.
 
 **Where it would be specified.** Command delivery is `SPEC-REG-COMMANDS` in the
-[work queue](../../../queue/work-queue.yaml): not started, blocked on `SPEC-REG-MODES`; §3.6 says
-"The command API itself is not specified here." The proposal record is folded into that item
+[work queue](../../../queue/work-queue.yaml): not started, blocked on `SPEC-REG-MODES`; the
+[registration specification §9](spec/registration.md#9-channels-roles-and-provenance) leaves the command API to it. The proposal record is folded into that item
 (maintainer, 2026-10-18), with gate cases for an approval bound to one payload hash, an expired
 proposal, and a proposal from a credential with no propose role; the open question above is its
 first.

@@ -8,7 +8,7 @@ So the authority hierarchy used as a hub-side conflict rule, the conflict scenar
 composition invariants below are rules a controller may apply, not the hub's. Still prior art: the
 agent as an actor, scopes that separate proposing from acting (the upstream RFC's `suggest`), and
 the delegation-grant shape. Instances, roles and command routing are specified in
-[hub-sync §3.6](../30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances)
+[registration specification §8–§9](../30-design/platform/spec/registration.md#9-channels-roles-and-provenance)
 (D19). An agent initiator is written in the open-vocabulary form `{value: other, controllerTerm}`;
 no `agent` value is added (maintainer, 2026-10-18). Map of what exists:
 [agents in the ecosystem](../30-design/platform/agent-trust-boundaries-2026-10-18.md).

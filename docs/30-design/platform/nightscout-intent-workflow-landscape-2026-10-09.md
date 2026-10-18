@@ -71,7 +71,7 @@ Six properties. A controller's intent model has each of them; an entity collecti
 
 *P5, decided 2026-10-18 (maintainer):* no `agent` value is added to any initiator vocabulary; an
 agent initiator is written in the open-vocabulary form `{value: other, controllerTerm}`, as the
-hub-sync design does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. ([execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16),
+registration specification ([§9](spec/registration.md#9-channels-roles-and-provenance)) does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. ([execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16),
 row 17; [agents in the ecosystem §4.2](agent-trust-boundaries-2026-10-18.md#42-the-upstream-rfc-under-d18)).
 
 ## 3. Per-controller matrix
