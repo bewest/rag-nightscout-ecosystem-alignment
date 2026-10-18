@@ -140,6 +140,26 @@ is `<submit.href>/<vendor>/<product>`, each segment percent-encoded.
    `maxRegistrationBytes` (413) or `maxExtensions` (`limit-exceeded`).
 4. **Each element** (§5.3).
 
+```mermaid
+flowchart LR
+  accTitle: Order of checks for a registration write
+  accDescr: A write is checked for authorisation first, then its preconditions, then the owner's block, then the registration as a whole, and only then element by element. The first check that fails answers, and nothing is stored for a failure before the elements; elements are accepted or refused one at a time.
+  w([PUT or DELETE of a registration]) --> auth{permission and binding}
+  auth -- no --> r403[403 not-authorised or not-registration-owner]
+  auth -- yes --> pre{precondition sent and current}
+  pre -- none --> r428[428]
+  pre -- stale --> r412[412 with the current etag and state]
+  pre -- yes --> block{blocked by the owner}
+  block -- yes --> rb[403 blocked-by-owner]
+  block -- no --> whole{registration as a whole valid}
+  whole -- no --> r422[422 or 413, nothing stored]
+  whole -- yes --> el[each element accepted or refused, §5.3]
+  classDef refuse fill:#fde2e2,stroke:#b42318,color:#1a1a1a
+  classDef ok fill:#e6f4ea,stroke:#3b7a4a,color:#1a1a1a
+  class r403,r428,r412,rb,r422 refuse
+  class el ok
+```
+
 ### 5.3 Elements and their results
 
 | element id | from | carrier when not accepted |

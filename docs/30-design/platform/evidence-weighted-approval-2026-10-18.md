@@ -104,9 +104,9 @@ Paths, from lightest to heaviest:
 | **L local only** | not through the hub at all; changed on the controller by the person |
 
 **Plan approval** (policy level) always needs a human approval of the plan: A for R0–R2 elements,
-RA for R3–R5, where R3–R5 elements may be accepted into a plan only as occurrences that each still
-need their own approval (the occurrence column below). No evidence makes a plan active without a
-human approving it.
+RA for R3–R5. R3 and R4 elements may be standing only under FL1's conditions, and R5 elements only
+per occurrence ([plans PN4](spec/plans.md#3-the-plan-object-proposed)). No evidence makes a plan
+active without a human approving it.
 
 **Occurrence or moment item**, for a plan already approved or a moment proposal:
 
@@ -119,6 +119,39 @@ human approving it.
 | R4 insulin | RA | RA | A, or S under FL1 | A, or S under FL1 |
 | R5 persistent settings | RA | RA | RA | RA |
 | R6 safety limits | L | L | L | L |
+
+The same matrix as a grid. N notify, W cancel window, A approve, RA reviews then approve, S
+standing under FL1's conditions, L local only; the heavy border marks where a row meets its floor,
+which no evidence lowers.
+
+```mermaid
+block-beta
+  columns 6
+  h0["risk / evidence"] h1["weak"] h2["confirmed"] h3["reviewed"] h4["previewed"] h5["floor"]
+  r0["R0 inform"] c00["N"] c01["N"] c02["N"] c03["N"] f0["—"]
+  r1["R1 bounded target"] c10["A"] c11["W"] c12["N"] c13["N"] f1["—"]
+  r2["R2 bounded sensitivity"] c20["A"] c21["A"] c22["W"] c23["W"] f2["—"]
+  r3["R3 carbs"] c30["RA"] c31["A"] c32["A"] c33["A"] f3["FL2"]
+  r4["R4 insulin"] c40["RA"] c41["RA"] c42["A or S"] c43["A or S"] f4["FL1"]
+  r5["R5 persistent settings"] c50["RA"] c51["RA"] c52["RA"] c53["RA"] f5["FL3"]
+  r6["R6 safety limits"] c60["L"] c61["L"] c62["L"] c63["L"] f6["FL4"]
+  classDef head fill:#f3f4f6,stroke:#9ca3af,color:#111
+  classDef n fill:#dcfce7,stroke:#86a,color:#111
+  classDef w fill:#ecfccb,stroke:#86a,color:#111
+  classDef a fill:#fef9c3,stroke:#86a,color:#111
+  classDef ra fill:#fed7aa,stroke:#86a,color:#111
+  classDef s fill:#dbeafe,stroke:#86a,color:#111
+  classDef l fill:#fecaca,stroke:#86a,color:#111
+  classDef floor stroke:#111,stroke-width:4px
+  class h0,h1,h2,h3,h4,h5,r0,r1,r2,r3,r4,r5,r6,f0,f1,f2,f3,f4,f5,f6 head
+  class c00,c01,c02,c03,c12,c13 n
+  class c10,c20,c21,c31,c32,c33 a
+  class c11,c22,c23 w
+  class c30,c40,c41,c50,c51,c52,c53 ra
+  class c42,c43 s
+  class c60,c61,c62,c63 l
+  class c33,c43,c53,c63 floor
+```
 
 Reading it: stronger evidence moves an item left in the paths, as the maintainer framed it, but
 the floors of §5 stop that movement at A for carbs, at S under FL1's conditions for insulin, at
@@ -185,6 +218,23 @@ is UCA-AUTH-002 unless it is bounded. The framework makes that bound a grant und
 | scope | confirm occurrences of those elements within the plan's bounds; only classes whose cell is N or W at the evidence the grantee supplies; never R3–R6 |
 | expiry | the plan's end date, required (FL6); a maximum length per class, set by clinical review |
 | revocation | cancelling the plan revokes the grant: unsent confirmations are cancelled, the controller drops the plan and reports it, the mirror shows who ended it |
+
+The grant's life:
+
+```mermaid
+stateDiagram-v2
+  accTitle: A plan's standing approval
+  accDescr: A plan is proposed, reviewed and approved by the person or a delegate; the approval is the grant, scoped to the plan and its accepted elements and expiring at the plan's end. While it is in force the grantee may confirm occurrences inside its scope; a confirmation outside it is refused. The grant ends when the plan reaches its end date or when the person, the approver or the proposer ends the plan, which cancels unsent confirmations.
+  state "in force: confirm occurrences within scope" as inforce
+  [*] --> proposed: agent proposes the plan
+  proposed --> reviewed: required reviews attached
+  reviewed --> inforce: person or delegate approves (grant)
+  inforce --> inforce: confirmation within scope
+  inforce --> expired: endsAt (FL6)
+  inforce --> revoked: plan ended (FL7), unsent confirmations cancelled
+  expired --> [*]
+  revoked --> [*]
+```
 
 This narrows UCA-AUTH-002 to a grantee that can only confirm occurrences of one approved plan, and
 UCA-AUTH-003 to the plan's life. It does not give the agent `api:commands:create` on the channel;

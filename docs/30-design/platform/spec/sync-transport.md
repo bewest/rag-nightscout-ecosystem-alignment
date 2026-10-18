@@ -34,6 +34,29 @@ checked by one.
 | T3 | **Server write times.** `srvModified` and `srvCreated` are the server's, in milliseconds since the epoch, set on every write to a collection API v3 serves, by any path; a value a client sends is replaced. Within one process every `srvModified` is unique and never goes backwards, even when the clock does, and boot restores the clock from stored records before any writer starts. A hard delete leaves no `srvModified`, so history does not show it; a soft delete does. | merged on `dev` (`lib/server/srv-dates.js`, `lib/api3/generic/create/insert.js:27` at `fade2299`, read) |
 | T4 | **The change event.** One event per write call: the collection, the operation, the stored documents (or the removed ids), the largest `srvModified` among its records, and the origin. Under `TENANCY_MODE=multi` the event is read from the replication slot (D6), so every field but `runtime` and `origin` is derived from the committed row; how the slot reader groups one call's rows into one event is not specified. | specified (write contract §2.4) |
 
+The write step, per item, as T1 orders it:
+
+```mermaid
+flowchart LR
+  accTitle: The one write step
+  accDescr: A write from API v1, API v3, the socket or an in-process caller goes through one step. Per item it reads the _id form, finds the target by the collection's match order, decides the outcome, sets the server's write times, and stores the item; each item is answered with its outcome and both ids. After the call, one change event goes to the socket, and the history read finds the same records by their server time.
+  src([API v1, API v3, socket,\nin-process caller]) --> id[_id form\nidentity I2]
+  id --> target{target, by the\nmatch order\nidentity §3}
+  target -- matched --> merge[merged, replaced\nor unchanged, T2]
+  target -- none --> ins[inserted]
+  target -- refused --> ref[refused]
+  merge --> dates[server times\nsrvModified, srvCreated, T3]
+  ins --> dates
+  dates --> store[(storage write)]
+  store --> reply[each item answered:\noutcome and both ids, I4]
+  ref --> reply
+  store --> event[one change event\nper call, T4]
+  event --> sock[socket subscribers, T10, T11]
+  store --> hist[history read by\nserver time, T5, T6]
+  classDef stop fill:#fde2e2,stroke:#b42318,color:#1a1a1a
+  class ref stop
+```
+
 ## 3. What each client's sync code can call
 
 `make schema-sync-cost`, run 2026-10-18, counts the distinct endpoints each client's Nightscout

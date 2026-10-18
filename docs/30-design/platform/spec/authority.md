@@ -35,6 +35,12 @@ specified; §7 states delegation's requirements, and its design is open.
 | AU4 | **Subjects, not tokens.** A registration or an instance is bound to the subject that created it, never to a token, so a token rotated on the same subject changes nothing that is bound to it. Whether a delegation grant names subjects the same way is part of §7. | decided 2026-10-14 (registration question 4; hub-sync §3.5 at `b3536bbf`) |
 | AU5 | **Permissions today.** Writes are per collection (`api:<collection>:<action>`); reading is one bit: `readable` is `*:*:read`, every collection, every field, all time. | shipping (cgm-remote-monitor `lib/authorization/storage.js:235` at `dev` `fade2299`, read) |
 
+Under `multi`, who reaches the hub through which listener, with which credential (dashed: adopted
+in principle and gated, D17 row 2). The drawing's source is
+`tools/structure-diagrams/inputs/3-listeners.yaml`.
+
+![3·listeners: controllers and uploaders reach ns-api and ns-realtime with a native per-tenant credential; caregivers, viewers and the tenant owner sign in through the cohort's Kratos pool, which is gated, and get a per-tenant token for the data listener or an owner's session for ns-tenant-admin; the operator reaches ns-admin, which tenants cannot reach; both tenant listeners act on one tenant's records under RLS](../../../00-overview/perspective/diagrams/3-listeners.svg)
+
 ## 3. Binding and credential kind
 
 A create or update binds the registration to the credential that wrote it: `boundTo: {kind:
