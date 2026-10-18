@@ -16,7 +16,7 @@
         <link rel="prev" href="PROPOSAL-replay-fidelity-changes-2026-09-11.html">
       
       
-        <link rel="next" href="nightscout-devicestatus-profile-fidelity-2026-09-10.html">
+        <link rel="next" href="algorithm-audition-2026-10-18.html">
       
       
         
@@ -790,6 +790,8 @@
       
         
           
+        
+      
         
       
         
@@ -2327,6 +2329,8 @@
       
         
       
+        
+      
     
     
     
@@ -2673,6 +2677,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="algorithm-audition-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auditioning a dosing algorithm: same inputs, shadow only
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -3869,6 +3901,66 @@
     
   
     backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../guides/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    guides/
   
 
     
@@ -5315,6 +5407,10 @@ attribution is optional):</p>
 </tr>
 </tbody>
 </table>
+<p>Beside these, in one commercial controller's private repository, 3,441 of 6,055 commits (57%)
+carry a Copilot co-author trailer (<strong>measured</strong> 2026-10-18 by counting trailers in its history;
+the repository is private, so the count cannot be re-run from here), and its automated task loop's
+only gate is that the test suite passes (read-derived from its source, 2026-10-18).</p>
 <p><strong>What exists in this repository.</strong></p>
 <table>
 <thead>
@@ -5388,7 +5484,9 @@ un-read it, and the data has also gone to whoever runs the model. Where the mode
 property of the agent's host, not of the tool that fetched the data: a tool that keeps its database
 local still returns its output into the conversation, which goes to the model provider when the
 model is a hosted service. Lumose (repository <code>GlycemicGPT</code>) states this choice in its README; the
-evidence table records which tools do.</p>
+evidence table records which tools do.
+A plain-language page for people connecting such a tool to their own site is
+<a href="../../guides/ai-tools-and-your-nightscout-data-2026-10-18.html">giving an AI tool access to your Nightscout data</a>.</p>
 <h3 id="32-mcp-is-an-adapter">3.2 MCP is an adapter<a class="headerlink" href="#32-mcp-is-an-adapter" title="Permanent link">&para;</a></h3>
 <p>The Model Context Protocol, at its current revision <code>2026-07-28</code>, lets a server offer <em>resources</em>
 (context and data), <em>prompts</em> (templated messages) and <em>tools</em> (functions the model may call), over
@@ -5460,8 +5558,8 @@ The statistics API proposal specifies an MCP resource provider over a documented
 <td>designed, <strong>not implemented</strong></td>
 </tr>
 <tr>
-<td>D19 instances with leases, roles <code>source</code> / <code>command-sink</code> / <code>{value: other, controllerTerm}</code> "for roles such as an agent's propose and act", required provenance <code>device</code> or <code>simulated</code>, a <code>device</code> command-sink only for the product's bound subject or by the owner's transfer (<code>grantedBy</code>), and routing that refuses rather than guesses (<code>no-command-destination</code>, 409 <code>ambiguous-command-destination</code>)</td>
-<td><a href="nightscout-hub-sync-architecture-2026-09-11.html#36-definitions-and-instances">hub-sync §3.6</a></td>
+<td>D19 instances with leases, roles <code>source</code> / <code>command-sink</code> / <code>{value: other, controllerTerm}</code> ("any other role, such as an agent's"), required provenance <code>device</code> or <code>simulated</code>, a <code>device</code> command-sink only for the product's bound subject or by the owner's transfer (<code>grantedBy</code>), and routing that refuses rather than guesses (<code>no-command-destination</code>, 409 <code>ambiguous-command-destination</code>)</td>
+<td><a href="spec/registration.html#9-channels-roles-and-provenance">registration specification §8–§9</a></td>
 <td>Specified, not implemented: no hub serves any of this</td>
 </tr>
 <tr>
@@ -5508,7 +5606,7 @@ Read against that:</p>
 </table>
 <p><strong>An agent as initiator</strong> (maintainer, 2026-10-18). No <code>agent</code> value is added to any initiator
 vocabulary. An agent initiator is written in the open-vocabulary form <code>{value: other,
-controllerTerm}</code>, as hub-sync §3.6 does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. Recorded in the <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">execution
+controllerTerm}</code>, as the <a href="spec/registration.html#9-channels-roles-and-provenance">registration specification §9</a> does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. Recorded in the <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">execution
 plan</a>
 (row 17). The registration grammar's <code>initiators.values</code> take strings in the controller's own
 vocabulary or the <code>{value: other, controllerTerm}</code> form, with no shared list
@@ -5549,7 +5647,7 @@ the item that specifies commands can take it or leave it.</p>
 </tr>
 <tr>
 <td>command</td>
-<td>the hub routes to the live <code>device</code> command-sink, as specified in §3.6</td>
+<td>the hub routes to the live <code>device</code> command-sink, as specified in registration §9</td>
 <td>the approved payload and its hash; the controller checks the hash before enacting</td>
 </tr>
 <tr>
@@ -5566,13 +5664,21 @@ is safe. For comparison, OWASP's <em>LLM06:2025 Excessive Agency</em> recommends
 minimum permissions, and human approval of high-impact actions.</p>
 <p><strong>"The state it was based on" has no home yet.</strong> What D19 versions is the registration: the
 product's etag and the instance's etag cover the declaration, the binding and the granted roles
-(<a href="nightscout-hub-sync-architecture-2026-09-11.html#36-definitions-and-instances">hub-sync §3.5–§3.6</a>).
+(<a href="spec/registration.html#54-etag-and-idempotency">registration specification §5.4 and §8</a>).
 Neither covers the controller's therapy state — which override is active, which profile, what is
 on board — so neither tells an approver that the state the agent read is still the state the
 controller holds.</p>
+<p><strong>What one prototype shows.</strong> A commercial controller prototype implemented the client side of
+the upstream agent control-plane RFC: sources including <code>agent</code>, delegation grants with
+auto-approve types, and an audit log held in memory. Its approval records only the reviewer, the
+time and a note against the proposal id — no payload hash and no state — and its remote-command
+"success" means the HTTP request succeeded, with no acknowledgement or outcome (read-derived from
+its source, 2026-10-18; not reproduced here). That is evidence for the binding requirement above
+and for its open question: an approval that names neither the payload nor the state does not
+bind to either, and an HTTP status says nothing about what the controller did.</p>
 <p><strong>Where it would be specified.</strong> Command delivery is <code>SPEC-REG-COMMANDS</code> in the
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2b91fb2ae443062e243e01882d6005479915627b/queue/work-queue.yaml">work queue</a>: not started, blocked on <code>SPEC-REG-MODES</code>; §3.6 says
-"The command API itself is not specified here." The proposal record is folded into that item
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/359ae61f5eaf28d92ea7c5fc1e075d2f9b45aeaf/queue/work-queue.yaml">work queue</a>: not started, blocked on <code>SPEC-REG-MODES</code>; the
+<a href="spec/registration.html#9-channels-roles-and-provenance">registration specification §9</a> leaves the command API to it. The proposal record is folded into that item
 (maintainer, 2026-10-18), with gate cases for an approval bound to one payload hash, an expired
 proposal, and a proposal from a credential with no propose role; the open question above is its
 first.</p>
@@ -5590,12 +5696,16 @@ the algorithm does with the inputs it gets.</p>
 <li><strong>Replay is bounded by what was recorded.</strong> Of the dosing inputs each algorithm declares, 20% are
   recorded for Loop and 50% for the oref0 family (55% and 72% counting inputs derivable from
   history), as of 2026-09-11 (<a href="nightscout-hub-sync-architecture-2026-09-11.html#42-completeness-as-a-published-number">hub-sync §4.2</a>).
-  Loop's input set is read from its source; oref0's is the union of inputs across 385 captured replay
-  vectors (<code>specs/nsschema/dosing-input-sources.yaml</code>). A derived input is <em>a</em> value, not
+  Loop's input set is read from its source; oref0's is the union of inputs across 385 replay vector
+  files (<code>specs/nsschema/dosing-input-sources.yaml</code>), which hold 308 distinct inputs, 22 of them
+  synthetic (measured 2026-10-18, <a href="algorithm-audition-2026-10-18.html#21-the-adapter-protocol-and-its-vectors">algorithm audition §2.1</a>). A derived input is <em>a</em> value, not
   necessarily the one the controller used, so a replay on derived inputs tests the replayer as much
   as the algorithm. The change list that would raise the figures is
   <a href="PROPOSAL-replay-fidelity-changes-2026-09-11.html">replay-fidelity changes</a>.</li>
 </ul>
+<p>Comparing algorithms on the same recorded inputs in shadow, what an independent implementation's
+shadow runner and replay work show, and what an audition harness would need without ever granting
+control, are in <a href="algorithm-audition-2026-10-18.html">auditioning a dosing algorithm</a>.</p>
 <h2 id="6-regulatory-boundary">6. Regulatory boundary<a class="headerlink" href="#6-regulatory-boundary" title="Permanent link">&para;</a></h2>
 <p>Facts, and questions for counsel; no conclusion is drawn here.</p>
 <ul>
