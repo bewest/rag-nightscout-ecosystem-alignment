@@ -27,7 +27,7 @@
     
     
       
-        <title>docs/30-design/platform - Nightscout ecosystem alignment</title>
+        <title>Platform contracts: where each piece is specified - Nightscout ecosystem alignment</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#docs30-designplatform" class="md-skip">
+        <a href="#platform-contracts-where-each-piece-is-specified" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              docs/30-design/platform
+              Platform contracts: where each piece is specified
             
           </span>
         </div>
@@ -2323,6 +2323,8 @@
       
         
       
+        
+      
     
     
     
@@ -2652,6 +2654,68 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="spec/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    spec/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
     </li>
   
 
@@ -4676,10 +4740,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#folders" class="md-nav__link">
+  <a href="#l0-identity" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Folders
+        L0 Identity
       
     </span>
   </a>
@@ -4687,10 +4751,76 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pages" class="md-nav__link">
+  <a href="#l1-records" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Pages
+        L1 Records
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#l2-definitions-and-instances" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L2 Definitions and instances
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#l3-state-and-intent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L3 State and intent
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#l4-change-and-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L4 Change and sync
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#l5-authority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L5 Authority
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reading-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading order
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#planned-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Planned layout
       
     </span>
   </a>
@@ -4714,27 +4844,299 @@
 
 
 
-<h1 id="docs30-designplatform">docs/30-design/platform<a class="headerlink" href="#docs30-designplatform" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>b3536bbfb</code> (generated from the repository tree).</em></p>
-<p><em>Generated index: <code>docs/30-design/platform</code> has no README.md or index.md.</em></p>
-<h2 id="folders">Folders<a class="headerlink" href="#folders" title="Permanent link">&para;</a></h2>
+<h1 id="platform-contracts-where-each-piece-is-specified">Platform contracts: where each piece is specified<a class="headerlink" href="#platform-contracts-where-each-piece-is-specified" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-10-18 at <code>8d2b93ede</code>.</em></p>
+<p><em>Contributor-facing. Living index, current at <code>main</code> <code>5a9a49cc</code> (2026-10-18). Terms are defined in
+the <a href="spec/glossary.html">platform glossary</a>.</em></p>
+<p>This page maps the work on how controllers (Loop, Trio, AndroidAPS and others) and hubs
+(cgm-remote-monitor, Nocturne) agree on what records are, who wrote them, and how they move. The
+aim has three parts:</p>
 <ul>
-<li><a href="upstream-asks-device-simulators/index.html">upstream-asks-device-simulators/</a></li>
-<li><a href="upstream-asks-loop-identifier/index.html">upstream-asks-loop-identifier/</a></li>
+<li><strong>Full audit fidelity.</strong> Every stored record says what it is, which copy of which controller
+  wrote it, under which definition, and whether it was requested, applied, mapped or projected.</li>
+<li><strong>Controller-owned definitions, secured.</strong> A controller declares its own typed definitions. The
+  hub accepts them per element, binds them to the credential that wrote them, and never lets one
+  controller redefine another's data.</li>
+<li><strong>Cost-effective sync.</strong> Fewer requests per cycle with typed records, REST for writes and
+  catch-up, a socket for live delivery, and versioned definitions so a new release does not need
+  a full re-sync.</li>
 </ul>
-<h2 id="pages">Pages<a class="headerlink" href="#pages" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="PROPOSAL-controller-descriptions-2026-09-11.html">Proposal: let Nightscout describe the controllers it already recognises</a></li>
-<li><a href="PROPOSAL-replay-fidelity-changes-2026-09-11.html">Proposal: the concrete changes that make Nightscout high-fidelity for replay</a></li>
-<li><a href="agent-trust-boundaries-2026-10-18.html">Agents in the ecosystem: develop, interpret, act</a></li>
-<li><a href="nightscout-devicestatus-profile-fidelity-2026-09-10.html"><code>devicestatus</code> and <code>profile</code>: what survives, what is lost, and what was never written</a></li>
-<li><a href="nightscout-effects-and-versioning-2026-09-11.html">Temporary effects, privacy-preserving projection, and which version this is</a></li>
-<li><a href="nightscout-extensibility-models-2026-09-10.html">Extending the Nightscout document model: four designs, measured</a></li>
-<li><a href="nightscout-hub-sync-architecture-2026-09-11.html">A hub-and-spoke sync model for AID controllers</a></li>
-<li><a href="nightscout-intent-workflow-landscape-2026-10-09.html">Intent, workflow and entity management across the AID controller landscape</a></li>
-<li><a href="nightscout-primitive-coverage-2026-09-11.html">Is there enough evidence for a unified primitive catalogue? A coverage assessment</a></li>
-<li><a href="nightscout-typed-schema-evidence-2026-09-10.html">Typed schemas for Nightscout: what the documents actually contain</a></li>
-</ul>
+<p>The material is organised in six layers. A lower layer never depends on a higher one.</p>
+<table>
+<thead>
+<tr>
+<th>layer</th>
+<th>question it answers</th>
+<th>depends on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>L0 Identity</strong></td>
+<td>Which record, definition, instance or subject is this?</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>L1 Records</strong></td>
+<td>What typed observations exist, and how are today's documents decomposed into them?</td>
+<td>L0</td>
+</tr>
+<tr>
+<td><strong>L2 Definitions and instances</strong></td>
+<td>Who declared what a record means, and which running copy wrote it?</td>
+<td>L0, L1</td>
+</tr>
+<tr>
+<td><strong>L3 State and intent</strong></td>
+<td>What was requested, what was applied, what is active now, and why did it end?</td>
+<td>L1, L2</td>
+</tr>
+<tr>
+<td><strong>L4 Change and sync</strong></td>
+<td>How are writes matched, re-sent, ordered and delivered over REST and the socket?</td>
+<td>L0–L3</td>
+</tr>
+<tr>
+<td><strong>L5 Authority</strong></td>
+<td>Who may register, write, route a command or act for someone else?</td>
+<td>L0, L2</td>
+</tr>
+</tbody>
+</table>
+<p>Audit fidelity is not a separate layer. Each layer's section below lists what it records for
+audit.</p>
+<p><strong>Status words used here.</strong> <em>Evidenced</em>: measured or read from source in the corpus or controller
+code. <em>Specified</em>: a contract with synthetic conformance cases and a reference decision function
+in <code>tools/nsschema/</code>, which checks the cases but is not a hub. <em>Implemented</em>: a hub serves it. On
+2026-10-18, no hub implements any L2, L3 or L5 contract on this page.</p>
+<h2 id="l0-identity">L0 Identity<a class="headerlink" href="#l0-identity" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Spec</strong></td>
+<td><a href="spec/identity.html">spec/identity.md</a>: rules I1–I9, contract ids, match order per collection, the proposed <code>identifier</code> format, open decisions, today's cgm-remote-monitor behaviour, 20 cases</td>
+</tr>
+<tr>
+<td><strong>Drawn from</strong></td>
+<td><a href="nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">hub-sync §3.7</a> rules 5–8; <a href="../tenancy/write-contract-spec-2026-10-07.html">write contract</a> §2.2, §3 and §6.1; <a href="nightscout-hub-sync-architecture-2026-09-11.html#36-definitions-and-instances">hub-sync §3.6</a></td>
+</tr>
+<tr>
+<td><strong>Evidence</strong></td>
+<td><a href="../../60-research/tenancy/identifier-format-2026-10-17.html">identifier format</a> (UUID not required; constraints C1–C7); <a href="../../60-research/tenancy/identifier-duplicates-2026-10-17.html">identifier duplicates</a>; <a href="upstream-asks-loop-identifier/index.html">Loop identifier ask</a></td>
+</tr>
+<tr>
+<td><strong>Schemas, cases</strong></td>
+<td><code>specs/sync/registration-submit.schema.json</code> (<code>write.ids</code>, <code>matchedBy</code>); <code>specs/quirks/</code>; 29 cases in <code>specs/sync/conformance/quirks/</code></td>
+</tr>
+<tr>
+<td><strong>Decisions</strong></td>
+<td><a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">D20</a></td>
+</tr>
+<tr>
+<td><strong>Open</strong></td>
+<td><code>ID-FORMAT-DECISION</code>, <code>ID-CLIENT-OID-DECISION</code>, <code>ID-V3-IMMUTABLE-DECISION</code> (needs decision); <code>ID-SIMPLE-MATCH</code>, <code>ID-VALIDATE</code>, <code>ID-FIRST-MATCH</code>, <code>ID-V1-LOOKUP</code>, <code>ID-UNIQUE-INDEX</code> (blocked)</td>
+</tr>
+<tr>
+<td><strong>Audit</strong></td>
+<td>every write reply returns <code>identifier</code> and <code>_id</code> and says which one matched; an assigned ObjectId's time is the hub's receipt time, never the record's time</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>specified (<code>SPEC-ID</code>); the v1 <code>identifier</code> match for entries and devicestatus is queued for cgm-remote-monitor after 15.0.9</td>
+</tr>
+</tbody>
+</table>
+<h2 id="l1-records">L1 Records<a class="headerlink" href="#l1-records" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Spec today</strong></td>
+<td><code>specs/sync/primitives.yaml</code> (the observation catalogue, graded <code>measured</code>, <code>declared</code> or <code>proposed</code>); <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#26-d11--devicestatus-is-a-decomposition-problem-not-a-column-selection-problem">D11</a> (devicestatus is decomposed, not given columns); <a href="nightscout-hub-sync-architecture-2026-09-11.html#33-composite-on-the-wire-primitive-in-storage">hub-sync §3.3</a></td>
+</tr>
+<tr>
+<td><strong>Evidence</strong></td>
+<td><a href="nightscout-typed-schema-evidence-2026-09-10.html">typed schema evidence</a>; <a href="nightscout-primitive-coverage-2026-09-11.html">primitive coverage</a>; <a href="nightscout-devicestatus-profile-fidelity-2026-09-10.html">devicestatus and profile fidelity</a>; <a href="nightscout-extensibility-models-2026-09-10.html">extensibility models</a>; <a href="../../../specs/quirks/index.html">quirks registry</a></td>
+</tr>
+<tr>
+<td><strong>Schemas</strong></td>
+<td><code>specs/nsschema/*.model.json</code> (today's collections); <code>specs/sync/controller-settings.schema.json</code>; <code>specs/sync/sensitivity.yaml</code> (the two-axis sensitivity label)</td>
+</tr>
+<tr>
+<td><strong>Open</strong></td>
+<td>devicestatus and profile decomposition coverage is unmeasured (<a href="nightscout-hub-sync-architecture-2026-09-11.html#7-what-is-not-measured">hub-sync §7</a>)</td>
+</tr>
+<tr>
+<td><strong>Audit</strong></td>
+<td>the composite document is kept beside its decomposed records, so "what did the device send" stays answerable</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>evidenced; treatment routing measured at 99.86% by <code>eventType</code> alone</td>
+</tr>
+</tbody>
+</table>
+<h2 id="l2-definitions-and-instances">L2 Definitions and instances<a class="headerlink" href="#l2-definitions-and-instances" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Spec today</strong></td>
+<td><a href="nightscout-hub-sync-architecture-2026-09-11.html#31-registration">hub-sync §3.1</a> (the grammar); <a href="nightscout-hub-sync-architecture-2026-09-11.html#35-negotiation">§3.5</a> (capability document, submit, per-element results, fallback, owner actions); <a href="nightscout-hub-sync-architecture-2026-09-11.html#36-definitions-and-instances">§3.6</a> (content-addressed definitions, leased instances, labels, read selection, projected views, retention); <a href="nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">§3.7</a> rules 1–4 (version-scoped quirks)</td>
+</tr>
+<tr>
+<td><strong>Evidence</strong></td>
+<td><a href="PROPOSAL-controller-descriptions-2026-09-11.html">controller descriptions</a> (the well-known tier); <a href="nightscout-intent-workflow-landscape-2026-10-09.html">intent and workflow landscape</a> §8–§9 (what a registration must declare); <a href="../tenancy/nightscout-control-plane-reconciliation-2026-09-11.html">control-plane reconciliation</a> (the upstream RFC's kind/instance split)</td>
+</tr>
+<tr>
+<td><strong>Schemas, cases</strong></td>
+<td><code>specs/sync/controller-state-model.schema.json</code>, <code>hub-capabilities.schema.json</code>, <code>registration-submit.schema.json</code>, <code>controller-instance.schema.json</code>; generated registrations in <code>specs/sync/registrations/</code>; 54 cases in <code>specs/sync/conformance/</code>, 103 in <code>conformance/instances/</code></td>
+</tr>
+<tr>
+<td><strong>Decisions</strong></td>
+<td><a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">D18</a> and its <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#d18-addendum--an-extensible-grammar-maintainer-2026-10-12">addendum</a>; <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#262-d19--definitions-and-instances-maintainer-2026-10-14">D19</a></td>
+</tr>
+<tr>
+<td><strong>Open</strong></td>
+<td><code>SPEC-REG-MODES</code>, <code>SPEC-REG-MIGRATE</code>; implementation <code>HUB-REG-CRM</code>, <code>HUB-REG-CRM-SEAM</code>, <code>HUB-REG-CRM-ADMIN</code>; adoption <code>HUB-REG-NOCTURNE</code>, <code>PROPOSAL-REG-CONTROLLERS</code>; §3.7's choices 2, 3, 4, 6, 7, 9, 10, 11 and 12 await the maintainer</td>
+</tr>
+<tr>
+<td><strong>Audit</strong></td>
+<td>every typed record carries its instance, its definition id and its role's provenance; projected documents carry <code>projectedFrom</code>; records are attributed to the registration and its bound credential, never to a namespace string</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>specified</td>
+</tr>
+</tbody>
+</table>
+<h2 id="l3-state-and-intent">L3 State and intent<a class="headerlink" href="#l3-state-and-intent" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Spec today</strong></td>
+<td><code>stateSpans</code> in <a href="nightscout-hub-sync-architecture-2026-09-11.html#31-registration">hub-sync §3.1</a> (slot, states, end reasons, wire carrier, requested and applied, initiators, composition, <code>acceptsFromHub</code>); slot sharing and <code>sameAs</code> in <a href="nightscout-hub-sync-architecture-2026-09-11.html#36-definitions-and-instances">§3.6</a> and <a href="nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">§3.7</a> rule 2</td>
+</tr>
+<tr>
+<td><strong>Evidence</strong></td>
+<td><a href="nightscout-intent-workflow-landscape-2026-10-09.html">intent and workflow landscape</a> (per-controller matrix, end encodings, how each hub decides what is active, command lifecycles); <a href="nightscout-effects-and-versioning-2026-09-11.html">effects and versioning</a> (effect separated from motivation); <a href="../../10-domain/authority-model.html">authority model</a></td>
+</tr>
+<tr>
+<td><strong>Schemas</strong></td>
+<td><code>specs/sync/controller-state-model.schema.json</code> (<code>stateSpans</code>, <code>composition</code>, <code>commands</code>); <code>specs/sync/shared-slots.yaml</code>; <code>specs/sync/therapy-effect.schema.json</code>; <code>specs/sync/effect-remapping.yaml</code></td>
+</tr>
+<tr>
+<td><strong>Open</strong></td>
+<td>iAPS has no registration; end-reason vocabularies for Trio override and temporary target and for AndroidAPS profile switch, AndroidAPS initiator values and every command vocabulary are undeclared (landscape §10); <code>LAB-TRIO-INTENT</code></td>
+</tr>
+<tr>
+<td><strong>Audit</strong></td>
+<td>requested and applied are recorded separately; each span records its end reason and initiator in the controller's own vocabulary; composition is recorded as the controller reports it, never computed by the hub</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>evidenced and declared in the generated registrations; <code>LAB-HUB-ACTIVE-STATE</code> measured cgm-remote-monitor and Nocturne disagreeing on what is active for the same records (landscape §5)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="l4-change-and-sync">L4 Change and sync<a class="headerlink" href="#l4-change-and-sync" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Spec today</strong></td>
+<td><a href="../tenancy/write-contract-spec-2026-10-07.html">write contract</a> §2–§3 (one write step, the re-send rule, every path's writes reaching the storage socket); <a href="nightscout-hub-sync-architecture-2026-09-11.html#32-the-contract-the-hub-returns">hub-sync §3.2</a> (cursor envelope and batch write); <a href="PROPOSAL-replay-fidelity-changes-2026-09-11.html#1-sync-cost-should-be-o1-in-the-number-of-resources">replay-fidelity proposal §1</a> (one history read across collections on API v3); §3.5's fallback and load-versus-definite refusal rule; <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">D6</a> (the change feed under multi)</td>
+</tr>
+<tr>
+<td><strong>Evidence</strong></td>
+<td><a href="nightscout-hub-sync-architecture-2026-09-11.html#2-what-sync-costs-now">hub-sync §2</a> (<code>make schema-sync-cost</code>: up to 5,760, 2,016 and 1,440 requests a day for AndroidAPS, Loop and Trio against 576 for two requests a cycle; source-derived upper bounds, not traffic); the write contract's measured matrix</td>
+</tr>
+<tr>
+<td><strong>Open</strong></td>
+<td><code>WRITE-CONTRACT</code>, <code>WC-STEP-PATCH</code>, <code>ID-BATCH-RESULTS</code> (blocked). Not specified anywhere: socket delivery of typed records, cursor semantics under concurrent writers, and migrating stored typed records when a definition changes version (rule 4 of the D18 addendum converts nothing without a declared mapping)</td>
+</tr>
+<tr>
+<td><strong>Audit</strong></td>
+<td>one change event per write call; a matched re-send stores no second copy and is answered with the stored ids; each mapping the hub applies is recorded as <code>quirksApplied</code></td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>the write matrix is evidenced; the write step is specified; the typed sync transport is not</td>
+</tr>
+</tbody>
+</table>
+<h2 id="l5-authority">L5 Authority<a class="headerlink" href="#l5-authority" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Spec today</strong></td>
+<td>binding, credential kind, owner actions and the block state in <a href="nightscout-hub-sync-architecture-2026-09-11.html#35-negotiation">hub-sync §3.5</a>; roles, provenance, command-sink binding and command routing in <a href="nightscout-hub-sync-architecture-2026-09-11.html#36-definitions-and-instances">§3.6</a></td>
+</tr>
+<tr>
+<td><strong>Evidence</strong></td>
+<td><a href="agent-trust-boundaries-2026-10-18.html">agent trust boundaries</a> (develop, interpret and act; a proposal lifecycle, proposed and not specified); <a href="../tenancy/nightscout-configuration-and-delegation-2026-09-10.html#5-new-data-and-delegation-between-agents">configuration and delegation §5</a> (what a delegation design must provide); <a href="../tenancy/nightscout-control-plane-reconciliation-2026-09-11.html">control-plane reconciliation</a>; <a href="../../10-domain/authority-model.html">authority model</a></td>
+</tr>
+<tr>
+<td><strong>Decisions</strong></td>
+<td><a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">D13–D17</a> (credential root, listeners, auth plane; D17 row 2 open)</td>
+</tr>
+<tr>
+<td><strong>Open</strong></td>
+<td><code>SPEC-REG-COMMANDS</code> (the command API itself is not specified); delegation of a principal's authority to a caregiver, app or agent, and proposals awaiting approval, are not specified</td>
+</tr>
+<tr>
+<td><strong>Audit</strong></td>
+<td>the owner's listing shows every product's binding, credential kind and binding event, every instance's roles and liveness, and every overlap</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>specified for registration and routing; not specified for commands and delegation</td>
+</tr>
+</tbody>
+</table>
+<h2 id="reading-order">Reading order<a class="headerlink" href="#reading-order" title="Permanent link">&para;</a></h2>
+<p>For someone new to the series: this page, then the <a href="spec/glossary.html">glossary</a>, then
+<a href="nightscout-intent-workflow-landscape-2026-10-09.html">intent and workflow landscape</a> §2 and §9 for
+why the contract exists, then hub-sync §3.5–§3.7 for the contract itself.</p>
+<h2 id="planned-layout">Planned layout<a class="headerlink" href="#planned-layout" title="Permanent link">&para;</a></h2>
+<p>Each layer's living specification has, or will have, its own undated file under <code>spec/</code>:
+<a href="spec/identity.html">identity</a> is written; <code>registration</code>, <code>state-intent</code>, <code>sync-transport</code> and
+<code>authority</code> are queued as <code>SPEC-REGISTRATION</code>, <code>SPEC-STATE-INTENT</code>, <code>SPEC-SYNC-TRANSPORT</code> and
+<code>SPEC-AUTHORITY</code>. The dated documents
+above stay where they are as snapshots, and each moved section leaves a pointer to its new home.</p>
 
 
 
