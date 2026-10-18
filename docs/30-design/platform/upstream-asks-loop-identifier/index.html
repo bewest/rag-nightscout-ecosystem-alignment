@@ -4704,6 +4704,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-simple-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The simple contract
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#the-proposal-summarised" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4776,7 +4787,7 @@
 
 
 <h1 id="upstream-ask-the-loop-developers-identifier-proposal">Upstream ask: the Loop developers' <code>identifier</code> proposal<a class="headerlink" href="#upstream-ask-the-loop-developers-identifier-proposal" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-17 at <code>da1a0f02d</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>18b2b3723</code>.</em></p>
 <p><em>Contributor-facing. </em><em>DRAFT, not yet sent. For maintainer review.</em><em> Queue item <code>LOOP-ID-REPLY</code>.
 Facts checked 2026-10-17 at cgm-remote-monitor <code>15.0.8</code> (<code>92d08342</code>) and <code>dev</code> <code>fade2299</code>, Loop at
 LoopWorkspace <code>548b332</code> (NightscoutService <code>2cef489</code>, LoopKit <code>d9f1437</code>) and NightscoutKit <code>4ec9fd1</code>,
@@ -4786,6 +4797,26 @@ from this repository's <code>5a6cef4d</code>. Each project's maintainers decide 
 based on 15.0.8. It is a private page shared with the maintainer and is not linked from here. Our
 draft reply is <a href="reply.body.html">reply.body.md</a>, ready to paste as GitHub or Zulip markdown. It links
 the published pages on the project site.</p>
+<h2 id="the-simple-contract">The simple contract<a class="headerlink" href="#the-simple-contract" title="Permanent link">&para;</a></h2>
+<p>What the reply proposes, and what Nightscout supports today except where the reply's table says
+otherwise:</p>
+<ol>
+<li><code>_id</code> is a MongoDB ObjectId (24 hex) or absent. A client may create its own ObjectId and send
+   it. Other values are not valid; <code>UUID_HANDLING</code> (default on) moves a UUID <code>_id</code> to
+   <code>identifier</code> on treatments and entries, as a compatibility rule.</li>
+<li>If <code>_id</code> is absent, the client sends <code>identifier</code>, a string (UUID recommended: v5 of a
+   source-derived key when devices must agree, v4 once for a manual entry). The server assigns
+   <code>_id</code>. One identifier names one record.</li>
+<li>If neither is sent, the collection's time key applies (entries <code>sysTime</code> + <code>type</code>, treatments
+   <code>created_at</code> + <code>eventType</code>); this fallback may be deprecated later.</li>
+</ol>
+<p>Tie-break (proposed, queue <code>ID-CLIENT-OID-DECISION</code>): when a write carries both and they point at
+different records, <code>_id</code> decides. That differs from D20 rule 5's identifier-first order and from
+v1 treatments today (<code>identifier</code> present drops <code>_id</code>, <code>server/treatments.js:356-362</code> @15.0.8).
+Every write reply returns both ids (rule 5).</p>
+<p>The one server change it needs, v1 entries and device status matching on <code>identifier</code>, is queue
+item <code>ID-SIMPLE-MATCH</code>; it ships with BF-169 after 15.0.9 (maintainer, 2026-10-17; see
+<a href="../../../../releases/cgm-remote-monitor-15.0.9/decisions.html#decided-at-the-same-time-outside-1509s-contents">15.0.9 decisions</a>).</p>
 <h2 id="the-proposal-summarised">The proposal, summarised<a class="headerlink" href="#the-proposal-summarised" title="Permanent link">&para;</a></h2>
 <p><strong>The ask.</strong> An uploader gives each record a stable <code>identifier</code> taken from the data's source. The
 server puts a unique index on it and upserts on it, in every collection and both API versions.
@@ -4805,16 +4836,17 @@ Records without one keep today's rules.</p>
   device status intentional, and should an identifier make re-sends idempotent.</li>
 </ul>
 <h2 id="how-the-reply-argues">How the reply argues<a class="headerlink" href="#how-the-reply-argues" title="Permanent link">&para;</a></h2>
+<p>Rewritten 2026-10-17 around the simple contract, at the maintainer's direction that the simple
+model is generally workable; the previous, longer version is in git history at <code>dd6febcc</code>.</p>
 <ol>
-<li>Opens from Loop's own measured problems: the 24-hour id cache, <code>"NA"</code> for a missing <code>_id</code>
-   (BF-165), re-sends stored twice (38 of 66 path pairs), Loop device status copies.</li>
-<li>Quotes D20 rule 5, "Two ids, one rule", and maps it line by line onto their proposal.</li>
-<li>Why we decided it: the measurement, and that Loop, Trio, xDrip+ and AndroidAPS each keep a
-   record identity under a different field name.</li>
-<li>Status by tier: works on 15.0.8; in <code>dev</code>; decided but not built; not decided anywhere.</li>
-<li>Two neutral corrections (15.0.7 not 15.0.8; v3 keeps a client value).</li>
-<li>Answers Q1–Q3 and offers decision rows and shared conformance cases.</li>
-<li>Next steps in order, with server work "after 15.0.9" and no dates.</li>
+<li>Agrees with the ask; most of it works; the confusion is largely the swagger sentence (BF-169).</li>
+<li>The three rules and the tie-break, with D20 rule 5's "every write reply returns both" quoted.</li>
+<li>A table of what works today and the one gap (v1 entries and device status store <code>identifier</code>
+   but do not match on it).</li>
+<li>The watch-and-phone case: four options; recommends a source-derived identifier, with an
+   agreed timestamp as an interim that needs no server change. FHIR and HealthKit precedents.</li>
+<li>Cautions for Loop starting today; what we will do (the one server change and BF-169, after
+   15.0.9); the deferred questions as a short list.</li>
 </ol>
 <h2 id="evidence">Evidence<a class="headerlink" href="#evidence" title="Permanent link">&para;</a></h2>
 <p>[R] read at the ref; [M] measured (the cited page says how). cgm-remote-monitor paths are under
@@ -4860,7 +4892,7 @@ Records without one keep today's rules.</p>
 </tr>
 <tr>
 <td>proposal: v3 "spec tells clients not to supply one"</td>
-<td>the code keeps a client value, computes one only when absent, warns on mismatch [R, and reproduced at module level by the records agent]; swagger's "client should not create the identifier" is wrong: <strong>BF-169</strong> (filed 2026-10-17, branch <code>records/loop-identifier-2026-10-17</code> <code>e8a1f2d0</code>, not on main). Its "immutable by the client" part is accurate for PUT/PATCH</td>
+<td>the code keeps a client value, computes one only when absent, warns on mismatch [R, and reproduced at module level by the records agent]; swagger's "client should not create the identifier" is wrong: <strong>BF-169</strong> (filed 2026-10-17, <code>e8a1f2d0</code>, on main since 52a82ac8). Its "immutable by the client" part is accurate for PUT/PATCH</td>
 <td><code>api3/shared/operationTools.js:114-126</code>; <code>api3/swagger.yaml:1103</code> @15.0.8, <code>:1062</code> @dev; <code>swagger.json:1383</code> both</td>
 </tr>
 <tr>
@@ -4938,7 +4970,7 @@ Records without one keep today's rules.</p>
 <p>Decisions cited: <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">D20 rule 5 and rule 7</a>
 (<code>18397441</code>, 2026-10-16); <a href="../../tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-10-12">write contract §3 (U4, U6) and §6.1</a>
 (2026-10-12); <a href="../nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">hub-sync design §3.7</a>
-(<code>write.ids</code>, <code>matchedBy</code>); cases in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/dd6febcc6496d41459d4ccb2f8de012e0c092b11/specs/sync/conformance/quirks"><code>specs/sync/conformance/quirks/</code></a>;
+(<code>write.ids</code>, <code>matchedBy</code>); cases in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/18b2b3723101ff36d1c4631f43e8a7a5a932b6db/specs/sync/conformance/quirks"><code>specs/sync/conformance/quirks/</code></a>;
 <a href="../../../../traceability/sync-identity-gaps.html">GAP-SYNC-032</a> ("send <code>syncIdentifier</code> as
 <code>identifier</code>") and REQ-BATCH-003 (per-item results) in
 <a href="../../../../traceability/sync-identity-requirements.html">sync-identity-requirements</a>.</p>
@@ -4972,6 +5004,13 @@ send <code>identifier</code>) is the direction the reply takes.</p>
 <td><a href="reply.body.html">reply.body.md</a>; adds (2026-10-17) a question back: is the watch-and-phone case a re-send to acknowledge or an edit to apply? Our decision of record (write contract Q1, merge on match) answers "update"</td>
 <td><code>ID-V3-IMMUTABLE-DECISION</code> (queue), beside write contract §6.1 Q1</td>
 </tr>
+<tr>
+<td>2026-10-17</td>
+<td>rewritten</td>
+<td>—</td>
+<td>reply rewritten around the simple contract (three rules, tie-break <code>_id</code> decides, one server change after 15.0.9); previous version at <code>dd6febcc</code> in git history</td>
+<td><code>ID-SIMPLE-MATCH</code>, <code>ID-CLIENT-OID-DECISION</code> (queue)</td>
+</tr>
 </tbody>
 </table>
 <p>When the reply is sent, add its date, channel and link. When they answer, add a row and the
@@ -4984,19 +5023,14 @@ decision row it produces.</p>
   2026-01-17) names a new <code>syncId</code> field in UUID v4 format. D20 rule 5 and this reply use
   <code>identifier</code>, and Loop proposes opaque non-UUID values. The reply does not cite ADR-002; it may
   need a superseding note.</li>
-<li><strong>Q1 position.</strong> The reply proposes "merge only when the stored record has no <code>identifier</code>" on
-  every collection and path. For v1 treatments that is a change: today a write with an
-  <code>identifier</code> never adopts a legacy record. Confirm before sending.</li>
-<li><strong>Device status Q3.</strong> The reply offers to revisit the 2026-10-12 decision with <code>identifier</code>
-  first. Confirm.</li>
-<li><strong>The <code>date</code> question.</strong> The reply raises v3's immutable <code>date</code>/<code>device</code> on an identifier match
-  as undecided. Reproduced over HTTP on 2026-10-17 (queue item <code>LOOP-ID-V3-IMMUTABLE</code>,
-  <a href="../../../../tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.html">lab results</a>).
-  Recorded as an observation, not a backfix: the 400 is API v3's documented rule; what it should
-  be for a client-supplied identifier is not decided.</li>
+<li><strong>Q1–Q3 and the <code>date</code> question.</strong> The rewritten reply takes no position on them; they are in
+  its "Later, only if needed" list. The <code>date</code> behaviour on API v3 is reproduced
+  (<a href="../../../../tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.html">lab results</a>).</li>
+<li><strong>Tie-break.</strong> The reply proposes that <code>_id</code> decides when the two ids disagree, which departs
+  from D20 rule 5's order. Confirm before sending (<code>ID-CLIENT-OID-DECISION</code>).</li>
 <li><strong>Push first.</strong> The reply links pages on the project site; the gh-pages build of 2026-10-17
-  (<code>de66763c</code>) has every linked page and anchor. BF-169 is on an unlanded branch and is cited by
-  number only.</li>
+  (<code>de66763c</code>) has every linked page and anchor, including the folder's <code>index.html</code> the rewritten
+  reply links. BF-169 is cited by number only.</li>
 </ul>
 
 

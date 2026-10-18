@@ -2876,7 +2876,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-17 at <code>8271016b8</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>d0c2b9726</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -2959,7 +2959,9 @@ match only themselves. API v3 computes uuid.v5(device_date[_eventType],
 106). A random UUID cannot serve the phone-and-watch case, where both devices
 must derive the same value; AndroidAPS keys on pump event ids. Not required:
 changing an existing client's identifiers, which would break matching against
-records it already stored.</p>
+records it already stored. 2026-10-17: the rewritten Loop reply states only "a
+string, UUID recommended" and lists the limit, character set and case under
+"later, only if needed"; decide when a client or ID-VALIDATE needs it.</p>
 <hr />
 <h2 id="before-you-approve">Before you approve<a class="headerlink" href="#before-you-approve" title="Permanent link">&para;</a></h2>
 <ul class="task-list">
