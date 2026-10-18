@@ -15,6 +15,11 @@ T="$(mktemp -d "${TMPDIR:-/tmp}/nsschema-weakened-XXXXXX")"
 trap 'rm -rf "$T"' EXIT
 mkdir -p "$T/tools" "$T/specs"
 cp -r "$ROOT/tools/nsschema" "$T/tools/" && cp -r "$ROOT/specs/sync" "$T/specs/"
+# Cached bytecode is checked by modification time and size only, so a
+# replacement of the same length made within the same second would run the
+# unweakened code and pass for the wrong reason.
+find "$T" -name __pycache__ -type d -prune -exec rm -rf {} +
+export PYTHONDONTWRITEBYTECODE=1
 python3 - "$T/tools/nsschema/$MODULE" "$OLD" "$NEW" <<'PY' || exit 90
 import sys
 path, old, new = sys.argv[1:]
@@ -24,5 +29,5 @@ if text.count(old) != 1:
     sys.exit(1)
 open(path, "w").write(text.replace(old, new))
 PY
-cd "$T" && python3 -m pytest -q "tools/nsschema/$TEST" 2>&1 | tail -2
+cd "$T" && python3 -m pytest -q -p no:cacheprovider "tools/nsschema/$TEST" 2>&1 | tail -2
 exit "${PIPESTATUS[0]}"
