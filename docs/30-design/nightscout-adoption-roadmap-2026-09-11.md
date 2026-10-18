@@ -1,5 +1,8 @@
-# Adoption roadmap: who builds what, in what order
+# Hub-and-spoke adoption across projects: who builds what, in what order
 
+> *What this is: a proposal (contributor-facing). Read after the [hub-and-spoke sync
+> sketch](./platform/nightscout-hub-sync-architecture-2026-09-11.md); leads to the
+> [controller-descriptions proposal](./platform/PROPOSAL-controller-descriptions-2026-09-11.md).*
 > **Snapshot — describes each project's development branch on 2026-09-11.** Status: current as
 > the cross-project (hub-and-spoke) adoption proposal; not the cgm-remote-monitor release order,
 > which is on the [roadmap](../00-overview/ROADMAP.md).
@@ -409,14 +412,13 @@ Those are the two complaints this series started from.
   than the number suggests, and AAPS's 2,434 include a multiplatform
   migration that touches everything. Worse, a six-month window opening
   2026-03-11 excluded cgm-remote-monitor's `docs/proposals/` set entirely —
-  the single most relevant prior art in this series — because it landed
+  the earlier draft of this series, written in this repository — because it landed
   2026-01-01. Both errors ran the same direction: **counting recent commits
   systematically understates design work, which is bursty, and understates
   connectivity work, which is spread across submodules and sibling repos.**
-* **No maintainer has been asked.** Everything here is inferred from public
-  branches. Willingness, capacity and appetite are not observable from git,
-  and every phase that names a project is a proposal to that project, not a
-  plan for it.
+* **Willingness, capacity and appetite.** Everything here is read from public
+  branches, and these are not observable from git. Every phase that names a
+  project is a proposal to that project.
 * **Whether AAPS's `settings` client is intended for controller settings at
   all.** It is unwired, unreleased, and arrived inside a ktor migration
   commit, which makes incidental completeness at least as likely as intent.
@@ -435,9 +437,10 @@ Those are the two complaints this series started from.
   multi-writer conflict resolution. What the tree can say about *live* is
   narrow and negative: **nothing in `lib/` or `tests/` references any of
   these documents**, the only mention outside the directory is one line in
-  `docs/INDEX.md`, and all four questionnaire responses are still *Pending*.
-  Drafted and parked is the reading; nobody has said so, and asking a
-  maintainer is still the only way to know.
+  `docs/INDEX.md`, and all four questionnaire responses read *Pending*.
+  Drafted and parked is the reading. The defaults this work proposes for
+  each questionnaire answer are in the integration questionnaire defaults of
+  2026-10-18, beside the platform specifications.
 * **Whether the pump/CGM connectivity push has a shared bottleneck** that a
   data-layer proposal could relieve. Five projects widening device coverage
   in parallel is the ecosystem's revealed priority; nothing here tests

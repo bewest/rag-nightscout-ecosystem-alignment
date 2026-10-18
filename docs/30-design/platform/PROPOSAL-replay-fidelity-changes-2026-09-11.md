@@ -1,8 +1,10 @@
-# Proposal: the concrete changes that make Nightscout high-fidelity for replay
+# Replay fidelity: the concrete changes, per project
 
-*Contributor-facing.* **Snapshot, written 2026-09-11. Current: the only statement of the
+*What this is: a proposal (contributor-facing). Read after the [controller-descriptions
+proposal](PROPOSAL-controller-descriptions-2026-09-11.md); leads to the [sync-transport
+specification](spec/sync-transport.md).* **Snapshot, written 2026-09-11. Current: the only statement of the
 replay-fidelity change list.** Change A (§1) is carried, with its cursor rule, as rules T5–T7 of the
-[sync-transport specification](spec/sync-transport.md). A proposal to each named project, none of which has agreed to anything.
+[sync-transport specification](spec/sync-transport.md). Status: proposed to each named project; each change is independent of the others.
 Measurements are over the 11-site corpus (snapshots 2026-04-01 and 2026-04-26) and the source
 trees as of 2026-09-11. It is a **change list rather than an analysis.** Decisions it touches:
 [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
@@ -363,9 +365,8 @@ before the profile is quoted at a maintainer.
 | **This repository** | Rebuild the conformance profile from the dosing-input map so it can fail (§7) | Generator change |
 
 **Nothing in this list requires a new API version, and nothing requires any
-two projects to move together.** Each change is useful alone, which is the
-only sequencing property that matters when no maintainer has agreed to
-anything.
+two projects to move together.** Each change is useful alone, so each project can take its row
+independently, in any order.
 
 ---
 
@@ -388,10 +389,8 @@ anything.
   all `openaps.*` figures are single-site.
 * **Whether the eight Loop settings are accessible at the point Loop
   serialises `loopSettings`.** They are all `LoopSettings`/therapy-settings
-  values, so this is likely, but it is read from source and has not been
-  confirmed by anyone who maintains Loop.
+  values, so this is likely; it is read-derived (from source), not
+  measured.
 * **Cursor behaviour under concurrent writers.** Two controllers plus a
   care-portal user writing to one site is the normal case, and `srvModified`
   ordering under that load is unexamined — here and upstream.
-* **Nobody has been asked.** Every row in §8 is a proposal to a project, not
-  a plan for it.

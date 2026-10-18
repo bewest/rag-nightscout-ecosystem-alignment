@@ -1,13 +1,15 @@
-# Typed schemas for Nightscout: what the documents actually contain
+# Typed schemas for Nightscout, measured against stored documents
 
-*Contributor-facing.* **Snapshot — describes 2026-09-10. Status: current — the measurements stand.** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+*What this is: a measurement (contributor-facing). Read after the [records
+specification](spec/records.md); leads to [primitive
+coverage](nightscout-primitive-coverage-2026-09-11.md).* **Snapshot — describes 2026-09-10. Status: current — the measurements stand.** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
 
 Date: 2026-09-10. Companion to
 [Nightscout multitenancy: evidence and options](../tenancy/nightscout-multitenancy-discussion-2026-09-09.md)
 (§6.4 in particular) and to the
 [`x-aid-extensions` convention proposal](../../sdqctl-proposals/x-aid-extensions-convention-proposal.md).
 
-**Nothing here is a proposal to merge. The deliverable is evidence, plus the
+**The deliverable is evidence, plus the
 tooling that produced it, so that any of it can be re-derived or disputed.**
 
 ---
@@ -16,7 +18,7 @@ tooling that produced it, so that any of it can be re-derived or disputed.**
 
 The multitenancy discussion's §6.4 recommends one source of truth for a
 field's type, with validators, an ODM schema and column types generated
-from it. That recommendation has a precondition nobody had checked: **the
+from it. That recommendation has an unchecked precondition: **the
 spec has to match the data.** It does not.
 
 Measured over **1,968,464 real documents from 11 consenting Nightscout

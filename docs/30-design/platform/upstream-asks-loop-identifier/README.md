@@ -1,6 +1,8 @@
-# Upstream ask: the Loop developers' `identifier` proposal
+# Reply to the Loop developers' `identifier` proposal
 
-*Contributor-facing. **DRAFT, not yet sent. For maintainer review.** Queue item `LOOP-ID-REPLY`.
+*What this is: an outreach draft (contributor-facing). Read after the [identity
+specification](../spec/identity.md); leads to the [device-simulator
+requests](../upstream-asks-device-simulators/README.md). Status: **draft, not yet sent; for maintainer review.** Queue item `LOOP-ID-REPLY`.
 Facts checked 2026-10-17 at cgm-remote-monitor `15.0.8` (`92d08342`) and `dev` `fade2299`, Loop at
 LoopWorkspace `548b332` (NightscoutService `2cef489`, LoopKit `d9f1437`) and NightscoutKit `4ec9fd1`,
 from this repository's `5a6cef4d`. Each project's maintainers decide what, if anything, to do.*

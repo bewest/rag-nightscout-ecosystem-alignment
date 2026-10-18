@@ -1,7 +1,9 @@
 # Agents in the ecosystem: develop, interpret, act
 
-*Contributor-facing.* **Snapshot — describes 2026-10-18. Status: current; a map of what exists and
-what does not, not a design. The proposal lifecycle in §4.3 is proposed, not specified.** Repository
+*What this is: a map (contributor-facing). Read after the [authority specification](spec/authority.md);
+leads to [auditioning a dosing algorithm](algorithm-audition-2026-10-18.md).* **Snapshot — describes
+2026-10-18. Status: current; a map of what exists and what is missing for each of develop, interpret
+and act. The proposal lifecycle in §4.3 is proposed, not specified.** Repository
 facts are read at this repository's `5a9a49cc`; facts about other repositories and publications were
 checked 2026-10-18 through the GitHub API or the publisher's page, and each names its commit or
 date. Every claim is **read-derived** (from source or documents) unless marked **measured**. Current

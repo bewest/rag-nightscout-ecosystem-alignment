@@ -1,6 +1,7 @@
 # Intent, workflow and entity management across the AID controller landscape
 
-*Contributor-facing.* **Snapshot — describes 2026-10-09. Status: current; the evidence for D18.** Every claim is **read-derived** (from source, a hypothesis about behaviour) unless marked
+*What this is: an analysis (contributor-facing). Read after the [platform index](README.md) and
+[glossary](spec/glossary.md) (§2 and §9 first); leads to the [identity specification](spec/identity.md).* **Snapshot — describes 2026-10-09. Status: current; the evidence for D18.** Every claim is **read-derived** (from source, a hypothesis about behaviour) unless marked
 **measured**. Sources and commits are in §1. Current decisions: [execution plan
 §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
 **Corrected in place 2026-10-12:** §5 is measured on both hubs (TL;DR and §12 follow it); the §10 rows for the hub-sync design and `specs/sync/registrations/` record what the

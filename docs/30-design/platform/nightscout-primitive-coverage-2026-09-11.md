@@ -1,6 +1,8 @@
-# Is there enough evidence for a unified primitive catalogue? A coverage assessment
+# Evidence coverage of the primitive catalogue
 
-*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current — the catalogue it assesses is `specs/sync/primitives.yaml`; the rules built on it are maintained in the [records specification](spec/records.md).** *Corrected 2026-10-18:* §2's per-primitive table predates the catalogue's regrading; the totals (84 measured, 50 declared) stand, and the current per-primitive counts are generated in the records specification §3 (for example `ApsSnapshot` 23 measured and 2 declared, not 14 and 11). Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+*What this is: a measurement (contributor-facing). Read after [typed
+schemas](nightscout-typed-schema-evidence-2026-09-10.md); leads to [`devicestatus` and `profile`
+replay](nightscout-devicestatus-profile-fidelity-2026-09-10.md).* **Snapshot — describes 2026-09-11. Status: current — the catalogue it assesses is `specs/sync/primitives.yaml`; the rules built on it are maintained in the [records specification](spec/records.md).** *Corrected 2026-10-18:* §2's per-primitive table predates the catalogue's regrading; the totals (84 measured, 50 declared) stand, and the current per-primitive counts are generated in the records specification §3 (for example `ApsSnapshot` 23 measured and 2 declared, not 14 and 11). Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
 
 Date: 2026-09-11.
 
@@ -152,7 +154,7 @@ Honestly graded:
 
 The useful way to read 63% is not as a shortfall but as a map: it says which
 parts of a decomposition could be built today against real data, and which
-would be building against a model nobody has verified. Those are different
+would be building against a model unverified against data. Those are different
 risks and they were previously indistinguishable.
 
 ## 6. What would raise confidence most, in order

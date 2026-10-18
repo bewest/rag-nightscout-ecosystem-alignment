@@ -1,6 +1,8 @@
 # Extending the Nightscout document model: four designs, measured
 
-*Contributor-facing.* **Snapshot, 2026-09-10. Superseded as a design by [PROPOSAL-controller-descriptions](PROPOSAL-controller-descriptions-2026-09-11.md); the measurements stand.** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+*What this is: an analysis (contributor-facing). Read after [`devicestatus` and `profile`
+replay](nightscout-devicestatus-profile-fidelity-2026-09-10.md); leads to [therapy effects and
+versioning](nightscout-effects-and-versioning-2026-09-11.md) and to the design it chose.* **Snapshot, 2026-09-10. Superseded as a design by [PROPOSAL-controller-descriptions](PROPOSAL-controller-descriptions-2026-09-11.md); the measurements stand.** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
 
 Date: 2026-09-10. Companion to
 [Typed schemas for Nightscout](./nightscout-typed-schema-evidence-2026-09-10.md)
@@ -9,7 +11,7 @@ and to the
 extends §6.5.1 of the
 [multitenancy discussion](../tenancy/nightscout-multitenancy-discussion-2026-09-09.md).
 
-**Nothing here is a proposal to merge. The deliverable is evidence.**
+**The deliverable is evidence.**
 
 ---
 
@@ -96,8 +98,8 @@ This is the design in
 [the controller-descriptions proposal](./PROPOSAL-controller-descriptions-2026-09-11.md),
 and §3.4 argues it is the answer to controller-scoped extensibility — the
 ability to ship a feature nobody else has without negotiating for it. Three
-descriptions are generated in `specs/sync/registrations/`; **none has been
-consumed by a reader yet**, so it sits between §1.2's measured model and
+descriptions are generated in `specs/sync/registrations/`; **no reader
+consumes them yet** (not implemented in any hub), so it sits between §1.2's measured model and
 §1.4's unmeasured one.
 
 ### 1.4 Tenant-registered custom resources
@@ -255,7 +257,7 @@ ecosystem before the feature ships — which is the actual complaint.
 
 The evidence for this is thinner than for §3's primitive coverage, and should
 be labelled that way: three descriptions exist, generated from one corpus,
-and **none has been consumed by a reader in production.** The claim that this
+and **no production reader consumes them yet.** The claim that this
 shape supports per-controller innovation is a design argument, not a
 measurement.
 
@@ -290,7 +292,7 @@ designs avoid:
    discussion found the `$regex` filter reaching MongoDB with no pattern
    guard, no index requirement and no `maxTimeMS`. A tenant-declared schema
    means tenant-declared *fields to query*, and the query-profile work that
-   section proposes has to cover shapes nobody reviewed.
+   section proposes has to cover unvetted query shapes.
 2. **Validation stops being one compiled validator.** §6 measured
    85k–330k docs/s for a fixed schema set. N tenants × their own schemas is
    a different cache-residency problem, and it lands on exactly the

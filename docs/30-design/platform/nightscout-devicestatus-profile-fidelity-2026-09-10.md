@@ -1,6 +1,8 @@
-# `devicestatus` and `profile`: what survives, what is lost, and what was never written
+# Replaying a dosing decision from `devicestatus` and `profile`: what is lost, and what was never written
 
-*Contributor-facing.* **Snapshot — describes 2026-09-10. Status: current — the measurements stand; the controller-description design built on them is [PROPOSAL-controller-descriptions](PROPOSAL-controller-descriptions-2026-09-11.md); the record rules they support are maintained in the [records specification](spec/records.md).** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+*What this is: a measurement (contributor-facing). Read after [primitive
+coverage](nightscout-primitive-coverage-2026-09-11.md); leads to [extensibility
+models](nightscout-extensibility-models-2026-09-10.md).* **Snapshot — describes 2026-09-10. Status: current — the measurements stand; the controller-description design built on them is [PROPOSAL-controller-descriptions](PROPOSAL-controller-descriptions-2026-09-11.md); the record rules they support are maintained in the [records specification](spec/records.md).** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
 
 Date: 2026-09-10. Third in a series
 with
@@ -8,7 +10,7 @@ with
 and
 [Extending the document model](./nightscout-extensibility-models-2026-09-10.md).
 
-**Nothing here is a proposal to merge. The deliverable is evidence.**
+**The deliverable is evidence.**
 
 ---
 

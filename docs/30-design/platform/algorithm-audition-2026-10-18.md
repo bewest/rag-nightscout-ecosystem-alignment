@@ -1,7 +1,9 @@
 # Auditioning a dosing algorithm: same inputs, shadow only
 
-*Contributor-facing.* **Snapshot — describes 2026-10-18. Status: current; a research note, not a
-design. The harness in §4 is proposed, not specified, and nothing here is decided.** Repository
+*What this is: a research note (contributor-facing). Read after [agents in the
+ecosystem](agent-trust-boundaries-2026-10-18.md); leads to the [controller-descriptions
+proposal](PROPOSAL-controller-descriptions-2026-09-11.md).* **Snapshot — describes 2026-10-18.
+Status: current. The harness in §4 is proposed, not specified; no decision rests on this note.** Repository
 facts are read at this repository's `ef29293a`; counts marked **measured** were taken that day with
 the command or method named beside them. Facts about an independent implementation (§3) are
 **read-derived from its source and documents, 2026-10-18; not reproduced here**. Current decisions:

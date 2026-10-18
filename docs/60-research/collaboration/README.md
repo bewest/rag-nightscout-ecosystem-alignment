@@ -69,8 +69,9 @@ it, the schemas say what readers expect.
 
 ### 4. Review
 
-Most work here has had no human reviewer. If you can read Nightscout code or data analysis
-critically, that is the scarcest contribution:
+Review is the contribution most wanted here. If you can read Nightscout code or data analysis
+critically, start with the reviewer onboarding page, pick one claim, and check it against its
+source or command:
 [`docs/00-overview/REVIEWER-ONBOARDING.md`](../../00-overview/REVIEWER-ONBOARDING.md).
 
 ## Rules for people and agents working here

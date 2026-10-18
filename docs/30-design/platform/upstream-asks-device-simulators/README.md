@@ -1,11 +1,13 @@
-# Upstream asks: device simulators and app rigs
+# Device simulators and app rigs: requests to their projects
 
-*Contributor-facing. **Living**: drafted outgoing messages, kept current until each is sent or
-dropped. Facts checked 2026-10-17 against the repositories' heads, releases and open pull requests
+*What this is: an outreach draft (contributor-facing). Read after the [device-simulators
+record](../../../60-research/programme/device-simulators-2026-10-17.md); leads to each row's draft
+message. Status: drafts; each row's status column says whether it was sent. **Living**: drafted
+outgoing messages, kept current until each is sent or dropped. Facts checked 2026-10-17 against the repositories' heads, releases and open pull requests
 through the GitHub API, at this repository's `9c198f93`. Evidence:
 [device-simulators record](../../../60-research/programme/device-simulators-2026-10-17.md) (§3 how the
-pieces join, §6 the missing joins) and the three deep dives in `docs/10-domain/`. **Nothing here has
-been sent.** Each project's maintainers decide what, if anything, to do with an ask.*
+pieces join, §6 the missing joins) and the three deep dives in `docs/10-domain/`. Each project's maintainers decide what to do with an
+ask.*
 
 ## How to use these drafts
 
