@@ -128,13 +128,13 @@ which no evidence lowers.
 block-beta
   columns 6
   h0["risk / evidence"] h1["weak"] h2["confirmed"] h3["reviewed"] h4["previewed"] h5["floor"]
-  r0["R0 inform"] c00["N"] c01["N"] c02["N"] c03["N"] f0["—"]
-  r1["R1 bounded target"] c10["A"] c11["W"] c12["N"] c13["N"] f1["—"]
-  r2["R2 bounded sensitivity"] c20["A"] c21["A"] c22["W"] c23["W"] f2["—"]
-  r3["R3 carbs"] c30["RA"] c31["A"] c32["A"] c33["A"] f3["FL2"]
-  r4["R4 insulin"] c40["RA"] c41["RA"] c42["A or S"] c43["A or S"] f4["FL1"]
-  r5["R5 persistent settings"] c50["RA"] c51["RA"] c52["RA"] c53["RA"] f5["FL3"]
-  r6["R6 safety limits"] c60["L"] c61["L"] c62["L"] c63["L"] f6["FL4"]
+  r0["R0 inform"] c0_0["N"] c0_1["N"] c0_2["N"] c0_3["N"] f0["—"]
+  r1["R1 bounded target"] c1_0["A"] c1_1["W"] c1_2["N"] c1_3["N"] f1["—"]
+  r2["R2 bounded sensitivity"] c2_0["A"] c2_1["A"] c2_2["W"] c2_3["W"] f2["—"]
+  r3["R3 carbs"] c3_0["RA"] c3_1["A"] c3_2["A"] c3_3["A"] f3["FL2"]
+  r4["R4 insulin"] c4_0["RA"] c4_1["RA"] c4_2["A or S"] c4_3["A or S"] f4["FL1"]
+  r5["R5 persistent settings"] c5_0["RA"] c5_1["RA"] c5_2["RA"] c5_3["RA"] f5["FL3"]
+  r6["R6 safety limits"] c6_0["L"] c6_1["L"] c6_2["L"] c6_3["L"] f6["FL4"]
   classDef head fill:#f3f4f6,stroke:#9ca3af,color:#111
   classDef n fill:#dcfce7,stroke:#86a,color:#111
   classDef w fill:#ecfccb,stroke:#86a,color:#111
@@ -144,13 +144,13 @@ block-beta
   classDef l fill:#fecaca,stroke:#86a,color:#111
   classDef floor stroke:#111,stroke-width:4px
   class h0,h1,h2,h3,h4,h5,r0,r1,r2,r3,r4,r5,r6,f0,f1,f2,f3,f4,f5,f6 head
-  class c00,c01,c02,c03,c12,c13 n
-  class c10,c20,c21,c31,c32,c33 a
-  class c11,c22,c23 w
-  class c30,c40,c41,c50,c51,c52,c53 ra
-  class c42,c43 s
-  class c60,c61,c62,c63 l
-  class c33,c43,c53,c63 floor
+  class c0_0,c0_1,c0_2,c0_3,c1_2,c1_3 n
+  class c1_0,c2_0,c2_1,c3_1,c3_2,c3_3 a
+  class c1_1,c2_2,c2_3 w
+  class c3_0,c4_0,c4_1,c5_0,c5_1,c5_2,c5_3 ra
+  class c4_2,c4_3 s
+  class c6_0,c6_1,c6_2,c6_3 l
+  class c3_3,c4_3,c5_3,c6_3 floor
 ```
 
 Reading it: stronger evidence moves an item left in the paths, as the maintainer framed it, but
