@@ -55,6 +55,8 @@ does not. Registrations and instances bind to the subject, never to a token.
 
 ## L1 Records
 
+Specified in the [records specification](records.md).
+
 **Composite document, carrier.** Today's wire documents (a treatment, a devicestatus, a profile).
 A *carrier* is the composite shape an element is written in when it is not written typed: its
 `wire` declaration (collection, `eventType`, duration unit, indefinite sentinel, how "ended" is

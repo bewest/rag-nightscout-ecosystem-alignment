@@ -8,7 +8,8 @@
 #
 #   narration  append an amendment note to the spec
 #   case       rename one cited case so it no longer exists
-#   count      change the stated case count
+#   count      change the stated case or check count
+#   test       point the first cited test at a name its file does not define
 #   pointer    remove the spec link from the first source document
 #
 # Never writes outside its scratch directory.
@@ -20,18 +21,21 @@ SPEC="docs/30-design/platform/spec/$LAYER.md"
 
 T="$(mktemp -d "${TMPDIR:-/tmp}/platform-spec-control-XXXXXX")"
 trap 'rm -rf "$T"' EXIT
-for p in docs/30-design/platform docs/30-design/tenancy docs/60-research/tenancy specs/sync/conformance; do
+for p in docs/30-design/platform docs/30-design/tenancy docs/60-research/tenancy specs/sync/conformance tools/nsschema; do
   mkdir -p "$T/$(dirname "$p")" && cp -r "$ROOT/$p" "$T/$p"
 done
 
 case "$BREAK" in
   narration) printf '\n*(Withdrawn 2026-10-18: control.)*\n' >> "$T/$SPEC" ;;
   case)      c=$(grep -m1 -oE '^\| `[a-z0-9-]+/[a-z0-9-]+`' "$T/$SPEC" | tr -d '|` ')
+             [ -n "$c" ] || { echo "CONTROL-INVALID: $SPEC cites no conformance case"; exit 90; }
              mv "$T/specs/sync/conformance/$c.yaml" "$T/specs/sync/conformance/$c.moved" ;;
-  count)     sed -i -E 's/^([0-9]+) cases/999 cases/' "$T/$SPEC" ;;
+  count)     sed -i -E 's/^([0-9]+) (cases|checks)/999 \2/' "$T/$SPEC" ;;
+  test)      grep -qE '^\| `tools/[^`]+::test_' "$T/$SPEC" || { echo "CONTROL-INVALID: $SPEC cites no test"; exit 90; }
+             sed -i -E '0,/^\| `tools\/[^`]+::test_/s//&renamed_by_control_/' "$T/$SPEC" ;;
   pointer)   src=$(node "$ROOT/tools/queue/gates/platform-spec.js" "$LAYER" --sources | head -1)
              sed -i "s#spec/$LAYER\.md#spec/REMOVED.md#g" "$T/$src" ;;
-  *)         echo "CONTROL-INVALID: break must be narration|case|count|pointer"; exit 90 ;;
+  *)         echo "CONTROL-INVALID: break must be narration|case|count|test|pointer"; exit 90 ;;
 esac
 
 out="$(QUEUE_GATE_ROOT="$T" node "$ROOT/tools/queue/gates/platform-spec.js" "$LAYER" 2>&1)"; rc=$?

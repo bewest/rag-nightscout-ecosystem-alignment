@@ -293,7 +293,8 @@ OpenAPI spec, `indexedFields`, the nsschema model and the `walker` (§3.4).
   The remaining 179 nodes stay in JSONB.
 - **Do not widen the column list to anticipate decomposition.** The normalised series are separate
   relations with their own schemas.
-- **Decomposition must sit above the seam, like coercion** (§3.4). The 56-of-166 dropped-path
+- **Decomposition must sit above the seam, like coercion** (§3.4). The record rules are maintained
+  in the [records specification](../platform/spec/records.md). The 56-of-166 dropped-path
   finding that motivates it ({M} motivation (a)) is a fidelity problem; fixing it in the multitenant
   backend only would leave single-tenant behind, which D4 forbids.
 

@@ -44,7 +44,7 @@ reader brings, and each has its own rules, conformance cases and gate.
 |---|---|---|---|---|---|
 | [glossary](spec/glossary.md) | what does this term mean, and where is it specified? | all | — | written | — |
 | [identity](spec/identity.md) | which record, definition, instance or subject is this, and when is a write a re-send? | L0 | I1–I9 | written | `SPEC-ID` |
-| `records` | what typed observations and settings snapshots exist, and how do today's documents decompose into them? | L1 | R | queued | `SPEC-RECORDS` |
+| [records](spec/records.md) | what typed observations and settings snapshots exist, and how do today's documents decompose into them? | L1 | R1–R9 | written | `SPEC-RECORDS` |
 | [registration](spec/registration.md) | how does a controller declare what its data means, and how does a hub accept it and attribute what is written? | L2 | G1–G5, Q1–Q4 | written | `SPEC-REGISTRATION` |
 | [state and intent](spec/state-intent.md) | what was requested, applied and active, who started it, and why did it end? | L3 | S1–S12 | written | `SPEC-STATE-INTENT` |
 | `commands` | how does a request or a proposal reach a controller, and how does its outcome come back? | L3, L5 | C | queued | `SPEC-REG-COMMANDS` |
@@ -75,8 +75,6 @@ binding, the owner's actions and delegation are read in one place.
 **What moves when the queued files are written:**
 - registration §15 (binding, credentials, the owner) moves to *authority*;
 - command routing in registration §9 moves to *commands*;
-- the observation catalogue and settings snapshots, specified today only in `specs/sync/primitives.yaml`,
-  `controller-settings.schema.json` and the dated evidence documents, go to *records*.
 
 Each file should stay readable in a sitting. *Registration* is the largest, at about 820 lines, and
 shrinks when §15 and routing move out.
@@ -114,12 +112,12 @@ shrinks when §15 and routing move out.
 
 | | |
 |---|---|
-| **Spec today** | queued as `SPEC-RECORDS`; today `specs/sync/primitives.yaml` (the observation catalogue, graded `measured`, `declared` or `proposed`); [D11](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#26-d11--devicestatus-is-a-decomposition-problem-not-a-column-selection-problem) (devicestatus is decomposed, not given columns); [hub-sync §3.3](nightscout-hub-sync-architecture-2026-09-11.md#33-composite-on-the-wire-primitive-in-storage) |
+| **Spec** | [spec/records.md](spec/records.md): rules R1–R9, the generated catalogue with evidence grades, decomposition measured, the settings snapshot and completeness, sensitivity labels, 10 checks. Drawn from `specs/sync/primitives.yaml` (the observation catalogue, graded `measured`, `declared` or `proposed`); [D11](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#26-d11--devicestatus-is-a-decomposition-problem-not-a-column-selection-problem) (devicestatus is decomposed, not given columns); [hub-sync §3.3](nightscout-hub-sync-architecture-2026-09-11.md#33-composite-on-the-wire-primitive-in-storage) |
 | **Evidence** | [typed schema evidence](nightscout-typed-schema-evidence-2026-09-10.md); [primitive coverage](nightscout-primitive-coverage-2026-09-11.md); [devicestatus and profile fidelity](nightscout-devicestatus-profile-fidelity-2026-09-10.md); [extensibility models](nightscout-extensibility-models-2026-09-10.md); [quirks registry](../../../specs/quirks/README.md) |
 | **Schemas** | `specs/nsschema/*.model.json` (today's collections); `specs/sync/controller-settings.schema.json`; `specs/sync/sensitivity.yaml` (the two-axis sensitivity label) |
 | **Open** | devicestatus and profile decomposition coverage is unmeasured ([hub-sync §7](nightscout-hub-sync-architecture-2026-09-11.md#7-what-is-not-measured)) |
 | **Audit** | the composite document is kept beside its decomposed records, so "what did the device send" stays answerable |
-| **Status** | evidenced; treatment routing measured at 99.86% by `eventType` alone |
+| **Status** | evidenced (`SPEC-RECORDS`); treatment routing measured at 99.86% by `eventType` alone; devicestatus and profile decomposition not measured |
 
 ## L2 Definitions and instances
 
@@ -170,4 +168,4 @@ shrinks when §15 and routing move out.
 For someone new to the series: this page, then the [glossary](spec/glossary.md), then
 [intent and workflow landscape](nightscout-intent-workflow-landscape-2026-10-09.md) §2 and §9 for
 why the contract exists, then the specifications in layer order: [identity](spec/identity.md),
-[registration](spec/registration.md), [state and intent](spec/state-intent.md).
+[records](spec/records.md), [registration](spec/registration.md), [state and intent](spec/state-intent.md).

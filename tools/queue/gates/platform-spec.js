@@ -13,7 +13,8 @@
  *   2. it carries none of the amendment narration DEFINITION-OF-DONE
  *      criterion 1 rules out;
  *   3. every conformance case its case table names exists under
- *      specs/sync/conformance/, and the count it states equals the table;
+ *      specs/sync/conformance/, every test it names (`tools/...py::test_x`)
+ *      is defined in that file, and the count it states equals the table;
  *   4. the platform index and every source the layer was drawn from link to
  *      it, so a reader who lands on the dated section is sent to the rule.
  *
@@ -34,6 +35,12 @@ const SOURCES = {
   ],
   registration: [
     'docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md',
+    'docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md',
+  ],
+  records: [
+    'docs/30-design/platform/nightscout-primitive-coverage-2026-09-11.md',
+    'docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md',
+    'docs/30-design/platform/nightscout-devicestatus-profile-fidelity-2026-09-10.md',
     'docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md',
   ],
   'state-intent': [
@@ -84,20 +91,31 @@ if (text !== null) {
     });
   }
 
-  const start = lines.findIndex((l) => /^## \d+\. Conformance cases/.test(l));
-  findings.push({ ok: start >= 0, text: 'has a "Conformance cases" section' });
+  const start = lines.findIndex((l) => /^## \d+\. (Conformance cases|Checks)/.test(l));
+  findings.push({ ok: start >= 0, text: 'has a "Conformance cases" or "Checks" section' });
   if (start >= 0) {
     const section = [];
     for (let i = start + 1; i < lines.length && !/^## /.test(lines[i]); i++) section.push(lines[i]);
-    const stated = section.join('\n').match(/^(\d+) cases/m);
+    const stated = section.join('\n').match(/^(\d+) (?:cases|checks)/m);
     const cases = section
       .map((l) => l.match(/^\| `([a-z0-9-]+(?:\/[a-z0-9-]+)?)` \|/))
       .filter(Boolean)
       .map((m) => m[1]);
+    const tests = section
+      .map((l) => l.match(/^\| `(tools\/[\w\/.-]+\.py)::(\w+)` \|/))
+      .filter(Boolean);
+    const rowCount = cases.length + tests.length;
     findings.push({
-      ok: Boolean(stated) && Number(stated[1]) === cases.length && cases.length > 0,
-      text: `stated case count ${stated ? stated[1] : 'missing'} equals the ${cases.length} table rows`,
+      ok: Boolean(stated) && Number(stated[1]) === rowCount && rowCount > 0,
+      text: `stated count ${stated ? stated[1] : 'missing'} equals the ${rowCount} table rows`,
     });
+    for (const [, file, name] of tests) {
+      const body = read(path.join(REPO_ROOT, file));
+      findings.push({
+        ok: body !== null && new RegExp(`^def ${name}\\(`, 'm').test(body),
+        text: `test ${file}::${name} is defined`,
+      });
+    }
     for (const c of cases) {
       const p = path.join('specs', 'sync', 'conformance', `${c}.yaml`);
       findings.push({ ok: fs.existsSync(path.join(REPO_ROOT, p)), text: `case ${p} exists` });

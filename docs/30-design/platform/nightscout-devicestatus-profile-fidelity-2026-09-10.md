@@ -1,6 +1,6 @@
 # `devicestatus` and `profile`: what survives, what is lost, and what was never written
 
-*Contributor-facing.* **Snapshot — describes 2026-09-10. Status: current — the measurements stand; the controller-description design built on them is [PROPOSAL-controller-descriptions](PROPOSAL-controller-descriptions-2026-09-11.md).** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+*Contributor-facing.* **Snapshot — describes 2026-09-10. Status: current — the measurements stand; the controller-description design built on them is [PROPOSAL-controller-descriptions](PROPOSAL-controller-descriptions-2026-09-11.md); the record rules they support are maintained in the [records specification](spec/records.md).** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
 
 Date: 2026-09-10. Third in a series
 with
