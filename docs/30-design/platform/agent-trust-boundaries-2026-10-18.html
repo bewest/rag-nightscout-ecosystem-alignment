@@ -2832,10 +2832,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#42-the-upstream-rfc-under-d18" class="md-nav__link">
+  <a href="#42-the-earlier-draft-and-the-rules-proposed-to-supersede-it" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.2 The upstream RFC under D18
+        4.2 The earlier draft and the rules proposed to supersede it
       
     </span>
   </a>
@@ -5197,10 +5197,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#42-the-upstream-rfc-under-d18" class="md-nav__link">
+  <a href="#42-the-earlier-draft-and-the-rules-proposed-to-supersede-it" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.2 The upstream RFC under D18
+        4.2 The earlier draft and the rules proposed to supersede it
       
     </span>
   </a>
@@ -5289,7 +5289,7 @@ decisions: <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14
 <p><strong>The question.</strong> Software agents built on language models now touch this ecosystem in three
 different ways: they write and change the code of apps and servers, they read a person's data and
 explain it, and they could propose or start a therapy change. Each needs a different assurance, and
-most of what each needs is already written down here or upstream, in separate places. This page
+most of what each needs is already written down here or in cgm-remote-monitor's <code>docs/proposals</code>, in separate places. This page
 puts them side by side and names what is missing.</p>
 <hr />
 <h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
@@ -5318,8 +5318,8 @@ puts them side by side and names what is missing.</p>
 <tr>
 <td><strong>Act</strong></td>
 <td>proposes or starts a therapy change</td>
-<td>the upstream RFC's <code>agent</code> issuer, <code>suggest</code> scope and <code>DelegationGrant</code>; D19 instances, roles and command routing, specified (§4)</td>
-<td>any path of its own for an agent; a proposal record, an approval bound to the exact change, a command API</td>
+<td>the earlier draft's <code>agent</code> issuer, <code>suggest</code> scope and <code>DelegationGrant</code>, proposed to be superseded by the authority and commands specifications; D19 instances, roles and command routing, specified (§4)</td>
+<td>any path of its own for an agent; an implemented proposal record, approval bound to the exact change, or command API (proposed in the <a href="spec/commands.html">commands specification</a>)</td>
 </tr>
 </tbody>
 </table>
@@ -5508,9 +5508,9 @@ record in any project surveyed.</p>
 <td>requirements, stated 2026-09-10; the read role above is still one bit</td>
 </tr>
 <tr>
-<td>Delegation grants with scopes, constraints and expiry</td>
-<td><a href="../../10-domain/authority-model.html">authority model</a></td>
-<td>designed, <strong>not implemented</strong></td>
+<td>A worked delegation grant with constraints, purpose and expiry</td>
+<td><a href="../../10-domain/authority-model.html#delegation-grants">authority model</a></td>
+<td>proposed, <strong>not implemented</strong></td>
 </tr>
 <tr>
 <td>Tools that read a site for an agent: MCP servers, an agent skill, an AI platform</td>
@@ -5589,13 +5589,8 @@ The statistics API proposal specifies an MCP resource provider over a documented
 </tr>
 <tr>
 <td><code>issuerType: human \| controller \| agent</code>; scopes <code>read</code>, <code>suggest</code> (<code>override.suggest # Can propose, human must approve</code>), <code>activate</code>, <code>deliver</code>, <code>admin</code>; <code>DelegationGrant {grantId, grantedBy, grantedTo, scopes, constraints {maxOverrideDuration, allowedOverrideTypes, requireConfirmation, expiresAt}, grantedAt, revokedAt}</code>; append-only audit</td>
-<td>upstream <code>docs/proposals/agent-control-plane-rfc.md</code> (draft v1.0, January 2026; read at official <code>b5ddd662</code>)</td>
-<td>proposal, not implemented</td>
-</tr>
-<tr>
-<td>Authority levels (agent 50) and a grant with rate limits and time windows</td>
-<td><a href="../../10-domain/authority-model.html">authority model</a></td>
-<td>designed, <strong>not implemented</strong></td>
+<td><code>docs/proposals/agent-control-plane-rfc.md</code>, part of the earlier draft in cgm-remote-monitor's <code>docs/proposals</code> (draft v1.0, January 2026; read at official <code>b5ddd662</code>)</td>
+<td>proposal, not implemented; proposed to be superseded (§4.2)</td>
 </tr>
 <tr>
 <td>D19 instances with leases, roles <code>source</code> / <code>command-sink</code> / <code>{value: other, controllerTerm}</code> ("any other role, such as an agent's"), required provenance <code>device</code> or <code>simulated</code>, a <code>device</code> command-sink only for the product's bound subject or by the owner's transfer (<code>grantedBy</code>), and routing that refuses rather than guesses (<code>no-command-destination</code>, 409 <code>ambiguous-command-destination</code>)</td>
@@ -5609,50 +5604,51 @@ The statistics API proposal specifies an MCP resource provider over a documented
 </tr>
 </tbody>
 </table>
-<h3 id="42-the-upstream-rfc-under-d18">4.2 The upstream RFC under D18<a class="headerlink" href="#42-the-upstream-rfc-under-d18" title="Permanent link">&para;</a></h3>
-<p><em>What is decided about authority, and what delegation would need, is maintained in the <a href="spec/authority.html">authority specification</a>.</em></p>
-<p>D18 makes the hub responsible for observability and the controller responsible for sending,
-syncing and reconciling; the hub records the controller's result and never composes intents
-(<a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">execution plan §2.6.1</a>).
-Read against that:</p>
+<h3 id="42-the-earlier-draft-and-the-rules-proposed-to-supersede-it">4.2 The earlier draft and the rules proposed to supersede it<a class="headerlink" href="#42-the-earlier-draft-and-the-rules-proposed-to-supersede-it" title="Permanent link">&para;</a></h3>
+<p>The authority and commands specifications are proposed to supersede the agent parts of the earlier
+draft in cgm-remote-monitor's <code>docs/proposals</code>; the <a href="../tenancy/nightscout-control-plane-reconciliation-2026-09-11.html">control-plane supersession
+map</a> covers the rest of it.</p>
 <table>
 <thead>
 <tr>
-<th>RFC element</th>
-<th>Under D18 and D19</th>
+<th>earlier draft</th>
+<th>proposed to be superseded by</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>agent</code> as an issuer type</td>
-<td>prior art: the actor exists</td>
+<td><a href="spec/state-intent.html#2-rules">state and intent S8</a>: an agent initiator is <code>{value: other, controllerTerm}</code>; <a href="spec/registration.html#9-channels-roles-and-provenance">registration §9</a>: an agent's role is an <code>other</code> role a hub lists</td>
 </tr>
 <tr>
 <td><code>suggest</code> scope ("can propose, human must approve")</td>
-<td>prior art: the distinction between proposing and acting</td>
+<td><a href="spec/commands.html#6-proposals-and-approvals-proposed">commands CM11–CM14</a>: a proposal needs <code>api:proposals:create</code> and a granted propose role; an approval names the payload hash and needs <code>api:commands:create</code>; a <code>readable</code> credential can do neither</td>
 </tr>
 <tr>
-<td><code>DelegationGrant</code> shape: who granted, to whom, scopes, constraints, expiry, revocation</td>
-<td>prior art: the grant a proposal would cite</td>
+<td><code>DelegationGrant</code>: who granted, to whom, scopes, constraints, expiry, revocation</td>
+<td><a href="spec/authority.html#7-delegation-not-decided">authority §7, DR1–DR7</a>: requirements; the grant's shape is open (<a href="spec/authority.html#9-open">authority §9</a> item 6)</td>
 </tr>
 <tr>
 <td>append-only audit with issuer and authority</td>
-<td>prior art</td>
+<td><a href="spec/authority.html#8-what-is-recorded-for-audit">authority §8</a>; <a href="spec/commands.html#4-the-command-record-proposed">commands CM1</a>: a command is recorded before it is sent</td>
 </tr>
 <tr>
-<td>Conflict rules: override composition inside the hub, "Human &gt; Agent &gt; Controller"</td>
-<td><strong>outside the hub's role.</strong> Composition is controller-specific (<a href="nightscout-intent-workflow-landscape-2026-10-09.html#7-composition-who-combines-overlapping-intents">intent landscape §7</a>); the <a href="../tenancy/nightscout-control-plane-reconciliation-2026-09-11.html">control-plane reconciliation</a> records the same</td>
+<td>conflict rules: override composition inside the hub, "Human &gt; Agent &gt; Controller"</td>
+<td><a href="spec/state-intent.html#2-rules">state and intent S1</a>: the controller composes; the hub records the result (D18)</td>
 </tr>
 </tbody>
 </table>
-<p>The same earlier draft's integration questionnaire has a default answer per controller, read from source, in <a href="integration-questionnaire-defaults-2026-10-18.html">integration questionnaire defaults</a>.</p>
+<p>The same draft's integration questionnaire has a default answer per controller, read from source, in <a href="integration-questionnaire-defaults-2026-10-18.html">integration questionnaire defaults</a>.</p>
 <p><strong>An agent as initiator</strong> (maintainer, 2026-10-18). No <code>agent</code> value is added to any initiator
-vocabulary. An agent initiator is written in the open-vocabulary form <code>{value: other,
-controllerTerm}</code>, as the <a href="spec/registration.html#9-channels-roles-and-provenance">registration specification §9</a> does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. Recorded in the <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">execution
+vocabulary; an agent initiator is written <code>{value: other, controllerTerm}</code>
+(<a href="spec/state-intent.html#2-rules">state and intent S8</a>), as an agent's role is
+(<a href="spec/registration.html#9-channels-roles-and-provenance">registration §9</a>). No controller records an
+agent as initiator today. The registrations are built for needs that are latent but measured and
+demonstrated — in the corpus, in controller source and in the labs — not only for what apps send
+now; the open form lets a controller, simulator or lab record an agent initiator today, and a
+shared value can be named once the corpus or a lab shows one in use. Recorded in the <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">execution
 plan</a>
-(row 17). The registration grammar's <code>initiators.values</code> take strings in the controller's own
-vocabulary or the <code>{value: other, controllerTerm}</code> form, with no shared list
-(<a href="spec/state-intent.html#2-rules">state and intent S8</a>; <em>corrected 2026-10-18 by <code>SCHEMA-INTENT-GAPS</code></em>).</p>
+(row 17).</p>
 <h3 id="43-what-a-proposal-lifecycle-would-add--proposed-not-specified">4.3 What a proposal lifecycle would add — proposed, not specified<a class="headerlink" href="#43-what-a-proposal-lifecycle-would-add--proposed-not-specified" title="Permanent link">&para;</a></h3>
 <p>Nothing in this subsection is specified or decided. It states what exists nowhere above, so that
 the item that specifies commands can take it or leave it.</p>
@@ -5711,7 +5707,7 @@ Neither covers the controller's therapy state — which override is active, whic
 on board — so neither tells an approver that the state the agent read is still the state the
 controller holds.</p>
 <p><strong>What one prototype shows.</strong> A commercial controller prototype implemented the client side of
-the upstream agent control-plane RFC: sources including <code>agent</code>, delegation grants with
+the agent control-plane RFC of that earlier draft: sources including <code>agent</code>, delegation grants with
 auto-approve types, and an audit log held in memory. Its approval records only the reviewer, the
 time and a note against the proposal id — no payload hash and no state — and its remote-command
 "success" means the HTTP request succeeded, with no acknowledgement or outcome (read-derived from
@@ -5773,13 +5769,13 @@ person running it, would be the manufacturer of such a function.</p>
   and source read.</li>
 <li>Whether any controller project would accept an agent as a command sender at all, under any grant.</li>
 <li>How an agent instance is scoped, limited and revoked: no decision covers it
-  (<a href="../../00-overview/perspective/PROCESS-MODELS.html">process models</a>).</li>
+  (<a href="spec/authority.html#9-open">authority §9</a> item 6; <a href="../../00-overview/perspective/PROCESS-MODELS.html">process models</a>).</li>
 <li>A shared initiator list (§4.2).</li>
-<li>A therapy-state version a proposal could bind to (§4.3).</li>
-<li>Whether the proposal lifecycle of §4.3 belongs in <code>SPEC-REG-COMMANDS</code> or in a separate item. <em>(Decided 2026-10-18, maintainer: in <code>SPEC-REG-COMMANDS</code>; §4.3 records it.)</em></li>
+<li>A therapy-state version a proposal could bind to (§4.3): the hub's state version is proposed in <a href="spec/commands.html#6-proposals-and-approvals-proposed">commands CM15</a>; it versions the hub's record, not the controller's state.</li>
 <li>Read audit, purpose limitation and real revocation for a delegated reader (§3.1).</li>
-<li>Which of the authority model and upstream <code>conflict-resolution.md</code> becomes the source for the
-  grant shape (<a href="nightscout-hub-sync-architecture-2026-09-11.html#52-liveness-and-channel-ownership--open-here-already-drafted-upstream">hub-sync §5.2</a>).</li>
+<li>The delegation grant's shape, storage and checks (<a href="spec/authority.html#9-open">authority §9</a> item 6).</li>
+<li>Whether outstanding commands on a channel are shown to an approver or included in what the state
+  version check compares (<a href="spec/commands.html#9-open">commands §9</a> item 7).</li>
 </ul>
 
 

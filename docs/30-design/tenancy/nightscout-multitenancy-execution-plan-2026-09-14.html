@@ -2575,7 +2575,7 @@
   <span class="md-ellipsis">
     
   
-    Reconciling the agentic control plane RFC with what the corpus measured
+    The earlier control-plane draft and the specifications proposed to supersede it
   
 
     
@@ -5508,14 +5508,14 @@
 
 
 <h1 id="multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs">Multitenancy execution plan: decisions, tasks, and the context each one needs<a class="headerlink" href="#multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>27c3f991e</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>dc029db33</code>.</em></p>
 <p><em>Contributor- and maintainer-facing.</em></p>
 <p><strong>Status: living document — the decision record.</strong> Decisions D1–D20 are the maintainer's
 (2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16) and are all <strong>adopted</strong>, except <strong>D17 row 2</strong>
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is <strong>adopted in principle,
 gated</strong> on the edge's production conditions and the compliance question (<code>T30-ORY-PROOF</code> held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. <strong>Item state lives
-in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9dd0981e3efe4dca0fd12fd7076d23a41b126955/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
+in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7e6fab2b505a54319bfea35cd0e95af3b0131a7c/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
 <a href="../../../queue/QUEUE.html"><code>queue/QUEUE.md</code></a>, measured by <code>make queue-status</code>); defect facts live
 in the <a href="../remedial/nightscout-backfix-register.html">backfix register</a>. Measured facts below name
 their date and commit.</p>
@@ -6011,7 +6011,7 @@ initiator vocabulary, its command contract, and which hub-originated intent it a
 <p><strong>The role split decides one open design question.</strong> Overlapping intents are combined by a
 controller-specific rule (Loop, Trio/iAPS and AAPS each differ, and the rule depends on algorithm
 settings), so the hub records the result the controller reports and never derives it. A hub-side
-composition rule, such as the upstream RFC's <code>conflict-resolution.md</code> override composition, is
+composition rule, such as the override composition in <code>conflict-resolution.md</code> of the earlier draft in cgm-remote-monitor's <code>docs/proposals</code>, is
 outside the hub's role.</p>
 <p><strong>What D18 supersedes:</strong> <a href="../platform/PROPOSAL-controller-descriptions-2026-09-11.html">controller descriptions</a>
 §4 ("static descriptions, not CRD-style, no new endpoints"). The well-known tier keeps every
@@ -6159,15 +6159,16 @@ separates the two.</p>
 </tr>
 </tbody>
 </table>
-<p><strong>Prior art.</strong> cgm-remote-monitor's agent control plane RFC (<code>docs/proposals/agent-control-plane-rfc.md</code>,
-2026-01-01; read at official <code>b5ddd662</code>) already splits <code>ControllerKindDefinition</code> from
+<p><strong>The earlier draft.</strong> <code>docs/proposals/agent-control-plane-rfc.md</code>, part of the earlier draft in
+cgm-remote-monitor's <code>docs/proposals</code> (read at official <code>b5ddd662</code>), splits <code>ControllerKindDefinition</code> from
 <code>ControllerInstanceRegistration</code>, with <code>lastSeenAt</code> as liveness, and plans agents as a later
 phase. The <a href="../platform/nightscout-hub-sync-architecture-2026-09-11.html#52-liveness-and-channel-ownership--open-here-already-drafted-upstream">hub-sync design §5.2</a>
-maps it and the <a href="nightscout-control-plane-reconciliation-2026-09-11.html">control-plane reconciliation</a>
-§3.3 corrects it: instance identity must not come from the free-text <code>devicestatus.device</code>,
-which is recorded only as an observed alias. D19 adopts that split and correction, and fills the
-gap the reconciliation (§5) finds in both trees: what happens when two instances write to one
-site.</p>
+maps it. Instance identity does not come from the free-text <code>devicestatus.device</code>, which is
+recorded only as an observed alias (<a href="nightscout-control-plane-reconciliation-2026-09-11.html#33-instance-identity-and-the-device-string">control-plane supersession map
+§3.3</a>).
+D19 takes that split with that identity rule, and says what happens when two instances write to
+one site; the <a href="nightscout-control-plane-reconciliation-2026-09-11.html">supersession map</a> names the
+specification rule proposed to supersede each object of the draft.</p>
 <p><strong>Rules.</strong></p>
 <table>
 <thead>

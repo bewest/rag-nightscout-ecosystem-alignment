@@ -2731,7 +2731,7 @@
 
 
 <h1 id="process-models-what-we-believe-and-how-it-works">Process models: what we believe, and how it works<a class="headerlink" href="#process-models-what-we-believe-and-how-it-works" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>174c8e8e5</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>31b818574</code>.</em></p>
 <p><em>What this is: a map (part 2 of the overview, perspective; <a href="../index.html">how the overview is organised</a>), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after <a href="STRUCTURES.html">control structures</a>; leads to part 3, starting with the <a href="../ECOSYSTEM-PROGRAMME.html">ecosystem programme</a>. Living page,
 written 2026-10-17. Companion to <a href="STRUCTURES.html">control structures</a>, whose conventions,
 legend and icons apply here. Every node and edge comes from a source cited under the drawing;
@@ -3263,7 +3263,7 @@ wrote a record, an agent acts as an agent, and a command that was sent was appli
 whether a <code>devicestatus</code> has a <code>loop</code> or an <code>openaps</code> key (<code>lib/plugins/loop.js:50</code>,
 <code>lib/plugins/openaps.js:82</code>, <code>lib/plugins/iob.js:100-101</code>), so Trio and AndroidAPS, which both write
 <code>openaps</code>, look the same, and the free-text <code>device</code> string is unreliable
-(<a href="../../30-design/tenancy/nightscout-control-plane-reconciliation-2026-09-11.html#32-the-trio-discriminator-never-fires">control-plane reconciliation §3.2–§3.3</a>).
+(<a href="../../30-design/tenancy/nightscout-control-plane-reconciliation-2026-09-11.html#32-trio-and-androidaps-both-write-openaps">control-plane supersession map §3.2–§3.3</a>).
 Access is a shared secret or tokens with default roles; the Loop relay permission is held only by
 <code>admin</code> (<code>lib/authorization/storage.js:140-148</code>, <code>lib/api2/notifications-v2.js:19</code>). Only one
 development-only AndroidAPS path records a command and returns an acknowledgement with an id;
@@ -3291,7 +3291,7 @@ An agent would register its own instance; role types are open "so roles such as 
 acting can be added for agents" (D19 rule 5). <strong>Open:</strong> the command API, proposed in the
 <a href="../../30-design/platform/spec/commands.html">commands specification</a> and not decided, the
 contract per tenancy mode (<code>SPEC-REG-MODES</code>), the first hub (<code>HUB-REG-CRM</code>), the proposals to
-Nocturne and the controllers, all not started (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9dd0981e3efe4dca0fd12fd7076d23a41b126955/queue/work-queue.yaml">queue</a>); and how an
+Nocturne and the controllers, all not started (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7e6fab2b505a54319bfea35cd0e95af3b0131a7c/queue/work-queue.yaml">queue</a>); and how an
 agent is scoped, limited and revoked, which no decision covers.</p>
 <p><em>Interpretation.</em> Properties the three panels show:</p>
 <ol>
@@ -3368,7 +3368,7 @@ security contact, complaint workflow, SBOM or build-provenance record was found
 (<a href="../PARTNER-READINESS.html#3-what-a-manufacturer-will-need-to-see">partner readiness §3</a>). The
 conformance suite lives in this repository: 85 vector files, an oref0 runner, and AndroidAPS and
 Loop runners not implemented (<a href="../../../conformance/index.html"><code>conformance/</code></a>;
-<code>tools/conformance_suite.py:43-55</code>). This repository's <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9dd0981e3efe4dca0fd12fd7076d23a41b126955/.github/workflows/ci.yml">CI</a> runs
+<code>tools/conformance_suite.py:43-55</code>). This repository's <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7e6fab2b505a54319bfea35cd0e95af3b0131a7c/.github/workflows/ci.yml">CI</a> runs
 Python syntax and spec validation; the suite and the <a href="../../../queue/index.html">queue gates</a> run by
 <code>make</code>, outside CI. The 15.0.9 run records are the nearest thing to release evidence
 (<a href="../QUALITY-SYSTEM.html#41-the-record-every-run-leaves">quality system §4.1</a>).</p>

@@ -5953,8 +5953,9 @@ matters for coordination — <code>SupersededById</code>, <code>CanonicalId</cod
 <ul>
 <li><strong>Supersession, not last-write-wins.</strong> When a human and a controller both
   set an override, or two controllers overlap, the resolution has to be
-  recorded rather than implied. <code>authority-model.md</code> has already worked
-  through those conflict scenarios.</li>
+  recorded rather than implied. The controller resolves them and declares
+  how (<code>supersedes</code>, <a href="spec/state-intent.html#2-rules">state and intent S3</a>);
+  the hub records the result.</li>
 <li><strong><code>DataExclusion</code> as a first-class span.</strong> A sensor warm-up or a known-bad
   stretch is not missing data, it is data known to be unusable, and a replay
   that cannot tell the difference will silently score itself against noise.</li>
@@ -5970,10 +5971,8 @@ retrofit into the collection API.</p>
 reconciliation target because the honest finding is that cgm-remote-monitor
 has drafted most of it already, and this series had not noticed.</p>
 <blockquote>
-<p><strong>The reconciliation has since been done.</strong> This section remains the map;
-the specific edits it implies — twelve of them, across four upstream files,
-plus five corrections the corpus supplies — are in
-<a href="../tenancy/nightscout-control-plane-reconciliation-2026-09-11.html">Reconciling the agentic control plane RFC</a>.</p>
+<p>The <a href="../tenancy/nightscout-control-plane-reconciliation-2026-09-11.html">control-plane supersession map</a>
+names the specification rule proposed to supersede each object of the earlier draft below.</p>
 </blockquote>
 <p>The question is real and this design does not answer it. A registration says
 what a controller <em>kind</em> writes. It does not say which controller is
@@ -6021,7 +6020,7 @@ missing half</strong>, and it carves the problem at a joint this series did not:
 <td>Authority hierarchy, composition, delegation grants</td>
 <td><code>conflict-resolution.md</code></td>
 <td><code>docs/10-domain/authority-model.md</code></td>
-<td><strong>Duplicated.</strong> Near-identical authority levels, conflict scenarios and grant structures exist in both trees. This is the clearest single place to converge</td>
+<td>Composition is the controller's (<a href="spec/state-intent.html#2-rules">state and intent S1</a>); delegation's requirements are <a href="spec/authority.html#7-delegation-not-decided">authority §7</a>; <code>authority-model.md</code> keeps the credential rationale and a worked grant</td>
 </tr>
 <tr>
 <td>Global monotonic event cursor</td>

@@ -5709,11 +5709,11 @@ and from the corpus where it applies. This page is that fill.</p>
 <p>Heads: <code>gh api repos/&lt;owner&gt;/&lt;repo&gt;/commits/&lt;branch&gt; --jq .sha</code>; staleness:
 <code>gh api repos/&lt;owner&gt;/&lt;repo&gt;/compare/&lt;clone&gt;...&lt;head&gt;</code>. File paths in cells are basenames; the
 <a href="#appendix-b-path-index">path index</a> gives the full path of each. The registrations under
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/9dd0981e3efe4dca0fd12fd7076d23a41b126955/specs/sync/registrations"><code>specs/sync/registrations/</code></a> were read at older commits
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/7e6fab2b505a54319bfea35cd0e95af3b0131a7c/specs/sync/registrations"><code>specs/sync/registrations/</code></a> were read at older commits
 (Loop <code>c2fddb76</code>, Trio <code>e41c9db37</code>, AndroidAPS <code>7e1d537d49</code>); where a cell here and a registration
 differ, this page is at the newer commit.</p>
-<p><strong>One change since the earlier evidence.</strong> Items the <a href="nightscout-intent-workflow-landscape-2026-10-09.html">intent
-landscape</a> marks AndroidAPS <strong>dev-only</strong>
+<p><strong>AndroidAPS 4.0.0 prereleases.</strong> Items the <a href="nightscout-intent-workflow-landscape-2026-10-09.html">intent
+landscape</a> marks AndroidAPS <strong>4.0.0 prerelease</strong>
 (scenes, client control on the NS <code>settings</code> collection) are in the <code>4.0.0-beta1</code> (2026-10-08) and
 <code>4.0.0-rc1</code> (2026-10-16) prereleases (H: <code>gh api repos/nightscout/AndroidAPS/contents/plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/SettingsIdentifiers.kt?ref=4.0.0-beta1</code>).
 Client-control envelopes are authenticated with HMAC-SHA256 over a shared secret (R <code>A ClientControlCrypto.kt:10-24</code>).</p>
@@ -6025,7 +6025,7 @@ The earlier draft's <code>conflict-resolution.md</code> composes inside the hub;
 </tr>
 </tbody>
 </table>
-<p><em>Note on safety limits.</em> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9dd0981e3efe4dca0fd12fd7076d23a41b126955/specs/nsschema/dosing-input-sources.yaml"><code>dosing-input-sources.yaml</code></a>
+<p><em>Note on safety limits.</em> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7e6fab2b505a54319bfea35cd0e95af3b0131a7c/specs/nsschema/dosing-input-sources.yaml"><code>dosing-input-sources.yaml</code></a>
 records <code>profile.maxIob</code> as absent for every oref0 derivative, which is what the corpus shows.
 oref0's own rig uploads its <code>preferences</code> file, which holds <code>max_iob</code>, with each devicestatus
 (R above); the corpus has no oref0 rig to measure it on. A digital twin that read Nightscout would
@@ -6071,12 +6071,12 @@ find <code>max_iob</code> for an oref0 rig and for no other controller here.</p>
 </tr>
 </tbody>
 </table>
-<p><em>Note.</em> This corrects the <a href="../tenancy/nightscout-control-plane-reconciliation-2026-09-11.html#35-all-three-publish-a-suggestion-under-three-different-names">control-plane reconciliation
-§3.5</a>
-reading of <code>loop.enacted.received</code> as a pump acknowledgement: in Loop it is a constant. The question
-§3.5 proposed as the narrower one — <em>is there a point in your code where a command has been sent and
-not yet acknowledged, and can you emit it?</em> — has a default per column above: Loop and AndroidAPS
-hold one locally, Trio has none, OpenAPS holds a file.</p>
+<p><em>Note.</em> <code>loop.enacted.received</code> is a constant in Loop, not a pump acknowledgement; the corpus
+counts for each state are in the <a href="../tenancy/nightscout-control-plane-reconciliation-2026-09-11.html#35-suggested-requested-and-confirmed">control-plane supersession map
+§3.5</a>.
+The narrower question — <em>is there a point in your code where a command has been sent and not yet
+acknowledged, and can you emit it?</em> — has a default per column above: Loop and AndroidAPS hold one
+locally, Trio has none, OpenAPS holds a file.</p>
 <h3 id="c8-pump-response-codes">C8. Pump response codes<a class="headerlink" href="#c8-pump-response-codes" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -6208,7 +6208,7 @@ hold one locally, Trio has none, OpenAPS holds a file.</p>
 <tr>
 <td><strong>Ordering method</strong></td>
 <td>Timestamp plus <code>syncIdentifier</code> on doses and carbs (a dedup key, not a sequence) — R <code>NSS Extensions/DoseEntry.swift:31,47,62</code>; M <code>syncIdentifier</code> 306,741 reads (83%), 10 sites</td>
-<td>Timestamp; treatments carry a UUID as <code>id</code>, which Nightscout does not read — R <code>T NightscoutTreatment.swift:24,62</code>; M <code>id</code> 55,939 reads, 1 site (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9dd0981e3efe4dca0fd12fd7076d23a41b126955/specs/quirks/treatments.yaml">QUIRK-TREATMENTS-007</a>)</td>
+<td>Timestamp; treatments carry a UUID as <code>id</code>, which Nightscout does not read — R <code>T NightscoutTreatment.swift:24,62</code>; M <code>id</code> 55,939 reads, 1 site (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7e6fab2b505a54319bfea35cd0e95af3b0131a7c/specs/quirks/treatments.yaml">QUIRK-TREATMENTS-007</a>)</td>
 <td>Upload in local <code>id</code> order; v3 <code>identifier</code> per record — R <code>A TemporaryTargetDao.kt:45-46</code>, <code>A DataSyncSelectorV3.kt:340-389</code></td>
 <td>Pump-history time; treatments newer than the latest uploaded <code>created_at</code> — R <code>O nightscout.sh:344-349</code></td>
 </tr>
@@ -6457,9 +6457,9 @@ The command rules this repository proposes are in <a href="spec/commands.html">s
 </tr>
 </tbody>
 </table>
-<p><em>Note.</em> <code>device</code> is free text and is not an identity (reconciliation
-<a href="../tenancy/nightscout-control-plane-reconciliation-2026-09-11.html#33-instance-identity-should-not-come-from-the-device-string">§3.3</a>);
-a registered instance gets a hub-issued or controller-supplied id (<a href="spec/registration.html">spec/registration.md</a>).
+<p><em>Note.</em> <code>device</code> is free text and is not an identity (supersession map
+<a href="../tenancy/nightscout-control-plane-reconciliation-2026-09-11.html#33-instance-identity-and-the-device-string">§3.3</a>);
+a registered instance has a random UUID v4 the controller supplies (<a href="spec/identity.html#2-contract-ids">identity §2</a>; <a href="spec/registration.html#8-instances">spec/registration.md</a>).
 Loop's <code>device</code> and <code>uploader.name</code> carry the user's device name, which <code>specs/sync/sensitivity.yaml</code> treats as identifying.</p>
 <hr />
 <h2 id="g-migration-path">G) Migration path<a class="headerlink" href="#g-migration-path" title="Permanent link">&para;</a></h2>
@@ -6526,7 +6526,7 @@ controller's writers and from the hub lab.</p>
 <tbody>
 <tr>
 <td>Accuracy of override state extraction</td>
-<td><strong>Yes</strong>: pre-meal is not uploaded; devicestatus <code>override.duration</code> is seconds while the treatment's is minutes; the two hubs disagree on it — R <code>NSS StoredDosingDecision.swift:119,129</code>, <code>NSK OverrideTreatment.swift:67</code>; M hub lab, landscape <a href="nightscout-intent-workflow-landscape-2026-10-09.html#5-how-the-hubs-decide-what-is-active">§5</a>; M 10,892 of 55,938 active overrides carry a name and no effect (<a href="../tenancy/nightscout-control-plane-reconciliation-2026-09-11.html#34-overrideinstanceeffectiveeffects-will-be-empty-20-of-the-time">reconciliation §3.4</a>)</td>
+<td><strong>Yes</strong>: pre-meal is not uploaded; devicestatus <code>override.duration</code> is seconds while the treatment's is minutes; the two hubs disagree on it — R <code>NSS StoredDosingDecision.swift:119,129</code>, <code>NSK OverrideTreatment.swift:67</code>; M hub lab, landscape <a href="nightscout-intent-workflow-landscape-2026-10-09.html#5-how-the-hubs-decide-what-is-active">§5</a>; M 10,892 of 55,938 active overrides carry a name and no effect (<a href="../tenancy/nightscout-control-plane-reconciliation-2026-09-11.html#34-overrides-with-a-name-and-no-effect">supersession map §3.4</a>)</td>
 <td><strong>Yes</strong>: every override is <code>Exercise</code> with name only; percentage and target are not sent — R <code>T NightscoutExercise.swift:23-29</code>, <code>T OverrideStored+helper.swift:33-36</code>; M 399 distinct <code>Exercise</code> documents, 1 site</td>
 <td><strong>Partly</strong>: no override object; the PS → EPS pair is clear, EPS arrives as a <code>Note</code>; <code>timeshift</code> is milliseconds — R <code>A nsclientV3/extensions/EffectiveProfileSwitchExtension.kt:45-66</code>, <code>A TreatmentMapper.kt:540</code>; M hub lab: hubs disagree on timeshift units (landscape §5)</td>
 <td><strong>No</strong> override state to extract — R <code>O targets.js:11-68</code></td>

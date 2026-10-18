@@ -5218,7 +5218,7 @@
 
 
 <h1 id="controller-descriptions-nightscout-describes-the-controllers-it-already-recognises--proposal">Controller descriptions: Nightscout describes the controllers it already recognises — proposal<a class="headerlink" href="#controller-descriptions-nightscout-describes-the-controllers-it-already-recognises--proposal" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>0248960c0</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>31b818574</code>.</em></p>
 <p><em>What this is: a proposal (contributor-facing). Read after the <a href="nightscout-hub-sync-architecture-2026-09-11.html">hub-and-spoke sync
 sketch</a>; leads to the <a href="PROPOSAL-replay-fidelity-changes-2026-09-11.html">replay-fidelity
 changes</a> and the <a href="spec/registration.html">registration
@@ -5491,8 +5491,9 @@ that takes part in the system, for example one acting for a person or caregiver.
   computed). A reader can then tell a delegated agent's records from a controller's, and can see
   what the agent relied on.</li>
 </ul>
-<p>The <a href="../tenancy/nightscout-control-plane-reconciliation-2026-09-11.html">control-plane reconciliation</a>
-covers the authority questions this raises. No lab has yet run a synthetic controller or agent
+<p>The authority questions this raises are in the <a href="spec/authority.html">authority specification</a>; the
+<a href="../tenancy/nightscout-control-plane-reconciliation-2026-09-11.html">control-plane supersession map</a>
+names the rule that carries each part of the earlier draft. No lab has yet run a synthetic controller or agent
 through both halves. That would be the first measurement.</p>
 <p><strong>What it proposes to each project:</strong></p>
 <ul>
@@ -5824,8 +5825,8 @@ controller publishes, so "it publishes none" stops being invisible.</p>
 <td><code>cgm-remote-monitor/docs/proposals/</code> — <code>agent-control-plane-rfc.md</code>, <code>bridge-rules.md</code>, <code>conflict-resolution.md</code>, <code>integration-questionnaire.md</code>. See <a href="nightscout-hub-sync-architecture-2026-09-11.html">hub-and-spoke sync</a> §5.2</td>
 </tr>
 <tr>
-<td>What to change in that earlier draft, and what it already gets right</td>
-<td><a href="../tenancy/nightscout-control-plane-reconciliation-2026-09-11.html">Reconciling the agentic control plane RFC</a> — seven claims the corpus confirms, five it corrects, twelve proposed edits</td>
+<td>Which specification rule is proposed to supersede each part of that earlier draft</td>
+<td><a href="../tenancy/nightscout-control-plane-reconciliation-2026-09-11.html">The earlier control-plane draft and the specifications proposed to supersede it</a> — objects and rules mapped to spec rules, with the corpus findings each rule carries</td>
 </tr>
 <tr>
 <td>The concrete changes that raise replay fidelity, per project</td>

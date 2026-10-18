@@ -27,7 +27,7 @@
     
     
       
-        <title>Reconciling the agentic control plane RFC with what the corpus measured - Nightscout ecosystem alignment</title>
+        <title>The earlier control-plane draft and the specifications proposed to supersede it - Nightscout ecosystem alignment</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#reconciling-the-agentic-control-plane-rfc-with-what-the-corpus-measured" class="md-skip">
+        <a href="#the-earlier-control-plane-draft-and-the-specifications-proposed-to-supersede-it" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Reconciling the agentic control plane RFC with what the corpus measured
+              The earlier control-plane draft and the specifications proposed to supersede it
             
           </span>
         </div>
@@ -2584,7 +2584,7 @@
   <span class="md-ellipsis">
     
   
-    Reconciling the agentic control plane RFC with what the corpus measured
+    The earlier control-plane draft and the specifications proposed to supersede it
   
 
     
@@ -2602,7 +2602,7 @@
   <span class="md-ellipsis">
     
   
-    Reconciling the agentic control plane RFC with what the corpus measured
+    The earlier control-plane draft and the specifications proposed to supersede it
   
 
     
@@ -2628,10 +2628,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#1-the-earlier-draft" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR
+        1. The earlier draft
       
     </span>
   </a>
@@ -2639,44 +2639,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#1-why-this-document-exists" class="md-nav__link">
+  <a href="#2-supersession-map" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Why this document exists
+        2. Supersession map
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-what-the-measurements-confirm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. What the measurements confirm
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-what-the-measurements-correct" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. What the measurements correct
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="3. What the measurements correct">
+    <nav class="md-nav" aria-label="2. Supersession map">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#31-the-rfc-understates-its-own-best-argument" class="md-nav__link">
+  <a href="#21-objects" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.1 The RFC understates its own best argument
+        2.1 Objects
       
     </span>
   </a>
@@ -2684,43 +2662,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#32-the-trio-discriminator-never-fires" class="md-nav__link">
+  <a href="#22-rules" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.2 The Trio discriminator never fires
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#33-instance-identity-should-not-come-from-the-device-string" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3.3 Instance identity should not come from the device string
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#34-overrideinstanceeffectiveeffects-will-be-empty-20-of-the-time" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3.4 OverrideInstance.effectiveEffects will be empty 20% of the time
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#35-all-three-publish-a-suggestion-under-three-different-names" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3.5 All three publish a suggestion, under three different names
+        2.2 Rules
       
     </span>
   </a>
@@ -2733,22 +2678,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-two-simplifications-with-arithmetic" class="md-nav__link">
+  <a href="#3-measured-findings-the-specifications-carry" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Two simplifications, with arithmetic
+        3. Measured findings the specifications carry
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="4. Two simplifications, with arithmetic">
+    <nav class="md-nav" aria-label="3. Measured findings the specifications carry">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#41-fix-the-sync-primitive-then-the-collections-are-free" class="md-nav__link">
+  <a href="#31-fields-already-on-the-wire" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.1 Fix the sync primitive, then the collections are free
+        3.1 Fields already on the wire
       
     </span>
   </a>
@@ -2756,10 +2701,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#42-one-cursor-not-two" class="md-nav__link">
+  <a href="#32-trio-and-androidaps-both-write-openaps" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.2 One cursor, not two
+        3.2 Trio and AndroidAPS both write openaps
       
     </span>
   </a>
@@ -2767,10 +2712,54 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#43-do-not-add-an-issuer-field-where-two-already-exist" class="md-nav__link">
+  <a href="#33-instance-identity-and-the-device-string" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.3 Do not add an issuer field where two already exist
+        3.3 Instance identity and the device string
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-overrides-with-a-name-and-no-effect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Overrides with a name and no effect
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-suggested-requested-and-confirmed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Suggested, requested and confirmed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-safety-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 Safety limits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-sync-cost-of-typed-collections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 Sync cost of typed collections
       
     </span>
   </a>
@@ -2783,68 +2772,41 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-what-is-missing-from-both-trees" class="md-nav__link">
+  <a href="#4-examples" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. What is missing from both trees
+        4. Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-an-override-proposed-approved-requested-and-applied" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 An override proposed, approved, requested and applied
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#6-the-concrete-edit-list" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#42-an-approval-bound-to-a-payload-hash" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. The concrete edit list
+        4.2 An approval bound to a payload hash
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#7-pre-filling-the-questionnaire-is-the-highest-value-single-edit" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. Pre-filling the questionnaire is the highest-value single edit
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#8-one-conflict-to-resolve-before-both-land" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        8. One conflict to resolve before both land
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#9-what-changes-on-our-side" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        9. What changes on our side
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#10-caveats" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        10. Caveats
-      
-    </span>
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -4868,10 +4830,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#1-the-earlier-draft" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR
+        1. The earlier draft
       
     </span>
   </a>
@@ -4879,44 +4841,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#1-why-this-document-exists" class="md-nav__link">
+  <a href="#2-supersession-map" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Why this document exists
+        2. Supersession map
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-what-the-measurements-confirm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. What the measurements confirm
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-what-the-measurements-correct" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. What the measurements correct
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="3. What the measurements correct">
+    <nav class="md-nav" aria-label="2. Supersession map">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#31-the-rfc-understates-its-own-best-argument" class="md-nav__link">
+  <a href="#21-objects" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.1 The RFC understates its own best argument
+        2.1 Objects
       
     </span>
   </a>
@@ -4924,43 +4864,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#32-the-trio-discriminator-never-fires" class="md-nav__link">
+  <a href="#22-rules" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.2 The Trio discriminator never fires
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#33-instance-identity-should-not-come-from-the-device-string" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3.3 Instance identity should not come from the device string
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#34-overrideinstanceeffectiveeffects-will-be-empty-20-of-the-time" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3.4 OverrideInstance.effectiveEffects will be empty 20% of the time
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#35-all-three-publish-a-suggestion-under-three-different-names" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3.5 All three publish a suggestion, under three different names
+        2.2 Rules
       
     </span>
   </a>
@@ -4973,22 +4880,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-two-simplifications-with-arithmetic" class="md-nav__link">
+  <a href="#3-measured-findings-the-specifications-carry" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Two simplifications, with arithmetic
+        3. Measured findings the specifications carry
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="4. Two simplifications, with arithmetic">
+    <nav class="md-nav" aria-label="3. Measured findings the specifications carry">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#41-fix-the-sync-primitive-then-the-collections-are-free" class="md-nav__link">
+  <a href="#31-fields-already-on-the-wire" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.1 Fix the sync primitive, then the collections are free
+        3.1 Fields already on the wire
       
     </span>
   </a>
@@ -4996,10 +4903,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#42-one-cursor-not-two" class="md-nav__link">
+  <a href="#32-trio-and-androidaps-both-write-openaps" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.2 One cursor, not two
+        3.2 Trio and AndroidAPS both write openaps
       
     </span>
   </a>
@@ -5007,10 +4914,54 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#43-do-not-add-an-issuer-field-where-two-already-exist" class="md-nav__link">
+  <a href="#33-instance-identity-and-the-device-string" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.3 Do not add an issuer field where two already exist
+        3.3 Instance identity and the device string
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-overrides-with-a-name-and-no-effect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Overrides with a name and no effect
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-suggested-requested-and-confirmed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Suggested, requested and confirmed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-safety-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 Safety limits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-sync-cost-of-typed-collections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 Sync cost of typed collections
       
     </span>
   </a>
@@ -5023,68 +4974,41 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-what-is-missing-from-both-trees" class="md-nav__link">
+  <a href="#4-examples" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. What is missing from both trees
+        4. Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-an-override-proposed-approved-requested-and-applied" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 An override proposed, approved, requested and applied
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#6-the-concrete-edit-list" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#42-an-approval-bound-to-a-payload-hash" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. The concrete edit list
+        4.2 An approval bound to a payload hash
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#7-pre-filling-the-questionnaire-is-the-highest-value-single-edit" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. Pre-filling the questionnaire is the highest-value single edit
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#8-one-conflict-to-resolve-before-both-land" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        8. One conflict to resolve before both land
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#9-what-changes-on-our-side" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        9. What changes on our side
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#10-caveats" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        10. Caveats
-      
-    </span>
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -5105,647 +5029,397 @@
 
 
 
-<h1 id="reconciling-the-agentic-control-plane-rfc-with-what-the-corpus-measured">Reconciling the agentic control plane RFC with what the corpus measured<a class="headerlink" href="#reconciling-the-agentic-control-plane-rfc-with-what-the-corpus-measured" title="Permanent link">&para;</a></h1>
+<h1 id="the-earlier-control-plane-draft-and-the-specifications-proposed-to-supersede-it">The earlier control-plane draft and the specifications proposed to supersede it<a class="headerlink" href="#the-earlier-control-plane-draft-and-the-specifications-proposed-to-supersede-it" title="Permanent link">&para;</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Record</p>
 <p>Record as of 2026-09-11. A point-in-time document; it is not kept up to date.</p>
 </div>
-<p><em>Contributor-facing.</em> <strong>Snapshot — describes 2026-09-11. Status: current as analysis of the RFC; no decision rests on it.</strong> Current decisions: <a href="nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>. <strong>Corrected in place 2026-10-09:</strong> §3.4 counts are distinct documents across the corpus's two overlapping snapshots. The RFC's hub-side override composition (<code>conflict-resolution.md</code>) is outside the hub's role under D18. <strong>Corrected in place 2026-10-18:</strong> §7's "No — ask" rows, and every other question, now have defaults read from each controller's source in <a href="../platform/integration-questionnaire-defaults-2026-10-18.html">integration questionnaire defaults</a>; the questionnaire has 16 questions, not twenty; and §3.5's <code>loop.enacted.received</code> is a constant in Loop's writer, not a pump acknowledgement (that page, C7).</p>
-<p>Date: 2026-09-11. Tenth in the series, and the
-first one addressed <strong>to cgm-remote-monitor's own <code>docs/proposals/</code> set</strong>
-rather than to a controller.</p>
-<blockquote>
-<p><strong>The RFC is not being rewritten here.</strong> It was drafted 2026-01-01. The
-census that could check it ran on snapshots dated 2026-04-01 and
-2026-04-26. Nothing in the RFC was wrong to assume at the time it was
-written; several things can now be <em>checked</em>, and a few of them come back
-different. This document is the checking, plus the edits that follow from
-it.</p>
-</blockquote>
-<hr />
-<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
+<p><em>What this is: a supersession map (contributor-facing). Read after the <a href="../platform/index.html#reading-order">platform
+specifications</a>; leads to <a href="../platform/integration-questionnaire-defaults-2026-10-18.html">integration questionnaire
+defaults</a>.</em> <strong>Snapshot — describes the
+earlier draft at cgm-remote-monitor <code>a8888f0d</code> and this repository's specifications at <code>main</code>
+<code>df93608c</code> (2026-10-18). Status: current; no decision rests on it.</strong> Current decisions: <a href="nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution
+plan §1</a>. The 2026-09-11 analysis
+of the same draft is in git: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/85c645c8b003b61dc07ea31f8a7002711493b18a/docs/30-design/tenancy/nightscout-control-plane-reconciliation-2026-09-11.md">full text at
+<code>85c645c8</code></a>.</p>
+<p>The earlier draft in cgm-remote-monitor's <code>docs/proposals</code> came from earlier versions of this
+repository and was added there in cgm-remote-monitor <code>12c90cfc</code> (2026-01-19). This repository's
+<a href="../platform/index.html">platform specifications</a> are proposed to supersede it. Each row below names
+the rule that now carries an idea of the draft and what changes. The specifications share one
+premise: the hub routes and records, never composes intents, never judges whether a change is safe
+and never doses; validation and enactment stay the controller's (D18).</p>
+<h2 id="1-the-earlier-draft">1. The earlier draft<a class="headerlink" href="#1-the-earlier-draft" title="Permanent link">&para;</a></h2>
+<p>Read at cgm-remote-monitor <code>a8888f0d</code>; none of the five files has changed since <code>db32bdc6</code>
+(2026-01-18).</p>
+<table>
+<thead>
+<tr>
+<th>file</th>
+<th>what it proposes</th>
+<th>proposed to be superseded by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>agent-control-plane-rfc.md</code></td>
+<td>an event envelope; configuration, runtime, computed, delivery and capability objects; ten collections and an event stream; bridge mode; authority, scopes, delegation and audit</td>
+<td><a href="../platform/spec/records.html">records</a>, <a href="../platform/spec/registration.html">registration</a>, <a href="../platform/spec/state-intent.html">state and intent</a>, <a href="../platform/spec/commands.html">commands</a>, <a href="../platform/spec/sync-transport.html">sync transport</a>, <a href="../platform/spec/authority.html">authority</a></td>
+</tr>
+<tr>
+<td><code>bridge-rules.md</code></td>
+<td>synthesising those objects from today's <code>devicestatus</code>, <code>treatments</code> and <code>profile</code></td>
+<td><a href="../platform/spec/registration.html#2-two-tiers">registration §2–§3</a> (well-known registrations), <a href="../platform/spec/records.html#2-rules">records R1–R2</a>, <a href="../platform/spec/state-intent.html#2-rules">state and intent S6–S7</a></td>
+</tr>
+<tr>
+<td><code>conflict-resolution.md</code></td>
+<td>an authority hierarchy, five conflict scenarios, optimistic locking, a global event cursor, delegation grants, safety invariants</td>
+<td><a href="../platform/spec/state-intent.html#2-rules">state and intent S1, A7–A9</a>, <a href="../platform/spec/sync-transport.html#4-the-sync-read-and-write-proposed">sync transport T8–T9</a>, <a href="../platform/spec/authority.html#7-delegation-not-decided">authority §7</a></td>
+</tr>
+<tr>
+<td><code>oidc-actor-identity-proposal.md</code></td>
+<td>verified actor identity through OpenID Connect, an <code>actors</code> collection, delegation claims, a migration away from <code>enteredBy</code></td>
+<td><a href="../platform/spec/authority.html#2-principals-and-credentials">authority AU1–AU4</a>, <a href="../platform/spec/authority.html#8-what-is-recorded-for-audit">authority §8</a></td>
+</tr>
+<tr>
+<td><code>integration-questionnaire.md</code></td>
+<td>16 questions to Loop, AAPS, Trio and OpenAPS implementers</td>
+<td><a href="../platform/integration-questionnaire-defaults-2026-10-18.html">integration questionnaire defaults</a>: a default answer per controller, read from source</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-supersession-map">2. Supersession map<a class="headerlink" href="#2-supersession-map" title="Permanent link">&para;</a></h2>
+<h3 id="21-objects">2.1 Objects<a class="headerlink" href="#21-objects" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>earlier draft</th>
+<th>replaced by</th>
+<th>what changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>EventEnvelope</code> (<code>eventId</code>, <code>cursor</code>, <code>issuer</code>, <code>issuerSeq</code>, <code>idempotencyKey</code>, <code>refs</code>)</td>
+<td><a href="../platform/spec/identity.html#1-rules">identity I1, I5</a>; <a href="../platform/spec/sync-transport.html#2-the-write-path">sync transport T4, T8</a>; <a href="../platform/spec/state-intent.html#2-rules">state and intent S8</a>; <a href="../platform/spec/registration.html#11-typed-writes-and-attribution">registration §11</a></td>
+<td>No envelope. A record keeps its own <code>identifier</code> (the client's sync identity, which is the idempotency key) and <code>_id</code>; a write produces one change event; the cursor is opaque; who started an intent is its initiator, and which running copy wrote a record is its instance</td>
+</tr>
+<tr>
+<td><code>ProfileDefinition</code> (<code>profileId</code>, <code>contentHash</code>, schedules, insulin model)</td>
+<td><a href="../platform/spec/records.html#2-rules">records R1</a> (<code>TherapySettings</code> and four schedules); <a href="../platform/spec/state-intent.html#2-rules">state and intent S9</a></td>
+<td>A profile decomposes into typed primitives. A stable profile id is something a controller declares (<code>definitions.idField</code>); no controller sends one today (<a href="../platform/integration-questionnaire-defaults-2026-10-18.html#a1-profile-identification">questionnaire defaults A1</a>)</td>
+</tr>
+<tr>
+<td><code>OverrideDefinition</code>, <code>OverrideInstance</code>, <code>ProfileSelection</code></td>
+<td><a href="../platform/spec/state-intent.html#2-rules">state and intent S2–S9</a> and <a href="../platform/spec/state-intent.html#61-rules">A1–A13</a></td>
+<td>One declaration per intent kind (S2) with its slot (S3), states (S4), end reasons (S5), wire carrier (S6), requested and applied carriers (S7), initiators (S8) and definitions (S9). The hub derives what is active from the controller's own records; <code>status: superseded</code> and <code>supersededBy</code> become the declared <code>supersedes</code> (S3, A7)</td>
+</tr>
+<tr>
+<td><code>PolicyComposition</code></td>
+<td><a href="../platform/spec/state-intent.html#2-rules">state and intent S1, §4</a>; <a href="../platform/spec/records.html#5-settings-snapshot">records §5</a></td>
+<td>The hub never computes it. The controller reports its composed result where it publishes one (<code>composition.result</code>); effective limits are settings in an effective-dated <code>ControllerSettings</code> snapshot</td>
+</tr>
+<tr>
+<td><code>DeliveryRequest</code> (<code>basedOn.policyCompositionId</code>, <code>expiresAt</code>)</td>
+<td><a href="../platform/spec/commands.html#4-the-command-record-proposed">commands CM1–CM6</a>, <a href="../platform/spec/commands.html#6-proposals-and-approvals-proposed">CM11</a></td>
+<td>A command record with the payload, its <code>payloadHash</code> and a required expiry (CM3); after an approval it carries <code>basedOn</code>, the hub's <a href="../platform/spec/state-intent.html#61-rules">state version</a> (A12)</td>
+</tr>
+<tr>
+<td><code>DeliveryObservation</code> (<code>confidence</code>, <code>pumpResponse.acked</code>, <code>errorCode</code>)</td>
+<td><a href="../platform/spec/records.html#3-the-catalogue">records §3</a> (<code>Bolus</code>, <code>TempBasal</code>, <code>ApsSnapshot</code>); <a href="../platform/spec/commands.html#5-outcomes-proposed">commands CM7–CM9</a></td>
+<td>A delivery is a typed primitive with an evidence grade per field (R4). Whether a command was received or enacted is the destination's outcome report, <code>acknowledged</code>, <code>succeeded</code>, <code>failed</code> or <code>refused</code>, with a reason (CM8)</td>
+</tr>
+<tr>
+<td><code>Reconciliation</code> (<code>matched</code>, <code>partial</code>, <code>blocked</code>, <code>unknown</code>, <code>expired</code>)</td>
+<td><a href="../platform/spec/commands.html#4-the-command-record-proposed">commands §4 states, CM9</a></td>
+<td>The hub sets only hand-over states (<code>sent</code>, <code>fetched</code>, <code>unconfirmed</code>, <code>undeliverable</code>, <code>expired</code>); outcomes are the controller's. A command enacted in part is open (<a href="../platform/spec/commands.html#9-open">commands §9</a> item 4)</td>
+</tr>
+<tr>
+<td><code>ControllerKindDefinition</code> (<code>kindId</code>, <code>version</code>, <code>supportedFeatures</code>, <code>eventCapabilities</code>)</td>
+<td><a href="../platform/spec/registration.html#2-two-tiers">registration §2–§3, §7</a></td>
+<td>A product registration in two tiers: well-known, generated by the hub from measurement, and controller-owned. Definitions are content-addressed (<code>sha256:</code> of RFC 8785 canonical JSON) and several coexist per product. What a controller can do is declared per element: intent kinds, commands, replay inputs, settings</td>
+</tr>
+<tr>
+<td><code>ControllerInstanceRegistration</code> (<code>instanceId</code>, <code>device</code>, <code>pumpBinding</code>, <code>cgmBinding</code>, <code>lastSeenAt</code>)</td>
+<td><a href="../platform/spec/registration.html#8-instances">registration §8</a>; <a href="../platform/spec/identity.html#2-contract-ids">identity §2</a></td>
+<td>The instance id is a random UUID v4 the controller supplies; liveness is a lease; an instance carries no hardware identifiers. <code>devicestatus.device</code> is at most an observed alias, labelled identifying and withheld by default (§3.3)</td>
+</tr>
+<tr>
+<td><code>CapabilitySnapshot</code> (<code>connectivity</code>, <code>automationState</code>, <code>effectiveLimits</code>, <code>health</code>)</td>
+<td><a href="../platform/spec/records.html#3-the-catalogue">records §3, §5</a>; <a href="../platform/spec/registration.html#4-the-capability-document">registration §4</a>, <a href="../platform/spec/registration.html#8-instances">§8</a></td>
+<td>Split by what each part is: pump, uploader and loop state are the <code>PumpSnapshot</code>, <code>UploaderSnapshot</code> and <code>ApsSnapshot</code> primitives; limits are <code>ControllerSettings</code>; liveness is the instance lease. The capability document at <code>/.well-known/nightscout/sync</code> describes the hub software, never a person</td>
+</tr>
+<tr>
+<td>Ten collections, and <code>/api/v3/events</code> with WebSocket and SSE subscriptions</td>
+<td><a href="../platform/spec/sync-transport.html#4-the-sync-read-and-write-proposed">sync transport T5–T11</a>; <a href="../platform/spec/registration.html#13-projected-views-for-older-readers">registration §13</a></td>
+<td>One read across collections, one batch write and one opaque cursor (an event cursor, if one is added, is the same cursor); socket subscription by product and channel. Typed records reach older readers as projected documents</td>
+</tr>
+<tr>
+<td>Bridge mode and <code>bridge-rules.md</code> (detection, profile hashing, override and delivery extraction, idempotency)</td>
+<td><a href="../platform/spec/registration.html#2-two-tiers">registration §2–§3</a>, <a href="../platform/spec/registration.html#16-version-scoped-quirks">§16</a>; <a href="../platform/spec/records.html#2-rules">records R1–R2</a>; <a href="../platform/spec/state-intent.html#2-rules">state and intent S6–S7</a>; <a href="../platform/spec/identity.html#1-rules">identity I5–I7</a></td>
+<td>Well-known registrations served at <code>/.well-known/nightscout/controllers</code> describe today's writers as they are; decomposition is declared with structural discriminators, never the <code>device</code> string; version-specific encodings are recorded quirks. A re-send matches on <code>identifier</code>, then <code>_id</code>, then the collection's natural key</td>
+</tr>
+</tbody>
+</table>
+<h3 id="22-rules">2.2 Rules<a class="headerlink" href="#22-rules" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>earlier draft</th>
+<th>replaced by</th>
+<th>what changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authority hierarchy (human 100, caregiver 80, agent 50, controller 30) and conflict rules: composition by most restrictive target and lowest basal multiplier, supersession by authority, profile selection by recency</td>
+<td><a href="../platform/spec/state-intent.html#2-rules">state and intent S1, S3, A7–A9</a>; <a href="../platform/spec/authority.html#7-delegation-not-decided">authority §7</a></td>
+<td>Composition is the controller's rule and differs per controller (<a href="../platform/spec/state-intent.html#4-composition-as-read-from-each-controllers-source">state and intent §4</a>). The hub reports each product's instances, ends one by another only as the controller declares (<code>supersedes</code>, <code>overlay</code>), and marks overlap without resolving it (A9)</td>
+</tr>
+<tr>
+<td>Flip-flop prevention: rate limits per issuer, a cooldown, confirmation after N activations</td>
+<td><a href="../platform/spec/commands.html#9-open">commands §9</a> (proposal volume, UCA-PROP-002)</td>
+<td>Open: nothing limits the open proposals one instance holds on a channel</td>
+</tr>
+<tr>
+<td>Optimistic locking on <code>srvModified</code>; a global <code>eventCursors</code> counter</td>
+<td><a href="../platform/spec/registration.html#54-etag-and-idempotency">registration §5.4</a>; <a href="../platform/spec/sync-transport.html#2-the-write-path">sync transport T3, T8, T9</a></td>
+<td>Registration resources use etags and <code>If-Match</code>. Records are ordered by the server's <code>srvModified</code> (unique and never decreasing within a process) under <code>single</code> and by the replication slot under <code>multi</code>, behind one opaque cursor with a low watermark, so a slow write is never skipped. No global counter document</td>
+</tr>
+<tr>
+<td>Identity model: human and caregiver by OAuth, controller by a device-bound key, agent by OAuth with a delegation token</td>
+<td><a href="../platform/spec/authority.html#2-principals-and-credentials">authority AU1–AU4</a></td>
+<td>By audience: devices and uploaders hold a native per-tenant credential; owners and caregivers are to sign in through one Ory Kratos pool on hosted sites (adopted in principle, gated); third-party delegated access is deferred. Everything binds to a subject, never a token</td>
+</tr>
+<tr>
+<td><code>issuerType: human \| controller \| agent</code></td>
+<td><a href="../platform/spec/state-intent.html#2-rules">state and intent S8</a>; <a href="../platform/spec/registration.html#9-channels-roles-and-provenance">registration §9</a></td>
+<td>The initiator is a value in the controller's own vocabulary. An agent initiator is <code>{value: other, controllerTerm}</code>; no <code>agent</code> value is added (maintainer, 2026-10-18). An agent's role is an <code>other</code> role a hub lists</td>
+</tr>
+<tr>
+<td>Scopes <code>read</code>, <code>suggest</code> ("can propose, human must approve"), <code>activate</code>, <code>deliver</code>, <code>admin</code></td>
+<td><a href="../platform/spec/authority.html#2-principals-and-credentials">authority AU5, §5</a>; <a href="../platform/spec/commands.html#6-proposals-and-approvals-proposed">commands CM5, CM12, CM14</a></td>
+<td>Permissions per collection and action. Proposing needs <code>api:proposals:create</code> and a granted propose role; approving needs <code>api:commands:create</code>, because approving is sending; a proposer cannot approve its own proposal; reading confers neither (CM12). Registering needs <code>api:registrations:create</code></td>
+</tr>
+<tr>
+<td><code>DelegationGrant</code> (<code>grantedBy</code>, <code>grantedTo</code>, <code>scopes</code>, <code>constraints</code>, <code>expiresAt</code>, <code>revokedAt</code>) and grant validation</td>
+<td><a href="../platform/spec/authority.html#7-delegation-not-decided">authority §7, DR1–DR7</a></td>
+<td>Requirements stated; the grant's shape, storage and checks are open (<a href="../platform/spec/authority.html#9-open">authority §9</a> item 6). The <a href="../../10-domain/authority-model.html">authority model</a> keeps a worked example of a grant with constraints</td>
+</tr>
+<tr>
+<td>Audit: append-only events with <code>issuer</code> and <code>authority</code>; optional signed events and a hash chain per issuer</td>
+<td><a href="../platform/spec/authority.html#8-what-is-recorded-for-audit">authority §8</a>; <a href="../platform/spec/commands.html#4-the-command-record-proposed">commands CM1, CM10</a></td>
+<td>The owner's listing records current bindings, roles and overlaps; typed records carry instance, definition and provenance; a command is recorded before it is sent. Binding an approval end to end needs a signature by the sender or approver (CM10). Who took an owner action, and reads, are not recorded</td>
+</tr>
+<tr>
+<td>OIDC actor identity: an <code>actors</code> collection, RFC 8693 delegation claims, <code>enteredBy</code> replaced by verified claims</td>
+<td><a href="../platform/spec/authority.html#2-principals-and-credentials">authority AU1, AU3, AU4, §8</a>; <a href="../platform/spec/records.html#2-rules">records R9</a></td>
+<td>Identity is per cohort; credentials and authorization are per tenant. <code>enteredBy</code> stays a free-text field labelled identifying, never an identity</td>
+</tr>
+<tr>
+<td>Safety invariants ("human always wins", composed effects within safety limits, conservative composition)</td>
+<td><a href="../platform/spec/state-intent.html#2-rules">state and intent S1</a>; <a href="../platform/spec/commands.html#4-the-command-record-proposed">commands CM5, CM10</a></td>
+<td>They bind the controller, which composes and validates. The hub checks only routing, expiry, size and permission, and never changes a payload</td>
+</tr>
+<tr>
+<td>Integration questionnaire</td>
+<td><a href="../platform/integration-questionnaire-defaults-2026-10-18.html">integration questionnaire defaults</a>; <a href="../platform/spec/state-intent.html#2-rules">state and intent S10–S11</a>; <a href="../platform/spec/records.html#2-rules">records R8</a></td>
+<td>Every question has a default per controller, read from source, for its authors to correct. What the questions ask is what a registration declares: acceptance policy, command paths, replay inputs</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-measured-findings-the-specifications-carry">3. Measured findings the specifications carry<a class="headerlink" href="#3-measured-findings-the-specifications-carry" title="Permanent link">&para;</a></h2>
+<p>Measured over the corpus in <code>reports/schema-census/</code> (snapshots dated 2026-04-01 and 2026-04-26;
+11 sites, 9 of them Loop; one site carries <code>openaps.*</code>, and it is Trio's; no AndroidAPS closed-loop
+site and no oref0 rig). Counts are <code>docs_present</code> across both snapshots, which overlap, so they
+bound distinct documents from above; §3.4 counts distinct documents.</p>
+<h3 id="31-fields-already-on-the-wire">3.1 Fields already on the wire<a class="headerlink" href="#31-fields-already-on-the-wire" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>what the draft proposes</th>
+<th>on the wire today</th>
+<th>where the specifications use it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>an idempotency key</td>
+<td><code>treatments.syncIdentifier</code>, 306,741 (83%, 10 sites)</td>
+<td>the client's <code>identifier</code> (<a href="../platform/spec/identity.html#1-rules">identity I1, I5</a>)</td>
+</tr>
+<tr>
+<td>a human or automation flag</td>
+<td><code>treatments.automatic</code>, boolean, 300,228 (81%, 10 sites)</td>
+<td><code>Bolus.Automatic</code> (<a href="../platform/spec/records.html#3-the-catalogue">records §3</a>); a wire value can stand for an initiator through <code>wireProxy</code> (<a href="../platform/spec/state-intent.html#2-rules">state and intent S8</a>)</td>
+</tr>
+<tr>
+<td>controller version</td>
+<td><code>loop.version</code> 597,335 (85%, 10 sites); <code>openaps.version</code> 73,898 (1 site)</td>
+<td>the product and version a settings snapshot carries (<a href="../platform/spec/records.html#2-rules">records R5</a>)</td>
+</tr>
+<tr>
+<td>override state</td>
+<td><code>override.active</code> 597,335 (85%, 10 sites)</td>
+<td>Loop's applied override carrier (<a href="../platform/spec/state-intent.html#2-rules">state and intent S7</a>)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-trio-and-androidaps-both-write-openaps">3.2 Trio and AndroidAPS both write <code>openaps</code><a class="headerlink" href="#32-trio-and-androidaps-both-write-openaps" title="Permanent link">&para;</a></h3>
+<p>No corpus document has a top-level <code>trio</code> key, and Trio's wire model declares <code>openaps</code>,
+<code>suggested</code> and <code>enacted</code> (<code>Trio/Sources/Models/NightscoutStatus.swift</code>). The well-known Trio and
+AndroidAPS registrations use the same structural discriminator, <code>{path: openaps, test: is-object}</code>
+(<code>specs/sync/registrations/trio.yaml:18-20</code>), so the two cannot be told apart by a top-level key,
+and cgm-remote-monitor's readers cannot either (<code>lib/plugins/openaps.js:82</code>). In the
+specifications a registered controller's records are attributed to its instance and definition
+(<a href="../platform/spec/registration.html#11-typed-writes-and-attribution">registration §11</a>), and a
+controller-published registration takes precedence over a structurally inferred one
+(<a href="../platform/spec/registration.html#2-two-tiers">registration §2</a>).</p>
+<h3 id="33-instance-identity-and-the-device-string">3.3 Instance identity and the <code>device</code> string<a class="headerlink" href="#33-instance-identity-and-the-device-string" title="Permanent link">&para;</a></h3>
+<p><code>devicestatus.device</code> is on every devicestatus document and is free text: one site's device
+strings read like a controller while its treatments show no automated dosing. An instance id is a
+random UUID v4 the controller supplies, never derived from a device name, model, serial number or
+<code>devicestatus.device</code> (<a href="../platform/spec/identity.html#2-contract-ids">identity §2</a>); the hub may
+keep the string as an observed alias, labelled <code>{level: identifying, category: device}</code> and
+withheld by default (<a href="../platform/spec/registration.html#8-instances">registration §8</a>).</p>
+<h3 id="34-overrides-with-a-name-and-no-effect">3.4 Overrides with a name and no effect<a class="headerlink" href="#34-overrides-with-a-name-and-no-effect" title="Permanent link">&para;</a></h3>
+<p>Of the 55,938 distinct devicestatus documents with an active override:</p>
 <table>
 <thead>
 <tr>
 <th></th>
-<th></th>
+<th style="text-align: right;">count</th>
+<th style="text-align: right;">share</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>Seven claims the corpus confirms</strong></td>
-<td>Including two the RFC treats as open questions that already have answers on the wire: an idempotency key (<code>syncIdentifier</code>, 306,741 treatments) and a human/automation flag (<code>automatic</code>, 300,228 treatments)</td>
+<td>effect and name both present</td>
+<td style="text-align: right;">42,799</td>
+<td style="text-align: right;">76.5%</td>
 </tr>
 <tr>
-<td><strong>Five things the corpus corrects</strong></td>
-<td>The Trio discriminator never fires; instance identity is taken from the least reliable field; <code>OverrideInstance.effectiveEffects</code> would be empty for 20% of observed active overrides; the suggested/enacted split already exists under three different key names</td>
+<td>effect only</td>
+<td style="text-align: right;">2,176</td>
+<td style="text-align: right;">3.9%</td>
 </tr>
 <tr>
-<td><strong>Two simplifications with arithmetic behind them</strong></td>
-<td>The ten new collections would add 2,880 requests/day <em>only because the delta is per collection</em>. Fix that first — a small change to already-generic code — and their cost is zero. The RFC does not have to choose between typed resources and cheap sync</td>
+<td><strong>name only, no effect</strong></td>
+<td style="text-align: right;"><strong>10,892</strong></td>
+<td style="text-align: right;"><strong>19.5%</strong></td>
 </tr>
 <tr>
-<td><strong>One thing to do before any of it</strong></td>
-<td><code>integration-questionnaire.md</code> is twenty questions and fourteen empty tables. Roughly half can be pre-filled from measurement and source. An implementer corrects a wrong table far faster than they fill an empty one</td>
-</tr>
-</tbody>
-</table>
-<p><strong>The single most useful finding for the RFC's own case:</strong> <code>CapabilitySnapshot.effectiveLimits.maxIOB</code>
-and <code>PolicyComposition.effectiveParameters.maxBasalAllowed</code> are the objects that
-would close the most-cited replay gap in this entire series — <code>max_iob</code> is
-<strong>recorded by no oref0 derivative anywhere in Nightscout</strong>, and a real replay
-tool has to assume it. The RFC proposes the right object and never says that
-is what it is for.</p>
-<hr />
-<h2 id="1-why-this-document-exists">1. Why this document exists<a class="headerlink" href="#1-why-this-document-exists" title="Permanent link">&para;</a></h2>
-<p>The roadmap listed "how much of <code>docs/proposals/</code> is live" as an open
-question and said reconciling against it was "arguably ahead of Phase 1,
-since duplicating an existing RFC is the specific failure this work is
-supposed to prevent." This is that reconciliation.</p>
-<p>Three things make it worth doing as edits rather than as a competing
-proposal:</p>
-<ol>
-<li><strong>The overlap is near-total in scope and near-zero in evidence.</strong> The RFC
-   and this series propose the same objects for the same reasons. The RFC
-   argues from design; this series argues from 1.97 million documents. They
-   are complements, not rivals.</li>
-<li><strong>Two efforts independently reached the same structural discriminator.</strong>
-   <code>bridge-rules.md</code> detects controllers with <code>if (devicestatus.loop)</code>,
-   <code>if (devicestatus.openaps)</code>. So does <code>specs/sync/registrations/</code>. That is
-   the strongest evidence in either tree that the approach is right.</li>
-<li><strong>The RFC's weakest sections are exactly the ones a corpus can fix</strong>, and
-   its strongest sections are ones this series never attempted — delegation,
-   agent authority, remote commands.</li>
-</ol>
-<hr />
-<h2 id="2-what-the-measurements-confirm">2. What the measurements confirm<a class="headerlink" href="#2-what-the-measurements-confirm" title="Permanent link">&para;</a></h2>
-<p>Each row is reproducible from <code>reports/schema-census/</code>.</p>
-<table>
-<thead>
-<tr>
-<th>RFC claim</th>
-<th>Measured</th>
-<th>Verdict</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>"Overrides buried in devicestatus"</td>
-<td><code>override.active</code> on <strong>597,335</strong> devicestatus documents (85%, 10 sites); <code>override.name</code>, <code>.duration</code>, <code>.multiplier</code>, <code>.currentCorrectionRange</code> present only when one is running</td>
-<td><strong>Confirmed.</strong> The override <em>is</em> a devicestatus field, exactly as described</td>
-</tr>
-<tr>
-<td>Structural detection in <code>bridge-rules.md</code></td>
-<td><code>loop</code>, <code>openaps</code>, <code>pump</code>, <code>uploader</code>, <code>override</code> are the observed top-level <code>devicestatus</code> objects. Nothing else discriminates</td>
-<td><strong>Confirmed, and independently arrived at</strong></td>
-</tr>
-<tr>
-<td>"Controller version" in <code>ControllerKindDefinition</code></td>
-<td><code>loop.version</code> on <strong>597,335</strong> documents (85%, 10 sites); <code>openaps.version</code> on <strong>73,898</strong> (1 site)</td>
-<td><strong>Already published.</strong> No controller change needed for this field</td>
-</tr>
-<tr>
-<td><code>EventEnvelope.idempotencyKey</code></td>
-<td><code>treatments.syncIdentifier</code> on <strong>306,741</strong> documents (83%, 10 sites)</td>
-<td><strong>Already on the wire under another name.</strong> See §4.3</td>
-</tr>
-<tr>
-<td><code>issuerType: human \| controller</code></td>
-<td><code>treatments.automatic</code>, boolean, on <strong>300,228</strong> documents (81%, 10 sites)</td>
-<td><strong>Already on the wire.</strong> The base case of the authority hierarchy is observable today</td>
-</tr>
-<tr>
-<td><code>DeliveryObservation.pumpResponse.acked</code></td>
-<td><code>loop.enacted.received</code>, boolean, <strong>405,228</strong> documents (58%, 10 sites); <code>openaps.enacted.received</code>, <strong>73,834</strong> (1 site)</td>
-<td><strong>Already published as a boolean.</strong> The ACK exists; the error <em>code</em> does not — <code>loop.failureReason</code> is a string on only <strong>16,550</strong> documents (2.4%)</td>
-</tr>
-<tr>
-<td>"No 'effective policy' view"</td>
-<td><code>max_iob</code> is recorded by <strong>no oref0 derivative anywhere</strong>; <code>oref-digital-twin</code> lists it in <code>REQUIRED_SETTINGS</code> and must assume it</td>
-<td><strong>Confirmed, and it is the strongest argument the RFC has.</strong> See §3.1</td>
+<td>neither</td>
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">0.1%</td>
 </tr>
 </tbody>
 </table>
-<p><strong>What this changes about the RFC's ask.</strong> Four of the fields it proposes as
-new already exist in production data. The work is not to invent them; it is
-to <strong>describe the ones that exist and name the ones that do not</strong> — which is
-what a controller description is for.</p>
-<h2 id="3-what-the-measurements-correct">3. What the measurements correct<a class="headerlink" href="#3-what-the-measurements-correct" title="Permanent link">&para;</a></h2>
-<h3 id="31-the-rfc-understates-its-own-best-argument">3.1 The RFC understates its own best argument<a class="headerlink" href="#31-the-rfc-understates-its-own-best-argument" title="Permanent link">&para;</a></h3>
-<p><code>agent-control-plane-rfc.md</code> motivates <code>PolicyComposition</code> and
-<code>CapabilitySnapshot</code> as prerequisites for <em>agents</em>. They are also, and more
-immediately, the fix for a measured failure that has nothing to do with
-agents:</p>
+<p>Of 2,865 temporary effects in treatments, 399 carry a label and no effect. A reader that
+synthesises an override's effect from these records gets none for one in five. In the
+specifications the hub never computes a composed result from them (<a href="../platform/spec/state-intent.html#2-rules">state and intent
+S1</a>); a kind declares the fields it does not publish
+(<code>unpublishedFields</code>, S6); and a setting a controller does not publish is recorded as not
+published, never filled with a default (<a href="../platform/spec/records.html#2-rules">records R6</a>). The
+draft therapy-effect schema separates an effect from why it was asked for (<a href="../platform/spec/state-intent.html#5-effect-and-motivation-proposed">state and intent
+§5</a>).</p>
+<h3 id="35-suggested-requested-and-confirmed">3.5 Suggested, requested and confirmed<a class="headerlink" href="#35-suggested-requested-and-confirmed" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
-<th>Object and field</th>
-<th>What it would close</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>CapabilitySnapshot.effectiveLimits.maxIOB</code></td>
-<td><code>profile.maxIob</code> — <strong>absent from every oref0 derivative in the corpus.</strong> A replay must assume it</td>
-</tr>
-<tr>
-<td><code>PolicyComposition.effectiveParameters.maxBasalAllowed</code></td>
-<td><code>profile.maxBasal</code> — <strong>partial.</strong> Loop records <code>loopSettings.maximumBasalRatePerHour</code> (10 sites); AAPS and Trio record no equivalent</td>
-</tr>
-<tr>
-<td><code>PolicyComposition.effectiveParameters.effectiveISF</code>/<code>effectiveCR</code></td>
-<td>Reconstructing these from profile plus overrides is where replay silently diverges from what the controller used</td>
-</tr>
-</tbody>
-</table>
-<p>Replay completeness is <strong>20% for Loop and 50% for the oref0 family</strong>. The RFC
-would move both, and it does not claim the credit.</p>
-<p><strong>Recommended edit:</strong> add a motivation item — <em>"Safety limits and effective
-parameters are not recoverable"</em> — with these numbers, ahead of the agent
-motivation. It makes the RFC adoptable by people who do not want agents.</p>
-<h3 id="32-the-trio-discriminator-never-fires">3.2 The Trio discriminator never fires<a class="headerlink" href="#32-the-trio-discriminator-never-fires" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1">// bridge-rules.md:68</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">devicestatus</span><span class="p">.</span><span class="nx">trio</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="s1">'trio'</span><span class="p">;</span>
-</code></pre></div>
-<p><strong>No document in the corpus carries a top-level <code>trio</code> key</strong>, and Trio's own
-wire model agrees: <code>Trio/Sources/Models/NightscoutStatus.swift</code> declares
-<code>openaps</code>, <code>suggested</code>, <code>enacted</code> — no <code>trio</code>. Two independent confirmations.</p>
-<p>The honest version is worse than a typo, and it is <strong>our limit too</strong>: Trio is
-an oref derivative and writes under <code>openaps</code>, so
-<code>specs/sync/registrations/trio.yaml</code> and <code>androidaps.yaml</code> both discriminate
-on <code>openaps</code> and <strong>cannot be told apart at the top level either</strong>.</p>
-<p><strong>Recommended edit, both trees:</strong> delete the <code>trio</code> branch; state that oref
-derivatives are not distinguishable by top-level key and that separating them
-needs a second-order signal (<code>openaps.version</code> string, or an explicit
-declaration). Do not invent one silently.</p>
-<h3 id="33-instance-identity-should-not-come-from-the-device-string">3.3 Instance identity should not come from the device string<a class="headerlink" href="#33-instance-identity-should-not-come-from-the-device-string" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// bridge-rules.md:470</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nx">controllerInstanceId</span><span class="o">:</span><span class="w"> </span><span class="nx">devicestatus</span><span class="p">.</span><span class="nx">device</span><span class="p">,</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1">// bridge-rules.md:171</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nx">issuerId</span><span class="o">:</span><span class="w"> </span><span class="nx">devicestatus</span><span class="p">.</span><span class="nx">device</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="s1">'unknown'</span>
-</code></pre></div>
-<p><code>device</code> is present on all 702,254 documents, and it is the free-text field
-this series spent the most effort de-identifying. It is also unreliable in a
-way that matters here: <strong>one site's device strings read like a controller
-while its treatments showed no automated dosing at all.</strong></p>
-<p>Using it as instance identity makes liveness inherit that unreliability, and
-it makes <code>ControllerInstanceRegistration.instanceId</code> — the RFC's own answer
-to liveness — a rename of a string nobody controls.</p>
-<p><strong>Recommended edit:</strong> <code>instanceId</code> is issued by the hub on registration, or
-supplied by the controller. <code>device</code> may be <em>recorded</em> on the instance as an
-observed alias; it must not <em>be</em> the identity. Bridge-synthesized events for
-an unregistered controller get a synthetic instance id, not the device
-string.</p>
-<h3 id="34-overrideinstanceeffectiveeffects-will-be-empty-20-of-the-time">3.4 <code>OverrideInstance.effectiveEffects</code> will be empty 20% of the time<a class="headerlink" href="#34-overrideinstanceeffectiveeffects-will-be-empty-20-of-the-time" title="Permanent link">&para;</a></h3>
-<p>Bridge mode synthesizes <code>OverrideInstance</code> from devicestatus. Measured over
-the <strong>55,938</strong> distinct devicestatus documents with an active override (counted once across the corpus's two overlapping snapshots; corrected 2026-10-09):</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>Count</th>
-<th>Share</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Effect and motivation both present</td>
-<td>42,799</td>
-<td>76.5%</td>
-</tr>
-<tr>
-<td>Effect only (no label)</td>
-<td>2,176</td>
-<td>3.9%</td>
-</tr>
-<tr>
-<td><strong>Motivation only — a name, no effect</strong></td>
-<td><strong>10,892</strong></td>
-<td><strong>19.5%</strong></td>
-</tr>
-<tr>
-<td>Neither</td>
-<td>71</td>
-<td>0.1%</td>
-</tr>
-</tbody>
-</table>
-<p>The same shape appears on treatments: of 2,865 temporary effects, <strong>399
-carry a label and no effect at all</strong>.</p>
-<p>So a bridged <code>OverrideInstance</code> will carry a <code>reason</code> and an empty
-<code>effectiveEffects</code> for roughly one in five active overrides. That is not a
-bridge bug — the data is not there — but a <code>PolicyComposition</code> computed from
-it would be <strong>silently wrong rather than visibly incomplete</strong>, which is the
-worse failure for a replay or an agent.</p>
-<p><strong>Recommended edit:</strong> bridge rules must mark synthesized effects with a
-confidence or completeness flag, and <code>PolicyComposition</code> must be able to say
-"an override is active whose effects are unknown." The RFC already has the
-vocabulary — <code>DeliveryObservation.confidence: confirmed | inferred |
-reported</code> — it just is not applied to overrides.</p>
-<h3 id="35-all-three-publish-a-suggestion-under-three-different-names">3.5 All three publish a suggestion, under three different names<a class="headerlink" href="#35-all-three-publish-a-suggestion-under-three-different-names" title="Permanent link">&para;</a></h3>
-<p><code>integration-questionnaire.md</code> C7 asks all three controllers to fill in one
-table for suggested / requested / confirmed. All three publish a suggestion —
-but under three different key names, and Loop publishes <strong>two</strong> of them for
-two different purposes:</p>
-<table>
-<thead>
-<tr>
-<th>State</th>
+<th>state</th>
 <th>Loop</th>
 <th>oref0 family (Trio, AAPS)</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Suggested — manual bolus</td>
-<td><code>loop.recommendedBolus</code> — <strong>597,143 docs (85%, 10 sites)</strong></td>
-<td><code>openaps.recommendedBolus</code> — 41,474 (1 site)</td>
+<td>suggested, manual bolus</td>
+<td><code>loop.recommendedBolus</code>, 597,143 (85%, 10 sites)</td>
+<td><code>openaps.recommendedBolus</code>, 41,474 (1 site)</td>
 </tr>
 <tr>
-<td>Suggested — automatic dose</td>
-<td><code>loop.automaticDoseRecommendation</code> (<code>bolusVolume</code>, <code>tempBasalAdjustment</code>) — <strong>183,049 (26%, 10 sites)</strong></td>
-<td><code>openaps.suggested</code> — <strong>73,898 (1 site)</strong></td>
+<td>suggested, automatic dose</td>
+<td><code>loop.automaticDoseRecommendation</code>, 183,049 (26%, 10 sites)</td>
+<td><code>openaps.suggested</code>, 73,898 (1 site)</td>
 </tr>
 <tr>
-<td>Requested</td>
-<td>not separately published</td>
-<td>not separately published</td>
+<td>requested</td>
+<td>not published</td>
+<td>not published</td>
 </tr>
 <tr>
-<td>Confirmed</td>
-<td><code>loop.enacted</code> + <code>loop.enacted.received</code> (bool) — <strong>405,228 (58%)</strong></td>
-<td><code>openaps.enacted</code> + <code>.received</code> (bool) — <strong>73,834</strong></td>
+<td>confirmed</td>
+<td><code>loop.enacted</code> with <code>received</code>, 405,228 (58%, 10 sites)</td>
+<td><code>openaps.enacted</code> with <code>received</code>, 73,834 (1 site)</td>
 </tr>
 </tbody>
 </table>
-<p>So the <em>suggested</em> row is already satisfied everywhere — <code>OBS-LOOP-003</code>
-("what the algorithm recommended, separately from what was enacted") is met
-on 10 of 10 sites. What no controller publishes is <strong>requested</strong> as distinct
-from confirmed, and neither publishes an error code beyond Loop's sparse
-<code>failureReason</code> (2.4%).</p>
-<p><strong>Recommended edit:</strong> replace C7's empty table with this one, marked
-<em>"pre-filled from corpus; correct what is wrong"</em>, and add the real question
-underneath, which is narrower and answerable: <strong>is there a point in your code
-where a command has been sent and not yet acknowledged, and can you emit
-it?</strong> That is the only one of the three states that is genuinely missing, and
-asking for it alone is a far smaller request than asking for all three.</p>
-<hr />
-<h2 id="4-two-simplifications-with-arithmetic">4. Two simplifications, with arithmetic<a class="headerlink" href="#4-two-simplifications-with-arithmetic" title="Permanent link">&para;</a></h2>
-<h3 id="41-fix-the-sync-primitive-then-the-collections-are-free">4.1 Fix the sync primitive, then the collections are free<a class="headerlink" href="#41-fix-the-sync-primitive-then-the-collections-are-free" title="Permanent link">&para;</a></h3>
-<p><strong>This is not an argument against the ten collections.</strong> It is an argument
-that their cost is an artifact of the sync primitive, and that the primitive
-should be fixed first — after which the RFC can have as many typed resources
-as fidelity needs.</p>
-<p><code>agent-control-plane-rfc.md</code>'s API table has eleven rows: <strong>ten new
-collections</strong>, eight "CRUD + history" and two "Read + history" — and, in the
-eleventh row, a single <code>GET /api/v3/events?cursor=</code> stream that carries
-everything those ten would carry.</p>
-<p>Under the model in <code>reports/schema-census/sync-cost.json</code> (distinct endpoints
-per 5-minute cycle × 288 cycles/day, a source-derived upper bound, not a
-packet capture):</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>Endpoints/cycle</th>
-<th>Requests/day</th>
-<th>Cost of the ten new collections</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>AndroidAPS today, per-collection deltas</td>
-<td>20</td>
-<td>5,760</td>
-<td><strong>+2,880/day</strong></td>
-</tr>
-<tr>
-<td>The event stream alone</td>
-<td>1</td>
-<td>288</td>
-<td>0</td>
-</tr>
-<tr>
-<td>A collection-agnostic delta + batch write</td>
-<td>2</td>
-<td>576</td>
-<td><strong>0</strong></td>
-</tr>
-</tbody>
-</table>
-<p>The measured finding that motivates the whole sync section of this series is
-that <strong>the client using v3 correctly has the worst fan-out, because v3 gives
-it a delta per collection.</strong> Under that shape, every resource added to
-improve replay makes sync worse, and a fidelity proposal reads as a cost
-proposal. That trade is not inherent — it is the per-collection delta, and it
-is a small change to code that is already generic:
-<code>lib/api3/specific/lastModified.js</code> already loops every collection with a
-per-collection permission check, and <code>lib/api3/generic/history/operation.js</code>
-is already generic in <code>opCtx.col</code>.
-<a href="../platform/PROPOSAL-replay-fidelity-changes-2026-09-11.html">The concrete endpoints, the merged-cursor correctness rule, and the
-arithmetic are in the replay-fidelity proposal</a> §1.</p>
-<p><strong>Recommended edits, in this order:</strong></p>
-<ol>
-<li><strong>Land the collection-agnostic delta read and the batch write first.</strong>
-   They are independently useful — they are the largest single sync
-   improvement available to AAPS today — and they remove the cost objection
-   to everything after them.</li>
-<li><strong>Then make <code>/events</code> the Phase 1 read path</strong> and the ten collections
-   <em>projections</em>: materialized views a UI or legacy client reads, not a sync
-   surface each client must poll separately.</li>
-</ol>
-<p>Neither costs the RFC anything it wanted. The event stream is already its
-Phase 1 deliverable, and the collections survive intact — they simply stop
-being the thing a controller has to iterate.</p>
-<h3 id="42-one-cursor-not-two">4.2 One cursor, not two<a class="headerlink" href="#42-one-cursor-not-two" title="Permanent link">&para;</a></h3>
-<p><code>conflict-resolution.md</code> proposes a global monotonic cursor
-(<code>eventCursors</code> collection, <code>findOneAndUpdate</code> with <code>$inc</code>) alongside
-optimistic locking on <code>srvModified</code>. v3 already ships <code>srvModified</code> per
-document and <code>GET /lastModified</code> across collections. This series' §3.2
-proposes an opaque server watermark deliberately so the implementation can
-change without a client release.</p>
-<p>Three cursor-ish things in two trees is one too many.</p>
-<p><strong>Recommended edit:</strong> state explicitly that the event cursor <strong>is</strong> the sync
-watermark, exposed opaquely, and that <code>srvModified</code> is its current
-implementation. Whether it stays a <code>srvModified</code> scan or becomes a counter or
-a replication offset is then an internal decision rather than a protocol one.</p>
-<p><strong>Unmeasured concern worth writing down rather than acting on:</strong> a single
-<code>{_id: 'global'}</code> counter document incremented on every event write is a
-write-serialization point, and multi-writer is the case the RFC exists to
-serve. Nobody has measured this, here or upstream. It belongs in the RFC's
-own open-questions list, not in a design decision.</p>
-<h3 id="43-do-not-add-an-issuer-field-where-two-already-exist">4.3 Do not add an issuer field where two already exist<a class="headerlink" href="#43-do-not-add-an-issuer-field-where-two-already-exist" title="Permanent link">&para;</a></h3>
-<p>The RFC's <code>IssuerIdentity</code> is the right model. But <code>treatments.enteredBy</code>
-(100% of documents) and <code>treatments.automatic</code> (81%, boolean, 10 sites)
-already carry, badly, exactly the distinction the base of the authority
-hierarchy needs.</p>
-<p><strong>Recommended edit:</strong> bridge rules should derive <code>issuerType</code> from
-<code>automatic</code> (true → <code>controller</code>, false/absent → <code>human</code>) and record
-<code>enteredBy</code> as an observed issuer <em>label</em>, not an identity. Add both to the
-questionnaire's D-section as pre-filled rows. New controllers emit
-<code>IssuerIdentity</code> natively; existing ones get a correct-by-default bridge for
-free.</p>
-<p><code>enteredBy</code> is free text and is treated as an identifying field by
-<code>specs/sync/sensitivity.yaml</code>. It must not be propagated into any served
-catalogue, event payload shown to a third party, or audit record that leaves
-the site.</p>
-<hr />
-<h2 id="5-what-is-missing-from-both-trees">5. What is missing from both trees<a class="headerlink" href="#5-what-is-missing-from-both-trees" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Gap</th>
-<th>Neither document has it</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>The settings resource</strong></td>
-<td>The RFC has <code>ProfileDefinition</code> (schedules) and <code>CapabilitySnapshot</code> (limits) but no effective-dated <em>controller settings</em> snapshot. This series has <code>specs/sync/controller-settings.schema.json</code> and no event model for it. Neither is complete alone</td>
-</tr>
-<tr>
-<td><strong><code>DataExclusion</code></strong></td>
-<td>A sensor warm-up or known-bad stretch is not missing data; it is data known to be unusable. The RFC's event model has no way to say so, and a replay that cannot tell the difference scores itself against noise</td>
-</tr>
-<tr>
-<td><strong>Replay inputs as a declared list</strong></td>
-<td>The RFC asks controllers what they <em>can</em> emit (E12). It never asks what they <em>have and do not publish</em> — which is the <code>status: absent, path: null</code> line that makes completeness measurable</td>
-</tr>
-<tr>
-<td><strong>Liveness under two controllers</strong></td>
-<td><code>ControllerInstanceRegistration</code> gives each instance an identity. Nothing in either tree says what happens when two instances write to one site, which is the normal case</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="6-the-concrete-edit-list">6. The concrete edit list<a class="headerlink" href="#6-the-concrete-edit-list" title="Permanent link">&para;</a></h2>
-<p>For <code>externals/cgm-remote-monitor-official/docs/proposals/</code>. Each is small,
-each is independently useful, and none requires this series to be adopted.</p>
-<table>
-<thead>
-<tr>
-<th>#</th>
-<th>File</th>
-<th>Change</th>
-<th>Source</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td><code>agent-control-plane-rfc.md</code> § Motivation</td>
-<td>Add "safety limits and effective parameters are not recoverable", with the 20%/50% replay figures and <code>max_iob</code></td>
-<td>§3.1</td>
-</tr>
-<tr>
-<td>2</td>
-<td><code>agent-control-plane-rfc.md</code> § API Design</td>
-<td>Land a collection-agnostic delta read and batch write <strong>first</strong>; then make <code>/events</code> the Phase 1 read path and the ten collections projections rather than a sync surface</td>
-<td>§4.1</td>
-</tr>
-<tr>
-<td>3</td>
-<td><code>agent-control-plane-rfc.md</code> § Capabilities</td>
-<td>Note that <code>loop.version</code> and <code>openaps.version</code> are already published, so <code>ControllerKindDefinition.version</code> needs no controller change</td>
-<td>§2</td>
-</tr>
-<tr>
-<td>4</td>
-<td><code>agent-control-plane-rfc.md</code> § Implementation Phases</td>
-<td>Add the write-serialization question about the global cursor to open questions</td>
-<td>§4.2</td>
-</tr>
-<tr>
-<td>5</td>
-<td><code>bridge-rules.md:68</code></td>
-<td>Delete <code>if (devicestatus.trio)</code>; document that oref derivatives share <code>openaps</code> and need a second-order signal</td>
-<td>§3.2</td>
-</tr>
-<tr>
-<td>6</td>
-<td><code>bridge-rules.md:171,470</code></td>
-<td>Stop using <code>devicestatus.device</code> as <code>issuerId</code>/<code>controllerInstanceId</code>; use a hub-issued synthetic id, record <code>device</code> as an observed alias</td>
-<td>§3.3</td>
-</tr>
-<tr>
-<td>7</td>
-<td><code>bridge-rules.md</code> § override extraction</td>
-<td>Mark synthesized override effects with <code>confidence</code>; allow "active, effects unknown"</td>
-<td>§3.4</td>
-</tr>
-<tr>
-<td>8</td>
-<td><code>bridge-rules.md</code> § issuer</td>
-<td>Derive <code>issuerType</code> from <code>treatments.automatic</code>; treat <code>enteredBy</code> as a label, never an identity, and never propagate it</td>
-<td>§4.3</td>
-</tr>
-<tr>
-<td>9</td>
-<td><code>conflict-resolution.md</code> § Event Ordering</td>
-<td>State that the event cursor and v3's sync watermark are one object, exposed opaquely</td>
-<td>§4.2</td>
-</tr>
-<tr>
-<td>10</td>
-<td><code>conflict-resolution.md</code> (whole)</td>
-<td>Reconcile with <code>docs/10-domain/authority-model.md</code>, which is a near-duplicate. One should become the source and the other a pointer</td>
-<td>§7</td>
-</tr>
-<tr>
-<td>11</td>
-<td><code>integration-questionnaire.md</code> (whole)</td>
-<td>Pre-fill from measurement and source; mark each cell <em>measured</em>, <em>from source</em>, or <em>ask</em></td>
-<td>§7</td>
-</tr>
-<tr>
-<td>12</td>
-<td><code>api-query-normalization.md</code> §5.1</td>
-<td>Reconcile the devicestatus caps (100 docs, 7 days) with backfill and replay, which are bounded-but-large reads</td>
-<td>§8</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="7-pre-filling-the-questionnaire-is-the-highest-value-single-edit">7. Pre-filling the questionnaire is the highest-value single edit<a class="headerlink" href="#7-pre-filling-the-questionnaire-is-the-highest-value-single-edit" title="Permanent link">&para;</a></h2>
-<p><code>integration-questionnaire.md</code> asks Loop, AAPS and Trio implementers twenty
-questions across fourteen tables, and every cell is empty. Status on all four
-controllers: <em>Pending</em>.</p>
-<p>An empty table is a request for unpaid work from maintainers whose capacity
-is demonstrably committed elsewhere — Loop's six-month commit history is
-device connectivity, not sync. <strong>A wrong table is a five-minute correction.</strong>
-Roughly half the questionnaire can be answered from the corpus or from each
-project's own source, today, with provenance marked per cell:</p>
-<table>
-<thead>
-<tr>
-<th>Question</th>
-<th>Can be pre-filled</th>
-<th>From</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>A3 Override dimensions</td>
-<td><strong>Mostly</strong> — Loop's observed dimensions are target range, multiplier, duration, name</td>
-<td><code>override.*</code> census</td>
-</tr>
-<tr>
-<td>B6 Composition emission — controller version</td>
-<td><strong>Yes</strong></td>
-<td><code>loop.version</code>, <code>openaps.version</code></td>
-</tr>
-<tr>
-<td>B6 — effective ISF/CR/basal, safety limits</td>
-<td><strong>Yes, as "no"</strong></td>
-<td>dosing-input map: absent/partial</td>
-</tr>
-<tr>
-<td>C7 Suggested / requested / confirmed</td>
-<td><strong>Yes</strong></td>
-<td>§3.5 table</td>
-</tr>
-<tr>
-<td>C8 Pump response codes</td>
-<td><strong>Partly</strong> — boolean ACK yes, error codes only Loop <code>failureReason</code> (2.4%)</td>
-<td>census</td>
-</tr>
-<tr>
-<td>D10 Monotonic ordering</td>
-<td><strong>Partly</strong> — <code>syncIdentifier</code> on 83% of treatments is a dedup key, not a sequence</td>
-<td>census</td>
-</tr>
-<tr>
-<td>F14 Controller registration — version, device info</td>
-<td><strong>Yes</strong></td>
-<td><code>loop.version</code>, <code>device</code> (with §3.3's caveat)</td>
-</tr>
-<tr>
-<td>A1 Profile identifiers, A2 templates, A4 resolution</td>
-<td><strong>No — ask</strong></td>
-<td>Internal to each controller</td>
-</tr>
-<tr>
-<td>C9 Failure reason distinction</td>
-<td><strong>No — ask</strong></td>
-<td>Not published</td>
-</tr>
-<tr>
-<td>D11 Offline batching, F13 remote commands, G15 timeline</td>
-<td><strong>No — ask</strong></td>
-<td>Not observable</td>
-</tr>
-</tbody>
-</table>
-<p>The remaining questions are then a genuinely short list of things only a
-maintainer knows, which is what a questionnaire should be.</p>
-<p><strong>One caveat that must travel with any pre-filled table.</strong> The corpus is
-<strong>Loop-dominant — 9 of 11 sites — and contains no AAPS closed-loop site at
-all.</strong> Every <code>openaps.*</code> figure above comes from <strong>one site</strong>. A pre-filled
-AAPS column would be read from source only, and must be labelled that way or
-it will mislead exactly the maintainer it is meant to help.</p>
-<hr />
-<h2 id="8-one-conflict-to-resolve-before-both-land">8. One conflict to resolve before both land<a class="headerlink" href="#8-one-conflict-to-resolve-before-both-land" title="Permanent link">&para;</a></h2>
-<p><code>api-query-normalization.md</code> caps <code>devicestatus</code> at <strong>100 documents and a
-7-day range</strong> for anonymous callers, 5× for admin. That is a sound answer to
-the self-inflicted-DDoS problem it documents — and it collides with two
-things:</p>
-<ul>
-<li><strong>Backfill and replay</strong> are bounded-but-large reads. <code>oref-digital-twin</code>
-  replays a history; a decomposition migration reads everything once.</li>
-<li><strong>The event stream</strong> would inherit whatever limits <code>/events</code> is given, and
-  a cursor-based reader catching up after an outage is indistinguishable from
-  an abusive one by request shape alone.</li>
-</ul>
-<p><strong>Recommended edit:</strong> state that cursor-paginated reads are exempt from the
-range cap and bounded by page size instead — the cursor already guarantees
-forward progress and bounded work per request, which is what the cap is for.
-This series' §3.4 makes the same argument from the other side: a
-<code>queryProfile</code> fixed in advance is what makes a bounded query safe without
-making it small.</p>
-<hr />
-<h2 id="9-what-changes-on-our-side">9. What changes on our side<a class="headerlink" href="#9-what-changes-on-our-side" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Doc</th>
-<th>Change</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>nightscout-hub-sync-architecture-2026-09-11.md</code> §5.2</td>
-<td>Points here; §5.2 stays as the reconciliation table, this document carries the edits</td>
-</tr>
-<tr>
-<td><code>PROPOSAL-controller-descriptions-2026-09-11.md</code> §9</td>
-<td>Prior-art row points here</td>
-</tr>
-<tr>
-<td><code>docs/10-domain/authority-model.md</code></td>
-<td>Two cross-reference links point at a path that does not exist (<code>externals/cgm-remote-monitor/</code>, the fork, not <code>-official</code>). Fixed. The duplication with <code>conflict-resolution.md</code> is now named in the document itself</td>
-</tr>
-<tr>
-<td><code>nightscout-adoption-roadmap-2026-09-11.md</code> §6</td>
-<td>"How much of <code>docs/proposals/</code> is live" is now partly answered: no reference anywhere in <code>lib/</code> or <code>tests/</code>, one line in <code>docs/INDEX.md</code>, and all four questionnaire responses still <em>Pending</em> — drafted and parked, not in progress</td>
-</tr>
-</tbody>
-</table>
-<h2 id="10-caveats">10. Caveats<a class="headerlink" href="#10-caveats" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong>Nobody upstream has been asked about any of this.</strong> Every recommendation
-  is a proposal to a document, not a decision about it. The RFC's status is
-  "Draft (2026 Proposal)" and no maintainer has said it is active.</li>
-<li><strong>All <code>openaps.*</code> figures are single-site.</strong> Trio and AAPS statements that
-  are not from the corpus are read from each project's source and are marked
-  as such.</li>
-<li><strong>"Parked, not in progress" is inferred</strong> from the absence of references to
-  these documents anywhere in <code>lib/</code> or <code>tests/</code> — the only mention in the
-  tree is one line in <code>docs/INDEX.md</code> — and from the absence of filled
-  questionnaire responses. It is not a statement anybody made.</li>
-<li><strong>The fan-out arithmetic in §4.1 is an upper bound on distinct endpoint
-  calls</strong>, extended from <code>sync-cost.json</code> under the same stated model. It is
-  a basis for comparing designs, not a traffic measurement.</li>
-</ul>
+<p>Loop's writer sets <code>loop.enacted.received</code> to <code>true</code> whenever there is a recommendation and no
+error, so it is not a pump acknowledgement; Trio sets <code>received</code> from the pump call's result
+(<a href="../platform/integration-questionnaire-defaults-2026-10-18.html#c7-delivery-state-distinction">questionnaire defaults C7</a>).
+Loop's only failure text is <code>loop.failureReason</code>, a string on 16,550 documents (2.4%). The
+suggestions decompose into <code>ApsSnapshot</code>'s <code>RecommendedBolus</code> and <code>Enacted</code>
+(<a href="../platform/spec/records.html#3-the-catalogue">records §3</a>); a request recorded apart from its
+effect is the requested carrier (<a href="../platform/spec/state-intent.html#2-rules">state and intent S7</a>);
+for a command, handed over and not yet acknowledged is the <code>sent</code> or <code>fetched</code> state
+(<a href="../platform/spec/commands.html#4-the-command-record-proposed">commands §4</a>).</p>
+<h3 id="36-safety-limits">3.6 Safety limits<a class="headerlink" href="#36-safety-limits" title="Permanent link">&para;</a></h3>
+<p>Loop records its limits in <code>profile.loopSettings</code> (200 profile documents, 10 sites). The corpus
+holds no <code>max_iob</code> from any oref0 derivative, so a replay of corpus data has to assume it. oref0's
+own rig uploads its <code>preferences</code> file, <code>max_iob</code> included, as <code>devicestatus.preferences</code> (oref0
+<code>d219baf9</code> <code>bin/ns-status.js:40-49,175-177</code>); Trio and AndroidAPS write a cap only into <code>reason</code>
+text when it binds. Of the dosing inputs each family declares, Nightscout records 20% for Loop and
+50% for the oref0 family (55% and 72% counting derivable inputs). The specifications carry this as
+the settings snapshot and the declared replay inputs (<a href="../platform/spec/records.html#5-settings-snapshot">records R5, R6, R8,
+§5</a>).</p>
+<h3 id="37-sync-cost-of-typed-collections">3.7 Sync cost of typed collections<a class="headerlink" href="#37-sync-cost-of-typed-collections" title="Permanent link">&para;</a></h3>
+<p>API v3 gives a client one delta read per collection, so a client that uses it as designed reads
+each collection separately, and every typed collection added adds a read. One read and one write
+across collections make the cost independent of the number of collections (<a href="../platform/spec/sync-transport.html#3-what-each-clients-sync-code-can-call">sync transport §3,
+T5, T7</a>). The change
+list is the <a href="../platform/PROPOSAL-replay-fidelity-changes-2026-09-11.html">replay-fidelity proposal</a> §1.</p>
+<h2 id="4-examples">4. Examples<a class="headerlink" href="#4-examples" title="Permanent link">&para;</a></h2>
+<h3 id="41-an-override-proposed-approved-requested-and-applied">4.1 An override proposed, approved, requested and applied<a class="headerlink" href="#41-an-override-proposed-approved-requested-and-applied" title="Permanent link">&para;</a></h3>
+<p>An agent instance proposes an exercise override; a person approves it; Loop, as a registered
+controller holding the <code>override</code> channel's <code>command-sink</code>, enacts it. Each step is a typed
+record. Identifiers are shortened, and the payload is illustrative, because no definition yet
+declares a command payload's shape (<a href="../platform/spec/commands.html#9-open">commands §9</a> item 3).</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># 1. Proposal (commands CM11). The agent's own instance holds a propose role (CM12).</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nt">proposal</span><span class="p">:</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="nt">proposalId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">p-41</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="nt">instanceId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9b2f…</span><span class="w">            </span><span class="c1"># the agent's instance (registration §8)</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span><span class="nt">channel</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">override</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span><span class="nt">payload</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">preset</span><span class="p">:</span><span class="w"> </span><span class="nv">Exercise</span><span class="p p-Indicator">,</span><span class="nt"> durationMinutes</span><span class="p">:</span><span class="w"> </span><span class="nv">60</span><span class="p p-Indicator">}</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">  </span><span class="nt">payloadHash</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sha256:7c1e…</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">  </span><span class="nt">basedOn</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sha256:a90d…</span><span class="w">        </span><span class="c1"># Loop's state version the agent read (state and intent A12)</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">  </span><span class="nt">expiresAt</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2026-10-18T15:10:00Z</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">  </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">open</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="c1"># 2. The approval names the hash (CM13, CM14). The hub creates one command (CM1).</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="nt">approval</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">proposalId</span><span class="p">:</span><span class="w"> </span><span class="nv">p-41</span><span class="p p-Indicator">,</span><span class="nt"> payloadHash</span><span class="p">:</span><span class="w"> </span><span class="nv">sha256</span><span class="p p-Indicator">:</span><span class="nv">7c1e…</span><span class="p p-Indicator">}</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="nt">command</span><span class="p">:</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">  </span><span class="nt">commandId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">c-118</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">  </span><span class="nt">proposalId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">p-41</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">  </span><span class="nt">payloadHash</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sha256:7c1e…</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">  </span><span class="nt">initiator</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="nv">other</span><span class="p p-Indicator">,</span><span class="nt"> controllerTerm</span><span class="p">:</span><span class="w"> </span><span class="nv">agent</span><span class="p p-Indicator">}</span><span class="w">   </span><span class="c1"># state and intent S8</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="w">  </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pending</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="c1"># 3. Loop fetches it (CM18), checks the hash, the expiry and its own limits (CM10),</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="c1">#    enacts it, and reports the record that shows the effect (CM7).</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="nt">outcome</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">commandId</span><span class="p">:</span><span class="w"> </span><span class="nv">c-118</span><span class="p p-Indicator">,</span><span class="nt"> state</span><span class="p">:</span><span class="w"> </span><span class="nv">succeeded</span><span class="p p-Indicator">,</span><span class="nt"> payloadHash</span><span class="p">:</span><span class="w"> </span><span class="nv">sha256</span><span class="p p-Indicator">:</span><span class="nv">7c1e…</span><span class="p p-Indicator">,</span><span class="nt"> record</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="nv">5d3a…</span><span class="p p-Indicator">}}</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="c1"># 4. Loop's records give the two layers the hub reports (state and intent S7, A10):</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="c1">#    treatments   `Temporary Override`, duration in minutes      -&gt; the requested instance</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a><span class="c1">#    devicestatus `override`, duration in seconds remaining      -&gt; the applied layer</span>
+</code></pre></div>
+<h3 id="42-an-approval-bound-to-a-payload-hash">4.2 An approval bound to a payload hash<a class="headerlink" href="#42-an-approval-bound-to-a-payload-hash" title="Permanent link">&para;</a></h3>
+<p>The proposal's payload hashes to <code>sha256:7c1e…</code>. An approval naming <code>sha256:7c1e…</code> creates a
+command whose payload is the proposal's, byte for byte. An approval naming any other hash is
+refused 409 <code>hash-mismatch</code>, and the proposal stays <code>open</code>. An approval after Loop's records have
+changed the state version is refused 409 <code>state-changed</code> (CM15); one after the <code>override</code>
+channel's <code>command-sink</code> has moved to another Loop instance is refused 409 <code>destination-changed</code>
+(CM13). The state version is the hub's record of what Loop reported, so <code>state-changed</code> tells the
+approver that the record changed, never that Loop's own state is unchanged.</p>
 
 
 

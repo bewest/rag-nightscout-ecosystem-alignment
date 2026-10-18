@@ -5315,7 +5315,7 @@
 <strong>measured</strong>. Sources and commits are in §1. Current decisions: <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan
 §1</a>.
 <strong>Corrected in place 2026-10-12:</strong> §5 is measured on both hubs (TL;DR and §12 follow it); the §10 rows for the hub-sync design and <code>specs/sync/registrations/</code> record what the
-registrations now declare and what remains; the registrations row also records the D18 addendum grammar (<code>SCHEMA-REG-EXT</code>, 2026-10-12). <strong>Also 2026-10-18:</strong> §2 records the maintainer's decision on agent initiators (P5). The rules this evidence supports are maintained in the <a href="spec/state-intent.html">state and intent specification</a>.</p>
+registrations now declare and what remains; the registrations row also records the D18 addendum grammar (<code>SCHEMA-REG-EXT</code>, 2026-10-12). <strong>Also 2026-10-18:</strong> §2 records the maintainer's decision on agent initiators (P5); the AndroidAPS items marked <strong>4.0.0 prerelease</strong> ship in <code>4.0.0-beta1</code> and <code>4.0.0-rc1</code> (§1). The rules this evidence supports are maintained in the <a href="spec/state-intent.html">state and intent specification</a>.</p>
 <p><strong>The question.</strong> Nightscout's API v1 and v3 manage <em>entities</em>: create, read, update and delete
 documents in <code>treatments</code>, <code>devicestatus</code>, <code>profile</code>. AID controllers increasingly manage
 <em>intent</em>: a named preset is activated, several intents run at once and combine, the controller
@@ -5348,7 +5348,7 @@ controller is responsible for sending data accurately and for syncing and reconc
 </tr>
 <tr>
 <td><strong>Every controller already built them</strong></td>
-<td>each in its own place: AAPS on the NS <code>settings</code> collection (dev), Loop and Trio over APNs replies and failure <code>Note</code>s, iAPS over NS <code>Announcement</code> treatments. None of it is typed, and most of it is invisible to the hub (§3, §6)</td>
+<td>each in its own place: AAPS on the NS <code>settings</code> collection (4.0.0 prereleases), Loop and Trio over APNs replies and failure <code>Note</code>s, iAPS over NS <code>Announcement</code> treatments. None of it is typed, and most of it is invisible to the hub (§3, §6)</td>
 </tr>
 <tr>
 <td><strong>The hubs disagree on "what is active now"</strong></td>
@@ -5393,7 +5393,7 @@ controller is responsible for sending data accurately and for syncing and reconc
 <tr>
 <td>AndroidAPS</td>
 <td><code>7e1d537d49</code> (dev, 2026-09-23)</td>
-<td>release <code>3.4.2.6</code> (<code>598e2eb39c</code>) is not an ancestor; items marked <strong>dev-only</strong> are absent from the release</td>
+<td>release <code>3.4.2.6</code> (<code>598e2eb39c</code>) is not an ancestor; items marked <strong>4.0.0 prerelease</strong> are absent from that release and present in <code>4.0.0-beta1</code> (2026-10-08) and <code>4.0.0-rc1</code> (2026-10-16), both descendants of <code>7e1d537d49</code> (<a href="integration-questionnaire-defaults-2026-10-18.html#1-sources">questionnaire defaults §1</a>)</td>
 </tr>
 <tr>
 <td>cgm-remote-monitor</td>
@@ -5485,7 +5485,7 @@ Trio preset-join statement is read-derived.</p>
 <p><em>P5, decided 2026-10-18 (maintainer):</em> no <code>agent</code> value is added to any initiator vocabulary; an
 agent initiator is written in the open-vocabulary form <code>{value: other, controllerTerm}</code>, as the
 registration specification (<a href="spec/registration.html#9-channels-roles-and-provenance">§9</a>) does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. (<a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">execution plan</a>,
-row 17; <a href="agent-trust-boundaries-2026-10-18.html#42-the-upstream-rfc-under-d18">agents in the ecosystem §4.2</a>).</p>
+row 17; <a href="agent-trust-boundaries-2026-10-18.html#42-the-earlier-draft-and-the-rules-proposed-to-supersede-it">agents in the ecosystem §4.2</a>).</p>
 <h2 id="3-per-controller-matrix">3. Per-controller matrix<a class="headerlink" href="#3-per-controller-matrix" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5503,14 +5503,14 @@ row 17; <a href="agent-trust-boundaries-2026-10-18.html#42-the-upstream-rfc-unde
 <td><code>TemporaryScheduleOverridePreset</code> with UUID; activation copies the preset; presets uploaded in <code>profile.loopSettings.overridePresets</code> <strong>without id</strong>; remote enactment by name</td>
 <td>one <code>OverrideStored</code> entity, <code>isPreset</code> flag; activation mutates the preset row; presets in <code>profile.overridePresets</code> {name, duration, percentage, target}; remote by name</td>
 <td>separate <code>OverridePresets</code> and append-only <code>Override</code> log; presets not sent to Nightscout</td>
-<td>named profiles in the store; ProfileSwitch copies blocks; TT presets in preferences; <strong>dev-only</strong> Scenes with definition id</td>
+<td>named profiles in the store; ProfileSwitch copies blocks; TT presets in preferences; <strong>4.0.0 prerelease</strong> Scenes with definition id</td>
 </tr>
 <tr>
 <td><strong>P2 slots</strong></td>
 <td><code>override</code> + <code>preMeal</code>, concurrent</td>
 <td>override + temp target, concurrent</td>
 <td>override + temp target, concurrent</td>
-<td>ProfileSwitch + TT, concurrent; RunningMode (temporary over permanent); <strong>dev-only</strong> one Scene</td>
+<td>ProfileSwitch + TT, concurrent; RunningMode (temporary over permanent); <strong>4.0.0 prerelease</strong> one Scene</td>
 </tr>
 <tr>
 <td><strong>P3 requested vs applied</strong></td>
@@ -5538,7 +5538,7 @@ row 17; <a href="agent-trust-boundaries-2026-10-18.html#42-the-upstream-rfc-unde
 <td>APNs; TOTP for bolus/carbs only; optional APNs reply without correlation id; failure as <code>Note</code></td>
 <td>APNs, AES-GCM, ±600 s window; reply to sender over APNs; failure <code>Note</code></td>
 <td>Nightscout <code>Announcement</code> treatments; authorisation is NS write access; no acknowledgement</td>
-<td>SMS with TOTP+PIN; <strong>dev-only</strong> signed envelopes on NS <code>settings</code>: prepare/commit, <code>validUntil</code>, ack Executing → Done{Ok, Failed, Expired} → Delivery{Failed}</td>
+<td>SMS with TOTP+PIN; <strong>4.0.0 prerelease</strong> signed envelopes on NS <code>settings</code>: prepare/commit, <code>validUntil</code>, ack Executing → Done{Ok, Failed, Expired} → Delivery{Failed}</td>
 </tr>
 <tr>
 <td><strong>Unique, needs typing</strong></td>
@@ -5594,7 +5594,7 @@ row 17; <a href="agent-trust-boundaries-2026-10-18.html#42-the-upstream-rfc-unde
   PS is written by a user, SMS, automation, scene or NS sync; the profile is pushed to the pump;
   <strong>only if the pump accepts</strong> is an EPS written. A failed or pending change is visible on the wire
   only as a PS with no following EPS. The EPS is uploaded as <code>eventType: "Note"</code>, recognised by
-  <code>originalProfileName</code>; its <code>profileJson</code> is scaled, the PS's is the base profile. <strong>dev-only:</strong>
+  <code>originalProfileName</code>; its <code>profileJson</code> is scaled, the PS's is the base profile. <strong>4.0.0 prerelease:</strong>
   <code>EPS.originalPsId</code> links the two locally and is not sent.</li>
 <li><strong><code>percentage</code> scales overall insulin needs.</strong> <code>ProfileSealed.convertToNonCustomizedProfile</code>:
   basal × p/100, ISF × 100/p, IC × 100/p; targets only time-shifted (pinned by
@@ -5602,14 +5602,14 @@ row 17; <a href="agent-trust-boundaries-2026-10-18.html#42-the-upstream-rfc-unde
   percentage enters the TDD-based ISF formula instead.</li>
 <li><strong>RunningMode</strong> has a requested layer and a constraint-forced layer (<code>autoForced: true</code>,
   <code>reasons</code>), both uploaded as <code>OpenAPS Offline</code>; open-ended <code>DISABLED_LOOP</code> is sent with a
-  10-year duration and <code>originalDuration: 0</code>. <strong>dev-only:</strong> <code>RunningModeReconciler</code> drives the
+  10-year duration and <code>originalDuration: 0</code>. <strong>4.0.0 prerelease:</strong> <code>RunningModeReconciler</code> drives the
   pump from the mode record and re-checks drift at startup.</li>
 <li><strong>Temp targets</strong> have a closed reason vocabulary (<code>Custom, Hypo, Activity, Eating Soon,
   Automation, Wear</code>); a new TT ends the running one; inbound merges are shorten-only.</li>
 <li><strong>Accepting remote intent is opt-in per type.</strong> The pump-owning phone applies NS-originated PS,
   TT and RunningMode records only if <code>NsClientAcceptProfileSwitch</code>, <code>…TempTarget</code>,
   <code>…RunningMode</code> are on; all default off.</li>
-<li><strong>dev-only client control and scenes.</strong> Commands and acknowledgements travel as documents in
+<li><strong>Client control and scenes (4.0.0 prerelease).</strong> Commands and acknowledgements travel as documents in
   the NS v3 <code>settings</code> collection under fixed identifiers; scene and automation definitions are
   published under <code>aaps</code>, active-scene state (with the NS identifiers of the records the scene
   created) under <code>aaps-state</code>. Scene revert shortens only records the scene still owns.</li>
@@ -5794,7 +5794,7 @@ honoured only by controllers that download them (Trio; AAPS behind an opt-in).</
 <td>no</td>
 </tr>
 <tr>
-<td>AAPSClient → AAPS (<strong>dev-only</strong>, NS <code>settings</code>)</td>
+<td>AAPSClient → AAPS (<strong>4.0.0 prerelease</strong>, NS <code>settings</code>)</td>
 <td>yes, signed</td>
 <td><code>Executing</code> ack</td>
 <td><code>Done/Ok</code> ack</td>
@@ -5872,7 +5872,7 @@ the hub; that section is inconsistent with the roles and would need revising.</p
 <td>everything, as far as the hub is concerned</td>
 </tr>
 <tr>
-<td>AAPS (<strong>dev-only</strong>)</td>
+<td>AAPS (<strong>4.0.0 prerelease</strong>)</td>
 <td>NS <code>settings</code>, identifiers <code>aaps</code> and <code>aaps-state</code></td>
 <td>scene, automation, QuickWizard and insulin definitions; active scene with component record identifiers</td>
 <td>a schema other software can read</td>
@@ -5931,7 +5931,7 @@ publishing its definitions to the hub, in a controller-private shape, overwritte
 </tr>
 <tr>
 <td><code>specs/sync/registrations/{loop,trio,androidaps}.yaml</code></td>
-<td>structural discriminators. <strong>Since 2026-10-12</strong> (<code>make schema-sync-model</code>, schema extended additively): every intent kind declares its slot and which slots coexist, states, the wire carrier (§4), requested vs applied, initiators, definitions and acceptance policy, each with <code>read</code>/<code>measured</code> evidence; <code>composition</code> is declared as reported by the controller and <code>commands</code> per §6. Added: Loop pre-meal (declared with <code>wire: null</code>, not published), Loop <code>dosingEnabled</code>, Trio <code>dosingMode</code> (§3.2; the <code>dosingMode</code> in this row's original text is Trio's), AAPS RunningMode, the AAPS PS → EPS pair, dev-only AAPS Scene. AAPS <code>Override</code> removed. <strong>Also 2026-10-12</strong> (<code>SCHEMA-REG-EXT</code>, D18 addendum rules 1–5): the grammar is must-ignore with typed, reverse-DNS-namespaced <code>extensions</code>, typed field declarations, <code>other</code> + <code>controllerTerm</code> for the open lists, per-kind <code>versions</code> and declared horizons; the three registrations gained <code>typeRef</code> to ControllerSettings definitions read from their own algorithm family, a <code>cycle</code> horizon on the <code>devicestatus</code> document and an <code>effective-dated</code> horizon on <code>settings</code>; a synthetic fixture (<code>registrations/fixtures/</code>) uses every rule</td>
+<td>structural discriminators. <strong>Since 2026-10-12</strong> (<code>make schema-sync-model</code>, schema extended additively): every intent kind declares its slot and which slots coexist, states, the wire carrier (§4), requested vs applied, initiators, definitions and acceptance policy, each with <code>read</code>/<code>measured</code> evidence; <code>composition</code> is declared as reported by the controller and <code>commands</code> per §6. Added: Loop pre-meal (declared with <code>wire: null</code>, not published), Loop <code>dosingEnabled</code>, Trio <code>dosingMode</code> (§3.2; the <code>dosingMode</code> in this row's original text is Trio's), AAPS RunningMode, the AAPS PS → EPS pair, AAPS Scene (4.0.0 prerelease). AAPS <code>Override</code> removed. <strong>Also 2026-10-12</strong> (<code>SCHEMA-REG-EXT</code>, D18 addendum rules 1–5): the grammar is must-ignore with typed, reverse-DNS-namespaced <code>extensions</code>, typed field declarations, <code>other</code> + <code>controllerTerm</code> for the open lists, per-kind <code>versions</code> and declared horizons; the three registrations gained <code>typeRef</code> to ControllerSettings definitions read from their own algorithm family, a <code>cycle</code> horizon on the <code>devicestatus</code> document and an <code>effective-dated</code> horizon on <code>settings</code>; a synthetic fixture (<code>registrations/fixtures/</code>) uses every rule</td>
 <td>still undeclared, because this document does not establish them: iAPS (no registration exists); end-reason vocabularies for Trio override and temp target and for AAPS profile switch; AAPS <code>Sources</code> values; command vocabularies; where AAPS reports the composed target; a <code>scheduled</code> state for any kind except Loop's override. The declarations are read-derived except the counts §3 marks <strong>measured</strong>. Not typed, rather than guessed: per-cycle state, and <code>suspendThreshold</code>, whose ControllerSettings definition is labelled oref0 but was read from Loop's source; no generated field carries a sensitivity label, so each falls to <code>unlabelledPolicy: withhold</code></td>
 </tr>
 <tr>
