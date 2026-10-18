@@ -13,8 +13,8 @@
 
 # Review packet — ID-FORMAT-DECISION
 
-**Decide: the client identifier's format (opaque string with limits; UUID
-recommended, not required)**
+**Decide: the client identifier's format (opaque string with limits; UUID not
+required)**
 
 | | |
 |---|---|
@@ -45,13 +45,16 @@ maintainer, after the Loop maintainers answer
 
 *Each of these is the author recording, at the time, a property they could not measure. This is the reviewer's worklist.*
 
-- A decision, not measurable. Proposed 2026-10-17 in the Loop reply:
-  identifier is a non-empty string with a length limit and character set;
-  the recommended form is a UUID, v5 of a source-derived key when several
-  devices must agree, v4 created once for manual entries; the server never
-  depends on its shape; one identifier names one record, the client's
-  responsibility. Open: the limit, the character set, and whether the server
-  compares UUIDs without regard to case.
+- A decision, not measurable. Proposed answer (research note identifier-
+  format-2026-10-17 §6.2, reply rewritten 2026-10-17): an opaque, case-
+  sensitive string, 1 to 256 characters from [A-Za-z0-9._~:-], not exactly
+  24 hex, not history, ., .., invalid, undefined, null or NaN; one
+  identifier names one record per collection. UUID not required: v4 for a
+  one-device record, v5 of a scheme-prefixed source-derived name (in a
+  published Nightscout client namespace) when several devices must agree,
+  needed only by clients that use the v1 by-_id routes. Open: the 256 limit,
+  the character set (Loop's current CGM keys contain spaces; 503 Loop
+  syncIdentifiers at one corpus site contain /), and the client namespace.
 
 ## Blocked on
 
@@ -61,6 +64,7 @@ maintainer, after the Loop maintainers answer
 
 - [`docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md`](../../docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md)
 - [`docs/60-research/tenancy/identifier-duplicates-2026-10-17.md`](../../docs/60-research/tenancy/identifier-duplicates-2026-10-17.md)
+- [`docs/60-research/tenancy/identifier-format-2026-10-17.md`](../../docs/60-research/tenancy/identifier-format-2026-10-17.md)
 
 ## Notes carried on the item
 

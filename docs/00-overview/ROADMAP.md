@@ -198,7 +198,7 @@ Until then, the order below is the order of development, not of release.
 | 5 | `A7A-4` | §7a item 4 - a health signal for a silent per-tenant outage | `not-started` | `T44` |
 | 5 | `BFQ-66` | BF-66 - the deployment's own tokens fail its own tenant check | `blocked` | `T30-WIRING`, `T31-REM`, `SEAM-REFRESH` |
 | 5 | `ID-CLIENT-OID-DECISION` | Decide: may a client set _id (an ObjectId it creates), and which field wins when | `needs-decision` | `LOOP-ID-REPLY` |
-| 5 | `ID-FORMAT-DECISION` | Decide: the client identifier's format (opaque string with limits; UUID recommen | `needs-decision` | `LOOP-ID-REPLY` |
+| 5 | `ID-FORMAT-DECISION` | Decide: the client identifier's format (opaque string with limits; UUID not requ | `needs-decision` | `LOOP-ID-REPLY` |
 | 5 | `ID-V3-IMMUTABLE-DECISION` | Decide: on an identifier match, may date, device or eventType change? | `needs-decision` | `LOOP-ID-REPLY` |
 | 6 | `A7A-GATE` | The alarms-on gate itself - nothing here may be marked done by inference | `blocked` | `T44`, `A7A-3`, `A7A-4`, `A7A-7` |
 | 6 | `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up s | `blocked` | `ID-FIRST-MATCH`, `ID-BATCH-RESULTS`, `ID-V3-IMMUTABLE-DECISION` |

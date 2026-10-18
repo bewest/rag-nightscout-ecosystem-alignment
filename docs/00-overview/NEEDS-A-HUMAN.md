@@ -37,7 +37,7 @@ they need is a release, and that is one item — `RT-0` — which is listed.
 | `BFQ-164` | `needs-decision` | BF-164 - writes outside API v3 never reach the v3 storage socket | &mdash; |
 | `DEPENDABOT-CONFIG` | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts co | &mdash; |
 | `ID-CLIENT-OID-DECISION` | `needs-decision` | Decide: may a client set _id (an ObjectId it creates), and which field wins when | &mdash; |
-| `ID-FORMAT-DECISION` | `needs-decision` | Decide: the client identifier's format (opaque string with limits; UUID recommen | &mdash; |
+| `ID-FORMAT-DECISION` | `needs-decision` | Decide: the client identifier's format (opaque string with limits; UUID not requ | &mdash; |
 | `ID-V3-IMMUTABLE-DECISION` | `needs-decision` | Decide: on an identifier match, may date, device or eventType change? | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |

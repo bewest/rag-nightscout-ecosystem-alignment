@@ -5984,7 +5984,7 @@ alarm-readiness items, and the seam branch refresh.
 | `WC-STEP-PATCH` | Release 1 (patch): one write step for every v1, v3 and socket path, today's behaviour pinned; BF-165's _id in every reply | `blocked` | `-` | patch | 0 run + 1 no-gate |
 | `ID-FIRST-MATCH` | Release 2 (minor): identifier-first matching for entries, devicestatus and socket dbAdd, with the Q1 adoption rule | `blocked` | `-` | minor | 0 run + 1 no-gate |
 | `ID-BATCH-RESULTS` | Release 2 (minor): per-item results in v1 batch replies; one bad item no longer fails the batch | `blocked` | `-` | minor | 0 run + 1 no-gate |
-| `ID-FORMAT-DECISION` | Decide: the client identifier's format (opaque string with limits; UUID recommended, not required) | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
+| `ID-FORMAT-DECISION` | Decide: the client identifier's format (opaque string with limits; UUID not required) | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
 | `ID-CLIENT-OID-DECISION` | Decide: may a client set _id (an ObjectId it creates), and which field wins when identifier and _id match different records? | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection; empty and null mean absent | `blocked` | `-` | minor | 0 run + 1 no-gate |
 | `ID-V1-LOOKUP` | Release 2 (minor): v1 GET and DELETE by any identifier, without the default time window | `blocked` | `-` | minor | 0 run + 1 no-gate |
@@ -6680,7 +6680,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Notes.** U6 in spec section 3. The error item's shape is not decided; it must not break NightscoutKit's same-length check (read, not run).
 
-### `ID-FORMAT-DECISION` &mdash; Decide: the client identifier's format (opaque string with limits; UUID recommended, not required)
+### `ID-FORMAT-DECISION` &mdash; Decide: the client identifier's format (opaque string with limits; UUID not required)
 
 | | |
 |---|---|
@@ -6701,12 +6701,13 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; A decision, not measurable. Proposed 2026-10-17 in the Loop reply: identifier is a non-empty string with a length limit and character set; the recommended form is a UUID, v5 of a source-derived key when several devices must agree, v4 created once for manual entries; the server never depends on its shape; one identifier names one record, the client's responsibility. Open: the limit, the character set, and whether the server compares UUIDs without regard to case.
+- **NO GATE** &mdash; A decision, not measurable. Proposed answer (research note identifier-format-2026-10-17 §6.2, reply rewritten 2026-10-17): an opaque, case-sensitive string, 1 to 256 characters from [A-Za-z0-9._~:-], not exactly 24 hex, not history, ., .., invalid, undefined, null or NaN; one identifier names one record per collection. UUID not required: v4 for a one-device record, v5 of a scheme-prefixed source-derived name (in a published Nightscout client namespace) when several devices must agree, needed only by clients that use the v1 by-_id routes. Open: the 256 limit, the character set (Loop's current CGM keys contain spaces; 503 Loop syncIdentifiers at one corpus site contain /), and the client namespace.
 
 **Evidence.**
 
 - `docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md`
 - `docs/60-research/tenancy/identifier-duplicates-2026-10-17.md`
+- `docs/60-research/tenancy/identifier-format-2026-10-17.md`
 
 **Notes.** Today: v1 recognises only UUID-shaped values as identifiers in by-id routes (UUID_RE, case-insensitive, lib/server/query.js:12 at dev fade2299), while stored identifiers are compared exactly, so Loop's upper-case override UUIDs match only themselves. API v3 computes uuid.v5(device_date[_eventType], "NightscoutRocks!") when none is sent (lib/api3/shared/operationTools.js:6, 106). A random UUID cannot serve the phone-and-watch case, where both devices must derive the same value; AndroidAPS keys on pump event ids. Not required: changing an existing client's identifiers, which would break matching against records it already stored. 2026-10-17: the rewritten Loop reply states only "a string, UUID recommended" and lists the limit, character set and case under "later, only if needed"; decide when a client or ID-VALIDATE needs it.
 
@@ -6768,7 +6769,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/tenancy/identifier-duplicates-2026-10-17.md`
 
-**Notes.** BF-141's fix (#8781) treats an empty treatment identity as absent; this extends the rule to identifier on every collection. ID-DUP-MEASURE found no stored identifier that is null, "" or non-string in the corpus, and every stored one is a UUID-shaped or Loop syncIdentifier value; the corpus has no v3 writer, so this does not bound what AndroidAPS stores.
+**Notes.** Checks in order of value (identifier-format-2026-10-17 §6.3): length over the limit (a 1,000-character identifier fails to insert on MongoDB 3.6.8, measured); exactly 24 hex that is not the record's own _id; reserved words and client sentinels (history, ., .., invalid from G7SensorKit, undefined, null, NaN); characters outside the set, first as a warning because Loop's current CGM keys contain spaces. No UUID pattern check: it would reject 489 stored corpus values and every non-UUID key. Earlier notes follow. BF-141's fix (#8781) treats an empty treatment identity as absent; this extends the rule to identifier on every collection. ID-DUP-MEASURE found no stored identifier that is null, "" or non-string in the corpus, and every stored one is a UUID-shaped or Loop syncIdentifier value; the corpus has no v3 writer, so this does not bound what AndroidAPS stores.
 
 ### `ID-V1-LOOKUP` &mdash; Release 2 (minor): v1 GET and DELETE by any identifier, without the default time window
 
