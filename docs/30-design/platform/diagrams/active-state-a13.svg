@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="381" viewBox="0 0 720 381" font-family="Helvetica, Arial, sans-serif" role="img">
+<title>A13 · Sampled state</title>
+<desc>A13 · Sampled state: A kind whose endedEncoding is sampled-state has no instance records: each record carries the current value, which holds from the record's time until the next record of the kind and product. The value reported is the first declared path's. Cases drawn: sampled-state-latest-value: A sampled-state kind is the latest sample's value, each sample holding until the next.</desc>
+<rect x="0" y="0" width="720" height="381" fill="#ffffff"/>
+<text x="12" y="24" font-size="14" fill="#111111" font-weight="bold">A13 · Sampled state</text>
+<text x="12" y="44" font-size="12" fill="#555555">Each panel is one conformance case: the records in the order the hub received them, the instances the case expects (blue), and</text>
+<text x="12" y="59" font-size="12" fill="#555555">what it expects to be active at each dashed line. A hollow dot is created_at, where the record's time comes from another declared</text>
+<text x="12" y="74" font-size="12" fill="#555555">field.</text>
+<rect x="12" y="97" width="696" height="236" rx="6" fill="#f4f4f4"/>
+<line x1="195.8" y1="157" x2="195.8" y2="303" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<line x1="283.5" y1="157" x2="283.5" y2="303" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="18" y="115" font-size="12.5" fill="#111111" font-weight="bold">sampled-state-latest-value — A sampled-state kind is the latest sample's value, each sample holding until the</text>
+<text x="18" y="131" font-size="12.5" fill="#111111" font-weight="bold">next</text>
+<text x="18" y="149" font-size="12" fill="#555555">rules A13</text>
+<text x="18" y="171" font-size="12" fill="#111111">#1 write</text>
+<circle cx="152" cy="167" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="160" y="161.4" width="105.4" height="12.6" fill="#f4f4f4"/><text x="161" y="171" font-size="12" fill="#111111">dosingMode closed</text>
+<text x="18" y="191" font-size="12" fill="#111111">#2 write</text>
+<circle cx="239.7" cy="187" r="4" fill="#111111" stroke="#111111" stroke-width="1.5"/>
+<rect x="247.7" y="181.4" width="97.4" height="12.6" fill="#f4f4f4"/><text x="248.7" y="191" font-size="12" fill="#111111">dosingMode open</text>
+<rect x="18" y="201" width="684" height="1" fill="#c8c8c8"/>
+<text x="18" y="219" font-size="12" fill="#1f5fa8">instance</text>
+<rect x="152" y="209" width="87.7" height="12" rx="2" fill="#dce7f5" stroke="#1f5fa8" stroke-width="1"/>
+<rect x="244.7" y="209.4" width="114.9" height="12.6" fill="#f4f4f4"/><text x="245.7" y="219" font-size="12" fill="#111111">DosingMode @10:00</text>
+<text x="18" y="239" font-size="12" fill="#1f5fa8">instance</text>
+<rect x="239.7" y="229" width="438.3" height="12" rx="2" fill="#dce7f5" stroke="#1f5fa8" stroke-width="1"/>
+<path d="M678,232 L684,235 L678,238 Z" fill="#1f5fa8"/>
+<text x="243.7" y="239" font-size="12" fill="#111111">DosingMode @10:10, open-ended</text>
+<rect x="18" y="249" width="684" height="1" fill="#c8c8c8"/>
+<text x="18" y="269" font-size="12" fill="#111111">active at</text>
+<rect x="144" y="255" width="173.3" height="20" rx="3" fill="#ffffff" stroke="#1f5fa8" stroke-width="1"/>
+<text x="230.6" y="269" font-size="12" fill="#111111" text-anchor="middle">DosingMode @10:00 = closed</text>
+<rect x="200.9" y="279" width="165.3" height="20" rx="3" fill="#ffffff" stroke="#1f5fa8" stroke-width="1"/>
+<text x="283.5" y="293" font-size="12" fill="#111111" text-anchor="middle">DosingMode @10:10 = open</text>
+<line x1="152" y1="307" x2="678" y2="307" stroke="#c8c8c8" stroke-width="1"/>
+<line x1="152" y1="307" x2="152" y2="311" stroke="#555555" stroke-width="1"/>
+<text x="152" y="324" font-size="12" fill="#555555" text-anchor="middle">10:00</text>
+<line x1="415" y1="307" x2="415" y2="311" stroke="#555555" stroke-width="1"/>
+<text x="415" y="324" font-size="12" fill="#555555" text-anchor="middle">10:30</text>
+<line x1="678" y1="307" x2="678" y2="311" stroke="#555555" stroke-width="1"/>
+<text x="678" y="324" font-size="12" fill="#555555" text-anchor="middle">11:00</text>
+<text x="18" y="324" font-size="12" fill="#555555">UTC</text>
+<text x="12" y="347" font-size="12" fill="#555555" font-style="italic">Rule A13, docs/30-design/platform/spec/state-intent.md §6.1; cases from specs/sync/conformance/active-state/</text>
+<text x="12" y="362" font-size="12" fill="#555555" font-style="italic">(sampled-state-latest-value). Synthetic; expectations authored by hand.</text>
+</svg>

@@ -1135,6 +1135,8 @@
       
         
       
+        
+      
     
     
     
@@ -1363,6 +1365,64 @@
     
   
     cgmencode/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../diagrams/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    diagrams/
   
 
     
@@ -2036,7 +2096,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_15" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_16" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -2059,8 +2119,8 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_15_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_8_15">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_16_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8_16">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2752,6 +2812,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#mermaid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mermaid
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exclusions" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2846,7 +2917,7 @@
 
 
 <h1 id="static-site-mkdocs-material">Static site (MkDocs Material)<a class="headerlink" href="#static-site-mkdocs-material" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>f59547fc1</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>689d69cb9</code>.</em></p>
 <p><em>Contributor-facing.</em> Builds a browsable copy of this repository's
 documentation. It is deployed only by the maintainer, from a local build, on the
 <code>gh-pages</code> branch (see <a href="#publishing">Publishing</a>). Every page carries
@@ -2900,6 +2971,16 @@ want to see it.</p>
    override in <code>tools/site/overrides/main.html</code> adds the noindex meta;
    <code>tools/site/hooks.py</code> loads the generated nav).</li>
 </ol>
+<h2 id="mermaid">Mermaid<a class="headerlink" href="#mermaid" title="Permanent link">&para;</a></h2>
+<p><code>tools/site/overrides/main.html</code> pins the mermaid runtime (11.17.2 from unpkg) and adds it only to
+pages that have a mermaid block. mkdocs-material fetches its own floating <code>mermaid@11</code> only when no
+global <code>mermaid</code> exists, so the pinned script is the one used. <code>make diagrams-check</code> (<code>mermaid_check.py</code>) parses every
+<code>```mermaid</code> block in the tracked Markdown with that same version in headless Chrome and
+fails with <code>file:line</code>. It needs no network once the runtime is cached: the first run for a
+version downloads the npm tarball, checks it against the integrity recorded in the script, and
+keeps <code>dist/mermaid.min.js</code> under <code>~/.cache/nightscout-alignment/mermaid/&lt;version&gt;/</code>. To move
+the pin, change the URL in <code>overrides/main.html</code> and add the version's <code>npm view mermaid@&lt;v&gt;
+dist.integrity</code> to <code>INTEGRITY</code>.</p>
 <h2 id="exclusions">Exclusions<a class="headerlink" href="#exclusions" title="Permanent link">&para;</a></h2>
 <p><code>tools/site/exclusions.yaml</code> lists glob patterns for tracked paths that must not
 be published, each with an <code>axis</code>, a <code>reason</code> and who decided it (the schema is
@@ -3070,8 +3151,11 @@ is not committed. It never pushes.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
+  
       <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
+  
+
   </body>
 </html>
