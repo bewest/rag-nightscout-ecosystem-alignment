@@ -284,17 +284,18 @@ async function req (method, p, body, headers) {
     put('treatments v1 PUT: by identifier, no _id', st(r) + ' | stored ' + desc(d, undefined, { X, fields: ['carbs'] }) + ' | reply ' + replyId(r.j, undefined, d[0] && d[0]._id));
   }
   {
-    const t = T(), A = oid(), X = uuid(), U = uuid(), Up = U.toUpperCase();
+    const t = T(), A = oid(), X = uuid(), U1 = uuid(), U2 = uuid().toUpperCase();
     await req('POST', TR, [tr(t, { _id: A, identifier: X })], H);
-    await req('POST', TR, [tr(T(), { _id: U })], H);
-    await req('POST', TR, [tr(T(), { _id: Up })], H);
+    await req('POST', TR, [tr(T(), { _id: U1 })], H);
+    await req('POST', TR, [tr(T(), { _id: U2 })], H);
     const n = r => Array.isArray(r.j) ? r.j.length : r.s;
     const g1 = await req('GET', TR + '.json?find[_id]=' + A, undefined, H);
     const g2 = await req('GET', TR + '.json?find[identifier]=' + X, undefined, H);
-    const g3 = await req('GET', TR + '.json?find[_id]=' + U, undefined, H);
-    const g4 = await req('GET', TR + '.json?find[_id]=' + Up, undefined, H);
-    const g5 = await req('GET', TR + '.json?find[_id]=' + U.toUpperCase(), undefined, H);
-    put('treatments v1 GET: find[_id]=<hex>, find[identifier]=X, find[_id]=<uuid sent as _id>, same upper-case-sent, lower-case-sent asked upper', 'found ' + [g1, g2, g3, g4, g5].map(n).join(', '));
+    const g3 = await req('GET', TR + '.json?find[_id]=' + U1, undefined, H);
+    const g4 = await req('GET', TR + '.json?find[_id]=' + U2, undefined, H);
+    const g5 = await req('GET', TR + '.json?find[_id]=' + U1.toUpperCase(), undefined, H);
+    const g6 = await req('GET', TR + '.json?find[_id]=' + U2.toLowerCase(), undefined, H);
+    put('treatments v1 GET: find[_id]=<hex sent beside identifier>, find[identifier]=X, find[_id]=<lower-case UUID sent as _id>, <upper-case UUID sent as _id>, the first asked upper-case, the second asked lower-case', 'found ' + [g1, g2, g3, g4, g5, g6].map(n).join(', '));
   }
   {
     const t = T(), X = uuid();

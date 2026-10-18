@@ -58,6 +58,7 @@ maintainer
 
 ## Evidence
 
+- [`docs/10-domain/record-identity-reference.md`](../../docs/10-domain/record-identity-reference.md)
 - [`docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`](../../docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md)
 - [`docs/60-research/tenancy/identifier-duplicates-2026-10-17.md`](../../docs/60-research/tenancy/identifier-duplicates-2026-10-17.md)
 

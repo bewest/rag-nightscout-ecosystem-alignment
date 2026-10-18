@@ -139,3 +139,10 @@ decision row it produces.
 - **Push first.** The reply links pages on the project site; the gh-pages build of 2026-10-17
   (`de66763c`) has every linked page and anchor, including the folder's `index.html` the rewritten
   reply links. BF-169 is cited by number only.
+
+## Related
+
+- [Record identity reference](../../../10-domain/record-identity-reference.md) (living, as of
+  2026-10-18): what every v1, API v3 and socket path does with `_id`, `identifier` and the time
+  keys, for entries, treatments, devicestatus, profile and food, at 15.0.8 and dev `fade2299`,
+  each claim measured or read ([lab](../../../../tools/lab/record-identity/README.md)).

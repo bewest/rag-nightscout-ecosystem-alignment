@@ -5496,6 +5496,7 @@ items:
           one.
     blocks_on: [LOOP-ID-REPLY]
     evidence:
+      - docs/10-domain/record-identity-reference.md
       - tools/lab/record-identity/results/record-identity-2026-10-18.md
       - reports/consumer-impact-15.0.9/clients-8758.md
       - docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md
@@ -5546,6 +5547,7 @@ items:
           POST: 201, a new record.
     blocks_on: [LOOP-ID-REPLY]
     evidence:
+      - docs/10-domain/record-identity-reference.md
       - tools/lab/record-identity/results/record-identity-2026-10-18.md
     notes: >
       Choices: resurrect (today's v3 POST), refuse (410, as v3 PUT does
@@ -5584,6 +5586,7 @@ items:
           treatments); tenants never share an identifier space.
     blocks_on: [LOOP-ID-REPLY]
     evidence:
+      - docs/10-domain/record-identity-reference.md
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
       - docs/60-research/tenancy/identifier-duplicates-2026-10-17.md
     notes: >
@@ -14536,10 +14539,10 @@ items:
     repo: rag-nightscout-ecosystem-alignment
     branch: records/loop-identifier-2026-10-17
     base: main@5a9a49cc
-    state: in-progress
+    state: done
     pr: []
     blast_radius: >
-      New living page record-identity-reference (docs/10-domain), its lab
+      New living page docs/10-domain/record-identity-reference.md, its lab
       tools/lab/record-identity/, and links from the Loop reply README and
       the docs/10-domain index. No reply text changes.
     review: maintainer
@@ -14554,7 +14557,9 @@ items:
           FAILS unless the reference exists, names 15.0.8 and dev, and its
           summary table has a row for each of entries, treatments,
           devicestatus, profile and food over v1, v3 and socket. RED on
-          2026-10-18 before the page existed.
+          2026-10-18 before the page existed, GREEN after; ablated on a copy
+          (a food x socket row removed, 15.0.8 renamed, profile x v3 renamed),
+          each RED.
     blocks_on: []
     evidence:
       - tools/lab/record-identity/results/record-identity-2026-10-18.md
@@ -14563,7 +14568,12 @@ items:
     notes: >
       Asked for so that app developers stop guessing at how records are
       identified, before any proposal is adopted. Every claim is marked
-      measured or read.
+      measured or read. Done 2026-10-18. Found while measuring, not filed:
+      API v3 stores a body _id as sent (a 24-hex value as a string) on both
+      refs; on 15.0.8 v1 find[_id] then misses it. 15.0.0's breakage was
+      driver methods (insert, save, update) removed by mongodb-legacy 5,
+      not _id values (#8114, #8117, #8119, #8120, #8121, #8146; reverted
+      by #8115).
 
   - id: LAB-G7-TWO-DISPLAY
     title: "Lab: two displays on one real G7 sensor report the same seconds counter for each reading, live and backfill"

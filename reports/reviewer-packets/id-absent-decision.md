@@ -59,6 +59,7 @@ maintainer, after the Loop maintainers answer
 
 ## Evidence
 
+- [`docs/10-domain/record-identity-reference.md`](../../docs/10-domain/record-identity-reference.md)
 - [`tools/lab/record-identity/results/record-identity-2026-10-18.md`](../../tools/lab/record-identity/results/record-identity-2026-10-18.md)
 - [`reports/consumer-impact-15.0.9/clients-8758.md`](../../reports/consumer-impact-15.0.9/clients-8758.md)
 - [`docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md`](../../docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md)

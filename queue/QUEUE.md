@@ -42,14 +42,14 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | state | n | ids |
 |---|---|---|
 | `not-started` | 67 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
-| `in-progress` | 5 | BFQ-46, BFQ-ENV, OID-LAB, DOCS-RECORD-IDENTITY, LOOP-ID-REPLY |
+| `in-progress` | 4 | BFQ-46, BFQ-ENV, OID-LAB, LOOP-ID-REPLY |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 30 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, WC-STEP-PATCH, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-72, BFQ-52, BFQ-93, BFQ-95, BFQ-67, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-152, BFQ-154, BFQ-156 |
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 87 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 12 | RT-0, T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164 |
-| `done` | 23 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-G7-SLOTS, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE |
+| `done` | 24 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
 | `answered` | 2 | RT-D3, RT-PROPAGATION |
@@ -6769,6 +6769,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `docs/10-domain/record-identity-reference.md`
 - `tools/lab/record-identity/results/record-identity-2026-10-18.md`
 - `reports/consumer-impact-15.0.9/clients-8758.md`
 - `docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md`
@@ -6800,6 +6801,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `docs/10-domain/record-identity-reference.md`
 - `tools/lab/record-identity/results/record-identity-2026-10-18.md`
 
 **Notes.** Choices: resurrect (today's v3 POST), refuse (410, as v3 PUT does today), or create a new record beside the tombstone. A deleted reading that a second uploader still holds is re-sent on its next cycle, so "resurrect" undoes a user's delete. Read at 15.0.8: lib/api3/generic/update/validate.js:36 skips every immutable check when the stored record has isValid false; update/operation.js:62 and patch/operation.js:42 answer 410. On dev, v1 reads hide isValid false records (lib/server/soft-deleted.js) and an entries re-send clears isValid (lib/server/entries.js $unset).
@@ -6829,6 +6831,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `docs/10-domain/record-identity-reference.md`
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/60-research/tenancy/identifier-duplicates-2026-10-17.md`
 
@@ -7045,7 +7048,7 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 | `DOCS-VENDOR-FACTS` | Update vendor facts across the repo: Abbott's partner list, MiniMed's separation from Medtronic, Diabeloop in twiist (verify each first) | `done` | `main` | n/a | 2 run |
 | `DOCS-REMOTE-FOLLOWUP` | Re-check two remote-command statements found while correcting DOCS-REMOTE-PATHS: where Trio's shared secret is configured, and LoopFollow's remote carbs path | `done` | `main` | n/a | 2 run |
 | `DOCS-G7-SLOTS` | Correct the Dexcom BLE deep dive: the G7 holds one connection slot per display type, not one exclusive connection | `done` | `main` | n/a | 1 run |
-| `DOCS-RECORD-IDENTITY` | Reference: how each Nightscout path identifies a record today (_id, identifier, time keys), 15.0.8 and dev | `in-progress` | `records/loop-identifier-2026-10-17` | n/a | 1 run |
+| `DOCS-RECORD-IDENTITY` | Reference: how each Nightscout path identifies a record today (_id, identifier, time keys), 15.0.8 and dev | `done` | `records/loop-identifier-2026-10-17` | n/a | 1 run |
 | `LOOP-ID-RECORDS` | Correct BF-116's claim that Loop sends identifier on devicestatus, and the docs that call the v3 identifier server-assigned | `done` | `records/loop-identifier-2026-10-17` | n/a | 3 run |
 
 ### `DOC-SEQUENCING` &mdash; phase0-pr-sequencing contradicts itself on the branch count
@@ -7551,7 +7554,7 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `done` |
 | repo | `rag-nightscout-ecosystem-alignment` |
 | branch | `records/loop-identifier-2026-10-17` |
 | base | `main@5a9a49cc` |
@@ -7559,7 +7562,7 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 | semver | `n/a` |
 | review | maintainer |
 
-**Blast radius.** New living page record-identity-reference (docs/10-domain), its lab tools/lab/record-identity/, and links from the Loop reply README and the docs/10-domain index. No reply text changes.
+**Blast radius.** New living page docs/10-domain/record-identity-reference.md, its lab tools/lab/record-identity/, and links from the Loop reply README and the docs/10-domain index. No reply text changes.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -7568,7 +7571,7 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 **Gates.**
 
 - `[static]` `python3 tools/qc/record-identity-doc-gate.py`
-  - FAILS unless the reference exists, names 15.0.8 and dev, and its summary table has a row for each of entries, treatments, devicestatus, profile and food over v1, v3 and socket. RED on 2026-10-18 before the page existed.
+  - FAILS unless the reference exists, names 15.0.8 and dev, and its summary table has a row for each of entries, treatments, devicestatus, profile and food over v1, v3 and socket. RED on 2026-10-18 before the page existed, GREEN after; ablated on a copy (a food x socket row removed, 15.0.8 renamed, profile x v3 renamed), each RED.
 
 **Evidence.**
 
@@ -7576,7 +7579,7 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 - `tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md`
 - `reports/consumer-impact-15.0.9/clients-8758.md`
 
-**Notes.** Asked for so that app developers stop guessing at how records are identified, before any proposal is adopted. Every claim is marked measured or read.
+**Notes.** Asked for so that app developers stop guessing at how records are identified, before any proposal is adopted. Every claim is marked measured or read. Done 2026-10-18. Found while measuring, not filed: API v3 stores a body _id as sent (a 24-hex value as a string) on both refs; on 15.0.8 v1 find[_id] then misses it. 15.0.0's breakage was driver methods (insert, save, update) removed by mongodb-legacy 5, not _id values (#8114, #8117, #8119, #8120, #8121, #8146; reverted by #8115).
 
 ### `LOOP-ID-RECORDS` &mdash; Correct BF-116's claim that Loop sends identifier on devicestatus, and the docs that call the v3 identifier server-assigned
 

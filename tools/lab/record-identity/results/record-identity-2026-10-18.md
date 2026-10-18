@@ -20,8 +20,9 @@ RID_NODE=<n>/versions/node/22.23.2/bin/node
 MongoDB: dedicated container `ridlab-mongo`, `mongo:7`, server version read back **7.0.43**. Node
 22.23.2. `UUID_HANDLING` unset (default on). v1 calls carry the `api-secret` hash, v3 calls a JWT
 for an `admin` subject the probe creates, the socket authorizes with the hash. The probes were run
-three times against the same servers; every cell was the same each time except the order of two
-records in one cell, which the probe now sorts.
+four times (three against one pair of servers, one after a fresh `up`); every cell was the same
+each time, except the order of two records in one cell, which the probe now sorts, and the
+treatments GET row, whose case-sensitivity probes were corrected before the fourth run.
 
 How to read a cell: HTTP status (and the MongoDB cause when the reply body names one), then what
 is stored, read **from mongo**: `n=` copies, each with `_id:oid` (an ObjectId) or `_id:string`,
@@ -60,7 +61,7 @@ minute apart per case, 1 to 2 days back.
 | treatments v1 POST (single object): same identifier twice | 200 \| stored n=1 [_id:oid identifier=X carbs=13] \| 1st reply _id=stored, 2nd reply _id=stored | 200 \| stored n=1 [_id:oid identifier=X carbs=13] \| 1st reply _id=stored, 2nd reply _id=stored |
 | treatments v1 PUT: by 24-hex _id | 200 \| stored n=1 [_id:oid=sent carbs=14] \| reply _id=sent=stored | 200 \| stored n=1 [_id:oid=sent carbs=14] \| reply _id=sent=stored |
 | treatments v1 PUT: by identifier, no _id | 200 \| stored n=1 [_id:oid identifier=X carbs=15] \| reply _id=stored | 200 \| stored n=1 [_id:oid identifier=X carbs=15] \| reply _id=stored |
-| treatments v1 GET: find[_id]=<hex>, find[identifier]=X, find[_id]=<uuid sent as _id>, same upper-case-sent, lower-case-sent asked upper | found 0, 1, 1, 1, 1 | found 0, 1, 1, 1, 1 |
+| treatments v1 GET: find[_id]=<hex sent beside identifier>, find[identifier]=X, find[_id]=<lower-case UUID sent as _id>, <upper-case UUID sent as _id>, the first asked upper-case, the second asked lower-case | found 0, 1, 1, 1, 0, 0 | found 0, 1, 1, 1, 0, 0 |
 | treatments v1 DELETE /treatments/<uuid identifier>, then re-send | delete 200 {"acknowledged":true,"deletedCount":1,"n":1}, left n=0 \| re-send 200 \| stored n=1 [_id:oid identifier=X] | delete 200 {"acknowledged":true,"deletedCount":1,"n":1}, left n=0 \| re-send 200 \| stored n=1 [_id:oid identifier=X] |
 | treatments v1 DELETE /treatments/<non-UUID identifier>; GET find[identifier] | delete 200 {"acknowledged":true,"deletedCount":0,"n":0}, left n=1 \| GET found 1 | delete 200 {"acknowledged":true,"deletedCount":0,"n":0}, left n=1 \| GET found 1 |
 | treatments v1 DELETE /treatments/<hex>, then re-send same _id | delete 200 {"acknowledged":true,"deletedCount":1,"n":1} \| re-send 200 \| stored n=1 [_id:oid=sent] | delete 200 {"acknowledged":true,"deletedCount":1,"n":1} \| re-send 200 \| stored n=1 [_id:oid=sent] |

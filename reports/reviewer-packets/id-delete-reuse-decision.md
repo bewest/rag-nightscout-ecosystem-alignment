@@ -62,6 +62,7 @@ maintainer, after the Loop maintainers answer
 
 ## Evidence
 
+- [`docs/10-domain/record-identity-reference.md`](../../docs/10-domain/record-identity-reference.md)
 - [`tools/lab/record-identity/results/record-identity-2026-10-18.md`](../../tools/lab/record-identity/results/record-identity-2026-10-18.md)
 
 ## Notes carried on the item

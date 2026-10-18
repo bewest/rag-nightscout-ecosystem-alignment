@@ -209,7 +209,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | `release-train` | 5 |  | 5 |  | 6 |  | 13 | 1 | 1 |  |  | 2 | **33** |
 | `register-open` | 34 | 3 | 1 | 1 | 11 | 1 | 55 | 4 |  |  | 3 |  | **113** |
 | `tenancy` | 8 |  |  | 1 | 13 |  |  | 7 | 3 | 1 |  |  | **33** |
-| `docs-truth` | 7 | 1 | 1 |  |  |  |  |  | 9 |  |  |  | **18** |
+| `docs-truth` | 7 |  | 1 |  |  |  |  |  | 10 |  |  |  | **18** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
 | `platform` | 10 | 1 |  |  |  |  |  |  | 9 |  |  |  | **20** |
 
