@@ -48,6 +48,12 @@ const SOURCES = {
     'docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md',
     'docs/30-design/platform/PROPOSAL-replay-fidelity-changes-2026-09-11.md',
   ],
+  authority: [
+    'docs/30-design/platform/spec/registration.md',
+    'docs/30-design/tenancy/nightscout-configuration-and-delegation-2026-09-10.md',
+    'docs/30-design/platform/agent-trust-boundaries-2026-10-18.md',
+    'docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md',
+  ],
   'state-intent': [
     'docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md',
     'docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md',
@@ -131,8 +137,11 @@ if (text !== null) {
 const target = `spec/${layer}.md`;
 for (const src of [path.join(PLATFORM, 'README.md')].concat(SOURCES[layer])) {
   const body = read(path.join(REPO_ROOT, src));
+  // A source inside spec/ links to its sibling by file name alone.
+  const sibling = src.startsWith(path.join(PLATFORM, 'spec')) && body !== null
+    && body.includes(`](${layer}.md`);
   findings.push({
-    ok: body !== null && body.includes(target),
+    ok: body !== null && (body.includes(target) || sibling),
     text: `${src} links to ${target}`,
   });
 }

@@ -265,6 +265,8 @@ is direction of travel, **held** pending `T30-ORY-PROOF`; Hydra is deferred.]
 
 ### 5.4 What a delegation design would have to provide
 
+*Carried as requirements DR1–DR7 in the [authority specification §7](../platform/spec/authority.md#7-delegation-not-decided).*
+
 Stated as requirements rather than a solution, because this is the part that
 needs qualified review:
 

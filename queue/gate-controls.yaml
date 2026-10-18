@@ -2225,3 +2225,29 @@ controls:
     proves: >
       run 2026-10-18: a scratch copy that ignores zero-duration end markers
       fails zero-duration-ends-instance and marker-at-next-start (exit 1).
+
+  - gate: |-
+      node tools/queue/gates/platform-spec.js authority
+    cwd: .
+    control: |-
+      tools/queue/gates/platform-spec-control.sh authority pointer
+    positive-control: |-
+      node tools/queue/gates/platform-spec.js authority
+    control-kind: static
+    proves: >
+      run 2026-10-18: removing the registration spec's sibling link to
+      authority.md exits 1 with the one finding that registration.md does
+      not link to spec/authority.md. The narration, case and count breaks
+      were run the same day, each exiting 1 with its own finding.
+
+  - gate: |-
+      python3 -m tools.nsschema.spec_cases authority --check
+    cwd: .
+    control: |-
+      T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && sed '/instances\/owner-transfer-role`/d' docs/30-design/platform/spec/authority.md > "$T/a.md" && python3 -m tools.nsschema.spec_cases authority --check --spec "$T/a.md"
+    positive-control: |-
+      python3 -m tools.nsschema.spec_cases authority --check
+    control-kind: static
+    proves: >
+      run 2026-10-18: a copy with the generated row for
+      instances/owner-transfer-role deleted is reported stale and exits 1.

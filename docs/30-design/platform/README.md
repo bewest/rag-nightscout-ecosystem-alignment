@@ -49,7 +49,7 @@ reader brings, and each has its own rules, conformance cases and gate.
 | [state and intent](spec/state-intent.md) | what was requested, applied and active, who started it, and why did it end? | L3 | S1–S12 | written | `SPEC-STATE-INTENT` |
 | `commands` | how does a request or a proposal reach a controller, and how does its outcome come back? | L3, L5 | C | queued | `SPEC-REG-COMMANDS` |
 | [sync-transport](spec/sync-transport.md) | how are writes matched, ordered and delivered over REST and the socket, and at what cost? | L4 | T1–T15 | written | `SPEC-SYNC-TRANSPORT` |
-| `authority` | who may register, write, own, route or act for someone else? | L5 | A | queued | `SPEC-AUTHORITY` |
+| [authority](spec/authority.md) | who may register, write, own, route or act for someone else? | L5 | AU1–AU5, DR1–DR7 | written | `SPEC-AUTHORITY` |
 
 **Why these boundaries.** Each boundary falls where the reader, the rate of change or the review
 differs:
@@ -73,11 +73,10 @@ says who may rather than what happens. *Authority* is kept apart from *registrat
 binding, the owner's actions and delegation are read in one place.
 
 **What moves when the queued files are written:**
-- registration §15 (binding, credentials, the owner) moves to *authority*;
 - command routing in registration §9 moves to *commands*;
 
-Each file should stay readable in a sitting. *Registration* is the largest, at about 820 lines, and
-shrinks when §15 and routing move out.
+Each file should stay readable in a sitting. *Registration* is the largest; command routing in its §9 moves to *commands* when that
+specification is written.
 
 **How they are kept.**
 
@@ -156,12 +155,12 @@ shrinks when §15 and routing move out.
 
 | | |
 |---|---|
-| **Spec today** | binding, credential kind, owner actions and authorisation in [registration §15](spec/registration.md#15-binding-credentials-and-the-owner); roles, provenance, command-sink binding and command routing in [registration §9](spec/registration.md#9-channels-roles-and-provenance) |
+| **Spec** | [spec/authority.md](spec/authority.md): principals and credentials (AU1–AU5), the binding and credential kind, the owner's actions, the authorisation of registrations and namespaces, who may receive a command, delegation as requirements DR1–DR7 with what is decided around it, what is recorded for audit, 56 cases |
 | **Evidence** | [agent trust boundaries](agent-trust-boundaries-2026-10-18.md) (develop, interpret and act; a proposal lifecycle, proposed and not specified); [configuration and delegation §5](../tenancy/nightscout-configuration-and-delegation-2026-09-10.md#5-new-data-and-delegation-between-agents) (what a delegation design must provide); [control-plane reconciliation](../tenancy/nightscout-control-plane-reconciliation-2026-09-11.md); [authority model](../../10-domain/authority-model.md) |
 | **Decisions** | [D13–D17](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions) (credential root, listeners, auth plane; D17 row 2 open) |
-| **Open** | `SPEC-REG-COMMANDS` (the command API and the proposal record in front of a command, to be the `commands` specification); `SPEC-AUTHORITY` (delegation of a principal's authority to a caregiver, app or agent) |
+| **Open** | `SPEC-REG-COMMANDS` (the command API and the proposal record, to be the `commands` specification); delegation (authority §7); D17 row 2; the owner choices in authority §9 |
 | **Audit** | the owner's listing shows every product's binding, credential kind and binding event, every instance's roles and liveness, and every overlap |
-| **Status** | specified for registration and routing; not specified for commands and delegation |
+| **Status** | specified for registration, owners and command destinations (`SPEC-AUTHORITY`); delegation and the command API are not specified |
 
 ## Reading order
 

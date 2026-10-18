@@ -208,9 +208,11 @@ it applied a quirk mapping or decided a channel by `sameAs`, so a mapped value i
 
 ## L5 Authority
 
+Specified in the [authority specification](authority.md).
+
 **Binding (`boundTo`), credential kind.** The subject (or, in single mode, the shared secret) a
 product or instance is bound to; only it may update or retire it. `credentialKind` records whether
-a subject token or `API_SECRET` last wrote it. [REG §15](registration.md#15-binding-credentials-and-the-owner).
+a subject token or `API_SECRET` last wrote it. [authority §3](authority.md#3-binding-and-credential-kind).
 
 **Owner, owner actions.** The tenant owner, acting on `ns-tenant-admin` (or with `API_SECRET` in
 single mode). The owner may retire, block, unblock, release, transfer, free namespaces, transfer a

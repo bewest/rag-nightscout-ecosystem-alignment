@@ -34,7 +34,7 @@ case "$BREAK" in
   test)      grep -qE '^\| `tools/[^`]+::test_' "$T/$SPEC" || { echo "CONTROL-INVALID: $SPEC cites no test"; exit 90; }
              sed -i -E '0,/^\| `tools\/[^`]+::test_/s//&renamed_by_control_/' "$T/$SPEC" ;;
   pointer)   src=$(node "$ROOT/tools/queue/gates/platform-spec.js" "$LAYER" --sources | head -1)
-             sed -i "s#spec/$LAYER\.md#spec/REMOVED.md#g" "$T/$src" ;;
+             sed -i "s#spec/$LAYER\.md#spec/REMOVED.md#g; s#](${LAYER}\.md#](REMOVED.md#g" "$T/$src" ;;
   *)         echo "CONTROL-INVALID: break must be narration|case|count|test|pointer"; exit 90 ;;
 esac
 

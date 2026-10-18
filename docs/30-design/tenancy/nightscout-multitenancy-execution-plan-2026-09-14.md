@@ -724,6 +724,8 @@ lands on `T30-WIRING`.
 
 #### D17 — by audience
 
+*The rules that follow from D13–D17 for registrations, owners and commands are maintained in the [authority specification](../platform/spec/authority.md).*
+
 | audience | decision | status |
 |---|---|---|
 | devices and uploaders | native per-tenant credential, **never Ory** | **ADOPTED.** Forced by D1 — an uploader cannot run an OAuth flow |

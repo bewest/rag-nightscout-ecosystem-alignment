@@ -119,7 +119,7 @@ is `<submit.href>/<vendor>/<product>`, each segment percent-encoded.
 | `DELETE` | controller | retire | `If-Match` |
 | `DELETE` | owner | retire | `If-Match` |
 | `POST …/block` | owner | block | `If-Match`; `If-None-Match: *` when nothing is stored |
-| `POST …/unblock`, `…/release`, `…/transfer`, `…/free-namespaces` | owner | §15 | `If-Match` |
+| `POST …/unblock`, `…/release`, `…/transfer`, `…/free-namespaces` | owner | [authority §4](authority.md#4-the-owners-actions) | `If-Match` |
 
 ### 5.2 Order of checks
 
@@ -160,7 +160,7 @@ name and type. Otherwise an element is rejected for:
 
 | reason | when |
 |---|---|
-| `namespace-not-owned` | the credential has stated namespace roots and none covers the namespace (§15.4) |
+| `namespace-not-owned` | the credential has stated namespace roots and none covers the namespace ([authority §5](authority.md#5-authorisation-of-registrations)) |
 | `namespace-claimed` | another registration on the tenant holds the namespace, whatever its state |
 | `untyped-extension` | an extension without a type declaration |
 | `unsupported-type-keyword` | a keyword or format outside `typeFragment`, including in a `typeRef` target |
@@ -386,17 +386,9 @@ on the owner's listing (channel, role, claimant, holder) until the claimant drop
 lapses; `holder: null` when the holder has lapsed or dropped the role. `simulated` roles never
 contend with `device` roles or with each other.
 
-**Command-sink binding.** A `device` command-sink role goes only to an instance whose binding
-equals the product's `boundTo`, or to one the owner moved it to with `transfer-role` (stored with
-`grantedBy: transfer-role`); any other `device` claim is refused `not-registration-owner` for that
-role, after the channel checks and before exclusivity. A `simulated` command-sink claim is open to
-any permitted subject and never receives a routed command. Source roles are open to any permitted
-subject. When a product's `boundTo` changes (the owner's `transfer` or `release`, or a released
-registration bound by its next writer), every `device` command-sink role held by an instance whose
-binding no longer matches is dropped at once and stored refused `not-registration-owner`, and that
-instance's etag changes; roles with `grantedBy: transfer-role` are kept. A held `device`
-command-sink survives renewal only when the instance matches the binding or the role carries
-`grantedBy`.
+**Command-sink binding.** Which instance may hold a `device` command-sink role, and what a change
+of a product's binding does to it, is [authority §6](authority.md#6-who-may-receive-a-command).
+Source roles are open to any permitted subject.
 
 **Handoff.** A role passes when its holder drops it (a renewal without it, or `DELETE`), when the
 holder's lease lapses, or when the owner transfers it. A lapsed or dropped role is not
@@ -495,66 +487,8 @@ the record goes.
 
 ## 15. Binding, credentials and the owner
 
-`SPEC-AUTHORITY` will carry this section into the authority specification.
-
-### 15.1 Binding and credential kind
-
-A create or update binds the registration to the credential that wrote it: `boundTo: {kind:
-subject, subject}`, never the token, so a token rotated on the same subject changes nothing; or
-`{kind: api-secret}` for the shared secret on `single`, which any holder of the secret presents. The
-stored registration records `credentialKind` (`subject`, `api-secret`, or `other` with the hub's
-term), the kind that last created or updated it; both are returned with it. `API_SECRET` against a
-subject-bound registration is `not-registration-owner` on the data path. A released registration
-(`boundTo: null`) is bound by the next credential with the permission that updates it, even with
-identical content (200, not a no-op); it records `bindingEvent: next-writer`, kept by later updates
-under the same binding and cleared by a release or transfer, and not in the etag. When a
-single-tenant site moves into a tenant, a registration bound to `api-secret` is bound to the
-tenant's root credential, a further credential kind; the etag changes with `boundTo` (decided;
-the mechanics are `SPEC-REG-MODES` and `SPEC-REG-MIGRATE`).
-
-### 15.2 The owner's actions
-
-On the owner's listener. The owner never edits a registration's content (an owner `PUT` is 403
-`not-authorised`) and never submits one. An action other than retire answers outcome `applied`
-with the resource after it; a request for what is already the case is a no-op.
-
-| action | effect |
-|---|---|
-| retire | §5.5 |
-| block | state `blocked`, recording the interrupted state as `blockedFrom`; etag changes; declaration, binding and stored data kept frozen; the controller's writes and typed writes are refused 403 `blocked-by-owner`. With `If-None-Match: *` it blocks an identity with nothing stored (stored with no registration), and a create for it is 403 |
-| unblock | restores the interrupted state (`active`, or `retired`); removes a pre-emptive block; never reactivates a retired registration. A blocked registration is unblocked before it is retired (409 `blocked-by-owner` otherwise) |
-| release | `boundTo: null`; §15.1; drops non-matching `device` command-sinks (§9) |
-| transfer | binds to a named subject; drops non-matching `device` command-sinks (§9) |
-| free-namespaces | a retired registration's namespaces are no longer held by it (409 `not-retired` otherwise); its declaration and stored data stay readable |
-| transfer-role | moves one role from its holder to a live instance that claims it with `device` provenance (409 `role-not-granted`, `role-not-claimed` or `not-live` otherwise); `If-Match` the etag of the instance it is moved from; both instances' etags change; the moved role records `grantedBy: transfer-role` |
-| pin-version, unpin-version | §12 |
-| listing | every instance with its roles, labels and liveness; the overlaps; `registrations` (every stored product with its `boundTo`, `credentialKind` and `bindingEvent`); `slotNameObservations`; observed aliases only when asked |
-
-An owner action on the data listener is 403 `not-authorised`.
-
-### 15.3 Authorisation
-
-- **The submitter is the controller, a device.** It holds the native per-tenant credential (D17
-  row 1). Submit, update, read and retire are on the data listener with that credential. Under
-  `TENANCY_MODE=multi` there is no deployment secret (D13) and the credential's token is signed
-  with the tenant's key (D14), so a registration is per tenant and a controller on two tenants
-  registers twice. On `single`, `API_SECRET` may also register and is recorded as `api-secret`.
-- **Permissions.** Submitting needs `api:registrations:create` and retiring
-  `api:registrations:delete`, granted by the tenant owner on `ns-tenant-admin` (D16). Updating and
-  retiring also need the binding.
-- **Storage.** Registrations, definitions and instances are tenant data: per tenant, under RLS
-  under `multi` (D3), never in the public capability document.
-
-### 15.4 Namespaces
-
-First to claim, per tenant. A credential with no stated namespace roots may claim any namespace no
-other registration on the tenant holds. A hub may restrict a credential to owner-granted roots; a
-registration may then declare a namespace equal to or below one of them (`com.example` covers
-`com.example.negotiation.targets`; `com.examplefoo` does not), else `namespace-not-owned`. Either
-way a namespace another registration holds is `namespace-claimed`. A retired registration holds its
-namespaces until the owner frees them. Readers spanning tenants interpret a field by the
-declaration carried with it, never by its namespace. A published list of namespace conventions may
-record use; it is never a check.
+The binding and credential kind, the owner's actions, the authorisation of registrations and
+namespaces are maintained in the [authority specification](authority.md) §3–§5.
 
 ## 16. Version-scoped quirks
 
@@ -594,11 +528,9 @@ How the `_id` entries are applied on a write is in [identity I9](identity.md#1-r
 
 Rules the specification chose that await the maintainer's confirmation:
 
-- **Product (§5, §15):** unblock restores the interrupted state; a blocked registration is
-  unblocked before it is retired; `credentialKind` is the kind that last created or updated it;
-  reactivation reclaims a freed namespace only if no other registration holds it; the cases assume
-  a controller does not treat an element as not accepted merely because it depends on an ignored
-  member.
+- **Product (§5):** the cases assume a controller does not treat an element as not accepted
+  merely because it depends on an ignored member. The binding and owner choices are in
+  [authority §9](authority.md#9-open).
 - **Definitions and instances (§7–§12):** a definition `PUT` never binds a released product;
   definitions and instances are refused for a retired product; the instance etag covers granted
   roles; every listed role, including an `other` role, is exclusive among `device` instances; a
@@ -616,7 +548,7 @@ Rules the specification chose that await the maintainer's confirmation:
 - **Identity:** two choices are listed in [identity §5](identity.md#5-open-decisions).
 
 Not yet specified: the contract per tenancy mode (`SPEC-REG-MODES`), the mechanics of registration
-state across a site's move into a tenant, whose binding rule §15.1 states (`SPEC-REG-MIGRATE`), and the command API (`SPEC-REG-COMMANDS`).
+state across a site's move into a tenant, whose binding rule [authority §3](authority.md#3-binding-and-credential-kind) states (`SPEC-REG-MIGRATE`), and the command API (`SPEC-REG-COMMANDS`).
 
 ## 19. Conformance cases
 

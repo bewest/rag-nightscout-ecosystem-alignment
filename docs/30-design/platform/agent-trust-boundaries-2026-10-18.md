@@ -159,6 +159,8 @@ An explanation is only as right as the numbers under it. Two layers come before 
 
 ### 4.2 The upstream RFC under D18
 
+*What is decided about authority, and what delegation would need, is maintained in the [authority specification](spec/authority.md).*
+
 D18 makes the hub responsible for observability and the controller responsible for sending,
 syncing and reconciling; the hub records the controller's result and never composes intents
 ([execution plan §2.6.1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#261-d18--two-tier-controller-registration)).

@@ -16649,37 +16649,62 @@ items:
     title: "Platform spec L5: the authority specification (binding, credential kind, owner actions, roles and provenance, command routing; delegation and proposals as open design)"
     parcel: platform
     repo: rag-nightscout-ecosystem-alignment
-    branch: main
-    base: main@5a9a49cc
-    state: not-started
+    branch: docs/platform-spec-index-2026-10-18
+    base: main@1b69c295
+    state: done
     pr: []
     blast_radius: >
-      docs/30-design/platform/spec/authority.md (new) from the hub-sync
-      design §3.5 (binding, owner actions, block) and §3.6 (roles,
-      provenance, command-sink binding, routing), D13-D17 and
-      configuration-and-delegation §5.4; pointers; the index row; a SOURCES
-      entry in the gate. Delegation and proposals are stated as open, with
-      what a design must provide, not specified here.
+      docs/30-design/platform/spec/authority.md (new): principals and
+      credentials (AU1-AU5, from D7 and D13-D17), the binding and credential
+      kind, the owner's actions, the authorisation of registrations and
+      namespaces (registration §15, moved), who may receive a command
+      (registration §9's command-sink binding, moved), delegation as the
+      requirements DR1-DR7 with what is decided around it, and what is
+      recorded for audit; 56 registration cases listed by name pattern.
+      registration.md §15 and the command-sink paragraph become pointers;
+      glossary, index, and pointers in configuration-and-delegation §5.4,
+      the agents page §4.2 and the execution plan's D17. spec_cases.py
+      selects cases by pattern; the gate accepts a sibling link inside
+      spec/, and its pointer break removes sibling links too. No rule or
+      case changes.
     review: maintainer
     operator_visible: ""
     semver: n/a
     semver_reason: specification in this repository; ships nothing
     register: []
     gates:
-      - no-gate: >
-          Not started. The gate will be `node tools/queue/gates/platform-spec.js
-          authority`, red under each control break, with the negotiation and
-          instance suites unchanged.
+      - run: node tools/queue/gates/platform-spec.js authority
+        kind: static
+        describe: >
+          FAILS when the spec is missing, carries amendment narration, names
+          a case that does not exist, states a count that differs from its
+          table, or when the index, the registration spec, the
+          configuration-and-delegation document, the agents page or the
+          execution plan does not link to it. GREEN on 2026-10-18: 71
+          checks, 56 cases.
+      - run: python3 -m tools.nsschema.spec_cases authority --check
+        kind: static
+        describe: >
+          FAILS when the case list differs from the case files the patterns
+          select.
     blocks_on: [SPEC-REGISTRATION]
     evidence:
-      - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
+      - docs/30-design/platform/spec/authority.md
+      - docs/30-design/platform/spec/registration.md
       - docs/30-design/tenancy/nightscout-configuration-and-delegation-2026-09-10.md
     notes: >
-      Start from the agent trust-boundaries page once it lands on main and
-      from the upstream agent control-plane RFC (issuerType agent, the
-      suggest scope, DelegationGrant) rather than a new design. Whether
-      delegation and proposals become a SPEC-REG-PROPOSALS item or fold into
-      SPEC-REG-COMMANDS is the maintainer's open choice.
+      Rule ids are AU (principals) and DR (delegation requirements) because
+      active state already uses A1-A13. Delegation is stated as decided
+      constraints (the agent initiator form, agent roles as other roles, the
+      proposal record in SPEC-REG-COMMANDS, Hydra deferred), the seven
+      requirements of 2026-09-10 with what exists today against each, the
+      proposed constraints from the agents page, and prior art; no grant
+      shape is invented. Non-vacuity, 2026-10-18: the narration, case and
+      count breaks were each red with their own finding; the pointer break
+      first passed, because registration.md links its sibling as
+      authority.md and the break only removed spec/authority.md; the break
+      now removes sibling links too and is red for all six specs; the test
+      break is CONTROL-INVALID.
 
   - id: SPEC-RECORDS
     title: "Platform spec L1: the records specification (observation primitives, decomposition of today's documents, effective-dated settings snapshots)"

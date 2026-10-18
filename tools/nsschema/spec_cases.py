@@ -34,6 +34,18 @@ PRIMITIVES = ROOT / "specs" / "sync" / "primitives.yaml"
 LAYERS = {
     "records": {"primitives": PRIMITIVES, "proposed": PRIMITIVES},
     "sync-transport": {"cases": [("sync-transport/", CASES / "sync-transport")]},
+    "authority": {"cases": [
+        "pattern:owner-*", "pattern:blocked-*", "pattern:released-*", "pattern:retire-*",
+        "pattern:update-*", "pattern:accepted-api-secret-single", "pattern:not-authorised",
+        "pattern:accepted-first-to-claim", "pattern:rejected-namespace-*",
+        "pattern:namespace-claimed-after-free",
+        "pattern:instances/*not-registration-owner*", "pattern:instances/owner-*",
+        "pattern:instances/rebind-*", "pattern:instances/listing-shows-*",
+        "pattern:instances/instance-create-other-subject",
+        "pattern:instances/instance-renew-transferred-command-sink",
+        "pattern:instances/command-after-rebind-*",
+        "pattern:instances/command-not-routed-to-other-subject-simulator",
+    ]},
     "registration": {"cases": [("", CASES), ("instances/", CASES / "instances"), ("quirks/", CASES / "quirks")]},
     "state-intent": {
         "kinds": ["loop", "trio", "androidaps"],
@@ -78,6 +90,12 @@ def cell(text):
 
 def case_paths(spec):
     for item in spec:
+        if isinstance(item, str) and item.startswith("pattern:"):
+            prefix, _, glob = item[len("pattern:"):].rpartition("/")
+            folder = CASES / prefix if prefix else CASES
+            for path in sorted(folder.glob(glob + ".yaml")):
+                yield (prefix + "/" if prefix else ""), path
+            continue
         if isinstance(item, tuple):
             prefix, folder = item
             for path in sorted(folder.glob("*.yaml")):
