@@ -32,16 +32,16 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 249 |
-| runnable gates | 292 |
-| explicit `no-gate:` markers | 283 |
+| runnable gates | 294 |
+| explicit `no-gate:` markers | 282 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 283 of the 575 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 282 of the 576 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 71 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
+| `not-started` | 70 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-ACTIVE-STATE |
 | `in-progress` | 4 | BFQ-46, BFQ-ENV, OID-LAB, LOOP-ID-REPLY |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -49,7 +49,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 87 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 12 | RT-0, T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164 |
-| `done` | 28 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-RECORDS |
+| `done` | 29 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-RECORDS, SCHEMA-INTENT-GAPS |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
 | `answered` | 2 | RT-D3, RT-PROPAGATION |
@@ -7747,7 +7747,7 @@ reproduced ones.
 | `SPEC-AUTHORITY` | Platform spec L5: the authority specification (binding, credential kind, owner actions, roles and provenance, command routing; delegation and proposals as open design) | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `SPEC-RECORDS` | Platform spec L1: the records specification (observation primitives, decomposition of today's documents, effective-dated settings snapshots) | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 2 run |
 | `SPEC-ACTIVE-STATE` | Decide and specify what a hub reports as active at a time, and a therapy-state version an approval can bind to | `not-started` | `main` | n/a | 0 run + 1 no-gate |
-| `SCHEMA-INTENT-GAPS` | Registration grammar: the initiators other form, duration units on requested and applied carriers, typed carrier fields | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `SCHEMA-INTENT-GAPS` | Registration grammar: the initiators other form, duration units on requested and applied carriers, typed carrier fields | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 2 run |
 
 ### `LAB-G7-TWO-DISPLAY` &mdash; Lab: two displays on one real G7 sensor report the same seconds counter for each reading, live and backfill
 
@@ -8615,16 +8615,16 @@ reproduced ones.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `done` |
 | repo | `rag-nightscout-ecosystem-alignment` |
-| branch | `main` |
-| base | `main@010e1661` |
+| branch | `docs/platform-spec-index-2026-10-18` |
+| base | `main@73aac62e` |
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer |
 | blocks on | `SPEC-STATE-INTENT` |
 
-**Blast radius.** specs/sync/controller-state-model.schema.json (additive, must-ignore): initiators.values items take a string or {value: other, controllerTerm}; the carrier definition gains durationField and durationUnit wherever wire has them; carrier paths may carry a typed field declaration (unit, type). The three generated registrations regenerated (Loop's applied override carrier gains its unit), the synthetic fixture extended, state and intent S6-S8 and §8 updated.
+**Blast radius.** specs/sync/controller-state-model.schema.json (additive, must-ignore): initiators.values items take a string or the otherTerm form; durationField and durationUnit move from wire into $defs/carrier, so requested and applied declare their own; carrier paths items take a path string or a carrierPath {path, fieldTyping members, type xor typeRef}. Generated registrations: Loop's applied override declares override.duration in seconds; AndroidAPS's profile switch wire path timeshift and effective switch path originalTimeshift declare milliseconds. Fixture uses every new form. State and intent S6-S8, §6 and §8 and registration G2-G3 updated; the agent page and execution plan row 17 corrected to say the grammar now carries the other form.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -8632,14 +8632,17 @@ reproduced ones.
 
 **Gates.**
 
-- **NO GATE** &mdash; Not started. The gate will be tools/nsschema/test_registration_grammar.py with a case per addition and its rejection control (a bare unknown initiator string still rejected, an unknown unit rejected), `make schema-sync-model --check` green, and the registration suites unchanged.
+- `[unit]` `python3 -m pytest -q tools/nsschema/test_registration_grammar.py`
+  - FAILS when a new form is not accepted where specified, a malformed one is accepted (an other-form object without controllerTerm, an unknown duration unit, a typed path without `path` or with both type and typeRef), or a generated registration declares a unit that differs from its source read. GREEN on 2026-10-18: 60 tests (46 before).
+- `[static]` `make schema-sync-model && git diff --exit-code specs/sync/registrations`
+  - FAILS when the generated registrations differ from what the generator produces from its source reads.
 
 **Evidence.**
 
 - `specs/sync/controller-state-model.schema.json`
 - `docs/30-design/platform/spec/state-intent.md`
 
-**Notes.** The agent-initiator form was decided 2026-10-18 (execution plan row 17) and is recorded in the agents page §7 as not yet in the grammar. The unit gaps are the two the hub active-state lab measured as disagreements (Loop's devicestatus override duration, AndroidAPS timeshift). Adding members is a minor change under must-ignore (registration G1); no kind's meaning changes unless a registration declares the new member.
+**Notes.** Done 2026-10-18 by a background agent in worktree rag-alignment-intent-gaps (commit 113f98c7, cherry-picked). Source reads: Loop's applied override duration is seconds remaining (NightscoutService fe075ef StoredDosingDecision.swift:129, NightscoutKit 4ec9fd1 OverrideStatus.swift:17,44-46); AndroidAPS timeshift and originalTimeshift are milliseconds (7e1d537d49 PS.kt:22, EPS.kt:24, ProfileFunctionImpl.kt:218, CommandQueueImplementation.kt:202, TreatmentMapper.kt:510,540, RemoteTreatment.kt:85,101), agreeing with the hub active-state lab and MAP- AAPS-PROFILESWITCH. A free initiator string stays valid (the controller's own vocabulary); only a malformed other-form object is rejected. Non-vacuity: eight weakenings, one at a time, each red for the right reason (strings-only initiators, any-object initiators, durationUnit removed from carrier, "hours" added to the units, path not required, strings-only paths, the type-xor- typeRef rule dropped, fieldTyping dropped). Suites: tools/nsschema 1675 passed; the three registration suites 1,281 unchanged. Open, in state and intent §8: the reference meaning comparison treats a typed path {path: x} with no typing members as different from the bare string x, so rewriting one as the other at one version would be refused version-conflict.
 
 ---
 

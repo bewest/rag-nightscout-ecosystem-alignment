@@ -1,6 +1,6 @@
 # Records (L1)
 
-*Contributor-facing. Living specification, current at `main` `73aac62e` (2026-10-18). Layer L1 of
+*Contributor-facing. Living specification, current at `main` `92a7d31b` (2026-10-18). Layer L1 of
 the [platform index](../README.md); terms are in the [glossary](glossary.md); record ids are in the
 [identity specification](identity.md). Evidenced, not implemented: the catalogue is generated from
 a shipped typed model and the corpus, and no hub stores these records behind the registration

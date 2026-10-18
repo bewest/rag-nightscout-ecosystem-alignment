@@ -169,9 +169,9 @@ Read against that:
 vocabulary. An agent initiator is written in the open-vocabulary form `{value: other,
 controllerTerm}`, as hub-sync §3.6 does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. Recorded in the [execution
 plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16)
-(row 17). The registration grammar's `initiators` element today lists strings in the controller's
-own vocabulary (`specs/sync/controller-state-model.schema.json`), with no shared list and no
-`other` form; applying the form there is not yet specified.
+(row 17). The registration grammar's `initiators.values` take strings in the controller's own
+vocabulary or the `{value: other, controllerTerm}` form, with no shared list
+([state and intent S8](spec/state-intent.md#2-rules); *corrected 2026-10-18 by `SCHEMA-INTENT-GAPS`*).
 
 ### 4.3 What a proposal lifecycle would add — proposed, not specified
 
@@ -260,7 +260,7 @@ person running it, would be the manufacturer of such a function.
 - Whether any controller project would accept an agent as a command sender at all, under any grant.
 - How an agent instance is scoped, limited and revoked: no decision covers it
   ([process models](../../00-overview/perspective/PROCESS-MODELS.md)).
-- A shared initiator list, and the `other` form in the registration grammar's `initiators` (§4.2).
+- A shared initiator list (§4.2).
 - A therapy-state version a proposal could bind to (§4.3).
 - Whether the proposal lifecycle of §4.3 belongs in `SPEC-REG-COMMANDS` or in a separate item.
 - Read audit, purpose limitation and real revocation for a delegated reader (§3.1).

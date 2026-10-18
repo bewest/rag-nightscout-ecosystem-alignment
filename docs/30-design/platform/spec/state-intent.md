@@ -1,6 +1,6 @@
 # State and intent (L3)
 
-*Contributor-facing. Living specification, current at `main` `010e1661` (2026-10-18). Layer L3 of
+*Contributor-facing. Living specification, current at `main` `92a7d31b` (2026-10-18). Layer L3 of
 the [platform index](../README.md); terms are in the [glossary](glossary.md). The grammar members
 named here are part of the [registration specification](registration.md) §3; how a hub accepts
 them is there too. Decisions: [D18](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#261-d18--two-tier-controller-registration)

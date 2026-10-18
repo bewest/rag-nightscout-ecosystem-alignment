@@ -16697,39 +16697,64 @@ items:
     title: "Registration grammar: the initiators other form, duration units on requested and applied carriers, typed carrier fields"
     parcel: platform
     repo: rag-nightscout-ecosystem-alignment
-    branch: main
-    base: main@010e1661
-    state: not-started
+    branch: docs/platform-spec-index-2026-10-18
+    base: main@73aac62e
+    state: done
     pr: []
     blast_radius: >
       specs/sync/controller-state-model.schema.json (additive, must-ignore):
-      initiators.values items take a string or {value: other,
-      controllerTerm}; the carrier definition gains durationField and
-      durationUnit wherever wire has them; carrier paths may carry a typed
-      field declaration (unit, type). The three generated registrations
-      regenerated (Loop's applied override carrier gains its unit), the
-      synthetic fixture extended, state and intent S6-S8 and §8 updated.
+      initiators.values items take a string or the otherTerm form;
+      durationField and durationUnit move from wire into $defs/carrier, so
+      requested and applied declare their own; carrier paths items take a
+      path string or a carrierPath {path, fieldTyping members, type xor
+      typeRef}. Generated registrations: Loop's applied override declares
+      override.duration in seconds; AndroidAPS's profile switch wire path
+      timeshift and effective switch path originalTimeshift declare
+      milliseconds. Fixture uses every new form. State and intent S6-S8, §6
+      and §8 and registration G2-G3 updated; the agent page and execution
+      plan row 17 corrected to say the grammar now carries the other form.
     review: maintainer
     operator_visible: ""
     semver: n/a
     semver_reason: specification in this repository; ships nothing
     register: []
     gates:
-      - no-gate: >
-          Not started. The gate will be tools/nsschema/test_registration_grammar.py
-          with a case per addition and its rejection control (a bare unknown
-          initiator string still rejected, an unknown unit rejected), `make
-          schema-sync-model --check` green, and the registration suites
-          unchanged.
+      - run: python3 -m pytest -q tools/nsschema/test_registration_grammar.py
+        kind: unit
+        describe: >
+          FAILS when a new form is not accepted where specified, a malformed
+          one is accepted (an other-form object without controllerTerm, an
+          unknown duration unit, a typed path without `path` or with both
+          type and typeRef), or a generated registration declares a unit
+          that differs from its source read. GREEN on 2026-10-18: 60 tests
+          (46 before).
+      - run: make schema-sync-model && git diff --exit-code specs/sync/registrations
+        kind: static
+        describe: >
+          FAILS when the generated registrations differ from what the
+          generator produces from its source reads.
     blocks_on: [SPEC-STATE-INTENT]
     evidence:
       - specs/sync/controller-state-model.schema.json
       - docs/30-design/platform/spec/state-intent.md
     notes: >
-      The agent-initiator form was decided 2026-10-18 (execution plan row
-      17) and is recorded in the agents page §7 as not yet in the grammar.
-      The unit gaps are the two the hub active-state lab measured as
-      disagreements (Loop's devicestatus override duration, AndroidAPS
-      timeshift). Adding members is a minor change under must-ignore
-      (registration G1); no kind's meaning changes unless a registration
-      declares the new member.
+      Done 2026-10-18 by a background agent in worktree
+      rag-alignment-intent-gaps (commit 113f98c7, cherry-picked). Source
+      reads: Loop's applied override duration is seconds remaining
+      (NightscoutService fe075ef StoredDosingDecision.swift:129, NightscoutKit
+      4ec9fd1 OverrideStatus.swift:17,44-46); AndroidAPS timeshift and
+      originalTimeshift are milliseconds (7e1d537d49 PS.kt:22, EPS.kt:24,
+      ProfileFunctionImpl.kt:218, CommandQueueImplementation.kt:202,
+      TreatmentMapper.kt:510,540, RemoteTreatment.kt:85,101), agreeing with
+      the hub active-state lab and MAP-AAPS-PROFILESWITCH. A free initiator
+      string stays valid (the controller's own vocabulary); only a
+      malformed other-form object is rejected. Non-vacuity: eight
+      weakenings, one at a time, each red for the right reason (strings-only
+      initiators, any-object initiators, durationUnit removed from carrier,
+      "hours" added to the units, path not required, strings-only paths,
+      the type-xor-typeRef rule dropped, fieldTyping dropped). Suites:
+      tools/nsschema 1675 passed; the three registration suites 1,281
+      unchanged. Open, in state and intent §8: the reference meaning
+      comparison treats a typed path {path: x} with no typing members as
+      different from the bare string x, so rewriting one as the other at
+      one version would be refused version-conflict.
