@@ -5442,14 +5442,14 @@
 
 
 <h1 id="multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs">Multitenancy execution plan: decisions, tasks, and the context each one needs<a class="headerlink" href="#multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>3fbabb345</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>060a98fce</code>.</em></p>
 <p><em>Contributor- and maintainer-facing.</em></p>
 <p><strong>Status: living document — the decision record.</strong> Decisions D1–D20 are the maintainer's
 (2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16) and are all <strong>adopted</strong>, except <strong>D17 row 2</strong>
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is <strong>adopted in principle,
 gated</strong> on the edge's production conditions and the compliance question (<code>T30-ORY-PROOF</code> held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. <strong>Item state lives
-in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/105059d8919644b3f7988d429356c010280626c8/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
+in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2b91fb2ae443062e243e01882d6005479915627b/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
 <a href="../../../queue/QUEUE.html"><code>queue/QUEUE.md</code></a>, measured by <code>make queue-status</code>); defect facts live
 in the <a href="../remedial/nightscout-backfix-register.html">backfix register</a>. Measured facts below name
 their date and commit.</p>
@@ -5903,7 +5903,8 @@ OpenAPI spec, <code>indexedFields</code>, the nsschema model and the <code>walke
   The remaining 179 nodes stay in JSONB.</li>
 <li><strong>Do not widen the column list to anticipate decomposition.</strong> The normalised series are separate
   relations with their own schemas.</li>
-<li><strong>Decomposition must sit above the seam, like coercion</strong> (§3.4). The 56-of-166 dropped-path
+<li><strong>Decomposition must sit above the seam, like coercion</strong> (§3.4). The record rules are maintained
+  in the <a href="../platform/spec/records.html">records specification</a>. The 56-of-166 dropped-path
   finding that motivates it ({M} motivation (a)) is a fidelity problem; fixing it in the multitenant
   backend only would leave single-tenant behind, which D4 forbids.</li>
 </ul>
@@ -6385,7 +6386,7 @@ vocabularies; <a href="../platform/nightscout-intent-workflow-landscape-2026-10-
 <tr>
 <td>17</td>
 <td>an agent as initiator</td>
-<td><strong>no <code>agent</code> value is added.</strong> An agent initiator is written in the open-vocabulary form <code>{value: other, controllerTerm}</code> (addendum rule 3), as §3.6 of the hub-sync design does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. The grammar's <code>initiators</code> element lists strings in each controller's own vocabulary, with no shared list and no <code>other</code> form; applying the form there is not yet specified. Map: <a href="../platform/agent-trust-boundaries-2026-10-18.html">agents in the ecosystem</a></td>
+<td><strong>no <code>agent</code> value is added.</strong> An agent initiator is written in the open-vocabulary form <code>{value: other, controllerTerm}</code> (addendum rule 3), as §3.6 of the hub-sync design does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. The grammar's <code>initiators.values</code> take strings in each controller's own vocabulary, with no shared list, or the <code>other</code> form (<a href="../platform/spec/state-intent.html#2-rules">state and intent S8</a>). Map: <a href="../platform/agent-trust-boundaries-2026-10-18.html">agents in the ecosystem</a></td>
 </tr>
 </tbody>
 </table>

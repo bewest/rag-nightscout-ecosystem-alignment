@@ -2895,6 +2895,8 @@
       
         
       
+        
+      
     
     
     
@@ -5508,9 +5510,9 @@ Read against that:</p>
 vocabulary. An agent initiator is written in the open-vocabulary form <code>{value: other,
 controllerTerm}</code>, as hub-sync §3.6 does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. Recorded in the <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">execution
 plan</a>
-(row 17). The registration grammar's <code>initiators</code> element today lists strings in the controller's
-own vocabulary (<code>specs/sync/controller-state-model.schema.json</code>), with no shared list and no
-<code>other</code> form; applying the form there is not yet specified.</p>
+(row 17). The registration grammar's <code>initiators.values</code> take strings in the controller's own
+vocabulary or the <code>{value: other, controllerTerm}</code> form, with no shared list
+(<a href="spec/state-intent.html#2-rules">state and intent S8</a>; <em>corrected 2026-10-18 by <code>SCHEMA-INTENT-GAPS</code></em>).</p>
 <h3 id="43-what-a-proposal-lifecycle-would-add--proposed-not-specified">4.3 What a proposal lifecycle would add — proposed, not specified<a class="headerlink" href="#43-what-a-proposal-lifecycle-would-add--proposed-not-specified" title="Permanent link">&para;</a></h3>
 <p>Nothing in this subsection is specified or decided. It states what exists nowhere above, so that
 the item that specifies commands can take it or leave it.</p>
@@ -5569,7 +5571,7 @@ Neither covers the controller's therapy state — which override is active, whic
 on board — so neither tells an approver that the state the agent read is still the state the
 controller holds.</p>
 <p><strong>Where it would be specified.</strong> Command delivery is <code>SPEC-REG-COMMANDS</code> in the
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/105059d8919644b3f7988d429356c010280626c8/queue/work-queue.yaml">work queue</a>: not started, blocked on <code>SPEC-REG-MODES</code>; §3.6 says
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2b91fb2ae443062e243e01882d6005479915627b/queue/work-queue.yaml">work queue</a>: not started, blocked on <code>SPEC-REG-MODES</code>; §3.6 says
 "The command API itself is not specified here." The proposal record is folded into that item
 (maintainer, 2026-10-18), with gate cases for an approval bound to one payload hash, an expired
 proposal, and a proposal from a credential with no propose role; the open question above is its
@@ -5620,7 +5622,7 @@ person running it, would be the manufacturer of such a function.</p>
 <li>Whether any controller project would accept an agent as a command sender at all, under any grant.</li>
 <li>How an agent instance is scoped, limited and revoked: no decision covers it
   (<a href="../../00-overview/perspective/PROCESS-MODELS.html">process models</a>).</li>
-<li>A shared initiator list, and the <code>other</code> form in the registration grammar's <code>initiators</code> (§4.2).</li>
+<li>A shared initiator list (§4.2).</li>
 <li>A therapy-state version a proposal could bind to (§4.3).</li>
 <li>Whether the proposal lifecycle of §4.3 belongs in <code>SPEC-REG-COMMANDS</code> or in a separate item.</li>
 <li>Read audit, purpose limitation and real revocation for a delegated reader (§3.1).</li>

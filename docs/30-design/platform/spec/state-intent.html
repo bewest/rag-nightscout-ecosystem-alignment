@@ -2684,6 +2684,8 @@
       
         
       
+        
+      
     
     
     
@@ -2781,6 +2783,34 @@
     
   
     Identity (L0)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="records.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Records (L1)
   
 
     
@@ -5139,8 +5169,8 @@
 
 
 <h1 id="state-and-intent-l3">State and intent (L3)<a class="headerlink" href="#state-and-intent-l3" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>73aac62ec</code>.</em></p>
-<p><em>Contributor-facing. Living specification, current at <code>main</code> <code>010e1661</code> (2026-10-18). Layer L3 of
+<p><em>Living document, last changed 2026-10-18 at <code>060a98fce</code>.</em></p>
+<p><em>Contributor-facing. Living specification, current at <code>main</code> <code>92a7d31b</code> (2026-10-18). Layer L3 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. The grammar members
 named here are part of the <a href="registration.html">registration specification</a> §3; how a hub accepts
 them is there too. Decisions: <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">D18</a>
@@ -5235,15 +5265,15 @@ read from Loop, Trio, iAPS and AndroidAPS source and measured where it says so.<
 </tr>
 <tr>
 <td>S6</td>
-<td><strong>The wire carrier.</strong> <code>wire</code> says how today's documents carry instances of the kind: the collection; <code>eventType</code>, or <code>documentIdentifier</code> for a single named document (such as one in the v3 <code>settings</code> collection); a <code>discriminator</code> (<code>path</code> and <code>test</code>: <code>exists</code>, <code>is-object</code>, <code>equals</code> with a <code>value</code>, or <code>{value: other, controllerTerm}</code>); <code>paths</code>, <code>vocabularies</code> (closed value sets by path), <code>unpublishedFields</code> and <code>writtenWhen</code>; <code>identity</code>, the fields that identify one instance across amendments; <code>durationField</code> and <code>durationUnit</code> (<code>seconds</code>, <code>minutes</code>, <code>milliseconds</code>); <code>indefinite</code>, how an open-ended instance is written; <code>endedEncoding</code>, how an early end is written (<code>amend-duration</code>, <code>delete-and-repost</code>, <code>repost-same-created_at</code>, <code>zero-duration-record</code>, <code>sampled-state</code>, or <code>{value: other, controllerTerm}</code>); <code>cancelBeforeStartEncoding</code> (<code>delete</code>, <code>soft-delete</code>, <code>zero-duration-record</code>); and <code>endReasonPath</code>, or null when the reason is not sent and can only be inferred from the encoding. <code>wire: null</code> means the controller keeps the intent and publishes no instance record.</td>
+<td><strong>The wire carrier.</strong> <code>wire</code> says how today's documents carry instances of the kind: the collection; <code>eventType</code>, or <code>documentIdentifier</code> for a single named document (such as one in the v3 <code>settings</code> collection); a <code>discriminator</code> (<code>path</code> and <code>test</code>: <code>exists</code>, <code>is-object</code>, <code>equals</code> with a <code>value</code>, or <code>{value: other, controllerTerm}</code>); <code>paths</code>, each a dotted path string or a typed path <code>{path, unit, type or typeRef}</code> that carries the typing members of a field declaration (<a href="registration.html#3-the-grammar">registration G2</a>), so a carrier field can declare its unit (AndroidAPS declares <code>timeshift</code> in milliseconds); <code>vocabularies</code> (closed value sets by path), <code>unpublishedFields</code> and <code>writtenWhen</code>; <code>durationField</code>, the path that carries the duration, and <code>durationUnit</code> (<code>seconds</code>, <code>minutes</code>, <code>milliseconds</code>); <code>identity</code>, the fields that identify one instance across amendments; <code>indefinite</code>, how an open-ended instance is written; <code>endedEncoding</code>, how an early end is written (<code>amend-duration</code>, <code>delete-and-repost</code>, <code>repost-same-created_at</code>, <code>zero-duration-record</code>, <code>sampled-state</code>, or <code>{value: other, controllerTerm}</code>); <code>cancelBeforeStartEncoding</code> (<code>delete</code>, <code>soft-delete</code>, <code>zero-duration-record</code>); and <code>endReasonPath</code>, or null when the reason is not sent and can only be inferred from the encoding. <code>wire: null</code> means the controller keeps the intent and publishes no instance record.</td>
 </tr>
 <tr>
 <td>S7</td>
-<td><strong>Requested and applied are separate.</strong> <code>requested</code> says where the request is recorded when it is a different record from the applied effect; <code>applied</code> says where the controller reports what it applied; either is null when not published. Both are carriers with the members S6 lists, except the ones only <code>wire</code> has (identity, duration and end encodings). A carrier's <code>linkToRequest</code> names the field that links an applied record to its request, or null. A request record alone does not show that anything was applied: AndroidAPS writes an effective profile switch only after the pump accepts the profile switch, and a profile switch with none following is one that failed or is pending.</td>
+<td><strong>Requested and applied are separate.</strong> <code>requested</code> says where the request is recorded when it is a different record from the applied effect; <code>applied</code> says where the controller reports what it applied; either is null when not published. Both are carriers with the members S6 lists, except the ones only <code>wire</code> has (<code>identity</code>, <code>indefinite</code> and the end encodings), so each declares its own <code>durationField</code> and <code>durationUnit</code>: Loop's applied override reports <code>override.duration</code> in seconds remaining while its wire override's <code>duration</code> is in minutes. A carrier's <code>linkToRequest</code> names the field that links an applied record to its request, or null. A request record alone does not show that anything was applied: AndroidAPS writes an effective profile switch only after the pump accepts the profile switch, and a profile switch with none following is one that failed or is pending.</td>
 </tr>
 <tr>
 <td>S8</td>
-<td><strong>Initiators.</strong> <code>initiators</code> gives the controller's vocabulary name, its <code>values</code> (a list of strings), the <code>wirePath</code> that carries it (or null), and a <code>wireProxy</code> where one wire value stands in for one initiator. Decided 2026-10-18: no <code>agent</code> value is added to any initiator vocabulary, and an agent initiator takes the open-vocabulary form <code>{value: other, controllerTerm}</code>; a shared value is named once the corpus or a lab shows one in use. The grammar cannot carry that form in <code>values</code> yet, and how it is applied there is not specified (<code>SCHEMA-INTENT-GAPS</code>). No controller records an agent as initiator today.</td>
+<td><strong>Initiators.</strong> <code>initiators</code> gives the controller's vocabulary name, its <code>values</code>, the <code>wirePath</code> that carries it (or null), and a <code>wireProxy</code> where one wire value stands in for one initiator. Each value is a string in the controller's own vocabulary, which is not a shared list, so any string is valid; a value outside that vocabulary is written <code>{value: other, controllerTerm}</code> and rendered "other: <em>term</em>". Decided 2026-10-18: no <code>agent</code> value is added to any initiator vocabulary, and an agent initiator takes that <code>other</code> form; a shared value is named once the corpus or a lab shows one in use. No controller records an agent as initiator today.</td>
 </tr>
 <tr>
 <td>S9</td>
@@ -5483,8 +5513,8 @@ For each disagreement, the declaration that already carries the answer, and what
 </tr>
 <tr>
 <td>Loop's devicestatus override <code>duration</code>: seconds in cgm-remote-monitor, minutes in Nocturne</td>
-<td>Loop's <code>applied</code> carrier</td>
-<td>the carrier has no <code>durationUnit</code>: only <code>wire</code> declares units</td>
+<td>Loop's <code>applied</code> carrier: <code>durationField: override.duration</code>, <code>durationUnit: seconds</code> (seconds remaining, read from NightscoutService and NightscoutKit)</td>
+<td>the rule that a reader takes a duration's unit from the carrier's declaration</td>
 </tr>
 <tr>
 <td>a timed profile switch after a permanent one: cgm-remote-monitor falls back to the permanent profile, Nocturne has no profile after expiry</td>
@@ -5493,8 +5523,8 @@ For each disagreement, the declaration that already carries the answer, and what
 </tr>
 <tr>
 <td>AndroidAPS <code>timeshift</code>: milliseconds in cgm-remote-monitor, hours in Nocturne</td>
-<td>a typed field's <code>unit</code> (registration G2)</td>
-<td>carrier <code>paths</code> are untyped, so no unit can be declared for <code>timeshift</code></td>
+<td>the profile switch <code>wire</code> path <code>{path: timeshift, unit: milliseconds}</code>, and <code>originalTimeshift</code> in milliseconds on the effective profile switch (read from AndroidAPS)</td>
+<td>the rule that a reader takes a field's unit from the typed path</td>
 </tr>
 <tr>
 <td>two temporary targets at the same millisecond: cgm-remote-monitor keeps the first; Nocturne stores both, so list reads agree and latest-span reads disagree once the first ends</td>
@@ -5577,9 +5607,10 @@ careportal or nightguard temporary target for a controller that does not downloa
 <h2 id="8-open">8. Open<a class="headerlink" href="#8-open" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>The active-state rule</strong> and a therapy-state version (§6): <code>SPEC-ACTIVE-STATE</code>.</li>
-<li><strong>Grammar gaps</strong> (<code>SCHEMA-INTENT-GAPS</code>): <code>initiators.values</code> is a list of plain strings, so the
-  S8 <code>{value: other, controllerTerm}</code> form cannot yet be written; <code>requested</code> and <code>applied</code>
-  carriers cannot declare a duration unit; carrier <code>paths</code> carry no type or unit.</li>
+<li><strong>A typed path with no typing members</strong> (S6): whether <code>{path: x}</code> means the same as the bare
+  string <code>x</code> at one version. The reference comparison of a kind's meaning
+  (<code>tools/nsschema/negotiate.py</code>) treats the two as different, so a controller that rewrites one
+  as the other at the same version is rejected <code>version-conflict</code>.</li>
 <li><strong>Undeclared vocabularies</strong> (§3): for <code>PROPOSAL-REG-CONTROLLERS</code> to confirm with each controller's
   authors.</li>
 <li><strong>Effect and motivation</strong> (§5): proposed, not adopted.</li>

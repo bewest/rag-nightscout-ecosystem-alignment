@@ -2682,6 +2682,8 @@
       
         
       
+        
+      
     
     
     
@@ -4851,7 +4853,7 @@
 
 
 <h1 id="platform-contracts-where-each-piece-is-specified">Platform contracts: where each piece is specified<a class="headerlink" href="#platform-contracts-where-each-piece-is-specified" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>73aac62ec</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>273f0df72</code>.</em></p>
 <p><em>Contributor-facing. Living index, current at <code>main</code> <code>010e1661</code> (2026-10-18). Terms are defined in
 the <a href="spec/glossary.html">platform glossary</a>.</em></p>
 <p>This page maps the work on how controllers (Loop, Trio, AndroidAPS and others) and hubs
@@ -4947,11 +4949,11 @@ reader brings, and each has its own rules, conformance cases and gate.</p>
 <td><code>SPEC-ID</code></td>
 </tr>
 <tr>
-<td><code>records</code></td>
+<td><a href="spec/records.html">records</a></td>
 <td>what typed observations and settings snapshots exist, and how do today's documents decompose into them?</td>
 <td>L1</td>
-<td>R</td>
-<td>queued</td>
+<td>R1–R9</td>
+<td>written</td>
 <td><code>SPEC-RECORDS</code></td>
 </tr>
 <tr>
@@ -5017,9 +5019,7 @@ says who may rather than what happens. <em>Authority</em> is kept apart from <em
 binding, the owner's actions and delegation are read in one place.</p>
 <p><strong>What moves when the queued files are written:</strong>
 - registration §15 (binding, credentials, the owner) moves to <em>authority</em>;
-- command routing in registration §9 moves to <em>commands</em>;
-- the observation catalogue and settings snapshots, specified today only in <code>specs/sync/primitives.yaml</code>,
-  <code>controller-settings.schema.json</code> and the dated evidence documents, go to <em>records</em>.</p>
+- command routing in registration §9 moves to <em>commands</em>;</p>
 <p>Each file should stay readable in a sitting. <em>Registration</em> is the largest, at about 820 lines, and
 shrinks when §15 and routing move out.</p>
 <p><strong>How they are kept.</strong></p>
@@ -5091,8 +5091,8 @@ shrinks when §15 and routing move out.</p>
 </thead>
 <tbody>
 <tr>
-<td><strong>Spec today</strong></td>
-<td>queued as <code>SPEC-RECORDS</code>; today <code>specs/sync/primitives.yaml</code> (the observation catalogue, graded <code>measured</code>, <code>declared</code> or <code>proposed</code>); <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#26-d11--devicestatus-is-a-decomposition-problem-not-a-column-selection-problem">D11</a> (devicestatus is decomposed, not given columns); <a href="nightscout-hub-sync-architecture-2026-09-11.html#33-composite-on-the-wire-primitive-in-storage">hub-sync §3.3</a></td>
+<td><strong>Spec</strong></td>
+<td><a href="spec/records.html">spec/records.md</a>: rules R1–R9, the generated catalogue with evidence grades, decomposition measured, the settings snapshot and completeness, sensitivity labels, 10 checks. Drawn from <code>specs/sync/primitives.yaml</code> (the observation catalogue, graded <code>measured</code>, <code>declared</code> or <code>proposed</code>); <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#26-d11--devicestatus-is-a-decomposition-problem-not-a-column-selection-problem">D11</a> (devicestatus is decomposed, not given columns); <a href="nightscout-hub-sync-architecture-2026-09-11.html#33-composite-on-the-wire-primitive-in-storage">hub-sync §3.3</a></td>
 </tr>
 <tr>
 <td><strong>Evidence</strong></td>
@@ -5112,7 +5112,7 @@ shrinks when §15 and routing move out.</p>
 </tr>
 <tr>
 <td><strong>Status</strong></td>
-<td>evidenced; treatment routing measured at 99.86% by <code>eventType</code> alone</td>
+<td>evidenced (<code>SPEC-RECORDS</code>); treatment routing measured at 99.86% by <code>eventType</code> alone; devicestatus and profile decomposition not measured</td>
 </tr>
 </tbody>
 </table>
@@ -5260,7 +5260,7 @@ shrinks when §15 and routing move out.</p>
 <p>For someone new to the series: this page, then the <a href="spec/glossary.html">glossary</a>, then
 <a href="nightscout-intent-workflow-landscape-2026-10-09.html">intent and workflow landscape</a> §2 and §9 for
 why the contract exists, then the specifications in layer order: <a href="spec/identity.html">identity</a>,
-<a href="spec/registration.html">registration</a>, <a href="spec/state-intent.html">state and intent</a>.</p>
+<a href="spec/records.html">records</a>, <a href="spec/registration.html">registration</a>, <a href="spec/state-intent.html">state and intent</a>.</p>
 
 
 

@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/spec/registration.html">
       
       
-        <link rel="prev" href="identity.html">
+        <link rel="prev" href="records.html">
       
       
         <link rel="next" href="state-intent.html">
@@ -2684,6 +2684,8 @@
       
         
       
+        
+      
     
     
     
@@ -2781,6 +2783,34 @@
     
   
     Identity (L0)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="records.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Records (L1)
   
 
     
@@ -5581,7 +5611,7 @@
 
 
 <h1 id="registration-l2">Registration (L2)<a class="headerlink" href="#registration-l2" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>010e16618</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>0c1615544</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>8d2b93ed</code> (2026-10-18). Layer L2 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>; ids are defined in
 the <a href="identity.html">identity specification</a>. Specified, not implemented: no hub serves any of this.
@@ -5714,11 +5744,11 @@ bound.</p>
 </tr>
 <tr>
 <td>G2</td>
-<td><strong>Typed declarations.</strong> A typed field carries <code>type</code>, a restricted JSON Schema fragment (<code>type</code>, <code>enum</code>, <code>minimum</code>, <code>maximum</code>, <code>format</code>, <code>items</code>, <code>properties</code>, <code>required</code>; closed; an object lists its properties), or <code>typeRef</code> to a Nightscout-published definition such as a ControllerSettings field; plus <code>unit</code>, <code>range</code>, <code>horizon</code>, <code>sensitivity</code> and <code>evidence</code>. <code>settings.fields[]</code> and <code>replayInputs[]</code> take a name or a typed declaration. An extension or extension field without a type is rejected. A field with no sensitivity label falls under <code>sensitivity.unlabelledPolicy</code>, <code>withhold</code> when absent.</td>
+<td><strong>Typed declarations.</strong> A typed field carries <code>type</code>, a restricted JSON Schema fragment (<code>type</code>, <code>enum</code>, <code>minimum</code>, <code>maximum</code>, <code>format</code>, <code>items</code>, <code>properties</code>, <code>required</code>; closed; an object lists its properties), or <code>typeRef</code> to a Nightscout-published definition such as a ControllerSettings field; plus <code>unit</code>, <code>range</code>, <code>horizon</code>, <code>sensitivity</code> and <code>evidence</code>. <code>settings.fields[]</code> and <code>replayInputs[]</code> take a name or a typed declaration; a carrier's <code>paths[]</code> take a path or a typed path <code>{path, …}</code> with the same typing members (<a href="state-intent.html#2-rules">state and intent S6</a>). An extension or extension field without a type is rejected. A field with no sensitivity label falls under <code>sensitivity.unlabelledPolicy</code>, <code>withhold</code> when absent.</td>
 </tr>
 <tr>
 <td>G3</td>
-<td><strong>Open vocabularies.</strong> <code>endedEncoding</code>, command <code>transport</code>, <code>replayInputs[].status</code>, the discriminator <code>test</code> and <code>endReasons</code> take a shared value or <code>{value: other, controllerTerm}</code>. A hub renders an unknown term as "other: <em>term</em>" instead of rejecting the registration.</td>
+<td><strong>Open vocabularies.</strong> <code>endedEncoding</code>, command <code>transport</code>, <code>replayInputs[].status</code>, the discriminator <code>test</code> and <code>endReasons</code> take a shared value or <code>{value: other, controllerTerm}</code>; <code>initiators.values</code> take the controller's own strings, which are not a shared list, or the same <code>other</code> form (<a href="state-intent.html#2-rules">state and intent S8</a>). A hub renders an unknown term as "other: <em>term</em>" instead of rejecting the registration.</td>
 </tr>
 <tr>
 <td>G4</td>

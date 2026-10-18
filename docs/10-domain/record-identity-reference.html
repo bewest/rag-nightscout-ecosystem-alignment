@@ -8057,7 +8057,7 @@
 
 
 <h1 id="record-identity-in-cgm-remote-monitor-_id-identifier-and-time-keys">Record identity in cgm-remote-monitor: <code>_id</code>, <code>identifier</code> and time keys<a class="headerlink" href="#record-identity-in-cgm-remote-monitor-_id-identifier-and-time-keys" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>105059d89</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>2b91fb2ae</code>.</em></p>
 <p><em>Contributor-facing. Living reference, </em><em>as of 2026-10-18</em><em>. Pinned to cgm-remote-monitor
 </em><em>15.0.8</em><em> (<code>92d08342</code>, the shipping release) and </em><em>dev</em><em> (<code>fade2299</code>, the 15.0.9 candidate).
 Queue item <code>DOCS-RECORD-IDENTITY</code>. It describes what the code does today; it proposes nothing.</em></p>
@@ -8403,8 +8403,8 @@ both [M].</p>
 <p>API v3 does not read or convert <code>_id</code>; a POST that carries one is stored with it as sent, and a
 24-hex value becomes a <strong>string</strong> <code>_id</code>, on both refs [M]. v3 replies and reads never show <code>_id</code>
 [M], so the client cannot see this. On 15.0.8 a v1 <code>find[_id]</code> for that hex then misses the
-record (<code>query.js</code> converts to an ObjectId); dev's v1 lookups match both forms [R]. Not filed as
-a defect at the time of writing.</p>
+record (<code>query.js</code> converts to an ObjectId); dev's v1 lookups match both forms [R]. Filed as
+BF-170 (2026-10-18).</p>
 <h2 id="3-uuid_handling">3. <code>UUID_HANDLING</code><a class="headerlink" href="#3-uuid_handling" title="Permanent link">&para;</a></h2>
 <p><code>UUID_HANDLING</code> is on unless set false (<code>env.uuidHandling = readENVTruthy("UUID_HANDLING", true)</code>,
 <code>lib/server/env.js:93</code> @15.0.8, <code>:102</code> @fade2299) [R]. It was added in 15.0.7 (commit <code>bf6cfb77</code>,
@@ -8424,10 +8424,10 @@ reached <code>dev</code> in #8456) [R].</p>
   finds it [M]. <code>$in</code> lists are not rewritten [R]. Devicestatus lookups do not pass the flag [R].</li>
 <li><strong>Version-scoped quirks it serves</strong> (D20 rule 7: today's handling becomes a registry entry
   scoped to the versions that send it, its behaviour unchanged).
-  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/105059d8919644b3f7988d429356c010280626c8/specs/quirks/treatments.yaml">QUIRK-TREATMENTS-006</a>: Loop sends a Temporary Override's
+  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2b91fb2ae443062e243e01882d6005479915627b/specs/quirks/treatments.yaml">QUIRK-TREATMENTS-006</a>: Loop sends a Temporary Override's
   <code>syncIdentifier</code> UUID as <code>_id</code> (read at LoopWorkspace <code>f8412858</code>, Loop 3.14.8; measured in the
   corpus: every stored document it fires on is an override with an upper-case UUID).
-  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/105059d8919644b3f7988d429356c010280626c8/specs/quirks/entries.yaml">QUIRK-ENTRIES-004</a>: upper-case UUIDs and 24-character
+  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2b91fb2ae443062e243e01882d6005479915627b/specs/quirks/entries.yaml">QUIRK-ENTRIES-004</a>: upper-case UUIDs and 24-character
   non-hex strings stored as entries <code>_id</code> on two corpus sites, attributed to older Trio versions
   by a backlog, unmeasured. Trio 1.0.1 (<code>e41c9db3</code>) sends <code>_id</code> on carbs and temporary targets
   (<code>CarbsEntry.swift:29</code>, <code>TempTarget.swift:50</code>) and its other treatments' UUID as <code>id</code>, which
