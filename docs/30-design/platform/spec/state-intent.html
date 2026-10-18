@@ -27,7 +27,7 @@
     
     
       
-        <title>State and intent (L3) - Nightscout ecosystem alignment</title>
+        <title>L3 State and intent: what was requested, applied and active, who started it, and why it ended - Nightscout ecosystem alignment</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#state-and-intent-l3" class="md-skip">
+        <a href="#l3-state-and-intent-what-was-requested-applied-and-active-who-started-it-and-why-it-ended" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              State and intent (L3)
+              L3 State and intent: what was requested, applied and active, who started it, and why it ended
             
           </span>
         </div>
@@ -2792,7 +2792,7 @@
   <span class="md-ellipsis">
     
   
-    Authority (L5)
+    L5 Authority: who may register, write, own a site, receive a command, and act for someone else
   
 
     
@@ -2820,7 +2820,7 @@
   <span class="md-ellipsis">
     
   
-    Commands (L3, L5)
+    L3 and L5 Commands: how a request or a proposal reaches a controller, and how its outcome comes back
   
 
     
@@ -2848,7 +2848,7 @@
   <span class="md-ellipsis">
     
   
-    Platform glossary
+    Platform glossary: the terms the seven specifications share, and where each is defined
   
 
     
@@ -2876,7 +2876,7 @@
   <span class="md-ellipsis">
     
   
-    Identity (L0)
+    L0 Identity: how records, definitions, instances and subjects are named
   
 
     
@@ -2904,7 +2904,7 @@
   <span class="md-ellipsis">
     
   
-    Records (L1)
+    L1 Records: the typed observations a hub stores, and how today's documents decompose into them
   
 
     
@@ -2932,7 +2932,7 @@
   <span class="md-ellipsis">
     
   
-    Registration (L2)
+    L2 Registration: how a controller declares what its data means, and how a hub accepts it
   
 
     
@@ -2969,7 +2969,7 @@
   <span class="md-ellipsis">
     
   
-    State and intent (L3)
+    L3 State and intent: what was requested, applied and active, who started it, and why it ended
   
 
     
@@ -2987,7 +2987,7 @@
   <span class="md-ellipsis">
     
   
-    State and intent (L3)
+    L3 State and intent: what was requested, applied and active, who started it, and why it ended
   
 
     
@@ -3173,7 +3173,7 @@
   <span class="md-ellipsis">
     
   
-    Sync transport (L4)
+    L4 Sync transport: how writes are matched, ordered and delivered over REST and the socket, and at what cost
   
 
     
@@ -5428,8 +5428,8 @@
 
 
 
-<h1 id="state-and-intent-l3">State and intent (L3)<a class="headerlink" href="#state-and-intent-l3" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>57a6db95f</code>.</em></p>
+<h1 id="l3-state-and-intent-what-was-requested-applied-and-active-who-started-it-and-why-it-ended">L3 State and intent: what was requested, applied and active, who started it, and why it ended<a class="headerlink" href="#l3-state-and-intent-what-was-requested-applied-and-active-who-started-it-and-why-it-ended" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-10-18 at <code>85c645c8b</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>92a7d31b</code> (2026-10-18). Layer L3 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. The grammar members
 named here are part of the <a href="registration.html">registration specification</a> §3; how a hub accepts
@@ -5437,11 +5437,14 @@ them is there too. Decisions: <a href="../../tenancy/nightscout-multitenancy-exe
 (the hub observes, the controller composes) and the maintainer's 2026-10-18 decision on agent
 initiators (<a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">execution plan §2.6.3</a>
 row 17). Queue: <code>SPEC-STATE-INTENT</code>.</em></p>
+<p><em>Specification 4 of 7 in the <a href="../index.html#reading-order">reading order</a>; after registration, whose grammar it uses, and before commands. Expect rules S1–S12 and A1–A13, the declared kinds per controller, composition, what is active at a time, and the conformance cases.</em></p>
 <p>A controller manages <em>intent</em>: a preset is activated, several intents run at once and combine, the
 controller applies something that may differ from what was asked, and the intent ends for a
 reason. Nightscout's collections manage <em>entities</em>. This page says how a controller declares its
 intent model, so that a reader can tell what was requested, what was applied, who started it and
-why it ended, and what the hub may and may not conclude from the records.</p>
+why it ended, and what the hub may and may not conclude from the records. Status: rules S1–S12 are specified;
+the active-state rules A1–A13 are proposed and specified with cases; §3, §4 and §7 are evidenced;
+§5 is proposed; none is implemented.</p>
 <p>The evidence is the <a href="../nightscout-intent-workflow-landscape-2026-10-09.html">intent and workflow landscape</a>,
 read from Loop, Trio, iAPS and AndroidAPS source and measured where it says so.</p>
 <h2 id="1-what-entity-records-lose">1. What entity records lose<a class="headerlink" href="#1-what-entity-records-lose" title="Permanent link">&para;</a></h2>

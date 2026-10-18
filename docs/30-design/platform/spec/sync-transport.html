@@ -27,7 +27,7 @@
     
     
       
-        <title>Sync transport (L4) - Nightscout ecosystem alignment</title>
+        <title>L4 Sync transport: how writes are matched, ordered and delivered over REST and the socket, and at what cost - Nightscout ecosystem alignment</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#sync-transport-l4" class="md-skip">
+        <a href="#l4-sync-transport-how-writes-are-matched-ordered-and-delivered-over-rest-and-the-socket-and-at-what-cost" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Sync transport (L4)
+              L4 Sync transport: how writes are matched, ordered and delivered over REST and the socket, and at what cost
             
           </span>
         </div>
@@ -2792,7 +2792,7 @@
   <span class="md-ellipsis">
     
   
-    Authority (L5)
+    L5 Authority: who may register, write, own a site, receive a command, and act for someone else
   
 
     
@@ -2820,7 +2820,7 @@
   <span class="md-ellipsis">
     
   
-    Commands (L3, L5)
+    L3 and L5 Commands: how a request or a proposal reaches a controller, and how its outcome comes back
   
 
     
@@ -2848,7 +2848,7 @@
   <span class="md-ellipsis">
     
   
-    Platform glossary
+    Platform glossary: the terms the seven specifications share, and where each is defined
   
 
     
@@ -2876,7 +2876,7 @@
   <span class="md-ellipsis">
     
   
-    Identity (L0)
+    L0 Identity: how records, definitions, instances and subjects are named
   
 
     
@@ -2904,7 +2904,7 @@
   <span class="md-ellipsis">
     
   
-    Records (L1)
+    L1 Records: the typed observations a hub stores, and how today's documents decompose into them
   
 
     
@@ -2932,7 +2932,7 @@
   <span class="md-ellipsis">
     
   
-    Registration (L2)
+    L2 Registration: how a controller declares what its data means, and how a hub accepts it
   
 
     
@@ -2960,7 +2960,7 @@
   <span class="md-ellipsis">
     
   
-    State and intent (L3)
+    L3 State and intent: what was requested, applied and active, who started it, and why it ended
   
 
     
@@ -2997,7 +2997,7 @@
   <span class="md-ellipsis">
     
   
-    Sync transport (L4)
+    L4 Sync transport: how writes are matched, ordered and delivered over REST and the socket, and at what cost
   
 
     
@@ -3015,7 +3015,7 @@
   <span class="md-ellipsis">
     
   
-    Sync transport (L4)
+    L4 Sync transport: how writes are matched, ordered and delivered over REST and the socket, and at what cost
   
 
     
@@ -5350,16 +5350,19 @@
 
 
 
-<h1 id="sync-transport-l4">Sync transport (L4)<a class="headerlink" href="#sync-transport-l4" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>1b90df6e7</code>.</em></p>
+<h1 id="l4-sync-transport-how-writes-are-matched-ordered-and-delivered-over-rest-and-the-socket-and-at-what-cost">L4 Sync transport: how writes are matched, ordered and delivered over REST and the socket, and at what cost<a class="headerlink" href="#l4-sync-transport-how-writes-are-matched-ordered-and-delivered-over-rest-and-the-socket-and-at-what-cost" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-10-18 at <code>85c645c8b</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>df621fa7</code> (2026-10-18). Layer L4 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>; how a re-send is
 matched is in the <a href="identity.html">identity specification</a> §3. Decisions: the
 <a href="../../tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-10-12">write contract's §6.1</a>
 (2026-10-12) and <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">D6</a>
 (the change feed under multi). Queue: <code>SPEC-SYNC-TRANSPORT</code>.</em></p>
+<p><em>Specification 6 of 7 in the <a href="../index.html#reading-order">reading order</a>; after the layers whose records it moves, before authority. Expect the decided write path (T1–T4), each client's declared sync endpoints, the proposed read, cursor and socket rules (T5–T15), and the conformance cases.</em></p>
 <p>How writes are applied, ordered and delivered, over REST and the socket, and what a client pays to
-stay in sync. §2 is the write path, with each rule's status; §3 is what each client's sync code
+stay in sync. Status: the write path is decided, except re-sends of <code>devicestatus</code> (T2), and T3 is on <code>dev</code>;
+§3 is evidenced; §4–§6 are
+proposed, and §4 is specified with cases. §2 is the write path, with each rule's status; §3 is what each client's sync code
 can call, read from its source; §4–§6 are proposed and specified with cases where a rule can be
 checked by one.</p>
 <h2 id="1-files">1. Files<a class="headerlink" href="#1-files" title="Permanent link">&para;</a></h2>
@@ -5565,8 +5568,8 @@ number of collections. Request counts and payload sizes on the wire are not meas
 </tr>
 </tbody>
 </table>
-<p>Nothing is retired. A capability member that says a hub serves T5 and T7 is not yet in the
-capability document.</p>
+<p>Nothing is retired. The capability document member that would say a hub serves T5 and T7 is open
+(§8).</p>
 <h2 id="8-open">8. Open<a class="headerlink" href="#8-open" title="Permanent link">&para;</a></h2>
 <ol>
 <li><strong>Choices for the maintainer:</strong> the T5 and T7 paths; whether a typed re-send under a new
@@ -5595,8 +5598,8 @@ capability document.</p>
 <p>13 cases under <code>specs/sync/conformance/sync-transport/</code>, checked by
 <code>tools/nsschema/test_sync_cursor.py</code>, whose expectations are written by hand. Each is a timeline of
 writes, each taking its <code>srvModified</code> at one step and becoming visible at the same or a later one
-(or failing), and the client's history reads and socket events. The typed socket (§5) and versions (§6) have no
-case yet.</p>
+(or failing), and the client's history reads and socket events. The typed socket (§5) and versions (§6) are
+proposed without cases.</p>
 <!-- BEGIN GENERATED: sync-transport-cases (tools/nsschema/spec_cases.py) -->
 <table>
 <thead>

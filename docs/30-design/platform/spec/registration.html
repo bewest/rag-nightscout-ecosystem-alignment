@@ -27,7 +27,7 @@
     
     
       
-        <title>Registration (L2) - Nightscout ecosystem alignment</title>
+        <title>L2 Registration: how a controller declares what its data means, and how a hub accepts it - Nightscout ecosystem alignment</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#registration-l2" class="md-skip">
+        <a href="#l2-registration-how-a-controller-declares-what-its-data-means-and-how-a-hub-accepts-it" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Registration (L2)
+              L2 Registration: how a controller declares what its data means, and how a hub accepts it
             
           </span>
         </div>
@@ -2792,7 +2792,7 @@
   <span class="md-ellipsis">
     
   
-    Authority (L5)
+    L5 Authority: who may register, write, own a site, receive a command, and act for someone else
   
 
     
@@ -2820,7 +2820,7 @@
   <span class="md-ellipsis">
     
   
-    Commands (L3, L5)
+    L3 and L5 Commands: how a request or a proposal reaches a controller, and how its outcome comes back
   
 
     
@@ -2848,7 +2848,7 @@
   <span class="md-ellipsis">
     
   
-    Platform glossary
+    Platform glossary: the terms the seven specifications share, and where each is defined
   
 
     
@@ -2876,7 +2876,7 @@
   <span class="md-ellipsis">
     
   
-    Identity (L0)
+    L0 Identity: how records, definitions, instances and subjects are named
   
 
     
@@ -2904,7 +2904,7 @@
   <span class="md-ellipsis">
     
   
-    Records (L1)
+    L1 Records: the typed observations a hub stores, and how today's documents decompose into them
   
 
     
@@ -2941,7 +2941,7 @@
   <span class="md-ellipsis">
     
   
-    Registration (L2)
+    L2 Registration: how a controller declares what its data means, and how a hub accepts it
   
 
     
@@ -2959,7 +2959,7 @@
   <span class="md-ellipsis">
     
   
-    Registration (L2)
+    L2 Registration: how a controller declares what its data means, and how a hub accepts it
   
 
     
@@ -3277,7 +3277,7 @@
   <span class="md-ellipsis">
     
   
-    State and intent (L3)
+    L3 State and intent: what was requested, applied and active, who started it, and why it ended
   
 
     
@@ -3305,7 +3305,7 @@
   <span class="md-ellipsis">
     
   
-    Sync transport (L4)
+    L4 Sync transport: how writes are matched, ordered and delivered over REST and the socket, and at what cost
   
 
     
@@ -5692,17 +5692,18 @@
 
 
 
-<h1 id="registration-l2">Registration (L2)<a class="headerlink" href="#registration-l2" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>39a598616</code>.</em></p>
+<h1 id="l2-registration-how-a-controller-declares-what-its-data-means-and-how-a-hub-accepts-it">L2 Registration: how a controller declares what its data means, and how a hub accepts it<a class="headerlink" href="#l2-registration-how-a-controller-declares-what-its-data-means-and-how-a-hub-accepts-it" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-10-18 at <code>85c645c8b</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>8d2b93ed</code> (2026-10-18). Layer L2 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>; ids are defined in
-the <a href="identity.html">identity specification</a>. Specified, not implemented: no hub serves any of this.
+the <a href="identity.html">identity specification</a>. Status: specified, not implemented; the first hub implementation is <code>HUB-REG-CRM</code>.
 Decisions: <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">D18</a>
 and its <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#d18-addendum--an-extensible-grammar-maintainer-2026-10-12">addendum</a>,
 <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#262-d19--definitions-and-instances-maintainer-2026-10-14">D19</a>,
 <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">D20</a>
 and the maintainer's decisions of 2026-10-14, 2026-10-16 and 2026-10-17 recorded there. Queue:
 <code>SPEC-REGISTRATION</code>.</em></p>
+<p><em>Specification 3 of 7 in the <a href="../index.html#reading-order">reading order</a>, and the largest; after records, before state and intent, which uses its grammar. Expect rules G1–G5 and Q1–Q4, the grammar, the capability document, products, definitions, instances, channels and roles, labels, typed writes, projected views, quirks, and the conformance cases.</em></p>
 <p>A controller declares what its data means; the hub accepts the declaration element by element,
 stores typed records for what it accepts, and tells the controller to write everything else in
 today's document shapes. Several running copies of a controller can share a site without
@@ -6487,7 +6488,7 @@ by any controller author:</p>
   fails the check; declaration entries are measured only by hub records.</li>
 <li><strong>Identity:</strong> two choices are listed in <a href="identity.html#5-open-decisions">identity §5</a>.</li>
 </ul>
-<p>Not yet specified: the contract per tenancy mode (<code>SPEC-REG-MODES</code>), the mechanics of registration
+<p>Open: the contract per tenancy mode (<code>SPEC-REG-MODES</code>), the mechanics of registration
 state across a site's move into a tenant, whose binding rule <a href="authority.html#3-binding-and-credential-kind">authority §3</a> states (<code>SPEC-REG-MIGRATE</code>). The command API is proposed in the <a href="commands.html">commands specification</a>.</p>
 <h2 id="19-conformance-cases">19. Conformance cases<a class="headerlink" href="#19-conformance-cases" title="Permanent link">&para;</a></h2>
 <p>186 cases, under <code>specs/sync/conformance/</code>: 54 for the product resource and negotiation at the

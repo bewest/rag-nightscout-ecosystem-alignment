@@ -27,7 +27,7 @@
     
     
       
-        <title>Authority (L5) - Nightscout ecosystem alignment</title>
+        <title>L5 Authority: who may register, write, own a site, receive a command, and act for someone else - Nightscout ecosystem alignment</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#authority-l5" class="md-skip">
+        <a href="#l5-authority-who-may-register-write-own-a-site-receive-a-command-and-act-for-someone-else" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Authority (L5)
+              L5 Authority: who may register, write, own a site, receive a command, and act for someone else
             
           </span>
         </div>
@@ -2801,7 +2801,7 @@
   <span class="md-ellipsis">
     
   
-    Authority (L5)
+    L5 Authority: who may register, write, own a site, receive a command, and act for someone else
   
 
     
@@ -2819,7 +2819,7 @@
   <span class="md-ellipsis">
     
   
-    Authority (L5)
+    L5 Authority: who may register, write, own a site, receive a command, and act for someone else
   
 
     
@@ -2977,7 +2977,7 @@
   <span class="md-ellipsis">
     
   
-    Commands (L3, L5)
+    L3 and L5 Commands: how a request or a proposal reaches a controller, and how its outcome comes back
   
 
     
@@ -3005,7 +3005,7 @@
   <span class="md-ellipsis">
     
   
-    Platform glossary
+    Platform glossary: the terms the seven specifications share, and where each is defined
   
 
     
@@ -3033,7 +3033,7 @@
   <span class="md-ellipsis">
     
   
-    Identity (L0)
+    L0 Identity: how records, definitions, instances and subjects are named
   
 
     
@@ -3061,7 +3061,7 @@
   <span class="md-ellipsis">
     
   
-    Records (L1)
+    L1 Records: the typed observations a hub stores, and how today's documents decompose into them
   
 
     
@@ -3089,7 +3089,7 @@
   <span class="md-ellipsis">
     
   
-    Registration (L2)
+    L2 Registration: how a controller declares what its data means, and how a hub accepts it
   
 
     
@@ -3117,7 +3117,7 @@
   <span class="md-ellipsis">
     
   
-    State and intent (L3)
+    L3 State and intent: what was requested, applied and active, who started it, and why it ended
   
 
     
@@ -3145,7 +3145,7 @@
   <span class="md-ellipsis">
     
   
-    Sync transport (L4)
+    L4 Sync transport: how writes are matched, ordered and delivered over REST and the socket, and at what cost
   
 
     
@@ -5372,8 +5372,8 @@
 
 
 
-<h1 id="authority-l5">Authority (L5)<a class="headerlink" href="#authority-l5" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>39a598616</code>.</em></p>
+<h1 id="l5-authority-who-may-register-write-own-a-site-receive-a-command-and-act-for-someone-else">L5 Authority: who may register, write, own a site, receive a command, and act for someone else<a class="headerlink" href="#l5-authority-who-may-register-write-own-a-site-receive-a-command-and-act-for-someone-else" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-10-18 at <code>85c645c8b</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>1b69c295</code> (2026-10-18). Layer L5 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. Decisions:
 <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">D7 and D13–D17</a>
@@ -5381,10 +5381,11 @@ the <a href="../index.html">platform index</a>; terms are in the <a href="glossa
 <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">D18 and D19</a>
 and the maintainer's decisions of 2026-10-14 to 2026-10-18 recorded with them. Queue:
 <code>SPEC-AUTHORITY</code>.</em></p>
+<p><em>Specification 7 of 7 in the <a href="../index.html#reading-order">reading order</a>; last, because it authorises what the others define. Expect rules AU1–AU5, binding and credential kinds, the owner's actions, namespaces, command destinations, delegation requirements DR1–DR7, what is recorded for audit, and the conformance cases.</em></p>
 <p>Who may register a controller's definitions, write under them, act as a site's owner, receive a
 command, and act for someone else. The hub routes and records; it never decides whether a change
-to therapy is safe, and it never doses (D18). §2–§6 are decided or specified; §7 says what
-delegation would have to provide, because no design for it is decided.</p>
+to therapy is safe, and it never doses (D18). Status: §2–§6 are decided or
+specified; §7 states delegation's requirements, and its design is open.</p>
 <h2 id="1-files">1. Files<a class="headerlink" href="#1-files" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5557,8 +5558,8 @@ command-sink survives renewal only when the instance matches the binding or the 
 <a href="commands.html#2-where-a-command-goes">commands §2</a>. The command record and the proposal in front of
 a command are proposed in <a href="commands.html#4-the-command-record-proposed">commands §4–§7</a>.</p>
 <h2 id="7-delegation-not-decided">7. Delegation (not decided)<a class="headerlink" href="#7-delegation-not-decided" title="Permanent link">&para;</a></h2>
-<p>Delegation lets a principal give a caregiver, an app or an agent a part of their authority. Nothing
-in Nightscout implements it, and no design is decided.</p>
+<p>Delegation lets a principal give a caregiver, an app or an agent a part of their authority.
+Status: requirements stated (DR1–DR7); design open; not implemented.</p>
 <p><strong>What is decided around it:</strong></p>
 <ul>
 <li>Validation and enactment stay the controller's; the hub routes and records and does not judge
@@ -5623,12 +5624,13 @@ qualified review
 </table>
 <p><strong>Proposed constraints</strong>, carried from
 <a href="../agent-trust-boundaries-2026-10-18.html#43-what-a-proposal-lifecycle-would-add--proposed-not-specified">agents in the ecosystem §4.3</a>
-and not yet decided: read access never confers a propose or act role, so a <code>readable</code> credential,
-or a tool holding one, cannot be promoted to either; and an approval binds to the exact change, by
-the SHA-256 of its canonical payload. What an approval binds as "the state it was based on" has no
-home yet: <a href="state-intent.html#61-rules">state and intent A12</a> versions the hub's record of what the
-controller reported, not the controller's own state, so it can tell an approver that the hub's
-record changed but never that the controller's state is unchanged.</p>
+and specified as proposed rules in <a href="commands.html#6-proposals-and-approvals-proposed">commands §6</a>:
+read access never confers a propose or act role, so a <code>readable</code> credential, or a tool holding one,
+cannot be promoted to either (CM12); an approval binds to the exact change, by the SHA-256 of its
+canonical payload (CM13); and the state a proposal was based on is the hub's state version
+(<a href="state-intent.html#61-rules">state and intent A12</a>), checked by the hub at approval (CM15). That
+version is the hub's record of what the controller reported, so it can tell an approver that the
+record changed, never that the controller's own state is unchanged.</p>
 <p><strong>Prior art.</strong> The upstream agent control-plane RFC's <code>agent</code> issuer type, its <code>suggest</code> scope
 ("can propose, human must approve") and its <code>DelegationGrant</code> (who granted, to whom, scopes,
 constraints, expiry, revocation); the <a href="../../../10-domain/authority-model.html">authority model</a>; and

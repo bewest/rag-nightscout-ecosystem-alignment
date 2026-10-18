@@ -27,7 +27,7 @@
     
     
       
-        <title>Commands (L3, L5) - Nightscout ecosystem alignment</title>
+        <title>L3 and L5 Commands: how a request or a proposal reaches a controller, and how its outcome comes back - Nightscout ecosystem alignment</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#commands-l3-l5" class="md-skip">
+        <a href="#l3-and-l5-commands-how-a-request-or-a-proposal-reaches-a-controller-and-how-its-outcome-comes-back" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Commands (L3, L5)
+              L3 and L5 Commands: how a request or a proposal reaches a controller, and how its outcome comes back
             
           </span>
         </div>
@@ -2792,7 +2792,7 @@
   <span class="md-ellipsis">
     
   
-    Authority (L5)
+    L5 Authority: who may register, write, own a site, receive a command, and act for someone else
   
 
     
@@ -2829,7 +2829,7 @@
   <span class="md-ellipsis">
     
   
-    Commands (L3, L5)
+    L3 and L5 Commands: how a request or a proposal reaches a controller, and how its outcome comes back
   
 
     
@@ -2847,7 +2847,7 @@
   <span class="md-ellipsis">
     
   
-    Commands (L3, L5)
+    L3 and L5 Commands: how a request or a proposal reaches a controller, and how its outcome comes back
   
 
     
@@ -3005,7 +3005,7 @@
   <span class="md-ellipsis">
     
   
-    Platform glossary
+    Platform glossary: the terms the seven specifications share, and where each is defined
   
 
     
@@ -3033,7 +3033,7 @@
   <span class="md-ellipsis">
     
   
-    Identity (L0)
+    L0 Identity: how records, definitions, instances and subjects are named
   
 
     
@@ -3061,7 +3061,7 @@
   <span class="md-ellipsis">
     
   
-    Records (L1)
+    L1 Records: the typed observations a hub stores, and how today's documents decompose into them
   
 
     
@@ -3089,7 +3089,7 @@
   <span class="md-ellipsis">
     
   
-    Registration (L2)
+    L2 Registration: how a controller declares what its data means, and how a hub accepts it
   
 
     
@@ -3117,7 +3117,7 @@
   <span class="md-ellipsis">
     
   
-    State and intent (L3)
+    L3 State and intent: what was requested, applied and active, who started it, and why it ended
   
 
     
@@ -3145,7 +3145,7 @@
   <span class="md-ellipsis">
     
   
-    Sync transport (L4)
+    L4 Sync transport: how writes are matched, ordered and delivered over REST and the socket, and at what cost
   
 
     
@@ -5372,19 +5372,20 @@
 
 
 
-<h1 id="commands-l3-l5">Commands (L3, L5)<a class="headerlink" href="#commands-l3-l5" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>57a6db95f</code>.</em></p>
+<h1 id="l3-and-l5-commands-how-a-request-or-a-proposal-reaches-a-controller-and-how-its-outcome-comes-back">L3 and L5 Commands: how a request or a proposal reaches a controller, and how its outcome comes back<a class="headerlink" href="#l3-and-l5-commands-how-a-request-or-a-proposal-reaches-a-controller-and-how-its-outcome-comes-back" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-10-18 at <code>85c645c8b</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>9736bd65</code> (2026-10-18). Layers L3
 and L5 of the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. Decisions:
 <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">D18 and D19</a>
 and the maintainer's decisions of 2026-10-14 to 2026-10-18 recorded with them; the proposal
 record was folded into this item on 2026-10-18. Queue: <code>SPEC-REG-COMMANDS</code>.</em></p>
+<p><em>Specification 5 of 7 in the <a href="../index.html#reading-order">reading order</a>; after state and intent, whose acceptance policy (S10, S11) it builds on, and before sync-transport. Expect where a command goes, the command path today, rules CM1–CM20 for the command record, outcomes, proposals and delivery in each mode, compatibility with each controller, and the conformance cases.</em></p>
 <p>How a request to change therapy reaches a controller through a hub, what the hub records about it,
 how the controller's outcome comes back, and the proposal and approval that can stand in front of
 a command. The hub routes and records; it never decides whether a change is safe, never alters
 what was asked, and never doses (D18). Validation and enactment stay the controller's.</p>
-<p>§2 states where a command goes, which is specified. Everything from §4 on is proposed: no hub
-serves a command API, and no rule there is decided.</p>
+<p>Status: §2 is specified; §3 and §8 are evidenced; §4–§7 are proposed and specified with cases;
+none is implemented.</p>
 <h2 id="1-files">1. Files<a class="headerlink" href="#1-files" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5493,7 +5494,8 @@ to Loop.</p>
 <p>Senders are the careportal's Loop plugin (<code>lib/plugins/loop.js:110-180</code> on <code>dev</code>) and the
 NightscoutKit fork LoopCaregiver uses, for overrides, bolus and carbs when its newer
 remote-command option is off; LoopCaregiver sends closed-loop and automatic-bolus changes to
-<code>/api/v2/remotecommands</code> whatever the option, a route no hub serves. Trio, LoopFollow and
+<code>/api/v2/remotecommands</code> whatever the option, a route neither cgm-remote-monitor nor Nocturne
+implements. Trio, LoopFollow and
 AndroidAPS do not call this route.</p>
 <p><strong>Everything else is data.</strong> <code>Temporary Target</code>, <code>Profile Switch</code> and <code>Announcement</code> treatments are
 stored and broadcast like any other record; a controller that downloads treatments may act on them
@@ -5744,7 +5746,7 @@ was run.</p>
 </tr>
 <tr>
 <td>LoopCaregiver "Remote Commands 2" (experimental, off by default; closed-loop and automatic-bolus changes always)</td>
-<td>expects <code>/api/v2/remotecommands</code>, which no hub serves</td>
+<td>expects <code>/api/v2/remotecommands</code>, which neither cgm-remote-monitor nor Nocturne implements</td>
 <td>one-time password</td>
 <td>none on the record</td>
 <td>the record's <code>_id</code></td>

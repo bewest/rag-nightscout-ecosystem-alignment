@@ -27,7 +27,7 @@
     
     
       
-        <title>Platform contracts: where each piece is specified - Nightscout ecosystem alignment</title>
+        <title>Platform contracts: the index to six layers and seven specifications - Nightscout ecosystem alignment</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#platform-contracts-where-each-piece-is-specified" class="md-skip">
+        <a href="#platform-contracts-the-index-to-six-layers-and-seven-specifications" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Platform contracts: where each piece is specified
+              Platform contracts: the index to six layers and seven specifications
             
           </span>
         </div>
@@ -4923,6 +4923,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#ideas-borrowed-from-kubernetes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ideas borrowed from Kubernetes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#reading-order" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4950,8 +4961,8 @@
 
 
 
-<h1 id="platform-contracts-where-each-piece-is-specified">Platform contracts: where each piece is specified<a class="headerlink" href="#platform-contracts-where-each-piece-is-specified" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>39a598616</code>.</em></p>
+<h1 id="platform-contracts-the-index-to-six-layers-and-seven-specifications">Platform contracts: the index to six layers and seven specifications<a class="headerlink" href="#platform-contracts-the-index-to-six-layers-and-seven-specifications" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-10-18 at <code>85c645c8b</code>.</em></p>
 <p><em>Contributor-facing. Living index, current at <code>main</code> <code>010e1661</code> (2026-10-18). Terms are defined in
 the <a href="spec/glossary.html">platform glossary</a>.</em></p>
 <p>This page maps the work on how controllers (Loop, Trio, AndroidAPS and others) and hubs
@@ -5011,10 +5022,12 @@ aim has three parts:</p>
 </table>
 <p>Audit fidelity is not a separate layer. Each layer's section below lists what it records for
 audit.</p>
-<p><strong>Status words used here.</strong> <em>Evidenced</em>: measured or read from source in the corpus or controller
-code. <em>Specified</em>: a contract with synthetic conformance cases and a reference decision function
-in <code>tools/nsschema/</code>, which checks the cases but is not a hub. <em>Implemented</em>: a hub serves it. On
-2026-10-18, no hub implements any L2, L3 or L5 contract on this page.</p>
+<p><strong>Status words used here and in every specification's header.</strong> <em>Evidenced</em>: measured or read
+from source in the corpus or controller code. <em>Decided</em>: the maintainer decided it, recorded in the
+execution plan. <em>Proposed</em>: written as a rule for the maintainer to decide. <em>Specified</em>: a contract
+with synthetic conformance cases and a reference decision function in <code>tools/nsschema/</code>, which
+checks the cases but is not a hub. <em>Implemented</em>: a hub serves it. On 2026-10-18 the L2, L3 and L5
+contracts are specified and not implemented; the first hub implementation is <code>HUB-REG-CRM</code>.</p>
 <h2 id="the-specification-set">The specification set<a class="headerlink" href="#the-specification-set" title="Permanent link">&para;</a></h2>
 <p>Seven specifications and a glossary, one file each under <code>spec/</code>. Each answers one question a
 reader brings, and each has its own rules, conformance cases and gate.</p>
@@ -5351,11 +5364,71 @@ moved from its §9 to <em>commands</em> §2.</p>
 </tr>
 </tbody>
 </table>
+<h2 id="ideas-borrowed-from-kubernetes">Ideas borrowed from Kubernetes<a class="headerlink" href="#ideas-borrowed-from-kubernetes" title="Permanent link">&para;</a></h2>
+<p>Several parts of this design take what Kubernetes does well for declared, typed resources, and
+apply it to controllers that share a hub:</p>
+<table>
+<thead>
+<tr>
+<th>idea</th>
+<th>in Kubernetes</th>
+<th>here</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>one object shape</td>
+<td><code>apiVersion</code>, <code>kind</code>, <code>metadata</code>, <code>spec</code></td>
+<td>every registration and definition has the same four members (<a href="spec/registration.html#3-the-grammar">registration §3</a>)</td>
+</tr>
+<tr>
+<td>declared spec, reported status</td>
+<td><code>spec</code> is what is wanted, <code>status</code> what is observed</td>
+<td>a definition declares what a controller's data means; the owner's listing reports what the hub granted, refused and saw overlap (<a href="spec/registration.html#7-definitions">registration §7–§9</a>); a command record separates the request from its state (<a href="spec/commands.html#4-the-command-record-proposed">commands §4</a>)</td>
+</tr>
+<tr>
+<td>reconciliation</td>
+<td>a controller drives observed state toward its spec</td>
+<td>the controller reconciles; each instance renewal re-evaluates every claim, and the hub records what it observes (<a href="spec/registration.html#8-instances">registration §8–§9</a>)</td>
+</tr>
+<tr>
+<td>leases</td>
+<td><code>coordination.k8s.io</code> Lease for liveness and leadership</td>
+<td>instances hold leases; a lapsed holder loses its roles and is never a command destination (<a href="spec/registration.html#8-instances">registration §8</a>)</td>
+</tr>
+<tr>
+<td>labels and selectors</td>
+<td>key-value labels, selected by queries</td>
+<td>instance labels and read selection (<a href="spec/registration.html#10-labels">registration §10, §12</a>)</td>
+</tr>
+<tr>
+<td>typed extension resources</td>
+<td>CustomResourceDefinitions, versioned, with conversion</td>
+<td>controller-owned definitions with namespaced extensions, version-scoped quirks and projected views for older readers (<a href="spec/registration.html#7-definitions">registration §7, §13, §16</a>)</td>
+</tr>
+<tr>
+<td>admission</td>
+<td>requests are checked and refused with a reason before they are stored</td>
+<td>each element is accepted or refused with a reason code, and nothing is rewritten (<a href="spec/registration.html#5-the-product-resource">registration §5</a>)</td>
+</tr>
+</tbody>
+</table>
+<p>What the hub does with these is narrower than a Kubernetes control plane: it schedules nothing and
+acts on no therapy. It records, routes and refuses; the controller decides and enacts (D18).</p>
 <h2 id="reading-order">Reading order<a class="headerlink" href="#reading-order" title="Permanent link">&para;</a></h2>
 <p>For someone new to the series: this page, then the <a href="spec/glossary.html">glossary</a>, then
 <a href="nightscout-intent-workflow-landscape-2026-10-09.html">intent and workflow landscape</a> §2 and §9 for
-why the contract exists, then the specifications in layer order: <a href="spec/identity.html">identity</a>,
-<a href="spec/records.html">records</a>, <a href="spec/registration.html">registration</a>, <a href="spec/state-intent.html">state and intent</a>.</p>
+why the contract exists, then the seven specifications in layer order:</p>
+<ol>
+<li><a href="spec/identity.html">identity</a> (L0): every other specification uses its ids;</li>
+<li><a href="spec/records.html">records</a> (L1): the typed observations a hub stores;</li>
+<li><a href="spec/registration.html">registration</a> (L2): how a controller declares what those records mean,
+   the largest file;</li>
+<li><a href="spec/state-intent.html">state and intent</a> (L3): requested, applied and active state;</li>
+<li><a href="spec/commands.html">commands</a> (L3, L5): requests and proposals that reach a controller;</li>
+<li><a href="spec/sync-transport.html">sync-transport</a> (L4): how all of the above moves;</li>
+<li><a href="spec/authority.html">authority</a> (L5): who may do each of the above.</li>
+</ol>
 
 
 

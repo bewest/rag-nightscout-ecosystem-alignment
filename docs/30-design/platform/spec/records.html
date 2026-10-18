@@ -27,7 +27,7 @@
     
     
       
-        <title>Records (L1) - Nightscout ecosystem alignment</title>
+        <title>L1 Records: the typed observations a hub stores, and how today's documents decompose into them - Nightscout ecosystem alignment</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#records-l1" class="md-skip">
+        <a href="#l1-records-the-typed-observations-a-hub-stores-and-how-todays-documents-decompose-into-them" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Records (L1)
+              L1 Records: the typed observations a hub stores, and how today's documents decompose into them
             
           </span>
         </div>
@@ -2792,7 +2792,7 @@
   <span class="md-ellipsis">
     
   
-    Authority (L5)
+    L5 Authority: who may register, write, own a site, receive a command, and act for someone else
   
 
     
@@ -2820,7 +2820,7 @@
   <span class="md-ellipsis">
     
   
-    Commands (L3, L5)
+    L3 and L5 Commands: how a request or a proposal reaches a controller, and how its outcome comes back
   
 
     
@@ -2848,7 +2848,7 @@
   <span class="md-ellipsis">
     
   
-    Platform glossary
+    Platform glossary: the terms the seven specifications share, and where each is defined
   
 
     
@@ -2876,7 +2876,7 @@
   <span class="md-ellipsis">
     
   
-    Identity (L0)
+    L0 Identity: how records, definitions, instances and subjects are named
   
 
     
@@ -2913,7 +2913,7 @@
   <span class="md-ellipsis">
     
   
-    Records (L1)
+    L1 Records: the typed observations a hub stores, and how today's documents decompose into them
   
 
     
@@ -2931,7 +2931,7 @@
   <span class="md-ellipsis">
     
   
-    Records (L1)
+    L1 Records: the typed observations a hub stores, and how today's documents decompose into them
   
 
     
@@ -3067,7 +3067,7 @@
   <span class="md-ellipsis">
     
   
-    Registration (L2)
+    L2 Registration: how a controller declares what its data means, and how a hub accepts it
   
 
     
@@ -3095,7 +3095,7 @@
   <span class="md-ellipsis">
     
   
-    State and intent (L3)
+    L3 State and intent: what was requested, applied and active, who started it, and why it ended
   
 
     
@@ -3123,7 +3123,7 @@
   <span class="md-ellipsis">
     
   
-    Sync transport (L4)
+    L4 Sync transport: how writes are matched, ordered and delivered over REST and the socket, and at what cost
   
 
     
@@ -5328,15 +5328,15 @@
 
 
 
-<h1 id="records-l1">Records (L1)<a class="headerlink" href="#records-l1" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>060a98fce</code>.</em></p>
+<h1 id="l1-records-the-typed-observations-a-hub-stores-and-how-todays-documents-decompose-into-them">L1 Records: the typed observations a hub stores, and how today's documents decompose into them<a class="headerlink" href="#l1-records-the-typed-observations-a-hub-stores-and-how-todays-documents-decompose-into-them" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-10-18 at <code>85c645c8b</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>92a7d31b</code> (2026-10-18). Layer L1 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>; record ids are in the
-<a href="identity.html">identity specification</a>. Evidenced, not implemented: the catalogue is generated from
-a shipped typed model and the corpus, and no hub stores these records behind the registration
-contract yet. Decision: <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#26-d11--devicestatus-is-a-decomposition-problem-not-a-column-selection-problem">D11</a>,
+<a href="identity.html">identity specification</a>. Status: evidenced, not implemented: the catalogue is
+generated from a shipped typed model and the corpus. Decision: <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#26-d11--devicestatus-is-a-decomposition-problem-not-a-column-selection-problem">D11</a>,
 for <code>devicestatus</code>; the rest of this page is proposed (§2).
 Queue: <code>SPEC-RECORDS</code>.</em></p>
+<p><em>Specification 2 of 7 in the <a href="../index.html#reading-order">reading order</a>; after identity, before registration, which declares what these records mean. Expect rules R1–R9, the generated catalogue of primitives and their evidence grades, decomposition, settings snapshots, and named test checks.</em></p>
 <p>A controller sends what it has, in the shape it has it: a treatment, a device status, a profile.
 The hub keeps that document and also decomposes it into typed observation primitives, so queries
 stay bounded and a dose can be replayed against the inputs that produced it. This page says which
