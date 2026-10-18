@@ -555,7 +555,7 @@ wrote a record, an agent acts as an agent, and a command that was sent was appli
 whether a `devicestatus` has a `loop` or an `openaps` key (`lib/plugins/loop.js:50`,
 `lib/plugins/openaps.js:82`, `lib/plugins/iob.js:100-101`), so Trio and AndroidAPS, which both write
 `openaps`, look the same, and the free-text `device` string is unreliable
-([control-plane reconciliation §3.2–§3.3](../../30-design/tenancy/nightscout-control-plane-reconciliation-2026-09-11.md#32-the-trio-discriminator-never-fires)).
+([control-plane supersession map §3.2–§3.3](../../30-design/tenancy/nightscout-control-plane-reconciliation-2026-09-11.md#32-trio-and-androidaps-both-write-openaps)).
 Access is a shared secret or tokens with default roles; the Loop relay permission is held only by
 `admin` (`lib/authorization/storage.js:140-148`, `lib/api2/notifications-v2.js:19`). Only one
 development-only AndroidAPS path records a command and returns an acknowledgement with an id;

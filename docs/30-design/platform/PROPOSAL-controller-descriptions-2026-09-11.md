@@ -195,8 +195,9 @@ that takes part in the system, for example one acting for a person or caregiver.
   computed). A reader can then tell a delegated agent's records from a controller's, and can see
   what the agent relied on.
 
-The [control-plane reconciliation](../tenancy/nightscout-control-plane-reconciliation-2026-09-11.md)
-covers the authority questions this raises. No lab has yet run a synthetic controller or agent
+The authority questions this raises are in the [authority specification](spec/authority.md); the
+[control-plane supersession map](../tenancy/nightscout-control-plane-reconciliation-2026-09-11.md)
+names the rule that carries each part of the earlier draft. No lab has yet run a synthetic controller or agent
 through both halves. That would be the first measurement.
 
 **What it proposes to each project:**
@@ -394,5 +395,5 @@ Every number above is reproducible from this repository:
 | Who should do what, in what order | [Adoption roadmap](../nightscout-adoption-roadmap-2026-09-11.md) |
 | Whether the primitives are actually evidenced | [Primitive coverage](./nightscout-primitive-coverage-2026-09-11.md) |
 | The earlier draft of all of this, in cgm-remote-monitor's `docs/proposals/` | `cgm-remote-monitor/docs/proposals/` — `agent-control-plane-rfc.md`, `bridge-rules.md`, `conflict-resolution.md`, `integration-questionnaire.md`. See [hub-and-spoke sync](./nightscout-hub-sync-architecture-2026-09-11.md) §5.2 |
-| What to change in that earlier draft, and what it already gets right | [Reconciling the agentic control plane RFC](../tenancy/nightscout-control-plane-reconciliation-2026-09-11.md) — seven claims the corpus confirms, five it corrects, twelve proposed edits |
+| Which specification rule is proposed to supersede each part of that earlier draft | [The earlier control-plane draft and the specifications proposed to supersede it](../tenancy/nightscout-control-plane-reconciliation-2026-09-11.md) — objects and rules mapped to spec rules, with the corpus findings each rule carries |
 | The concrete changes that raise replay fidelity, per project | [Replay fidelity changes](./PROPOSAL-replay-fidelity-changes-2026-09-11.md) — five changes, measured before and after |

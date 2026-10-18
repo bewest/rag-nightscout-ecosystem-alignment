@@ -174,12 +174,12 @@ find `max_iob` for an oref0 rig and for no other controller here.
 | **Requested** | Held locally (`lastRequestedBolus`, pump `initiating…` states, `deliveryIsUncertain`); not uploaded — R `L Loop/Managers/LoopDataManager.swift:430,721-755`, `LK PumpManagerStatus.swift:39-71` | No requested state between send and confirmation — R `T APSManager.swift:773-874` | Local queued `PumpEnactResult` not uploaded; the request is uploaded inside `enacted.requested` once the pump enacted — R `A LoopPlugin.kt:701-705,1077-1087` | `enact/smb-suggested.json` exists locally before enactment; not uploaded — R `O oref0-pump-loop.sh:321-366` | not reported (R, as cited) |
 | **Confirmed/enacted** | `loop.enacted` with `received: true`, **inferred** from "a recommendation and no errors", not from a pump acknowledgement — R `NSS StoredDosingDecision.swift:63-70`; M 405,228 reads, 10 sites | `openaps.enacted` with `received` = enacted, set after the pump call returns without error; a failed enact is uploaded as `suggested` with `received: false` — R `T APSManager.swift:436-438,841-874`, `T DeterminationStorage.swift:195` | `openaps.enacted` only if the pump reported the temp basal enacted; `enacted.smb` is taken from the temp-basal result — R `A LoopPlugin.kt:1070-1087` | `enacted.json` = suggested + `received: true`, written only after the pump command returns — R `O oref0-pump-loop.sh:365-366,459` | devicestatus (R, as cited) |
 
-*Note.* This corrects the [control-plane reconciliation
-§3.5](../tenancy/nightscout-control-plane-reconciliation-2026-09-11.md#35-all-three-publish-a-suggestion-under-three-different-names)
-reading of `loop.enacted.received` as a pump acknowledgement: in Loop it is a constant. The question
-§3.5 proposed as the narrower one — *is there a point in your code where a command has been sent and
-not yet acknowledged, and can you emit it?* — has a default per column above: Loop and AndroidAPS
-hold one locally, Trio has none, OpenAPS holds a file.
+*Note.* `loop.enacted.received` is a constant in Loop, not a pump acknowledgement; the corpus
+counts for each state are in the [control-plane supersession map
+§3.5](../tenancy/nightscout-control-plane-reconciliation-2026-09-11.md#35-suggested-requested-and-confirmed).
+The narrower question — *is there a point in your code where a command has been sent and not yet
+acknowledged, and can you emit it?* — has a default per column above: Loop and AndroidAPS hold one
+locally, Trio has none, OpenAPS holds a file.
 
 ### C8. Pump response codes
 
@@ -300,9 +300,9 @@ The command rules this repository proposes are in [spec/commands.md](spec/comman
 | CGM binding info | Entry `device` = manufacturer + model, or provenance — R `NSS StoredGlucoseSample.swift:22-32` | No device string on entries — R `T BloodGlucose.swift:60-76` | Entry `device` = source sensor — R `A nsclientV3/extensions/GlucoseValueExtension.kt:38` | Entry `device` = `openaps://medtronic/pump/cgm` — R `O mm-format-ns-glucose.sh:32` |
 | Version/build | `loop.version` — R, see B6 | `openaps.version` — R, see B6 | `pump.extended.Version` — R, see B6 | `openaps.version` — R, see B6 |
 
-*Note.* `device` is free text and is not an identity (reconciliation
-[§3.3](../tenancy/nightscout-control-plane-reconciliation-2026-09-11.md#33-instance-identity-should-not-come-from-the-device-string));
-a registered instance gets a hub-issued or controller-supplied id ([spec/registration.md](spec/registration.md)).
+*Note.* `device` is free text and is not an identity (supersession map
+[§3.3](../tenancy/nightscout-control-plane-reconciliation-2026-09-11.md#33-instance-identity-and-the-device-string));
+a registered instance has a random UUID v4 the controller supplies ([identity §2](spec/identity.md#2-contract-ids); [spec/registration.md](spec/registration.md#8-instances)).
 Loop's `device` and `uploader.name` carry the user's device name, which `specs/sync/sensitivity.yaml` treats as identifying.
 
 ---
@@ -331,7 +331,7 @@ controller's writers and from the hub lab.
 
 | Concern | Loop | Trio | AndroidAPS | OpenAPS |
 |---|---|---|---|---|
-| Accuracy of override state extraction | **Yes**: pre-meal is not uploaded; devicestatus `override.duration` is seconds while the treatment's is minutes; the two hubs disagree on it — R `NSS StoredDosingDecision.swift:119,129`, `NSK OverrideTreatment.swift:67`; M hub lab, landscape [§5](nightscout-intent-workflow-landscape-2026-10-09.md#5-how-the-hubs-decide-what-is-active); M 10,892 of 55,938 active overrides carry a name and no effect ([reconciliation §3.4](../tenancy/nightscout-control-plane-reconciliation-2026-09-11.md#34-overrideinstanceeffectiveeffects-will-be-empty-20-of-the-time)) | **Yes**: every override is `Exercise` with name only; percentage and target are not sent — R `T NightscoutExercise.swift:23-29`, `T OverrideStored+helper.swift:33-36`; M 399 distinct `Exercise` documents, 1 site | **Partly**: no override object; the PS → EPS pair is clear, EPS arrives as a `Note`; `timeshift` is milliseconds — R `A nsclientV3/extensions/EffectiveProfileSwitchExtension.kt:45-66`, `A TreatmentMapper.kt:540`; M hub lab: hubs disagree on timeshift units (landscape §5) | **No** override state to extract — R `O targets.js:11-68` |
+| Accuracy of override state extraction | **Yes**: pre-meal is not uploaded; devicestatus `override.duration` is seconds while the treatment's is minutes; the two hubs disagree on it — R `NSS StoredDosingDecision.swift:119,129`, `NSK OverrideTreatment.swift:67`; M hub lab, landscape [§5](nightscout-intent-workflow-landscape-2026-10-09.md#5-how-the-hubs-decide-what-is-active); M 10,892 of 55,938 active overrides carry a name and no effect ([supersession map §3.4](../tenancy/nightscout-control-plane-reconciliation-2026-09-11.md#34-overrides-with-a-name-and-no-effect)) | **Yes**: every override is `Exercise` with name only; percentage and target are not sent — R `T NightscoutExercise.swift:23-29`, `T OverrideStored+helper.swift:33-36`; M 399 distinct `Exercise` documents, 1 site | **Partly**: no override object; the PS → EPS pair is clear, EPS arrives as a `Note`; `timeshift` is milliseconds — R `A nsclientV3/extensions/EffectiveProfileSwitchExtension.kt:45-66`, `A TreatmentMapper.kt:540`; M hub lab: hubs disagree on timeshift units (landscape §5) | **No** override state to extract — R `O targets.js:11-68` |
 | Accuracy of delivery extraction | **Yes**: `enacted.received` is constant `true`; devicestatus is uploaded only for four decision reasons, each paired with the last loop decision — R `NSS StoredDosingDecision.swift:63-70`, `NSS NightscoutService.swift:282-297` | Low: enacted vs suggested follows the pump result — R `T Determination+helper.swift:72-89` | **Yes**: `enacted.smb` is the temp-basal result's bolus — R `A LoopPlugin.kt:1087` | Low — R `O oref0-pump-loop.sh:365-366` |
 | Missing fields in current devicestatus | Effective ISF/CR/basal; failure codes (2.4% carry text) — R B6; M `loop.failureReason` | Override factors, `halfBasalTarget`, pump model — R `T NightscoutTreatment.swift:3-25` | `OapsProfile` (max_iob, ISF, CR as fields), `utcOffset` — R `A nsclientV3/extensions/DeviceStatusExtension.kt:7-23` | Pump model and CGM in devicestatus — R `O ns-status.js:154-169` |
 | Timing/ordering issues | Devicestatus `created_at` is the decision time, posted later in batches — R `NSS StoredDosingDecision.swift:148-153` | Unuploaded rows older than a day are dropped — R `T Determination+helper.swift:72-89` | Inbound records by `srvModified` — R `A LoadTreatmentsRunner.kt:41-57` | Files older than 24 h deleted unsent — R `O oref0-ns-loop.sh:205` |

@@ -1,409 +1,209 @@
-# Reconciling the agentic control plane RFC with what the corpus measured
+# The earlier control-plane draft and the specifications proposed to supersede it
 
-*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current as analysis of the RFC; no decision rests on it.** Current decisions: [execution plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). **Corrected in place 2026-10-09:** §3.4 counts are distinct documents across the corpus's two overlapping snapshots. The RFC's hub-side override composition (`conflict-resolution.md`) is outside the hub's role under D18. **Corrected in place 2026-10-18:** §7's "No — ask" rows, and every other question, now have defaults read from each controller's source in [integration questionnaire defaults](../platform/integration-questionnaire-defaults-2026-10-18.md); the questionnaire has 16 questions, not twenty; and §3.5's `loop.enacted.received` is a constant in Loop's writer, not a pump acknowledgement (that page, C7).
+*What this is: a supersession map (contributor-facing). Read after the [platform
+specifications](../platform/README.md#reading-order); leads to [integration questionnaire
+defaults](../platform/integration-questionnaire-defaults-2026-10-18.md).* **Snapshot — describes the
+earlier draft at cgm-remote-monitor `a8888f0d` and this repository's specifications at `main`
+`df93608c` (2026-10-18). Status: current; no decision rests on it.** Current decisions: [execution
+plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). The 2026-09-11 analysis
+of the same draft is in git: [full text at
+`85c645c8`](https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/85c645c8b003b61dc07ea31f8a7002711493b18a/docs/30-design/tenancy/nightscout-control-plane-reconciliation-2026-09-11.md).
 
-Date: 2026-09-11. Tenth in the series, and the
-first one addressed **to cgm-remote-monitor's own `docs/proposals/` set**
-rather than to a controller.
+The earlier draft in cgm-remote-monitor's `docs/proposals` came from earlier versions of this
+repository and was added there in cgm-remote-monitor `12c90cfc` (2026-01-19). This repository's
+[platform specifications](../platform/README.md) are proposed to supersede it. Each row below names
+the rule that now carries an idea of the draft and what changes. The specifications share one
+premise: the hub routes and records, never composes intents, never judges whether a change is safe
+and never doses; validation and enactment stay the controller's (D18).
 
-> **The RFC is not being rewritten here.** It was drafted 2026-01-01. The
-> census that could check it ran on snapshots dated 2026-04-01 and
-> 2026-04-26. Nothing in the RFC was wrong to assume at the time it was
-> written; several things can now be *checked*, and a few of them come back
-> different. This document is the checking, plus the edits that follow from
-> it.
+## 1. The earlier draft
 
----
+Read at cgm-remote-monitor `a8888f0d`; none of the five files has changed since `db32bdc6`
+(2026-01-18).
 
-## TL;DR
+| file | what it proposes | proposed to be superseded by |
+|---|---|---|
+| `agent-control-plane-rfc.md` | an event envelope; configuration, runtime, computed, delivery and capability objects; ten collections and an event stream; bridge mode; authority, scopes, delegation and audit | [records](../platform/spec/records.md), [registration](../platform/spec/registration.md), [state and intent](../platform/spec/state-intent.md), [commands](../platform/spec/commands.md), [sync transport](../platform/spec/sync-transport.md), [authority](../platform/spec/authority.md) |
+| `bridge-rules.md` | synthesising those objects from today's `devicestatus`, `treatments` and `profile` | [registration §2–§3](../platform/spec/registration.md#2-two-tiers) (well-known registrations), [records R1–R2](../platform/spec/records.md#2-rules), [state and intent S6–S7](../platform/spec/state-intent.md#2-rules) |
+| `conflict-resolution.md` | an authority hierarchy, five conflict scenarios, optimistic locking, a global event cursor, delegation grants, safety invariants | [state and intent S1, A7–A9](../platform/spec/state-intent.md#2-rules), [sync transport T8–T9](../platform/spec/sync-transport.md#4-the-sync-read-and-write-proposed), [authority §7](../platform/spec/authority.md#7-delegation-not-decided) |
+| `oidc-actor-identity-proposal.md` | verified actor identity through OpenID Connect, an `actors` collection, delegation claims, a migration away from `enteredBy` | [authority AU1–AU4](../platform/spec/authority.md#2-principals-and-credentials), [authority §8](../platform/spec/authority.md#8-what-is-recorded-for-audit) |
+| `integration-questionnaire.md` | 16 questions to Loop, AAPS, Trio and OpenAPS implementers | [integration questionnaire defaults](../platform/integration-questionnaire-defaults-2026-10-18.md): a default answer per controller, read from source |
 
-| | |
-|---|---|
-| **Seven claims the corpus confirms** | Including two the RFC treats as open questions that already have answers on the wire: an idempotency key (`syncIdentifier`, 306,741 treatments) and a human/automation flag (`automatic`, 300,228 treatments) |
-| **Five things the corpus corrects** | The Trio discriminator never fires; instance identity is taken from the least reliable field; `OverrideInstance.effectiveEffects` would be empty for 20% of observed active overrides; the suggested/enacted split already exists under three different key names |
-| **Two simplifications with arithmetic behind them** | The ten new collections would add 2,880 requests/day *only because the delta is per collection*. Fix that first — a small change to already-generic code — and their cost is zero. The RFC does not have to choose between typed resources and cheap sync |
-| **One thing to do before any of it** | `integration-questionnaire.md` is twenty questions and fourteen empty tables. Roughly half can be pre-filled from measurement and source. An implementer corrects a wrong table far faster than they fill an empty one |
+## 2. Supersession map
 
-**The single most useful finding for the RFC's own case:** `CapabilitySnapshot.effectiveLimits.maxIOB`
-and `PolicyComposition.effectiveParameters.maxBasalAllowed` are the objects that
-would close the most-cited replay gap in this entire series — `max_iob` is
-**recorded by no oref0 derivative anywhere in Nightscout**, and a real replay
-tool has to assume it. The RFC proposes the right object and never says that
-is what it is for.
+### 2.1 Objects
 
----
+| earlier draft | replaced by | what changes |
+|---|---|---|
+| `EventEnvelope` (`eventId`, `cursor`, `issuer`, `issuerSeq`, `idempotencyKey`, `refs`) | [identity I1, I5](../platform/spec/identity.md#1-rules); [sync transport T4, T8](../platform/spec/sync-transport.md#2-the-write-path); [state and intent S8](../platform/spec/state-intent.md#2-rules); [registration §11](../platform/spec/registration.md#11-typed-writes-and-attribution) | No envelope. A record keeps its own `identifier` (the client's sync identity, which is the idempotency key) and `_id`; a write produces one change event; the cursor is opaque; who started an intent is its initiator, and which running copy wrote a record is its instance |
+| `ProfileDefinition` (`profileId`, `contentHash`, schedules, insulin model) | [records R1](../platform/spec/records.md#2-rules) (`TherapySettings` and four schedules); [state and intent S9](../platform/spec/state-intent.md#2-rules) | A profile decomposes into typed primitives. A stable profile id is something a controller declares (`definitions.idField`); no controller sends one today ([questionnaire defaults A1](../platform/integration-questionnaire-defaults-2026-10-18.md#a1-profile-identification)) |
+| `OverrideDefinition`, `OverrideInstance`, `ProfileSelection` | [state and intent S2–S9](../platform/spec/state-intent.md#2-rules) and [A1–A13](../platform/spec/state-intent.md#61-rules) | One declaration per intent kind (S2) with its slot (S3), states (S4), end reasons (S5), wire carrier (S6), requested and applied carriers (S7), initiators (S8) and definitions (S9). The hub derives what is active from the controller's own records; `status: superseded` and `supersededBy` become the declared `supersedes` (S3, A7) |
+| `PolicyComposition` | [state and intent S1, §4](../platform/spec/state-intent.md#2-rules); [records §5](../platform/spec/records.md#5-settings-snapshot) | The hub never computes it. The controller reports its composed result where it publishes one (`composition.result`); effective limits are settings in an effective-dated `ControllerSettings` snapshot |
+| `DeliveryRequest` (`basedOn.policyCompositionId`, `expiresAt`) | [commands CM1–CM6](../platform/spec/commands.md#4-the-command-record-proposed), [CM11](../platform/spec/commands.md#6-proposals-and-approvals-proposed) | A command record with the payload, its `payloadHash` and a required expiry (CM3); after an approval it carries `basedOn`, the hub's [state version](../platform/spec/state-intent.md#61-rules) (A12) |
+| `DeliveryObservation` (`confidence`, `pumpResponse.acked`, `errorCode`) | [records §3](../platform/spec/records.md#3-the-catalogue) (`Bolus`, `TempBasal`, `ApsSnapshot`); [commands CM7–CM9](../platform/spec/commands.md#5-outcomes-proposed) | A delivery is a typed primitive with an evidence grade per field (R4). Whether a command was received or enacted is the destination's outcome report, `acknowledged`, `succeeded`, `failed` or `refused`, with a reason (CM8) |
+| `Reconciliation` (`matched`, `partial`, `blocked`, `unknown`, `expired`) | [commands §4 states, CM9](../platform/spec/commands.md#4-the-command-record-proposed) | The hub sets only hand-over states (`sent`, `fetched`, `unconfirmed`, `undeliverable`, `expired`); outcomes are the controller's. A command enacted in part is open ([commands §9](../platform/spec/commands.md#9-open) item 4) |
+| `ControllerKindDefinition` (`kindId`, `version`, `supportedFeatures`, `eventCapabilities`) | [registration §2–§3, §7](../platform/spec/registration.md#2-two-tiers) | A product registration in two tiers: well-known, generated by the hub from measurement, and controller-owned. Definitions are content-addressed (`sha256:` of RFC 8785 canonical JSON) and several coexist per product. What a controller can do is declared per element: intent kinds, commands, replay inputs, settings |
+| `ControllerInstanceRegistration` (`instanceId`, `device`, `pumpBinding`, `cgmBinding`, `lastSeenAt`) | [registration §8](../platform/spec/registration.md#8-instances); [identity §2](../platform/spec/identity.md#2-contract-ids) | The instance id is a random UUID v4 the controller supplies; liveness is a lease; an instance carries no hardware identifiers. `devicestatus.device` is at most an observed alias, labelled identifying and withheld by default (§3.3) |
+| `CapabilitySnapshot` (`connectivity`, `automationState`, `effectiveLimits`, `health`) | [records §3, §5](../platform/spec/records.md#3-the-catalogue); [registration §4](../platform/spec/registration.md#4-the-capability-document), [§8](../platform/spec/registration.md#8-instances) | Split by what each part is: pump, uploader and loop state are the `PumpSnapshot`, `UploaderSnapshot` and `ApsSnapshot` primitives; limits are `ControllerSettings`; liveness is the instance lease. The capability document at `/.well-known/nightscout/sync` describes the hub software, never a person |
+| Ten collections, and `/api/v3/events` with WebSocket and SSE subscriptions | [sync transport T5–T11](../platform/spec/sync-transport.md#4-the-sync-read-and-write-proposed); [registration §13](../platform/spec/registration.md#13-projected-views-for-older-readers) | One read across collections, one batch write and one opaque cursor (an event cursor, if one is added, is the same cursor); socket subscription by product and channel. Typed records reach older readers as projected documents |
+| Bridge mode and `bridge-rules.md` (detection, profile hashing, override and delivery extraction, idempotency) | [registration §2–§3](../platform/spec/registration.md#2-two-tiers), [§16](../platform/spec/registration.md#16-version-scoped-quirks); [records R1–R2](../platform/spec/records.md#2-rules); [state and intent S6–S7](../platform/spec/state-intent.md#2-rules); [identity I5–I7](../platform/spec/identity.md#1-rules) | Well-known registrations served at `/.well-known/nightscout/controllers` describe today's writers as they are; decomposition is declared with structural discriminators, never the `device` string; version-specific encodings are recorded quirks. A re-send matches on `identifier`, then `_id`, then the collection's natural key |
 
-## 1. Why this document exists
+### 2.2 Rules
 
-The roadmap listed "how much of `docs/proposals/` is live" as an open
-question and said reconciling against it was "arguably ahead of Phase 1,
-since duplicating an existing RFC is the specific failure this work is
-supposed to prevent." This is that reconciliation.
+| earlier draft | replaced by | what changes |
+|---|---|---|
+| Authority hierarchy (human 100, caregiver 80, agent 50, controller 30) and conflict rules: composition by most restrictive target and lowest basal multiplier, supersession by authority, profile selection by recency | [state and intent S1, S3, A7–A9](../platform/spec/state-intent.md#2-rules); [authority §7](../platform/spec/authority.md#7-delegation-not-decided) | Composition is the controller's rule and differs per controller ([state and intent §4](../platform/spec/state-intent.md#4-composition-as-read-from-each-controllers-source)). The hub reports each product's instances, ends one by another only as the controller declares (`supersedes`, `overlay`), and marks overlap without resolving it (A9) |
+| Flip-flop prevention: rate limits per issuer, a cooldown, confirmation after N activations | [commands §9](../platform/spec/commands.md#9-open) (proposal volume, UCA-PROP-002) | Open: nothing limits the open proposals one instance holds on a channel |
+| Optimistic locking on `srvModified`; a global `eventCursors` counter | [registration §5.4](../platform/spec/registration.md#54-etag-and-idempotency); [sync transport T3, T8, T9](../platform/spec/sync-transport.md#2-the-write-path) | Registration resources use etags and `If-Match`. Records are ordered by the server's `srvModified` (unique and never decreasing within a process) under `single` and by the replication slot under `multi`, behind one opaque cursor with a low watermark, so a slow write is never skipped. No global counter document |
+| Identity model: human and caregiver by OAuth, controller by a device-bound key, agent by OAuth with a delegation token | [authority AU1–AU4](../platform/spec/authority.md#2-principals-and-credentials) | By audience: devices and uploaders hold a native per-tenant credential; owners and caregivers are to sign in through one Ory Kratos pool on hosted sites (adopted in principle, gated); third-party delegated access is deferred. Everything binds to a subject, never a token |
+| `issuerType: human \| controller \| agent` | [state and intent S8](../platform/spec/state-intent.md#2-rules); [registration §9](../platform/spec/registration.md#9-channels-roles-and-provenance) | The initiator is a value in the controller's own vocabulary. An agent initiator is `{value: other, controllerTerm}`; no `agent` value is added (maintainer, 2026-10-18). An agent's role is an `other` role a hub lists |
+| Scopes `read`, `suggest` ("can propose, human must approve"), `activate`, `deliver`, `admin` | [authority AU5, §5](../platform/spec/authority.md#2-principals-and-credentials); [commands CM5, CM12, CM14](../platform/spec/commands.md#6-proposals-and-approvals-proposed) | Permissions per collection and action. Proposing needs `api:proposals:create` and a granted propose role; approving needs `api:commands:create`, because approving is sending; a proposer cannot approve its own proposal; reading confers neither (CM12). Registering needs `api:registrations:create` |
+| `DelegationGrant` (`grantedBy`, `grantedTo`, `scopes`, `constraints`, `expiresAt`, `revokedAt`) and grant validation | [authority §7, DR1–DR7](../platform/spec/authority.md#7-delegation-not-decided) | Requirements stated; the grant's shape, storage and checks are open ([authority §9](../platform/spec/authority.md#9-open) item 6). The [authority model](../../10-domain/authority-model.md) keeps a worked example of a grant with constraints |
+| Audit: append-only events with `issuer` and `authority`; optional signed events and a hash chain per issuer | [authority §8](../platform/spec/authority.md#8-what-is-recorded-for-audit); [commands CM1, CM10](../platform/spec/commands.md#4-the-command-record-proposed) | The owner's listing records current bindings, roles and overlaps; typed records carry instance, definition and provenance; a command is recorded before it is sent. Binding an approval end to end needs a signature by the sender or approver (CM10). Who took an owner action, and reads, are not recorded |
+| OIDC actor identity: an `actors` collection, RFC 8693 delegation claims, `enteredBy` replaced by verified claims | [authority AU1, AU3, AU4, §8](../platform/spec/authority.md#2-principals-and-credentials); [records R9](../platform/spec/records.md#2-rules) | Identity is per cohort; credentials and authorization are per tenant. `enteredBy` stays a free-text field labelled identifying, never an identity |
+| Safety invariants ("human always wins", composed effects within safety limits, conservative composition) | [state and intent S1](../platform/spec/state-intent.md#2-rules); [commands CM5, CM10](../platform/spec/commands.md#4-the-command-record-proposed) | They bind the controller, which composes and validates. The hub checks only routing, expiry, size and permission, and never changes a payload |
+| Integration questionnaire | [integration questionnaire defaults](../platform/integration-questionnaire-defaults-2026-10-18.md); [state and intent S10–S11](../platform/spec/state-intent.md#2-rules); [records R8](../platform/spec/records.md#2-rules) | Every question has a default per controller, read from source, for its authors to correct. What the questions ask is what a registration declares: acceptance policy, command paths, replay inputs |
 
-Three things make it worth doing as edits rather than as a competing
+## 3. Measured findings the specifications carry
+
+Measured over the corpus in `reports/schema-census/` (snapshots dated 2026-04-01 and 2026-04-26;
+11 sites, 9 of them Loop; one site carries `openaps.*`, and it is Trio's; no AndroidAPS closed-loop
+site and no oref0 rig). Counts are `docs_present` across both snapshots, which overlap, so they
+bound distinct documents from above; §3.4 counts distinct documents.
+
+### 3.1 Fields already on the wire
+
+| what the draft proposes | on the wire today | where the specifications use it |
+|---|---|---|
+| an idempotency key | `treatments.syncIdentifier`, 306,741 (83%, 10 sites) | the client's `identifier` ([identity I1, I5](../platform/spec/identity.md#1-rules)) |
+| a human or automation flag | `treatments.automatic`, boolean, 300,228 (81%, 10 sites) | `Bolus.Automatic` ([records §3](../platform/spec/records.md#3-the-catalogue)); a wire value can stand for an initiator through `wireProxy` ([state and intent S8](../platform/spec/state-intent.md#2-rules)) |
+| controller version | `loop.version` 597,335 (85%, 10 sites); `openaps.version` 73,898 (1 site) | the product and version a settings snapshot carries ([records R5](../platform/spec/records.md#2-rules)) |
+| override state | `override.active` 597,335 (85%, 10 sites) | Loop's applied override carrier ([state and intent S7](../platform/spec/state-intent.md#2-rules)) |
+
+### 3.2 Trio and AndroidAPS both write `openaps`
+
+No corpus document has a top-level `trio` key, and Trio's wire model declares `openaps`,
+`suggested` and `enacted` (`Trio/Sources/Models/NightscoutStatus.swift`). The well-known Trio and
+AndroidAPS registrations use the same structural discriminator, `{path: openaps, test: is-object}`
+(`specs/sync/registrations/trio.yaml:18-20`), so the two cannot be told apart by a top-level key,
+and cgm-remote-monitor's readers cannot either (`lib/plugins/openaps.js:82`). In the
+specifications a registered controller's records are attributed to its instance and definition
+([registration §11](../platform/spec/registration.md#11-typed-writes-and-attribution)), and a
+controller-published registration takes precedence over a structurally inferred one
+([registration §2](../platform/spec/registration.md#2-two-tiers)).
+
+### 3.3 Instance identity and the `device` string
+
+`devicestatus.device` is on every devicestatus document and is free text: one site's device
+strings read like a controller while its treatments show no automated dosing. An instance id is a
+random UUID v4 the controller supplies, never derived from a device name, model, serial number or
+`devicestatus.device` ([identity §2](../platform/spec/identity.md#2-contract-ids)); the hub may
+keep the string as an observed alias, labelled `{level: identifying, category: device}` and
+withheld by default ([registration §8](../platform/spec/registration.md#8-instances)).
+
+### 3.4 Overrides with a name and no effect
+
+Of the 55,938 distinct devicestatus documents with an active override:
+
+| | count | share |
+|---|---:|---:|
+| effect and name both present | 42,799 | 76.5% |
+| effect only | 2,176 | 3.9% |
+| **name only, no effect** | **10,892** | **19.5%** |
+| neither | 71 | 0.1% |
+
+Of 2,865 temporary effects in treatments, 399 carry a label and no effect. A reader that
+synthesises an override's effect from these records gets none for one in five. In the
+specifications the hub never computes a composed result from them ([state and intent
+S1](../platform/spec/state-intent.md#2-rules)); a kind declares the fields it does not publish
+(`unpublishedFields`, S6); and a setting a controller does not publish is recorded as not
+published, never filled with a default ([records R6](../platform/spec/records.md#2-rules)). The
+draft therapy-effect schema separates an effect from why it was asked for ([state and intent
+§5](../platform/spec/state-intent.md#5-effect-and-motivation-proposed)).
+
+### 3.5 Suggested, requested and confirmed
+
+| state | Loop | oref0 family (Trio, AAPS) |
+|---|---|---|
+| suggested, manual bolus | `loop.recommendedBolus`, 597,143 (85%, 10 sites) | `openaps.recommendedBolus`, 41,474 (1 site) |
+| suggested, automatic dose | `loop.automaticDoseRecommendation`, 183,049 (26%, 10 sites) | `openaps.suggested`, 73,898 (1 site) |
+| requested | not published | not published |
+| confirmed | `loop.enacted` with `received`, 405,228 (58%, 10 sites) | `openaps.enacted` with `received`, 73,834 (1 site) |
+
+Loop's writer sets `loop.enacted.received` to `true` whenever there is a recommendation and no
+error, so it is not a pump acknowledgement; Trio sets `received` from the pump call's result
+([questionnaire defaults C7](../platform/integration-questionnaire-defaults-2026-10-18.md#c7-delivery-state-distinction)).
+Loop's only failure text is `loop.failureReason`, a string on 16,550 documents (2.4%). The
+suggestions decompose into `ApsSnapshot`'s `RecommendedBolus` and `Enacted`
+([records §3](../platform/spec/records.md#3-the-catalogue)); a request recorded apart from its
+effect is the requested carrier ([state and intent S7](../platform/spec/state-intent.md#2-rules));
+for a command, handed over and not yet acknowledged is the `sent` or `fetched` state
+([commands §4](../platform/spec/commands.md#4-the-command-record-proposed)).
+
+### 3.6 Safety limits
+
+Loop records its limits in `profile.loopSettings` (200 profile documents, 10 sites). The corpus
+holds no `max_iob` from any oref0 derivative, so a replay of corpus data has to assume it. oref0's
+own rig uploads its `preferences` file, `max_iob` included, as `devicestatus.preferences` (oref0
+`d219baf9` `bin/ns-status.js:40-49,175-177`); Trio and AndroidAPS write a cap only into `reason`
+text when it binds. Of the dosing inputs each family declares, Nightscout records 20% for Loop and
+50% for the oref0 family (55% and 72% counting derivable inputs). The specifications carry this as
+the settings snapshot and the declared replay inputs ([records R5, R6, R8,
+§5](../platform/spec/records.md#5-settings-snapshot)).
+
+### 3.7 Sync cost of typed collections
+
+API v3 gives a client one delta read per collection, so a client that uses it as designed reads
+each collection separately, and every typed collection added adds a read. One read and one write
+across collections make the cost independent of the number of collections ([sync transport §3,
+T5, T7](../platform/spec/sync-transport.md#3-what-each-clients-sync-code-can-call)). The change
+list is the [replay-fidelity proposal](../platform/PROPOSAL-replay-fidelity-changes-2026-09-11.md) §1.
+
+## 4. Examples
+
+### 4.1 An override proposed, approved, requested and applied
+
+An agent instance proposes an exercise override; a person approves it; Loop, as a registered
+controller holding the `override` channel's `command-sink`, enacts it. Each step is a typed
+record. Identifiers are shortened, and the payload is illustrative, because no definition yet
+declares a command payload's shape ([commands §9](../platform/spec/commands.md#9-open) item 3).
+
+```yaml
+# 1. Proposal (commands CM11). The agent's own instance holds a propose role (CM12).
 proposal:
+  proposalId: p-41
+  instanceId: 9b2f…            # the agent's instance (registration §8)
+  channel: override
+  payload: {preset: Exercise, durationMinutes: 60}
+  payloadHash: sha256:7c1e…
+  basedOn: sha256:a90d…        # Loop's state version the agent read (state and intent A12)
+  expiresAt: 2026-10-18T15:10:00Z
+  state: open
 
-1. **The overlap is near-total in scope and near-zero in evidence.** The RFC
-   and this series propose the same objects for the same reasons. The RFC
-   argues from design; this series argues from 1.97 million documents. They
-   are complements, not rivals.
-2. **Two efforts independently reached the same structural discriminator.**
-   `bridge-rules.md` detects controllers with `if (devicestatus.loop)`,
-   `if (devicestatus.openaps)`. So does `specs/sync/registrations/`. That is
-   the strongest evidence in either tree that the approach is right.
-3. **The RFC's weakest sections are exactly the ones a corpus can fix**, and
-   its strongest sections are ones this series never attempted — delegation,
-   agent authority, remote commands.
+# 2. The approval names the hash (CM13, CM14). The hub creates one command (CM1).
+approval: {proposalId: p-41, payloadHash: sha256:7c1e…}
+command:
+  commandId: c-118
+  proposalId: p-41
+  payloadHash: sha256:7c1e…
+  initiator: {value: other, controllerTerm: agent}   # state and intent S8
+  state: pending
 
----
+# 3. Loop fetches it (CM18), checks the hash, the expiry and its own limits (CM10),
+#    enacts it, and reports the record that shows the effect (CM7).
+outcome: {commandId: c-118, state: succeeded, payloadHash: sha256:7c1e…, record: {identifier: 5d3a…}}
 
-## 2. What the measurements confirm
-
-Each row is reproducible from `reports/schema-census/`.
-
-| RFC claim | Measured | Verdict |
-|---|---|---|
-| "Overrides buried in devicestatus" | `override.active` on **597,335** devicestatus documents (85%, 10 sites); `override.name`, `.duration`, `.multiplier`, `.currentCorrectionRange` present only when one is running | **Confirmed.** The override *is* a devicestatus field, exactly as described |
-| Structural detection in `bridge-rules.md` | `loop`, `openaps`, `pump`, `uploader`, `override` are the observed top-level `devicestatus` objects. Nothing else discriminates | **Confirmed, and independently arrived at** |
-| "Controller version" in `ControllerKindDefinition` | `loop.version` on **597,335** documents (85%, 10 sites); `openaps.version` on **73,898** (1 site) | **Already published.** No controller change needed for this field |
-| `EventEnvelope.idempotencyKey` | `treatments.syncIdentifier` on **306,741** documents (83%, 10 sites) | **Already on the wire under another name.** See §4.3 |
-| `issuerType: human \| controller` | `treatments.automatic`, boolean, on **300,228** documents (81%, 10 sites) | **Already on the wire.** The base case of the authority hierarchy is observable today |
-| `DeliveryObservation.pumpResponse.acked` | `loop.enacted.received`, boolean, **405,228** documents (58%, 10 sites); `openaps.enacted.received`, **73,834** (1 site) | **Already published as a boolean.** The ACK exists; the error *code* does not — `loop.failureReason` is a string on only **16,550** documents (2.4%) |
-| "No 'effective policy' view" | `max_iob` is recorded by **no oref0 derivative anywhere**; `oref-digital-twin` lists it in `REQUIRED_SETTINGS` and must assume it | **Confirmed, and it is the strongest argument the RFC has.** See §3.1 |
-
-**What this changes about the RFC's ask.** Four of the fields it proposes as
-new already exist in production data. The work is not to invent them; it is
-to **describe the ones that exist and name the ones that do not** — which is
-what a controller description is for.
-
-## 3. What the measurements correct
-
-### 3.1 The RFC understates its own best argument
-
-`agent-control-plane-rfc.md` motivates `PolicyComposition` and
-`CapabilitySnapshot` as prerequisites for *agents*. They are also, and more
-immediately, the fix for a measured failure that has nothing to do with
-agents:
-
-| Object and field | What it would close |
-|---|---|
-| `CapabilitySnapshot.effectiveLimits.maxIOB` | `profile.maxIob` — **absent from every oref0 derivative in the corpus.** A replay must assume it |
-| `PolicyComposition.effectiveParameters.maxBasalAllowed` | `profile.maxBasal` — **partial.** Loop records `loopSettings.maximumBasalRatePerHour` (10 sites); AAPS and Trio record no equivalent |
-| `PolicyComposition.effectiveParameters.effectiveISF`/`effectiveCR` | Reconstructing these from profile plus overrides is where replay silently diverges from what the controller used |
-
-Replay completeness is **20% for Loop and 50% for the oref0 family**. The RFC
-would move both, and it does not claim the credit.
-
-**Recommended edit:** add a motivation item — *"Safety limits and effective
-parameters are not recoverable"* — with these numbers, ahead of the agent
-motivation. It makes the RFC adoptable by people who do not want agents.
-
-### 3.2 The Trio discriminator never fires
-
-```javascript
-// bridge-rules.md:68
-if (devicestatus.trio) return 'trio';
+# 4. Loop's records give the two layers the hub reports (state and intent S7, A10):
+#    treatments   `Temporary Override`, duration in minutes      -> the requested instance
+#    devicestatus `override`, duration in seconds remaining      -> the applied layer
 ```
 
-**No document in the corpus carries a top-level `trio` key**, and Trio's own
-wire model agrees: `Trio/Sources/Models/NightscoutStatus.swift` declares
-`openaps`, `suggested`, `enacted` — no `trio`. Two independent confirmations.
+### 4.2 An approval bound to a payload hash
 
-The honest version is worse than a typo, and it is **our limit too**: Trio is
-an oref derivative and writes under `openaps`, so
-`specs/sync/registrations/trio.yaml` and `androidaps.yaml` both discriminate
-on `openaps` and **cannot be told apart at the top level either**.
-
-**Recommended edit, both trees:** delete the `trio` branch; state that oref
-derivatives are not distinguishable by top-level key and that separating them
-needs a second-order signal (`openaps.version` string, or an explicit
-declaration). Do not invent one silently.
-
-### 3.3 Instance identity should not come from the device string
-
-```javascript
-// bridge-rules.md:470
-controllerInstanceId: devicestatus.device,
-// bridge-rules.md:171
-issuerId: devicestatus.device || 'unknown'
-```
-
-`device` is present on all 702,254 documents, and it is the free-text field
-this series spent the most effort de-identifying. It is also unreliable in a
-way that matters here: **one site's device strings read like a controller
-while its treatments showed no automated dosing at all.**
-
-Using it as instance identity makes liveness inherit that unreliability, and
-it makes `ControllerInstanceRegistration.instanceId` — the RFC's own answer
-to liveness — a rename of a string nobody controls.
-
-**Recommended edit:** `instanceId` is issued by the hub on registration, or
-supplied by the controller. `device` may be *recorded* on the instance as an
-observed alias; it must not *be* the identity. Bridge-synthesized events for
-an unregistered controller get a synthetic instance id, not the device
-string.
-
-### 3.4 `OverrideInstance.effectiveEffects` will be empty 20% of the time
-
-Bridge mode synthesizes `OverrideInstance` from devicestatus. Measured over
-the **55,938** distinct devicestatus documents with an active override (counted once across the corpus's two overlapping snapshots; corrected 2026-10-09):
-
-| | Count | Share |
-|---|---|---|
-| Effect and motivation both present | 42,799 | 76.5% |
-| Effect only (no label) | 2,176 | 3.9% |
-| **Motivation only — a name, no effect** | **10,892** | **19.5%** |
-| Neither | 71 | 0.1% |
-
-The same shape appears on treatments: of 2,865 temporary effects, **399
-carry a label and no effect at all**.
-
-So a bridged `OverrideInstance` will carry a `reason` and an empty
-`effectiveEffects` for roughly one in five active overrides. That is not a
-bridge bug — the data is not there — but a `PolicyComposition` computed from
-it would be **silently wrong rather than visibly incomplete**, which is the
-worse failure for a replay or an agent.
-
-**Recommended edit:** bridge rules must mark synthesized effects with a
-confidence or completeness flag, and `PolicyComposition` must be able to say
-"an override is active whose effects are unknown." The RFC already has the
-vocabulary — `DeliveryObservation.confidence: confirmed | inferred |
-reported` — it just is not applied to overrides.
-
-### 3.5 All three publish a suggestion, under three different names
-
-`integration-questionnaire.md` C7 asks all three controllers to fill in one
-table for suggested / requested / confirmed. All three publish a suggestion —
-but under three different key names, and Loop publishes **two** of them for
-two different purposes:
-
-| State | Loop | oref0 family (Trio, AAPS) |
-|---|---|---|
-| Suggested — manual bolus | `loop.recommendedBolus` — **597,143 docs (85%, 10 sites)** | `openaps.recommendedBolus` — 41,474 (1 site) |
-| Suggested — automatic dose | `loop.automaticDoseRecommendation` (`bolusVolume`, `tempBasalAdjustment`) — **183,049 (26%, 10 sites)** | `openaps.suggested` — **73,898 (1 site)** |
-| Requested | not separately published | not separately published |
-| Confirmed | `loop.enacted` + `loop.enacted.received` (bool) — **405,228 (58%)** | `openaps.enacted` + `.received` (bool) — **73,834** |
-
-So the *suggested* row is already satisfied everywhere — `OBS-LOOP-003`
-("what the algorithm recommended, separately from what was enacted") is met
-on 10 of 10 sites. What no controller publishes is **requested** as distinct
-from confirmed, and neither publishes an error code beyond Loop's sparse
-`failureReason` (2.4%).
-
-**Recommended edit:** replace C7's empty table with this one, marked
-*"pre-filled from corpus; correct what is wrong"*, and add the real question
-underneath, which is narrower and answerable: **is there a point in your code
-where a command has been sent and not yet acknowledged, and can you emit
-it?** That is the only one of the three states that is genuinely missing, and
-asking for it alone is a far smaller request than asking for all three.
-
----
-
-## 4. Two simplifications, with arithmetic
-
-### 4.1 Fix the sync primitive, then the collections are free
-
-**This is not an argument against the ten collections.** It is an argument
-that their cost is an artifact of the sync primitive, and that the primitive
-should be fixed first — after which the RFC can have as many typed resources
-as fidelity needs.
-
-`agent-control-plane-rfc.md`'s API table has eleven rows: **ten new
-collections**, eight "CRUD + history" and two "Read + history" — and, in the
-eleventh row, a single `GET /api/v3/events?cursor=` stream that carries
-everything those ten would carry.
-
-Under the model in `reports/schema-census/sync-cost.json` (distinct endpoints
-per 5-minute cycle × 288 cycles/day, a source-derived upper bound, not a
-packet capture):
-
-| | Endpoints/cycle | Requests/day | Cost of the ten new collections |
-|---|---|---|---|
-| AndroidAPS today, per-collection deltas | 20 | 5,760 | **+2,880/day** |
-| The event stream alone | 1 | 288 | 0 |
-| A collection-agnostic delta + batch write | 2 | 576 | **0** |
-
-The measured finding that motivates the whole sync section of this series is
-that **the client using v3 correctly has the worst fan-out, because v3 gives
-it a delta per collection.** Under that shape, every resource added to
-improve replay makes sync worse, and a fidelity proposal reads as a cost
-proposal. That trade is not inherent — it is the per-collection delta, and it
-is a small change to code that is already generic:
-`lib/api3/specific/lastModified.js` already loops every collection with a
-per-collection permission check, and `lib/api3/generic/history/operation.js`
-is already generic in `opCtx.col`.
-[The concrete endpoints, the merged-cursor correctness rule, and the
-arithmetic are in the replay-fidelity proposal](../platform/PROPOSAL-replay-fidelity-changes-2026-09-11.md) §1.
-
-**Recommended edits, in this order:**
-
-1. **Land the collection-agnostic delta read and the batch write first.**
-   They are independently useful — they are the largest single sync
-   improvement available to AAPS today — and they remove the cost objection
-   to everything after them.
-2. **Then make `/events` the Phase 1 read path** and the ten collections
-   *projections*: materialized views a UI or legacy client reads, not a sync
-   surface each client must poll separately.
-
-Neither costs the RFC anything it wanted. The event stream is already its
-Phase 1 deliverable, and the collections survive intact — they simply stop
-being the thing a controller has to iterate.
-
-### 4.2 One cursor, not two
-
-`conflict-resolution.md` proposes a global monotonic cursor
-(`eventCursors` collection, `findOneAndUpdate` with `$inc`) alongside
-optimistic locking on `srvModified`. v3 already ships `srvModified` per
-document and `GET /lastModified` across collections. This series' §3.2
-proposes an opaque server watermark deliberately so the implementation can
-change without a client release.
-
-Three cursor-ish things in two trees is one too many.
-
-**Recommended edit:** state explicitly that the event cursor **is** the sync
-watermark, exposed opaquely, and that `srvModified` is its current
-implementation. Whether it stays a `srvModified` scan or becomes a counter or
-a replication offset is then an internal decision rather than a protocol one.
-
-**Unmeasured concern worth writing down rather than acting on:** a single
-`{_id: 'global'}` counter document incremented on every event write is a
-write-serialization point, and multi-writer is the case the RFC exists to
-serve. Nobody has measured this, here or upstream. It belongs in the RFC's
-own open-questions list, not in a design decision.
-
-### 4.3 Do not add an issuer field where two already exist
-
-The RFC's `IssuerIdentity` is the right model. But `treatments.enteredBy`
-(100% of documents) and `treatments.automatic` (81%, boolean, 10 sites)
-already carry, badly, exactly the distinction the base of the authority
-hierarchy needs.
-
-**Recommended edit:** bridge rules should derive `issuerType` from
-`automatic` (true → `controller`, false/absent → `human`) and record
-`enteredBy` as an observed issuer *label*, not an identity. Add both to the
-questionnaire's D-section as pre-filled rows. New controllers emit
-`IssuerIdentity` natively; existing ones get a correct-by-default bridge for
-free.
-
-`enteredBy` is free text and is treated as an identifying field by
-`specs/sync/sensitivity.yaml`. It must not be propagated into any served
-catalogue, event payload shown to a third party, or audit record that leaves
-the site.
-
----
-
-## 5. What is missing from both trees
-
-| Gap | Neither document has it |
-|---|---|
-| **The settings resource** | The RFC has `ProfileDefinition` (schedules) and `CapabilitySnapshot` (limits) but no effective-dated *controller settings* snapshot. This series has `specs/sync/controller-settings.schema.json` and no event model for it. Neither is complete alone |
-| **`DataExclusion`** | A sensor warm-up or known-bad stretch is not missing data; it is data known to be unusable. The RFC's event model has no way to say so, and a replay that cannot tell the difference scores itself against noise |
-| **Replay inputs as a declared list** | The RFC asks controllers what they *can* emit (E12). It never asks what they *have and do not publish* — which is the `status: absent, path: null` line that makes completeness measurable |
-| **Liveness under two controllers** | `ControllerInstanceRegistration` gives each instance an identity. Nothing in either tree says what happens when two instances write to one site, which is the normal case |
-
----
-
-## 6. The concrete edit list
-
-For `externals/cgm-remote-monitor-official/docs/proposals/`. Each is small,
-each is independently useful, and none requires this series to be adopted.
-
-| # | File | Change | Source |
-|---|---|---|---|
-| 1 | `agent-control-plane-rfc.md` § Motivation | Add "safety limits and effective parameters are not recoverable", with the 20%/50% replay figures and `max_iob` | §3.1 |
-| 2 | `agent-control-plane-rfc.md` § API Design | Land a collection-agnostic delta read and batch write **first**; then make `/events` the Phase 1 read path and the ten collections projections rather than a sync surface | §4.1 |
-| 3 | `agent-control-plane-rfc.md` § Capabilities | Note that `loop.version` and `openaps.version` are already published, so `ControllerKindDefinition.version` needs no controller change | §2 |
-| 4 | `agent-control-plane-rfc.md` § Implementation Phases | Add the write-serialization question about the global cursor to open questions | §4.2 |
-| 5 | `bridge-rules.md:68` | Delete `if (devicestatus.trio)`; document that oref derivatives share `openaps` and need a second-order signal | §3.2 |
-| 6 | `bridge-rules.md:171,470` | Stop using `devicestatus.device` as `issuerId`/`controllerInstanceId`; use a hub-issued synthetic id, record `device` as an observed alias | §3.3 |
-| 7 | `bridge-rules.md` § override extraction | Mark synthesized override effects with `confidence`; allow "active, effects unknown" | §3.4 |
-| 8 | `bridge-rules.md` § issuer | Derive `issuerType` from `treatments.automatic`; treat `enteredBy` as a label, never an identity, and never propagate it | §4.3 |
-| 9 | `conflict-resolution.md` § Event Ordering | State that the event cursor and v3's sync watermark are one object, exposed opaquely | §4.2 |
-| 10 | `conflict-resolution.md` (whole) | Reconcile with `docs/10-domain/authority-model.md`, which is a near-duplicate. One should become the source and the other a pointer | §7 |
-| 11 | `integration-questionnaire.md` (whole) | Pre-fill from measurement and source; mark each cell *measured*, *from source*, or *ask* | §7 |
-| 12 | `api-query-normalization.md` §5.1 | Reconcile the devicestatus caps (100 docs, 7 days) with backfill and replay, which are bounded-but-large reads | §8 |
-
----
-
-## 7. Pre-filling the questionnaire is the highest-value single edit
-
-`integration-questionnaire.md` asks Loop, AAPS and Trio implementers twenty
-questions across fourteen tables, and every cell is empty. Status on all four
-controllers: *Pending*.
-
-An empty table is a request for unpaid work from maintainers whose capacity
-is demonstrably committed elsewhere — Loop's six-month commit history is
-device connectivity, not sync. **A wrong table is a five-minute correction.**
-Roughly half the questionnaire can be answered from the corpus or from each
-project's own source, today, with provenance marked per cell:
-
-| Question | Can be pre-filled | From |
-|---|---|---|
-| A3 Override dimensions | **Mostly** — Loop's observed dimensions are target range, multiplier, duration, name | `override.*` census |
-| B6 Composition emission — controller version | **Yes** | `loop.version`, `openaps.version` |
-| B6 — effective ISF/CR/basal, safety limits | **Yes, as "no"** | dosing-input map: absent/partial |
-| C7 Suggested / requested / confirmed | **Yes** | §3.5 table |
-| C8 Pump response codes | **Partly** — boolean ACK yes, error codes only Loop `failureReason` (2.4%) | census |
-| D10 Monotonic ordering | **Partly** — `syncIdentifier` on 83% of treatments is a dedup key, not a sequence | census |
-| F14 Controller registration — version, device info | **Yes** | `loop.version`, `device` (with §3.3's caveat) |
-| A1 Profile identifiers, A2 templates, A4 resolution | **No — ask** | Internal to each controller |
-| C9 Failure reason distinction | **No — ask** | Not published |
-| D11 Offline batching, F13 remote commands, G15 timeline | **No — ask** | Not observable |
-
-The remaining questions are then a genuinely short list of things only a
-maintainer knows, which is what a questionnaire should be.
-
-**One caveat that must travel with any pre-filled table.** The corpus is
-**Loop-dominant — 9 of 11 sites — and contains no AAPS closed-loop site at
-all.** Every `openaps.*` figure above comes from **one site**. A pre-filled
-AAPS column would be read from source only, and must be labelled that way or
-it will mislead exactly the maintainer it is meant to help.
-
----
-
-## 8. One conflict to resolve before both land
-
-`api-query-normalization.md` caps `devicestatus` at **100 documents and a
-7-day range** for anonymous callers, 5× for admin. That is a sound answer to
-the self-inflicted-DDoS problem it documents — and it collides with two
-things:
-
-* **Backfill and replay** are bounded-but-large reads. `oref-digital-twin`
-  replays a history; a decomposition migration reads everything once.
-* **The event stream** would inherit whatever limits `/events` is given, and
-  a cursor-based reader catching up after an outage is indistinguishable from
-  an abusive one by request shape alone.
-
-**Recommended edit:** state that cursor-paginated reads are exempt from the
-range cap and bounded by page size instead — the cursor already guarantees
-forward progress and bounded work per request, which is what the cap is for.
-This series' §3.4 makes the same argument from the other side: a
-`queryProfile` fixed in advance is what makes a bounded query safe without
-making it small.
-
----
-
-## 9. What changes on our side
-
-| Doc | Change |
-|---|---|
-| `nightscout-hub-sync-architecture-2026-09-11.md` §5.2 | Points here; §5.2 stays as the reconciliation table, this document carries the edits |
-| `PROPOSAL-controller-descriptions-2026-09-11.md` §9 | Prior-art row points here |
-| `docs/10-domain/authority-model.md` | Two cross-reference links point at a path that does not exist (`externals/cgm-remote-monitor/`, the fork, not `-official`). Fixed. The duplication with `conflict-resolution.md` is now named in the document itself |
-| `nightscout-adoption-roadmap-2026-09-11.md` §6 | "How much of `docs/proposals/` is live" is now partly answered: no reference anywhere in `lib/` or `tests/`, one line in `docs/INDEX.md`, and all four questionnaire responses still *Pending* — drafted and parked, not in progress |
-
-## 10. Caveats
-
-* **Nobody upstream has been asked about any of this.** Every recommendation
-  is a proposal to a document, not a decision about it. The RFC's status is
-  "Draft (2026 Proposal)" and no maintainer has said it is active.
-* **All `openaps.*` figures are single-site.** Trio and AAPS statements that
-  are not from the corpus are read from each project's source and are marked
-  as such.
-* **"Parked, not in progress" is inferred** from the absence of references to
-  these documents anywhere in `lib/` or `tests/` — the only mention in the
-  tree is one line in `docs/INDEX.md` — and from the absence of filled
-  questionnaire responses. It is not a statement anybody made.
-* **The fan-out arithmetic in §4.1 is an upper bound on distinct endpoint
-  calls**, extended from `sync-cost.json` under the same stated model. It is
-  a basis for comparing designs, not a traffic measurement.
+The proposal's payload hashes to `sha256:7c1e…`. An approval naming `sha256:7c1e…` creates a
+command whose payload is the proposal's, byte for byte. An approval naming any other hash is
+refused 409 `hash-mismatch`, and the proposal stays `open`. An approval after Loop's records have
+changed the state version is refused 409 `state-changed` (CM15); one after the `override`
+channel's `command-sink` has moved to another Loop instance is refused 409 `destination-changed`
+(CM13). The state version is the hub's record of what Loop reported, so `state-changed` tells the
+approver that the record changed, never that Loop's own state is unchanged.

@@ -411,10 +411,8 @@ retrofit into the collection API.
 reconciliation target because the honest finding is that cgm-remote-monitor
 has drafted most of it already, and this series had not noticed.
 
-> **The reconciliation has since been done.** This section remains the map;
-> the specific edits it implies — twelve of them, across four upstream files,
-> plus five corrections the corpus supplies — are in
-> [Reconciling the agentic control plane RFC](../tenancy/nightscout-control-plane-reconciliation-2026-09-11.md).
+> The [control-plane supersession map](../tenancy/nightscout-control-plane-reconciliation-2026-09-11.md)
+> names the specification rule proposed to supersede each object of the earlier draft below.
 
 The question is real and this design does not answer it. A registration says
 what a controller *kind* writes. It does not say which controller is
