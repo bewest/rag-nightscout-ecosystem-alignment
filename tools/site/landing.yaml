@@ -81,6 +81,7 @@ orders:
     - registration.md
     - state-intent.md
     - commands.md
+    - plans.md
     - sync-transport.md
     - authority.md
     - control-loops.md
