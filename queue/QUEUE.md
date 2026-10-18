@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 250 |
-| runnable gates | 304 |
-| explicit `no-gate:` markers | 279 |
+| items | 253 |
+| runnable gates | 307 |
+| explicit `no-gate:` markers | 281 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 279 of the 583 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 281 of the 588 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 67 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `not-started` | 69 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 4 | BFQ-46, BFQ-ENV, OID-LAB, LOOP-ID-REPLY |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -49,7 +49,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 87 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 12 | RT-0, T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164 |
-| `done` | 33 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
+| `done` | 34 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
 | `answered` | 2 | RT-D3, RT-PROPAGATION |
@@ -7743,7 +7743,7 @@ flag rule: versioning policy section 5.7.
 
 ## Controller registration and intent observability
 
-`parcel: platform` &mdash; 28 items
+`parcel: platform` &mdash; 31 items
 
 D18 (maintainer, 2026-10-09): two-tier controller registration - well-known
 declarations for backwards compatibility, controller-owned typed registrations
@@ -7768,6 +7768,9 @@ reproduced ones.
 | `HUB-REG-CRM-SEAM` | cgm-remote-monitor: carry the registration store onto the storage seam, so single (MongoDB, PostgreSQL) and multi serve one contract | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `HUB-REG-CRM-ADMIN` | cgm-remote-monitor: the registration owner's actions on ns-tenant-admin under TENANCY_MODE=multi | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `SPEC-REG-COMMANDS` | Hub command delivery to a command-sink instance, with the proposal record in front of it, specified for single and multi mode | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 3 run |
+| `SPEC-STPA-PLATFORM` | STPA of the platform specifications: the control loops they set up, each unsafe control action and the rule that prevents it | `done` | `docs/stpa-commands-2026-10-18` | n/a | 3 run |
+| `SPEC-COMPAT-APPS` | One table of every listed app against every layer: today's behaviour, and what changes with a newer hub | `not-started` | `-` | n/a | 0 run + 1 no-gate |
+| `SPEC-DEV-GUIDES` | Two developer guides: adding a setting in a controller's next release, and adding a new controller | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `SPEC-REG-MIGRATE` | Registration state across a single-tenant site's move into a tenant, and back | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `HUB-REG-NOCTURNE` | Nocturne: propose the registration grammar and negotiation as a shared contract, with the hub active-state evidence | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `PROPOSAL-REG-CONTROLLERS` | Open-source AID controllers: propose registration, instances and negotiation, with pre-filled declarations | `not-started` | `main` | n/a | 0 run + 1 no-gate |
@@ -8235,6 +8238,100 @@ reproduced ones.
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
 **Notes.** The maintainer asked for this item on 2026-10-18 while SPEC-REG-MODES was not started; what a mode changes beyond fetch, push and push credentials (the storage key and credential kinds a record names) is left to that item, so blocks_on is cleared and the dependency is stated in commands §7 and §9. Everything from §4 on is proposed. The 87 command cases were hand-authored by an agent that read only the spec text, not the reference; the two sides first disagreed on 3 of 394 checks, each resolved in the spec text; 17 ambiguities it reported were settled in the rules (order of checks, CM2 covering sent, reports from a destination that lost its role, late reports replacing hub- inferred states, invalid-reason, payload-too-large, destination-changed). Adversarial review, 2026-10-18, applied: a command handed over and then past its expiry or its destination's lease reads `unconfirmed`, never `expired` or `undeliverable`, which a sender would read as safe to re-send (the high finding); the legacy Loop route is stated to be outside the rules; CM10 says the hash detects change in transit only; a proposal is routed when made and an approval refused when the destination changed, whether or not an instance was named; basedOn is required; a refused approval leaves the proposal open; the re-send key covers channel and product; proposals obey the size limit; 404 for another tenant's instance; A12 and S11 repointed; §8 cells corrected; the controller check before approval listed as open. The case author added 22 cases for these. Non-vacuity, 2026-10-18: 43 weakenings of commands.py, one per rule or check, each red (two first written were CONTROL-INVALID or an equivalent mutant and were rewritten); the narration, case, count and pointer breaks of the platform-spec control each red with their own finding, the test break CONTROL-INVALID. Compatibility findings that bear on the rules are listed in §8 and §9 (AndroidAPS's late delivery failure after success, Trio's part-enacted meal command). A credential-exposure mechanism found while reading controller source is kept out of this repository and reported to the maintainer directly.
+
+### `SPEC-STPA-PLATFORM` &mdash; STPA of the platform specifications: the control loops they set up, each unsafe control action and the rule that prevents it
+
+| | |
+|---|---|
+| state (claimed) | `done` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `docs/stpa-commands-2026-10-18` |
+| base | `main@85c645c8` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** docs/30-design/platform/spec/control-loops.md (new): losses, hazards, the control structure the seven specifications set up (the hub has no control action on the pump, and is in the feedback path of every other controller), seven loops (a remote command, a proposal and approval, routing, records and sync, active state, definitions, authority), each with its unsafe control actions or feedback flaws, hazards, severity, the rules that prevent them and their status, the control-loop patterns in the proposed mechanics, and what the analysis found. specs/sync/stpa/platform-control-loops.yaml holds the entries; tools/nsschema/test_stpa.py holds them to the specifications. Gaps are added to commands §9, authority §9 and identity §5. The platform-spec gate gains a control-loops layer. Ships nothing.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** analysis in this repository; ships nothing
+
+**Gates.**
+
+- `[static]` `node tools/queue/gates/platform-spec.js control-loops`
+  - FAILS when the page is missing, carries amendment narration, names a check that is not defined, states a count that differs from its table, or when the index, commands, authority or identity does not link to it.
+- `[unit]` `python3 -m pytest -q tools/nsschema/test_stpa.py`
+  - FAILS when an entry cites a rule, section, case or check that does not exist, cites a case whose listed rules are not among its constraints, leaves an STPA type of a control action unconsidered, is a gap the specification's open items do not name, or when the page's rows or counts differ from the file.
+- `[static]` `python3 -m tools.nsschema.stpa_tables --check`
+  - FAILS when a table in control-loops §4 differs from specs/sync/stpa/platform-control-loops.yaml.
+
+**Evidence.**
+
+- `docs/30-design/platform/spec/control-loops.md`
+- `specs/sync/stpa/platform-control-loops.yaml`
+- `docs/STPA-USAGE-GUIDE.md`
+- `traceability/stpa/cross-project-patterns.md`
+
+**Notes.** The maintainer asked for this item on 2026-10-18, with the request to consider STPA-style controller and actuator loops for the proposed mechanics (control- loops §5). Severities follow the usage guide's S1-S4 scale and need review by a qualified clinician before they prioritise anything (control-loops §7). Adversarial review, 2026-10-18, applied: the treatment-download path, the owner's and operator's actions and command cancel were missing from the structure; the state version covers intents, not doses; identity §3 causes the resurrected-dose and natural-key merge entries; a process sharing the destination's credential under single; socket revocation; one case added. 72 entries (41 covered, 6 controller, 3 uncased, 22 gaps). Non-vacuity: 18 weakenings of the analysis, its page and the specifications, each red.
+
+### `SPEC-COMPAT-APPS` &mdash; One table of every listed app against every layer: today's behaviour, and what changes with a newer hub
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `-` |
+| base | `main` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** Expected: a living compatibility table under docs/30-design/platform/spec/ with one row per app in the stack census (controllers, uploaders and bridges, followers and caregiver apps, watch and display apps, hubs) and one column group per layer L0-L5: how the app writes and reads today, read from its source at a stated commit, and what it sees from a hub that implements the specifications without the app changing. Fills the generic older/newer tables in registration §17, sync-transport §7 and commands §8 with named apps, and the authority layer, which names no app today. Each cell is evidenced (source read, with a path) or marked not read. Ships nothing.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** specification in this repository; ships nothing
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started. The gate is written with the table: a platform-spec layer for it, and a check that every app in the census has a row.
+
+**Evidence.**
+
+- `docs/60-research/programme/stack-census-2026-09-30.md`
+
+**Notes.** The maintainer asked for this item on 2026-10-18. Re-run the stack census before quoting its count; the consumer-impact survey for 15.0.9 is the model for reading clients against a change.
+
+### `SPEC-DEV-GUIDES` &mdash; Two developer guides: adding a setting in a controller's next release, and adding a new controller
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `-` |
+| base | `main` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `SPEC-COMPAT-APPS` |
+
+**Blast radius.** Expected: two contributor-facing guides beside the specifications. (1) For a Loop or Trio developer adding a setting or feature in the next release: declare it in a typed registration, submit it, fall back when the hub is older or refuses the element, write the typed record, read it back, and what an older follower sees. (2) For a new controller, starting from specs/sync/registrations/fixtures/example-testcontroller.yaml: the capability document, a definition, an instance and its lease, roles, receiving a command and reporting its outcome. Each step names the rule it follows and a conformance case that shows it; C4 context and container drawings, roles only, in the style of the structure drawings. Until HUB-REG-CRM is implemented the guides are checked against the cases, not run against a hub. Ships nothing.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** documentation in this repository; ships nothing
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started. The gate is written with the guides: every rule and case a step names exists.
+
+**Evidence.**
+
+- `docs/30-design/platform/README.md`
+- `specs/sync/registrations/fixtures/example-testcontroller.yaml`
+
+**Notes.** The maintainer asked for this item on 2026-10-18, after the compatibility table, so each guide can say what an older app sees.
 
 ### `SPEC-REG-MIGRATE` &mdash; Registration state across a single-tenant site's move into a tenant, and back
 
