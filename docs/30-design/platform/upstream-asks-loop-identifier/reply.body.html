@@ -4884,7 +4884,7 @@
 
   <h1>Reply.body</h1>
 
-<p><em>Living document, last changed 2026-10-17 at <code>18b2b3723</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>509eabce1</code>.</em></p>
 <p><strong>Re: client-supplied identifiers for Nightscout</strong></p>
 <p>Thank you for writing this up. We agree with the core of the ask, and most of what Loop needs
 already works. Much of the confusion comes from our API documentation, not the design: API v3's
@@ -4897,11 +4897,10 @@ sends. That sentence is wrong; we track it as BF-169.</p>
 <li><strong><code>_id</code> is a MongoDB ObjectId (24 hex characters) or absent.</strong> A client that keeps a local
    cache may create its own ObjectId and send it. ObjectIds are designed to be made by clients
    without coordination (a timestamp, a random part and a counter). Other values in <code>_id</code> are not
-   valid. For compatibility, <code>UUID_HANDLING</code> (on by default) moves a UUID <code>_id</code> to <code>identifier</code> on
-   treatments and entries, and the server assigns the ObjectId.</li>
-<li><strong>If <code>_id</code> is absent, send <code>identifier</code></strong>: a string. We recommend a UUID: v5 of a
-   source-derived key when several devices must agree, v4 created once for a manual entry. The
-   server assigns <code>_id</code>. One identifier names one record.</li>
+   valid. For compatibility, <code>UUID_HANDLING</code> (on by default) moves any string <code>_id</code> that is not 24
+   hex characters to <code>identifier</code> on treatments and entries, and the server assigns the ObjectId.</li>
+<li><strong>If <code>_id</code> is absent, send <code>identifier</code></strong>: an opaque string, compared exactly as sent. It does
+   not have to be a UUID. The server assigns <code>_id</code>. One identifier names one record.</li>
 <li><strong>If neither is sent</strong>, the server falls back to the collection's time key: entries
    <code>sysTime</code> + <code>type</code>, treatments <code>created_at</code> + <code>eventType</code>. This fallback may be deprecated
    later.</li>
@@ -4915,6 +4914,15 @@ decision. Rule 5 also says what every write reply should carry:</p>
 (<a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">D20 rule 5</a>)</p>
 </blockquote>
 <p>Returning both means a client never needs a cache of server ids to edit or delete what it sent.</p>
+<p><strong>What an <code>identifier</code> may contain (proposed).</strong> 1 to 256 characters from <code>A-Z a-z 0-9 . _ ~ : -</code>.
+That keeps it usable in API v3 paths (<code>/api/v3/{collection}/{identifier}</code>), where a <code>/</code>, <code>%</code>, <code>?</code>,
+<code>#</code> or space breaks or needs escaping, and under MongoDB's index key limit. Not exactly 24 hex
+characters, which both APIs read as an <code>_id</code>. Never a placeholder such as <code>invalid</code>, <code>undefined</code>,
+<code>null</code> or <code>NaN</code>: once identifiers are matched, every reading sharing one would overwrite the last.
+A UUID (v4 for a record made on one device, or v5 of a source-derived key) is needed only for
+today's v1 by-<code>_id</code> routes (<code>find[_id]=</code>, <code>DELETE /api/v1/treatments/:id</code>), which recognise
+UUID-shaped values only. API v3 and <code>find[identifier]=</code> take any string
+(<a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/tenancy/identifier-format-2026-10-17.html">identifier format</a>).</p>
 <h2 id="what-works-today-and-the-one-gap">What works today, and the one gap<a class="headerlink" href="#what-works-today-and-the-one-gap" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -4962,7 +4970,7 @@ decision. Rule 5 also says what every write reply should carry:</p>
 </tr>
 <tr>
 <td>3. a source-derived identifier, <code>g7:&lt;serial&gt;:&lt;seconds&gt;</code> or its UUIDv5</td>
-<td>entries match on <code>identifier</code> (the one change below)</td>
+<td>entries match on <code>identifier</code> (the one change below). The inputs must come from the sensor: the real serial and the sensor's own seconds counter</td>
 </tr>
 <tr>
 <td>4. server-side fuzzy time matching</td>
@@ -4970,7 +4978,11 @@ decision. Rule 5 also says what every write reply should carry:</p>
 </tr>
 </tbody>
 </table>
-<p>We recommend (3), with (2) as an interim that needs no server change. Precedents: FHIR keeps
+<p>We recommend (3), with (2) as an interim that needs no server change. Today's G7 <code>syncIdentifier</code>
+would not serve (3) as it stands. It embeds each device's own activation estimate, as fractional
+hours, and the BLE name <code>DXCMxx</code> rather than the serial, and it falls back to <code>"invalid"</code>
+(G7SensorKit <code>dd91f46</code>, <code>G7CGMManager.swift:511-517</code>). Hashing it into a UUIDv5 would not help,
+because the input already differs between devices. Precedents: FHIR keeps
 the server id apart from the business <code>identifier</code>, and its conditional create answers 200 with
 the existing record when the identifier already matches
 (<a href="https://www.health-samurai.io/docs/aidbox/api/rest-api/crud/create">Aidbox</a>). HealthKit pairs
@@ -4994,7 +5006,8 @@ With it, the swagger fix (BF-169). Both land after 15.0.9, which is frozen as <c
 <h2 id="later-only-if-needed">Later, only if needed<a class="headerlink" href="#later-only-if-needed" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Whether a re-send with changed fields is an edit or a duplicate, and versioning, HealthKit-style.</li>
-<li>The identifier's length limit, character set and case comparison.</li>
+<li>Whether the proposed length limit and character set above become server checks, and when (a
+  character check would reject Loop's current space-containing ids, so it would start as a warning).</li>
 <li>Per-record results in batch replies.</li>
 <li>A unique index on <code>identifier</code>.</li>
 <li>API v3's immutable <code>date</code> and <code>device</code> on an identifier match (400 today, measured in the lab above).</li>

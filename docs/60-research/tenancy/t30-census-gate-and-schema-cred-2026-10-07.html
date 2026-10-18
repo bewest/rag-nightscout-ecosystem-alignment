@@ -4723,6 +4723,8 @@
       
         
       
+        
+      
     
     
     
@@ -4876,6 +4878,34 @@
     
   
     ID-DUP-MEASURE: duplicate identifier values in the 12-site corpus
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="identifier-format-2026-10-17.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ID-FORMAT: should Nightscout require a client identifier to be a UUID?
   
 
     
@@ -7236,9 +7266,9 @@ Queue items: <code>T30-RESEARCH</code>, <code>T30-SCHEMA-CRED</code>. Specificat
 <p>Two things were done:</p>
 <ol>
 <li>The §G.3 census script now lives in the queue as a gate:
-   <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/18b2b3723101ff36d1c4631f43e8a7a5a932b6db/tools/queue/gates/t30-census-differential.js"><code>tools/queue/gates/t30-census-differential.js</code></a>.</li>
+   <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9bd19200fd9a6d131faebab5baa20d131f2babd0/tools/queue/gates/t30-census-differential.js"><code>tools/queue/gates/t30-census-differential.js</code></a>.</li>
 <li>The device and data-path credential tables were added to <code>lib/admin/platform.sql</code>, and
-   <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/18b2b3723101ff36d1c4631f43e8a7a5a932b6db/tools/queue/gates/platform-sql-surface.js"><code>tools/queue/gates/platform-sql-surface.js</code></a>
+   <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9bd19200fd9a6d131faebab5baa20d131f2babd0/tools/queue/gates/platform-sql-surface.js"><code>tools/queue/gates/platform-sql-surface.js</code></a>
    was tightened. Before the change it could not tell a column from a comment.</li>
 </ol>
 <p>Environment: Node 24.20.0, the version the seam's <code>engines</code> field (<code>^22.23.2 || ^24.20.0</code>)

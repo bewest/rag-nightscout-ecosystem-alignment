@@ -2876,7 +2876,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-17 at <code>d0c2b9726</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>9bd19200f</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -2891,8 +2891,8 @@
 -->
 
 <h1 id="review-packet--id-format-decision">Review packet — ID-FORMAT-DECISION<a class="headerlink" href="#review-packet--id-format-decision" title="Permanent link">&para;</a></h1>
-<p><strong>Decide: the client identifier's format (opaque string with limits; UUID
-recommended, not required)</strong></p>
+<p><strong>Decide: the client identifier's format (opaque string with limits; UUID not
+required)</strong></p>
 <table>
 <thead>
 <tr>
@@ -2935,13 +2935,16 @@ ID-V1-LOOKUP's matching, and is published in the API description.</p>
 <h2 id="what-these-gates-do-not-prove">What these gates do NOT prove<a class="headerlink" href="#what-these-gates-do-not-prove" title="Permanent link">&para;</a></h2>
 <p><em>Each of these is the author recording, at the time, a property they could not measure. This is the reviewer's worklist.</em></p>
 <ul>
-<li>A decision, not measurable. Proposed 2026-10-17 in the Loop reply:
-  identifier is a non-empty string with a length limit and character set;
-  the recommended form is a UUID, v5 of a source-derived key when several
-  devices must agree, v4 created once for manual entries; the server never
-  depends on its shape; one identifier names one record, the client's
-  responsibility. Open: the limit, the character set, and whether the server
-  compares UUIDs without regard to case.</li>
+<li>A decision, not measurable. Proposed answer (research note identifier-
+  format-2026-10-17 §6.2, reply rewritten 2026-10-17): an opaque, case-
+  sensitive string, 1 to 256 characters from [A-Za-z0-9._~:-], not exactly
+  24 hex, not history, ., .., invalid, undefined, null or NaN; one
+  identifier names one record per collection. UUID not required: v4 for a
+  one-device record, v5 of a scheme-prefixed source-derived name (in a
+  published Nightscout client namespace) when several devices must agree,
+  needed only by clients that use the v1 by-_id routes. Open: the 256 limit,
+  the character set (Loop's current CGM keys contain spaces; 503 Loop
+  syncIdentifiers at one corpus site contain /), and the client namespace.</li>
 </ul>
 <h2 id="blocked-on">Blocked on<a class="headerlink" href="#blocked-on" title="Permanent link">&para;</a></h2>
 <p><code>LOOP-ID-REPLY</code></p>
@@ -2949,6 +2952,7 @@ ID-V1-LOOKUP's matching, and is published in the API description.</p>
 <ul>
 <li><a href="../../docs/30-design/platform/upstream-asks-loop-identifier/reply.body.html"><code>docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md</code></a></li>
 <li><a href="../../docs/60-research/tenancy/identifier-duplicates-2026-10-17.html"><code>docs/60-research/tenancy/identifier-duplicates-2026-10-17.md</code></a></li>
+<li><a href="../../docs/60-research/tenancy/identifier-format-2026-10-17.html"><code>docs/60-research/tenancy/identifier-format-2026-10-17.md</code></a></li>
 </ul>
 <h2 id="notes-carried-on-the-item">Notes carried on the item<a class="headerlink" href="#notes-carried-on-the-item" title="Permanent link">&para;</a></h2>
 <p>Today: v1 recognises only UUID-shaped values as identifiers in by-id routes

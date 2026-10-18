@@ -1,0 +1,8066 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/tenancy/identifier-format-2026-10-17.html">
+      
+      
+        <link rel="prev" href="identifier-duplicates-2026-10-17.html">
+      
+      
+        <link rel="next" href="multitenancy-k-and-residency-2026-09-14.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>ID-FORMAT: should Nightscout require a client identifier to be a UUID? - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#id-format-should-nightscout-require-a-client-identifier-to-be-a-uuid" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ID-FORMAT: should Nightscout require a client identifier to be a UUID?
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../30-design/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27" id="__nav_5_27_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_27_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    60-research/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2844-phenotype-drilldown-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-0001 to 2869
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2870-envelope-crossover-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2870 to 2909
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2910-eight-dim-regrade-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2910 to 2949
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2950-uniform-action-curve-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2950 to 2999
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-3000-3003-cf-replay-maturation-2026-04-25.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-3000 and later
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../AUTORESEARCH-SESSION-2026-04-26.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programme, closeouts and syntheses
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../accuracy-validation-2026-04-05.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Productionization and pipelines
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../capability-report-clinical-decision-support.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capability reports
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../circadian-therapy-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Therapy
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aid-aware-settings-report-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings and profiles
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../natural-experiment-deconfounding-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Natural experiments
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../bilateral-deconfounding-report-2026-04-19.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP, supply-demand and deconfounding
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../autotune-uam-characterization-report.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Meals and carbohydrates
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../causal-pk-leakage-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Insulin, ISF and pharmacokinetics
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../acceleration-clinical-utility-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clinical, safety and hypoglycaemia
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aid-author-recommendations-report-2026-04-20.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AID controllers, cohorts and waves
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../centering-dynamics-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forecasting, prediction and classification
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../advanced-architectures-benchmark-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML methods and architectures
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../canonical/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    canonical/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../collaboration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    collaboration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../external-inventories/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    external-inventories/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../programme/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    programme/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../remedial/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../structures-2026-10-17/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    structures-2026-10-17/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27_27" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27_27" id="__nav_5_27_27_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_27_27_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27_27">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    tenancy/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="alarm-critical-slice-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The alarm-critical slice, measured: 32.7 KB and 1.94 ms, not 852 KB and 27.5 ms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="auth-plane-ory-vs-inhouse-2026-09-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The auth plane: Ory Kratos/Hydra against building it ourselves
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="exp-mt-026-database-in-the-loop-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-MT-026: a real database in the loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="identifier-duplicates-2026-10-17.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ID-DUP-MEASURE: duplicate identifier values in the 12-site corpus
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ID-FORMAT: should Nightscout require a client identifier to be a UUID?
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="identifier-format-2026-10-17.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ID-FORMAT: should Nightscout require a client identifier to be a UUID?
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-answer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Answer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-per-app-identity-for-cgm-readings-and-the-treatment-identity-each-app-sends-r" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Per-app identity for CGM readings (and the treatment identity each app sends) [R]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-corpus-the-shapes-in-the-wild-m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Corpus: the shapes in the wild [M]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-server-compatibility-of-non-uuid-identifiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Server compatibility of non-UUID identifiers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Server compatibility of non-UUID identifiers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-api-v1-r-1508-92d0834-dev-fade2299" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 API v1 [R] (15.0.8 92d0834, dev fade2299)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-api-v3-r" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 API v3 [R]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-what-breaks-two-small-harnesses-m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 What breaks: two small harnesses [M]
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-uuidv5-as-the-bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. UUIDv5 as the bridge
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-precedents-fetched" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Precedents (fetched)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-implications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Implications
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Implications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-the-reply-replybodymd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 The reply (reply.body.md)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-id-format-decision-proposed-answer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 ID-FORMAT-DECISION (proposed answer)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-id-validate-server-checks-worth-adding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 ID-VALIDATE (server checks worth adding)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-loops-g7-identifier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Loop's G7 identifier
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-reproduce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Reproduce
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="multitenancy-k-and-residency-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What sets K: residency, the load cycle, and two quadratics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ns-evaluator-spike-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ns-evaluator: what a per-tenant evaluation loop actually needs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ory-cookie-variants-2026-10-12.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kratos session cookie scope: two more designs measured (E and H2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ory-proof-2026-10-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One Ory identity pool, two Nightscout tenants: the T30-ORY-PROOF measurement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pgbouncer-tenant-binding-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    pgbouncer and the D3 tenant binding — isolation holds, and two of the three modes are usable
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-filter-ast-three-arm-validation-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Three-arm validation of the storage seam's filter AST: closing §8.5
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-filter-re-operator-validation-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T2.3 — the nine operators in SQL, and what turning re on found
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-limit-and-projection-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    limit and projection across the seam — and two live API defects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-ordering-and-pagination-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ordering across the seam — and a live pagination defect in API v3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-propagation-rehearsal-2026-10-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seam propagation rehearsal: the Phase 1 prefix by merge and by rebase
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-readoptions-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    readOptions across the seam — a bound that stops holding exactly where it matters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-write-path-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The write path across the seam — three divergences, and a vacuity trap in my own harness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sort-key-typing-corpus-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Are sort keys really "one type in practice"? — measured against the corpus
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="t25-postgres-backend-verification-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verifying the T2.5 PostgreSQL backend — four predictions, two of them wrong
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="t30-census-gate-and-schema-cred-2026-10-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T3.0: the census gate, and the credential half of the schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tenant-resolution-adversarial-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Attacking tenant resolution — the half of isolation that runs before the database
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tenant-shared-state-audit-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module-level shared state: what T3.3 has to fix before it can exist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="v1-operator-census-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What API v1 operators clients actually send — the census behind T2.4's allowlist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="write-contract-null-and-keys-2026-10-12.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WRITE-CONTRACT: explicit nulls, natural keys and identical re-sends, measured
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-answer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Answer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-per-app-identity-for-cgm-readings-and-the-treatment-identity-each-app-sends-r" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Per-app identity for CGM readings (and the treatment identity each app sends) [R]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-corpus-the-shapes-in-the-wild-m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Corpus: the shapes in the wild [M]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-server-compatibility-of-non-uuid-identifiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Server compatibility of non-UUID identifiers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Server compatibility of non-UUID identifiers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-api-v1-r-1508-92d0834-dev-fade2299" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 API v1 [R] (15.0.8 92d0834, dev fade2299)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-api-v3-r" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 API v3 [R]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-what-breaks-two-small-harnesses-m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 What breaks: two small harnesses [M]
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-uuidv5-as-the-bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. UUIDv5 as the bridge
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-precedents-fetched" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Precedents (fetched)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-implications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Implications
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Implications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-the-reply-replybodymd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 The reply (reply.body.md)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-id-format-decision-proposed-answer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 ID-FORMAT-DECISION (proposed answer)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-id-validate-server-checks-worth-adding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 ID-VALIDATE (server checks worth adding)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-loops-g7-identifier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Loop's G7 identifier
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-reproduce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Reproduce
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="id-format-should-nightscout-require-a-client-identifier-to-be-a-uuid">ID-FORMAT: should Nightscout require a client <code>identifier</code> to be a UUID?<a class="headerlink" href="#id-format-should-nightscout-require-a-client-identifier-to-be-a-uuid" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-10-17. A point-in-time document; it is not kept up to date.</p>
+</div>
+<p><em>Contributor-facing.</em> <strong>Snapshot, 2026-10-17.</strong> Input to queue item <code>ID-FORMAT-DECISION</code> and to the
+reply in <a href="../../30-design/platform/upstream-asks-loop-identifier/reply.body.html">upstream-asks-loop-identifier</a>.
+Companion to <a href="identifier-duplicates-2026-10-17.html">identifier duplicates</a>, whose corpus, site labels
+and client classes this note reuses.</p>
+<p>Marks: <strong>[R]</strong> read from code at the commit given; <strong>[M]</strong> measured, by
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9bd19200fd9a6d131faebab5baa20d131f2babd0/docs/60-research/tenancy/identifier-format-2026-10-17/idshape.py"><code>identifier-format-2026-10-17/idshape.py</code></a> (corpus shapes,
+output <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9bd19200fd9a6d131faebab5baa20d131f2babd0/docs/60-research/tenancy/identifier-format-2026-10-17/results-2026-10-17.txt"><code>results-2026-10-17.txt</code></a>, control
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9bd19200fd9a6d131faebab5baa20d131f2babd0/docs/60-research/tenancy/identifier-format-2026-10-17/control-results-2026-10-17.txt"><code>control-results-2026-10-17.txt</code></a>) or by
+the two small harnesses in §3.3. Corpus output is aggregate counts and value <strong>shapes</strong>
+(regex classes, lengths, token signatures); no identifier value, serial or record content is printed
+or committed.</p>
+<hr />
+<h2 id="0-answer">0. Answer<a class="headerlink" href="#0-answer" title="Permanent link">&para;</a></h2>
+<p><strong>No. Do not require a UUID. Define <code>identifier</code> as an opaque, case-sensitive string with a small set
+of constraints, and recommend (not require) a UUID: v4 for a record made once on one device, v5 of a
+source-derived key when several devices must agree.</strong></p>
+<p>Why not require it:</p>
+<ul>
+<li>Non-UUID values are already in the wild and the server already accepts them on every write path
+  [R][M]: 489 stored treatment <code>identifier</code>s at one site are 32-hex strings (§2); 15,117 entries at
+  another site carry a 24-character non-hex alphanumeric <code>_id</code>, which 15.0.7 and later move into
+  <code>identifier</code> (§3.1); and API v3 checks only "non-empty string" (§3.2). A UUID rule would reject
+  writes that work today.</li>
+<li>The ecosystem's own sync keys are not UUIDs. Loop's CGM <code>syncIdentifier</code>s are derived strings, and
+  Loop's dose <code>syncIdentifier</code>s are pump-event hex of 14 to 72 characters (§1, §2). HealthKit and FHIR
+  both define their sync or business identifier as a plain string (§5).</li>
+<li>A UUID rule does not solve the watch-and-phone problem. What makes two devices agree is the
+  <em>derivation</em> (the inputs must be the same on both), not the format. A UUIDv5 of a device-dependent
+  key is still device-dependent (§4, §6.4).</li>
+</ul>
+<p>The constraints a format rule does need (each grounded below):</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>constraint</th>
+<th>why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C1</td>
+<td>a JSON string, at least one non-whitespace character</td>
+<td>already enforced on API v3 create (<code>create/validate.js:19</code>) [R]; v1 treatments reject a non-string (<code>treatments.js:18-25</code>) [R]</td>
+</tr>
+<tr>
+<td>C2</td>
+<td><strong>at most 256 characters</strong> (proposal)</td>
+<td>an indexed <code>identifier</code> near 1 KB fails the insert on MongoDB before 4.2 (measured on 3.6.8: 1,000 characters fails, the compound <code>{date, identifier, created_at}</code> key is 1,026 bytes) [M]; the URL path of an API v3 read is capped by Node's 16 KB header limit (20,000 characters gave 431) [M]</td>
+</tr>
+<tr>
+<td>C3</td>
+<td><strong>printable ASCII, no <code>/</code>, <code>%</code>, <code>?</code>, <code>#</code>, space or control characters</strong> (proposal; or "URL-unreserved characters <code>A-Z a-z 0-9 - . _ ~</code> plus <code>:</code>")</td>
+<td>API v3 addresses a record as <code>/api/v3/{collection}/{identifier}</code>. A raw <code>/</code> gives 404, a malformed <code>%</code> gives 400, and <code>?</code>/<code>#</code>/space must be percent-encoded by every client [M]; <code>%2F</code> works in Express but is commonly rewritten or refused by reverse proxies [R, not run]</td>
+</tr>
+<tr>
+<td>C4</td>
+<td><strong>not exactly 24 hex characters</strong> unless it equals the record's own <code>_id</code></td>
+<td>both API v3 (<code>filterForOne</code>, <code>identifyingFilter</code>) and v1 (<code>normalizeIdValue</code>) treat a 24-hex value as an ObjectId <code>_id</code> as well, so it can address a different record [R]</td>
+</tr>
+<tr>
+<td>C5</td>
+<td><strong>not a reserved word</strong>: <code>history</code> (shadowed by <code>GET /api/v3/{col}/history</code>), <code>.</code> and <code>..</code> (normalized away by URL libraries), and client sentinels such as <code>invalid</code>, <code>undefined</code>, <code>null</code>, <code>NaN</code></td>
+<td><code>GET /api/v3/entries/history</code> reaches the history route, not the record [M]; G7SensorKit returns the literal <code>invalid</code> when its inputs are missing (§1) [R]</td>
+</tr>
+<tr>
+<td>C6</td>
+<td><strong>one identifier, one record</strong>, per collection, forever (no reuse after a long interval)</td>
+<td>already in the reply; the companion note found 13 Loop <code>syncIdentifier</code> values on 2 to 4 treatments [M]</td>
+</tr>
+<tr>
+<td>C7</td>
+<td>compared <strong>exactly</strong> (case-sensitive, no trimming or normalization)</td>
+<td>v1 and v3 match with <code>$eq</code> [R]; Loop sends upper-case UUIDs and the server's own v5 is lower-case (§2, §4), so a client must send one spelling consistently</td>
+</tr>
+</tbody>
+</table>
+<p>Use the UUID recommendation where it buys something concrete: <strong>v1 by-id routes understand only UUID-
+and ObjectId-shaped values</strong> (<code>query.js</code> <code>UUID_RE</code>, §3.1). A client that wants <code>find[_id]=&lt;identifier&gt;</code>
+or <code>DELETE /api/v1/treatments/&lt;identifier&gt;</code> to work must use a UUID; a client that uses
+<code>find[identifier]=</code>, API v3, or the reply's two-id rule does not need one.</p>
+<hr />
+<h2 id="1-per-app-identity-for-cgm-readings-and-the-treatment-identity-each-app-sends-r">1. Per-app identity for CGM readings (and the treatment identity each app sends) [R]<a class="headerlink" href="#1-per-app-identity-for-cgm-readings-and-the-treatment-identity-each-app-sends-r" title="Permanent link">&para;</a></h2>
+<p>Two independent devices "agree" only if every input of the derivation comes from the sensor or
+pump, not from the receiving device's clock or a random generator.</p>
+<table>
+<thead>
+<tr>
+<th>app / source</th>
+<th>per-reading identity</th>
+<th>form</th>
+<th>derived from</th>
+<th>two devices reading the same sensor agree?</th>
+<th>hazards</th>
+<th>sent to Nightscout today</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Loop, <strong>G7</strong> (G7SensorKit)</td>
+<td><code>syncIdentifier</code> = <code>"&lt;activatedAt in hours&gt; &lt;sensorID&gt; &lt;glucoseTimestamp&gt;"</code> (<code>G7CGMManager.swift:511-517</code>)</td>
+<td>space-separated derived string; first token a <code>Double</code> printed with full fractional precision (<code>.hours</code> is <code>Double</code>, <code>Common/TimeInterval.swift:57</code>)</td>
+<td><code>activatedAt</code> = <strong>local <code>Date()</code> at receipt minus the sensor's message counter</strong> (<code>G7Sensor.swift:134</code>), stored once at discovery (<code>G7CGMManager.swift:313-322</code>); <code>sensorID</code> = BLE peripheral name (<code>DXCMxx</code>, <code>G7Sensor.swift:254-256</code>); timestamp = sensor seconds counter (<code>G7GlucoseMessage.swift:18,29-30</code>)</td>
+<td><strong>No.</strong> The first token embeds each device's own receive time and clock, to sub-second precision</td>
+<td>literal <code>"invalid"</code> when <code>activatedAt</code> or <code>sensorID</code> is nil (shared by every reading in that state); <code>sensorID</code> is a 2-character suffix, so it repeats across sensors and is unique only together with the activation token</td>
+<td><strong>No.</strong> Entries carry no id (<code>StoredGlucoseSample.swift:34-42</code>, NightscoutKit <code>GlucoseEntry.swift:108</code> sends <code>_id</code> only when set; it is not)</td>
+</tr>
+<tr>
+<td>Loop, <strong>G6</strong> (CGMBLEKit)</td>
+<td><code>"&lt;transmitterID&gt; &lt;glucoseMessage.timestamp&gt;"</code> (<code>Glucose.swift:110-113</code>)</td>
+<td>space-separated derived string</td>
+<td>transmitter ID + transmitter-relative seconds</td>
+<td><strong>Yes</strong>, both come from the transmitter ("consistent between backfill/live")</td>
+<td>a simulated-sample path uses <code>Date()</code> (<code>TransmitterManager.swift:106-108</code>), not used for real readings</td>
+<td>No (as above)</td>
+</tr>
+<tr>
+<td>Loop, <strong>Libre</strong> (LibreTransmitter)</td>
+<td><code>syncId</code> = <code>"&lt;Int(epoch s)&gt;&lt;unsmoothedGlucose&gt;"</code> (<code>LibreGlucose.swift:33-35</code>)</td>
+<td>digits concatenated with a decimal, no separator</td>
+<td>reading time = <strong>local <code>Date()</code> at read minus minute offsets</strong> (<code>SensorData.swift:303</code>) + value</td>
+<td><strong>No</strong> (local clock)</td>
+<td>two readings in one second with one value collide</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Loop, <strong>Eversense</strong> (EversenseKit)</td>
+<td><code>"&lt;epoch Double&gt;&lt;value&gt;"</code> (<code>Common/NewGlucoseSample.swift:14</code>)</td>
+<td>concatenation, no separator</td>
+<td>transmitter-reported time + value</td>
+<td>not checked</td>
+<td>concatenation without a separator is ambiguous in principle</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Loop, <strong>Nightscout remote CGM</strong></td>
+<td><code>glucose.id ?? "&lt;Int(epoch)&gt;"</code> (<code>NightscoutRemoteCGM.swift:169</code>)</td>
+<td>server <code>_id</code>, else epoch digits</td>
+<td>the server's record</td>
+<td>yes (both read the server)</td>
+<td>fallback collides for two readings in one second</td>
+<td>n/a (it reads Nightscout)</td>
+</tr>
+<tr>
+<td>Loop, <strong>Dexcom Share</strong></td>
+<td><code>"&lt;Int(epoch)&gt;"</code> (<code>ShareClientManager.swift:110</code>)</td>
+<td>epoch digits</td>
+<td>Share's reading time</td>
+<td>yes (both read Share)</td>
+<td>one-second collisions; not unique across sensors or sites</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Loop, <strong>Minimed CGM</strong></td>
+<td><code>"Y-M-D H-M-S"</code> of the pump clock, else <code>UUID()</code> (<code>MySentryPumpStatusMessageBody+CGMManager.swift:59-71</code>, <code>SensorValueGlucoseEvent+CGMManager.swift:10-24</code>, <code>MinimedPumpManager.swift:437,1610</code>)</td>
+<td>derived string with a space; fallback random UUID</td>
+<td>pump clock</td>
+<td>yes when derived; no for the fallback</td>
+<td>repeats after a pump clock change; not unique across pumps</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Loop, simulators / mocks</td>
+<td><code>UUID()</code> (<code>MockGlucoseProvider.swift:83</code>)</td>
+<td>UUID v4</td>
+<td>random</td>
+<td>no</td>
+<td>—</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Loop, <strong>watch</strong></td>
+<td>the watch <strong>receives</strong> the phone's sample and forwards its <code>syncIdentifier</code> (<code>WatchContext.swift:162-170</code>, <code>WatchHistoricalGlucose.swift:55,72</code>)</td>
+<td>as the phone's</td>
+<td>—</td>
+<td>n/a: no watch-side CGM reader in Loop <code>main</code> or <code>next-dev</code></td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Trio</strong> (any CGM, incl. the same LoopKit managers)</td>
+<td>discards the manager's <code>syncIdentifier</code>; <code>id: UUID().uuidString</code> (<code>PluginSource.swift:328,343</code>), re-assigned <code>UUID()</code> when stored (<code>GlucoseStorage.swift:255</code>)</td>
+<td>UUID v4</td>
+<td>random, per device</td>
+<td><strong>No</strong></td>
+<td>—</td>
+<td><strong>Yes</strong>, as entry field <strong><code>id</code></strong> (<code>BloodGlucose.swift:61-62</code>; <code>_id</code> no longer sent since Trio commit <code>149e3bb71</code>, 2026-03-24)</td>
+</tr>
+<tr>
+<td><strong>AndroidAPS</strong></td>
+<td>local key <code>timestamp</code> + <code>sourceSensor</code> (<code>GlucoseValueDao.kt:32-33</code>); Nightscout identity = the <strong>server-assigned</strong> API v3 <code>identifier</code>, kept as <code>nightscoutId</code> (<code>GlucoseValueExtension.kt:38</code>)</td>
+<td>server's UUIDv5</td>
+<td>server computes v5 of <code>device + "_" + date</code> (<code>operationTools.js:95-107</code>)</td>
+<td>yes <strong>if</strong> both send the same <code>device</code> string and the same <code>date</code> to the millisecond</td>
+<td>—</td>
+<td>creates without an identifier; updates by the server's identifier</td>
+</tr>
+<tr>
+<td><strong>xDrip+</strong></td>
+<td><code>BgReading.uuid = UUID.randomUUID()</code> (<code>BgReading.java:359</code> and others)</td>
+<td>UUID v4</td>
+<td>random</td>
+<td>No</td>
+<td>—</td>
+<td>entries: no id; treatments: <code>uuid</code>, and <code>_id</code> = <code>uuid_to_id(uuid)</code>: the UUID's first 24 hex, or <strong>MD5 of a non-standard value</strong> (one containing <code>:</code> or shorter than 24) truncated to 24 hex (<code>NightscoutUploader.java:245-256,884</code>)</td>
+</tr>
+<tr>
+<td><strong>xDrip4iOS</strong></td>
+<td><code>BgReading.id = UniqueId.createEventId()</code> (<code>BgReading+CoreDataClass.swift:32</code>)</td>
+<td><strong>24 random characters from <code>[A-Za-z0-9]</code></strong> (<code>UniqueId.swift:18-25</code>)</td>
+<td>random</td>
+<td>No</td>
+<td>looks ObjectId-sized but is not hex</td>
+<td>entries: as <code>_id</code> (<code>BgReading+Nightscout.swift:9</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Commits read: LoopWorkspace <code>548b332</code> (= <code>main</code> per <code>gh api</code>, 2026-10-05) with G7SensorKit <code>dd91f46</code>,
+CGMBLEKit <code>ea224e7</code>, LibreTransmitter <code>4110512</code>, EversenseKit <code>e1bb6fa</code>, NightscoutRemoteCGM
+<code>45b4efd</code>, MinimedKit <code>a7b2685</code>, dexcom-share-client-swift <code>ff0d714</code>, Loop <code>c30b5c8</code>,
+NightscoutService <code>2cef489</code>, LoopKit <code>d9f1437</code>; NightscoutKit <code>4ec9fd1</code> (the revision LoopWorkspace's
+<code>Package.resolved</code> pins). Loop <strong>next-dev</strong>: the local clone (<code>584bdaf</code>, 2026-07-15) is stale, so
+<code>gh api</code> was read instead: LoopWorkspace <code>next-dev</code> <code>1561bff</code> (2026-10-15) pins G7SensorKit <code>e17129d</code>
+and Loop <code>859b61d</code>. G7SensorKit <code>e17129d</code> has the same <code>generateSyncIdentifier</code> (line 1171) and the
+same <code>activationDate</code> derivation (<code>G7Sensor.swift:392</code>); it adds <code>G7DisplayType</code> (<code>phone</code> = 2,
+<code>watch</code> = 3; "a phone and a watch can both hold a session with it, while two phones cannot") and
+reads the sensor's real serial number (<code>transmitterVersion?.serialNumberString</code>, lines 561, 579,
+594). Loop <code>859b61d</code>'s tree has no watch-side CGM code. Trio <code>0b29cd534</code> (= <code>main</code>). AndroidAPS local
+<code>7e1d537d49</code> (<code>dev</code> at 2026-09-23); current <code>dev</code> <code>b9bb9ef302</code> changes only the <code>device</code> resolver in
+<code>GlucoseValueExtension.kt</code>, not the identity lines (diffed via <code>gh api</code>). xDrip+ <code>1ed760048</code> (tag
+2026.09.18); <code>NightscoutUploader.java</code> is identical at current <code>master</code> <code>8532095b9</code>, and
+<code>BgReading.java</code> still assigns random UUIDs there. xDrip4iOS <code>c268542e</code> (= <code>master</code>).</p>
+<p><strong>Treatments, briefly.</strong> Loop sends <code>syncIdentifier</code> (NightscoutKit <code>NightscoutTreatment.swift:117</code>)
+and an override's UUID as <code>_id</code>; Trio sends <code>id</code>; AndroidAPS uses API v3 <code>identifier</code>; xDrip+ sends
+<code>uuid</code> and a derived <code>_id</code>.</p>
+<h2 id="2-corpus-the-shapes-in-the-wild-m">2. Corpus: the shapes in the wild [M]<a class="headerlink" href="#2-corpus-the-shapes-in-the-wild-m" title="Permanent link">&para;</a></h2>
+<p>12 sites, 719,559 entries and 307,996 treatments (the companion note's corpus §1; fetched by API v1
+GET; server versions not recorded). Counts by collection, client class, field and shape:</p>
+<table>
+<thead>
+<tr>
+<th>collection</th>
+<th>client class</th>
+<th>field</th>
+<th>shape</th>
+<th style="text-align: right;">documents</th>
+<th>sites</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>entries</td>
+<td>every class except below</td>
+<td><code>_id</code></td>
+<td>24-hex (ObjectId form)</td>
+<td style="text-align: right;">655,578</td>
+<td>12</td>
+</tr>
+<tr>
+<td>entries</td>
+<td>no-device</td>
+<td><code>_id</code></td>
+<td>UUID, upper case, v4</td>
+<td style="text-align: right;">48,864</td>
+<td>b</td>
+</tr>
+<tr>
+<td>entries</td>
+<td>LibreLinkUp / xDrip+</td>
+<td><code>_id</code></td>
+<td><strong>24 alphanumeric, not hex</strong> (xDrip4iOS's generator shape)</td>
+<td style="text-align: right;">13,096 / 2,021</td>
+<td>j</td>
+</tr>
+<tr>
+<td>entries</td>
+<td>any</td>
+<td><code>identifier</code>, <code>syncIdentifier</code>, <code>uuid</code>, <code>id</code>, <code>NSCLIENT_ID</code></td>
+<td>—</td>
+<td style="text-align: right;"><strong>0</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>Loop</td>
+<td><code>identifier</code></td>
+<td>UUID, upper case, v4</td>
+<td style="text-align: right;">16</td>
+<td>L, i</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>Loop</td>
+<td><code>identifier</code></td>
+<td><strong>32 hex</strong> (equals its own <code>syncIdentifier</code>)</td>
+<td style="text-align: right;"><strong>489</strong></td>
+<td>L</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>Loop</td>
+<td><code>syncIdentifier</code></td>
+<td>UUID, upper case, v4</td>
+<td style="text-align: right;">6,862</td>
+<td>11</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>Loop</td>
+<td><code>syncIdentifier</code></td>
+<td>hex, length 14 / 18 / 20 / 32</td>
+<td style="text-align: right;">103 / 16 / 49 / 29,982</td>
+<td>L</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>Loop</td>
+<td><code>syncIdentifier</code></td>
+<td>hex, length 60 / 62 / 64 / 68 / 70 / 72</td>
+<td style="text-align: right;">41,695 / 51,245 / 976 / 75,421 / 17,409 / 31,537</td>
+<td>10</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>Loop</td>
+<td><code>syncIdentifier</code></td>
+<td><strong><code>&lt;hex 64-72&gt; &lt;3 characters containing "/"&gt;</code></strong></td>
+<td style="text-align: right;">503</td>
+<td>i</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>Loop</td>
+<td><code>syncIdentifier</code></td>
+<td>digits</td>
+<td style="text-align: right;">13</td>
+<td>L</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>Loop</td>
+<td><code>_id</code></td>
+<td>UUID, upper case, v4</td>
+<td style="text-align: right;">2,064</td>
+<td>9</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>Trio</td>
+<td><code>id</code></td>
+<td>UUID, upper case, v4</td>
+<td style="text-align: right;">47,454</td>
+<td>b</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>every class</td>
+<td><code>uuid</code>, <code>NSCLIENT_ID</code></td>
+<td>—</td>
+<td style="text-align: right;">0</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>Readings:</p>
+<ul>
+<li><strong>Non-UUID identity values are the majority, not the exception.</strong> 248,949 treatments at 11 sites
+  carry a non-UUID, non-ObjectId value in a client identity field (<code>results</code>, last section), almost
+  all Loop dose <code>syncIdentifier</code>s. As <code>identifier</code> itself, 489 are non-UUID.</li>
+<li><strong>A <code>/</code> appears in real client keys.</strong> 503 Loop <code>syncIdentifier</code>s at site i end in a 3-character
+  token containing <code>/</code>. Sent as <code>identifier</code>, each would need <code>%2F</code> in an API v3 path (C3).</li>
+<li><strong>Every UUID in the corpus is upper case and v4.</strong> No v5 UUID was found, so no stored record shows a
+  client using UUIDv5 today, and none shows the server's own v5 (this corpus has no API v3 writer).</li>
+<li><strong>No CGM entry carries a client identity field.</strong> This agrees with the code read in §1: Loop and
+  xDrip+ send none for entries; Trio's <code>id</code> (from 2026-03-24) postdates most of this corpus.</li>
+<li>The 24-alphanumeric <code>_id</code>s at site j were stored as string <code>_id</code>s by whatever server version
+  received them; on 15.0.7 and later the same write moves the value into <code>identifier</code> (§3.1).</li>
+</ul>
+<p>Not visible here: AndroidAPS, xDrip+ uploader and other API v3 writers are absent from the corpus, as
+the companion note says. Shapes, not values, were read.</p>
+<h2 id="3-server-compatibility-of-non-uuid-identifiers">3. Server compatibility of non-UUID identifiers<a class="headerlink" href="#3-server-compatibility-of-non-uuid-identifiers" title="Permanent link">&para;</a></h2>
+<h3 id="31-api-v1-r-1508-92d0834-dev-fade2299">3.1 API v1 [R] (15.0.8 <code>92d0834</code>, dev <code>fade2299</code>)<a class="headerlink" href="#31-api-v1-r-1508-92d0834-dev-fade2299" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>path</th>
+<th>behaviour with a non-UUID <code>identifier</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>treatments write, <code>identifier</code> in body</td>
+<td>matched first, by exact string (<code>{identifier: {$eq: v}}</code>), any characters; <code>_id</code> dropped from the replacement (<code>treatments.js:356-381</code> @92d0834). Non-string values throw (<code>treatments.js:18-25</code>). Same on fade2299</td>
+</tr>
+<tr>
+<td>treatments / entries write, string <code>_id</code> that is <strong>not 24-hex</strong></td>
+<td>moved to <code>identifier</code> when <code>UUID_HANDLING</code> is on (the default), deleted otherwise (<code>treatments.js:394-405</code>, <code>entries.js:267-277</code> @92d0834; <code>treatments.js:452-459</code>, <code>entries.js:334-341</code> @fade2299). The test is "not 24-hex", <strong>not</strong> "is a UUID", although the comments say UUID: an xDrip4iOS 24-alphanumeric <code>_id</code> or a Loop-style derived string becomes an <code>identifier</code></td>
+</tr>
+<tr>
+<td>entries write, <code>identifier</code> in body</td>
+<td>stored, not matched; entries match on <code>sysTime</code> + <code>type</code> (the reply's "gap")</td>
+</tr>
+<tr>
+<td>read/delete by <code>_id</code> (<code>find[_id]=</code>, <code>DELETE /api/v1/treatments/:id</code>)</td>
+<td><code>normalizeIdValue</code>: 24-hex becomes an ObjectId; <strong>only a value matching <code>UUID_RE</code></strong> (<code>query.js:7</code> @92d0834, <code>query.js:12</code> @fade2299) is looked up by <code>identifier</code>; any other string is compared to <code>_id</code> and finds nothing (<code>query.js:131-143</code> @92d0834, <code>195-206</code> @fade2299)</td>
+</tr>
+<tr>
+<td>query by <code>find[identifier]=</code></td>
+<td>generic exact match on the field, any string</td>
+</tr>
+<tr>
+<td>index</td>
+<td><code>identifier</code> is indexed alone and in <code>{date, identifier, created_at}</code> on entries and <code>{eventType, created_at, identifier, date}</code> on treatments (<code>entries.js:224-226</code>, <code>treatments.js:430-432</code> @92d0834)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-api-v3-r">3.2 API v3 [R]<a class="headerlink" href="#32-api-v3-r" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Create:</strong> <code>resolveIdentifier</code> computes the server key; a client value that differs only logs a
+  warning and is kept (<code>operationTools.js:114-126</code>); <code>validate</code> requires a non-empty, non-whitespace
+  string, nothing more (<code>create/validate.js:19</code>). No pattern, no length. Same at both commits.</li>
+<li><strong>Address:</strong> <code>/{collection}/:identifier</code> for GET, PUT, PATCH, DELETE (<code>generic/collection.js:42</code>),
+  registered <strong>after</strong> <code>GET /{collection}/history</code> (lines 54-57).</li>
+<li><strong>Lookup:</strong> exact <code>identifier</code> match, plus <code>_id</code> when the value is 24-hex
+  (<code>mongoCollection/utils.js:107-116</code> @92d0834). On fade2299 a non-hex string is also compared to a
+  string <code>_id</code> (<code>utils.js:105-123</code>), so a v1 record stored with a non-hex string <code>_id</code> is reachable.</li>
+<li><strong>Swagger:</strong> <code>paramIdentifier</code> and <code>identifierField</code> are <code>type: string</code> with a UUID-shaped
+  <strong>example</strong> only, no <code>pattern</code> or <code>maxLength</code> (<code>swagger.yaml:1052-1060</code> @92d0834,
+  <code>1011-1020</code> @fade2299).</li>
+</ul>
+<h3 id="33-what-breaks-two-small-harnesses-m">3.3 What breaks: two small harnesses [M]<a class="headerlink" href="#33-what-breaks-two-small-harnesses-m" title="Permanent link">&para;</a></h3>
+<p><strong>URL path.</strong> Express 4.22.2 (the version in the checkout's <code>node_modules</code>; dev pins 4.22.2, 15.0.8
+4.22.1) with the four v3 routes and the history route registered in the server's order, driven over
+HTTP (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9bd19200fd9a6d131faebab5baa20d131f2babd0/docs/60-research/tenancy/identifier-format-2026-10-17/v3-path-routing.js"><code>v3-path-routing.js</code></a>; Express routing only, no proxy, no auth, no storage):</p>
+<table>
+<thead>
+<tr>
+<th>identifier in path</th>
+<th>GET result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UUID, <code>g7:SERIAL:12345</code> (colon), <code>a+b</code></td>
+<td>reaches the record route; colon and plus pass through unchanged</td>
+</tr>
+<tr>
+<td><code>a%20b%20c</code>, <code>a%2Fb</code>, <code>a%25b</code>, <code>a%23b</code>, <code>a%3Fb</code></td>
+<td>reaches the record route, decoded to space, <code>/</code>, <code>%</code>, <code>#</code>, <code>?</code></td>
+</tr>
+<tr>
+<td><code>a/b</code> (raw slash)</td>
+<td><strong>404</strong></td>
+</tr>
+<tr>
+<td><code>a%zzb</code> (malformed escape)</td>
+<td><strong>400</strong> "Failed to decode param"</td>
+</tr>
+<tr>
+<td><code>history</code></td>
+<td><strong>reaches the history route</strong>, not the record (PUT and DELETE do reach the record)</td>
+</tr>
+<tr>
+<td><code>.</code> and <code>..</code></td>
+<td>reach the record route in this harness; client URL libraries normalize them away</td>
+</tr>
+<tr>
+<td>8,000 characters</td>
+<td>reaches the route; <strong>20,000 characters: 431</strong> (Node's 16 KB header limit)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Index key size.</strong> (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9bd19200fd9a6d131faebab5baa20d131f2babd0/docs/60-research/tenancy/identifier-format-2026-10-17/index-key-size.js"><code>index-key-size.js</code></a>.) Local MongoDB 3.6.8 (FCV 3.6), a scratch database with the v1 entries indexes
+<code>{identifier: 1}</code> and <code>{date: -1, identifier: -1, created_at: -1}</code>, dropped afterwards: a 256-character
+<code>identifier</code> inserts; 1,000, 1,010, 1,020, 1,100 and 2,000 characters fail with code 17280 "key too
+large to index" (the compound key is 1,026 bytes at 1,000 characters). MongoDB 4.2 removed this limit
+at FCV 4.2 (not fetched from MongoDB's documentation; MongoDB's tracker
+<a href="https://jira.mongodb.org/browse/DOCS-11942">DOCS-11942</a> was listed by a search, not opened).</p>
+<h2 id="4-uuidv5-as-the-bridge">4. UUIDv5 as the bridge<a class="headerlink" href="#4-uuidv5-as-the-bridge" title="Permanent link">&para;</a></h2>
+<p>If a client hashes its derived key into a UUIDv5 and sends that as <code>identifier</code>:</p>
+<table>
+<thead>
+<tr>
+<th>gained</th>
+<th>lost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>works with today's v1 by-id routes (<code>UUID_RE</code>), every version since <code>UUID_HANDLING</code></td>
+<td>readability: the sensor, session and time are no longer visible in the record</td>
+</tr>
+<tr>
+<td>fixed 36 characters: no index-size, header or URL-escaping concern (C2, C3)</td>
+<td>debuggability: a support person cannot tell two ids apart or see why they differ, unless the client also stores the key (in <code>syncIdentifier</code> or a dedicated field)</td>
+</tr>
+<tr>
+<td>never 24-hex, never a reserved word (C4, C5)</td>
+<td>irreversibility: no parsing back; a wrong input (e.g. today's G7 activation token) is invisible</td>
+</tr>
+<tr>
+<td>byte-for-byte determinism is explicit: the same namespace and the same canonical name give the same UUID (<a href="https://www.rfc-editor.org/rfc/rfc9562.html#section-6.5">RFC 9562 §6.5</a>)</td>
+<td>nothing about agreement: v5 is exactly as device-independent as its input, no more</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Namespace.</strong> The server's v3 namespace is the 16 ASCII bytes of <code>NightscoutRocks!</code>
+(<code>operationTools.js:6,106</code>), i.e. <code>4e696768-7473-636f-7574-526f636b7321</code>; read as a UUID its variant
+bits are the reserved NCS variant, so it is not an RFC-conformant UUID of any version (computed, not
+a defect: v5 accepts any 16 bytes). The server's names are <code>&lt;device&gt;_&lt;date&gt;[_&lt;eventType&gt;]</code>
+(<code>operationTools.js:95-107</code>). A client v5 in the same namespace collides with a server-computed
+identifier only if its name string is byte-identical to such a name (SHA-1 makes accidental
+collisions between different names negligible). A scheme-prefixed name such as <code>g7:&lt;serial&gt;:&lt;seconds&gt;</code>
+cannot equal <code>&lt;device&gt;_&lt;digits&gt;</code> unless a client's <code>device</code> string were itself crafted to match.
+The risk is semantic, not cryptographic, but it is avoidable: RFC 9562 recommends a v4 or v7 value for
+a custom namespace (<a href="https://www.rfc-editor.org/rfc/rfc9562.html#section-6.6">§6.6</a>). Proposal:
+Nightscout publishes <strong>one client namespace</strong> (a fresh v4, documented next to the format rule) and
+asks clients to put a scheme prefix in the name (<code>g7:</code>, <code>g6:</code>, <code>libre:</code> …). Two independent
+apps that adopt the same scheme then agree with each other, and none can coincide with a server key.</p>
+<h2 id="5-precedents-fetched">5. Precedents (fetched)<a class="headerlink" href="#5-precedents-fetched" title="Permanent link">&para;</a></h2>
+<p>FHIR R4's <code>Identifier.value</code> is a <code>string</code> "unique within the context of the system", with <code>system</code>
+a URI that "establishes the namespace for the value"; FHIR strings are limited to 1 MB and should
+contain non-whitespace content, while FHIR's resource <code>id</code> (the server id) is a separate type limited
+to <code>[A-Za-z0-9\-\.]{1,64}</code>, case-sensitive (<a href="https://hl7.org/fhir/R4/datatypes.html">FHIR R4 data types</a>).
+HealthKit's <code>HKMetadataKeySyncIdentifier</code> is "a unique string that identifies a piece of data so it
+can be updated and synced", must be accompanied by <code>HKMetadataKeySyncVersion</code>, and a save with a
+greater sync version replaces the stored object
+(<a href="https://developer.apple.com/tutorials/data/documentation/healthkit/hkmetadatakeysyncidentifier.json">Apple, documentation JSON for HKMetadataKeySyncIdentifier</a>).
+Neither imposes a UUID. The FHIR split, a free-form business identifier beside a tightly-charactered,
+length-capped server id, is the same split as Nightscout's <code>identifier</code> beside <code>_id</code>; FHIR's <code>id</code>
+rule is a reasonable model for C2/C3 if the maintainers want a stricter character set. Open mHealth
+and IEEE 11073 were not checked.</p>
+<h2 id="6-implications">6. Implications<a class="headerlink" href="#6-implications" title="Permanent link">&para;</a></h2>
+<h3 id="61-the-reply-replybodymd">6.1 The reply (<code>reply.body.md</code>)<a class="headerlink" href="#61-the-reply-replybodymd" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Nothing in it overstates a UUID requirement.</strong> It says "a string. We recommend a UUID", which
+  this note supports.</li>
+<li><strong>Rule 1 is narrower than the code.</strong> "<code>UUID_HANDLING</code> … moves a UUID <code>_id</code> to <code>identifier</code>": the
+  code moves <strong>any non-24-hex string</strong> <code>_id</code> (§3.1). Not wrong for Loop, but "a non-ObjectId string
+  <code>_id</code> (a UUID, for example)" would be exact.</li>
+<li><strong>Option 3 needs two qualifiers</strong> if it stays as written: the <code>&lt;serial&gt;</code> must be the sensor's
+  serial number, not G7SensorKit's <code>sensorID</code> (a <code>DXCMxx</code> BLE name that repeats across sensors), and
+  the string form works on v1 treatments, API v3 and <code>find[identifier]=</code> but <strong>not</strong> on v1 by-id
+  routes; its UUIDv5 works on all of them.</li>
+<li><strong>Option 2's premise matches the code:</strong> today each device computes its own activation estimate
+  from its own receive time, so phone and watch timestamps differ unless one adopts the other's.</li>
+<li>"Later, only if needed: the identifier's length limit, character set and case comparison" can now
+  carry a concrete proposal (§0, C1-C7) instead of an open question.</li>
+</ul>
+<h3 id="62-id-format-decision-proposed-answer">6.2 <code>ID-FORMAT-DECISION</code> (proposed answer)<a class="headerlink" href="#62-id-format-decision-proposed-answer" title="Permanent link">&para;</a></h3>
+<p><code>identifier</code> is an opaque, case-sensitive string, 1 to 256 characters, from
+<code>[A-Za-z0-9._~:-]</code>, not exactly 24 hex characters, not <code>history</code>, <code>.</code>, <code>..</code>, <code>invalid</code>, <code>undefined</code>,
+<code>null</code> or <code>NaN</code>; one identifier names one record per collection. Recommended: UUID v4 for a
+one-device record; UUID v5 in the published Nightscout client namespace over a scheme-prefixed,
+source-derived name when several devices must agree; required only by clients that use v1 by-id
+routes. The 256 limit and the character set are proposals for the maintainers: the corpus's longest
+client key is 72 hex characters plus a 4-character suffix, and the only character outside the set
+seen in client keys is the <code>/</code> in §2 (and the space in Loop's CGM keys, §1).</p>
+<h3 id="63-id-validate-server-checks-worth-adding">6.3 <code>ID-VALIDATE</code> (server checks worth adding)<a class="headerlink" href="#63-id-validate-server-checks-worth-adding" title="Permanent link">&para;</a></h3>
+<p>In order of value, each a 400 on API v3 and a per-record rejection on v1 once per-record results exist:</p>
+<ol>
+<li><strong>Length</strong> over the limit (protects pre-4.2 MongoDB from a failed insert that today surfaces as a
+   storage error, §3.3).</li>
+<li><strong>Exactly 24 hex</strong> in <code>identifier</code> that is not the record's own <code>_id</code> (C4: ambiguous addressing).</li>
+<li><strong>Reserved words</strong> (<code>history</code>, <code>.</code>, <code>..</code>) and known client sentinels (<code>invalid</code> from G7SensorKit;
+   <code>undefined</code>, <code>null</code>, <code>NaN</code> from string-formatting bugs). A sentinel shared by many readings is the
+   worst case for C6: with identifier matching on entries, every "invalid" reading would overwrite
+   the last.</li>
+<li><strong>Characters</strong> outside the set (C3), at least <code>/</code>, <code>%</code>, <code>?</code>, <code>#</code>, whitespace and control
+   characters. This one would reject Loop's current G7/G6 <code>syncIdentifier</code>s (they contain spaces)
+   if Loop sent them unchanged, so roll it out as a warning first, or define the set to allow a space
+   and accept that such ids must be percent-encoded in v3 paths.</li>
+</ol>
+<p>Do <strong>not</strong> add a UUID pattern check: it would reject the 489 stored values and every non-UUID key in §1.</p>
+<h3 id="64-loops-g7-identifier">6.4 Loop's G7 identifier<a class="headerlink" href="#64-loops-g7-identifier" title="Permanent link">&para;</a></h3>
+<p><strong>Verified:</strong> today's G7 <code>syncIdentifier</code> would <strong>not</strong> dedupe a watch and a phone reading the same
+sensor. Its first token is <code>activatedAt.timeIntervalSince1970.hours</code>, a <code>Double</code> printed in full,
+where <code>activatedAt</code> = (local time when the first glucose message was received) − (the message's
+sensor seconds counter), computed independently on each device (<code>G7Sensor.swift:134</code>,
+<code>G7CGMManager.swift:313-322,511-517</code> @dd91f46; unchanged in next-dev <code>e17129d</code>). Receive latency and
+clock offset differ between devices, so the token differs; it would differ even between two
+discoveries on one device. The reading's <code>date</code> is derived from the same per-device estimate
+(<code>G7CGMManager.swift:469,476,547</code>), which is why the reply's option 2 needs one device to adopt the
+other's estimate.</p>
+<p>A device-independent G7 form needs only inputs both devices read from the sensor:</p>
+<ul>
+<li><strong>sensor identity:</strong> the real serial number (<code>transmitterVersion.serialNumberString</code>, read in
+  next-dev), not the <code>DXCMxx</code> peripheral name, which has a 2-character suffix and repeats across
+  sensors. Without the serial, the session must be identified some other sensor-sourced way; rounding
+  the activation estimate is not safe (two devices can fall either side of a rounding boundary).</li>
+<li><strong>reading position:</strong> the sensor's own seconds counter (<code>glucoseTimestamp</code>), already used.</li>
+<li><strong>no fallback sentinel:</strong> if either input is missing, send no <code>identifier</code> (let the time key apply)
+  rather than <code>"invalid"</code>.</li>
+<li><strong>one spelling:</strong> fixed scheme, separators and case (e.g. <code>g7:&lt;serial&gt;:&lt;seconds&gt;</code>), or its UUIDv5
+  in the published namespace; both devices must produce the same bytes.</li>
+</ul>
+<p>To verify before relying on it (not checked here): that <code>messageTimestamp</code> ("seconds since pairing of
+the <em>message</em>", <code>G7GlucoseMessage.swift:18</code>) counts from the sensor session and not from each
+display's pairing slot. If it is per slot, a phone and a watch holding separate slots would see
+different counters and no sensor-relative key would agree.</p>
+<h2 id="7-reproduce">7. Reproduce<a class="headerlink" href="#7-reproduce" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python3<span class="w"> </span>-I<span class="w"> </span>docs/60-research/tenancy/identifier-format-2026-10-17/idshape.py
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python3<span class="w"> </span>-I<span class="w"> </span>docs/60-research/tenancy/identifier-format-2026-10-17/idshape.py<span class="w"> </span>--control
+</code></pre></div>
+<p>The §3.3 harnesses take the cgm-remote-monitor checkout (for its <code>node_modules</code>) as their argument:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>node<span class="w"> </span>docs/60-research/tenancy/identifier-format-2026-10-17/v3-path-routing.js<span class="w"> </span>&lt;cgm-remote-monitor<span class="w"> </span>checkout&gt;
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>node<span class="w"> </span>docs/60-research/tenancy/identifier-format-2026-10-17/index-key-size.js<span class="w"> </span>&lt;cgm-remote-monitor<span class="w"> </span>checkout&gt;<span class="w">  </span><span class="c1"># needs mongod on 127.0.0.1:27017; creates and drops idfmt_scratch_20261017</span>
+</code></pre></div>
+<p><code>idshape.py</code> needs <code>externals/ns-data</code> at the main checkout's path (as the companion script's <code>BASE</code> names) and the
+companion script beside this folder (its classifiers are imported). Runs in about 5 s. The control
+plants six documents in site a (a G7-form and an <code>invalid</code> Loop <code>syncIdentifier</code>, a colon and a G6-form
+entry <code>identifier</code>, a 24-alphanumeric <code>_id</code>, a Trio upper-case UUID <code>id</code>); each moves exactly its own
+counter (<code>control-results-2026-10-17.txt</code>).</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

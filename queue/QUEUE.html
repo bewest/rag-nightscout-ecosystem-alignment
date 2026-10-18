@@ -2871,7 +2871,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-17 at <code>d0c2b9726</code>.</em></p>
+<p><em>Living document, last changed 2026-10-17 at <code>9bd19200f</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -15084,7 +15084,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 </tr>
 <tr>
 <td><code>ID-FORMAT-DECISION</code></td>
-<td>Decide: the client identifier's format (opaque string with limits; UUID recommended, not required)</td>
+<td>Decide: the client identifier's format (opaque string with limits; UUID not required)</td>
 <td><code>needs-decision</code></td>
 <td><code>-</code></td>
 <td>n/a</td>
@@ -16401,7 +16401,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md</code></li>
 </ul>
 <p><strong>Notes.</strong> U6 in spec section 3. The error item's shape is not decided; it must not break NightscoutKit's same-length check (read, not run).</p>
-<h3 id="id-format-decision--decide-the-client-identifiers-format-opaque-string-with-limits-uuid-recommended-not-required"><code>ID-FORMAT-DECISION</code> &mdash; Decide: the client identifier's format (opaque string with limits; UUID recommended, not required)<a class="headerlink" href="#id-format-decision--decide-the-client-identifiers-format-opaque-string-with-limits-uuid-recommended-not-required" title="Permanent link">&para;</a></h3>
+<h3 id="id-format-decision--decide-the-client-identifiers-format-opaque-string-with-limits-uuid-not-required"><code>ID-FORMAT-DECISION</code> &mdash; Decide: the client identifier's format (opaque string with limits; UUID not required)<a class="headerlink" href="#id-format-decision--decide-the-client-identifiers-format-opaque-string-with-limits-uuid-not-required" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -16449,12 +16449,13 @@ alarm-readiness items, and the seam branch refresh.</p>
 <p><strong>Why <code>n/a</code>.</strong> a decision; the code that follows is classed in ID-VALIDATE and ID-V1-LOOKUP</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><strong>NO GATE</strong> &mdash; A decision, not measurable. Proposed 2026-10-17 in the Loop reply: identifier is a non-empty string with a length limit and character set; the recommended form is a UUID, v5 of a source-derived key when several devices must agree, v4 created once for manual entries; the server never depends on its shape; one identifier names one record, the client's responsibility. Open: the limit, the character set, and whether the server compares UUIDs without regard to case.</li>
+<li><strong>NO GATE</strong> &mdash; A decision, not measurable. Proposed answer (research note identifier-format-2026-10-17 §6.2, reply rewritten 2026-10-17): an opaque, case-sensitive string, 1 to 256 characters from [A-Za-z0-9._~:-], not exactly 24 hex, not history, ., .., invalid, undefined, null or NaN; one identifier names one record per collection. UUID not required: v4 for a one-device record, v5 of a scheme-prefixed source-derived name (in a published Nightscout client namespace) when several devices must agree, needed only by clients that use the v1 by-_id routes. Open: the 256 limit, the character set (Loop's current CGM keys contain spaces; 503 Loop syncIdentifiers at one corpus site contain /), and the client namespace.</li>
 </ul>
 <p><strong>Evidence.</strong></p>
 <ul>
 <li><code>docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md</code></li>
 <li><code>docs/60-research/tenancy/identifier-duplicates-2026-10-17.md</code></li>
+<li><code>docs/60-research/tenancy/identifier-format-2026-10-17.md</code></li>
 </ul>
 <p><strong>Notes.</strong> Today: v1 recognises only UUID-shaped values as identifiers in by-id routes (UUID_RE, case-insensitive, lib/server/query.js:12 at dev fade2299), while stored identifiers are compared exactly, so Loop's upper-case override UUIDs match only themselves. API v3 computes uuid.v5(device_date[_eventType], "NightscoutRocks!") when none is sent (lib/api3/shared/operationTools.js:6, 106). A random UUID cannot serve the phone-and-watch case, where both devices must derive the same value; AndroidAPS keys on pump event ids. Not required: changing an existing client's identifiers, which would break matching against records it already stored. 2026-10-17: the rewritten Loop reply states only "a string, UUID recommended" and lists the limit, character set and case under "later, only if needed"; decide when a client or ID-VALIDATE needs it.</p>
 <h3 id="id-client-oid-decision--decide-may-a-client-set-_id-an-objectid-it-creates-and-which-field-wins-when-identifier-and-_id-match-different-records"><code>ID-CLIENT-OID-DECISION</code> &mdash; Decide: may a client set _id (an ObjectId it creates), and which field wins when identifier and _id match different records?<a class="headerlink" href="#id-client-oid-decision--decide-may-a-client-set-_id-an-objectid-it-creates-and-which-field-wins-when-identifier-and-_id-match-different-records" title="Permanent link">&para;</a></h3>
@@ -16568,7 +16569,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 <li><code>docs/60-research/tenancy/identifier-duplicates-2026-10-17.md</code></li>
 </ul>
-<p><strong>Notes.</strong> BF-141's fix (#8781) treats an empty treatment identity as absent; this extends the rule to identifier on every collection. ID-DUP-MEASURE found no stored identifier that is null, "" or non-string in the corpus, and every stored one is a UUID-shaped or Loop syncIdentifier value; the corpus has no v3 writer, so this does not bound what AndroidAPS stores.</p>
+<p><strong>Notes.</strong> Checks in order of value (identifier-format-2026-10-17 §6.3): length over the limit (a 1,000-character identifier fails to insert on MongoDB 3.6.8, measured); exactly 24 hex that is not the record's own _id; reserved words and client sentinels (history, ., .., invalid from G7SensorKit, undefined, null, NaN); characters outside the set, first as a warning because Loop's current CGM keys contain spaces. No UUID pattern check: it would reject 489 stored corpus values and every non-UUID key. Earlier notes follow. BF-141's fix (#8781) treats an empty treatment identity as absent; this extends the rule to identifier on every collection. ID-DUP-MEASURE found no stored identifier that is null, "" or non-string in the corpus, and every stored one is a UUID-shaped or Loop syncIdentifier value; the corpus has no v3 writer, so this does not bound what AndroidAPS stores.</p>
 <h3 id="id-v1-lookup--release-2-minor-v1-get-and-delete-by-any-identifier-without-the-default-time-window"><code>ID-V1-LOOKUP</code> &mdash; Release 2 (minor): v1 GET and DELETE by any identifier, without the default time window<a class="headerlink" href="#id-v1-lookup--release-2-minor-v1-get-and-delete-by-any-identifier-without-the-default-time-window" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
