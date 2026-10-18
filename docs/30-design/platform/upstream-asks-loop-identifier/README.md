@@ -12,6 +12,29 @@ based on 15.0.8. It is a private page shared with the maintainer and is not link
 draft reply is [reply.body.md](reply.body.md), ready to paste as GitHub or Zulip markdown. It links
 the published pages on the project site.
 
+## The simple contract
+
+What the reply proposes, and what Nightscout supports today except where the reply's table says
+otherwise:
+
+1. `_id` is a MongoDB ObjectId (24 hex) or absent. A client may create its own ObjectId and send
+   it. Other values are not valid; `UUID_HANDLING` (default on) moves a UUID `_id` to
+   `identifier` on treatments and entries, as a compatibility rule.
+2. If `_id` is absent, the client sends `identifier`, a string (UUID recommended: v5 of a
+   source-derived key when devices must agree, v4 once for a manual entry). The server assigns
+   `_id`. One identifier names one record.
+3. If neither is sent, the collection's time key applies (entries `sysTime` + `type`, treatments
+   `created_at` + `eventType`); this fallback may be deprecated later.
+
+Tie-break (proposed, queue `ID-CLIENT-OID-DECISION`): when a write carries both and they point at
+different records, `_id` decides. That differs from D20 rule 5's identifier-first order and from
+v1 treatments today (`identifier` present drops `_id`, `server/treatments.js:356-362` @15.0.8).
+Every write reply returns both ids (rule 5).
+
+The one server change it needs, v1 entries and device status matching on `identifier`, is queue
+item `ID-SIMPLE-MATCH`; it ships with BF-169 after 15.0.9 (maintainer, 2026-10-17; see
+[15.0.9 decisions](../../../../releases/cgm-remote-monitor-15.0.9/decisions.md#decided-at-the-same-time-outside-1509s-contents)).
+
 ## The proposal, summarised
 
 **The ask.** An uploader gives each record a stable `identifier` taken from the data's source. The
@@ -33,15 +56,17 @@ Records without one keep today's rules.
 
 ## How the reply argues
 
-1. Opens from Loop's own measured problems: the 24-hour id cache, `"NA"` for a missing `_id`
-   (BF-165), re-sends stored twice (38 of 66 path pairs), Loop device status copies.
-2. Quotes D20 rule 5, "Two ids, one rule", and maps it line by line onto their proposal.
-3. Why we decided it: the measurement, and that Loop, Trio, xDrip+ and AndroidAPS each keep a
-   record identity under a different field name.
-4. Status by tier: works on 15.0.8; in `dev`; decided but not built; not decided anywhere.
-5. Two neutral corrections (15.0.7 not 15.0.8; v3 keeps a client value).
-6. Answers Q1–Q3 and offers decision rows and shared conformance cases.
-7. Next steps in order, with server work "after 15.0.9" and no dates.
+Rewritten 2026-10-17 around the simple contract, at the maintainer's direction that the simple
+model is generally workable; the previous, longer version is in git history at `dd6febcc`.
+
+1. Agrees with the ask; most of it works; the confusion is largely the swagger sentence (BF-169).
+2. The three rules and the tie-break, with D20 rule 5's "every write reply returns both" quoted.
+3. A table of what works today and the one gap (v1 entries and device status store `identifier`
+   but do not match on it).
+4. The watch-and-phone case: four options; recommends a source-derived identifier, with an
+   agreed timestamp as an interim that needs no server change. FHIR and HealthKit precedents.
+5. Cautions for Loop starting today; what we will do (the one server change and BF-169, after
+   15.0.9); the deferred questions as a short list.
 
 ## Evidence
 
@@ -91,6 +116,7 @@ send `identifier`) is the direction the reply takes.
 |---|---|---|---|---|
 | 2026-10-17 | received | private page shared with the maintainer | Loop developers' proposal: client `identifier`, unique sparse index, upsert, v1 by-identifier routes; Q1–Q3 | this README; to be weighed against D20 rule 5, write contract §6.1, and [ADR-002](../../../90-decisions/adr-002-sync-identity-strategy.md) (Proposed) |
 | — | to send | not chosen | [reply.body.md](reply.body.md); adds (2026-10-17) a question back: is the watch-and-phone case a re-send to acknowledge or an edit to apply? Our decision of record (write contract Q1, merge on match) answers "update" | `ID-V3-IMMUTABLE-DECISION` (queue), beside write contract §6.1 Q1 |
+| 2026-10-17 | rewritten | — | reply rewritten around the simple contract (three rules, tie-break `_id` decides, one server change after 15.0.9); previous version at `dd6febcc` in git history | `ID-SIMPLE-MATCH`, `ID-CLIENT-OID-DECISION` (queue) |
 
 When the reply is sent, add its date, channel and link. When they answer, add a row and the
 decision row it produces.
@@ -103,16 +129,11 @@ decision row it produces.
   2026-01-17) names a new `syncId` field in UUID v4 format. D20 rule 5 and this reply use
   `identifier`, and Loop proposes opaque non-UUID values. The reply does not cite ADR-002; it may
   need a superseding note.
-- **Q1 position.** The reply proposes "merge only when the stored record has no `identifier`" on
-  every collection and path. For v1 treatments that is a change: today a write with an
-  `identifier` never adopts a legacy record. Confirm before sending.
-- **Device status Q3.** The reply offers to revisit the 2026-10-12 decision with `identifier`
-  first. Confirm.
-- **The `date` question.** The reply raises v3's immutable `date`/`device` on an identifier match
-  as undecided. Reproduced over HTTP on 2026-10-17 (queue item `LOOP-ID-V3-IMMUTABLE`,
-  [lab results](../../../../tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md)).
-  Recorded as an observation, not a backfix: the 400 is API v3's documented rule; what it should
-  be for a client-supplied identifier is not decided.
+- **Q1–Q3 and the `date` question.** The rewritten reply takes no position on them; they are in
+  its "Later, only if needed" list. The `date` behaviour on API v3 is reproduced
+  ([lab results](../../../../tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md)).
+- **Tie-break.** The reply proposes that `_id` decides when the two ids disagree, which departs
+  from D20 rule 5's order. Confirm before sending (`ID-CLIENT-OID-DECISION`).
 - **Push first.** The reply links pages on the project site; the gh-pages build of 2026-10-17
-  (`de66763c`) has every linked page and anchor. BF-169 is on an unlanded branch and is cited by
-  number only.
+  (`de66763c`) has every linked page and anchor, including the folder's `index.html` the rewritten
+  reply links. BF-169 is cited by number only.
