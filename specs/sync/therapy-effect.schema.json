@@ -19,8 +19,8 @@
    "description": "The dosing-relevant content. Every member is optional and absent means unchanged; a scale factor of 1.0 is not the same as 'not set', because the first says the controller considered it and the second says nothing.",
    "additionalProperties": false,
    "properties": {
-    "insulinNeedsScaleFactor": {"type": "number", "exclusiveMinimum": 0, "description": "Scales overall insulin needs. Loop's override multiplier; Trio's percentage."},
-    "basalScaleFactor": {"type": "number", "exclusiveMinimum": 0, "description": "Scales basal only. AAPS profile-switch percentage, which is NOT the same quantity as insulinNeedsScaleFactor and must not be merged into it."},
+    "insulinNeedsScaleFactor": {"type": "number", "exclusiveMinimum": 0, "description": "Scales overall insulin needs: basal by the factor, ISF and carb ratio by its inverse. Loop's override multiplier; Trio's percentage; the AndroidAPS profile-switch percentage / 100 (MAP-AAPS-PROFILESWITCH)."},
+    "basalScaleFactor": {"type": "number", "exclusiveMinimum": 0, "description": "Scales basal only, leaving ISF and carb ratio unchanged, as a Trio override does when its isf and cr flags are off. The AndroidAPS profile-switch percentage is not this: it scales all three and maps to insulinNeedsScaleFactor."},
     "sensitivityScaleFactor": {"type": "number", "exclusiveMinimum": 0},
     "carbRatioScaleFactor": {"type": "number", "exclusiveMinimum": 0},
     "targetRange": {

@@ -1,6 +1,6 @@
 # Temporary effects, privacy-preserving projection, and which version this is
 
-*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current as analysis; not adopted as a decision.** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). **Corrected in place 2026-10-09** to distinct-document counts (§2.1), and against source ([intent and workflow across the landscape](./nightscout-intent-workflow-landscape-2026-10-09.md) §11): the AAPS `percentage` semantics (§2.2, §3.3, §6), the Trio document count and the meaning of its `notes` (TL;DR, §2.2, §3.3), and the Trio recoverability question (§6).
+*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current as analysis; not adopted as a decision.** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). **Corrected in place 2026-10-09** to distinct-document counts (§2.1), and against source ([intent and workflow across the landscape](./nightscout-intent-workflow-landscape-2026-10-09.md) §11): the AAPS `percentage` semantics (§2.2, §3.3, §6), the Trio document count and the meaning of its `notes` (TL;DR, §2.2, §3.3), and the Trio recoverability question (§6). The `TherapyEffect` model is carried, as a proposal, in the [state and intent specification §5](spec/state-intent.md#5-effect-and-motivation-proposed).
 
 Date: 2026-09-11. Companion to
 [the hub-and-spoke sync design](./nightscout-hub-sync-architecture-2026-09-11.md).

@@ -43,7 +43,7 @@ and the write contract's U1 and U6.
 An instance id is never derived from a device name, model, serial number or the free-text
 `devicestatus.device`. A hub cannot check that an id is random; the contract states it. Bindings
 are to a subject, never to a token. These are specified in the
-[hub-sync design §3.5–§3.6](../nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances).
+[registration specification §7–§8](registration.md#7-definitions).
 
 ## 3. Match order per collection
 
@@ -98,12 +98,15 @@ uses today's v1 by-`_id` routes needs a UUID (§6).
 | `ID-FORMAT-DECISION` | adopt C1–C7? | §4 is proposed; I6 holds either way |
 | `ID-CLIENT-OID-DECISION` | may a client create its own ObjectId as `_id`; when `identifier` and `_id` match different records, which wins? | I2 keeps a client 24-hex `_id`. The [Loop reply's simple contract](../upstream-asks-loop-identifier/README.md#the-simple-contract) proposes that `_id` wins, which differs from I5's identifier-first order and from v1 treatments today |
 | `ID-V3-IMMUTABLE-DECISION` | on an `identifier` match, may `date`, `device` or `eventType` change? | API v3 refuses it (400, reproduced by `LOOP-ID-V3-IMMUTABLE`); v1 does not |
-| hub-sync §3.7 choice 6 | is `identifier` null in the reply when the client sent none and the path assigns none? | I4 states null, pending confirmation |
-| hub-sync §3.7 choice 7 | does a typed re-send match across instances of one product? | I7 states yes, pending confirmation |
+| `ID-ABSENT-DECISION` | a write with no `identifier`: keep the time-key fallback, deprecate it, or require `identifier`? | today v1 entries and treatments fall back to a time key, API v3 to its fallback fields; v1 device status has no key |
+| `ID-DELETE-REUSE-DECISION` | after a delete, does a re-send of the same `identifier` resurrect, get refused, or create new? | API v3 resurrects a soft-deleted record on POST (measured 2026-10-18, [record identity reference](../../../10-domain/record-identity-reference.md)) |
+| `ID-SCOPE-DECISION` | is `identifier` unique per collection, across collections, and per tenant? | per collection today (each collection is its own MongoDB collection and index); the rules above do not say |
+| D20 choice 6 ([text](../nightscout-hub-sync-architecture-2026-09-11.md#37-version-scoped-quirks-and-the-two-ids)) | is `identifier` null in the reply when the client sent none and the path assigns none? | I4 states null, pending confirmation |
+| D20 choice 7 | does a typed re-send match across instances of one product? | I7 states yes, pending confirmation |
 
 ## 6. Today, in cgm-remote-monitor
 
-Read-derived unless marked, at `official/dev` `fade2299` except where another revision is named.
+Read-derived unless marked, at `official/dev` `fade2299` except where another revision is named. Measured per collection and path at 15.0.8 and `fade2299` in the [record identity reference](../../../10-domain/record-identity-reference.md) (2026-10-18).
 
 - **API v1 treatments** match a re-send on `identifier`, and drop a client `_id` when `identifier`
   is present (`lib/server/treatments.js:356-362` at 15.0.8).

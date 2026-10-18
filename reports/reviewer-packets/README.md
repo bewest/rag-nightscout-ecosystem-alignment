@@ -27,8 +27,11 @@ repository.
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`BFQ-164`](bfq-164.md) | &mdash; | `needs-decision` | BF-164 - writes outside API v3 never reach the v3 storage socket |
 | [`DEPENDABOT-CONFIG`](dependabot-config.md) | &mdash; | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev |
+| [`ID-ABSENT-DECISION`](id-absent-decision.md) | &mdash; | `needs-decision` | Decide: a write that carries no identifier (and no _id) - keep the time-key fallback, deprecate it, or require identifier? |
 | [`ID-CLIENT-OID-DECISION`](id-client-oid-decision.md) | &mdash; | `needs-decision` | Decide: may a client set _id (an ObjectId it creates), and which field wins when identifier and _id match different records? |
+| [`ID-DELETE-REUSE-DECISION`](id-delete-reuse-decision.md) | &mdash; | `needs-decision` | Decide: after a delete, what does a re-send of the same identifier (or _id) do - resurrect, refuse, or create new? |
 | [`ID-FORMAT-DECISION`](id-format-decision.md) | &mdash; | `needs-decision` | Decide: the client identifier's format (opaque string with limits; UUID not required) |
+| [`ID-SCOPE-DECISION`](id-scope-decision.md) | &mdash; | `needs-decision` | Decide: is identifier unique per collection, across collections, and per tenant under TENANCY_MODE=multi? |
 | [`ID-V3-IMMUTABLE-DECISION`](id-v3-immutable-decision.md) | &mdash; | `needs-decision` | Decide: on an identifier match, may date, device or eventType change? |
 | [`P0-C-REMEDIATE`](p0-c-remediate.md) | &mdash; | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling |
 | [`T30-AUTH`](t30-auth-main.md) | &mdash; | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split |

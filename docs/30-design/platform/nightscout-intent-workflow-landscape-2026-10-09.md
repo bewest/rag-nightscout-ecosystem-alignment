@@ -4,7 +4,7 @@
 **measured**. Sources and commits are in §1. Current decisions: [execution plan
 §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
 **Corrected in place 2026-10-12:** §5 is measured on both hubs (TL;DR and §12 follow it); the §10 rows for the hub-sync design and `specs/sync/registrations/` record what the
-registrations now declare and what remains; the registrations row also records the D18 addendum grammar (`SCHEMA-REG-EXT`, 2026-10-12). **Also 2026-10-18:** §2 records the maintainer's decision on agent initiators (P5).
+registrations now declare and what remains; the registrations row also records the D18 addendum grammar (`SCHEMA-REG-EXT`, 2026-10-12). **Also 2026-10-18:** §2 records the maintainer's decision on agent initiators (P5). The rules this evidence supports are maintained in the [state and intent specification](spec/state-intent.md).
 
 **The question.** Nightscout's API v1 and v3 manage *entities*: create, read, update and delete
 documents in `treatments`, `devicestatus`, `profile`. AID controllers increasingly manage
