@@ -16119,6 +16119,11 @@ items:
           constraints, leaves an STPA type of a control action unconsidered,
           is a gap the specification's open items do not name, or when the
           page's rows or counts differ from the file.
+      - run: python3 -m tools.nsschema.stpa_tables --check
+        kind: static
+        describe: >
+          FAILS when a table in control-loops §4 differs from
+          specs/sync/stpa/platform-control-loops.yaml.
     blocks_on: []
     evidence:
       - docs/30-design/platform/spec/control-loops.md

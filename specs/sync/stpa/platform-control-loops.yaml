@@ -40,6 +40,7 @@ loops:
     specs: [commands §2, commands §4, commands §5, commands §7]
     actions:
       CA-CMD-SEND: {by: sender, to: hub, text: send a command for a channel}
+      CA-CMD-CANCEL: {by: sender, to: hub, text: cancel a command that is no longer wanted}
       CA-CMD-DELIVER: {by: hub, to: controller, text: deliver a command by push or in a fetch}
       CA-CMD-ENACT: {by: controller, to: pump, text: enact a delivered command}
     feedback:
@@ -59,10 +60,11 @@ loops:
       CA-ROUTE-REBIND: {by: owner, to: hub, text: transfer or release a product, or transfer a role}
   sync:
     title: Records written, matched and read back
-    specs: [identity §1, sync-transport §2, sync-transport §4, records §2]
+    specs: [identity §1, identity §3, sync-transport §2, sync-transport §4, records §2, state-intent §2]
     actions:
       CA-SYNC-STORE: {by: hub, to: store, text: store, match or merge a written record}
       CA-SYNC-SERVE: {by: hub, to: reader, text: serve a history page or a socket event}
+      CA-SYNC-DOWNLOAD: {by: hub, to: controller, text: serve treatments other clients wrote to a controller that acts on them (S10 treatment-download)}
   state:
     title: What is active, as the hub reports it
     specs: [state-intent §6]
@@ -75,16 +77,22 @@ loops:
       CA-DEF-ACCEPT: {by: hub, to: store, text: accept a registration, definition or element}
   authority:
     title: Credentials, permissions and delegation
-    specs: [authority §2, authority §3, authority §7]
+    specs: [authority §2, authority §3, authority §4, authority §7]
     actions:
       CA-AUTH-GRANT: {by: owner, to: hub, text: grant a credential or permission}
+      CA-OWNER-ADMIN: {by: owner, to: hub, text: block, retire, free namespaces or pin a version}
+      CA-OP-CONFIG: {by: operator, to: hub, text: set the hub's limits and tenancy mode}
 
 # For each control action, every STPA type is either a UCA below or listed here with why it is
 # not hazardous on its own.
 considered:
   CA-CMD-SEND:
-    not-provided: Not sending is the sender's decision; a valid command the hub refuses is CA-CMD-DELIVER not provided.
+    not-provided: Not sending is the sender's decision; a command the hub refuses at routing is recorded not-routed and answered (CM1).
     duration: A command is one request; how long its effect lasts is in its payload, which the controller reads and the hub does not (CM5).
+  CA-CMD-CANCEL:
+    provided: No cancel is specified; once one is, a cancel after hand-over can only ask the controller (UCA-CMD-015).
+    timing: As provided.
+    duration: A cancel is one event.
   CA-CMD-DELIVER:
     duration: Delivery is one event; a command delivered more than once is under provided.
   CA-CMD-ENACT:
@@ -102,7 +110,6 @@ considered:
     duration: An evaluation is one event.
   CA-ROUTE-GRANT:
     timing: Grants happen at renewal; a late grant is the lapse case under provided.
-    duration: A role lasts as long as its holder's lease (registration §8); a role kept too long is UCA-ROUTE-005.
   CA-ROUTE-REBIND:
     not-provided: A rebind not made leaves routing as it was, which the owner's listing shows.
     timing: A rebind takes effect at once (authority §6).
@@ -111,8 +118,9 @@ considered:
     not-provided: A write the hub does not store is answered with an error, and the client's re-send is safe because it matches (I5).
     timing: A store's time is the server's (T3) and a record's own time is its own field (I3), both covered under provided.
     duration: A store is one event.
-  CA-SYNC-SERVE:
-    duration: A page or an event is one event.
+  CA-SYNC-DOWNLOAD:
+    not-provided: An entry not downloaded is not acted on; the person can enter it on the controller.
+    duration: A download is one event; what the entry starts lasts as the controller decides.
   CA-DEF-ACCEPT:
     not-provided: A refused element is written as its carrier and stays readable (registration §6).
     timing: Acceptance is at submission; a stored record keeps its definition (T13).
@@ -123,7 +131,15 @@ considered:
     absent: A kind whose records cannot be read is reported unreadable, not shown as having nothing active (A11).
   CA-AUTH-GRANT:
     not-provided: A permission not granted refuses the request, which the requester sees.
-    timing: A grant takes effect when made.
+    timing: A grant takes effect when made; revocation reaching what is already open is UCA-SYNC-SERVE-005.
+  CA-OWNER-ADMIN:
+    not-provided: An action not taken leaves the registration as it was, which the owner's listing shows.
+    timing: Each action takes effect at once (authority §4).
+    duration: A block or retire lasts until the owner reverses it, which the listing shows.
+  CA-OP-CONFIG:
+    not-provided: Without a setting the hub uses its default.
+    timing: A setting applies to requests after it.
+    duration: A setting lasts until changed.
 
 ucas:
   # --- command ---
@@ -260,7 +276,7 @@ ucas:
   - id: FB-CMD-002
     action: FB-CMD-STATE
     type: incorrect
-    text: A command reads succeeded because something other than its destination reported it.
+    text: A command reads succeeded because a subject other than the destination's bound subject reported it.
     hazards: [HAZ-3]
     severity: S3
     constraints: [CM7]
@@ -278,12 +294,33 @@ ucas:
   - id: FB-CMD-004
     action: FB-CMD-STATE
     type: absent
-    text: The sender learns nothing after the hub's reply, as on today's Loop route, where a 200 means only that the push service accepted the push.
+    text: The sender learns nothing after the hub accepts a command, with no record of it and no outcome.
     hazards: [HAZ-3, HAZ-5]
     severity: S3
     constraints: [CM1, CM7]
     status: covered
     verification: [commands/report-from-destination-accepted, commands/route-no-holder]
+    note: Today's Loop route is outside these rules (commands §8); there a 200 means only that the push service accepted the push.
+
+  - id: UCA-CMD-014
+    action: CA-CMD-DELIVER
+    type: provided
+    text: A process other than the destination that holds its credential, such as another app sharing API_SECRET under single, fetches the command, which moves it to fetched and out of the controller's next fetch, or reports its outcome.
+    hazards: [HAZ-2, HAZ-3]
+    severity: S3
+    constraints: [CM7, CM18]
+    status: gap
+    open: commands §9
+    note: CM7 and CM18 check the subject; under single every holder of the secret is one subject.
+  - id: UCA-CMD-015
+    action: CA-CMD-CANCEL
+    type: not-provided
+    text: A sender cannot cancel a pending command after the reason for it went away, such as a meal not eaten.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [CM3]
+    status: gap
+    open: commands §9
 
   # --- proposal ---
   - id: UCA-PROP-001
@@ -334,7 +371,7 @@ ucas:
   - id: UCA-PROP-006
     action: CA-PROP-APPROVE
     type: provided
-    text: An approval is given after the controller's reported state changed from the one the proposal was based on.
+    text: An approval is given after the controller's reported intents changed from the ones the proposal was based on.
     hazards: [HAZ-1]
     severity: S3
     constraints: [CM15]
@@ -387,6 +424,26 @@ ucas:
     constraints: [CM16]
     status: covered
     verification: [commands/evaluation-does-not-change-proposal, commands/evaluate-without-read]
+
+  - id: UCA-PROP-012
+    action: CA-PROP-APPROVE
+    type: provided
+    text: A dose proposal is approved after the person dosed locally, because the state version covers intents and not doses or carbs.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [A12, CM15]
+    status: gap
+    open: commands §9
+  - id: UCA-PROP-013
+    action: CA-PROP-APPROVE
+    type: provided
+    text: Two approvers approve one proposal and two commands are created.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [CM13]
+    status: covered
+    verification: [commands/approve-approved-proposal]
+    note: The case shows a second approval refused; atomicity under concurrent approvals is open (commands §9).
 
   # --- routing ---
   - id: UCA-ROUTE-001
@@ -453,6 +510,16 @@ ucas:
     status: gap
     open: authority §9
 
+  - id: UCA-ROUTE-008
+    action: CA-ROUTE-GRANT
+    type: duration
+    text: A phone that no longer has the pump keeps the command sink until its lease lapses, and commands sent in that window go to it.
+    hazards: [HAZ-2]
+    severity: S2
+    constraints: [CM2, CM7, authority §4]
+    status: controller
+    evidence: A lease is minutes long, longer than moving a pump between phones takes. A command routed there is never re-routed (CM2); the controller on that phone cannot reach the pump and reports failed, which the sender sees (CM7); the owner can move the role at once with transfer-role (authority §4).
+
   # --- sync ---
   - id: UCA-SYNC-STORE-001
     action: CA-SYNC-STORE
@@ -479,9 +546,10 @@ ucas:
     text: A re-send after a delete brings back a dose record the person deleted as wrong.
     hazards: [HAZ-3]
     severity: S3
-    constraints: [I5]
+    constraints: [I5, identity §3]
     status: gap
     open: identity §5
+    note: Identity §3 stores a re-send of a soft-deleted record again; ID-DELETE-REUSE-DECISION is open.
   - id: UCA-SYNC-STORE-004
     action: CA-SYNC-STORE
     type: provided
@@ -503,7 +571,7 @@ ucas:
   - id: UCA-SYNC-STORE-006
     action: CA-SYNC-STORE
     type: provided
-    text: A record is timed by when the hub received it rather than its own time, so a backfilled dose lands at the wrong time.
+    text: A reader times a record by when the hub received it, the time in its `_id`, rather than its own time field.
     hazards: [HAZ-3]
     severity: S3
     constraints: [I3, A3]
@@ -523,7 +591,7 @@ ucas:
     type: not-provided
     text: A client that follows the socket alone misses writes that never reach it.
     hazards: [HAZ-3]
-    severity: S2
+    severity: S3
     constraints: [T10, T12]
     status: covered
     verification: [sync-transport/socket-resume-after-disconnect, sync-transport/write-without-event-not-lost]
@@ -531,10 +599,10 @@ ucas:
   - id: UCA-SYNC-SERVE-003
     action: CA-SYNC-SERVE
     type: provided
-    text: A history page or socket event includes records the credential may not read.
+    text: A history page includes records the credential may not read.
     hazards: [HAZ-4]
     severity: S3
-    constraints: [T5, T11]
+    constraints: [T5]
     status: covered
     verification: [sync-transport/unreadable-collection-omitted]
   - id: UCA-SYNC-SERVE-004
@@ -546,6 +614,62 @@ ucas:
     constraints: [CM5, CM10]
     status: controller
     evidence: A hub's picture lags the controller by its upload cycle. The controller is the only party that knows its current state and validates each command against it (D18); see UCA-CMD-010.
+
+  - id: UCA-SYNC-STORE-007
+    action: CA-SYNC-STORE
+    type: provided
+    text: Two distinct doses with the same created_at and eventType and no identifier are merged by the natural key, and one disappears from every reader's history.
+    hazards: [HAZ-3]
+    severity: S3
+    constraints: [identity §3, T2]
+    status: gap
+    open: identity §5
+    note: Identity §3 falls back to created_at and eventType for treatments without identity, and T2 keeps the socket's ±2 s similar-treatment match as an option; ID-ABSENT-DECISION is open.
+  - id: UCA-SYNC-SERVE-005
+    action: CA-SYNC-SERVE
+    type: duration
+    text: A socket subscription keeps receiving events after its credential is revoked or its permission narrowed.
+    hazards: [HAZ-4]
+    severity: S3
+    constraints: [T11, DR6]
+    status: gap
+    open: authority §9
+  - id: UCA-SYNC-SERVE-006
+    action: CA-SYNC-SERVE
+    type: provided
+    text: A socket event reaches a subscriber whose credential may not read the record.
+    hazards: [HAZ-4]
+    severity: S3
+    constraints: [T11]
+    status: uncased
+    open: sync-transport §8
+  - id: UCA-SYNC-DL-001
+    action: CA-SYNC-DOWNLOAD
+    type: provided
+    text: A controller acts on a carb or bolus entry another client wrote, with no expiry, no destination, no outcome and no record that it acted, so the entry works as an unrecorded command.
+    hazards: [HAZ-1, HAZ-5]
+    severity: S4
+    constraints: [S10]
+    status: gap
+    open: state-intent §8
+  - id: UCA-SYNC-DL-002
+    action: CA-SYNC-DOWNLOAD
+    type: timing
+    text: A controller acts on a downloaded entry long after it was written, such as after an outage.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [S10]
+    status: controller
+    evidence: Whether a controller acts on downloaded treatments, and any age limit, is its own acceptance policy (S10 acceptsFromHub); the hub serves records and does not know who acts on them.
+  - id: UCA-SYNC-DL-003
+    action: CA-SYNC-DOWNLOAD
+    type: provided
+    text: An entry is edited or deleted after a controller acted on it, so the record and what was enacted differ for every reader.
+    hazards: [HAZ-3]
+    severity: S3
+    constraints: [S10, A6]
+    status: gap
+    open: state-intent §8
 
   # --- state ---
   - id: FB-STATE-001
@@ -598,7 +722,7 @@ ucas:
     type: delayed
     text: The state version is unchanged although the controller has already changed its state, so an approval based on it passes.
     hazards: [HAZ-3, HAZ-1]
-    severity: S3
+    severity: S4
     constraints: [A12, CM15]
     status: controller
     evidence: CM15 checks the hub's record, as an etag does, and says it cannot show the controller's own state is unchanged; only the controller's validation can (D18). A controller check before approval is open (commands §9).
@@ -679,3 +803,22 @@ ucas:
     constraints: [DR1, DR4, DR5]
     status: gap
     open: authority §9
+  - id: UCA-AUTH-005
+    action: CA-OWNER-ADMIN
+    type: provided
+    text: The owner blocks or retires a product, and another product's instance takes its command sink on a shared channel, receiving commands senders meant for the blocked one.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [registration §9, authority §4]
+    status: gap
+    open: authority §9
+    note: Exclusivity counts live instances of active products only (registration §9).
+  - id: UCA-AUTH-006
+    action: CA-OP-CONFIG
+    type: provided
+    text: The operator sets commands.maxExpirySeconds so long that a command can be enacted hours after it was sent.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [CM3]
+    status: gap
+    open: commands §9

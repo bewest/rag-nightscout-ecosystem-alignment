@@ -1,0 +1,99 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §6. Times are seconds; expectations authored by hand.
+id: approve-approved-proposal
+title: An approved proposal cannot be approved again
+rules:
+- CM13
+- CM14
+description: 's-care approves p1, then s-care-2 approves it too: 409 proposal-closed, and one command exists.'
+control: approve-creates-command-with-proposal-payload
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+  i-agent:
+    tenant: A
+    subject: s-agent
+    product: AgentTool
+    definitionId: sha256:d-agent
+    sinks: {}
+    proposes:
+    - override
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-care-2:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+  s-agent:
+    tenant: A
+    permissions:
+    - api:proposals:create
+stateVersions:
+  A:
+    ControllerA:
+    - - 0
+      - v1
+calls:
+- at: 20
+  kind: propose
+  tenant: A
+  subject: s-agent
+  instance: i-agent
+  channel: override
+  payload:
+    action: start
+    preset: example
+  basedOn: v1
+  expiresAt: 100
+- at: 30
+  kind: approve
+  tenant: A
+  subject: s-care
+  proposal: p1
+  approves:
+    action: start
+    preset: example
+- at: 31
+  kind: approve
+  tenant: A
+  subject: s-care-2
+  proposal: p1
+  approves:
+    action: start
+    preset: example
+expected:
+  calls:
+  - status: 201
+    proposalId: p1
+  - status: 201
+    commandId: c1
+    state: pending
+  - status: 409
+    code: proposal-closed
+  proposals:
+    p1:
+      state: approved
+  commands:
+    c1:
+      state: pending
+      destination: i-ctl-a
+      proposalId: p1

@@ -12,7 +12,7 @@ import re
 import pytest
 import yaml
 
-from nsschema import corpus
+from nsschema import corpus, stpa_tables
 
 ROOT = corpus.repo_root()
 SPEC_DIR = ROOT / "docs" / "30-design" / "platform" / "spec"
@@ -25,7 +25,8 @@ FEEDBACK_TYPES = ("incorrect", "absent", "delayed")
 STATUSES = ("covered", "uncased", "controller", "gap")
 SEVERITIES = ("S1", "S2", "S3", "S4")
 
-SPECS = {p.stem: p.read_text() for p in SPEC_DIR.glob("*.md")}
+# The specifications the analysis cites; never the analysis page itself.
+SPECS = {p.stem: p.read_text() for p in SPEC_DIR.glob("*.md") if p.stem != "control-loops"}
 RULES = {m.group(1)
          for text in SPECS.values()
          for m in re.finditer(r"^\| \*?\*?([A-Z]{1,3}[0-9]+[a-z]?)\*?\*? \|", text, re.M)}
@@ -39,6 +40,7 @@ for loop in STPA["loops"].values():
         ACTIONS[fid] = FEEDBACK_TYPES
 
 ENTRIES = {u["id"]: u for u in STPA["ucas"]}
+FAMILIES = r"UCA-(?:CMD|PROP|ROUTE|SYNC-STORE|SYNC-SERVE|SYNC-DL|DEF|AUTH)|FB-(?:CMD|STATE)"
 
 
 def _heading(ref):
@@ -52,6 +54,15 @@ def _heading(ref):
 
 def _section(ref):
     return _heading(ref) is not None
+
+
+def _section_text(ref):
+    """The text of `<spec> §N`, from its heading to the next `## `."""
+    spec, n = ref.split(" §")
+    text = SPECS[spec]
+    start = re.search(r"^## %s\. " % n, text, re.M).start()
+    end = re.search(r"^## ", text[start + 3:], re.M)
+    return text[start:start + 3 + end.start()] if end else text[start:]
 
 
 def _constraint_exists(ref):
@@ -135,32 +146,30 @@ def test_verification_exists_and_is_about_the_rule(uid):
 
 
 def test_gaps_are_listed_in_the_open_items():
-    # A gap names an open item, and the open item names the entry, so a reader of the
+    # A gap names an open item, and that Open section names the entry, so a reader of the
     # specification finds it without the analysis.
     for uid, u in ENTRIES.items():
         if u["status"] in ("gap", "uncased"):
-            spec = u["open"].split()[0]
-            assert uid in SPECS[spec], (uid, spec)
+            assert re.search(r"\b%s\b" % re.escape(uid), _section_text(u["open"])), (uid, u["open"])
 
 
 def test_page_lists_exactly_the_entries():
     # The ecosystem's earlier UCA-BOLUS, UCA-CARB, UCA-REMOTE and UCA-SYNC ids may be cited too.
-    families = r"UCA-(?:CMD|PROP|ROUTE|SYNC-STORE|SYNC-SERVE|DEF|AUTH)|FB-(?:CMD|STATE)"
-    on_page = set(re.findall(r"\b((?:%s)-\d{3})\b" % families, PAGE))
+    on_page = set(re.findall(r"\b((?:%s)-\d{3})\b" % FAMILIES, PAGE))
     assert on_page == set(ENTRIES), (sorted(on_page - set(ENTRIES)), sorted(set(ENTRIES) - on_page))
 
 
-ROW = re.compile(r"^\| ((?:UCA|FB)-[A-Z-]+-\d{3}) \| ([a-z-]+) \| .* \| (S[1-4]) \| .* \| ([a-z]+)(?:: ([a-z-]+ §\d+))? \|$",
-                 re.M)
+def test_page_tables_are_generated():
+    # Every column of every row in §4 is the file's (python3 -m tools.nsschema.stpa_tables).
+    assert stpa_tables.render(PAGE, STPA) == PAGE
 
 
-def test_page_rows_match_the_file():
-    rows = {m.group(1): m.groups()[1:] for m in ROW.finditer(PAGE)}
-    assert set(rows) == set(ENTRIES)
-    for uid, (kind, severity, status, open_item) in rows.items():
-        u = ENTRIES[uid]
-        assert (kind, severity, status, open_item) == (u["type"], u["severity"], u["status"],
-                                                       u.get("open")), uid
+def test_references_in_reasons_and_notes_exist():
+    texts = [r for reasons in STPA["considered"].values() for r in reasons.values()]
+    texts += [u.get("note", "") + u.get("evidence", "") for u in STPA["ucas"]]
+    for text in texts:
+        for ref in re.findall(r"\b((?:%s)-\d{3})\b" % FAMILIES, text):
+            assert ref in ENTRIES, (ref, text)
 
 
 def test_status_counts_match_the_page():
@@ -170,3 +179,15 @@ def test_status_counts_match_the_page():
             "responsibility (D18), %d have a rule and no case, and %d are gaps"
             % (len(ENTRIES), counts["covered"], counts["controller"], counts["uncased"], counts["gap"]))
     assert want in line, line
+
+
+def test_findings_counts_match_the_file():
+    counts = {s: sum(1 for u in ENTRIES.values() if u["status"] == s) for s in STATUSES}
+    found = PAGE[PAGE.index("## 6. "):PAGE.index("## 7. ")]
+    assert re.search(r"^%d gaps, " % counts["gap"], found, re.M), counts
+    assert re.search(r"^%d rules have no case" % counts["uncased"], found, re.M), counts
+    assert re.search(r"^%d entries are the controller's" % counts["controller"], found, re.M), counts
+    for status in ("gap", "uncased", "controller"):
+        for uid, u in ENTRIES.items():
+            if u["status"] == status:
+                assert uid in found, uid

@@ -230,6 +230,19 @@ What in this table bears on the rules:
      instance that renewed under a new definition receives a payload approved under the old one.
    - **Proposal volume** (UCA-PROP-002). Nothing limits the open proposals one instance holds on
      a channel.
+   - **Doses since `basedOn`** (UCA-PROP-012). The state version covers active intents (A12), not
+     doses or carbs, so a dose proposal passes CM15 after the person has dosed locally.
+   - **A process holding the destination's credential** (UCA-CMD-014). CM7 and CM18 check the
+     subject, not the process: under `single` every holder of `API_SECRET` is one subject, so
+     another app can fetch a command, which moves it to `fetched` and out of the controller's
+     next fetch, or report its outcome.
+   - **Cancelling a command** (UCA-CMD-015). A sender cannot cancel a `pending` command whose
+     reason went away. Cancelling before hand-over is safe; after it, a cancel can only ask.
+   - **Approving at once** (UCA-PROP-013). CM13 lets only an `open` proposal change, and
+     `approve-approved-proposal` shows a second approval refused; that the change from `open` to
+     `approved` is atomic under concurrent approvals is not stated.
+   - **The operator's limits** (UCA-AUTH-006). `commands.maxExpirySeconds` bounds every expiry
+     (CM3) and has no bound of its own.
 
 ## 10. Conformance cases
 
@@ -239,7 +252,7 @@ which also checks on every case that nothing reaches another tenant, nothing is 
 at or after its expiry, nothing is pushed unbound under `multi`, and an approved command carries
 the payload hash its approval named (the case's `received` payload stands for what was delivered). CM20 has no case; CM17 has one, `sent-and-fetched-are-not-success`.
 
-114 cases.
+115 cases.
 
 <!-- BEGIN GENERATED: commands-cases (tools/nsschema/spec_cases.py) -->
 | case | shows | expected | control |
@@ -254,6 +267,7 @@ the payload hash its approval named (the case's `received` payload stands for wh
 | `commands/acknowledged-then-succeeded` | acknowledged may precede a final state | rules CM9 |  |
 | `commands/approve-after-proposal-expiry` | An approval after the proposal's expiry is refused | rules CM13 | `approve-creates-command-with-proposal-payload` |
 | `commands/approve-after-sink-passed-unnamed` | An approval after the sink passed to another instance is refused, even with no instanceId named | rules CM13 | `approve-before-sink-passes` |
+| `commands/approve-approved-proposal` | An approved proposal cannot be approved again | rules CM13, CM14 | `approve-creates-command-with-proposal-payload` |
 | `commands/approve-before-sink-lapses` | An approval while the recorded destination still holds the sink is accepted | rules CM13 |  |
 | `commands/approve-before-sink-passes` | An approval before the sink passes routes to the instance recorded at proposal | rules CM13 |  |
 | `commands/approve-by-other-subject` | A subject other than the proposer approves | rules CM14 |  |

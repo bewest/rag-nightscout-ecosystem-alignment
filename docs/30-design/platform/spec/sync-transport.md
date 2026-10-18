@@ -108,7 +108,8 @@ Nothing is retired. The capability document member that would say a hub serves T
    second process, or a writer that goes to the database directly, can produce equal or
    out-of-order values; T6 keeps equal values on one page, and `multi` (T8) orders by commit, but
    `single` with more than one writer is not covered.
-4. **BF-164** (T12).
+4. **BF-164** (T12). A socket event's permission check (T11) has no case (UCA-SYNC-SERVE-006 in
+   the [control-loop analysis](control-loops.md)).
 5. **The write step** (`WRITE-CONTRACT`, `WC-STEP-PATCH`, `ID-BATCH-RESULTS`) is blocked behind the
    storage seam refresh.
 6. **Not measured:** payload size; real request counts; `srvModified` order under several writers

@@ -171,6 +171,10 @@ trigger, or `other` with the controller's term.
 `EnactTrigger`, Trio `AdjustmentSource`, AndroidAPS `Sources`). A value outside the shared list is
 `{value: other, controllerTerm}`.
 
+**State version.** `sha256:` over a product's active intents at a time, as the hub recorded them.
+A proposal names the version it was based on, and an approval is refused when it changed. It
+covers intents, not doses or carbs. [State and intent A12](state-intent.md#61-rules).
+
 **Composition.** How overlapping intents combine. Recorded as the controller reports it
 (`reportedBy: controller`, `hubComputes: false`); the hub never computes it.
 
@@ -236,6 +240,7 @@ of its payload; only the destination reports the outcome, and `sent` or `fetched
 
 **Delegation, proposal.** A *delegation* would let a principal grant a caregiver, app or agent a
 scoped, expiring, revocable authority; it is not specified. A *proposal* records an intended
-change for approval without authority to execute it; an approval names the hash of one payload
+change for approval without authority to execute it; an *approval* by someone who may send the
+command turns it into one, and names the hash of one payload
 (proposed, [commands §6](commands.md#6-proposals-and-approvals-proposed)). What a delegation design must provide is in
 [configuration and delegation §5.4](../../tenancy/nightscout-configuration-and-delegation-2026-09-10.md#54-what-a-delegation-design-would-have-to-provide).

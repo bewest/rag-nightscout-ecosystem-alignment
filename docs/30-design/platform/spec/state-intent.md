@@ -204,6 +204,11 @@ careportal or nightguard temporary target for a controller that does not downloa
 - **Undeclared vocabularies** (§3): for `PROPOSAL-REG-CONTROLLERS` to confirm with each controller's
   authors.
 - **Effect and motivation** (§5): proposed, not adopted.
+- **Treatments a controller downloads and acts on** (S10 `treatment-download`), found by the
+  [control-loop analysis](control-loops.md): unlike a command, such an entry has no expiry, no
+  destination, no outcome and no record that a controller acted on it (UCA-SYNC-DL-001); an edit
+  or delete after the controller acted changes the record and not what was enacted
+  (UCA-SYNC-DL-003).
 - Not measured: anything about AndroidAPS from data (no AndroidAPS closed-loop site in the
   corpus); whether shipping AndroidAPS sites turn on the `NsClientAccept*` preferences; Trio's
   preset name join; the order in which a Trio override factor and a temporary target's
