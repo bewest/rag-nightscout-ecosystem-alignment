@@ -1,0 +1,32 @@
+# L3 · The control structure the platform specifications set up: who acts on what, and which
+# feedback each controller acts on. Source: docs/30-design/platform/spec/control-loops.md §3
+# (D18: the hub routes and records; the controller validates and enacts), commands CM1-CM25,
+# plans PN1-PN18. The hub has no control action on the pump; it is in the feedback path of every
+# controller above it. Drawn 2026-10-18; read from the specifications, which are proposed.
+title: "3·platform · The platform specifications' control structure"
+bands:
+  - {label: "People and agents", levels: [0]}
+  - {label: "Hub", levels: [1]}
+  - {label: "Phone", levels: [2]}
+  - {label: "Body", levels: [3]}
+nodes:
+  - {id: owner, label: "Site owner\n(grants, rebinds)", kind: human, level: 0, column: 0, icon: key-round}
+  - {id: sender, label: "Caregiver or person\n(commands, approvals,\nskips, ends)", kind: human, level: 0, column: 1, icon: users}
+  - {id: agent, label: "Agent instance\n(proposes, confirms)", kind: entity, level: 0, column: 2, icon: bot}
+  - {id: hub, label: "Hub: records,\nroutes, mirrors,\nderives state", kind: commons, level: 1, column: 1, icon: server}
+  - {id: ctl, label: "AID controller app\n(validates, enacts)", kind: org, level: 2, column: 1, icon: smartphone}
+  - {id: pump, label: "Insulin pump", kind: process, level: 2, column: 2, icon: syringe}
+  - {id: body, label: "Glucose-insulin\ndynamics (the body)", kind: process, level: 3, column: 1, icon: droplet}
+edges:
+  - {from: owner, to: hub, kind: control, label: "grants, rebind,\nblock, retire"}
+  - {from: sender, to: hub, kind: control, label: "command, approval,\ncancel, skip, end"}
+  - {from: agent, to: hub, kind: control, label: "proposal,\nconfirmation"}
+  - {from: hub, to: sender, kind: feedback, label: "outstanding list,\nstates, active state"}
+  - {from: hub, to: agent, kind: feedback, label: "history,\nstate version"}
+  - {from: hub, to: ctl, kind: control, label: "commands, plans\n(routed once)"}
+  - {from: sender, to: ctl, kind: control, label: "local actions\non the phone", route: corridor}
+  - {from: ctl, to: hub, kind: feedback, label: "records, outcomes,\nplan reports"}
+  - {from: ctl, to: pump, kind: control, label: "dose, suspend,\ntemporary basal"}
+  - {from: pump, to: ctl, kind: feedback, label: "delivery\nstatus"}
+  - {from: pump, to: body, kind: control, label: "insulin"}
+  - {from: body, to: ctl, kind: feedback, label: "glucose (CGM)"}

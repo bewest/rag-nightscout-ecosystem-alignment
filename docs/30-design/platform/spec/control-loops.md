@@ -54,39 +54,11 @@ Losses and hazards use `LOSS-` and `HAZ-` so that they do not read as the layers
 
 ## 3. The control structure
 
-Solid arrows are control actions; dotted arrows are feedback. Every box is a role, not a product.
+Solid arrows are control actions; dashed arrows are feedback. Every box is a role, not a product.
+The drawing's source is `tools/structure-diagrams/inputs/3-platform-control.yaml`, rendered with
+`tools/structure-diagrams/render.py`.
 
-```mermaid
-flowchart TB
-  operator["Hub operator"]
-  owner["Site owner"]
-  sender["Caregiver, or an app acting for the person"]
-  agent["Agent instance (proposer)"]
-  hub["Hub: records, routes, derives state"]
-  ctl["AID controller app"]
-  pump["Pump"]
-  body(("Person's body"))
-  cgm["CGM"]
-  person["Person with diabetes"]
-
-  operator -- "limits, tenancy mode" --> hub
-  owner -- "grants, rebind, transfer-role, block, retire" --> hub
-  hub -. "owner's listing" .-> owner
-  sender -- "command, approval, careportal entry" --> hub
-  agent -- "proposal" --> hub
-  hub -. "history, socket, active state, command state" .-> sender
-  hub -. "history, state version" .-> agent
-  hub -- "command delivery" --> ctl
-  hub -- "treatments other clients wrote" --> ctl
-  ctl -. "records, outcome reports, renewals" .-> hub
-  person -- "local actions" --> ctl
-  ctl -. "display" .-> person
-  ctl -- "dose, suspend, temporary basal" --> pump
-  pump -. "delivery status" .-> ctl
-  pump --> body
-  body --> cgm
-  cgm -. "glucose" .-> ctl
-```
+![3·platform: people and agents act on the hub through commands, approvals, proposals, cancels, skips, ends and grants; the hub routes commands and plans to the controller and feeds back the outstanding list, states and history; only the controller acts on the pump, and the person can also act on the phone](../../../00-overview/perspective/diagrams/3-platform-control.svg)
 
 Two observations follow from the drawing.
 
