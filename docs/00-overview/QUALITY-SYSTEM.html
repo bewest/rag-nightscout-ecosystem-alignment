@@ -2582,7 +2582,7 @@
 
 
 <h1 id="enough-quality-management-across-the-nightscout-ecosystem--proposal">Enough quality management across the Nightscout ecosystem — proposal<a class="headerlink" href="#enough-quality-management-across-the-nightscout-ecosystem--proposal" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-17 at <code>5e265927f</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>a70794c07</code>.</em></p>
 <p><em>For the maintainers of the ecosystem projects, the Nightscout Foundation board, the companies that
 host or build on Nightscout, and the community. </em><em>Recommendation</em><em> (part 3 of the overview;
 <a href="index.html">how the overview is organised</a>). </em><em>DRAFT PROPOSAL for discussion, requiring review by
@@ -2590,7 +2590,8 @@ the maintainers and by a quality-management professional before it is adopted.</
 vendor terms of use, device regulation or funding agreements, it also needs review by the
 foundation's counsel (§10). Written 2026-09-30 against this repository at <code>df5e2ade</code> and the
 <a href="../60-research/programme/stack-census-2026-09-30.html">stack census record</a> of the same day; simulator
-and app-rig facts are from the <a href="../60-research/programme/device-simulators-2026-10-17.html">device-simulators record of 2026-10-17</a>. Borrowing
+and app-rig facts are from the <a href="../60-research/programme/device-simulators-2026-10-17.html">device-simulators record of 2026-10-17</a>; the
+lesson on parity tests in §4.1 is from the <a href="../30-design/platform/algorithm-audition-2026-10-18.html">algorithm audition note of 2026-10-18</a> §3.5. Borrowing
 a practice from a quality standard is not a claim of conformity with it. Nothing here is decided.</em></p>
 <p><em>Author's interests: the author maintains cgm-remote-monitor, founded a company that hosts
 Nightscout commercially, and could be a candidate for paid work under the
@@ -2737,7 +2738,7 @@ each element, keep it only where it pays. Sources for every SQLite row:
 </tr>
 <tr>
 <td><strong>controller</strong> (Loop, Trio, AndroidAPS, iAPS, oref0)</td>
-<td>algorithm conformance vectors across implementations; driver test targets run in the app's CI; app runs with external device simulators in place of the built-in ones, uploading to a lab Nightscout that checks what arrived; validation on real AID rigs</td>
+<td>algorithm conformance vectors across implementations, with expected values from the original implementation or captured controller output; an end-to-end check that the code a parity suite tests is the code the app calls; driver test targets run in the app's CI; app runs with external device simulators in place of the built-in ones, uploading to a lab Nightscout that checks what arrived; validation on real AID rigs</td>
 <td><code>conformance/</code> vectors for oref0; Trio and AndroidAPS CI; LoopWorkspace's CircleCI, which runs six kits' test targets (G7SensorKit, OmnipodKit, MinimedKit, MedtrumKit, CGMBLEKit, RileyLinkBLEKit) at the commits it pins; LoopAlgorithm as a package; trio-test-harness (app builds from any PR driven on the iOS Simulator or a phone by a coding agent, with per-PR reports; built-in device simulators only)</td>
 <td>run the kits' own test targets in Trio's CI, as LoopWorkspace's already does</td>
 </tr>
@@ -2785,11 +2786,11 @@ user's need.</p>
 <tbody>
 <tr>
 <td>identity</td>
-<td>component, version, commit, and the digest of the artefact tested</td>
+<td>component, version, commit, the digest of the artefact tested, and how the run reached it: through the call path the product uses, or only through a test harness</td>
 </tr>
 <tr>
 <td>inputs</td>
-<td>the requirement IDs covered; the vector-corpus or fixture version; simulator scenarios; the configuration matrix (runtime, database, device, region)</td>
+<td>the requirement IDs covered; the vector-corpus or fixture version, and the source of its expected values; simulator scenarios; the configuration matrix (runtime, database, device, region)</td>
 </tr>
 <tr>
 <td>procedure</td>
@@ -2809,6 +2810,14 @@ user's need.</p>
 </tr>
 </tbody>
 </table>
+<p><strong>Tests that pass against code the product never calls.</strong> In one independent implementation of
+the oref and Loop algorithms, parity tests passed against matching code that the app did not run;
+a live comparison against a running controller exposed a 2.30 U/hr disagreement in one
+recommendation. The same implementation's exported vectors carried its own outputs as the expected
+values, so they could detect a change in it but not an error
+(<a href="../30-design/platform/algorithm-audition-2026-10-18.html#35-two-lessons">algorithm audition §3.5</a>).
+Two parts of the record answer this: the identity says whether the run reached the artefact through
+the product's own call path, and the inputs name where each expected value came from.</p>
 <p>The 15.0.9 records in this repository already carry most of these parts; the proposal is that every
 project can produce the same record with shared tooling. Rule 6 of the collaboration model applies:
 a record says what was checked, and says nothing about clinical safety or regulatory status.</p>
