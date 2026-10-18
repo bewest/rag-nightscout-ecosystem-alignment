@@ -5905,7 +5905,7 @@
 
 
 <h1 id="l2-registration-how-a-controller-declares-what-its-data-means-and-how-a-hub-accepts-it">L2 Registration: how a controller declares what its data means, and how a hub accepts it<a class="headerlink" href="#l2-registration-how-a-controller-declares-what-its-data-means-and-how-a-hub-accepts-it" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>13259e01d</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>ee49b07f5</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>8d2b93ed</code> (2026-10-18). Layer L2 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>; ids are defined in
 the <a href="identity.html">identity specification</a>. Status: specified, not implemented; the first hub implementation is <code>HUB-REG-CRM</code>.
@@ -6183,6 +6183,23 @@ is <code>&lt;submit.href&gt;/&lt;vendor&gt;/&lt;product&gt;</code>, each segment
    <code>maxRegistrationBytes</code> (413) or <code>maxExtensions</code> (<code>limit-exceeded</code>).</li>
 <li><strong>Each element</strong> (§5.3).</li>
 </ol>
+<pre class="mermaid"><code>flowchart LR
+  accTitle: Order of checks for a registration write
+  accDescr: A write is checked for authorisation first, then its preconditions, then the owner's block, then the registration as a whole, and only then element by element. The first check that fails answers, and nothing is stored for a failure before the elements; elements are accepted or refused one at a time.
+  w([PUT or DELETE of a registration]) --&gt; auth{permission and binding}
+  auth -- no --&gt; r403[403 not-authorised or not-registration-owner]
+  auth -- yes --&gt; pre{precondition sent and current}
+  pre -- none --&gt; r428[428]
+  pre -- stale --&gt; r412[412 with the current etag and state]
+  pre -- yes --&gt; block{blocked by the owner}
+  block -- yes --&gt; rb[403 blocked-by-owner]
+  block -- no --&gt; whole{registration as a whole valid}
+  whole -- no --&gt; r422[422 or 413, nothing stored]
+  whole -- yes --&gt; el[each element accepted or refused, §5.3]
+  classDef refuse fill:#fde2e2,stroke:#b42318,color:#1a1a1a
+  classDef ok fill:#e6f4ea,stroke:#3b7a4a,color:#1a1a1a
+  class r403,r428,r412,rb,r422 refuse
+  class el ok</code></pre>
 <h3 id="53-elements-and-their-results">5.3 Elements and their results<a class="headerlink" href="#53-elements-and-their-results" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -7900,6 +7917,8 @@ tools/nsschema/test_registration_quirks.py</code>.</p>
       <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
+  
+  <script src="https://unpkg.com/mermaid@11.17.2/dist/mermaid.min.js"></script>
   
 
   </body>

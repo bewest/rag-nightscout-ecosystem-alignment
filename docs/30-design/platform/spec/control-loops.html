@@ -5707,7 +5707,7 @@
 
 
 <h1 id="l2l5-control-loops-what-each-mechanism-controls-and-the-unsafe-control-actions-its-rules-prevent">L2–L5 Control loops: what each mechanism controls, and the unsafe control actions its rules prevent<a class="headerlink" href="#l2l5-control-loops-what-each-mechanism-controls-and-the-unsafe-control-actions-its-rules-prevent" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>13259e01d</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>c849615e2</code>.</em></p>
 <p><em>Contributor-facing. Living specification analysis, current at <code>main</code> <code>85c645c8</code> (2026-10-18).
 Covers layers L2–L5 of the <a href="../index.html">platform index</a>; terms are in the
 <a href="glossary.html">glossary</a>. Decisions: <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">D18 and D19</a>.
@@ -5820,36 +5820,10 @@ specification's open items.</p>
 </table>
 <p>Losses and hazards use <code>LOSS-</code> and <code>HAZ-</code> so that they do not read as the layers L0–L5.</p>
 <h2 id="3-the-control-structure">3. The control structure<a class="headerlink" href="#3-the-control-structure" title="Permanent link">&para;</a></h2>
-<p>Solid arrows are control actions; dotted arrows are feedback. Every box is a role, not a product.</p>
-<pre class="mermaid"><code>flowchart TB
-  operator["Hub operator"]
-  owner["Site owner"]
-  sender["Caregiver, or an app acting for the person"]
-  agent["Agent instance (proposer)"]
-  hub["Hub: records, routes, derives state"]
-  ctl["AID controller app"]
-  pump["Pump"]
-  body(("Person's body"))
-  cgm["CGM"]
-  person["Person with diabetes"]
-
-  operator -- "limits, tenancy mode" --&gt; hub
-  owner -- "grants, rebind, transfer-role, block, retire" --&gt; hub
-  hub -. "owner's listing" .-&gt; owner
-  sender -- "command, approval, careportal entry" --&gt; hub
-  agent -- "proposal" --&gt; hub
-  hub -. "history, socket, active state, command state" .-&gt; sender
-  hub -. "history, state version" .-&gt; agent
-  hub -- "command delivery" --&gt; ctl
-  hub -- "treatments other clients wrote" --&gt; ctl
-  ctl -. "records, outcome reports, renewals" .-&gt; hub
-  person -- "local actions" --&gt; ctl
-  ctl -. "display" .-&gt; person
-  ctl -- "dose, suspend, temporary basal" --&gt; pump
-  pump -. "delivery status" .-&gt; ctl
-  pump --&gt; body
-  body --&gt; cgm
-  cgm -. "glucose" .-&gt; ctl</code></pre>
+<p>Solid arrows are control actions; dashed arrows are feedback. Every box is a role, not a product.
+The drawing's source is <code>tools/structure-diagrams/inputs/3-platform-control.yaml</code>, rendered with
+<code>tools/structure-diagrams/render.py</code>.</p>
+<p><img alt="3·platform: people and agents act on the hub through commands, approvals, proposals, cancels, skips, ends and grants; the hub routes commands and plans to the controller and feeds back the outstanding list, states and history; only the controller acts on the pump, and the person can also act on the phone" src="../../../00-overview/perspective/diagrams/3-platform-control.svg" /></p>
 <p>Two observations follow from the drawing.</p>
 <ul>
 <li><strong>The hub has no control action on the pump.</strong> D18 puts every dosing decision in the controller,

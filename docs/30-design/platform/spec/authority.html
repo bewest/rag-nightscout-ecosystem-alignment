@@ -5585,7 +5585,7 @@
 
 
 <h1 id="l5-authority-who-may-register-write-own-a-site-receive-a-command-and-act-for-someone-else">L5 Authority: who may register, write, own a site, receive a command, and act for someone else<a class="headerlink" href="#l5-authority-who-may-register-write-own-a-site-receive-a-command-and-act-for-someone-else" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>13259e01d</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>ee49b07f5</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>1b69c295</code> (2026-10-18). Layer L5 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. Decisions:
 <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">D7 and D13–D17</a>
@@ -5666,6 +5666,10 @@ specified; §7 states delegation's requirements, and its design is open.</p>
 </tr>
 </tbody>
 </table>
+<p>Under <code>multi</code>, who reaches the hub through which listener, with which credential (dashed: adopted
+in principle and gated, D17 row 2). The drawing's source is
+<code>tools/structure-diagrams/inputs/3-listeners.yaml</code>.</p>
+<p><img alt="3·listeners: controllers and uploaders reach ns-api and ns-realtime with a native per-tenant credential; caregivers, viewers and the tenant owner sign in through the cohort's Kratos pool, which is gated, and get a per-tenant token for the data listener or an owner's session for ns-tenant-admin; the operator reaches ns-admin, which tenants cannot reach; both tenant listeners act on one tenant's records under RLS" src="../../../00-overview/perspective/diagrams/3-listeners.svg" /></p>
 <h2 id="3-binding-and-credential-kind">3. Binding and credential kind<a class="headerlink" href="#3-binding-and-credential-kind" title="Permanent link">&para;</a></h2>
 <p>A create or update binds the registration to the credential that wrote it: <code>boundTo: {kind:
 subject, subject}</code>, never the token, so a token rotated on the same subject changes nothing; or

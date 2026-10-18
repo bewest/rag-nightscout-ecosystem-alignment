@@ -5116,8 +5116,8 @@
 </div>
 <p><em>What this is: a journey map (contributor-facing). Read after the
 <a href="command-queue-and-planning-2026-10-18.html">command queue and planning note</a>, whose use cases and §5
-decisions it walks step by step; it leads to the <a href="spec/commands.html">commands specification</a>, where
-the needs it finds would be written.</em> <strong>Snapshot — describes 2026-10-18. Status: proposed.</strong></p>
+decisions it walks step by step; the needs it finds are specified in <a href="spec/commands.html">commands</a> (CM1–CM25) and
+<a href="spec/plans.html">plans</a> (PN1–PN18).</em> <strong>Snapshot — describes 2026-10-18. Status: proposed.</strong></p>
 <p>Each journey follows the format of the <a href="../../60-research/remedial/journey-map-15.0.9.html">15.0.9 journey map</a>:
 who is involved, then numbered steps. Each step names its level (policy, confirmation, moment or
 algorithm, as in the note's §3), then <strong>Do</strong> (what happens), <strong>Working</strong> (what correct looks like),
@@ -5129,8 +5129,10 @@ open item or decision it needs). Claims about a named controller are read-derive
 <code>commandId</code> at most once; plans run on the controller and the hub keeps a read-only mirror; a plan or
 proposal may require named reviews before approval; the person may withdraw or cancel any item on
 their own therapy; followers read the queue; an adjustment is a new proposal, and an approval may
-accept a plan in parts, naming the elements it accepts. The dose check stays open: each journey
-shows which choice serves it.</p>
+accept a plan in parts, naming the elements it accepts. Two dose checks apply: the hub refuses a
+proposal's approval when a dose or carb record reached it after the proposal was made
+(<a href="spec/commands.html#6-proposals-and-approvals-proposed">CM22</a>), and the controller refuses at enactment by its own rule
+(<a href="spec/commands.html#5-outcomes-proposed">CM23</a>); Part 3 shows which serves each journey.</p>
 <h2 id="words-used-here">Words used here<a class="headerlink" href="#words-used-here" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5170,11 +5172,11 @@ shows which choice serves it.</p>
 </tr>
 <tr>
 <td><strong>hub refuses</strong></td>
-<td>the open dose-check choice in which the hub refuses an approval when doses or carbs arrived after the proposal's <code>basedOn</code></td>
+<td>the hub refuses a proposal's approval when a dose or carb record reached it after the proposal was made (CM22); it does not apply to a plan (PN7)</td>
 </tr>
 <tr>
 <td><strong>controller decides</strong></td>
-<td>the other choice: the hub shows doses and carbs since in the outstanding list, and only the controller refuses</td>
+<td>the controller refuses a dose or carbs at enactment by its own rule (CM23), at each plan occurrence too (PN10); the outstanding list shows doses and carbs since (CM24)</td>
 </tr>
 </tbody>
 </table>
@@ -5195,7 +5197,7 @@ shows which choice serves it.</p>
 </tr>
 <tr>
 <td>evaluator or reviewer</td>
-<td>attaches evidence (CM16); a <em>required</em> reviewer must do so before approval (not specified)</td>
+<td>attaches evidence (CM16); a <em>required</em> reviewer must do so before a plan's approval (PN6)</td>
 <td>a risk-check agent, a second agent, a caregiver, a clinician</td>
 </tr>
 <tr>
@@ -5205,7 +5207,7 @@ shows which choice serves it.</p>
 </tr>
 <tr>
 <td>the person</td>
-<td>may approve, adjust (by a new proposal), withdraw or cancel any item on their own therapy</td>
+<td>may approve, adjust (by a new proposal), withdraw or cancel any item on their own therapy (CM14, CM25), skip an occurrence or end a plan (PN14, PN16)</td>
 <td>the person with diabetes, or a parent for a young child</td>
 </tr>
 <tr>
@@ -5215,7 +5217,7 @@ shows which choice serves it.</p>
 </tr>
 <tr>
 <td>follower</td>
-<td>reads the queue, the mirror and outcomes; never acts</td>
+<td>reads the queue, the mirror and outcomes (CM24, PN11); never acts</td>
 <td>a partner, a school nurse with read access, a watch app</td>
 </tr>
 </tbody>
@@ -5243,6 +5245,28 @@ shows which choice serves it.</p>
 </tr>
 </tbody>
 </table>
+<pre class="mermaid"><code>sequenceDiagram
+  accTitle: PL1, a weekday lunch planned from the calendar and location
+  accDescr: A planning agent drafts a plan with an eating-soon element and a meal element. A risk-check agent and a caregiver review it. The person accepts the eating-soon element and declines the meal, preferring to bolus at the table. The controller holds the plan and the hub mirrors it. Each morning the agent confirms the day from the calendar and location; on a day the meeting runs over the person skips it; otherwise the controller starts eating soon after its own checks and reports it.
+  participant G as Planning agent
+  participant R as Reviewers
+  participant P as Person
+  participant H as Hub (mirror)
+  participant C as Controller
+  G-&gt;&gt;H: plan: eating soon + meal, weekdays, end date (PL1.1)
+  R-&gt;&gt;H: risk check, caregiver review (PL1.2)
+  P-&gt;&gt;H: accept eating soon, decline meal (PL1.3)
+  H-&gt;&gt;C: the accepted plan (PL1.4)
+  C-&gt;&gt;H: holds it, mirror active
+  G-&gt;&gt;H: morning: lunch on the calendar, usual place (PL1.5)
+  H-&gt;&gt;C: confirmation for today
+  alt meeting runs over
+    P-&gt;&gt;H: skip today (PL1.6)
+    H-&gt;&gt;C: skip, confirmation cancelled
+  else lunch happens
+    Note over C: own checks (PL1.7)
+    C-&gt;&gt;H: eating soon ran
+  end</code></pre>
 <p><strong>PL1.1 · policy · The agent drafts the plan.</strong>
 - <strong>Do:</strong> the agent sees the usual lunch at the usual time and place over past weeks and proposes a
   plan with two elements: an eating-soon target before lunch, and the usual lunch carbs with their
@@ -5251,18 +5275,23 @@ shows which choice serves it.</p>
   proposing agent and its expiry, and an evaluation saying in words why (no calendar entries).
 - <strong>Watch for:</strong> calendar titles or places in the proposal or evaluation; a plan with no end date.
 - <strong>Contributor:</strong> CM11, CM12 (<code>propose-with-permission-and-role</code>, <code>propose-without-role</code>), CM16,
-  <a href="spec/authority.html#7-delegation-not-decided">authority DR7</a>; UCA-PROP-001, UCA-PROP-004. Not
-  specified: the plan object and its element grammar (commands §9 item 3); a plan's lifetime
-  versus CM11's <code>expiresAt</code>, which CM3's <code>commands.maxExpirySeconds</code> bounds (§9 item 1).</p>
+  <a href="spec/authority.html#7-delegation-not-decided">authority DR7</a>; UCA-PROP-001, UCA-PROP-004. The
+  plan object: <a href="spec/plans.html#3-the-plan-object-proposed">plans PN1–PN4</a> (<code>plan-proposed-and-approved</code>,
+  <code>plan-ends-missing</code>); a plan proposal stays open up to <code>plans.maxProposalSeconds</code>, not CM3's
+  <code>commands.maxExpirySeconds</code> (PN1, <code>plan-proposal-open-past-command-expiry</code>). Not specified: the
+  trigger grammar (plans §9 item 3) and the grammar of an element's content (commands §9 item 3).</p>
 <p><strong>PL1.2 · policy · Required reviews.</strong>
 - <strong>Do:</strong> the plan names two required reviews: a risk-check agent and a caregiver. Each attaches an
   evaluation.
-- <strong>Working:</strong> approval is unavailable until both are attached; each review shows who made it.
+- <strong>Working:</strong> an approval before both are attached is refused 409 <code>review-required</code>; each review
+  shows who made it, and a review by the proposer does not count.
 - <strong>Watch for:</strong> an approval accepted with a required review missing; a review that changes the
   proposal's state.
 - <strong>Contributor:</strong> CM16 (<code>evaluation-does-not-change-proposal</code>, <code>evaluate-without-read</code>);
-  UCA-PROP-011. Not specified: required reviews (decision 3), a refusal for approving without them,
-  and who may name them.</p>
+  <a href="spec/plans.html#4-approving-a-plan-proposed">plans PN6</a> (<code>approve-review-missing</code>,
+  <code>approve-review-by-proposer-not-counted</code>): the proposer names them in <code>requiredReviews</code> (PN1),
+  and a plan accepting an R3 or higher element needs at least one; UCA-PROP-011. Not specified:
+  whether a second agent run by the same person or operator counts (plans §9 item 7).</p>
 <p><strong>PL1.3 · policy · The person accepts part of it.</strong>
 - <strong>Do:</strong> the person accepts the eating-soon element and declines the meal element, preferring to
   bolus at the table.
@@ -5270,39 +5299,47 @@ shows which choice serves it.</p>
   element is recorded as declined; one plan, with one element, reaches the controller.
 - <strong>Watch for:</strong> the declined element reaching the controller; an approval refused because the
   person's intents changed between drafting and approval (an unrelated override).
-- <strong>Contributor:</strong> CM13 (<code>approve-hash-mismatch</code>), CM14 (<code>self-approval-refused</code>), CM15
-  (<code>approve-state-changed</code>); UCA-PROP-003, UCA-PROP-006. Not specified: partial acceptance
-  (decision 4); CM13 makes one command whose payload is the proposal's byte for byte, so the
-  accepted subset needs its own hash rule. CM15 compares the whole intent state version, which a
-  plan drafted days earlier rarely matches: whether <code>basedOn</code> applies to a plan at all is open.</p>
+- <strong>Contributor:</strong> <a href="spec/plans.html#4-approving-a-plan-proposed">plans PN5, PN7, PN8</a> (<code>approve-one-of-two-elements</code>,
+  <code>approve-element-hash-mismatch</code>): the approval names each accepted element by id and hash, the
+  rest are recorded as declined, and the command carries the accepted elements under one hash;
+  PN6 and CM14 (<code>approve-own-agent-plan-refused</code>); a plan's <code>basedOn</code> is per channel, so a change
+  on a channel no accepted element acts on does not stale it (PN7,
+  <code>approve-plan-unrelated-channel-changed</code>, <code>approve-plan-state-changed</code>); UCA-PROP-003,
+  UCA-PROP-006. Not specified: approver signatures over the accepted elements (plans §9 item 5).</p>
 <p><strong>PL1.4 · policy · The controller takes the plan; the hub mirrors it.</strong>
-- <strong>Do:</strong> the approval becomes a command; the controller validates the plan against its own
-  limits, stores it, reports <code>succeeded</code>, and reports the plan for the mirror.
-- <strong>Working:</strong> the command reads <code>succeeded</code>; the mirror shows the active plan, its accepted
-  element and the next occurrence; a redelivered copy of the command is not stored twice.
+- <strong>Do:</strong> the approval becomes one command; the controller validates the plan against its own
+  limits, holds it and reports <code>succeeded</code>.
+- <strong>Working:</strong> the command reads <code>succeeded</code>; the mirror moves from <code>approved</code> to <code>active</code> on that
+  report and shows the accepted and declined elements; a redelivered copy of the command is not
+  stored twice.
 - <strong>Watch for:</strong> the mirror showing the proposal's content rather than what the controller holds;
   the plan stored again after a push and a fetch.
 - <strong>Contributor:</strong> CM1, CM7–CM10, CM18, CM21 (<code>enact-identical-payload-succeeds</code>,
-  <code>enact-hash-mismatch-refused</code>, <code>enact-push-then-fetch-once</code>); UCA-CMD-006, UCA-PROP-008. Not
-  specified: the mirror's carrier, which needs a controller-owned plan kind declared under S2 and
-  S9 and written by the instance's <code>source</code> role (<a href="spec/registration.html#9-channels-roles-and-provenance">registration §9</a>).</p>
+  <code>enact-hash-mismatch-refused</code>, <code>enact-push-then-fetch-once</code>); <a href="spec/plans.html#5-the-controller-holds-the-plan-the-hub-mirrors-it-proposed">plans PN8, PN9,
+  PN11</a> (<code>plan-held-active</code>,
+  <code>plan-refused-by-controller</code>, <code>plan-command-expires-at-ends</code>): the hub keeps the mirror and moves
+  the controller's states only on the controller's reports; UCA-CMD-006, UCA-PROP-008. Not
+  specified: the plan channel a product declares (plans §9 item 6).</p>
 <p><strong>PL1.5 · confirmation · The morning confirmation.</strong>
 - <strong>Do:</strong> at a set hour the agent reads today's calendar and location and confirms today's
   occurrence, with an evaluation of one line ("lunch on the calendar, at the usual place").
-- <strong>Working:</strong> a confirmation command for this occurrence, expiring before the occurrence, appears
-  in the queue; the mirror shows the occurrence as confirmed.
+- <strong>Working:</strong> a confirmation command for this occurrence, expiring at the occurrence's time,
+  appears in the queue; the mirror shows the occurrence as <code>confirmed</code>.
 - <strong>Watch for:</strong> a confirmation carrying anything outside the plan's bounds; a confirmation for a
-  plan that was cancelled; an agent able to send commands outside plans.
-- <strong>Contributor:</strong> CM3, CM4, CM12; UCA-AUTH-002, UCA-AUTH-003. Not specified: the confirmation as
-  an object, and whether an approved plan authorises its proposer to confirm without a further
-  approval (a grant: <a href="spec/authority.html#7-delegation-not-decided">authority §7</a>, commands §9 item 5).</p>
+  plan that was ended; an agent able to send commands outside plans.
+- <strong>Contributor:</strong> CM3, CM12; <a href="spec/plans.html#6-occurrences-proposed">plans PN12</a> (<code>confirm-by-proposer</code>,
+  <code>confirm-by-other-subject</code>, <code>confirm-too-early</code>, <code>confirm-after-role-lost</code>): the approved plan is
+  its proposer's grant to confirm from its proposing instance without a further approval, and a
+  confirmation never releases a dose by itself; UCA-AUTH-002, UCA-AUTH-003.</p>
 <p><strong>PL1.6 · moment · The lunch is cancelled.</strong>
 - <strong>Do:</strong> the meeting runs over; the person skips today's occurrence from the phone or the hub.
-- <strong>Working:</strong> the confirmation is <code>cancelled</code> if not handed over, or the controller drops the
-  occurrence and reports it; tomorrow's occurrence is untouched.
+- <strong>Working:</strong> the occurrence reads <code>skip-requested</code>; its confirmation is <code>cancelled</code> if not
+  handed over, and a cancel request if it was; the controller reports <code>skipped</code>, or <code>ran</code> if it had
+  already run; tomorrow's occurrence is untouched.
 - <strong>Watch for:</strong> a skip that ends the whole plan; a skip read as done before the controller reports.
-- <strong>Contributor:</strong> CM2, CM3; UCA-CMD-015, FB-CMD-001. Not specified: cancel (§9 item 7) and skipping
-  one occurrence of a held plan.</p>
+- <strong>Contributor:</strong> CM2, CM3; <a href="spec/plans.html#6-occurrences-proposed">plans PN14</a> (<code>skip-by-person</code>,
+  <code>skip-cancels-pending-confirmation</code>, <code>skip-then-controller-reports-skipped</code>), cancelling as
+  <a href="spec/commands.html#4-the-command-record-proposed">CM25</a> does; UCA-CMD-015, FB-CMD-001.</p>
 <p><strong>PL1.7 · algorithm · The occurrence runs.</strong>
 - <strong>Do:</strong> at the planned time the controller starts the eating-soon target, after its own checks
   of what was dosed and eaten since the confirmation.
@@ -5310,7 +5347,9 @@ shows which choice serves it.</p>
   naming the plan, and the mirror links the occurrence to its intent.
 - <strong>Watch for:</strong> the target shown as applied when only requested; the target started twice.
 - <strong>Contributor:</strong> S8, S10, A2, A3, A10, A12 (<code>active-state/requested-and-applied</code>); FB-STATE-004,
-  UCA-CMD-010. Not specified: the field linking an intent to its plan occurrence.</p>
+  UCA-CMD-010; PN10, PN17; the controller's <code>ran</code> report carries the identity of the intent that
+  shows it (PN11, <code>plan-report-occurrence-ran</code>). Not specified: a field on the intent naming its
+  plan and occurrence; no open item in commands §9 or plans §9 carries it.</p>
 <h2 id="pl2-exercise-from-the-calendar">PL2. Exercise from the calendar<a class="headerlink" href="#pl2-exercise-from-the-calendar" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5334,19 +5373,23 @@ shows which choice serves it.</p>
 </table>
 <p><strong>PL2.1 · policy · Plan proposed and approved whole.</strong> The agent proposes a temporary target
 before calendar entries marked as exercise, confirmed by location or activity; the person approves.
-<strong>Working:</strong> one active plan in the mirror; the week's occurrences <code>scheduled</code>, not <code>active</code> (S4).
-<strong>Contributor:</strong> CM11–CM15, S4. Precedent: AndroidAPS automation triggers on time, location and
-activity and can start a temporary target (note §3). Not specified: the plan object.</p>
+<strong>Working:</strong> one <code>active</code> plan in the mirror; a target the controller announces ahead reads
+<code>scheduled</code>, not <code>active</code> (S4). <strong>Contributor:</strong> CM11–CM14, PN1–PN5, PN7
+(<code>plan-proposed-and-approved</code>), S4. Precedent: AndroidAPS automation triggers on time, location
+and activity and can start a temporary target (note §3). Not specified: conditions on calendar,
+location or activity in the trigger (plans §9 item 3).</p>
 <p><strong>PL2.2 · confirmation · Confirmed by activity.</strong>
 - <strong>Do:</strong> the agent sees the person arrive at the gym and confirms the occurrence.
-- <strong>Working:</strong> the confirmation is within the plan's bounds and expires soon after the session's
-  start; the evaluation says "at the usual place", not where.
+- <strong>Working:</strong> the confirmation is within the plan's bounds and expires at the occurrence's time;
+  the evaluation says "at the usual place", not where.
 - <strong>Watch for:</strong> location data in the queue; a confirmation arriving after the session ended.
-- <strong>Contributor:</strong> CM3, CM16, DR7; UCA-CMD-003. Not specified: as PL1.5.</p>
+- <strong>Contributor:</strong> CM3, CM16, DR7; PN12 (<code>confirm-by-proposer</code>): a confirmation at or after the
+  occurrence's time is 409 <code>occurrence-passed</code>; UCA-CMD-003.</p>
 <p><strong>PL2.3 · confirmation · The session does not happen.</strong> The entry stays on the calendar; the
 person stays home; no confirmation is sent. <strong>Working:</strong> the occurrence ends unconfirmed and nothing
-is enacted. <strong>Watch for:</strong> an occurrence run without a required confirmation. <strong>Contributor:</strong> HAZ-1.
-Not specified: an unconfirmed occurrence's end reason (S5 has <code>expired</code> and <code>other</code>).</p>
+is enacted, and the controller reports the occurrence <code>missed</code>. <strong>Watch for:</strong> an occurrence run
+without a required confirmation. <strong>Contributor:</strong> HAZ-1; PN10, PN11. Not specified: how a plan
+states that an occurrence runs only when confirmed, part of the trigger grammar (plans §9 item 3).</p>
 <p><strong>PL2.4 · algorithm · Two intents at once.</strong>
 - <strong>Do:</strong> the target starts while an override the person set is active.
 - <strong>Working:</strong> the hub reports both, with their initiators; the controller's combined result, if
@@ -5379,28 +5422,36 @@ Not specified: an unconfirmed occurrence's end reason (S5 has <code>expired</cod
   lessons, referring to the preset by its controller id.
 - <strong>Working:</strong> the proposal records the destination's <code>definitionId</code>; the nurse can read it.
 - <strong>Watch for:</strong> a preset referred to by a name the controller can rename.
-- <strong>Contributor:</strong> CM11, S9 (<code>idField</code>, <code>referencedBy</code>); UCA-PROP-008. Not specified: follower read
-  of plans (decision 3; CM11 reads need <code>api:proposals:read</code> or <code>api:commands:create</code>).</p>
+- <strong>Contributor:</strong> CM11, PN1, S9 (<code>idField</code>, <code>referencedBy</code>); UCA-PROP-008. The nurse reads the
+  proposal with <code>api:proposals:read</code> (CM11), and the outstanding list and the mirror with any of
+  CM24's read permissions (PN11, <code>plan-read-with-proposals-read</code>, <code>plan-read-without-permission</code>).</p>
 <p><strong>PL3.2 · policy · The other parent approves.</strong>
-- <strong>Do:</strong> the second parent approves; the proposing parent could not.
+- <strong>Do:</strong> the second parent approves. The proposing parent may also approve a plan they made from
+  their own app (CM14); a plan with an R3 or higher element still needs a review from another
+  subject first (PN6).
 - <strong>Working:</strong> one approval, one command, the plan held by the controller and mirrored.
 - <strong>Watch for:</strong> two approvals at once creating two plans.
-- <strong>Contributor:</strong> CM13, CM14 (<code>self-approval-refused</code>, <code>approve-approved-proposal</code>);
-  UCA-PROP-009, UCA-PROP-013. Not specified: a caregiver approving a plan they made alone, which
-  CM14 refuses and a grant could allow (§9 item 5); atomic approval (§9 item 7).</p>
+- <strong>Contributor:</strong> CM13, CM14 (<code>approve-own-proposal-by-person</code>, <code>approve-approved-proposal</code>;
+  <code>self-approval-refused</code> applies to an agent's proposal), PN5, PN6 (<code>approve-r4-without-any-review</code>);
+  UCA-PROP-009, UCA-PROP-013. Not specified: that the change from <code>open</code> to <code>approved</code> is atomic
+  under concurrent approvals (commands §9 item 7).</p>
 <p><strong>PL3.3 · policy · Wednesday changes.</strong> A school trip moves Wednesday's lesson; the parent
 proposes an adjusted plan, a new proposal. <strong>Working:</strong> once approved it replaces the held plan, and
 the mirror shows which plan is current. <strong>Watch for:</strong> both plans running on Wednesday.
-<strong>Contributor:</strong> decision 4; S3 <code>supersedes</code>, A7. Not specified: how a new plan ends the one it
-adjusts (plan supersession, or cancel then approve).</p>
+<strong>Contributor:</strong> decision 4; S3 <code>supersedes</code>, A7; PN16 ends the held plan. Not specified: an
+adjusted plan replacing one the controller holds, and several plans active on one channel
+(<a href="spec/plans.html#9-open">plans §9 item 10</a>).</p>
 <p><strong>PL3.4 · algorithm · The controller was updated midweek.</strong>
 - <strong>Do:</strong> the app updates and renews under a new definition in which the preset changed.
 - <strong>Working:</strong> the controller refuses Thursday's occurrence with a reason the hub records, and the
   parents see it.
 - <strong>Watch for:</strong> the occurrence enacted under the changed preset with no notice.
-- <strong>Contributor:</strong> CM8, S12, <a href="spec/registration.html#8-instances">registration §8</a>; UCA-PROP-008.
-  Not specified: whether the hub checks <code>definitionId</code> at approval (§9 item 7) and how a held plan
-  reports an occurrence it refused.</p>
+- <strong>Contributor:</strong> CM8, S12, <a href="spec/registration.html#8-instances">registration §8</a>; UCA-PROP-008. A
+  plan approved after a renewal under a new definition is refused 409 <code>definition-changed</code> (PN7,
+  <code>approve-plan-definition-changed</code>); a renewal after the approval does not affect it
+  (<code>approve-plan-definition-unchanged</code>), so the controller's check at the occurrence catches this
+  (PN10) and it reports the occurrence <code>refused</code> with its reason (PN11). For a moment proposal the
+  definition at approval is open (<a href="spec/commands.html#9-open">commands §9 item 7</a>).</p>
 <h2 id="pl4-a-sensitivity-plan-for-illness-or-a-cycle-phase-with-an-end-date">PL4. A sensitivity plan for illness or a cycle phase, with an end date<a class="headerlink" href="#pl4-a-sensitivity-plan-for-illness-or-a-cycle-phase-with-an-end-date" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5429,18 +5480,24 @@ adjusts (plan supersession, or cancel then approve).</p>
   person's disclosure allows.
 - <strong>Watch for:</strong> the motivation (illness, cycle phase) shown to followers.
 - <strong>Contributor:</strong> CM11; <a href="spec/state-intent.html#5-effect-and-motivation-proposed">state and intent §5</a>
-  (<code>disclosure</code>, proposed, not adopted). Not specified: disclosure on queue items and the mirror.</p>
+  (<code>disclosure</code>, proposed, not adopted). Not specified: disclosure on queue items and the mirror,
+  which waits on <a href="spec/state-intent.html#8-open">state and intent §8</a> (effect and motivation).</p>
 <p><strong>PL4.2 · policy · A required human review, then approval.</strong> The reviewer attaches a review and
 the person approves; <strong>Working</strong> and <strong>Contributor</strong> as PL1.2–PL1.4.</p>
 <p><strong>PL4.3 · algorithm · Runs and ends.</strong> The controller applies the change each day and reports it.
-<strong>Working:</strong> active each day, ended <code>expired</code> after the end date. <strong>Contributor:</strong> S5, A4, A12.</p>
+<strong>Working:</strong> active each day; the controller reports the plan <code>ended</code> at <code>endsAt</code> and no
+occurrence runs after it. <strong>Contributor:</strong> S5, A4, A12, PN10, <a href="spec/plans.html#7-ending-a-plan-proposed">PN15</a>
+(<code>plan-ended-by-controller</code>).</p>
 <p><strong>PL4.4 · moment · The person ends it early.</strong>
-- <strong>Do:</strong> feeling better, the person cancels the plan.
-- <strong>Working:</strong> the controller ends the active change with <code>cancelled</code> and stops future occurrences;
-  the mirror shows the plan ended by the person.
+- <strong>Do:</strong> feeling better, the person ends the plan.
+- <strong>Working:</strong> the mirror reads <code>ending</code> and the plan's queued occurrence commands are cancelled;
+  the controller ends the active change with <code>cancelled</code>, stops future occurrences and reports the
+  plan <code>ended</code>.
 - <strong>Watch for:</strong> future occurrences still listed; the change still active on the pump.
-- <strong>Contributor:</strong> S5, A5. Not specified: the person's standing to cancel an item someone else
-  proposed (decision 3), and cancelling a held plan, which is a request to the controller.</p>
+- <strong>Contributor:</strong> S5, A5; <a href="spec/plans.html#7-ending-a-plan-proposed">plans PN16</a> (<code>end-plan-by-person</code>,
+  <code>end-cancels-pending-confirmation</code>, <code>end-unconfirmed-plan</code>): the person, the approver or the
+  proposer may end a plan, by an end command to the controller; CM14, CM25 for other items. Not
+  specified: who counts as the person (<a href="spec/commands.html#9-open">commands §9 item 7</a>).</p>
 <h2 id="pl5-a-clinicians-settings-proposal-for-the-next-visit">PL5. A clinician's settings proposal for the next visit<a class="headerlink" href="#pl5-a-clinicians-settings-proposal-for-the-next-visit" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5467,8 +5524,10 @@ the person approves; <strong>Working</strong> and <strong>Contributor</strong> a
 - <strong>Working:</strong> the proposal is readable to the person and the reviewers until the visit.
 - <strong>Watch for:</strong> the proposal expiring before the visit, or a hub limit raised so far that every
   command could live that long.
-- <strong>Contributor:</strong> CM11, CM3 (<code>proposal-expiry-too-long</code>); UCA-AUTH-006. Not specified: a proposal
-  expiry separate from the command's (§9 item 1), and a clinician's propose role (§9 item 1).</p>
+- <strong>Contributor:</strong> CM11, CM3 (<code>proposal-expiry-too-long</code>); <a href="spec/plans.html#3-the-plan-object-proposed">plans PN1</a>: a plan
+  proposal stays open up to <code>plans.maxProposalSeconds</code>, separate from the command limit
+  (<code>plan-proposal-open-past-command-expiry</code>, <code>plan-proposal-expiry-too-long</code>); UCA-AUTH-006. Not
+  specified: how a capability document marks a clinician's propose role (commands §9 item 1).</p>
 <p><strong>PL5.2 · policy · Reviews before the visit.</strong> A risk-check agent compares the proposal with
 recent history; a caregiver adds notes. <strong>Working:</strong> evaluations attached, none changing the
 proposal. <strong>Contributor:</strong> CM16; as PL1.2.</p>
@@ -5476,11 +5535,15 @@ proposal. <strong>Contributor:</strong> CM16; as PL1.2.</p>
 - <strong>Do:</strong> the person accepts one setting change and declines the others.
 - <strong>Working:</strong> the approval names the accepted element; the declined ones stay on record.
 - <strong>Watch for:</strong> a <code>state-changed</code> refusal because an override started that morning.
-- <strong>Contributor:</strong> CM13, CM15; as PL1.3.</p>
+- <strong>Contributor:</strong> PN5, PN7: a plan's <code>basedOn</code> is per channel, so the override stales it only
+  when an accepted element acts on the override's channel (<code>approve-plan-other-channel-override</code>);
+  as PL1.3.</p>
 <p><strong>PL5.4 · algorithm · The controller applies it</strong> under its own limits. <strong>Working:</strong> its next
 settings upload shows the change; the command reads <code>succeeded</code>. <strong>Watch for:</strong> the hub's stored
-settings changed before the controller reports. <strong>Contributor:</strong> CM7, S10, D18. Not specified: a
-settings change is not a span intent, and no controller declares accepting one as a command.</p>
+settings changed before the controller reports. <strong>Contributor:</strong> CM7, S10, D18; a settings element
+is R5 in the draft classes, so it cannot be standing (PN4) and its occurrence needs the person's
+own approval (PN13, <code>approve-r5-occurrence-by-person</code>). Not specified: a settings change is not a
+span intent, and no controller declares accepting one as a command.</p>
 <hr />
 <h1 id="part-2-moment-journeys">Part 2: moment journeys<a class="headerlink" href="#part-2-moment-journeys" title="Permanent link">&para;</a></h1>
 <h2 id="c1-a-correction-bolus-for-a-child-at-school">C1. A correction bolus for a child at school<a class="headerlink" href="#c1-a-correction-bolus-for-a-child-at-school" title="Permanent link">&para;</a></h2>
@@ -5506,10 +5569,11 @@ settings change is not a span intent, and no controller declares accepting one a
 </table>
 <p><strong>C1.1 · moment · The parent looks before sending.</strong>
 - <strong>Do:</strong> the parent reads glucose, insulin on board and the outstanding list.
-- <strong>Working:</strong> the list shows any command on the channel not yet final, and doses since the last
-  upload are marked as possibly missing.
+- <strong>Working:</strong> the list shows any open proposal and any command on the channel not yet final, with
+  its sender, and the dose and carb records that reached the hub since the earliest of them.
 - <strong>Watch for:</strong> insulin on board from before a dose the controller already gave.
-- <strong>Contributor:</strong> UCA-SYNC-SERVE-004, UCA-CMD-001. Not specified: list outstanding (§9 item 7).</p>
+- <strong>Contributor:</strong> <a href="spec/commands.html#4-the-command-record-proposed">CM24</a> (<code>outstanding-lists-open-items</code>,
+  <code>outstanding-excludes-final</code>); UCA-SYNC-SERVE-004, UCA-CMD-001.</p>
 <p><strong>C1.2 · moment · Sends a correction bolus</strong> with a <code>requestId</code> and a short expiry. <strong>Working:</strong>
 one command, <code>pending</code> then <code>sent</code> or <code>fetched</code>; a retried send returns the first.
 <strong>Contributor:</strong> CM1–CM5 (<code>request-id-same-payload-returns-first</code>, <code>expiry-required</code>).</p>
@@ -5519,11 +5583,12 @@ one command, <code>pending</code> then <code>sent</code> or <code>fetched</code>
   boluses since the command's timestamp reach a fifth of the request; Loop's remote bolus checks the
   amount and the one-time password and no doses since.
 - <strong>Working:</strong> one bolus; the second delivery is recognised by <code>commandId</code>.
-- <strong>Contributor:</strong> CM10, CM18, CM21 (<code>enact-push-then-fetch-once</code>, <code>enact-after-restart-once</code>);
-  UCA-CMD-006, UCA-CMD-010.</p>
+- <strong>Contributor:</strong> CM10, CM18, CM21 (<code>enact-push-then-fetch-once</code>, <code>enact-after-restart-once</code>),
+  CM23 (<code>enact-dose-refused-doses-since</code>); UCA-CMD-006, UCA-CMD-010.</p>
 <p><strong>C1.4 · moment · The outcome.</strong> The controller reports <code>succeeded</code>; later the pump fails the
 delivery. <strong>Working:</strong> the parent sees the failure. <strong>Watch for:</strong> <code>succeeded</code> standing after it.
-<strong>Contributor:</strong> CM9 (<code>report-after-final-refused</code>); UCA-CMD-013. Not specified: §9 item 4.</p>
+<strong>Contributor:</strong> CM9 (<code>report-after-final-refused</code>); UCA-CMD-013. Not specified: a further state
+after <code>succeeded</code> (<a href="spec/commands.html#9-open">commands §9 item 4</a>).</p>
 <h2 id="c2-a-meal-sent-then-not-eaten">C2. A meal sent, then not eaten<a class="headerlink" href="#c2-a-meal-sent-then-not-eaten" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5545,6 +5610,23 @@ delivery. <strong>Working:</strong> the parent sees the failure. <strong>Watch f
 </tr>
 </tbody>
 </table>
+<pre class="mermaid"><code>sequenceDiagram
+  accTitle: C2, a meal sent and then not eaten
+  accDescr: A caregiver sends the meal's carbs and bolus. If the child refuses the meal before the phone fetches the command, the caregiver's cancel is final and nothing is delivered. If the phone already has it, the cancel is a request the controller decides; it refuses the command if it has not acted, and otherwise its outcome stands and may say which part it enacted.
+  participant K as Caregiver
+  participant H as Hub
+  participant C as Controller
+  K-&gt;&gt;H: carbs and bolus (C2.1, CM1)
+  alt not yet fetched
+    K-&gt;&gt;H: cancel (C2.2)
+    H--&gt;&gt;K: 200 cancelled, never delivered (CM25)
+  else already fetched
+    K-&gt;&gt;H: cancel
+    H--&gt;&gt;K: 202, a request on the next fetch (CM25)
+    H-&gt;&gt;C: the cancel
+    Note over C: decided once (CM21): refuse if not yet acted
+    C-&gt;&gt;H: refused (cancelled), or the outcome of what it did (C2.3)
+  end</code></pre>
 <p><strong>C2.1 · moment · Carbs and bolus sent.</strong> The caregiver sends the meal's carbs and bolus.
 <strong>Working:</strong> one command per item, or one command whose parts are reported separately.
 <strong>Contributor:</strong> CM1; UCA-CMD-011.</p>
@@ -5552,12 +5634,13 @@ delivery. <strong>Working:</strong> the parent sees the failure. <strong>Watch f
 - <strong>Do:</strong> the caregiver cancels before the phone has fetched it.
 - <strong>Working:</strong> the command reads <code>cancelled</code>, final, never handed over.
 - <strong>Watch for:</strong> a cancel reported as done after the command was <code>sent</code>; there it is only a request.
-- <strong>Contributor:</strong> CM2, CM3; UCA-CMD-015. Not specified: cancel and its state (§9 item 7).</p>
+- <strong>Contributor:</strong> CM2, CM3, <a href="spec/commands.html#4-the-command-record-proposed">CM25</a> (<code>cancel-pending-is-final</code>,
+  <code>cancel-after-fetch-is-a-request</code>); UCA-CMD-015.</p>
 <p><strong>C2.3 · algorithm · Already handed over.</strong>
 - <strong>Do:</strong> the controller had stored the carbs and refused the bolus, as Trio's meal command can.
 - <strong>Working:</strong> the outcome shows carbs entered and bolus refused, and the caregiver removes the
   carbs as a separate action.
-- <strong>Contributor:</strong> CM9; UCA-CMD-011. Not specified: an outcome per part (§9 item 4).</p>
+- <strong>Contributor:</strong> CM9, CM25; UCA-CMD-011. Not specified: an outcome per part (commands §9 item 4).</p>
 <h2 id="c3-two-caregivers-act-for-one-meal">C3. Two caregivers act for one meal<a class="headerlink" href="#c3-two-caregivers-act-for-one-meal" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5582,10 +5665,12 @@ delivery. <strong>Working:</strong> the parent sees the failure. <strong>Watch f
 <p><strong>C3.1 · moment · Both send.</strong> A parent and a nurse each send a meal bolus minutes apart.
 <strong>Working:</strong> the second sender sees the first command in the outstanding list, with who sent it.
 <strong>Watch for:</strong> two commands accepted with neither sender told. <strong>Contributor:</strong> CM4 matches within
-one subject only (<code>request-id-scoped-to-subject</code>); UCA-CMD-001. Not specified: list outstanding.</p>
+one subject only (<code>request-id-scoped-to-subject</code>); CM24 lists the first command with its sender,
+and the reply accepting the second carries the list (<code>outstanding-lists-open-items</code>); UCA-CMD-001.
+Not specified: refusing a second command while one is outstanding (commands §9 item 7).</p>
 <p><strong>C3.2 · algorithm · The controller's check.</strong> Enact once does not catch this: the commands have
 different ids. Only the controller's doses-since check does, after the first bolus is stored.
-<strong>Contributor:</strong> CM10; UCA-CMD-010; HAZ-1.</p>
+<strong>Contributor:</strong> CM10, CM23 (<code>enact-dose-refused-doses-since</code>); UCA-CMD-010; HAZ-1.</p>
 <h2 id="p1-the-person-doses-while-a-proposal-is-outstanding">P1. The person doses while a proposal is outstanding<a class="headerlink" href="#p1-the-person-doses-while-a-proposal-is-outstanding" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5610,13 +5695,15 @@ different ids. Only the controller's doses-since check does, after the first bol
 <p><strong>P1.1 · moment · Proposal made.</strong> An agent proposes a correction bolus with <code>basedOn</code>.
 <strong>Contributor:</strong> CM11.</p>
 <p><strong>P1.2 · moment · The person boluses locally.</strong> The dose reaches the hub one upload later.
-<strong>Contributor:</strong> A12 covers intents, not doses; FB-STATE-006.</p>
+<strong>Contributor:</strong> A12 covers intents, not doses; CM22 covers doses at approval; FB-STATE-006.</p>
 <p><strong>P1.3 · moment · The caregiver approves.</strong>
-- <strong>Working:</strong> the approver sees the dose since <code>basedOn</code>, or the approval is refused.
-- <strong>Watch for:</strong> an approval passing CM15 after the dose (UCA-PROP-012).
-- <strong>Contributor:</strong> CM15 (<code>approve-state-unchanged</code>). Not specified: the dose check (§5, still open).
-  <em>Hub refuses</em> catches a dose already uploaded; <em>controller decides</em> catches it at enactment on a
-  controller with a since check.</p>
+- <strong>Working:</strong> when the dose reached the hub after the proposal was made, the approval is refused
+  409 <code>doses-since</code> and the proposal stays open; a dose not yet uploaded is the controller's to
+  catch at enactment.
+- <strong>Watch for:</strong> an approval accepted after the dose reached the hub (UCA-PROP-012).
+- <strong>Contributor:</strong> CM15 (<code>approve-state-unchanged</code>), <a href="spec/commands.html#6-proposals-and-approvals-proposed">CM22</a> (<code>approve-doses-since</code>,
+  <code>approve-doses-before-proposal</code>), CM23 (<code>enact-dose-refused-doses-since</code>). CM22 catches a dose
+  already uploaded; CM23 catches it at enactment on a controller with a since check.</p>
 <h2 id="p2-the-person-sees-and-withdraws-or-cancels">P2. The person sees and withdraws or cancels<a class="headerlink" href="#p2-the-person-sees-and-withdraws-or-cancels" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5639,12 +5726,13 @@ different ids. Only the controller's doses-since check does, after the first bol
 </tbody>
 </table>
 <p><strong>P2.1 · any · Opens the queue.</strong> The person sees proposals, plans and commands on their channels.
-<strong>Contributor:</strong> CM6, CM11. Not specified: the list (§9 item 7).</p>
+<strong>Contributor:</strong> CM6, CM11, CM24 (<code>outstanding-lists-open-items</code>), PN11 and PN18 for plans.</p>
 <p><strong>P2.2 · any · Withdraws an agent's proposal.</strong> <strong>Working:</strong> the proposal reads <code>withdrawn</code>.
-<strong>Contributor:</strong> CM14 (<code>withdraw-by-other-subject</code>) allows only the proposer to withdraw, which
-decision 3 overrides for the person; not specified: who counts as the person (a subject bound to the
-therapy's owner).</p>
-<p><strong>P2.3 · any · Cancels a caregiver's command.</strong> As C2.2.</p>
+<strong>Contributor:</strong> CM14 lets the proposer and the person withdraw (<code>withdraw-by-person</code>,
+<code>withdraw-by-other-subject</code>). Not specified: who counts as the person, and whether there may be
+more than one (<a href="spec/commands.html#9-open">commands §9 item 7</a>).</p>
+<p><strong>P2.3 · any · Cancels a caregiver's command.</strong> As C2.2; the person may cancel any command on
+their therapy (CM25, <code>cancel-by-person</code>).</p>
 <h2 id="a1-carbs-proposed-from-a-photo-of-the-meal">A1. Carbs proposed from a photo of the meal<a class="headerlink" href="#a1-carbs-proposed-from-a-photo-of-the-meal" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5668,12 +5756,13 @@ therapy's owner).</p>
 </table>
 <p><strong>A1.1 · moment · Proposed.</strong> The agent proposes carbs with an evaluation of its estimate.
 <strong>Watch for:</strong> units or product misread on the approval screen. <strong>Contributor:</strong> CM11, CM16;
-UCA-PROP-004. Not specified: payload grammar (§9 item 3).</p>
-<p><strong>A1.2 · moment · The person adjusts.</strong> The adjusted amount is a new proposal (decision 4). Because
-the person made it, CM14's <code>self-approval</code> refuses their own approval; the person sends it as a
-command instead and withdraws the agent's. <strong>Contributor:</strong> CM14.</p>
+UCA-PROP-004. Not specified: payload grammar (commands §9 item 3).</p>
+<p><strong>A1.2 · moment · The person adjusts.</strong> The adjusted amount is a new proposal (decision 4), which
+the person may approve because they made it from their own app, or send as a command; either way
+they withdraw the agent's. <strong>Contributor:</strong> CM14 (<code>approve-own-proposal-by-person</code>,
+<code>withdraw-by-person</code>).</p>
 <p><strong>A1.3 · algorithm · Enacted.</strong> The controller checks carbs since; Trio refuses when newer carbs
-exist and misses a back-dated meal. <strong>Contributor:</strong> CM10; UCA-CMD-010.</p>
+exist and misses a back-dated meal. <strong>Contributor:</strong> CM10, CM23; UCA-CMD-010.</p>
 <h2 id="a2-a-correction-bolus-proposed-by-an-agent">A2. A correction bolus proposed by an agent<a class="headerlink" href="#a2-a-correction-bolus-proposed-by-an-agent" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5696,12 +5785,13 @@ exist and misses a back-dated meal. <strong>Contributor:</strong> CM10; UCA-CMD-
 </tbody>
 </table>
 <p><strong>A2.1 · moment · Proposed and reviewed.</strong> The required risk check is attached.
-<strong>Contributor:</strong> CM11, CM16; UCA-AUTH-002. Not specified: required reviews.</p>
+<strong>Contributor:</strong> CM11, CM16; UCA-AUTH-002. Not specified: required reviews on a moment proposal;
+PN6 covers plans, and no open item in commands §9 carries it.</p>
 <p><strong>A2.2 · moment · A controller preview.</strong> <strong>Working:</strong> the approver sees the dose the controller
 would give now. Only AndroidAPS's client-control prepare and commit offers this today.
-<strong>Contributor:</strong> not specified (§9 item 2).</p>
-<p><strong>A2.3 · moment · Approved.</strong> <strong>Contributor:</strong> CM13–CM15; UCA-PROP-007, UCA-PROP-012; the dose
-check is open.</p>
+<strong>Contributor:</strong> not specified (<a href="spec/commands.html#9-open">commands §9 item 2</a>).</p>
+<p><strong>A2.3 · moment · Approved.</strong> <strong>Contributor:</strong> CM13–CM15, CM22 (<code>approve-doses-since</code>), CM24;
+UCA-PROP-007, UCA-PROP-012.</p>
 <p><strong>A2.4 · algorithm · Enacted once.</strong> As C1.3–C1.4.</p>
 <h2 id="further-cases-briefly">Further cases, briefly<a class="headerlink" href="#further-cases-briefly" title="Permanent link">&para;</a></h2>
 <ul>
@@ -5709,85 +5799,86 @@ check is open.</p>
   a proposal). <strong>C5, closed loop or automatic bolus off:</strong> a running-mode channel; LoopCaregiver
   sends these to <code>/api/v2/remotecommands</code>, which no hub implements (commands §3).</li>
 <li><strong>A3, too many proposals:</strong> UCA-PROP-002; not specified: a limit per proposing instance and
-  channel (§9 item 7).</li>
+  channel (commands §9 item 7).</li>
 <li><strong>U1, the controller's own automation:</strong> outside the hub; Trio's Shortcuts use a six-minute
   window. The mirror would show such plans only if the controller reports them.</li>
 <li><strong>U2, a downloaded careportal entry:</strong> no expiry, destination or outcome (UCA-SYNC-DL-001,
   <a href="spec/state-intent.html#8-open">state and intent §8</a>).</li>
-<li><strong>F1, a follower:</strong> reads proposals, plans, the mirror and outcomes; any write is 403. Not
-  specified: a read permission covering commands and plans (CM11 names proposals only).</li>
+<li><strong>F1, a follower:</strong> reads proposals, plans, the mirror and outcomes; any write is 403. Any of
+  <code>api:commands:read</code>, <code>api:commands:create</code> or <code>api:proposals:read</code> reads the outstanding list and
+  the mirror (CM24, PN11; <code>outstanding-lists-open-items</code>, <code>plan-read-with-proposals-read</code>).</li>
 </ul>
 <hr />
 <h1 id="part-3-what-the-journeys-show">Part 3: what the journeys show<a class="headerlink" href="#part-3-what-the-journeys-show" title="Permanent link">&para;</a></h1>
-<h2 id="the-since-check-and-the-dose-check-choice">The since check and the dose-check choice<a class="headerlink" href="#the-since-check-and-the-dose-check-choice" title="Permanent link">&para;</a></h2>
+<h2 id="the-since-check-and-the-dose-checks">The since check and the dose checks<a class="headerlink" href="#the-since-check-and-the-dose-checks" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
 <th>journey</th>
 <th>since check</th>
-<th>which choice serves it</th>
+<th>which check serves it</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>PL1</td>
-<td>intents at approval; doses and carbs at each occurrence</td>
-<td>controller decides: the occurrence runs hours after any hub check</td>
+<td>intents per channel at approval; doses and carbs at each occurrence</td>
+<td>controller decides (CM23, PN10): the occurrence runs hours after any hub check; hub refuses does not apply to a plan (PN7)</td>
 </tr>
 <tr>
 <td>PL2</td>
 <td>intents; confirmation freshness</td>
-<td>controller decides</td>
+<td>controller decides (PN10); a confirmation expires at the occurrence's time (PN12)</td>
 </tr>
 <tr>
 <td>PL3</td>
 <td>definition unchanged</td>
-<td>neither; needs a <code>definitionId</code> check</td>
+<td><code>definition-changed</code> at a plan's approval (PN7); after it, the controller (PN10, PN11)</td>
 </tr>
 <tr>
 <td>PL4</td>
 <td>intents; definition</td>
-<td>controller decides</td>
+<td>controller decides (PN10); PN7 at approval</td>
 </tr>
 <tr>
 <td>PL5</td>
 <td>definition; long expiry</td>
-<td>neither; doses are not what changes over weeks</td>
+<td>PN7 at approval; PN1 bounds the proposal's open time; doses are not what changes over weeks</td>
 </tr>
 <tr>
 <td>C1</td>
 <td>doses since; outstanding</td>
-<td>controller decides; a command is not a proposal, and CM5 keeps the hub from judging it</td>
+<td>controller decides (CM23); a command is not a proposal, and CM5 keeps the hub from judging it; CM24 shows doses since</td>
 </tr>
 <tr>
 <td>C2</td>
 <td>carbs and doses since; cancel</td>
-<td>controller decides, with cancel</td>
+<td>controller decides (CM23), with cancel (CM25)</td>
 </tr>
 <tr>
 <td>C3</td>
 <td>doses since; outstanding, who sent</td>
-<td>controller decides, with the list showing the other sender</td>
+<td>controller decides (CM23), with the list showing the other sender (CM24)</td>
 </tr>
 <tr>
 <td>P1</td>
-<td>doses and carbs since <code>basedOn</code></td>
-<td>hub refuses catches an uploaded dose; controller decides catches it only on a controller with a since check</td>
+<td>doses and carbs since the proposal</td>
+<td>hub refuses (CM22) catches an uploaded dose; controller decides (CM23) catches it only on a controller with a since check</td>
 </tr>
 <tr>
 <td>A1</td>
 <td>carbs since</td>
-<td>hub refuses or controller decides; Trio's check misses back-dated meals</td>
+<td>hub refuses (CM22) and controller decides (CM23); Trio's check misses back-dated meals</td>
 </tr>
 <tr>
 <td>A2</td>
 <td>doses and carbs since; preview</td>
-<td>hub refuses before approval; controller decides at enactment, best with a preview</td>
+<td>hub refuses (CM22) before approval; controller decides (CM23) at enactment, best with a preview (commands §9 item 2)</td>
 </tr>
 <tr>
 <td>C4, C5</td>
 <td>intents</td>
-<td>neither; CM15 already applies to proposals</td>
+<td>CM15 for a proposal</td>
 </tr>
 <tr>
 <td>U1, U2, F1</td>
@@ -5796,7 +5887,7 @@ check is open.</p>
 </tr>
 </tbody>
 </table>
-<p>Hub refuses serves only P1, A1 and A2, and only when the local dose has been uploaded before the
+<p>Hub refuses serves only P1, A1 and A2, and only when the local dose reached the hub before the
 approval. Controller decides serves every journey in which a controller checks doses since, which
 Loop's remote bolus path does not today.</p>
 <h2 id="specification-needs">Specification needs<a class="headerlink" href="#specification-needs" title="Permanent link">&para;</a></h2>
@@ -5805,64 +5896,84 @@ Loop's remote bolus path does not today.</p>
 <tr>
 <th>need</th>
 <th>journeys</th>
+<th>status</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>list outstanding, with sender and doses since</td>
 <td>C1, C3, P1, P2, F1</td>
+<td>specified: CM24, PN18</td>
 </tr>
 <tr>
 <td>cancel (before hand-over final; after, a request)</td>
 <td>PL1.6, PL4.4, C2, P2</td>
+<td>specified: CM25; PN14, PN16 for occurrences and plans</td>
 </tr>
 <tr>
-<td>enact once per <code>commandId</code>, kept until expiry (specified: CM21)</td>
+<td>enact once per <code>commandId</code>, kept until expiry</td>
 <td>PL1.4, C1, A2</td>
+<td>specified: CM21; PN17 for occurrences</td>
 </tr>
 <tr>
 <td>the plan object: elements, trigger, conditions, bounds, end date, confirmation rule</td>
 <td>PL1–PL5</td>
+<td>specified: PN1–PN4; open: the trigger grammar, including a confirmation rule (plans §9 item 3)</td>
 </tr>
 <tr>
 <td>a confirmation bound to one occurrence, and whether the plan authorises its proposer</td>
 <td>PL1.5, PL2.2</td>
+<td>specified: PN12</td>
 </tr>
 <tr>
 <td>partial acceptance: the approval names elements; a hash rule for the accepted subset</td>
 <td>PL1.3, PL5.3</td>
+<td>specified: PN5, PN7, PN8; open: approver signatures (plans §9 item 5)</td>
 </tr>
 <tr>
 <td>required reviews: who names them, refusal when missing</td>
 <td>PL1.2, PL4.2, A2.1</td>
+<td>specified for plans: PN1, PN6; open: independence (plans §9 item 7), per occurrence (plans §9 item 9); a moment proposal has no rule or open item</td>
 </tr>
 <tr>
 <td>the mirror: plan kind, carrier, occurrence link to its intent</td>
 <td>PL1.4, PL1.7, PL3.3</td>
+<td>specified: PN9, PN11; open: the plan channel (plans §9 item 6); a field on the intent naming its occurrence has no open item</td>
 </tr>
 <tr>
 <td>follower read of proposals, plans and commands</td>
 <td>PL3.1, F1</td>
+<td>specified: CM11, CM24, PN11</td>
 </tr>
 <tr>
-<td>the person's withdraw and cancel on any item (amends CM14)</td>
-<td>P2, PL4.4</td>
+<td>the person's withdraw, cancel, skip and end on any item</td>
+<td>P2, PL1.6, PL4.4</td>
+<td>specified: CM14, CM25, PN14, PN16; open: who counts as the person (commands §9 item 7)</td>
 </tr>
 <tr>
 <td>proposal expiry separate from command expiry</td>
 <td>PL5</td>
+<td>specified for plans: PN1; a moment proposal stays under CM3 (CM11)</td>
 </tr>
 <tr>
 <td><code>basedOn</code> for plans, and a <code>definitionId</code> check at approval</td>
 <td>PL1.3, PL3.4, PL5.3</td>
+<td>specified for plans: PN7; open for a moment proposal (commands §9 item 7)</td>
 </tr>
 <tr>
-<td>plan supersession by an adjusted plan</td>
+<td>plan supersession by an adjusted plan; several plans on one channel</td>
 <td>PL3.3</td>
+<td>open: plans §9 item 10</td>
 </tr>
 <tr>
 <td>proposal limit</td>
 <td>A3</td>
+<td>open: commands §9 item 7</td>
+</tr>
+<tr>
+<td>outcome per part; a late failure after success</td>
+<td>C1.4, C2.3</td>
+<td>open: commands §9 item 4</td>
 </tr>
 </tbody>
 </table>
@@ -5938,6 +6049,8 @@ Loop's remote bolus path does not today.</p>
       <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
+  
+  <script src="https://unpkg.com/mermaid@11.17.2/dist/mermaid.min.js"></script>
   
 
   </body>

@@ -5585,7 +5585,7 @@
 
 
 <h1 id="l3-and-l5-commands-how-a-request-or-a-proposal-reaches-a-controller-and-how-its-outcome-comes-back">L3 and L5 Commands: how a request or a proposal reaches a controller, and how its outcome comes back<a class="headerlink" href="#l3-and-l5-commands-how-a-request-or-a-proposal-reaches-a-controller-and-how-its-outcome-comes-back" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>13259e01d</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>608dfeaf5</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>9736bd65</code> (2026-10-18). Layers L3
 and L5 of the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. Decisions:
 <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">D18 and D19</a>
@@ -5850,6 +5850,36 @@ destination sets <code>acknowledged</code>, <code>succeeded</code>, <code>failed
 <p><code>succeeded</code>, <code>failed</code>, <code>refused</code>, <code>not-routed</code>, <code>undeliverable</code>, <code>expired</code> and <code>cancelled</code> are final; the hub
 sets the last four only for a command that was never handed over. <code>sent</code>, <code>fetched</code> and <code>unconfirmed</code> are never
 reported as success or as failure.</p>
+<p>The same states as a diagram. Blue states are set by the hub, green by the destination's reports;
+the bold ones are final. A report may skip <code>acknowledged</code> (CM9).</p>
+<pre class="mermaid"><code>stateDiagram-v2
+  accTitle: Command states
+  accDescr: A command is recorded pending, or not-routed when routing refuses it. Before hand-over the hub moves a pending command to sent, fetched, cancelled, undeliverable or expired. A command handed over becomes unconfirmed when its expiry passes or its destination loses the role, never expired. Only the destination's reports set acknowledged, succeeded, failed or refused, and a report replaces unconfirmed.
+  state "not-routed" as not_routed
+  state "handed over" as handed {
+    sent --&gt; fetched: fetched (CM18)
+    sent --&gt; unconfirmed: expiry passed or role lost
+    fetched --&gt; unconfirmed: expiry passed
+  }
+  state "reported by the destination (CM7)" as reported {
+    acknowledged --&gt; succeeded
+    acknowledged --&gt; failed
+    acknowledged --&gt; refused
+  }
+  [*] --&gt; pending: accepted and routed (CM1)
+  [*] --&gt; not_routed: refused at routing (CM1)
+  pending --&gt; cancelled: cancelled (CM25)
+  pending --&gt; undeliverable: destination lapsed (CM2)
+  pending --&gt; expired: expiry passed (CM3)
+  pending --&gt; handed: pushed (CM19) or fetched (CM18)
+  handed --&gt; reported: a report replaces unconfirmed (CM9)
+  classDef hub fill:#e8f0fe,stroke:#4a6fa5,color:#1a1a1a
+  classDef controller fill:#e6f4ea,stroke:#3b7a4a,color:#1a1a1a
+  classDef final font-weight:bold,stroke-width:2px
+  class pending,sent,fetched,unconfirmed hub
+  class not_routed,cancelled,undeliverable,expired hub
+  class acknowledged,succeeded,failed,refused controller
+  class not_routed,cancelled,undeliverable,expired,succeeded,failed,refused final</code></pre>
 <h2 id="5-outcomes-proposed">5. Outcomes (proposed)<a class="headerlink" href="#5-outcomes-proposed" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5953,6 +5983,31 @@ reported as success or as failure.</p>
 </tr>
 </tbody>
 </table>
+<p>From proposal to outcome, with the checks each step makes:</p>
+<pre class="mermaid"><code>sequenceDiagram
+  accTitle: From proposal to outcome
+  accDescr: An agent instance proposes a payload with the state version it read. The hub routes and records the proposal; evaluations attach as evidence. A person or delegate approves the payload's hash; the hub refuses when the hash, the destination, the state version or doses since differ, leaving the proposal open, and otherwise records one command and returns what else is outstanding. The command reaches the controller by push or fetch with its id and hash. The controller checks the hash and expiry, decides the command once and checks doses since, then reports. A cancel before hand-over is final; after it, a request the controller decides.
+  participant P as Proposer (agent instance)
+  participant H as Hub
+  participant A as Approver (person or delegate)
+  participant C as Controller (destination)
+  P-&gt;&gt;H: propose payload, basedOn, expiresAt (CM11, CM12)
+  H--&gt;&gt;P: 201 proposalId, routed and recorded
+  Note over H: evaluations attach as evidence (CM16)
+  A-&gt;&gt;H: approve proposalId and payloadHash (CM13, CM14)
+  alt hash, destination, state version (CM15) or doses since (CM22) differ
+    H--&gt;&gt;A: 409, the proposal stays open
+  else accepted
+    H--&gt;&gt;A: 201 commandId and the outstanding list (CM24)
+    H-&gt;&gt;C: push or fetch, carrying commandId and payloadHash (CM18, CM19)
+    Note over C: hash and expiry (CM10)&lt;br/&gt;decided once (CM21)&lt;br/&gt;doses since (CM23)
+    opt cancel (CM25)
+      A-&gt;&gt;H: cancel commandId
+      H--&gt;&gt;A: 200 cancelled before hand-over, or 202 a request on the next fetch
+    end
+    C-&gt;&gt;H: report acknowledged, then succeeded, failed or refused (CM7)
+    H--&gt;&gt;A: the state, on read or in the outstanding list
+  end</code></pre>
 <p>What a mode changes beyond these, such as the storage key and the credential kinds a command
 record names, is the registration contract per mode (<code>SPEC-REG-MODES</code>, not written).</p>
 <h2 id="8-compatibility">8. Compatibility<a class="headerlink" href="#8-compatibility" title="Permanent link">&para;</a></h2>
@@ -6085,6 +6140,8 @@ was run.</p>
      instance that renewed under a new definition receives a payload approved under the old one.</li>
 <li><strong>Proposal volume</strong> (UCA-PROP-002). Nothing limits the open proposals one instance holds on
      a channel.</li>
+<li><strong>Required reviews on a moment proposal.</strong> Plans name reviews an approval waits for (plans
+     PN6); a proposal for one command has no such member.</li>
 <li><strong>Who acts for the person</strong> (CM14). Which subject the tenant marks as acting for the person
      whose therapy it holds, and whether there may be more than one.</li>
 <li><strong>A process holding the destination's credential</strong> (UCA-CMD-014). CM7 and CM18 check the
@@ -6979,6 +7036,8 @@ and no instance enacts a command twice (CM21). CM20 has no case; CM17 has one, <
       <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
+  
+  <script src="https://unpkg.com/mermaid@11.17.2/dist/mermaid.min.js"></script>
   
 
   </body>

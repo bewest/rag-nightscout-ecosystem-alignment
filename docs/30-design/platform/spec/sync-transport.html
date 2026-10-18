@@ -5563,7 +5563,7 @@
 
 
 <h1 id="l4-sync-transport-how-writes-are-matched-ordered-and-delivered-over-rest-and-the-socket-and-at-what-cost">L4 Sync transport: how writes are matched, ordered and delivered over REST and the socket, and at what cost<a class="headerlink" href="#l4-sync-transport-how-writes-are-matched-ordered-and-delivered-over-rest-and-the-socket-and-at-what-cost" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>13259e01d</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>ee49b07f5</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>df621fa7</code> (2026-10-18). Layer L4 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>; how a re-send is
 matched is in the <a href="identity.html">identity specification</a> §3. Decisions: the
@@ -5636,6 +5636,25 @@ checked by one.</p>
 </tr>
 </tbody>
 </table>
+<p>The write step, per item, as T1 orders it:</p>
+<pre class="mermaid"><code>flowchart LR
+  accTitle: The one write step
+  accDescr: A write from API v1, API v3, the socket or an in-process caller goes through one step. Per item it reads the _id form, finds the target by the collection's match order, decides the outcome, sets the server's write times, and stores the item; each item is answered with its outcome and both ids. After the call, one change event goes to the socket, and the history read finds the same records by their server time.
+  src([API v1, API v3, socket,\nin-process caller]) --&gt; id[_id form\nidentity I2]
+  id --&gt; target{target, by the\nmatch order\nidentity §3}
+  target -- matched --&gt; merge[merged, replaced\nor unchanged, T2]
+  target -- none --&gt; ins[inserted]
+  target -- refused --&gt; ref[refused]
+  merge --&gt; dates[server times\nsrvModified, srvCreated, T3]
+  ins --&gt; dates
+  dates --&gt; store[(storage write)]
+  store --&gt; reply[each item answered:\noutcome and both ids, I4]
+  ref --&gt; reply
+  store --&gt; event[one change event\nper call, T4]
+  event --&gt; sock[socket subscribers, T10, T11]
+  store --&gt; hist[history read by\nserver time, T5, T6]
+  classDef stop fill:#fde2e2,stroke:#b42318,color:#1a1a1a
+  class ref stop</code></pre>
 <h2 id="3-what-each-clients-sync-code-can-call">3. What each client's sync code can call<a class="headerlink" href="#3-what-each-clients-sync-code-can-call" title="Permanent link">&para;</a></h2>
 <p><code>make schema-sync-cost</code>, run 2026-10-18, counts the distinct endpoints each client's Nightscout
 code declares, read from its source. It is not a count of calls per cycle: some endpoints are
@@ -5967,6 +5986,8 @@ proposed without cases.</p>
       <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
+  
+  <script src="https://unpkg.com/mermaid@11.17.2/dist/mermaid.min.js"></script>
   
 
   </body>

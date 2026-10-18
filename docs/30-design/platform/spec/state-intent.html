@@ -5641,7 +5641,7 @@
 
 
 <h1 id="l3-state-and-intent-what-was-requested-applied-and-active-who-started-it-and-why-it-ended">L3 State and intent: what was requested, applied and active, who started it, and why it ended<a class="headerlink" href="#l3-state-and-intent-what-was-requested-applied-and-active-who-started-it-and-why-it-ended" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>13259e01d</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>a8f03c290</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>92a7d31b</code> (2026-10-18). Layer L3 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. The grammar members
 named here are part of the <a href="registration.html">registration specification</a> §3; how a hub accepts
@@ -6035,6 +6035,17 @@ instances and which are active; it never combines them (S1).</p>
 </tr>
 </tbody>
 </table>
+<p><strong>The rules drawn.</strong> Each panel draws one conformance case's records and its expected answer,
+not an application of the rule; <code>tools/diagrams/active_state_rules.py</code> generates them from the cases
+(<code>make diagrams-svg</code>; <code>make diagrams-svg-check</code> fails when one is stale).</p>
+<p><img alt="A3: an instance starts at its record's own time, never at the time in its _id or when the hub received it" src="../diagrams/active-state-a3.svg" /></p>
+<p><img alt="A4: an instance ends at its start plus its declared duration; the indefinite sentinel or no duration is open-ended" src="../diagrams/active-state-a4.svg" /></p>
+<p><img alt="A5: an amendment that shortens an instance ends it early as cancelled; one that runs its duration ends expired" src="../diagrams/active-state-a5.svg" /></p>
+<p><img alt="A6: a delete removes the write it names; an instance with no live write left ended as deleted before start" src="../diagrams/active-state-a6.svg" /></p>
+<p><img alt="A7: under supersedes, an instance ends at the start of the next instance by start time, never by arrival" src="../diagrams/active-state-a7.svg" /></p>
+<p><img alt="A8: under overlay, a timed instance applies over an open-ended one, which is active again when the timed one ends" src="../diagrams/active-state-a8.svg" /></p>
+<p><img alt="A9: overlapping instances of an exclusive kind with neither supersedes nor overlay are all reported active, marked overlap" src="../diagrams/active-state-a9.svg" /></p>
+<p><img alt="A13: a sampled-state kind has no instances; each record's value holds until the next record of the kind and product" src="../diagrams/active-state-a13.svg" /></p>
 <h3 id="62-what-decides-each-measured-disagreement">6.2 What decides each measured disagreement<a class="headerlink" href="#62-what-decides-each-measured-disagreement" title="Permanent link">&para;</a></h3>
 <p><code>LAB-HUB-ACTIVE-STATE</code> measured cgm-remote-monitor and Nocturne disagreeing on one synthetic record
 set (<a href="../nightscout-intent-workflow-landscape-2026-10-09.html#5-how-the-hubs-decide-what-is-active">landscape §5</a>).

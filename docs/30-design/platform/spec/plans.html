@@ -5585,7 +5585,7 @@
 
 
 <h1 id="l3-and-l5-plans-how-a-plan-is-proposed-approved-in-parts-held-by-the-controller-and-mirrored-by-the-hub">L3 and L5 Plans: how a plan is proposed, approved in parts, held by the controller and mirrored by the hub<a class="headerlink" href="#l3-and-l5-plans-how-a-plan-is-proposed-approved-in-parts-held-by-the-controller-and-mirrored-by-the-hub" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>7a1a09b5a</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>608dfeaf5</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>b081a15c</code> (2026-10-18). Layers L3
 and L5 of the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. Decisions:
 <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">D18 and D19</a>
@@ -5676,6 +5676,34 @@ that needs review by a qualified clinician before any of it is relied on.</p>
 </table>
 <p>One controller instance, the destination, holds the plan and is the only thing that acts on the
 pump. Agents, reviewers, a delegate and the person all work on the same plan record.</p>
+<p>A plan's life, for a weekday lunch with an eating-soon target that runs on the plan's approval
+and a meal bolus approved each day:</p>
+<pre class="mermaid"><code>sequenceDiagram
+  accTitle: A plan's life
+  accDescr: An agent proposes a plan with a standing eating-soon element and a per-occurrence meal bolus. A reviewer attaches an independent review, and the person approves both elements by id and hash. The hub records one command and a read-only mirror; the controller validates and holds the plan, and its report makes the mirror active. Each morning the agent confirms the day's occurrence; the person approves the day's meal bolus within 12 hours before it. The controller runs the occurrence after its own checks and reports it. The person can skip a day or end the plan at any time, and the hub cancels what was queued for it.
+  participant G as Agent (proposer)
+  participant V as Reviewer
+  participant P as Person or delegate
+  participant H as Hub (mirror)
+  participant C as Controller
+  G-&gt;&gt;H: propose plan: eating soon (standing), meal bolus (per occurrence) (PN1-PN4)
+  V-&gt;&gt;H: review (PN6)
+  P-&gt;&gt;H: approve elements by id and hash (PN5-PN7)
+  H-&gt;&gt;C: one command with the accepted elements (PN8)
+  C-&gt;&gt;H: holds it: succeeded (PN9), mirror active
+  loop each weekday
+    G-&gt;&gt;H: confirm the day's occurrence (PN12)
+    H-&gt;&gt;C: confirmation
+    P-&gt;&gt;H: approve the day's meal bolus, within 12 h before (PN13)
+    H-&gt;&gt;C: occurrence approval
+    Note over C: bounds, doses since, withdrawal criteria&lt;br/&gt;with fresh data (PN10), runs once (PN17)
+    C-&gt;&gt;H: occurrence ran, withdrawn or refused (PN11)
+  end
+  opt skip a day or end the plan (PN14, PN16)
+    P-&gt;&gt;H: skip or end
+    H-&gt;&gt;C: skip or end, and queued occurrence commands cancelled
+  end
+  C-&gt;&gt;H: ended at endsAt (PN15)</code></pre>
 <h2 id="3-the-plan-object-proposed">3. The plan object (proposed)<a class="headerlink" href="#3-the-plan-object-proposed" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5753,6 +5781,21 @@ pump. Agents, reviewers, a delegate and the person all work on the same plan rec
 </tr>
 </tbody>
 </table>
+<p>The mirror's states. Each state the controller owns moves only on its reports; the hub sets
+<code>ending</code> when it is asked to end the plan.</p>
+<pre class="mermaid"><code>stateDiagram-v2
+  accTitle: Plan mirror states
+  accDescr: An approved plan's mirror becomes active when the controller reports holding it, or refused when the controller refuses or fails the plan command. The person, the approver or the proposer can end a plan that is approved, active or ending; ending again re-sends the end. The mirror becomes ended when the controller reports the end, either after an end request or at endsAt.
+  [*] --&gt; approved: approval accepted (PN8)
+  approved --&gt; active: controller holds it (PN9, PN11)
+  approved --&gt; refused: refused or failed (PN9)
+  approved --&gt; ending: end requested (PN16)
+  active --&gt; ending: end requested (PN16)
+  ending --&gt; ending: end sent again (PN16)
+  active --&gt; ended: reported at endsAt (PN15)
+  ending --&gt; ended: reported (PN16)
+  refused --&gt; [*]
+  ended --&gt; [*]</code></pre>
 <h2 id="6-occurrences-proposed">6. Occurrences (proposed)<a class="headerlink" href="#6-occurrences-proposed" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5776,6 +5819,31 @@ pump. Agents, reviewers, a delegate and the person all work on the same plan rec
 </tr>
 </tbody>
 </table>
+<p>An occurrence's states. The hub records <code>confirmed</code>, <code>approved</code> and <code>skip-requested</code> as it is
+asked; the controller reports how the occurrence finished, and a finished occurrence takes no
+further confirmation or approval.</p>
+<pre class="mermaid"><code>stateDiagram-v2
+  accTitle: Occurrence states
+  accDescr: An occurrence is confirmed by the proposer or approved by the person or a delegate, in either order, or skipped. A skip cancels what was queued for the occurrence. The controller reports how it finished: ran, withdrawn, skipped, refused or missed; a skip request ends as skipped, or ran if the controller had already run it. A finished occurrence is closed.
+  state "skip-requested" as skip
+  state "finished, reported by the controller" as finished {
+    ran
+    withdrawn
+    skipped
+    refused
+    missed
+  }
+  state open {
+    [*] --&gt; confirmed: proposer confirms (PN12)
+    [*] --&gt; approved: person or delegate approves (PN13)
+    confirmed --&gt; approved: approved (PN13)
+  }
+  [*] --&gt; open
+  [*] --&gt; skip: skipped (PN14)
+  open --&gt; skip: skipped (PN14)
+  open --&gt; finished: controller reports (PN11)
+  skip --&gt; finished: skipped, or ran if it already had (PN14)
+  finished --&gt; [*]: closed (PN12)</code></pre>
 <h2 id="7-ending-a-plan-proposed">7. Ending a plan (proposed)<a class="headerlink" href="#7-ending-a-plan-proposed" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5855,7 +5923,8 @@ record of such a rule when it is proposed or approved away from the phone.</p>
    (FL3, the framework's reviews-then-approve path).</li>
 <li><strong>Not specified:</strong> an adjusted plan replacing one the controller holds (journey PL3.3); several
     plans active on one channel at once; occurrence reports for elements not accepted or dated
-    after <code>endsAt</code>; a maximum plan length per risk class, for clinical review.</li>
+    after <code>endsAt</code>; a maximum plan length per risk class, for clinical review; a field on an
+    intent naming the plan and occurrence that started it.</li>
 </ol>
 <h2 id="10-conformance-cases">10. Conformance cases<a class="headerlink" href="#10-conformance-cases" title="Permanent link">&para;</a></h2>
 <p>PN10 and PN17 have no case: they are the controller's, and the hub has nothing to refuse.</p>
@@ -6570,6 +6639,8 @@ was skipped.</p>
       <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
+  
+  <script src="https://unpkg.com/mermaid@11.17.2/dist/mermaid.min.js"></script>
   
 
   </body>
