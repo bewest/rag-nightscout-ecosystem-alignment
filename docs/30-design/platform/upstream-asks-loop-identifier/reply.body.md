@@ -48,7 +48,7 @@ Neither id alone solves two devices uploading one reading: both must arrive at t
 | option | server change |
 |---|---|
 | 1. one uploader at a time (today's workaround) | none |
-| 2. both devices agree on the timestamp: the phone adopts the watch's activation estimate for the loaned period | none: v1 entries already merge on `sysTime` + `type`. The match is exact, so the times must be identical to the millisecond. The later upload's fields overwrite the stored ones (`$set`), so `device` becomes the phone's ([entries.js:127-136](https://github.com/nightscout/cgm-remote-monitor/blob/92d0834219aa771b5837dbcbf1baeb839a200cf6/lib/server/entries.js#L127-L136)) |
+| 2. both devices agree on the timestamp: the phone adopts the watch's activation estimate for the loaned period | none: v1 entries already merge on `sysTime` + `type`. The match is exact, so the times must be identical to the millisecond. `device` need not match: it is not part of the v1 key (over API v3 it would, because the server computes `identifier` from `device` + `date`). The later upload's fields overwrite the stored ones (`$set`), so `device` becomes the phone's ([entries.js:127-136](https://github.com/nightscout/cgm-remote-monitor/blob/92d0834219aa771b5837dbcbf1baeb839a200cf6/lib/server/entries.js#L127-L136)) |
 | 3. a source-derived identifier, `g7:<serial>:<seconds>` or its UUIDv5 | entries match on `identifier` (the one change below) |
 | 4. server-side fuzzy time matching | avoid: it can merge readings from two real sensors |
 
