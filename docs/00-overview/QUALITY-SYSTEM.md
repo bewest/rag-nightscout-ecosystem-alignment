@@ -7,7 +7,8 @@ the maintainers and by a quality-management professional before it is adopted.**
 vendor terms of use, device regulation or funding agreements, it also needs review by the
 foundation's counsel (§10). Written 2026-09-30 against this repository at `df5e2ade` and the
 [stack census record](../60-research/programme/stack-census-2026-09-30.md) of the same day; simulator
-and app-rig facts are from the [device-simulators record of 2026-10-17](../60-research/programme/device-simulators-2026-10-17.md). Borrowing
+and app-rig facts are from the [device-simulators record of 2026-10-17](../60-research/programme/device-simulators-2026-10-17.md); the
+lesson on parity tests in §4.1 is from the [algorithm audition note of 2026-10-18](../30-design/platform/algorithm-audition-2026-10-18.md) §3.5. Borrowing
 a practice from a quality standard is not a claim of conformity with it. Nothing here is decided.*
 
 *Author's interests: the author maintains cgm-remote-monitor, founded a company that hosts
@@ -91,7 +92,7 @@ What each layer needs, what exists, and the first step. Detail and file paths ar
 | layer | the kit | exists today | first step |
 |---|---|---|---|
 | **device** (drivers, simulators, pairing cryptography) | a language-neutral vector corpus per protocol; known-answer tests from public standards for each primitive; fixed-randomness handshake transcripts; simulators with a virtual transport and fault injection; parser fuzzing; a hardware-in-the-loop smoke run before release | faketandem (simulator in CI with faults, and a Go codec held to pumpX2's by 7,961 recorded cases); LoopKit/pod (DASH pod side, CI) and g7sim (G7 sensor side, no CI), both with an iOS Simulator transport; pumpX2's captured-message suite; OpenMinimed's cross-implementation SAKE transcript; AndroidAPS's cross-platform crypto vectors; Omnipod vectors held in common by copying | extract the Omnipod and Tandem vectors that already exist into one file each and load them from every implementation's tests |
-| **controller** (Loop, Trio, AndroidAPS, iAPS, oref0) | algorithm conformance vectors across implementations; driver test targets run in the app's CI; app runs with external device simulators in place of the built-in ones, uploading to a lab Nightscout that checks what arrived; validation on real AID rigs | `conformance/` vectors for oref0; Trio and AndroidAPS CI; LoopWorkspace's CircleCI, which runs six kits' test targets (G7SensorKit, OmnipodKit, MinimedKit, MedtrumKit, CGMBLEKit, RileyLinkBLEKit) at the commits it pins; LoopAlgorithm as a package; trio-test-harness (app builds from any PR driven on the iOS Simulator or a phone by a coding agent, with per-PR reports; built-in device simulators only) | run the kits' own test targets in Trio's CI, as LoopWorkspace's already does |
+| **controller** (Loop, Trio, AndroidAPS, iAPS, oref0) | algorithm conformance vectors across implementations, with expected values from the original implementation or captured controller output; an end-to-end check that the code a parity suite tests is the code the app calls; driver test targets run in the app's CI; app runs with external device simulators in place of the built-in ones, uploading to a lab Nightscout that checks what arrived; validation on real AID rigs | `conformance/` vectors for oref0; Trio and AndroidAPS CI; LoopWorkspace's CircleCI, which runs six kits' test targets (G7SensorKit, OmnipodKit, MinimedKit, MedtrumKit, CGMBLEKit, RileyLinkBLEKit) at the commits it pins; LoopAlgorithm as a package; trio-test-harness (app builds from any PR driven on the iOS Simulator or a phone by a coding agent, with per-PR reports; built-in device simulators only) | run the kits' own test targets in Trio's CI, as LoopWorkspace's already does |
 | **cloud** (vendor connectors) | per-vendor contract notes; shared recorded-fixture suites with refusal cases; a read-only change canary with consenting accounts; a shared connector lab | nightscout-connect's LibreLinkUp lab against real Nightscout storage in CI; tconnectsync's captured-data parser tests; this repository's connector soak and log canary | one fixture format, seeded with synthetic LibreLinkUp and Dexcom Share cases, adopted by two implementations |
 | **shared contract and servers** | one current API description with stable statement IDs; a conformance suite any server can run; the client census kept current | schemas, quirks registry and per-client mappings (`specs/`, `mapping/`); the 40-client census; Nocturne's parity suite | publish the conformance suite as runnable against any server URL, and invite Nocturne's maintainers to run it |
 | **followers and reports** | the journey map's jobs checked on each release | the [journey map and lab](../60-research/remedial/journey-map-15.0.9.md) for cgm-remote-monitor | name the jobs each follower app promises and check them against the release candidate |
@@ -110,12 +111,21 @@ user's need.
 
 | part | contents |
 |---|---|
-| identity | component, version, commit, and the digest of the artefact tested |
-| inputs | the requirement IDs covered; the vector-corpus or fixture version; simulator scenarios; the configuration matrix (runtime, database, device, region) |
+| identity | component, version, commit, the digest of the artefact tested, and how the run reached it: through the call path the product uses, or only through a test harness |
+| inputs | the requirement IDs covered; the vector-corpus or fixture version, and the source of its expected values; simulator scenarios; the configuration matrix (runtime, database, device, region) |
 | procedure | the checklist item or gate; who ran it and when; automated or by hand |
 | outputs | pass, fail and skip counts; the red control that shows the check can fail; logs, de-identified |
 | known gaps | what was not covered and why (no device, no account in a region, no rig) |
 | status | **verified** (checks against the requirements) or **validated** (checked in real use on a rig or with a person); never "safe" |
+
+**Tests that pass against code the product never calls.** In one independent implementation of
+the oref and Loop algorithms, parity tests passed against matching code that the app did not run;
+a live comparison against a running controller exposed a 2.30 U/hr disagreement in one
+recommendation. The same implementation's exported vectors carried its own outputs as the expected
+values, so they could detect a change in it but not an error
+([algorithm audition §3.5](../30-design/platform/algorithm-audition-2026-10-18.md#35-two-lessons)).
+Two parts of the record answer this: the identity says whether the run reached the artefact through
+the product's own call path, and the inputs name where each expected value came from.
 
 The 15.0.9 records in this repository already carry most of these parts; the proposal is that every
 project can produce the same record with shared tooling. Rule 6 of the collaboration model applies:
