@@ -180,6 +180,7 @@ Until then, the order below is the order of development, not of release.
 | 1 | `T43` | T4.3 - ns-realtime, LISTEN per served tenant | `not-started` | &mdash; |
 | 2 | `SEAM-REFRESH` | Refresh the seam chain once after 15.0.9, onto the base the release train leaves | `blocked` | `RT-0` |
 | 2 | `T30-SCHEMA-CONFIG` | T3.0 part 2b - per-tenant configuration table, and where human identity lives | `not-started` | `T30-RESEARCH` |
+| 3 | `ID-CLIENT-OID-DECISION` | Decide: may a client set _id (an ObjectId it creates), and which field wins when | `needs-decision` | `LOOP-ID-REPLY` |
 | 3 | `ID-FORMAT-DECISION` | Decide: the client identifier's format (opaque string with limits; UUID recommen | `needs-decision` | `LOOP-ID-REPLY` |
 | 3 | `ID-V3-IMMUTABLE-DECISION` | Decide: on an identifier match, may date, device or eventType change? | `needs-decision` | `LOOP-ID-REPLY` |
 | 3 | `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `not-started` | `T30-SCHEMA-CONFIG` |

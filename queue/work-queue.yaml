@@ -5339,6 +5339,44 @@ items:
       existing client's identifiers, which would break matching against
       records it already stored.
 
+  - id: ID-CLIENT-OID-DECISION
+    title: "Decide: may a client set _id (an ObjectId it creates), and which field wins when identifier and _id match different records?"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@fade2299
+    state: needs-decision
+    pr: []
+    blast_radius: >
+      A decision row, no code. Its answer amends D20's 2026-10-16
+      walk-through (rows 2 and 3: every legacy _id is one the hub assigns,
+      carrying the hub's receipt time) and sets the write step's conflict
+      rule in ID-FIRST-MATCH.
+    review: maintainer, after the Loop maintainers answer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: a decision; the code that follows is classed in ID-FIRST-MATCH
+    register: []
+    gates:
+      - no-gate: >
+          A decision, not measurable. Two questions, raised 2026-10-17 in the
+          Loop reply: (1) may a client create an ObjectId and send it as _id,
+          so it needs no cache of server ids; (2) when a write carries both
+          identifier and _id and they match different stored records,
+          refuse, trust identifier, or trust _id.
+    blocks_on: [LOOP-ID-REPLY]
+    evidence:
+      - docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
+    notes: >
+      Read at the tags: no release up to 15.0.6 converted a client _id on
+      POST (it was passed to MongoDB as sent, so 24-hex values were stored
+      as strings, BF-99..102); only PUT and by-id reads and deletes
+      converted with ObjectID(). MongoDB never required _id to be an
+      ObjectId. Since #8758 (dev) a re-sent 24-hex _id is matched. A
+      client-set _id cannot serve the phone-and-watch case (two devices
+      create two ObjectIds), so identifier is needed either way.
+
   - id: ID-VALIDATE
     title: "Release 2 (minor): validate identifier on every collection; empty and null mean absent"
     parcel: tenancy
