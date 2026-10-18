@@ -15832,6 +15832,11 @@ items:
       registration, not the controller's therapy state (active override,
       profile, insulin on board), so nothing yet tells an approver that the
       state the agent read is still the state the controller holds (§4.3).
+      Evidence for both (read-derived, 2026-10-18; agents in the ecosystem
+      §4.3): a commercial controller prototype of the RFC's client side
+      binds an approval to the reviewer and the time only, with no payload
+      hash or state, and reports a remote command's success as the HTTP 200
+      of its request, with no acknowledgement or outcome.
 
   - id: SPEC-REG-MIGRATE
     title: "Registration state across a single-tenant site's move into a tenant, and back"

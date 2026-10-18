@@ -67,6 +67,11 @@ attribution is optional):
 | Loop `next-dev` | 300 (2025-10-07 to 2026-10-17) | 1 (Claude, 2026-04-23) | none at the root |
 | LoopKit `next-dev` | 300 (2025-08-22 to 2026-10-18) | 1 (Claude, 2026-04-23) | none at the root |
 
+Beside these, in one commercial controller's private repository, 3,441 of 6,055 commits (57%)
+carry a Copilot co-author trailer (**measured** 2026-10-18 by counting trailers in its history;
+the repository is private, so the count cannot be re-run from here), and its automated task loop's
+only gate is that the test suite passes (read-derived from its source, 2026-10-18).
+
 **What exists in this repository.**
 
 | Item | Where | Status |
@@ -206,6 +211,15 @@ Neither covers the controller's therapy state — which override is active, whic
 on board — so neither tells an approver that the state the agent read is still the state the
 controller holds.
 
+**What one prototype shows.** A commercial controller prototype implemented the client side of
+the upstream agent control-plane RFC: sources including `agent`, delegation grants with
+auto-approve types, and an audit log held in memory. Its approval records only the reviewer, the
+time and a note against the proposal id — no payload hash and no state — and its remote-command
+"success" means the HTTP request succeeded, with no acknowledgement or outcome (read-derived from
+its source, 2026-10-18; not reproduced here). That is evidence for the binding requirement above
+and for its open question: an approval that names neither the payload nor the state does not
+bind to either, and an HTTP status says nothing about what the controller did.
+
 **Where it would be specified.** Command delivery is `SPEC-REG-COMMANDS` in the
 [work queue](../../../queue/work-queue.yaml): not started, blocked on `SPEC-REG-MODES`; §3.6 says
 "The command API itself is not specified here." The proposal record is folded into that item
@@ -228,11 +242,16 @@ the algorithm does with the inputs it gets.
 - **Replay is bounded by what was recorded.** Of the dosing inputs each algorithm declares, 20% are
   recorded for Loop and 50% for the oref0 family (55% and 72% counting inputs derivable from
   history), as of 2026-09-11 ([hub-sync §4.2](nightscout-hub-sync-architecture-2026-09-11.md#42-completeness-as-a-published-number)).
-  Loop's input set is read from its source; oref0's is the union of inputs across 385 captured replay
-  vectors (`specs/nsschema/dosing-input-sources.yaml`). A derived input is *a* value, not
+  Loop's input set is read from its source; oref0's is the union of inputs across 385 replay vector
+  files (`specs/nsschema/dosing-input-sources.yaml`), which hold 308 distinct inputs, 22 of them
+  synthetic (measured 2026-10-18, [algorithm audition §2.1](algorithm-audition-2026-10-18.md#21-the-adapter-protocol-and-its-vectors)). A derived input is *a* value, not
   necessarily the one the controller used, so a replay on derived inputs tests the replayer as much
   as the algorithm. The change list that would raise the figures is
   [replay-fidelity changes](PROPOSAL-replay-fidelity-changes-2026-09-11.md).
+
+Comparing algorithms on the same recorded inputs in shadow, what an independent implementation's
+shadow runner and replay work show, and what an audition harness would need without ever granting
+control, are in [auditioning a dosing algorithm](algorithm-audition-2026-10-18.md).
 
 ## 6. Regulatory boundary
 
