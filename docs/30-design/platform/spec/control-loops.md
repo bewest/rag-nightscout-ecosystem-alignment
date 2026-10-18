@@ -20,8 +20,8 @@ then read as the constraints that prevent them. Where no rule prevents one, the 
 gap and the specification lists it as open.
 
 Status: the loops are drawn from the specifications, which are proposed or specified and not
-implemented. Of 72 entries, 42 are covered by a rule and a case, 6 are the controller's
-responsibility (D18), 3 have a rule and no case, and 21 are gaps, each listed in its
+implemented. Of 72 entries, 43 are covered by a rule and a case, 6 are the controller's
+responsibility (D18), 3 have a rule and no case, and 20 are gaps, each listed in its
 specification's open items.
 
 ## 1. Files
@@ -186,7 +186,7 @@ flowchart LR
 | UCA-PROP-009 | provided | The proposer approves its own proposal. | HAZ-1, HAZ-4 | S3 | CM14 | covered |
 | UCA-PROP-010 | timing | A proposal is approved after its expiry. | HAZ-1 | S3 | CM13 | covered |
 | UCA-PROP-011 | provided | An evaluation changes a proposal's state or approves it. | HAZ-1 | S3 | CM16 | covered |
-| UCA-PROP-012 | provided | A dose proposal is approved after the person dosed locally, because the state version covers intents and not doses or carbs. | HAZ-1 | S4 | A12, CM15 | gap: commands §9 |
+| UCA-PROP-012 | provided | A dose proposal is approved after the person dosed locally, because the state version covers intents and not doses or carbs. | HAZ-1 | S4 | A12, CM15, CM22 | covered |
 | UCA-PROP-013 | provided | Two approvers approve one proposal and two commands are created. | HAZ-1 | S4 | CM13 | covered |
 <!-- END GENERATED: stpa-proposal -->
 
@@ -310,14 +310,12 @@ vocabulary says what each one has to get right.
 
 ## 6. What the analysis found
 
-21 gaps, each listed in its specification's open items:
+20 gaps, each listed in its specification's open items:
 
 - **Commands** ([§9](commands.md#9-open)):
   - a sender or approver does not see a channel's outstanding commands, so a second command, or
     a second approval inside the controller's upload lag, is enacted as well (UCA-CMD-001,
     UCA-PROP-007);
-  - the state version covers intents and not doses, so a dose proposal passes after a local dose
-    (UCA-PROP-012);
   - an approval does not check that the destination's definition is unchanged (UCA-PROP-008);
   - another process holding the destination's credential can fetch or report a command
     (UCA-CMD-014);

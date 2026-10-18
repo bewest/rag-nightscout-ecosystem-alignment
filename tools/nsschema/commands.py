@@ -18,7 +18,7 @@ from nsschema.negotiate import canonical_json
 FINAL = ("succeeded", "failed", "refused", "not-routed", "undeliverable", "expired")
 HANDED_OVER = ("sent", "fetched")
 CONTROLLER_STATES = ("acknowledged", "succeeded", "failed", "refused")
-REASONS = ("hash-mismatch", "expired", "not-accepted", "limit")
+REASONS = ("hash-mismatch", "expired", "not-accepted", "limit", "doses-since")
 
 
 def payload_hash(payload):
@@ -113,7 +113,7 @@ class Hub:
         self.commands[cid] = {
             "tenant": tenant, "channel": call["channel"], "destination": destination,
             "payload": payload, "payloadHash": payload_hash(payload), "expiresAt": expires,
-            "proposalId": proposal_id, "subject": call["subject"],
+            "proposalId": proposal_id, "subject": call["subject"], "createdAt": call["at"],
             "state": "pending" if destination else "not-routed", "code": code}
         if code:
             return {"status": 409, "code": code, "commandId": cid}
@@ -190,6 +190,11 @@ class Hub:
             return {"state": "refused", "reason": "hash-mismatch"}
         if call["at"] >= c["expiresAt"]:
             return {"state": "refused", "reason": "expired"}
+        # CM23: before a dose or carbs, the controller's own record of doses since the command.
+        if isinstance(received, dict) and ("bolus" in received or "carbs" in received):
+            own = self.case.get("controllerDoses", {}).get(call["instance"], [])
+            if any(c["createdAt"] < t < call["at"] for t in own):
+                return {"state": "refused", "reason": "doses-since"}
         return {"state": "succeeded"}
 
     def restart(self, call):
@@ -270,7 +275,7 @@ class Hub:
             return {"status": 404}
         if not self._permitted(call, "api:commands:create"):
             return {"status": 403, "code": "not-authorised"}
-        if call["subject"] == p["subject"]:
+        if call["subject"] == p["subject"] and self.case["instances"][p["instance"]].get("agent", True):
             return {"status": 403, "code": "self-approval"}
         if p["state"] == "expired":
             return {"status": 409, "code": "proposal-expired"}
@@ -286,6 +291,9 @@ class Hub:
         product = self.case["instances"][destination]["product"]
         if _state_version(self.case, p["tenant"], product, call["at"]) != p["basedOn"]:
             return {"status": 409, "code": "state-changed"}
+        arrived = self.case.get("doseRecords", {}).get(p["tenant"], {}).get(product, [])
+        if any(p["at"] < t <= call["at"] for t in arrived):
+            return {"status": 409, "code": "doses-since"}
         p["state"] = "approved"
         made = dict(call, channel=p["channel"])
         return self._new_command(made, p["payload"], p["expiresAt"], proposal_id=call["proposal"],
@@ -307,7 +315,8 @@ class Hub:
         p = self._proposal(call)
         if p is None:
             return {"status": 404}
-        if call["subject"] != p["subject"]:
+        person = (self._subject(call) or {}).get("person", False)
+        if call["subject"] != p["subject"] and not person:
             return {"status": 403, "code": "not-authorised"}
         if p["state"] != "open":
             return {"status": 409, "code": "proposal-expired" if p["state"] == "expired"

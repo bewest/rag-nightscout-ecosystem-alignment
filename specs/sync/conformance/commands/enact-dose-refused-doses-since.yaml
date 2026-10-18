@@ -1,0 +1,95 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §6, §5. Times are seconds; expectations authored by hand.
+id: enact-dose-refused-doses-since
+title: The controller refuses a dose when it has dosed since the command was made
+rules:
+- CM23
+description: c1 asks for a correction bolus at 10; the controller records a dose of
+  its own at 30 and refuses c1 at 40 with doses-since.
+control: enact-dose-no-doses-since
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+      example/bolus:
+      - 0
+      - null
+  i-agent:
+    tenant: A
+    subject: s-agent
+    product: AgentTool
+    definitionId: sha256:d-agent
+    sinks: {}
+    proposes:
+    - override
+declares:
+  A:
+    override:
+    - ControllerA
+    example/bolus:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+  s-agent:
+    tenant: A
+    permissions:
+    - api:proposals:create
+stateVersions:
+  A:
+    ControllerA:
+    - - 0
+      - v1
+controllerDoses:
+  i-ctl-a:
+  - 30
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: example/bolus
+  product: ControllerA
+  payload:
+    bolus: correction
+    note: made-up test value
+  expiresAt: 100
+- at: 20
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+- at: 40
+  kind: enact
+  instance: i-ctl-a
+  command: c1
+  received:
+    bolus: correction
+    note: made-up test value
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+  - status: 200
+    commands:
+    - c1
+  - state: refused
+    reason: doses-since
+  commands:
+    c1:
+      state: fetched
+      destination: i-ctl-a

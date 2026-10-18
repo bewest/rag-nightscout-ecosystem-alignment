@@ -1,0 +1,89 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §6, §5. Times are seconds; expectations authored by hand.
+id: approve-doses-before-proposal
+title: A dose that arrived before the proposal does not refuse its approval
+rules:
+- CM22
+description: A dose record for ControllerA reaches the hub at 10, before p1 was made
+  at 20; the proposer could have seen it, and the approval at 50 is accepted.
+control: approve-doses-since
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+  i-agent:
+    tenant: A
+    subject: s-agent
+    product: AgentTool
+    definitionId: sha256:d-agent
+    sinks: {}
+    proposes:
+    - override
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+  s-agent:
+    tenant: A
+    permissions:
+    - api:proposals:create
+stateVersions:
+  A:
+    ControllerA:
+    - - 0
+      - v1
+doseRecords:
+  A:
+    ControllerA:
+    - 10
+calls:
+- at: 20
+  kind: propose
+  tenant: A
+  subject: s-agent
+  instance: i-agent
+  channel: override
+  payload:
+    action: start
+    preset: example
+  basedOn: v1
+  expiresAt: 100
+- at: 50
+  kind: approve
+  tenant: A
+  subject: s-care
+  proposal: p1
+  approves:
+    action: start
+    preset: example
+expected:
+  calls:
+  - status: 201
+    proposalId: p1
+  - status: 201
+    commandId: c1
+    state: pending
+  proposals:
+    p1:
+      state: approved
+  commands:
+    c1:
+      state: pending
+      destination: i-ctl-a
+      proposalId: p1

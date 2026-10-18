@@ -1,0 +1,80 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §6, §5. Times are seconds; expectations authored by hand.
+id: withdraw-by-person
+title: The person withdraws an agent's proposal
+rules:
+- CM14
+description: s-person, the subject acting for the person whose therapy the tenant
+  holds, withdraws p1, which an agent proposed.
+control: withdraw-by-other-subject
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+  i-agent:
+    tenant: A
+    subject: s-agent
+    product: AgentTool
+    definitionId: sha256:d-agent
+    sinks: {}
+    proposes:
+    - override
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+  s-agent:
+    tenant: A
+    permissions:
+    - api:proposals:create
+  s-person:
+    tenant: A
+    person: true
+    permissions: []
+stateVersions:
+  A:
+    ControllerA:
+    - - 0
+      - v1
+calls:
+- at: 20
+  kind: propose
+  tenant: A
+  subject: s-agent
+  instance: i-agent
+  channel: override
+  payload:
+    action: start
+    preset: example
+  basedOn: v1
+  expiresAt: 100
+- at: 30
+  kind: withdraw
+  tenant: A
+  subject: s-person
+  proposal: p1
+expected:
+  calls:
+  - status: 201
+    proposalId: p1
+  - status: 200
+  proposals:
+    p1:
+      state: withdrawn
+  commands: {}

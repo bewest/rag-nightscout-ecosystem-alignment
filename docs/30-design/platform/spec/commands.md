@@ -6,7 +6,7 @@ and L5 of the [platform index](../README.md); terms are in the [glossary](glossa
 and the maintainer's decisions of 2026-10-14 to 2026-10-18 recorded with them; the proposal
 record was folded into this item on 2026-10-18. Queue: `SPEC-REG-COMMANDS`.*
 
-*Specification 5 of 7 in the [reading order](../README.md#reading-order); after state and intent, whose acceptance policy (S10, S11) it builds on, and before sync-transport. Expect where a command goes, the command path today, rules CM1–CM21 for the command record, outcomes, proposals and delivery in each mode, compatibility with each controller, and the conformance cases.*
+*Specification 5 of 7 in the [reading order](../README.md#reading-order); after state and intent, whose acceptance policy (S10, S11) it builds on, and before sync-transport. Expect where a command goes, the command path today, rules CM1–CM23 for the command record, outcomes, proposals and delivery in each mode, compatibility with each controller, and the conformance cases.*
 
 How a request to change therapy reaches a controller through a hub, what the hub records about it,
 how the controller's outcome comes back, and the proposal and approval that can stand in front of
@@ -103,7 +103,7 @@ CM19 and CM20 are written against these two facts: a push from the load cycle re
 | CM5 | **The hub does not judge.** The hub checks only that the channel accepts commands, the routing, the expiry, the size (a payload over the hub's `commands.maxPayloadBytes` of canonical JSON is refused 413 `payload-too-large`) and the sender's permission (403 `not-authorised` without `api:commands:create`). It never checks a dose, a limit or the therapy state, and it never changes the payload. |
 | CM6 | **Tenant isolation.** A command's tenant is the tenant its request resolved to. Routing, sending, fetching, proposals, reports and reads see only that tenant: a command, proposal or instance from another tenant is 404, as one that does not exist is, so a request never reveals that it exists. |
 
-**Order of checks.** Where more than one refusal applies, the first wins: another tenant (404), then the sender's permission and ownership (403), then the request's own content (413, 422), then state (409). Among an approval's 409s the order is: the proposal's state (`proposal-expired`, `proposal-closed`), `hash-mismatch`, routing, `destination-changed`, `state-changed`. A push checks the binding (`withheld`) before the command's state, and applies only to a `pending` or `sent` command (`not-pending` otherwise).
+**Order of checks.** Where more than one refusal applies, the first wins: another tenant (404), then the sender's permission and ownership (403), then the request's own content (413, 422), then state (409). Among an approval's 409s the order is: the proposal's state (`proposal-expired`, `proposal-closed`), `hash-mismatch`, routing, `destination-changed`, `state-changed`, `doses-since`. A push checks the binding (`withheld`) before the command's state, and applies only to a `pending` or `sent` command (`not-pending` otherwise).
 
 **States.** The hub sets `pending`, `not-routed`, `sent`, `fetched`, `unconfirmed`, `undeliverable` and `expired`; only the
 destination sets `acknowledged`, `succeeded`, `failed` and `refused` (§5).
@@ -131,9 +131,10 @@ reported as success or as failure.
 | # | rule |
 |---|---|
 | CM7 | **Only the destination reports.** An outcome report names the `commandId` and is accepted only from the bound subject of the destination the command was routed to, whether or not that instance still holds the role; any other subject is refused 403 `not-registration-owner`. The report carries `state` (`acknowledged`, `succeeded`, `failed` or `refused`; any other is 422 `invalid-state`), the `payloadHash` the controller computed over the payload it received, a `reason` when refused or failed, and, when enacted, the identity of the record that shows the effect ([identity](identity.md)). A reported hash that differs from the command's is recorded as reported, with the record marked as a mismatch; the hub does not refuse it, because the report is evidence of what the controller did. |
-| CM8 | **Reasons.** A refusal or failure reason is one of `hash-mismatch`, `expired`, `not-accepted` (the controller's acceptance preference is off, [S10](state-intent.md#2-rules)), `limit` (a limit the controller enforces) or `{value: other, controllerTerm}`; a bare unknown string is refused 422 `invalid-reason`. The hub records the reason and does not interpret it. |
+| CM8 | **Reasons.** A refusal or failure reason is one of `hash-mismatch`, `expired`, `not-accepted` (the controller's acceptance preference is off, [S10](state-intent.md#2-rules)), `limit` (a limit the controller enforces), `doses-since` (CM23) or `{value: other, controllerTerm}`; a bare unknown string is refused 422 `invalid-reason`. The hub records the reason and does not interpret it. |
 | CM9 | **One outcome.** After a final state, a further report is refused 409 `already-final`. A report on an `unconfirmed` command is accepted and replaces it: that state is the hub's inference, and the controller's report of what it did is better evidence. `acknowledged` may precede a final state and may be skipped. |
 | CM10 | **The controller checks the hash.** Before enacting, the controller recomputes `payloadHash` over the payload it received and refuses `hash-mismatch` when it differs from the hash the command carries. It also refuses a command past `expiresAt` by its own clock. These checks are the controller's, as all validation is (D18). The controller receives the payload and the hash from the same hub, so the check detects a payload changed in transit or storage; it does not show that a hub, or anything acting as one, delivered what an approver approved, and it does not authenticate the sender. Binding an approval to a payload end to end needs a signature by the sender or approver. Authentication between sender and controller, such as Loop's one-time password, Trio's shared secret or AndroidAPS's per-client signature (§8), stays the controller's, and the hub carries it unread. |
+| CM23 | **The controller checks doses since.** Before it enacts a dose or carbs, the controller compares the doses and carbs it holds since the command was made, and refuses `doses-since` when its own rule says the command is no longer wanted. The rule and its threshold are the controller's, as all validation is (D18); Trio's refusal when boluses since reach 20 % of the request is one such rule (§8). |
 
 ## 6. Proposals and approvals (proposed)
 
@@ -146,9 +147,10 @@ propose → (evaluate) → approve | reject | withdraw | expire → command (§4
 | CM11 | **A proposal.** A proposal names the proposing instance, the target `channel` and, when known, the target product and `instanceId`; the `payload` and its `payloadHash`, under CM5's size limit; `basedOn`, the [state version](state-intent.md#61-rules) of the target product that the proposer read, required (422 `based-on-required`); and `expiresAt`, under the same limits as CM3. The hub routes the proposal when it is made (§2) and records the destination with its `definitionId`: a proposal with no destination is refused as a command would be, with nothing recorded; a named `instanceId` on another tenant, or none at all, is 404 (CM6); and one that is not the destination is refused 409 `destination-changed`. Its states are `open`, `approved`, `rejected`, `withdrawn` and `expired`; only `open` changes. A proposal is read by its tenant's subjects holding `api:proposals:read` or `api:commands:create`. |
 | CM12 | **Who may propose.** The sender holds `api:proposals:create`, and the proposing instance is its own and holds a granted propose role on the channel: an `other` role that the hub's capability document lists as proposing ([registration §9](registration.md#9-channels-roles-and-provenance)); a hub grants only roles it lists. Without the permission it is 403 `not-authorised`; an instance that is not the sender's is 403 `not-registration-owner`; without the role it is 403 `role-not-granted`. Reading confers neither: a `readable` credential, or a tool holding one, cannot propose. |
 | CM13 | **An approval binds to one payload.** An approval names the `proposalId` and the `payloadHash` it approves. A hash that differs from the proposal's is refused 409 `hash-mismatch`; a proposal past its expiry is refused 409 `proposal-expired`; one that is not `open` is refused 409 `proposal-closed`. The approval routes again: with no destination it is refused as a command would be (§2), and when the destination differs from the one recorded at the proposal it is refused 409 `destination-changed`, because the proposer read one device's state and the change would reach another. A refused approval leaves the proposal `open` and creates no command. An accepted approval creates one command (CM1) whose payload is the proposal's, byte for byte, with the same hash, `proposalId` and `basedOn` set, and the proposal's `expiresAt`. |
-| CM14 | **Who may approve.** The approver holds the permission to send the command itself (`api:commands:create`), else 403 `not-authorised`; approving is sending. The subject that proposed cannot approve its own proposal (403 `self-approval`). Rejecting needs the same permission; withdrawing is the proposer's alone; either by anyone else is 403 `not-authorised`. |
+| CM14 | **Who may approve.** The approver holds the permission to send the command itself (`api:commands:create`), else 403 `not-authorised`; approving is sending. When the proposing instance's propose role is an agent's, the subject that proposed cannot approve it (403 `self-approval`); a person may approve a proposal they made from their own app. Rejecting needs the same permission. Withdrawing is the proposer's, and also the person's: the subject the tenant marks as acting for the person whose therapy it holds may withdraw any proposal. Either by anyone else is 403 `not-authorised`. How a capability document marks a propose role as an agent's is open (§9). |
 | CM15 | **Based on.** An approval is refused 409 `state-changed` when the target product's state version at the hub, at the time of approval, differs from the proposal's `basedOn`. This checks the hub's record of what the controller reported, the way an etag does; it does not tell the approver that the controller's own state is unchanged, which only the controller's own validation can (D18); the controller is given `basedOn` but cannot recompute it, because it versions the hub's record. |
 | CM16 | **Evaluations are evidence.** Anyone who may read the proposal (CM11) may attach an evaluation: a risk check, a second model's opinion, a request for review. An evaluation never changes the proposal's state and never approves. |
+| CM22 | **Doses since the proposal.** An approval is refused 409 `doses-since` when a dose or carb record for the target product reached the hub after the proposal was made and by the time of approval. The proposer could not have seen it, as `basedOn` (A12) does not cover doses or carbs. It is the hub's record, limited by the controller's upload lag; the controller's own check is CM23. A refused approval leaves the proposal open. |
 
 ## 7. Delivery in each mode (proposed)
 
@@ -204,8 +206,9 @@ What in this table bears on the rules:
 ## 9. Open
 
 1. **Choices for the maintainer:**
-   - **How a capability document marks a listed `other` role as proposing** (CM12). Today it
-     lists role names only; nothing says which listed role may propose.
+   - **How a capability document marks a listed `other` role as proposing** (CM12), and as an
+     agent's (CM14). Today it lists role names only; nothing says which listed role may propose,
+     or which belongs to an agent.
    - **The command's expiry after an approval** (CM13 proposes the proposal's `expiresAt`), or a
      new one set at approval within the proposal's.
    - **Refusing a stale approval** (CM15), or only showing the approver that the state version
@@ -237,8 +240,8 @@ What in this table bears on the rules:
      instance that renewed under a new definition receives a payload approved under the old one.
    - **Proposal volume** (UCA-PROP-002). Nothing limits the open proposals one instance holds on
      a channel.
-   - **Doses since `basedOn`** (UCA-PROP-012). The state version covers active intents (A12), not
-     doses or carbs, so a dose proposal passes CM15 after the person has dosed locally.
+   - **Who acts for the person** (CM14). Which subject the tenant marks as acting for the person
+     whose therapy it holds, and whether there may be more than one.
    - **A process holding the destination's credential** (UCA-CMD-014). CM7 and CM18 check the
      subject, not the process: under `single` every holder of `API_SECRET` is one subject, so
      another app can fetch a command, which moves it to `fetched` and out of the controller's
@@ -260,7 +263,7 @@ at or after its expiry, nothing is pushed unbound under `multi`, an approved com
 the payload hash its approval named (the case's `received` payload stands for what was delivered),
 and no instance enacts a command twice (CM21). CM20 has no case; CM17 has one, `sent-and-fetched-are-not-success`.
 
-119 cases.
+125 cases.
 
 <!-- BEGIN GENERATED: commands-cases (tools/nsschema/spec_cases.py) -->
 | case | shows | expected | control |
@@ -281,9 +284,12 @@ and no instance enacts a command twice (CM21). CM20 has no case; CM17 has one, `
 | `commands/approve-by-other-subject` | A subject other than the proposer approves | rules CM14 |  |
 | `commands/approve-creates-command-with-proposal-payload` | An approval creates one command carrying the proposal's payload | rules CM13, CM14, CM1 |  |
 | `commands/approve-destination-changed` | An approval is refused when the named instance no longer holds the sink | rules CM13 | `approve-named-instance-still-holder` |
+| `commands/approve-doses-before-proposal` | A dose that arrived before the proposal does not refuse its approval | rules CM22 | `approve-doses-since` |
+| `commands/approve-doses-since` | An approval is refused when a dose arrived after the proposal was made | rules CM22 | `approve-doses-before-proposal` |
 | `commands/approve-hash-mismatch` | An approval naming a different payload's hash is refused | rules CM13 | `approve-creates-command-with-proposal-payload` |
 | `commands/approve-named-instance-still-holder` | An approval routes to the instance the proposal named while it holds the sink | rules CM13 |  |
 | `commands/approve-no-holder` | An approval when no instance holds the sink any more is refused at routing | rules CM13, CM1 | `approve-before-sink-lapses` |
+| `commands/approve-own-proposal-by-person` | A person approves a proposal they made themselves | rules CM14 | `self-approval-refused` |
 | `commands/approve-rejected-proposal` | A rejected proposal cannot be approved | rules CM13, CM14 | `approve-creates-command-with-proposal-payload` |
 | `commands/approve-state-changed-named-product` | basedOn is checked against the product the proposal names | rules CM15, CM11 | `approve-state-unchanged-named-product` |
 | `commands/approve-state-changed` | An approval after the target's state version moved is refused | rules CM15 | `approve-state-unchanged` |
@@ -295,6 +301,8 @@ and no instance enacts a command twice (CM21). CM20 has no case; CM17 has one, `
 | `commands/command-without-permission` | A sender without api:commands:create is refused and not recorded | rules CM5 | `route-to-holder` |
 | `commands/enact-after-expiry-refused` | The controller refuses a command past expiresAt by its own clock | rules CM10 | `enact-identical-payload-succeeds` |
 | `commands/enact-after-restart-once` | A command delivered again after the controller restarts is not enacted again | rules CM21 | `enact-identical-payload-succeeds` |
+| `commands/enact-dose-no-doses-since` | The controller enacts a dose when it has not dosed since the command was made | rules CM23 | `enact-dose-refused-doses-since` |
+| `commands/enact-dose-refused-doses-since` | The controller refuses a dose when it has dosed since the command was made | rules CM23 | `enact-dose-no-doses-since` |
 | `commands/enact-hash-mismatch-refused` | The controller refuses a received payload whose hash differs | rules CM10, CM7, CM8 | `enact-identical-payload-succeeds` |
 | `commands/enact-identical-payload-succeeds` | The controller enacts a payload whose hash matches | rules CM10 |  |
 | `commands/enact-push-then-fetch-once` | A command pushed and then fetched is enacted once | rules CM21, CM18 | `enact-identical-payload-succeeds` |
@@ -383,5 +391,6 @@ and no instance enacts a command twice (CM21). CM20 has no case; CM17 has one, `
 | `commands/sent-and-fetched-are-not-success` | A push and a fetch are receipts, not outcomes | rules CM9, CM17 |  |
 | `commands/undeliverable-not-rerouted` | A destination that stops holding before fetching makes the command undeliverable | rules CM2 | `fetched-before-holder-changes` |
 | `commands/withdraw-by-other-subject` | Only the proposer may withdraw | rules CM14 | `withdraw-by-proposer` |
+| `commands/withdraw-by-person` | The person withdraws an agent's proposal | rules CM14 | `withdraw-by-other-subject` |
 | `commands/withdraw-by-proposer` | The proposer withdraws its proposal | rules CM14 |  |
 <!-- END GENERATED: commands-cases -->

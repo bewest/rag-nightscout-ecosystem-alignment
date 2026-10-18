@@ -26,6 +26,7 @@ instances:
     simulated: false                   # optional; a simulated sink is never a destination
     sinks: {override: [0, null]}       # channel: [from, until), null = still holding
     proposes: [override]               # optional: channels it holds a granted propose role on
+    agent: true                        # optional, default true: its propose role is an agent's (CM14)
 declares:                              # products declaring each channel, per tenant; none = no-command-destination
   A: {override: [ControllerA], example/slot: [ControllerA, ControllerB]}
 shared: [override]                     # optional: shared channels, where §2's product inference does not apply
@@ -33,6 +34,11 @@ maxPayloadBytes: 4096                  # optional, default 4096: CM5
 subjects:
   s-care: {tenant: A, permissions: [api:commands:create]}
   s-ctl-a: {tenant: A, permissions: []}
+  s-person: {tenant: A, person: true, permissions: []}   # person: acts for the person whose therapy the tenant holds (CM14)
+doseRecords:                           # optional: per tenant, product: times dose or carb records reached the hub (CM22)
+  A: {ControllerA: [30]}
+controllerDoses:                       # optional: per instance, times of the controller's own doses (CM23)
+  i-ctl-a: [30]
 stateVersions:                         # optional: per tenant, product: [[from, version], ...]
   A: {ControllerA: [[0, v1], [50, v2]]}
 calls:

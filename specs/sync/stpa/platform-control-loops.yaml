@@ -431,9 +431,10 @@ ucas:
     text: A dose proposal is approved after the person dosed locally, because the state version covers intents and not doses or carbs.
     hazards: [HAZ-1]
     severity: S4
-    constraints: [A12, CM15]
-    status: gap
-    open: commands §9
+    constraints: [A12, CM15, CM22]
+    status: covered
+    verification: [commands/approve-doses-since, commands/approve-doses-before-proposal]
+    note: CM22 refuses an approval when a dose or carb record arrived after the proposal; it is limited by the upload lag, and the controller's own check is CM23.
   - id: UCA-PROP-013
     action: CA-PROP-APPROVE
     type: provided

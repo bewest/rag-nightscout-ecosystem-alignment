@@ -1,0 +1,100 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §6, §5. Times are seconds; expectations authored by hand.
+id: approve-own-proposal-by-person
+title: A person approves a proposal they made themselves
+rules:
+- CM14
+description: 's-person proposes from an instance whose propose role is not an agent''s,
+  then approves it: the self-approval refusal applies only to an agent''s proposal.'
+control: self-approval-refused
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+  i-agent:
+    tenant: A
+    subject: s-agent
+    product: AgentTool
+    definitionId: sha256:d-agent
+    sinks: {}
+    proposes:
+    - override
+  i-person-app:
+    tenant: A
+    subject: s-person
+    product: PersonApp
+    definitionId: sha256:d-person
+    agent: false
+    sinks: {}
+    proposes:
+    - override
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+  s-agent:
+    tenant: A
+    permissions:
+    - api:proposals:create
+  s-person:
+    tenant: A
+    person: true
+    permissions:
+    - api:proposals:create
+    - api:commands:create
+stateVersions:
+  A:
+    ControllerA:
+    - - 0
+      - v1
+calls:
+- at: 20
+  kind: propose
+  tenant: A
+  subject: s-person
+  instance: i-person-app
+  channel: override
+  payload:
+    action: start
+    preset: example
+  basedOn: v1
+  expiresAt: 100
+- at: 50
+  kind: approve
+  tenant: A
+  subject: s-person
+  proposal: p1
+  approves:
+    action: start
+    preset: example
+expected:
+  calls:
+  - status: 201
+    proposalId: p1
+  - status: 201
+    commandId: c1
+    state: pending
+  proposals:
+    p1:
+      state: approved
+  commands:
+    c1:
+      state: pending
+      destination: i-ctl-a
+      proposalId: p1
