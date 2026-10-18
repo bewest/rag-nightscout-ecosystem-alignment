@@ -97,6 +97,8 @@ property of the agent's host, not of the tool that fetched the data: a tool that
 local still returns its output into the conversation, which goes to the model provider when the
 model is a hosted service. Lumose (repository `GlycemicGPT`) states this choice in its README; the
 evidence table records which tools do.
+A plain-language page for people connecting such a tool to their own site is
+[giving an AI tool access to your Nightscout data](../../guides/ai-tools-and-your-nightscout-data-2026-10-18.md).
 
 ### 3.2 MCP is an adapter
 

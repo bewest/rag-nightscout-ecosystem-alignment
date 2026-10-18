@@ -48,6 +48,7 @@ const SCOPE = [
   'docs/00-overview',
   'docs/30-design',
   'docs/40-migration',
+  'docs/guides',
   'docs/60-research/remedial',
   'docs/60-research/modernization',
   'docs/60-research/tenancy',
