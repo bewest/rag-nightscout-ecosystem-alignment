@@ -1,0 +1,61 @@
+# Synthetic. SPEC-ACTIVE-STATE; state and intent §6. Expectations authored by hand.
+id: requested-without-applied
+title: A request with no applied record is reported as requested only
+rules:
+- A10
+control: requested-and-applied
+description: Shaped like AndroidAPS's profile switch, whose effective profile switch is written only after
+  the pump accepts it.
+declarations:
+- product: ControllerA
+  stateSpans:
+  - category: ProfileState
+    kind: ProfileSwitch
+    slot: profileSwitch
+    exclusiveWithinSlot: true
+    supersedes: true
+    wire:
+      collection: treatments
+      eventType: Profile Switch
+      identity:
+      - identifier
+      durationField: duration
+      durationUnit: minutes
+      endedEncoding: amend-duration
+      paths:
+      - timeshift
+    applied:
+      collection: treatments
+      eventType: Note
+      discriminator:
+        path: originalProfileName
+        test: exists
+      durationField: duration
+      durationUnit: minutes
+records:
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    identifier: p1
+    eventType: Profile Switch
+    created_at: '2026-10-18T10:00:00Z'
+    duration: 60
+expected:
+  instances:
+  - product: ControllerA
+    kind: ProfileSwitch
+    layer: requested
+    key: identifier=p1
+    start: '2026-10-18T10:00:00Z'
+    end: '2026-10-18T11:00:00Z'
+    endReason: expired
+  activeAt:
+  - at: '2026-10-18T10:10:00Z'
+    active:
+    - product: ControllerA
+      kind: ProfileSwitch
+      layer: requested
+      key: identifier=p1
+      start: '2026-10-18T10:00:00Z'
+      end: '2026-10-18T11:00:00Z'

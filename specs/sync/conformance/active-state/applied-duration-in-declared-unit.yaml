@@ -1,0 +1,97 @@
+# Synthetic. SPEC-ACTIVE-STATE; state and intent §6. Expectations authored by hand.
+id: applied-duration-in-declared-unit
+title: An applied sample is in effect from its own time, for its duration in the declared unit
+rules:
+- A3
+- A10
+- A11
+control: applied-duration-unit-minutes
+description: 'Shaped like Loop''s devicestatus override: override.timestamp is the sample time and override.duration
+  the seconds remaining. cgm-remote-monitor reads seconds; Nocturne reads minutes (LAB-HUB-ACTIVE-STATE).
+  The devicestatus created_at is two minutes after the sample time, so the start comes from timeField.'
+declarations:
+- product: ControllerA
+  stateSpans:
+  - category: Override
+    kind: AppliedOverride
+    slot: override
+    exclusiveWithinSlot: true
+    applied:
+      collection: devicestatus
+      discriminator:
+        path: override
+        test: is-object
+      durationField: override.duration
+      durationUnit: seconds
+      timeField: override.timestamp
+      activeField: override.active
+records:
+- product: ControllerA
+  collection: devicestatus
+  op: write
+  doc:
+    created_at: '2026-10-18T10:02:00Z'
+    override:
+      timestamp: '2026-10-18T10:00:00Z'
+      active: true
+      duration: 1800
+- product: ControllerA
+  collection: devicestatus
+  op: write
+  doc:
+    created_at: '2026-10-18T10:07:00Z'
+    override:
+      timestamp: '2026-10-18T10:05:00Z'
+      active: true
+      duration: 1500
+- product: ControllerA
+  collection: devicestatus
+  op: write
+  doc:
+    created_at: '2026-10-18T10:12:00Z'
+    override:
+      timestamp: '2026-10-18T10:10:00Z'
+      active: true
+      duration: 1200
+expected:
+  instances:
+  - product: ControllerA
+    kind: AppliedOverride
+    layer: applied
+    key: AppliedOverride@2026-10-18T10:00:00Z
+    start: '2026-10-18T10:00:00Z'
+    end: '2026-10-18T10:05:00Z'
+    endReason: null
+  - product: ControllerA
+    kind: AppliedOverride
+    layer: applied
+    key: AppliedOverride@2026-10-18T10:05:00Z
+    start: '2026-10-18T10:05:00Z'
+    end: '2026-10-18T10:10:00Z'
+    endReason: null
+  - product: ControllerA
+    kind: AppliedOverride
+    layer: applied
+    key: AppliedOverride@2026-10-18T10:10:00Z
+    start: '2026-10-18T10:10:00Z'
+    end: '2026-10-18T10:30:00Z'
+    endReason: null
+  activeAt:
+  - at: '2026-10-18T10:01:00Z'
+    active:
+    - product: ControllerA
+      kind: AppliedOverride
+      layer: applied
+      key: AppliedOverride@2026-10-18T10:00:00Z
+      start: '2026-10-18T10:00:00Z'
+      end: '2026-10-18T10:05:00Z'
+  - at: '2026-10-18T10:20:00Z'
+    active:
+    - product: ControllerA
+      kind: AppliedOverride
+      layer: applied
+      key: AppliedOverride@2026-10-18T10:10:00Z
+      start: '2026-10-18T10:10:00Z'
+      end: '2026-10-18T10:30:00Z'
+  - at: '2026-10-18T10:40:00Z'
+    active: []

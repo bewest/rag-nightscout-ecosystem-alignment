@@ -1,0 +1,56 @@
+# Synthetic. SPEC-ACTIVE-STATE; state and intent §6. Expectations authored by hand.
+id: deleted-before-start
+title: A record deleted before its start is listed as ended, deleted before start, and is never active
+rules:
+- A6
+control: scheduled-not-deleted
+description: A record deleted before its start is listed as ended, deleted before start, and is never
+  active.
+declarations:
+- product: ControllerA
+  stateSpans:
+  - category: Override
+    kind: Override
+    slot: override
+    exclusiveWithinSlot: true
+    supersedes: true
+    states:
+    - active
+    - ended
+    wire:
+      collection: treatments
+      eventType: Temporary Override
+      identity:
+      - _id
+      durationField: duration
+      durationUnit: minutes
+      indefinite:
+        field: durationType
+        value: indefinite
+      endedEncoding: amend-duration
+records:
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc: &id001
+    _id: d1
+    eventType: Temporary Override
+    created_at: '2026-10-18T11:00:00Z'
+    duration: 30
+- product: ControllerA
+  collection: treatments
+  op: delete
+  doc: *id001
+  receivedAt: '2026-10-18T10:30:00Z'
+expected:
+  instances:
+  - product: ControllerA
+    kind: Override
+    layer: requested
+    key: _id=d1
+    start: '2026-10-18T11:00:00Z'
+    end: '2026-10-18T11:00:00Z'
+    endReason: deletedBeforeStart
+  activeAt:
+  - at: '2026-10-18T11:10:00Z'
+    active: []

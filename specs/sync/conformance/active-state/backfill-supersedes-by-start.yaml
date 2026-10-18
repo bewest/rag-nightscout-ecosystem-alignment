@@ -1,0 +1,80 @@
+# Synthetic. SPEC-ACTIVE-STATE; state and intent §6. Expectations authored by hand.
+id: backfill-supersedes-by-start
+title: An earlier instance received later is still ended by the later-starting one
+rules:
+- A7
+control: in-order-same-result
+description: Nocturne supersedes only spans starting at or before the new one, so a backfilled earlier
+  override stays open (LAB-HUB-ACTIVE-STATE).
+declarations:
+- product: ControllerA
+  stateSpans:
+  - category: Override
+    kind: Override
+    slot: override
+    exclusiveWithinSlot: true
+    supersedes: true
+    states:
+    - active
+    - ended
+    wire:
+      collection: treatments
+      eventType: Temporary Override
+      identity:
+      - _id
+      durationField: duration
+      durationUnit: minutes
+      indefinite:
+        field: durationType
+        value: indefinite
+      endedEncoding: amend-duration
+records:
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    _id: ovB
+    eventType: Temporary Override
+    created_at: '2026-10-18T11:00:00Z'
+    durationType: indefinite
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    _id: ovA
+    eventType: Temporary Override
+    created_at: '2026-10-18T10:00:00Z'
+    durationType: indefinite
+expected:
+  instances:
+  - product: ControllerA
+    kind: Override
+    layer: requested
+    key: _id=ovA
+    start: '2026-10-18T10:00:00Z'
+    end: '2026-10-18T11:00:00Z'
+    endReason: superseded
+  - product: ControllerA
+    kind: Override
+    layer: requested
+    key: _id=ovB
+    start: '2026-10-18T11:00:00Z'
+    end: null
+    endReason: null
+  activeAt:
+  - at: '2026-10-18T10:30:00Z'
+    active:
+    - product: ControllerA
+      kind: Override
+      layer: requested
+      key: _id=ovA
+      start: '2026-10-18T10:00:00Z'
+      end: '2026-10-18T11:00:00Z'
+  - at: '2026-10-18T12:00:00Z'
+    active:
+    - product: ControllerA
+      kind: Override
+      layer: requested
+      key: _id=ovB
+      start: '2026-10-18T11:00:00Z'
+      end: null

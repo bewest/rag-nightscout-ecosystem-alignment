@@ -868,6 +868,16 @@
      ],
      "description": "The unit of `durationField`'s value."
     },
+    "timeField": {
+     "type": "string",
+     "minLength": 1,
+     "description": "The dotted path of the field that carries the record's own time: an instance's start, or the time of a sampled record. Absent: `created_at`. A reader never takes a record's time from its `_id` (identity I3)."
+    },
+    "activeField": {
+     "type": "string",
+     "minLength": 1,
+     "description": "For a record sampled each cycle: the dotted path of the boolean that says whether the intent is in effect at the record's time. A record whose value is false ends what an earlier record put in effect."
+    },
     "vocabularies": {
      "type": "object",
      "description": "Closed value sets carried on the wire, keyed by path.",

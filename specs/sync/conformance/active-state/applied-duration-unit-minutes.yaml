@@ -1,0 +1,82 @@
+# Synthetic. SPEC-ACTIVE-STATE; state and intent §6. Expectations authored by hand.
+id: applied-duration-unit-minutes
+title: The same samples declared in minutes stay in effect for twenty hours
+rules:
+- A11
+description: The same samples declared in minutes stay in effect for twenty hours.
+declarations:
+- product: ControllerA
+  stateSpans:
+  - category: Override
+    kind: AppliedOverride
+    slot: override
+    exclusiveWithinSlot: true
+    applied:
+      collection: devicestatus
+      discriminator:
+        path: override
+        test: is-object
+      durationField: override.duration
+      durationUnit: minutes
+      timeField: override.timestamp
+      activeField: override.active
+records:
+- product: ControllerA
+  collection: devicestatus
+  op: write
+  doc:
+    created_at: '2026-10-18T10:02:00Z'
+    override:
+      timestamp: '2026-10-18T10:00:00Z'
+      active: true
+      duration: 1800
+- product: ControllerA
+  collection: devicestatus
+  op: write
+  doc:
+    created_at: '2026-10-18T10:07:00Z'
+    override:
+      timestamp: '2026-10-18T10:05:00Z'
+      active: true
+      duration: 1500
+- product: ControllerA
+  collection: devicestatus
+  op: write
+  doc:
+    created_at: '2026-10-18T10:12:00Z'
+    override:
+      timestamp: '2026-10-18T10:10:00Z'
+      active: true
+      duration: 1200
+expected:
+  instances:
+  - product: ControllerA
+    kind: AppliedOverride
+    layer: applied
+    key: AppliedOverride@2026-10-18T10:00:00Z
+    start: '2026-10-18T10:00:00Z'
+    end: '2026-10-18T10:05:00Z'
+    endReason: null
+  - product: ControllerA
+    kind: AppliedOverride
+    layer: applied
+    key: AppliedOverride@2026-10-18T10:05:00Z
+    start: '2026-10-18T10:05:00Z'
+    end: '2026-10-18T10:10:00Z'
+    endReason: null
+  - product: ControllerA
+    kind: AppliedOverride
+    layer: applied
+    key: AppliedOverride@2026-10-18T10:10:00Z
+    start: '2026-10-18T10:10:00Z'
+    end: '2026-10-19T06:10:00Z'
+    endReason: null
+  activeAt:
+  - at: '2026-10-18T10:40:00Z'
+    active:
+    - product: ControllerA
+      kind: AppliedOverride
+      layer: applied
+      key: AppliedOverride@2026-10-18T10:10:00Z
+      start: '2026-10-18T10:10:00Z'
+      end: '2026-10-19T06:10:00Z'

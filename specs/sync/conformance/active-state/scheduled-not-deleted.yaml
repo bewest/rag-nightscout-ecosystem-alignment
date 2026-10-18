@@ -1,0 +1,55 @@
+# Synthetic. SPEC-ACTIVE-STATE; state and intent §6. Expectations authored by hand.
+id: scheduled-not-deleted
+title: The same scheduled record, not deleted, is active from its start
+rules:
+- A2
+description: The same scheduled record, not deleted, is active from its start.
+declarations:
+- product: ControllerA
+  stateSpans:
+  - category: Override
+    kind: Override
+    slot: override
+    exclusiveWithinSlot: true
+    supersedes: true
+    states:
+    - active
+    - ended
+    wire:
+      collection: treatments
+      eventType: Temporary Override
+      identity:
+      - _id
+      durationField: duration
+      durationUnit: minutes
+      indefinite:
+        field: durationType
+        value: indefinite
+      endedEncoding: amend-duration
+records:
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    _id: d1
+    eventType: Temporary Override
+    created_at: '2026-10-18T11:00:00Z'
+    duration: 30
+expected:
+  instances:
+  - product: ControllerA
+    kind: Override
+    layer: requested
+    key: _id=d1
+    start: '2026-10-18T11:00:00Z'
+    end: '2026-10-18T11:30:00Z'
+    endReason: expired
+  activeAt:
+  - at: '2026-10-18T11:10:00Z'
+    active:
+    - product: ControllerA
+      kind: Override
+      layer: requested
+      key: _id=d1
+      start: '2026-10-18T11:00:00Z'
+      end: '2026-10-18T11:30:00Z'

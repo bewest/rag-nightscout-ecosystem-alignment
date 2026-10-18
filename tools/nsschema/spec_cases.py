@@ -52,6 +52,7 @@ LAYERS = {
             "quirks/catalogue-mapping-version-outside",
             "quirks/catalogue-mapping-version-unknown",
             "quirks/same-as-typed-write-declared",
+            ("active-state/", CASES / "active-state"),
         ],
     },
 }

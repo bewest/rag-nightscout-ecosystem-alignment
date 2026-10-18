@@ -125,6 +125,8 @@ spec:
       - override.duration
       durationField: override.duration
       durationUnit: seconds
+      timeField: override.timestamp
+      activeField: override.active
       linkToRequest: null
       description: Written with each loop cycle's devicestatus; active is false when no override
         is on. override.duration is the remaining time in seconds, absent for an indefinite
@@ -185,6 +187,10 @@ spec:
     - claim: 'override.duration: round(actualEndDate - now), a TimeInterval in seconds; nil
         (field not written) for an indefinite override'
       source: NightscoutService fe075ef NightscoutServiceKit/Extensions/StoredDosingDecision.swift:129
+      basis: read
+    - claim: override.timestamp is the dosing decision's date, the time the status was sampled;
+        duration counts from it
+      source: NightscoutService fe075ef NightscoutServiceKit/Extensions/StoredDosingDecision.swift:122,131-136
       basis: read
     - claim: OverrideStatus writes duration as the TimeInterval unchanged
       source: NightscoutKit 4ec9fd1 Sources/NightscoutKit/Models/OverrideStatus.swift:17,44-46

@@ -1,0 +1,81 @@
+# Synthetic. SPEC-ACTIVE-STATE; state and intent §6. Expectations authored by hand.
+id: products-never-supersede-each-other
+title: Instances of two products on one slot are both reported; neither ends the other
+rules:
+- A1
+control: same-product-supersedes
+description: Instances of two products on one slot are both reported; neither ends the other.
+declarations:
+- product: ControllerA
+  stateSpans:
+  - &id001
+    category: Override
+    kind: Override
+    slot: override
+    exclusiveWithinSlot: true
+    supersedes: true
+    states:
+    - active
+    - ended
+    wire:
+      collection: treatments
+      eventType: Temporary Override
+      identity:
+      - _id
+      durationField: duration
+      durationUnit: minutes
+      indefinite:
+        field: durationType
+        value: indefinite
+      endedEncoding: amend-duration
+- product: ControllerB
+  stateSpans:
+  - *id001
+records:
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    _id: ovA
+    eventType: Temporary Override
+    created_at: '2026-10-18T10:00:00Z'
+    durationType: indefinite
+- product: ControllerB
+  collection: treatments
+  op: write
+  doc:
+    _id: ovB
+    eventType: Temporary Override
+    created_at: '2026-10-18T10:30:00Z'
+    durationType: indefinite
+expected:
+  instances:
+  - product: ControllerA
+    kind: Override
+    layer: requested
+    key: _id=ovA
+    start: '2026-10-18T10:00:00Z'
+    end: null
+    endReason: null
+  - product: ControllerB
+    kind: Override
+    layer: requested
+    key: _id=ovB
+    start: '2026-10-18T10:30:00Z'
+    end: null
+    endReason: null
+  activeAt:
+  - at: '2026-10-18T11:00:00Z'
+    active:
+    - product: ControllerA
+      kind: Override
+      layer: requested
+      key: _id=ovA
+      start: '2026-10-18T10:00:00Z'
+      end: null
+    - product: ControllerB
+      kind: Override
+      layer: requested
+      key: _id=ovB
+      start: '2026-10-18T10:30:00Z'
+      end: null

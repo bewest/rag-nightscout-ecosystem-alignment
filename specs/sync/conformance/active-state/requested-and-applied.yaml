@@ -1,0 +1,81 @@
+# Synthetic. SPEC-ACTIVE-STATE; state and intent §6. Expectations authored by hand.
+id: requested-and-applied
+title: With the applied record, both layers are reported
+rules:
+- A10
+description: With the applied record, both layers are reported.
+declarations:
+- product: ControllerA
+  stateSpans:
+  - category: ProfileState
+    kind: ProfileSwitch
+    slot: profileSwitch
+    exclusiveWithinSlot: true
+    supersedes: true
+    wire:
+      collection: treatments
+      eventType: Profile Switch
+      identity:
+      - identifier
+      durationField: duration
+      durationUnit: minutes
+      endedEncoding: amend-duration
+      paths:
+      - timeshift
+    applied:
+      collection: treatments
+      eventType: Note
+      discriminator:
+        path: originalProfileName
+        test: exists
+      durationField: duration
+      durationUnit: minutes
+records:
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    identifier: p1
+    eventType: Profile Switch
+    created_at: '2026-10-18T10:00:00Z'
+    duration: 60
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    identifier: e1
+    eventType: Note
+    created_at: '2026-10-18T10:01:00Z'
+    duration: 59
+    originalProfileName: Default
+expected:
+  instances:
+  - product: ControllerA
+    kind: ProfileSwitch
+    layer: applied
+    key: ProfileSwitch@2026-10-18T10:01:00Z
+    start: '2026-10-18T10:01:00Z'
+    end: '2026-10-18T11:00:00Z'
+    endReason: null
+  - product: ControllerA
+    kind: ProfileSwitch
+    layer: requested
+    key: identifier=p1
+    start: '2026-10-18T10:00:00Z'
+    end: '2026-10-18T11:00:00Z'
+    endReason: expired
+  activeAt:
+  - at: '2026-10-18T10:10:00Z'
+    active:
+    - product: ControllerA
+      kind: ProfileSwitch
+      layer: applied
+      key: ProfileSwitch@2026-10-18T10:01:00Z
+      start: '2026-10-18T10:01:00Z'
+      end: '2026-10-18T11:00:00Z'
+    - product: ControllerA
+      kind: ProfileSwitch
+      layer: requested
+      key: identifier=p1
+      start: '2026-10-18T10:00:00Z'
+      end: '2026-10-18T11:00:00Z'

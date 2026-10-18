@@ -1,0 +1,62 @@
+# Synthetic. SPEC-ACTIVE-STATE; state and intent §6. Expectations authored by hand.
+id: supersedes-without-overlay
+title: Without overlay, a superseding kind ends the open-ended instance for good
+rules:
+- A7
+- A8
+description: Without overlay, a superseding kind ends the open-ended instance for good.
+declarations:
+- product: ControllerA
+  stateSpans:
+  - category: LoopMode
+    kind: RunningMode
+    slot: runningMode
+    exclusiveWithinSlot: true
+    wire:
+      collection: treatments
+      eventType: OpenAPS Offline
+      identity:
+      - identifier
+      durationField: duration
+      durationUnit: minutes
+      indefinite:
+        field: durationType
+        value: indefinite
+      endedEncoding: amend-duration
+    supersedes: true
+records:
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    identifier: m1
+    eventType: OpenAPS Offline
+    created_at: '2026-10-18T09:00:00Z'
+    durationType: indefinite
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    identifier: m2
+    eventType: OpenAPS Offline
+    created_at: '2026-10-18T10:00:00Z'
+    duration: 30
+expected:
+  instances:
+  - product: ControllerA
+    kind: RunningMode
+    layer: requested
+    key: identifier=m1
+    start: '2026-10-18T09:00:00Z'
+    end: '2026-10-18T10:00:00Z'
+    endReason: superseded
+  - product: ControllerA
+    kind: RunningMode
+    layer: requested
+    key: identifier=m2
+    start: '2026-10-18T10:00:00Z'
+    end: '2026-10-18T10:30:00Z'
+    endReason: expired
+  activeAt:
+  - at: '2026-10-18T10:40:00Z'
+    active: []

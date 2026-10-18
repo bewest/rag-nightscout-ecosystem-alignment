@@ -570,6 +570,8 @@ def test_generated_registrations_declare_the_established_units():
     assert loop["kind"] == "TemporaryScheduleOverride"
     assert (loop["applied"]["durationField"], loop["applied"]["durationUnit"]) == (
         "override.duration", "seconds")
+    assert loop["applied"]["timeField"] == "override.timestamp"
+    assert loop["applied"]["activeField"] == "override.active"
     assert (loop["wire"]["durationField"], loop["wire"]["durationUnit"]) == (
         "duration", "minutes")
     aaps = _committed("androidaps")["spec"]["stateSpans"][0]
@@ -591,6 +593,8 @@ def test_generated_registrations_without_the_intent_forms_still_validate(key):
             if "paths" in carrier:
                 carrier["paths"] = [p["path"] if isinstance(p, dict) else p
                                     for p in carrier["paths"]]
+            carrier.pop("timeField", None)
+            carrier.pop("activeField", None)
             if name != "wire":
                 carrier.pop("durationField", None)
                 carrier.pop("durationUnit", None)
@@ -598,3 +602,17 @@ def test_generated_registrations_without_the_intent_forms_still_validate(key):
             assert isinstance(value, str)
     assert _valid(registration)
     assert sync_model.unknown_grammar_fields(registration, SCHEMA) == []
+
+
+# SPEC-ACTIVE-STATE: a carrier names the field holding its record's own time.
+@pytest.mark.parametrize("carrier", ["wire", "applied"])
+@pytest.mark.parametrize("member", ["timeField", "activeField"])
+def test_a_carrier_declares_its_time_and_active_fields(carrier, member):
+    doc = _fixture()
+    span = _span0(doc)
+    span.setdefault(carrier, {"collection": "devicestatus"})
+    span[carrier][member] = "override.timestamp"
+    assert _valid(doc)
+    for bad in ("", 5, None):
+        span[carrier][member] = bad
+        assert not _valid(doc), bad

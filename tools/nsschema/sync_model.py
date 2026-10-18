@@ -108,6 +108,8 @@ _LOOP_SPANS = [
                       "override.currentCorrectionRange", "override.duration"],
             "durationField": "override.duration",
             "durationUnit": "seconds",
+            "timeField": "override.timestamp",
+            "activeField": "override.active",
             "linkToRequest": None,
             "description": "Written with each loop cycle's devicestatus; active is false "
                            "when no override is on. override.duration is the remaining "
@@ -157,6 +159,9 @@ _LOOP_SPANS = [
             ev("override.duration: round(actualEndDate - now), a TimeInterval in seconds; "
                "nil (field not written) for an indefinite override",
                f"{NSSERVICE} NightscoutServiceKit/Extensions/StoredDosingDecision.swift:129"),
+            ev("override.timestamp is the dosing decision's date, the time the status was "
+               "sampled; duration counts from it",
+               f"{NSSERVICE} NightscoutServiceKit/Extensions/StoredDosingDecision.swift:122,131-136"),
             ev("OverrideStatus writes duration as the TimeInterval unchanged",
                f"{NSKIT} Sources/NightscoutKit/Models/OverrideStatus.swift:17,44-46"),
             ev("preset fields uploaded in profile.loopSettings.overridePresets",

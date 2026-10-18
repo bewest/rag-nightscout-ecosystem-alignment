@@ -1,0 +1,68 @@
+# Synthetic. SPEC-ACTIVE-STATE; state and intent §6. Expectations authored by hand.
+id: different-identity-same-instant
+title: Different identities at one instant are two instances; the later received supersedes
+rules:
+- A2
+- A7
+description: Different identities at one instant are two instances; the later received supersedes.
+declarations:
+- product: ControllerA
+  stateSpans:
+  - category: TemporaryTarget
+    kind: TempTarget
+    slot: temporaryTarget
+    exclusiveWithinSlot: true
+    supersedes: true
+    states:
+    - active
+    - ended
+    wire:
+      collection: treatments
+      eventType: Temporary Target
+      identity:
+      - identifier
+      durationField: duration
+      durationUnit: minutes
+      endedEncoding: amend-duration
+records:
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    identifier: i1
+    eventType: Temporary Target
+    created_at: '2026-10-18T10:00:00Z'
+    duration: 60
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    identifier: i2
+    eventType: Temporary Target
+    created_at: '2026-10-18T10:00:00Z'
+    duration: 30
+expected:
+  instances:
+  - product: ControllerA
+    kind: TempTarget
+    layer: requested
+    key: identifier=i1
+    start: '2026-10-18T10:00:00Z'
+    end: '2026-10-18T10:00:00Z'
+    endReason: superseded
+  - product: ControllerA
+    kind: TempTarget
+    layer: requested
+    key: identifier=i2
+    start: '2026-10-18T10:00:00Z'
+    end: '2026-10-18T10:30:00Z'
+    endReason: expired
+  activeAt:
+  - at: '2026-10-18T10:10:00Z'
+    active:
+    - product: ControllerA
+      kind: TempTarget
+      layer: requested
+      key: identifier=i2
+      start: '2026-10-18T10:00:00Z'
+      end: '2026-10-18T10:30:00Z'

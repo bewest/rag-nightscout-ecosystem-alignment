@@ -1,0 +1,57 @@
+# Synthetic. SPEC-ACTIVE-STATE; state and intent §6. Expectations authored by hand.
+id: field-unit-from-declaration
+title: A field's unit is reported from its typed path
+rules:
+- A11
+control: field-unit-undeclared
+description: Shaped like AndroidAPS's profile switch, whose timeshift is milliseconds on the 3.x wire.
+  cgm-remote-monitor reads milliseconds; Nocturne reads hours (LAB-HUB-ACTIVE-STATE).
+declarations:
+- product: ControllerA
+  stateSpans:
+  - category: ProfileState
+    kind: ProfileSwitch
+    slot: profileSwitch
+    exclusiveWithinSlot: true
+    supersedes: true
+    wire:
+      collection: treatments
+      eventType: Profile Switch
+      identity:
+      - identifier
+      durationField: duration
+      durationUnit: minutes
+      endedEncoding: amend-duration
+      paths:
+      - path: timeshift
+        unit: milliseconds
+records:
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    identifier: p1
+    eventType: Profile Switch
+    created_at: '2026-10-18T10:00:00Z'
+    duration: 60
+    timeshift: 3600000
+expected:
+  instances:
+  - product: ControllerA
+    kind: ProfileSwitch
+    layer: requested
+    key: identifier=p1
+    start: '2026-10-18T10:00:00Z'
+    end: '2026-10-18T11:00:00Z'
+    endReason: expired
+  activeAt:
+  - at: '2026-10-18T10:10:00Z'
+    active:
+    - product: ControllerA
+      kind: ProfileSwitch
+      layer: requested
+      key: identifier=p1
+      start: '2026-10-18T10:00:00Z'
+      end: '2026-10-18T11:00:00Z'
+      units:
+        timeshift: milliseconds

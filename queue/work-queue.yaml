@@ -16712,44 +16712,62 @@ items:
     title: "Decide and specify what a hub reports as active at a time, and a therapy-state version an approval can bind to"
     parcel: platform
     repo: rag-nightscout-ecosystem-alignment
-    branch: main
-    base: main@010e1661
-    state: not-started
+    branch: docs/platform-spec-index-2026-10-18
+    base: main@060a98fc
+    state: done
     pr: []
     blast_radius: >
-      A section of docs/30-design/platform/spec/state-intent.md (§6) turned
-      from a gap into rules, with synthetic cases and a reference function
-      under tools/nsschema/ deciding "active at t" from records and a
-      registration's declarations; the hub active-state lab re-run against
-      the rules on both hubs. Ships nothing.
+      State and intent §6 turned from a gap into rules A1-A12 with a
+      disagreement map and seven choices for the maintainer (§6.3);
+      tools/nsschema/active_state.py (new reference function);
+      tools/nsschema/test_active_state.py (new); 28 hand-authored cases
+      under specs/sync/conformance/active-state/; the grammar's carrier gains
+      timeField and activeField (additive), declared on Loop's applied
+      override (override.timestamp, override.active, read from
+      NightscoutService StoredDosingDecision.swift:118-136 at 2cef489);
+      grammar tests for both; the state-intent case table gains the
+      active-state directory. Ships nothing.
     review: maintainer
     operator_visible: ""
     semver: n/a
     semver_reason: specification in this repository; ships nothing
     register: []
     gates:
-      - no-gate: >
-          Not started. The gate will be a pytest suite over new cases, one per
-          measured disagreement (cancel encodings, a unit on an applied
-          carrier, overlay fallback, a field unit, equal identity, backfill
-          order), each paired with its control, and each rule shown
-          non-vacuous by a weakening that turns its case red.
+      - run: python3 -m pytest -q tools/nsschema/test_active_state.py
+        kind: unit
+        describe: >
+          FAILS when the reference function does not reproduce a case's
+          hand-authored instances, active sets or state-version relations, a
+          case's declarations are not grammar-valid, or a control is missing
+          or identical to its case. GREEN on 2026-10-18: 131 tests over 28
+          cases.
+      - run: python3 -m tools.nsschema.spec_cases state-intent --check
+        kind: static
+        describe: >
+          FAILS when the state-intent case table (now including
+          active-state/) differs from the case files.
     blocks_on: [SPEC-STATE-INTENT, SCHEMA-INTENT-GAPS]
     evidence:
       - docs/30-design/platform/spec/state-intent.md
       - tools/lab/hub-active-state/results/RESULTS.md
+      - specs/sync/conformance/active-state
     notes: >
-      Rules to decide, as state and intent §6 frames them: an end encoding
-      ends the instance it names and is not an instance; equal identity is
-      one instance amended; supersession orders by instance start, not
-      arrival; overlay returns to the open-ended instance; units come from
-      the declaration. Whether AndroidAPS returns to an earlier permanent
-      profile after a timed switch is not established and needs a source
-      read before overlay is declared for its profileSwitch. The therapy-state
-      version is the open question SPEC-REG-COMMANDS names for proposals
-      (D19's etags version the registration, not the active intents). Under
-      D18 the hub still never composes: this rule says which instances are
-      active, not what their combined effect is.
+      Proposed rules, specified with cases and a reference, for the
+      maintainer to confirm (§6.3 lists seven choices). Each measured
+      hub disagreement is mapped to a rule and a case. Expectations were
+      authored by hand from the rules, not computed by the function; one
+      hand error (a 1,200-minute duration written as open-ended) was found
+      by the function and corrected in the case. Non-vacuity, 2026-10-18:
+      fourteen weakenings of active_state.py, one at a time, each turned
+      the matching case red (end markers ignored; identity ignored;
+      early-end detection off; supersession by arrival; overlay ignored;
+      timeField ignored; unit ignored; activeField ignored; products mixed;
+      deleted-before-start dropped; overlap flag off; state version without
+      content; applied layer dropped; units dropped). The version-without-
+      content weakening first passed, because the amended case also moved
+      the end; the case state-version-content-changed was added so it goes
+      red. tools/nsschema 1812 passed. Under D18 the rules say which
+      instances are active, never what they mean together.
 
   - id: SCHEMA-INTENT-GAPS
     title: "Registration grammar: the initiators other form, duration units on requested and applied carriers, typed carrier fields"

@@ -1,0 +1,55 @@
+# Synthetic. SPEC-ACTIVE-STATE; state and intent §6. Expectations authored by hand.
+id: equal-identity-same-instant
+title: Two records with equal identity at one instant are one instance, as last received
+rules:
+- A2
+control: different-identity-same-instant
+description: cgm-remote-monitor keeps the first of two temporary targets at one millisecond; Nocturne
+  stores both (LAB-HUB-ACTIVE-STATE).
+declarations:
+- product: ControllerA
+  stateSpans:
+  - category: TemporaryTarget
+    kind: TempTarget
+    slot: temporaryTarget
+    exclusiveWithinSlot: true
+    supersedes: true
+    states:
+    - active
+    - ended
+    wire:
+      collection: treatments
+      eventType: Temporary Target
+      identity:
+      - created_at
+      - eventType
+      durationField: duration
+      durationUnit: minutes
+      endedEncoding: repost-same-created_at
+records:
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    eventType: Temporary Target
+    created_at: '2026-10-18T10:00:00Z'
+    duration: 60
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    eventType: Temporary Target
+    created_at: '2026-10-18T10:00:00Z'
+    duration: 30
+expected:
+  instances:
+  - product: ControllerA
+    kind: TempTarget
+    layer: requested
+    key: created_at=2026-10-18T10:00:00Z|eventType=Temporary Target
+    start: '2026-10-18T10:00:00Z'
+    end: '2026-10-18T10:30:00Z'
+    endReason: cancelled
+  activeAt:
+  - at: '2026-10-18T10:40:00Z'
+    active: []

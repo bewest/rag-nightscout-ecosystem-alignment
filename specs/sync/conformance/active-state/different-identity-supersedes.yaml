@@ -1,0 +1,71 @@
+# Synthetic. SPEC-ACTIVE-STATE; state and intent §6. Expectations authored by hand.
+id: different-identity-supersedes
+title: A different identity is a new instance, which supersedes the earlier one at its start
+rules:
+- A2
+- A7
+description: A different identity is a new instance, which supersedes the earlier one at its start.
+declarations:
+- product: ControllerA
+  stateSpans:
+  - category: TemporaryTarget
+    kind: TempTarget
+    slot: temporaryTarget
+    exclusiveWithinSlot: true
+    supersedes: true
+    states:
+    - active
+    - ended
+    wire:
+      collection: treatments
+      eventType: Temporary Target
+      identity:
+      - created_at
+      - eventType
+      durationField: duration
+      durationUnit: minutes
+      endedEncoding: repost-same-created_at
+records:
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    _id: x1
+    eventType: Temporary Target
+    created_at: '2026-10-18T10:00:00Z'
+    duration: 60
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    _id: x2
+    eventType: Temporary Target
+    created_at: '2026-10-18T10:05:00Z'
+    duration: 20
+expected:
+  instances:
+  - product: ControllerA
+    kind: TempTarget
+    layer: requested
+    key: created_at=2026-10-18T10:00:00Z|eventType=Temporary Target
+    start: '2026-10-18T10:00:00Z'
+    end: '2026-10-18T10:05:00Z'
+    endReason: superseded
+  - product: ControllerA
+    kind: TempTarget
+    layer: requested
+    key: created_at=2026-10-18T10:05:00Z|eventType=Temporary Target
+    start: '2026-10-18T10:05:00Z'
+    end: '2026-10-18T10:25:00Z'
+    endReason: expired
+  activeAt:
+  - at: '2026-10-18T10:10:00Z'
+    active:
+    - product: ControllerA
+      kind: TempTarget
+      layer: requested
+      key: created_at=2026-10-18T10:05:00Z|eventType=Temporary Target
+      start: '2026-10-18T10:05:00Z'
+      end: '2026-10-18T10:25:00Z'
+  - at: '2026-10-18T10:30:00Z'
+    active: []

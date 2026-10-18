@@ -1,0 +1,74 @@
+# Synthetic. SPEC-ACTIVE-STATE; state and intent §6. Expectations authored by hand.
+id: delete-and-repost-amends
+title: A delete followed by a re-post of the same identity amends the instance
+rules:
+- A2
+- A6
+control: delete-after-start-withdraws
+description: Shaped like Trio's override, which ends early by deleting the record and posting it again
+  with the actual duration under a new _id.
+declarations:
+- product: ControllerA
+  stateSpans:
+  - category: Override
+    kind: Override
+    slot: override
+    exclusiveWithinSlot: true
+    supersedes: true
+    states:
+    - active
+    - ended
+    wire:
+      collection: treatments
+      eventType: Exercise
+      identity:
+      - created_at
+      - eventType
+      durationField: duration
+      durationUnit: minutes
+      indefinite:
+        field: durationType
+        value: indefinite
+      endedEncoding: delete-and-repost
+records:
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc: &id001
+    _id: o1
+    eventType: Exercise
+    created_at: '2026-10-18T10:00:00Z'
+    duration: 60
+- product: ControllerA
+  collection: treatments
+  op: delete
+  doc: *id001
+  receivedAt: '2026-10-18T10:25:00Z'
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    _id: o2
+    eventType: Exercise
+    created_at: '2026-10-18T10:00:00Z'
+    duration: 25
+expected:
+  instances:
+  - product: ControllerA
+    kind: Override
+    layer: requested
+    key: created_at=2026-10-18T10:00:00Z|eventType=Exercise
+    start: '2026-10-18T10:00:00Z'
+    end: '2026-10-18T10:25:00Z'
+    endReason: cancelled
+  activeAt:
+  - at: '2026-10-18T10:20:00Z'
+    active:
+    - product: ControllerA
+      kind: Override
+      layer: requested
+      key: created_at=2026-10-18T10:00:00Z|eventType=Exercise
+      start: '2026-10-18T10:00:00Z'
+      end: '2026-10-18T10:25:00Z'
+  - at: '2026-10-18T10:30:00Z'
+    active: []
