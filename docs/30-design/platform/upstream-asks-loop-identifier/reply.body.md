@@ -258,6 +258,29 @@ Two points for you:
 - **Existing identifiers stay as they are.** Changing the form of a value a client has already
   sent would stop it matching the records it stored.
 
+**Two more open questions: one field or two, and who may set `_id`.**
+In follow-up discussion, two points came up that the rules above do not settle yet.
+
+- **Which field decides uniqueness.** You suggested that the server should name the one field
+  that decides whether two writes are the same record, and clients follow it. Rule 5 carries two:
+  `identifier` (the client's) and `_id` (storage). It says `identifier` is tried first. It does
+  not say what happens when a write carries both, and they match two *different* stored records.
+  The options are to refuse the write, to trust `identifier`, or to trust `_id`. We would like to
+  decide this with you.
+- **Whether a client may set `_id`.** A client that creates its own ObjectId and sends it as
+  `_id` needs no cache of server ids. ObjectIds were designed for exactly that: the drivers
+  create them on the client, without coordination. Nightscout has always accepted one, though before #8758 (in `dev`)
+  some paths stored it as a string rather than an ObjectId. Since #8758, a re-sent 24-hex `_id`
+  is matched instead of failing or being stored twice.
+  Our own decision does not yet say whether this is allowed. D20's 2026-10-16 walk-through says
+  every `_id` on the v1 and v3 APIs is one "the hub assigns". It also says an assigned ObjectId
+  carries the server's receipt time, and a client-made one would carry the client's.
+  A client-set `_id` also cannot serve your watch-and-phone case: two devices create two
+  different ObjectIds for one reading. So `identifier` is needed either way, and the question is
+  only whether `_id` may also come from the client.
+
+Both go into the decision record beside the format row.
+
 ## 6. What we propose to do next
 
 In order:
