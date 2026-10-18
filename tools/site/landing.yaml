@@ -83,3 +83,4 @@ orders:
     - commands.md
     - sync-transport.md
     - authority.md
+    - control-loops.md
