@@ -232,6 +232,19 @@ devicestatus write code of 15.0.0 differs from 15.0.1 only in the method names (
 non-ObjectId `_id` was handled the same way on both. No issue in that window names `_id`. [R:
 issues and PRs read with `gh` on 2026-10-18; `diff` of `lib/` between the tags]
 
+**Why a non-ObjectId `_id` still broke apps before 15.0.7.** MongoDB never rejected the value: a
+UUID or other string `_id` was stored as sent. What failed was every later operation that
+coerced the id with `ObjectID()`, which throws on a value that is not 24 hex characters. At
+15.0.6 that coercion sits in the v1 by-id query helper (`updateIdQuery`, `lib/server/query.js:92-96`,
+used by GET and DELETE by `_id`), in v1 PUT (`treatments.js:142`, `profile.js:18`, `food.js:20`,
+`activity.js:22`), in the profile, food and activity deletes (`profile.js:81`, `food.js:44`,
+`activity.js:64`) and in the socket's `dbUpdate` and `dbRemove` (`websocket.js:272, 510`). So a
+record stored under a UUID could not be edited or deleted by its id. A throw inside a socket
+event handler is not caught by an HTTP framework and can stop the server process. The
+maintainers' fix was `UUID_HANDLING` in 15.0.7, which moves such a value to `identifier` and
+lets the server assign the ObjectId. [R at 15.0.6; the maintainer's account, 2026-10-18; the
+crash path is read, not run]
+
 ## 5. For app developers: what holds today
 
 Each rule says the version it holds from; "dev" means not yet released.
