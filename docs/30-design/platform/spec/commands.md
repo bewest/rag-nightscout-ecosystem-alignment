@@ -129,6 +129,40 @@ destination sets `acknowledged`, `succeeded`, `failed` and `refused` (§5).
 sets the last four only for a command that was never handed over. `sent`, `fetched` and `unconfirmed` are never
 reported as success or as failure.
 
+The same states as a diagram. Blue states are set by the hub, green by the destination's reports;
+the bold ones are final. A report may skip `acknowledged` (CM9).
+
+```mermaid
+stateDiagram-v2
+  accTitle: Command states
+  accDescr: A command is recorded pending, or not-routed when routing refuses it. Before hand-over the hub moves a pending command to sent, fetched, cancelled, undeliverable or expired. A command handed over becomes unconfirmed when its expiry passes or its destination loses the role, never expired. Only the destination's reports set acknowledged, succeeded, failed or refused, and a report replaces unconfirmed.
+  state "not-routed" as not_routed
+  state "handed over" as handed {
+    sent --> fetched: fetched (CM18)
+    sent --> unconfirmed: expiry passed or role lost
+    fetched --> unconfirmed: expiry passed
+  }
+  state "reported by the destination (CM7)" as reported {
+    acknowledged --> succeeded
+    acknowledged --> failed
+    acknowledged --> refused
+  }
+  [*] --> pending: accepted and routed (CM1)
+  [*] --> not_routed: refused at routing (CM1)
+  pending --> cancelled: cancelled (CM25)
+  pending --> undeliverable: destination lapsed (CM2)
+  pending --> expired: expiry passed (CM3)
+  pending --> handed: pushed (CM19) or fetched (CM18)
+  handed --> reported: a report replaces unconfirmed (CM9)
+  classDef hub fill:#e8f0fe,stroke:#4a6fa5,color:#1a1a1a
+  classDef controller fill:#e6f4ea,stroke:#3b7a4a,color:#1a1a1a
+  classDef final font-weight:bold,stroke-width:2px
+  class pending,sent,fetched,unconfirmed hub
+  class not_routed,cancelled,undeliverable,expired hub
+  class acknowledged,succeeded,failed,refused controller
+  class not_routed,cancelled,undeliverable,expired,succeeded,failed,refused final
+```
+
 ## 5. Outcomes (proposed)
 
 | # | rule |
@@ -164,6 +198,35 @@ propose → (evaluate) → approve | reject | withdraw | expire → command (§4
 | CM19 | **Push only inside a bound request.** A push (a socket event to the destination, or a platform push such as APNs) is sent only inside a request already bound to the command's tenant, such as the request that accepted the command or approval, or a later request from the destination. Under `TENANCY_MODE=multi`, nothing is sent from a context with no tenant bound, such as the load cycle; an emission there, or one bound to another tenant, is withheld and the command stays `pending` until it is fetched. Under `single` the one tenant is always bound. |
 | CM20 | **Credentials for a platform push are the tenant's.** A platform push uses credentials held by the command's tenant, never the deployment's. |
 | CM21 | **Enacted once.** Delivery is at least once: a push may carry a command that a fetch returns again (CM18), and a platform may deliver a push twice. Every push and fetch carries the `commandId`. The controller decides each `commandId` once: it records the id when it first enacts or refuses the command, keeps that record across restarts until `expiresAt` by its own clock, and answers any later delivery of the id without enacting it and without a second outcome report. A sender who sends again without the same `requestId` makes a new command (CM4), which this rule does not catch. |
+
+From proposal to outcome, with the checks each step makes:
+
+```mermaid
+sequenceDiagram
+  accTitle: From proposal to outcome
+  accDescr: An agent instance proposes a payload with the state version it read. The hub routes and records the proposal; evaluations attach as evidence. A person or delegate approves the payload's hash; the hub refuses when the hash, the destination, the state version or doses since differ, leaving the proposal open, and otherwise records one command and returns what else is outstanding. The command reaches the controller by push or fetch with its id and hash. The controller checks the hash and expiry, decides the command once and checks doses since, then reports. A cancel before hand-over is final; after it, a request the controller decides.
+  participant P as Proposer (agent instance)
+  participant H as Hub
+  participant A as Approver (person or delegate)
+  participant C as Controller (destination)
+  P->>H: propose payload, basedOn, expiresAt (CM11, CM12)
+  H-->>P: 201 proposalId, routed and recorded
+  Note over H: evaluations attach as evidence (CM16)
+  A->>H: approve proposalId and payloadHash (CM13, CM14)
+  alt hash, destination, state version (CM15) or doses since (CM22) differ
+    H-->>A: 409, the proposal stays open
+  else accepted
+    H-->>A: 201 commandId and the outstanding list (CM24)
+    H->>C: push or fetch, carrying commandId and payloadHash (CM18, CM19)
+    Note over C: hash and expiry (CM10)<br/>decided once (CM21)<br/>doses since (CM23)
+    opt cancel (CM25)
+      A->>H: cancel commandId
+      H-->>A: 200 cancelled before hand-over, or 202 a request on the next fetch
+    end
+    C->>H: report acknowledged, then succeeded, failed or refused (CM7)
+    H-->>A: the state, on read or in the outstanding list
+  end
+```
 
 What a mode changes beyond these, such as the storage key and the credential kinds a command
 record names, is the registration contract per mode (`SPEC-REG-MODES`, not written).

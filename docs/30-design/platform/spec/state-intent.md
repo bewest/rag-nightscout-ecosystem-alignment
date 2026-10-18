@@ -136,6 +136,26 @@ instances and which are active; it never combines them (S1).
 | A12 | **A state version.** A product's state version at a time is `sha256:` over the RFC 8785 canonical JSON of its active rows with each instance's content. It changes when an instance starts, ends or is amended, including an amendment that changes only what the instance says. It versions the hub's record of what the controller reported, not the controller's own state: an approval bound to it is checked by the hub ([commands CM15](commands.md#6-proposals-and-approvals-proposed)), and only the controller's own validation checks its own state (D18). |
 | A13 | **Sampled state.** A kind whose `endedEncoding` is `sampled-state` has no instance records: each record carries the current value, which holds from the record's time until the next record of the kind and product. The value reported is the first declared path's. |
 
+**The rules drawn.** Each panel draws one conformance case's records and its expected answer,
+not an application of the rule; `tools/diagrams/active_state_rules.py` generates them from the cases
+(`make diagrams-svg`; `make diagrams-svg-check` fails when one is stale).
+
+![A3: an instance starts at its record's own time, never at the time in its _id or when the hub received it](../diagrams/active-state-a3.svg)
+
+![A4: an instance ends at its start plus its declared duration; the indefinite sentinel or no duration is open-ended](../diagrams/active-state-a4.svg)
+
+![A5: an amendment that shortens an instance ends it early as cancelled; one that runs its duration ends expired](../diagrams/active-state-a5.svg)
+
+![A6: a delete removes the write it names; an instance with no live write left ended as deleted before start](../diagrams/active-state-a6.svg)
+
+![A7: under supersedes, an instance ends at the start of the next instance by start time, never by arrival](../diagrams/active-state-a7.svg)
+
+![A8: under overlay, a timed instance applies over an open-ended one, which is active again when the timed one ends](../diagrams/active-state-a8.svg)
+
+![A9: overlapping instances of an exclusive kind with neither supersedes nor overlay are all reported active, marked overlap](../diagrams/active-state-a9.svg)
+
+![A13: a sampled-state kind has no instances; each record's value holds until the next record of the kind and product](../diagrams/active-state-a13.svg)
+
 ### 6.2 What decides each measured disagreement
 
 `LAB-HUB-ACTIVE-STATE` measured cgm-remote-monitor and Nocturne disagreeing on one synthetic record

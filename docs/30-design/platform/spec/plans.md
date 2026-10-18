@@ -47,6 +47,38 @@ A plan has four levels of decision, and each has its own party and its own check
 One controller instance, the destination, holds the plan and is the only thing that acts on the
 pump. Agents, reviewers, a delegate and the person all work on the same plan record.
 
+A plan's life, for a weekday lunch with an eating-soon target that runs on the plan's approval
+and a meal bolus approved each day:
+
+```mermaid
+sequenceDiagram
+  accTitle: A plan's life
+  accDescr: An agent proposes a plan with a standing eating-soon element and a per-occurrence meal bolus. A reviewer attaches an independent review, and the person approves both elements by id and hash. The hub records one command and a read-only mirror; the controller validates and holds the plan, and its report makes the mirror active. Each morning the agent confirms the day's occurrence; the person approves the day's meal bolus within 12 hours before it. The controller runs the occurrence after its own checks and reports it. The person can skip a day or end the plan at any time, and the hub cancels what was queued for it.
+  participant G as Agent (proposer)
+  participant V as Reviewer
+  participant P as Person or delegate
+  participant H as Hub (mirror)
+  participant C as Controller
+  G->>H: propose plan: eating soon (standing), meal bolus (per occurrence) (PN1-PN4)
+  V->>H: review (PN6)
+  P->>H: approve elements by id and hash (PN5-PN7)
+  H->>C: one command with the accepted elements (PN8)
+  C->>H: holds it: succeeded (PN9), mirror active
+  loop each weekday
+    G->>H: confirm the day's occurrence (PN12)
+    H->>C: confirmation
+    P->>H: approve the day's meal bolus, within 12 h before (PN13)
+    H->>C: occurrence approval
+    Note over C: bounds, doses since, withdrawal criteria<br/>with fresh data (PN10), runs once (PN17)
+    C->>H: occurrence ran, withdrawn or refused (PN11)
+  end
+  opt skip a day or end the plan (PN14, PN16)
+    P->>H: skip or end
+    H->>C: skip or end, and queued occurrence commands cancelled
+  end
+  C->>H: ended at endsAt (PN15)
+```
+
 ## 3. The plan object (proposed)
 
 | # | rule |
@@ -73,6 +105,25 @@ pump. Agents, reviewers, a delegate and the person all work on the same plan rec
 | PN10 | **The controller runs each occurrence.** At each occurrence the controller applies its own checks: the bounds of each element, the doses and carbs since (CM23), the plan's withdrawal criteria with data it judges fresh, and, for a `standing` R3 or R4 element, the declared mitigation. An occurrence whose criteria cannot be evaluated with fresh data does not run. The hub schedules nothing and sends nothing at an occurrence's time. |
 | PN11 | **The mirror.** The hub keeps, per plan, its state (`approved`, `active`, `refused`, `ending`, `ended`), its accepted and declined elements, and its occurrences, each keyed by the controller's occurrence key with a state: `confirmed`, `approved`, `skip-requested` (set by the hub, §6), and `ran`, `withdrawn`, `skipped`, `refused`, `missed` (reported by the controller, with a reason where one applies, and for `ran` the identity of the intent or record that shows it). The states the controller owns move only on its reports; the hub sets only what it was asked (`skip-requested`, `ending`). Only the destination's bound subject reports (CM7: anyone else is 403 `not-registration-owner`). A report on a plan the controller may hold (`approved`, `active`, `ending`) is accepted, and on an `approved` plan it also shows the controller holds it, so the mirror becomes `active`; on a plan that is `refused` or `ended` it is 409 `plan-not-active`. Anyone who may read the outstanding list (CM24) may read the mirror, which lists `occurrences` even when there are none; anyone else is 403 `not-authorised`. |
 
+The mirror's states. Each state the controller owns moves only on its reports; the hub sets
+`ending` when it is asked to end the plan.
+
+```mermaid
+stateDiagram-v2
+  accTitle: Plan mirror states
+  accDescr: An approved plan's mirror becomes active when the controller reports holding it, or refused when the controller refuses or fails the plan command. The person, the approver or the proposer can end a plan that is approved, active or ending; ending again re-sends the end. The mirror becomes ended when the controller reports the end, either after an end request or at endsAt.
+  [*] --> approved: approval accepted (PN8)
+  approved --> active: controller holds it (PN9, PN11)
+  approved --> refused: refused or failed (PN9)
+  approved --> ending: end requested (PN16)
+  active --> ending: end requested (PN16)
+  ending --> ending: end sent again (PN16)
+  active --> ended: reported at endsAt (PN15)
+  ending --> ended: reported (PN16)
+  refused --> [*]
+  ended --> [*]
+```
+
 ## 6. Occurrences (proposed)
 
 | # | rule |
@@ -80,6 +131,35 @@ pump. Agents, reviewers, a delegate and the person all work on the same plan rec
 | PN12 | **The plan is its proposer's grant to confirm.** While the mirror is `active` and before `endsAt`, the plan's proposer, from its proposing instance, may confirm an occurrence: the hub records it and sends the controller a command naming the plan and the occurrence, expiring at the occurrence's time. A confirmation is evidence that the occasion is happening; it never releases a dose by itself (FL5), and the controller still applies PN10. The checks, in order: another subject or instance is 403 `outside-grant`; a proposer that no longer holds `api:proposals:create` or its propose role on the plan channel (CM12) is 403 `role-not-granted`; a plan that is not `active` is 409 `plan-not-active`; at or past `endsAt`, 409 `plan-ended`; an occurrence time outside `startsAt` to `endsAt` is 409 `occurrence-outside-plan`; more than `plans.maxAdvanceApprovalSeconds` ahead, 409 `too-early`; at or after the occurrence time, 409 `occurrence-passed`; and an occurrence that is `skip-requested` or reported finished (`ran`, `withdrawn`, `skipped`, `refused`, `missed`) is 409 `occurrence-closed`. |
 | PN13 | **A per-occurrence element needs an approval per occurrence.** A `per-occurrence` element runs only on an approval of that occurrence, which names the plan, the occurrence key, its time, the element and its hash. The approver holds `api:commands:create` (403 `not-authorised`) and follows CM14; an R3 or higher element is approved by the person or a delegate (403 `not-person-or-delegate`), and an R5 element by the person (403 `person-required`, FL3). Then, in order: the plan is `active` and before `endsAt` (PN12's 409s); the element is `per-occurrence` and accepted, else 409 `not-per-occurrence`; its hash, else 409 `hash-mismatch`; and PN12's occurrence checks, so the approval is accepted from exactly `plans.maxAdvanceApprovalSeconds` before the occurrence (12 hours, pending clinical review) until the occurrence's time, on an occurrence not closed. An accepted approval sends the controller a command for that occurrence and element, expiring at the occurrence's time, as a confirmation's does. |
 | PN14 | **Skipping an occurrence.** The person (CM14), the plan's approver, or its proposer from its proposing instance (an agent whose live data contradicts the occasion withdraws it this way) may skip an occurrence while the plan is `approved` or `active` and before `endsAt`; anyone else is 403 `not-authorised`, a plan in another state 409 `plan-not-active`, at or past `endsAt` 409 `plan-ended`, and an occurrence already closed 409 `occurrence-closed`. The hub sets it `skip-requested`, cancels the occurrence's queued confirmation and approval commands as CM25 does (final before hand-over, a request after), and sends the controller a skip command expiring `commands.maxExpirySeconds` after the request; the controller reports `skipped`, or `ran` if it had already run. |
+
+An occurrence's states. The hub records `confirmed`, `approved` and `skip-requested` as it is
+asked; the controller reports how the occurrence finished, and a finished occurrence takes no
+further confirmation or approval.
+
+```mermaid
+stateDiagram-v2
+  accTitle: Occurrence states
+  accDescr: An occurrence is confirmed by the proposer or approved by the person or a delegate, in either order, or skipped. A skip cancels what was queued for the occurrence. The controller reports how it finished: ran, withdrawn, skipped, refused or missed; a skip request ends as skipped, or ran if the controller had already run it. A finished occurrence is closed.
+  state "skip-requested" as skip
+  state "finished, reported by the controller" as finished {
+    ran
+    withdrawn
+    skipped
+    refused
+    missed
+  }
+  state open {
+    [*] --> confirmed: proposer confirms (PN12)
+    [*] --> approved: person or delegate approves (PN13)
+    confirmed --> approved: approved (PN13)
+  }
+  [*] --> open
+  [*] --> skip: skipped (PN14)
+  open --> skip: skipped (PN14)
+  open --> finished: controller reports (PN11)
+  skip --> finished: skipped, or ran if it already had (PN14)
+  finished --> [*]: closed (PN12)
+```
 
 ## 7. Ending a plan (proposed)
 
