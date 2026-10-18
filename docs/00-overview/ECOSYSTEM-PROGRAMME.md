@@ -307,7 +307,9 @@ the foundation performs regulatory post-market surveillance (§9).
 - **Statistics and agents.** The statistics API proposal specifies an MCP resource provider on top of
   a documented statistics API (`REQ-STATS-005`,
   [statistics API proposal](../sdqctl-proposals/statistics-api-proposal.md)). Nocturne ships an MCP
-  component.
+  component. At least six independent MCP servers read a Nightscout site for an assistant; they
+  differ in transport, in the credential they accept and in whether they expose write tools
+  ([evidence §7.1](observations/ECOSYSTEM-EVIDENCE.md#71-research-tools-elsewhere-in-the-ecosystem)).
 - **Intent, action and evidence.** What a controller meant to do, what it did, and what it was based
   on now has a typed home in the registrations of commons A (D18's intent kinds and effect fields;
   D19's instances and provenance).
@@ -319,7 +321,10 @@ effective-dated resource (hub-sync §4.3) would give reports and clinicians the 
 any time.
 
 **The boundary.** An interface that lets software read and explain data is a different thing from
-one that takes part in a dosing decision. A report that proposes settings changes is clinician-facing
+one that takes part in a dosing decision. For agents the split is three ways: *develop* (writing
+the software), *interpret* (reading and explaining a person's data) and *act* (proposing or starting
+a therapy change), each needing a different assurance; what exists and what is missing for each is
+mapped in [agents in the ecosystem](../30-design/platform/agent-trust-boundaries-2026-10-18.md). A report that proposes settings changes is clinician-facing
 decision support: it needs clinical review before anyone acts on it, the SAFETY reviewer that the
 queue does not yet name, and counsel's view of its regulatory status (§9). Anything on the dosing
 side depends on commons A–C: typed schemas, identity and provenance, and longitudinal quality data.
@@ -382,8 +387,12 @@ implementation is a separate, recorded decision.
     foundation.
 11. Whether a report that proposes settings changes is clinical decision support software that
     falls under device regulation, and what clinical review it needs before it is offered to anyone.
+    FDA's *Clinical Decision Support Software* guidance, issued January 29, 2026, states that
+    software functions that support or provide recommendations to patients or caregivers, rather
+    than to health care professionals, meet the definition of a device.
 
 **To verify before this page is quoted:** the standards' status and dates in §5 were read from their
 publishers' pages on 2026-09-29. The datalake proposal's terms in §6 were read from its published
 page the same day. The census figures in §2a are from 2026-09-30. The review load in §3 is a
-generated table on PROGRAMME-STATUS; quote the current table, not this page.
+generated table on PROGRAMME-STATUS; quote the current table, not this page. The FDA guidance in §9 item 11
+was read from FDA's published PDF on 2026-10-18, and the MCP servers in §7 were counted the same day.
