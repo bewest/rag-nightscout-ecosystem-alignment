@@ -1,8 +1,6 @@
 # Working together across the Nightscout ecosystem — proposal
 
-*For the Nightscout Foundation board, the maintainers of the ecosystem projects, the operators and
-companies that host or build on Nightscout, and the community. **Recommendation** (part 3 of the
-overview; [how the overview is organised](README.md)). **DRAFT PROPOSAL for discussion.**
+*What this is: a proposal (part 3 of the overview, recommendations; [how the overview is organised](README.md)), for the Nightscout Foundation board, the maintainers of the ecosystem projects, the operators and companies that host or build on Nightscout, and the community. Read after the [sponsored maintenance team](SPONSORED-TEAM-PROPOSAL.md); leads to the [quality system](QUALITY-SYSTEM.md). **DRAFT PROPOSAL for discussion.**
 Written 2026-09-29 against this repository at `2c19f61d`. Where it touches conflicts of interest,
 partner agreements, trademarks or regulatory status, it needs review by the foundation's counsel
 before any decision rests on it (§8). Nothing here is decided.*

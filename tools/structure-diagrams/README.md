@@ -1,7 +1,7 @@
 # structure-diagrams — the overview's control-structure drawings
 
 *Contributor-facing.* Sources and renderer for the drawings on
-[Control structures, drawn](../../docs/00-overview/perspective/STRUCTURES.md).
+[Control structures of the ecosystem and the proposals](../../docs/00-overview/perspective/STRUCTURES.md).
 
 - `inputs/*.yaml`: one drawing each. Nodes have a `level` (0 = top) and a `column`, a `kind`
   (`authority`, `entity`, `org`, `commons`, `human`, `process`), and optionally `status: proposed`,

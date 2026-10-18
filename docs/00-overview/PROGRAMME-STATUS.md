@@ -1,6 +1,8 @@
 # Programme status — cgm-remote-monitor
 
-*Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. Contributor-facing; technical throughout.
+*What this is: a record (contributor-facing; technical throughout). Read after the
+[mission](mission.md); leads to the [roadmap](ROADMAP.md). Prepared for the Nightscout project;
+proposed for Nightscout Foundation stewardship.
 Prose revised 2026-10-08 against cgm-remote-monitor `official/dev` `fade2299` and
 `official/master` `92d08342` (tag `15.0.8`). The tables are generated from
 `queue/work-queue.yaml`; see [How to check any of this yourself](#how-to-check-any-of-this-yourself).*
@@ -224,8 +226,8 @@ Three states here are not what a casual reader expects:
 - **`merged-upstream`** means merged into `dev` and not released. It is deliberately
   not called `done`: nothing merged has reached an operator.
 
-The queue also carries **explicit `no-gate:` markers** — a record that nobody has
-built a way to measure a property yet, with the reason. They are bookkeeping, not
+The queue also carries **explicit `no-gate:` markers** — a record that a property
+has no measurement built yet, with the reason. They are bookkeeping, not
 gaps in it; `make queue-validate` prints how many gate slots are in that state.
 
 ---

@@ -1,6 +1,7 @@
 # Observations
 
-*Part 1 of the overview ([how the overview is organised](../README.md)).* What exists and what has
+*What this is: a map of part 1 of the overview ([how the overview is organised](../README.md)),
+contributor-facing. Read after the [overview](../README.md); leads to the [chronology](HISTORY.md).* What exists and what has
 happened, described with dates, counts, sources and methods. These pages recommend nothing.
 
 | page | what it covers |

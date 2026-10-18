@@ -1,6 +1,8 @@
-# Roadmap — what comes next, and in what order
+# Roadmap for cgm-remote-monitor: what comes next, and in what order
 
-*Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. Contributor-facing. Living document: prose dated
+*What this is: a map of the work ahead (contributor-facing). Read after [programme
+status](PROGRAMME-STATUS.md); leads to [needs a human](NEEDS-A-HUMAN.md). Prepared for the
+Nightscout project; proposed for Nightscout Foundation stewardship. Living document: prose dated
 2026-10-08 against cgm-remote-monitor `official/dev` `fade2299` and `official/master` `92d08342`
 (tag `15.0.8`). The two order tables are generated from `queue/work-queue.yaml`, and
 `make views-check` fails when they drift.*
@@ -215,10 +217,10 @@ operator-exposure table on [PROGRAMME-STATUS](PROGRAMME-STATUS.md#status-words-m
 lists the queue items for defects that are present on 15.0.8. A fix reaches operators only in a
 release, so each merged fix joins the next step on the release train.
 
-## 5. Proposals not yet adopted
+## 5. Proposals
 
-These are proposals for discussion with other projects and maintainers. Nothing in them is
-scheduled.
+These are proposals for discussion with other projects and maintainers. None is scheduled in the
+queue.
 
 **Cross-project adoption (hub and spoke).** This is a proposal to the controller projects (AAPS,
 Loop, Trio) and to Nightscout as the hub. Each phase is useful even if the next never happens:

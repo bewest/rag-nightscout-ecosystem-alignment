@@ -1,7 +1,6 @@
 # How decisions are made today across the Nightscout ecosystem
 
-*For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
-**Observations** (part 1 of the overview; [how the overview is organised](../README.md)). Living
+*What this is: a measurement (part 1 of the overview, observations; [how the overview is organised](../README.md)), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after [the chronology](HISTORY.md); leads to [ecosystem evidence](ECOSYSTEM-EVIDENCE.md). Living
 page, measured 2026-10-02 against this repository at `bdd84c4b`. It describes what can be read from
 public sources and the repositories' own settings; it does not assess any of it. Repository rows
 come from `gh api`, run with a maintainer's token (which can read some settings the public cannot,

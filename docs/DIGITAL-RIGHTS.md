@@ -304,7 +304,7 @@ The community response included:
 
 The protections above are defences: they describe what people and projects may do without the manufacturer's permission. Some newer devices accept commands, and sometimes data requests, only from a client holding a credential the manufacturer issues. For those devices, understanding the protocol is not enough, and access depends on an agreement with the manufacturer.
 
-An agreement can secure the same rights the [Data Rights Primer](10-domain/data-rights-primer.md) describes (access, export, share, delegate, audit) without depending on an exemption that expires every three years. What such an agreement needs, from both sides, is proposed in [Ready to agree with a device manufacturer](00-overview/PARTNER-READINESS.md):
+An agreement can secure the same rights the [Data Rights Primer](10-domain/data-rights-primer.md) describes (access, export, share, delegate, audit) without depending on an exemption that expires every three years. What such an agreement needs, from both sides, is proposed in [Partner readiness: agreeing terms with a device manufacturer](00-overview/PARTNER-READINESS.md):
 
 - **Start with read-only access.** Observing and exporting data is a separate, lower-risk agreement from configuring a device or controlling insulin delivery, and does not have to wait for them.
 - **Write the rights into the terms.** Nonexclusive access for any qualifying implementation; access the patient directs and can move; notice before changes that break an integration; revocation only by a published process; freedom to publish interoperability results.
@@ -526,7 +526,7 @@ These generally acknowledge clinical benefits while noting the lack of formal re
 
 - [Data Rights Primer](10-domain/data-rights-primer.md) - Plain-language guide to the Five Fundamental Diabetes Data Rights (Access, Export, Share, Delegate, Audit)
 - [Progressive Enhancement Framework](10-domain/progressive-enhancement-framework.md) - 10-layer capability model for diabetes technology
-- [Ready to agree with a device manufacturer](00-overview/PARTNER-READINESS.md) - Draft proposal: access tiers, agreement terms, complaint and incident handling
+- [Partner readiness: agreeing terms with a device manufacturer](00-overview/PARTNER-READINESS.md) - Draft proposal: access tiers, agreement terms, complaint and incident handling
 
 ---
 

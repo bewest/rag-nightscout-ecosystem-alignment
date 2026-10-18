@@ -1,8 +1,6 @@
-# Ready to agree with a device manufacturer — proposal
+# Partner readiness: agreeing terms with a device manufacturer — proposal
 
-*For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
-**Recommendation** (part 3 of the overview; [how the overview is organised](README.md)).
-**DRAFT PROPOSAL for discussion.** Written 2026-10-16 against this repository at `faafc57c`. The
+*What this is: a proposal (part 3 of the overview, recommendations; [how the overview is organised](README.md)), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after the [quality system](QUALITY-SYSTEM.md); leads to [why organise](WHY-ORGANISE.md). **DRAFT PROPOSAL for discussion.** Written 2026-10-16 against this repository at `faafc57c`. The
 facts it relies on are on the [governance](observations/GOVERNANCE-TODAY.md) and
 [evidence](observations/ECOSYSTEM-EVIDENCE.md) pages. It touches contracts, intellectual property,
 medical-device reporting, privacy and competition law. Each of those parts needs review by the

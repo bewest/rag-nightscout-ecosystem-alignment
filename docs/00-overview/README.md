@@ -1,7 +1,8 @@
 # Overview
 
-*For the Nightscout Foundation board, the maintainers of the ecosystem projects, reviewers, and the
-community. Living page, 2026-10-02.*
+*What this is: a map of the overview, for the Nightscout Foundation board, the maintainers of the
+ecosystem projects, reviewers, and the community. Read first; leads to [part 1,
+observations](observations/README.md). Living page, 2026-10-02.*
 
 The overview is in three parts, so that a reader can build a picture of the ecosystem before meeting
 any argument about what to do. Each part can be read without agreeing with the next.
@@ -25,9 +26,9 @@ and the volunteer-only view is stated beside the others.
 |---|---|
 | [When a DIY ecosystem becomes infrastructure](perspective/INFRASTRUCTURE-TRANSITION.md) | the conditions under which other open-source communities changed how their work was organised, which of those conditions can be measured here, and what the frame does not show |
 | [Precedents](perspective/PRECEDENTS.md) | one table of every organisation the proposals cite: how each is funded, who is paid, the commercial role, and size |
-| [What each activity brings](perspective/ACCOUNTABILITY-THRESHOLDS.md) | the nine pillars of duty that holding health data, issuing credentials, commanding insulin delivery, signing with a manufacturer or taking money bring to any organisation; how Apple, Dexcom and the FDA's interoperable routes put them in place; why the requirements are the same for anyone; and a US nonprofit's own money and staffing thresholds |
-| [Control structures, drawn](perspective/STRUCTURES.md) | the ecosystem and the proposals as STPA control structures, from society down to software and devices, with stakeholder views and precedents |
-| [What we believe, and how it works](perspective/PROCESS-MODELS.md) | the authority DIY acts under, its regulatory status, data rights, hosting, identity, federation and registration, each drawn as believed, as it works today, and as emerging or proposed |
+| [Accountability thresholds](perspective/ACCOUNTABILITY-THRESHOLDS.md) | the nine pillars of duty that holding health data, issuing credentials, commanding insulin delivery, signing with a manufacturer or taking money bring to any organisation; how Apple, Dexcom and the FDA's interoperable routes put them in place; why the requirements are the same for anyone; and a US nonprofit's own money and staffing thresholds |
+| [Control structures](perspective/STRUCTURES.md) | the ecosystem and the proposals as STPA control structures, from society down to software and devices, with stakeholder views and precedents |
+| [Process models: what we believe, and how it works](perspective/PROCESS-MODELS.md) | the authority DIY acts under, its regulatory status, data rights, hosting, identity, federation and registration, each drawn as believed, as it works today, and as emerging or proposed |
 
 ## 3. Recommendations: the author's proposals
 

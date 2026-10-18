@@ -1,8 +1,6 @@
 # A sponsored maintenance team for the Nightscout ecosystem — proposal
 
-*For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
-**Recommendation** (part 3 of the overview; [how the overview is organised](README.md)).
-**DRAFT PROPOSAL for discussion.** Written 2026-09-27 against this repository at `de46efc1` and
+*What this is: a proposal (part 3 of the overview, recommendations; [how the overview is organised](README.md)), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after the [ecosystem programme](ECOSYSTEM-PROGRAMME.md); leads to [working together](COLLABORATION-MODEL.md). **DRAFT PROPOSAL for discussion.** Written 2026-09-27 against this repository at `de46efc1` and
 cgm-remote-monitor `official/dev` `295f1177`; revised through 2026-10-02. The facts it relies on are
 on the [evidence page](observations/ECOSYSTEM-EVIDENCE.md), and the comparisons in
 [perspective](perspective/INFRASTRUCTURE-TRANSITION.md). Where it touches employment,

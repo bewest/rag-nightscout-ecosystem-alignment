@@ -1,5 +1,8 @@
 # Mission
 
+*What this is: a reference (contributor-facing). Read after [reviewer
+onboarding](REVIEWER-ONBOARDING.md); leads to [programme status](PROGRAMME-STATUS.md).*
+
 ## What Alignment Is
 
 Alignment is a coordination effort to establish shared semantics, schemas, and conformance criteria across multiple Automated Insulin Delivery (AID) systems and their supporting infrastructure.

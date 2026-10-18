@@ -1,6 +1,7 @@
 # Definition of done — downstream ready
 
-*Contributor-facing. Applies to every document under `docs/00-overview`,
+*What this is: a reference (contributor-facing). Read after [needs a human](NEEDS-A-HUMAN.md);
+leads to [document control](DOCUMENT-CONTROL.md). Applies to every document under `docs/00-overview`,
 `docs/30-design/{remedial,modernization,tenancy,platform}`,
 `docs/60-research/{remedial,modernization,tenancy,programme}`, `queue/` and
 `reports/reviewer-packets/`. Adopted 2026-09-22.*

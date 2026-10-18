@@ -1,6 +1,7 @@
 # Document control — proposal
 
-*Contributor- and maintainer-facing. **DRAFT PROPOSAL, requiring review by the maintainer and by
+*What this is: a proposal (contributor- and maintainer-facing). Read after the [definition of
+done](DEFINITION-OF-DONE.md); leads back to the [overview](README.md). **DRAFT PROPOSAL, requiring review by the maintainer and by
 a quality-management professional before it is adopted or relied on.** Written 2026-09-25 against
 this repository at `eb564053`. It is not legal or regulatory advice. It does not claim that the
 Nightscout Foundation, or any software it stewards, conforms to any standard.*

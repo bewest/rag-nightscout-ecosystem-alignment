@@ -1,7 +1,6 @@
-# Control structures, drawn
+# Control structures of the ecosystem and the proposals
 
-*For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
-**Perspective** (part 2 of the overview; [how the overview is organised](../README.md)). Living page,
+*What this is: a map (part 2 of the overview, perspective; [how the overview is organised](../README.md)), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after [accountability thresholds](ACCOUNTABILITY-THRESHOLDS.md); leads to [process models](PROCESS-MODELS.md). Living page,
 written 2026-10-16, relabelled 2026-10-17. Drawings to follow and discuss the overview's proposals with: who controls
 whom, what comes back, and where money flows. Every node and edge comes from a page linked under
 the drawing; nothing here is a new finding. The drawings marked **proposed** show a proposal for
@@ -42,7 +41,7 @@ same as drawings are added beside it.
 | idea | one idea from the argument, drawn small | idea·sponsor-or-operate, idea·one-codebase, idea·same-requirements, idea·oversight-layer, idea·tiers, idea·credential-lifetime, idea·complaints, idea·designated-third-party |
 
 \* Drawn three times on one layout (believed, actual, and emerging or proposed) on the companion
-page [What we believe, and how it works](PROCESS-MODELS.md).
+page [Process models: what we believe, and how it works](PROCESS-MODELS.md).
 
 A box marked `[zoom: 2·agreement]` is drawn in more detail in that drawing. Markers are used only
 where the link between two drawings would not be obvious otherwise: 0·sector's commons is the

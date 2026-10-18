@@ -1,7 +1,6 @@
 # When a DIY ecosystem becomes infrastructure
 
-*For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
-**Perspective** (part 2 of the overview; [how the overview is organised](../README.md)). Living page,
+*What this is: an analysis (part 2 of the overview, perspective; [how the overview is organised](../README.md)), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after the [perspective index](README.md); leads to [precedents](PRECEDENTS.md). Living page,
 written 2026-10-02 against this repository at `e3d7b65c`. It offers a frame for reading the
 [observations](../observations/ECOSYSTEM-EVIDENCE.md) and sets other communities' experience beside
 them. Where it interprets, it says so. It makes no request; the author's recommendations are in

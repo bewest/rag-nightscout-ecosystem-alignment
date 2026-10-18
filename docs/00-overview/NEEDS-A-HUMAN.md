@@ -1,6 +1,7 @@
 # Needs a human
 
-*Contributor-facing. The subset of the work queue where no further engineering
+*What this is: a record (contributor-facing). Read after the [roadmap](ROADMAP.md); leads to the
+[definition of done](DEFINITION-OF-DONE.md). The subset of the work queue where no further engineering
 advances anything — a person has to push, decide, or review. Prose revised
 2026-10-08 against cgm-remote-monitor `official/dev` `fade2299` and nightscout-connect
 `official/main` `4dde1ec` (tag `v0.1.0`); tables generated.*

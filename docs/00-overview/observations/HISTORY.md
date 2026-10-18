@@ -1,7 +1,6 @@
 # From a DIY project to shared infrastructure: a chronology of the Nightscout ecosystem
 
-*For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
-**Observations** (part 1 of the overview; [how the overview is organised](../README.md)). Living
+*What this is: a record (part 1 of the overview, observations; [how the overview is organised](../README.md)), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after the [observations index](README.md); leads to [governance today](GOVERNANCE-TODAY.md). Living
 page, assembled 2026-10-02 against this repository at `9b219f31`. It records dates and what
 happened; it gives no causes and makes no recommendation. People are named by role. Every row cites
 a primary source read on 2026-10-02 or a `git` command run on the clone named in §6, and a row that

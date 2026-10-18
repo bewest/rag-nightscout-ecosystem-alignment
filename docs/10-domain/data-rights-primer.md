@@ -180,7 +180,7 @@ The [Digital Rights and Legal Protections](../DIGITAL-RIGHTS.md) document covers
 
 **Note:** The Right to Delegate is the least developed in current legal frameworks. As remote control and agent-based features become central to safe automated insulin delivery, we need frameworks that clearly define and enforce: Who can see what? Who can act on what? Under what rules or revocable permissions?
 
-**Agreements with manufacturers.** Where a device only accepts clients the manufacturer has authorised, these rights also have to be written into an agreement. A draft of the terms that would carry them (nonexclusive, patient-directed access; notice before change; revocation by process) is in [Ready to agree with a device manufacturer](../00-overview/PARTNER-READINESS.md).
+**Agreements with manufacturers.** Where a device only accepts clients the manufacturer has authorised, these rights also have to be written into an agreement. A draft of the terms that would carry them (nonexclusive, patient-directed access; notice before change; revocation by process) is in [Partner readiness: agreeing terms with a device manufacturer](../00-overview/PARTNER-READINESS.md).
 
 ---
 
@@ -223,4 +223,4 @@ Open-source diabetes tools like Nightscout, Loop, OpenAPS, and the systems docum
 - [Authority Model](authority-model.md) — Delegation and authorization patterns
 - [Controller Registration Protocol Proposal](../60-research/controller-registration-protocol-proposal.md) — Formalizing controller delegation
 - [Remote Commands Comparison](remote-commands-comparison.md) — Cross-system remote control features
-- [Ready to agree with a device manufacturer](../00-overview/PARTNER-READINESS.md) — Draft proposal: access tiers and agreement terms
+- [Partner readiness: agreeing terms with a device manufacturer](../00-overview/PARTNER-READINESS.md) — Draft proposal: access tiers and agreement terms

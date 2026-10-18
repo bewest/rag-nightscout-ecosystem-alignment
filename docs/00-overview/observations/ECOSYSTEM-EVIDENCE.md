@@ -1,7 +1,6 @@
 # The Nightscout ecosystem: what it consists of, what depends on it, and what keeping it current takes
 
-*For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
-**Observations** (part 1 of the overview; [how the overview is organised](../README.md)). Living
+*What this is: a measurement (part 1 of the overview, observations; [how the overview is organised](../README.md)), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after [governance today](GOVERNANCE-TODAY.md); leads to [part 2, perspective](../perspective/README.md). Living
 page, assembled 2026-10-02 against this repository at `e3d7b65c`; §7 added 2026-10-16 at `66403e0f`; §7.1's agent tools and MCP servers checked 2026-10-18 at `5a9a49cc`. It describes; it recommends
 nothing. Each section names the date and the source or command of its figures; where a figure
 lives in a generated table or a record, this page links to that one home instead of copying it.

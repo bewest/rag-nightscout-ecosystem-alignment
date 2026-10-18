@@ -1,8 +1,6 @@
-# Why the ecosystem needs an accountable party, and why now — proposal
+# Why organise: an accountable party for the ecosystem, and why now — proposal
 
-*For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
-**Recommendation** (part 3 of the overview; [how the overview is organised](README.md)).
-**DRAFT PROPOSAL for discussion.** Living page, written 2026-10-17. It draws together evidence from
+*What this is: a proposal (part 3 of the overview, recommendations; [how the overview is organised](README.md)), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after [partner readiness](PARTNER-READINESS.md); leads to [the work itself](README.md#the-work-itself), starting with [reviewer onboarding](REVIEWER-ONBOARDING.md). **DRAFT PROPOSAL for discussion.** Living page, written 2026-10-17. It draws together evidence from
 [partner readiness](PARTNER-READINESS.md), [what we believe, and how it works](perspective/PROCESS-MODELS.md),
 the [vendor note](../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md) and the
 [evidence page](observations/ECOSYSTEM-EVIDENCE.md). Its characterisations of law are drafts for the

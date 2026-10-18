@@ -1,6 +1,7 @@
 # Reviewer onboarding — read this first
 
-*Contributor-facing. Written for somebody who has never seen this repository and
+*What this is: a guide (contributor-facing). Read after the [overview](README.md); leads to the
+[mission](mission.md). Written for somebody who has never seen this repository and
 is considering reviewing work in it. Prose revised 2026-10-03 against
 cgm-remote-monitor `official/dev` `1ad03e29` and `official/master` `92d08342` (tag
 `15.0.8`).*
