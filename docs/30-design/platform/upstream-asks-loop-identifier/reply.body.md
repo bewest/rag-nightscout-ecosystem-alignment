@@ -65,7 +65,20 @@ We recommend (3), with (2) as an interim that needs no server change. Today's G7
 would not serve (3) as it stands. It embeds each device's own activation estimate, as fractional
 hours, and the BLE name `DXCMxx` rather than the serial, and it falls back to `"invalid"`
 (G7SensorKit `dd91f46`, `G7CGMManager.swift:511-517`). Hashing it into a UUIDv5 would not help,
-because the input already differs between devices. Precedents: FHIR keeps
+because the input already differs between devices.
+
+For a G7, an identifier both devices can compute is `g7:<serial>:<seconds>`. `<serial>` is the
+sensor serial from the transmitter-version (`0x4A`) reply, which G7SensorKit `next-dev` reads.
+`<seconds>` is the sensor's seconds-since-activation counter for the reading: `messageTimestamp −
+age` for a live reading, the record's `timestamp` for backfill. Every G7 implementation we read
+(G7SensorKit, xDrip+, xDrip4iOS, Juggluco, DiaBLE) treats that counter as the sensor's own
+session clock, and backfill uses the same clock. We have not yet seen a capture with two
+displays on one sensor, so we would confirm with one before relying on it
+([identifier format §7](https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/tenancy/identifier-format-2026-10-17.html#7-is-the-g7-seconds-counter-shared-across-devices)).
+G6 (`<transmitterID> <timestamp>`) and Libre 3 (`<serial>-<lifeCount>`) already key on a sensor-side
+counter; Loop's Libre 2 key uses the phone's clock.
+
+Precedents: FHIR keeps
 the server id apart from the business `identifier`, and its conditional create answers 200 with
 the existing record when the identifier already matches
 ([Aidbox](https://www.health-samurai.io/docs/aidbox/api/rest-api/crud/create)). HealthKit pairs
