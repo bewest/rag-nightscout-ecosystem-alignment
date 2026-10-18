@@ -311,6 +311,8 @@ What in this table bears on the rules:
      instance that renewed under a new definition receives a payload approved under the old one.
    - **Proposal volume** (UCA-PROP-002). Nothing limits the open proposals one instance holds on
      a channel.
+   - **Required reviews on a moment proposal.** Plans name reviews an approval waits for (plans
+     PN6); a proposal for one command has no such member.
    - **Who acts for the person** (CM14). Which subject the tenant marks as acting for the person
      whose therapy it holds, and whether there may be more than one.
    - **A process holding the destination's credential** (UCA-CMD-014). CM7 and CM18 check the

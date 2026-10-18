@@ -208,7 +208,8 @@ record of such a rule when it is proposed or approved away from the phone.
    (FL3, the framework's reviews-then-approve path).
 10. **Not specified:** an adjusted plan replacing one the controller holds (journey PL3.3); several
     plans active on one channel at once; occurrence reports for elements not accepted or dated
-    after `endsAt`; a maximum plan length per risk class, for clinical review.
+    after `endsAt`; a maximum plan length per risk class, for clinical review; a field on an
+    intent naming the plan and occurrence that started it.
 
 ## 10. Conformance cases
 
