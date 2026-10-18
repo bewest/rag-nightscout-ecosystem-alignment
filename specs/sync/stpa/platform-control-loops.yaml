@@ -1,0 +1,681 @@
+# STPA of the platform specifications (queue item SPEC-STPA-PLATFORM).
+# Contributor-facing. Read with docs/30-design/platform/spec/control-loops.md, which draws each
+# loop and says what the analysis found; tools/nsschema/test_stpa.py checks this file.
+#
+# status:
+#   covered     a rule in a specification prevents it, and a conformance case or check shows it
+#   uncased     a rule prevents it; no case shows it yet
+#   controller  the controller's own validation prevents it (D18); `evidence` says where
+#   gap         no rule prevents it; `open` names the specification's open item that carries it
+#
+# constraints name a rule id from a specification table (CM3, I5, A7, ...) or a section,
+# written "<spec> §N". verification names cases under specs/sync/conformance/ or checks
+# written tools/...py::test_name.
+
+losses:
+  LOSS-1: Harm to the person with diabetes from insulin delivered or withheld (hypoglycaemia, hyperglycaemia, ketoacidosis).
+  LOSS-2: Loss of the ability to say afterwards what was asked, by whom, and what was enacted, for care, incident review or regulatory review.
+  LOSS-3: Disclosure of health data, or of control over therapy, to someone the person did not authorise.
+
+hazards:
+  HAZ-1:
+    text: Insulin delivery, or a therapy setting, that the person or someone they authorised did not intend at that time, including the same change enacted twice.
+    losses: [LOSS-1]
+  HAZ-2:
+    text: A therapy change someone intended is not made, while the people relying on it believe it was.
+    losses: [LOSS-1]
+  HAZ-3:
+    text: A person, controller or agent acts on a picture of delivered insulin, active therapy or a command's fate that differs from what happened.
+    losses: [LOSS-1, LOSS-2]
+  HAZ-4:
+    text: Control over therapy, or health data, reaches someone not authorised for it, such as another tenant or a reader promoted to an actor.
+    losses: [LOSS-1, LOSS-3]
+  HAZ-5:
+    text: The record cannot show what was asked, by whom, what was enacted, and when.
+    losses: [LOSS-2]
+
+loops:
+  command:
+    title: A remote command
+    specs: [commands §2, commands §4, commands §5, commands §7]
+    actions:
+      CA-CMD-SEND: {by: sender, to: hub, text: send a command for a channel}
+      CA-CMD-DELIVER: {by: hub, to: controller, text: deliver a command by push or in a fetch}
+      CA-CMD-ENACT: {by: controller, to: pump, text: enact a delivered command}
+    feedback:
+      FB-CMD-STATE: {from: hub, to: sender, text: the command's state and outcome}
+  proposal:
+    title: A proposal and its approval
+    specs: [commands §6, authority §7]
+    actions:
+      CA-PROP-PROPOSE: {by: proposer, to: hub, text: propose a change}
+      CA-PROP-APPROVE: {by: approver, to: hub, text: approve a proposal, which creates a command}
+      CA-PROP-EVALUATE: {by: evaluator, to: hub, text: attach an evaluation}
+  routing:
+    title: Which instance receives commands
+    specs: [registration §8, registration §9, authority §4, authority §6]
+    actions:
+      CA-ROUTE-GRANT: {by: hub, to: routing, text: grant or keep a command-sink role}
+      CA-ROUTE-REBIND: {by: owner, to: hub, text: transfer or release a product, or transfer a role}
+  sync:
+    title: Records written, matched and read back
+    specs: [identity §1, sync-transport §2, sync-transport §4, records §2]
+    actions:
+      CA-SYNC-STORE: {by: hub, to: store, text: store, match or merge a written record}
+      CA-SYNC-SERVE: {by: hub, to: reader, text: serve a history page or a socket event}
+  state:
+    title: What is active, as the hub reports it
+    specs: [state-intent §6]
+    feedback:
+      FB-STATE-ACTIVE: {from: hub, to: reader, text: the active intents and the state version}
+  definitions:
+    title: Controller-owned definitions
+    specs: [registration §5, registration §7, authority §5]
+    actions:
+      CA-DEF-ACCEPT: {by: hub, to: store, text: accept a registration, definition or element}
+  authority:
+    title: Credentials, permissions and delegation
+    specs: [authority §2, authority §3, authority §7]
+    actions:
+      CA-AUTH-GRANT: {by: owner, to: hub, text: grant a credential or permission}
+
+# For each control action, every STPA type is either a UCA below or listed here with why it is
+# not hazardous on its own.
+considered:
+  CA-CMD-SEND:
+    not-provided: Not sending is the sender's decision; a valid command the hub refuses is CA-CMD-DELIVER not provided.
+    duration: A command is one request; how long its effect lasts is in its payload, which the controller reads and the hub does not (CM5).
+  CA-CMD-DELIVER:
+    duration: Delivery is one event; a command delivered more than once is under provided.
+  CA-CMD-ENACT:
+    duration: How long an enacted override or temporary target runs is the controller's, checked by its own validation (D18).
+  CA-PROP-PROPOSE:
+    not-provided: A proposal not made changes nothing.
+    timing: A proposal's timing is checked at approval (CM13, CM15), where it can act.
+    duration: A proposal's life is its expiry, required as a command's is (CM11).
+  CA-PROP-APPROVE:
+    not-provided: An approval not given leaves the proposal to expire, which its proposer and readers see; the person can act directly.
+    duration: An approval is one event.
+  CA-PROP-EVALUATE:
+    not-provided: An evaluation is evidence and never required.
+    timing: An evaluation changes nothing whenever it arrives (CM16).
+    duration: An evaluation is one event.
+  CA-ROUTE-GRANT:
+    timing: Grants happen at renewal; a late grant is the lapse case under provided.
+    duration: A role lasts as long as its holder's lease (registration §8); a role kept too long is UCA-ROUTE-005.
+  CA-ROUTE-REBIND:
+    not-provided: A rebind not made leaves routing as it was, which the owner's listing shows.
+    timing: A rebind takes effect at once (authority §6).
+    duration: A rebind is one event.
+  CA-SYNC-STORE:
+    not-provided: A write the hub does not store is answered with an error, and the client's re-send is safe because it matches (I5).
+    timing: A store's time is the server's (T3) and a record's own time is its own field (I3), both covered under provided.
+    duration: A store is one event.
+  CA-SYNC-SERVE:
+    duration: A page or an event is one event.
+  CA-DEF-ACCEPT:
+    not-provided: A refused element is written as its carrier and stays readable (registration §6).
+    timing: Acceptance is at submission; a stored record keeps its definition (T13).
+    duration: A definition is stored until retention (registration §14).
+  FB-CMD-STATE:
+    delayed: A late outcome replaces unconfirmed (CM9); a sender who acts before it arrives is UCA-CMD-001.
+  FB-STATE-ACTIVE:
+    absent: A kind whose records cannot be read is reported unreadable, not shown as having nothing active (A11).
+  CA-AUTH-GRANT:
+    not-provided: A permission not granted refuses the request, which the requester sees.
+    timing: A grant takes effect when made.
+
+ucas:
+  # --- command ---
+  - id: UCA-CMD-001
+    action: CA-CMD-SEND
+    type: provided
+    text: A sender sends a second command for the same intent while the first is pending, sent, fetched or unconfirmed, and both are enacted.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [CM3, CM4]
+    status: gap
+    open: commands §9
+    note: CM4 returns the first command only when the sender gives the same requestId, and CM3 keeps a command that may have been enacted from reading as safe to re-send; nothing shows a sender a channel's outstanding commands, and a command without a requestId is always new.
+  - id: UCA-CMD-002
+    action: CA-CMD-SEND
+    type: provided
+    text: A retry of one request is treated as a new command.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [CM4]
+    status: covered
+    verification: [commands/request-id-same-payload-returns-first, commands/request-id-reordered-keys-same-hash, commands/request-id-different-payload-refused]
+  - id: UCA-CMD-003
+    action: CA-CMD-SEND
+    type: timing
+    text: A command is enacted long after it was sent, when the sender's reason for it no longer holds.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [CM3, CM10]
+    status: covered
+    verification: [commands/expiry-required, commands/expiry-too-long, commands/fetch-after-expiry-is-empty, commands/enact-after-expiry-refused, tools/nsschema/test_commands.py::test_never_after_expiry]
+  - id: UCA-CMD-004
+    action: CA-CMD-DELIVER
+    type: provided
+    text: A command reaches an instance other than the live device holder of the channel's command sink, such as a lapsed former holder, the newest instance, or a simulator.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [commands §2, CM1, CM2]
+    status: covered
+    verification: [commands/route-lapsed-holder-not-destination, commands/route-latest-instance-not-destination, commands/route-simulated-sink-not-destination, commands/undeliverable-not-rerouted]
+  - id: UCA-CMD-005
+    action: CA-CMD-DELIVER
+    type: provided
+    text: A command reaches an instance on another tenant, or a push for one tenant is sent with another tenant's or the deployment's credentials.
+    hazards: [HAZ-4, HAZ-1]
+    severity: S4
+    constraints: [CM6, CM19, CM20]
+    status: covered
+    verification: [commands/route-other-tenant-holder-not-used, commands/fetch-instance-other-tenant-404, commands/push-unbound-withheld-under-multi, commands/push-bound-other-tenant-withheld, tools/nsschema/test_commands.py::test_never_another_tenant, tools/nsschema/test_commands.py::test_never_pushed_unbound]
+  - id: UCA-CMD-006
+    action: CA-CMD-DELIVER
+    type: provided
+    text: One command is delivered more than once, by a push and again by a fetch that returns sent commands, and the controller enacts it each time.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [CM18]
+    status: gap
+    open: commands §9
+    note: Delivery is at least once by design (CM18 returns pending and sent commands). No rule requires a controller to enact one commandId at most once across restarts; Loop's de-duplication of its remote route is in memory (commands §8).
+  - id: UCA-CMD-007
+    action: CA-CMD-DELIVER
+    type: provided
+    text: The payload a controller receives differs from the one the sender sent.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [CM5, CM10]
+    status: covered
+    verification: [commands/hub-does-not-judge-payload, commands/enact-hash-mismatch-refused, commands/enact-identical-payload-succeeds]
+    note: The hash detects a change in transit or storage; binding a payload to its sender or approver end to end needs a signature (CM10).
+  - id: UCA-CMD-008
+    action: CA-CMD-DELIVER
+    type: not-provided
+    text: A push is lost and the destination never receives the command, while the sender reads sent as delivered.
+    hazards: [HAZ-2, HAZ-3]
+    severity: S2
+    constraints: [CM17, CM18]
+    status: covered
+    verification: [commands/fetch-returns-own-commands, commands/sent-and-fetched-are-not-success]
+  - id: UCA-CMD-009
+    action: CA-CMD-DELIVER
+    type: timing
+    text: A command is sent or fetched at or after its expiry.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [CM3]
+    status: covered
+    verification: [commands/fetch-after-expiry-is-empty, tools/nsschema/test_commands.py::test_never_after_expiry]
+  - id: UCA-CMD-010
+    action: CA-CMD-ENACT
+    type: provided
+    text: A controller enacts a remote command that its own limits, or a recent local action, should have refused.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [CM5, CM10]
+    status: controller
+    evidence: The hub never judges a dose (CM5, D18). Each controller that accepts a remote dose applies its own limits and authenticates the sender (commands §8); the existing constraint SC-REMOTE-002 (traceability/stpa/cross-project-patterns.md) asks a controller to refuse a remote command after a recent local action.
+  - id: UCA-CMD-011
+    action: CA-CMD-ENACT
+    type: provided
+    text: A controller enacts part of a command, such as storing a meal's carbs and refusing its bolus, and reports one final state.
+    hazards: [HAZ-3]
+    severity: S3
+    constraints: [CM9]
+    status: gap
+    open: commands §9
+  - id: UCA-CMD-012
+    action: CA-CMD-ENACT
+    type: timing
+    text: A controller enacts a command past its expiry because the hub's clock and its own differ.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [CM10]
+    status: covered
+    verification: [commands/enact-after-expiry-refused]
+  - id: UCA-CMD-013
+    action: CA-CMD-ENACT
+    type: not-provided
+    text: A controller does not enact a command it reported as succeeded, such as a bolus the pump later fails.
+    hazards: [HAZ-2, HAZ-3]
+    severity: S3
+    constraints: [CM9]
+    status: gap
+    open: commands §9
+    note: CM9 refuses a report after a final state, so AndroidAPS's late delivery failure after success cannot be recorded (commands §8).
+  - id: FB-CMD-001
+    action: FB-CMD-STATE
+    type: incorrect
+    text: A command that was handed over reads expired or undeliverable, and the sender sends it again.
+    hazards: [HAZ-3, HAZ-1]
+    severity: S4
+    constraints: [CM2, CM3]
+    status: covered
+    verification: [commands/fetched-then-expiry-unconfirmed, commands/pushed-then-lapse-unconfirmed, commands/report-on-unconfirmed-after-expiry-accepted]
+  - id: FB-CMD-002
+    action: FB-CMD-STATE
+    type: incorrect
+    text: A command reads succeeded because something other than its destination reported it.
+    hazards: [HAZ-3]
+    severity: S3
+    constraints: [CM7]
+    status: covered
+    verification: [commands/report-from-other-subject-refused, commands/report-other-tenant-404]
+  - id: FB-CMD-003
+    action: FB-CMD-STATE
+    type: incorrect
+    text: A command reads as done because it was sent or fetched.
+    hazards: [HAZ-3]
+    severity: S3
+    constraints: [CM7, CM17]
+    status: covered
+    verification: [commands/sent-and-fetched-are-not-success, commands/report-state-sent-invalid, commands/report-state-fetched-invalid]
+  - id: FB-CMD-004
+    action: FB-CMD-STATE
+    type: absent
+    text: The sender learns nothing after the hub's reply, as on today's Loop route, where a 200 means only that the push service accepted the push.
+    hazards: [HAZ-3, HAZ-5]
+    severity: S3
+    constraints: [CM1, CM7]
+    status: covered
+    verification: [commands/report-from-destination-accepted, commands/route-no-holder]
+
+  # --- proposal ---
+  - id: UCA-PROP-001
+    action: CA-PROP-PROPOSE
+    type: provided
+    text: A credential or tool that may only read proposes a change.
+    hazards: [HAZ-4]
+    severity: S3
+    constraints: [CM12]
+    status: covered
+    verification: [commands/propose-without-permission, commands/propose-without-role, commands/propose-with-another-subjects-instance]
+  - id: UCA-PROP-002
+    action: CA-PROP-PROPOSE
+    type: provided
+    text: A proposer floods a channel with proposals, and the approver approves from habit rather than reading.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [CM11]
+    status: gap
+    open: commands §9
+  - id: UCA-PROP-003
+    action: CA-PROP-APPROVE
+    type: provided
+    text: An approval creates a command whose payload differs from the one the approver approved.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [CM13]
+    status: covered
+    verification: [commands/approve-hash-mismatch, commands/approve-creates-command-with-proposal-payload, tools/nsschema/test_commands.py::test_approved_command_carries_approved_hash]
+  - id: UCA-PROP-004
+    action: CA-PROP-APPROVE
+    type: provided
+    text: An approver approves a payload whose meaning they misread, such as its units or which product it is for, because nothing declares the payload's shape for a display to render.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [CM5]
+    status: gap
+    open: commands §9
+  - id: UCA-PROP-005
+    action: CA-PROP-APPROVE
+    type: provided
+    text: An approval reaches a device other than the one whose state the proposer read.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [CM13]
+    status: covered
+    verification: [commands/approve-destination-changed, commands/approve-after-sink-passed-unnamed, commands/approve-no-holder]
+  - id: UCA-PROP-006
+    action: CA-PROP-APPROVE
+    type: provided
+    text: An approval is given after the controller's reported state changed from the one the proposal was based on.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [CM15]
+    status: covered
+    verification: [commands/approve-state-changed, commands/approve-state-changed-named-product]
+  - id: UCA-PROP-007
+    action: CA-PROP-APPROVE
+    type: provided
+    text: Two proposals on one channel are approved before the controller reports either, so both pass the state-version check and both are enacted.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [CM15]
+    status: gap
+    open: commands §9
+    note: A state version changes only when the controller's records reach the hub (A12), so it cannot see a command that is approved and not yet enacted.
+  - id: UCA-PROP-008
+    action: CA-PROP-APPROVE
+    type: provided
+    text: An approval is enacted under a different definition from the one the proposal was made against, after the destination instance renewed under a new definitionId.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [CM11, CM13, S12]
+    status: gap
+    open: commands §9
+    note: CM11 records the destination's definitionId; CM13 refuses destination-changed only when the instance differs.
+  - id: UCA-PROP-009
+    action: CA-PROP-APPROVE
+    type: provided
+    text: The proposer approves its own proposal.
+    hazards: [HAZ-1, HAZ-4]
+    severity: S3
+    constraints: [CM14]
+    status: covered
+    verification: [commands/self-approval-refused, commands/approve-without-command-permission]
+  - id: UCA-PROP-010
+    action: CA-PROP-APPROVE
+    type: timing
+    text: A proposal is approved after its expiry.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [CM13]
+    status: covered
+    verification: [commands/approve-after-proposal-expiry, commands/approved-command-has-proposal-expiry]
+  - id: UCA-PROP-011
+    action: CA-PROP-EVALUATE
+    type: provided
+    text: An evaluation changes a proposal's state or approves it.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [CM16]
+    status: covered
+    verification: [commands/evaluation-does-not-change-proposal, commands/evaluate-without-read]
+
+  # --- routing ---
+  - id: UCA-ROUTE-001
+    action: CA-ROUTE-GRANT
+    type: provided
+    text: A device command-sink role goes to an instance not bound to the product, such as another subject's development build.
+    hazards: [HAZ-1, HAZ-4]
+    severity: S4
+    constraints: [authority §6]
+    status: covered
+    verification: [instances/instance-command-sink-not-registration-owner, instances/command-not-routed-to-other-subject-simulator]
+  - id: UCA-ROUTE-002
+    action: CA-ROUTE-GRANT
+    type: provided
+    text: Two instances, such as an old and a new phone, both hold a channel's device command sink and both enact.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [registration §9]
+    status: covered
+    verification: [instances/instance-role-held, instances/instance-overlap-listed]
+  - id: UCA-ROUTE-003
+    action: CA-ROUTE-GRANT
+    type: provided
+    text: A lapsed or dropped role passes to the newest instance without its own claim or the owner's transfer.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [registration §9]
+    status: covered
+    verification: [instances/lapsed-role-not-auto-assigned, commands/route-latest-instance-not-destination]
+  - id: UCA-ROUTE-004
+    action: CA-ROUTE-GRANT
+    type: not-provided
+    text: The instance now attached to the pump cannot take the command sink, because a former phone still renews it.
+    hazards: [HAZ-2]
+    severity: S2
+    constraints: [authority §4, registration §9]
+    status: covered
+    verification: [instances/owner-transfer-role, instances/instance-overlap-listed]
+  - id: UCA-ROUTE-005
+    action: CA-ROUTE-GRANT
+    type: provided
+    text: A former holder keeps routing commands to itself after its lease lapsed.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [registration §8]
+    status: covered
+    verification: [instances/instance-handoff-lapse, commands/route-lapsed-holder-not-destination]
+  - id: UCA-ROUTE-006
+    action: CA-ROUTE-REBIND
+    type: provided
+    text: After the owner transfers or releases a product, commands still reach an instance of the former binding.
+    hazards: [HAZ-1, HAZ-4]
+    severity: S4
+    constraints: [authority §6]
+    status: covered
+    verification: [instances/rebind-transfer-drops-command-sink, instances/rebind-release-drops-command-sink, instances/command-after-rebind-no-destination]
+  - id: UCA-ROUTE-007
+    action: CA-ROUTE-REBIND
+    type: provided
+    text: An owner moves a command sink and nothing records who did it or when.
+    hazards: [HAZ-5]
+    severity: S2
+    constraints: [authority §8]
+    status: gap
+    open: authority §9
+
+  # --- sync ---
+  - id: UCA-SYNC-STORE-001
+    action: CA-SYNC-STORE
+    type: provided
+    text: A re-sent dose or carb record is stored twice, and a reader, or a controller that downloads treatments, counts it twice.
+    hazards: [HAZ-3, HAZ-1]
+    severity: S4
+    constraints: [I5, T1, T7]
+    status: covered
+    verification: [quirks/carrier-resend-identifier-first, quirks/carrier-resend-matches-identifier, quirks/typed-write-resend-same-ids]
+    note: The ecosystem's existing UCA-BOLUS-003 and UCA-CARB-001 (traceability/stpa/cross-project-patterns.md) are the controller side of this.
+  - id: UCA-SYNC-STORE-002
+    action: CA-SYNC-STORE
+    type: provided
+    text: Two different doses sent with one identifier are merged into one record, and the second dose disappears from every reader's history.
+    hazards: [HAZ-3]
+    severity: S4
+    constraints: [I1, I6]
+    status: controller
+    evidence: An identifier names one record (I6) and is the client's to assign (I1); a hub cannot tell a re-send from a different record that reuses an identifier, so uniqueness is the writing client's.
+  - id: UCA-SYNC-STORE-003
+    action: CA-SYNC-STORE
+    type: provided
+    text: A re-send after a delete brings back a dose record the person deleted as wrong.
+    hazards: [HAZ-3]
+    severity: S3
+    constraints: [I5]
+    status: gap
+    open: identity §5
+  - id: UCA-SYNC-STORE-004
+    action: CA-SYNC-STORE
+    type: provided
+    text: A stored record is converted to another definition version, or a quirk mapping is applied, without a record of it.
+    hazards: [HAZ-3, HAZ-5]
+    severity: S2
+    constraints: [T13, Q3]
+    status: covered
+    verification: [instances/project-no-mapping, quirks/carrier-uuid-id-moved]
+  - id: UCA-SYNC-STORE-005
+    action: CA-SYNC-STORE
+    type: provided
+    text: A setting the controller did not publish is stored with a default value, and a replay or reader takes it as the controller's.
+    hazards: [HAZ-3]
+    severity: S2
+    constraints: [R6]
+    status: covered
+    verification: [tools/nsschema/test_nsschema.py::test_settings_schema_is_valid_and_accepts_a_partial_publication]
+  - id: UCA-SYNC-STORE-006
+    action: CA-SYNC-STORE
+    type: provided
+    text: A record is timed by when the hub received it rather than its own time, so a backfilled dose lands at the wrong time.
+    hazards: [HAZ-3]
+    severity: S3
+    constraints: [I3, A3]
+    status: covered
+    verification: [quirks/typed-write-assigns-objectid, active-state/applied-duration-in-declared-unit]
+  - id: UCA-SYNC-SERVE-001
+    action: CA-SYNC-SERVE
+    type: not-provided
+    text: A history read skips a record, at a page boundary or while a write is in flight, and the reader never sees that dose.
+    hazards: [HAZ-3]
+    severity: S3
+    constraints: [T6, T9]
+    status: covered
+    verification: [sync-transport/equal-values-at-page-boundary, sync-transport/in-flight-write-not-skipped, sync-transport/truncated-above-watermark-no-stall]
+  - id: UCA-SYNC-SERVE-002
+    action: CA-SYNC-SERVE
+    type: not-provided
+    text: A client that follows the socket alone misses writes that never reach it.
+    hazards: [HAZ-3]
+    severity: S2
+    constraints: [T10, T12]
+    status: covered
+    verification: [sync-transport/socket-resume-after-disconnect, sync-transport/write-without-event-not-lost]
+    note: T10 makes history the record and the socket a fast path; which writes reach the socket is open (T12).
+  - id: UCA-SYNC-SERVE-003
+    action: CA-SYNC-SERVE
+    type: provided
+    text: A history page or socket event includes records the credential may not read.
+    hazards: [HAZ-4]
+    severity: S3
+    constraints: [T5, T11]
+    status: covered
+    verification: [sync-transport/unreadable-collection-omitted]
+  - id: UCA-SYNC-SERVE-004
+    action: CA-SYNC-SERVE
+    type: timing
+    text: A reader shows insulin on board from before a dose the controller already gave, because the dose has not reached the hub, and a caregiver sends another dose.
+    hazards: [HAZ-3, HAZ-1]
+    severity: S4
+    constraints: [CM5, CM10]
+    status: controller
+    evidence: A hub's picture lags the controller by its upload cycle. The controller is the only party that knows its current state and validates each command against it (D18); see UCA-CMD-010.
+
+  # --- state ---
+  - id: FB-STATE-001
+    action: FB-STATE-ACTIVE
+    type: incorrect
+    text: An override that ended is shown active, because a later record arrived first.
+    hazards: [HAZ-3]
+    severity: S3
+    constraints: [A7]
+    status: covered
+    verification: [active-state/backfill-supersedes-by-start, active-state/in-order-same-result]
+  - id: FB-STATE-002
+    action: FB-STATE-ACTIVE
+    type: incorrect
+    text: A duration is read in assumed units, so an intent is shown active for the wrong length of time.
+    hazards: [HAZ-3]
+    severity: S3
+    constraints: [A11]
+    status: covered
+    verification: [active-state/field-unit-undeclared, active-state/undeclared-unit-kind-unreadable]
+  - id: FB-STATE-003
+    action: FB-STATE-ACTIVE
+    type: incorrect
+    text: The hub composes overlapping intents into an effective value that the controller does not use.
+    hazards: [HAZ-3]
+    severity: S3
+    constraints: [S1, A9]
+    status: covered
+    verification: [active-state/exclusive-overlap-reported]
+  - id: FB-STATE-004
+    action: FB-STATE-ACTIVE
+    type: incorrect
+    text: What was requested is shown as what was applied.
+    hazards: [HAZ-3]
+    severity: S3
+    constraints: [A10]
+    status: covered
+    verification: [active-state/requested-without-applied, active-state/forced-mode-is-applied-not-requested]
+  - id: FB-STATE-005
+    action: FB-STATE-ACTIVE
+    type: incorrect
+    text: One product's intent ends another product's intent on a shared slot.
+    hazards: [HAZ-3]
+    severity: S2
+    constraints: [A1]
+    status: covered
+    verification: [active-state/products-never-supersede-each-other]
+  - id: FB-STATE-006
+    action: FB-STATE-ACTIVE
+    type: delayed
+    text: The state version is unchanged although the controller has already changed its state, so an approval based on it passes.
+    hazards: [HAZ-3, HAZ-1]
+    severity: S3
+    constraints: [A12, CM15]
+    status: controller
+    evidence: CM15 checks the hub's record, as an etag does, and says it cannot show the controller's own state is unchanged; only the controller's validation can (D18). A controller check before approval is open (commands §9).
+
+  # --- definitions ---
+  - id: UCA-DEF-001
+    action: CA-DEF-ACCEPT
+    type: provided
+    text: A definition or update from a subject other than the product's binding is accepted, so another controller redefines what a product's records mean.
+    hazards: [HAZ-3, HAZ-5]
+    severity: S3
+    constraints: [authority §5]
+    status: covered
+    verification: [update-not-registration-owner, instances/definition-not-registration-owner, update-api-secret-not-owner]
+  - id: UCA-DEF-002
+    action: CA-DEF-ACCEPT
+    type: provided
+    text: An extension is accepted in a namespace another registration holds.
+    hazards: [HAZ-3]
+    severity: S2
+    constraints: [authority §5]
+    status: covered
+    verification: [rejected-namespace-claimed, instances/definition-namespace-claimed]
+  - id: UCA-DEF-003
+    action: CA-DEF-ACCEPT
+    type: provided
+    text: A changed meaning is accepted under an existing version, so records already stored are read with the new meaning.
+    hazards: [HAZ-3]
+    severity: S3
+    constraints: [S12, registration §7]
+    status: covered
+    verification: [instances/definition-version-conflict, instances/definition-extension-version-conflict]
+  - id: UCA-DEF-004
+    action: CA-DEF-ACCEPT
+    type: provided
+    text: The site's owner edits a controller's registration content.
+    hazards: [HAZ-3, HAZ-5]
+    severity: S3
+    constraints: [authority §4]
+    status: uncased
+    open: authority §9
+
+  # --- authority ---
+  - id: UCA-AUTH-001
+    action: CA-AUTH-GRANT
+    type: provided
+    text: A credential on one tenant acts on another, because a deployment-wide secret signs every tenant's tokens.
+    hazards: [HAZ-4]
+    severity: S4
+    constraints: [AU3]
+    status: uncased
+    open: authority §9
+  - id: UCA-AUTH-002
+    action: CA-AUTH-GRANT
+    type: provided
+    text: An agent that holds the permission to send commands sends them directly, with no proposal or approval.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [CM12, CM14]
+    status: gap
+    open: authority §9
+    note: CM12 governs proposing only. Who may hold api:commands:create, and whether an agent's instance is scoped by label, role or its own subject, is the delegation design (authority §7).
+  - id: UCA-AUTH-003
+    action: CA-AUTH-GRANT
+    type: duration
+    text: A grant to a caregiver, app or agent outlives its purpose, because grants carry no expiry and revocation does not reach what was read.
+    hazards: [HAZ-4]
+    severity: S3
+    constraints: [DR3, DR6]
+    status: gap
+    open: authority §9
+  - id: UCA-AUTH-004
+    action: CA-AUTH-GRANT
+    type: provided
+    text: A read grant discloses more than its purpose needs, and the reads are not recorded.
+    hazards: [HAZ-4, HAZ-5]
+    severity: S2
+    constraints: [DR1, DR4, DR5]
+    status: gap
+    open: authority §9

@@ -16077,6 +16077,137 @@ items:
       mechanism found while reading controller source is kept out of this
       repository and reported to the maintainer directly.
 
+  - id: SPEC-STPA-PLATFORM
+    title: "STPA of the platform specifications: the control loops they set up, each unsafe control action and the rule that prevents it"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: docs/stpa-commands-2026-10-18
+    base: main@85c645c8
+    state: in-progress
+    pr: []
+    blast_radius: >
+      docs/30-design/platform/spec/control-loops.md (new): losses, hazards,
+      the control structure the seven specifications set up (the hub has no
+      control action on the pump, and is in the feedback path of every other
+      controller), seven loops (a remote command, a proposal and approval,
+      routing, records and sync, active state, definitions, authority), each
+      with its unsafe control actions or feedback flaws, hazards, severity,
+      the rules that prevent them and their status, the control-loop
+      patterns in the proposed mechanics, and what the analysis found.
+      specs/sync/stpa/platform-control-loops.yaml holds the entries;
+      tools/nsschema/test_stpa.py holds them to the specifications. Gaps are
+      added to commands §9, authority §9 and identity §5. The platform-spec
+      gate gains a control-loops layer. Ships nothing.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: analysis in this repository; ships nothing
+    register: []
+    gates:
+      - run: node tools/queue/gates/platform-spec.js control-loops
+        kind: static
+        describe: >
+          FAILS when the page is missing, carries amendment narration, names a
+          check that is not defined, states a count that differs from its
+          table, or when the index, commands, authority or identity does not
+          link to it.
+      - run: python3 -m pytest -q tools/nsschema/test_stpa.py
+        kind: unit
+        describe: >
+          FAILS when an entry cites a rule, section, case or check that does
+          not exist, cites a case whose listed rules are not among its
+          constraints, leaves an STPA type of a control action unconsidered,
+          is a gap the specification's open items do not name, or when the
+          page's rows or counts differ from the file.
+    blocks_on: []
+    evidence:
+      - docs/30-design/platform/spec/control-loops.md
+      - specs/sync/stpa/platform-control-loops.yaml
+      - docs/STPA-USAGE-GUIDE.md
+      - traceability/stpa/cross-project-patterns.md
+    notes: >
+      The maintainer asked for this item on 2026-10-18, with the request to
+      consider STPA-style controller and actuator loops for the proposed
+      mechanics (control-loops §5). Severities follow the usage guide's
+      S1-S4 scale and need review by a qualified clinician before they
+      prioritise anything (control-loops §7).
+
+  - id: SPEC-COMPAT-APPS
+    title: "One table of every listed app against every layer: today's behaviour, and what changes with a newer hub"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: ""
+    base: main
+    state: not-started
+    pr: []
+    blast_radius: >
+      Expected: a living compatibility table under
+      docs/30-design/platform/spec/ with one row per app in the stack census
+      (controllers, uploaders and bridges, followers and caregiver apps,
+      watch and display apps, hubs) and one column group per layer L0-L5:
+      how the app writes and reads today, read from its source at a stated
+      commit, and what it sees from a hub that implements the
+      specifications without the app changing. Fills the generic
+      older/newer tables in registration §17, sync-transport §7 and
+      commands §8 with named apps, and the authority layer, which names no
+      app today. Each cell is evidenced (source read, with a path) or
+      marked not read. Ships nothing.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: specification in this repository; ships nothing
+    register: []
+    gates:
+      - no-gate: >
+          Not started. The gate is written with the table: a platform-spec
+          layer for it, and a check that every app in the census has a row.
+    blocks_on: []
+    evidence:
+      - docs/60-research/programme/stack-census-2026-09-30.md
+    notes: >
+      The maintainer asked for this item on 2026-10-18. Re-run the stack
+      census before quoting its count; the consumer-impact survey for
+      15.0.9 is the model for reading clients against a change.
+
+  - id: SPEC-DEV-GUIDES
+    title: "Two developer guides: adding a setting in a controller's next release, and adding a new controller"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: ""
+    base: main
+    state: not-started
+    pr: []
+    blast_radius: >
+      Expected: two contributor-facing guides beside the specifications.
+      (1) For a Loop or Trio developer adding a setting or feature in the
+      next release: declare it in a typed registration, submit it, fall back
+      when the hub is older or refuses the element, write the typed record,
+      read it back, and what an older follower sees. (2) For a new
+      controller, starting from
+      specs/sync/registrations/fixtures/example-testcontroller.yaml: the
+      capability document, a definition, an instance and its lease, roles,
+      receiving a command and reporting its outcome. Each step names the
+      rule it follows and a conformance case that shows it; C4 context and
+      container drawings, roles only, in the style of the structure
+      drawings. Until HUB-REG-CRM is implemented the guides are checked
+      against the cases, not run against a hub. Ships nothing.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: documentation in this repository; ships nothing
+    register: []
+    gates:
+      - no-gate: >
+          Not started. The gate is written with the guides: every rule and
+          case a step names exists.
+    blocks_on: [SPEC-COMPAT-APPS]
+    evidence:
+      - docs/30-design/platform/README.md
+      - specs/sync/registrations/fixtures/example-testcontroller.yaml
+    notes: >
+      The maintainer asked for this item on 2026-10-18, after the
+      compatibility table, so each guide can say what an older app sees.
+
   - id: SPEC-REG-MIGRATE
     title: "Registration state across a single-tenant site's move into a tenant, and back"
     parcel: platform

@@ -1,7 +1,8 @@
 'use strict';
 /*
  * platform-spec.js <layer>  — SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT,
- *                              SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY
+ *                              SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-REG-COMMANDS,
+ *                              SPEC-STPA-PLATFORM (control-loops)
  *
  * A layer specification under docs/30-design/platform/spec/ is a LIVING
  * document drawn out of dated design documents whose sections were amended in
@@ -58,6 +59,11 @@ const SOURCES = {
     'docs/30-design/platform/spec/registration.md',
     'docs/30-design/platform/spec/authority.md',
     'docs/30-design/platform/agent-trust-boundaries-2026-10-18.md',
+  ],
+  'control-loops': [
+    'docs/30-design/platform/spec/commands.md',
+    'docs/30-design/platform/spec/authority.md',
+    'docs/30-design/platform/spec/identity.md',
   ],
   'state-intent': [
     'docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md',

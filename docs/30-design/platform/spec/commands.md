@@ -208,13 +208,28 @@ What in this table bears on the rules:
    controller offers a dry run of a remote command except AndroidAPS `dev`'s two-step prepare and
    commit, which computes and caps a dose on the controller before it is committed.
 3. **The payload grammar.** No definition declares the shape of a command's payload; the hub
-   stores it unread.
+   stores it unread, and an approver's display has nothing to render its units or product from
+   (UCA-PROP-004).
 4. **Outcomes that change after a final state:** a late delivery failure after success (§8), and
    a command enacted in part (§8). Either a further state (`failed` after `succeeded`, with the
-   record keeping both) or an outcome per part.
+   record keeping both) or an outcome per part (UCA-CMD-011, UCA-CMD-013).
 5. **The grant** that lets a person approve for someone else, and auto-approval: [authority
    §7](authority.md#7-delegation-not-decided).
 6. **The registration contract per tenancy mode** (`SPEC-REG-MODES`).
+7. **Found by the [control-loop analysis](control-loops.md):**
+   - **Enacting a command once** (UCA-CMD-006). Delivery is at least once: a push may carry a
+     command that a fetch returns again (CM18). No rule requires a controller to enact one
+     `commandId` at most once, or to keep that record across a restart.
+   - **Outstanding commands on a channel** (UCA-CMD-001, UCA-PROP-007). A sender or approver is
+     not shown the channel's commands that are not final, and the state version changes only when
+     the controller's records arrive (A12), so two approvals in that window both pass CM15. The
+     choices: show them with each send and approval; refuse a second approval on a channel while
+     a command from an approval is not final; or include them in what CM15 compares.
+   - **The definition at approval** (UCA-PROP-008). CM11 records the destination's
+     `definitionId`; CM13 refuses `destination-changed` only when the instance differs, so an
+     instance that renewed under a new definition receives a payload approved under the old one.
+   - **Proposal volume** (UCA-PROP-002). Nothing limits the open proposals one instance holds on
+     a channel.
 
 ## 10. Conformance cases
 

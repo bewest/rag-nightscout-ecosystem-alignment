@@ -187,12 +187,15 @@ intents inside the hub is outside the hub's role (D18).
 2. **D17 row 2:** caregivers and owners on Ory Kratos, adopted in principle and gated.
 3. **The contract per tenancy mode** (`SPEC-REG-MODES`) and across a site's move into a tenant
    (`SPEC-REG-MIGRATE`).
-4. **Owner actions with no case:** an owner `PUT` (403), retiring a blocked registration before
-   unblocking it (409), and `transfer-role` refused `role-not-granted` or `not-live`.
-5. **A record of owner actions** (who and when), which §8 says is not kept.
+4. **Owner actions with no case:** an owner `PUT` (403, UCA-DEF-004), retiring a blocked
+   registration before unblocking it (409), and `transfer-role` refused `role-not-granted` or
+   `not-live`. AU3's per-tenant credential root has no case here either (UCA-AUTH-001).
+5. **A record of owner actions** (who and when), which §8 says is not kept (UCA-ROUTE-007).
 6. **Delegation (§7):** the grant's shape, where a grant is stored and checked, read scopes, read
    audit, purpose limitation and revocation, and whether an agent instance is scoped by label,
-   by role or by its own subject.
+   by role or by its own subject. In the [control-loop analysis](control-loops.md), an agent
+   holding `api:commands:create` sends commands with no proposal (UCA-AUTH-002); grants carry no expiry (UCA-AUTH-003); reads are neither scoped nor
+   recorded (UCA-AUTH-004).
 
 ## 10. Conformance cases
 
