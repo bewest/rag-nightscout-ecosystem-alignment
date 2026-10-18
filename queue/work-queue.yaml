@@ -16083,7 +16083,7 @@ items:
     repo: rag-nightscout-ecosystem-alignment
     branch: docs/stpa-commands-2026-10-18
     base: main@85c645c8
-    state: in-progress
+    state: done
     pr: []
     blast_radius: >
       docs/30-design/platform/spec/control-loops.md (new): losses, hazards,
@@ -16136,6 +16136,14 @@ items:
       mechanics (control-loops §5). Severities follow the usage guide's
       S1-S4 scale and need review by a qualified clinician before they
       prioritise anything (control-loops §7).
+      Adversarial review, 2026-10-18, applied: the treatment-download path,
+      the owner's and operator's actions and command cancel were missing
+      from the structure; the state version covers intents, not doses;
+      identity §3 causes the resurrected-dose and natural-key merge entries;
+      a process sharing the destination's credential under single; socket
+      revocation; one case added. 72 entries (41 covered, 6 controller, 3
+      uncased, 22 gaps). Non-vacuity: 18 weakenings of the analysis, its
+      page and the specifications, each red.
 
   - id: SPEC-COMPAT-APPS
     title: "One table of every listed app against every layer: today's behaviour, and what changes with a newer hub"
