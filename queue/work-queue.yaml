@@ -16206,40 +16206,60 @@ items:
     title: "Platform spec L2: the registration specification (grammar, negotiation, definitions, instances, labels, read selection, projected views, quirks rules 1-4) as one living document"
     parcel: platform
     repo: rag-nightscout-ecosystem-alignment
-    branch: main
-    base: main@5a9a49cc
-    state: not-started
+    branch: docs/platform-spec-index-2026-10-18
+    base: main@8d2b93ed
+    state: done
     pr: []
     blast_radius: >
       docs/30-design/platform/spec/registration.md (new) from the hub-sync
-      design §3.1, §3.5, §3.6 and §3.7 rules 1-4; those sections reduced to
-      a pointer and their 2026-10-16 record; the index row; a SOURCES entry
-      in tools/queue/gates/platform-spec.js. No rule or case changes.
+      design §3.1 grammar rules, §3.5, §3.6 and §3.7 rules 1-4, with D18,
+      its addendum, D19, D20 and walk-through rows 1-16 applied; the
+      hub-sync design's §3.5-§3.7 replaced by their headings, a pointer and
+      a link to their full text at b3536bbf (1,654 to 524 lines); a pointer
+      in the execution plan §2.6.1; the platform index, glossary and
+      identity spec repointed; tools/nsschema/spec_cases.py (new) generates
+      the spec's case table from the case files; the gate's SOURCES entry.
+      No rule or conformance case changes.
     review: maintainer
     operator_visible: ""
     semver: n/a
     semver_reason: specification in this repository; ships nothing
     register: []
     gates:
-      - no-gate: >
-          Not started. The gate will be `node tools/queue/gates/platform-spec.js
-          registration` (SOURCES gains the hub-sync design and the execution
-          plan), red under platform-spec-control.sh for each of its four
-          breaks, plus the three registration suites
-          (tools/nsschema/test_registration_negotiation.py,
-          test_registration_instances.py, test_registration_quirks.py)
-          unchanged, showing no case moved.
+      - run: node tools/queue/gates/platform-spec.js registration
+        kind: static
+        describe: >
+          FAILS when the registration spec is missing, carries amendment
+          narration, names a case that does not exist, states a count that
+          differs from its table, or when the platform index, the hub-sync
+          design or the execution plan does not link to it. GREEN on
+          2026-10-18: 199 checks, 186 cases (54 + 103 + 29, every case
+          file under specs/sync/conformance/).
+      - run: python3 -m tools.nsschema.spec_cases registration --check
+        kind: static
+        describe: >
+          FAILS when the spec's generated case table differs from what the
+          case files (title, control, expected status, outcome and reason
+          codes) produce, so a case added, removed or retitled without
+          regenerating the table turns it red.
     blocks_on: [SPEC-ID]
     evidence:
+      - docs/30-design/platform/spec/registration.md
       - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
       - docs/30-design/platform/README.md
     notes: >
-      The largest extraction: about 1,000 lines whose rules were amended in
-      place through 2026-10-17 ("decided otherwise", "replacing"). The spec
-      states each rule as decided, with the open §3.7 choices (2, 3, 4, 6,
-      7, 9, 10, 11, 12) and the §3.6 choices listed as open. SPEC-REG-MODES,
-      SPEC-REG-MIGRATE and SPEC-REG-COMMANDS edit this spec rather than the
-      hub-sync design once it exists.
+      States each rule as decided, with the remaining choices awaiting the
+      maintainer in §18 and the not-yet-specified parts (SPEC-REG-MODES,
+      SPEC-REG-MIGRATE, SPEC-REG-COMMANDS) named; those items edit this
+      spec from now on. §15 (binding, credentials, the owner) is the block
+      SPEC-AUTHORITY moves into the authority spec. Non-vacuity, run
+      2026-10-18, one break at a time in a scratch root, each red with
+      exactly its own finding: an appended "(Withdrawn ...)" note; the
+      first cited case file renamed; the count changed to 999; the hub-sync
+      design's link removed; and, for the table gate, a copy of the spec
+      with one generated row deleted (--spec). The three registration
+      suites (1,281 tests) pass unchanged; they stay gated on the
+      SPEC-REG-* items.
 
   - id: SPEC-STATE-INTENT
     title: "Platform spec L3: the state and intent specification (kinds, slots, channels, states, end reasons, requested and applied, initiators, composition)"

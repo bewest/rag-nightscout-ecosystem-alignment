@@ -5,7 +5,8 @@ it is specified; the definition here is a summary, and the linked section is the
 terms (profile, override, temporary target) are in the [domain glossary](../../../10-domain/glossary.md).
 The [platform index](../README.md) explains the layers.*
 
-`HS` below is [the hub-sync design](../nightscout-hub-sync-architecture-2026-09-11.md); `WC` is
+`HS` below is [the hub-sync design](../nightscout-hub-sync-architecture-2026-09-11.md), `REG` the
+[registration specification](registration.md) and `ID` the [identity specification](identity.md); `WC` is
 [the write contract](../../tenancy/write-contract-spec-2026-10-07.md).
 
 ## "Primitive" has three meanings
@@ -15,14 +16,14 @@ The word appears across the series for three different things. Use the qualified
 | say | meaning | where |
 |---|---|---|
 | **observation primitive** | a typed record kind such as `SensorGlucose`, `Bolus` or `ApsSnapshot` that a composite document decomposes into | `specs/sync/primitives.yaml`; [HS §3.3](../nightscout-hub-sync-architecture-2026-09-11.md#33-composite-on-the-wire-primitive-in-storage) |
-| **grammar member** | a member of the registration grammar (`stateSpans`, `extensions`, `settings`, a type fragment) | [HS §3.1](../nightscout-hub-sync-architecture-2026-09-11.md#31-registration); `specs/sync/controller-state-model.schema.json` |
+| **grammar member** | a member of the registration grammar (`stateSpans`, `extensions`, `settings`, a type fragment) | [REG §3](registration.md#3-the-grammar); `specs/sync/controller-state-model.schema.json` |
 | **contract primitive** | a building block of the hub contract: an id, a definition, an instance, a role, an etag, a write result | this glossary, L0, L2 and L5 |
 
 ## L0 Identity
 
 **`_id`.** The storage key the hub assigns. On every hub's legacy surface (API v1 and v3) it is a
 24-hex value, on MongoDB and PostgreSQL alike. Its first four bytes are the hub's receipt time,
-not the record's time. [HS §3.7](../nightscout-hub-sync-architecture-2026-09-11.md#37-version-scoped-quirks-and-the-two-ids) rules 5, 6 and 8.
+not the record's time. [ID I2, I3](identity.md#1-rules).
 
 **`identifier`.** The sync identity the client assigns, stable across retries and devices. In the
 typed API it is the controller's record id. A UUID is recommended, not required. The proposed
@@ -31,7 +32,7 @@ and the format decision is open (`ID-FORMAT-DECISION`).
 
 **Two-id rule.** Every write reply returns both `identifier` and `_id` and says which one matched
 (`matchedBy`). A re-send matches on `identifier` first, then on `_id`, so a client needs no cache
-of server ids. [HS §3.7](../nightscout-hub-sync-architecture-2026-09-11.md#37-version-scoped-quirks-and-the-two-ids) rule 5.
+of server ids. [ID I4, I5](identity.md#1-rules).
 
 **`syncIdentifier`.** A controller's own per-record sync key (Loop and LoopKit; Nocturne's V4
 update key is `(dataSource, syncIdentifier)`). It is not unique per record in stored data:
@@ -44,10 +45,10 @@ devicestatus `created_at`+`device` for an identical body only; food and activity
 the key differs by path. [Identity §3](identity.md#3-match-order-per-collection).
 
 **Definition id.** `sha256:` and the hex SHA-256 of the RFC 8785 canonical JSON of a definition as
-submitted. Equal content gives an equal id. [HS §3.6](../nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances).
+submitted. Equal content gives an equal id. [ID §2](identity.md#2-contract-ids).
 
 **Instance id.** A random lowercase UUID v4 the controller generates once per running copy. It is
-never derived from a device name, model or serial. [HS §3.6](../nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances).
+never derived from a device name, model or serial. [ID §2](identity.md#2-contract-ids).
 
 **Subject.** The opaque id of the principal a credential belongs to. Tokens rotate; the subject
 does not. Registrations and instances bind to the subject, never to a token.
@@ -68,7 +69,7 @@ has it and the corpus does not show it), `proposed` (asked for). In registration
 
 **Quirk.** A recorded way stored documents deviate from the documented shape, scoped by
 `affects: {vendor, product, versions}`, with a lifecycle `proposed` → `active` → `historical` →
-`retired`. [quirks registry](../../../../specs/quirks/README.md); [HS §3.7](../nightscout-hub-sync-architecture-2026-09-11.md#37-version-scoped-quirks-and-the-two-ids) rules 1–4.
+`retired`. [quirks registry](../../../../specs/quirks/README.md); [REG §16](registration.md#16-version-scoped-quirks).
 
 **Sensitivity label.** A field's two-axis label (`specs/sync/sensitivity.yaml`). A field with no
 label is withheld by default (`unlabelledPolicy: withhold`).
@@ -80,7 +81,7 @@ or `aggregate`, each with its own cadence and retention.
 
 **Registration, product.** A controller's declaration of what its data means, one per
 `(vendor, product)` per tenant. The product resource holds the binding, the state (`active`,
-`retired`, `blocked`), the etag and the per-element results. [HS §3.5](../nightscout-hub-sync-architecture-2026-09-11.md#35-negotiation).
+`retired`, `blocked`), the etag and the per-element results. [REG §5](registration.md#5-the-product-resource).
 
 **Tier.** *Well-known*: registrations the hub ships for controllers that declare nothing, so
 legacy writers need no change. *Controller-owned*: registrations a controller submits. [D18](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#261-d18--two-tier-controller-registration).
@@ -101,13 +102,13 @@ Decided per element, from the response to this registration only.
 coexist under one product; ten simulators on one build share one. [D19](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#262-d19--definitions-and-instances-maintainer-2026-10-14).
 
 **Meaning members, `version-conflict`.** The members of a kind, extension or field that define
-what it means (HS §3.6's table). Within one product, one element at one version has one meaning. A
+what it means ([REG §7](registration.md#7-definitions)'s table). Within one product, one element at one version has one meaning. A
 different meaning at the same version is rejected `version-conflict`; a new meaning needs a new
 version.
 
 **Instance.** One running copy of a controller (a phone that doses, a development build, a
 simulator, the old and new phone during a migration). It names its definition, holds roles on
-channels and renews a lease. [HS §3.6](../nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances).
+channels and renews a lease. [REG §8](registration.md#8-instances).
 
 **Lease.** An instance's liveness. Each create or renewal extends it by the hub's
 `instances.leaseSeconds`; an instance that stops renewing lapses and holds no roles.
@@ -150,11 +151,11 @@ declare which other slots coexist with it.
 **Channel.** What roles are held on. For a kind with a slot, the channel is that slot. A slot is
 shared across products only through the hub's shared slot list or a declared `sameAs`; otherwise it
 is the product's own channel, `<vendor>/<product>/<slot>`. Other elements' channels are
-`<vendor>/<product>/<element id>`. [HS §3.6](../nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances).
+`<vendor>/<product>/<element id>`. [REG §9](registration.md#9-channels-roles-and-provenance).
 
 **Shared slot list, `sameAs`.** `specs/sync/shared-slots.yaml` (`override`, `loopMode`,
 `temporaryTarget`). A kind declares `sameAs: <shared slot>` to join that channel. Two slots are
-never joined because their names look alike. [HS §3.7](../nightscout-hub-sync-architecture-2026-09-11.md#37-version-scoped-quirks-and-the-two-ids) rule 2.
+never joined because their names look alike. [REG §9](registration.md#9-channels-roles-and-provenance).
 
 **Requested, applied.** What was asked for, and what the controller reports it put into effect.
 They are recorded separately; a request is not evidence that anything happened.
@@ -189,7 +190,7 @@ a stale one is 412.
 
 **Load refusal, definite refusal.** A typed write answered 429 or any 5xx is retried with backoff
 and never re-sent as its carrier. Any other refusal sends that record as its carrier at once.
-[HS §3.5](../nightscout-hub-sync-architecture-2026-09-11.md#35-negotiation) decision 8.
+[REG §6](registration.md#6-the-controllers-side-fallback-and-refused-writes).
 
 **Cursor, watermark.** An opaque server position from which changes are read. API v3 has
 `lastModified` and per-collection `history/{from}`; the proposed sync envelope reads every
@@ -205,7 +206,7 @@ it applied a quirk mapping or decided a channel by `sameAs`, so a mapped value i
 
 **Binding (`boundTo`), credential kind.** The subject (or, in single mode, the shared secret) a
 product or instance is bound to; only it may update or retire it. `credentialKind` records whether
-a subject token or `API_SECRET` last wrote it. [HS §3.5](../nightscout-hub-sync-architecture-2026-09-11.md#35-negotiation).
+a subject token or `API_SECRET` last wrote it. [REG §15](registration.md#15-binding-credentials-and-the-owner).
 
 **Owner, owner actions.** The tenant owner, acting on `ns-tenant-admin` (or with `API_SECRET` in
 single mode). The owner may retire, block, unblock, release, transfer, free namespaces, transfer a

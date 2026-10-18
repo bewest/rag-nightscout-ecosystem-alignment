@@ -32,16 +32,16 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 242 |
-| runnable gates | 285 |
-| explicit `no-gate:` markers | 280 |
+| runnable gates | 287 |
+| explicit `no-gate:` markers | 279 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 280 of the 565 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 279 of the 566 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 71 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY |
+| `not-started` | 70 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY |
 | `in-progress` | 4 | BFQ-46, BFQ-ENV, OID-LAB, LOOP-ID-REPLY |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -49,7 +49,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 87 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 9 | RT-0, T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-V3-IMMUTABLE-DECISION, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164 |
-| `done` | 24 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-G7-SLOTS, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID |
+| `done` | 25 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-G7-SLOTS, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
 | `answered` | 2 | RT-D3, RT-PROPAGATION |
@@ -7613,7 +7613,7 @@ reproduced ones.
 | `LOOP-ID-REPLY` | Draft a reply to the Loop maintainers' proposal that Nightscout accept a client-supplied identifier | `in-progress` | `main` | n/a | 0 run + 1 no-gate |
 | `LOOP-ID-V3-IMMUTABLE` | Reproduce over HTTP that API v3 answers a re-send with the same identifier and a different date, device or eventType with 400 | `done` | `records/loop-identifier-2026-10-17` | n/a | 1 run + 1 no-gate |
 | `SPEC-ID` | Platform spec L0: the identity specification as one living document (two ids, contract ids, match order, identifier format, open decisions) | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 1 run |
-| `SPEC-REGISTRATION` | Platform spec L2: the registration specification (grammar, negotiation, definitions, instances, labels, read selection, projected views, quirks rules 1-4) as one living document | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `SPEC-REGISTRATION` | Platform spec L2: the registration specification (grammar, negotiation, definitions, instances, labels, read selection, projected views, quirks rules 1-4) as one living document | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 2 run |
 | `SPEC-STATE-INTENT` | Platform spec L3: the state and intent specification (kinds, slots, channels, states, end reasons, requested and applied, initiators, composition) | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `SPEC-SYNC-TRANSPORT` | Platform spec L4: the change and sync specification (write step, re-send rule, cursor, history, socket delivery, definition-version migration) | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `SPEC-AUTHORITY` | Platform spec L5: the authority specification (binding, credential kind, owner actions, roles and provenance, command routing; delegation and proposals as open design) | `not-started` | `main` | n/a | 0 run + 1 no-gate |
@@ -8291,16 +8291,16 @@ reproduced ones.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `done` |
 | repo | `rag-nightscout-ecosystem-alignment` |
-| branch | `main` |
-| base | `main@5a9a49cc` |
+| branch | `docs/platform-spec-index-2026-10-18` |
+| base | `main@8d2b93ed` |
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer |
 | blocks on | `SPEC-ID` |
 
-**Blast radius.** docs/30-design/platform/spec/registration.md (new) from the hub-sync design §3.1, §3.5, §3.6 and §3.7 rules 1-4; those sections reduced to a pointer and their 2026-10-16 record; the index row; a SOURCES entry in tools/queue/gates/platform-spec.js. No rule or case changes.
+**Blast radius.** docs/30-design/platform/spec/registration.md (new) from the hub-sync design §3.1 grammar rules, §3.5, §3.6 and §3.7 rules 1-4, with D18, its addendum, D19, D20 and walk-through rows 1-16 applied; the hub-sync design's §3.5-§3.7 replaced by their headings, a pointer and a link to their full text at b3536bbf (1,654 to 524 lines); a pointer in the execution plan §2.6.1; the platform index, glossary and identity spec repointed; tools/nsschema/spec_cases.py (new) generates the spec's case table from the case files; the gate's SOURCES entry. No rule or conformance case changes.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -8308,14 +8308,18 @@ reproduced ones.
 
 **Gates.**
 
-- **NO GATE** &mdash; Not started. The gate will be `node tools/queue/gates/platform-spec.js registration` (SOURCES gains the hub-sync design and the execution plan), red under platform-spec-control.sh for each of its four breaks, plus the three registration suites (tools/nsschema/test_registration_negotiation.py, test_registration_instances.py, test_registration_quirks.py) unchanged, showing no case moved.
+- `[static]` `node tools/queue/gates/platform-spec.js registration`
+  - FAILS when the registration spec is missing, carries amendment narration, names a case that does not exist, states a count that differs from its table, or when the platform index, the hub-sync design or the execution plan does not link to it. GREEN on 2026-10-18: 199 checks, 186 cases (54 + 103 + 29, every case file under specs/sync/conformance/).
+- `[static]` `python3 -m tools.nsschema.spec_cases registration --check`
+  - FAILS when the spec's generated case table differs from what the case files (title, control, expected status, outcome and reason codes) produce, so a case added, removed or retitled without regenerating the table turns it red.
 
 **Evidence.**
 
+- `docs/30-design/platform/spec/registration.md`
 - `docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md`
 - `docs/30-design/platform/README.md`
 
-**Notes.** The largest extraction: about 1,000 lines whose rules were amended in place through 2026-10-17 ("decided otherwise", "replacing"). The spec states each rule as decided, with the open §3.7 choices (2, 3, 4, 6, 7, 9, 10, 11, 12) and the §3.6 choices listed as open. SPEC-REG-MODES, SPEC-REG-MIGRATE and SPEC- REG-COMMANDS edit this spec rather than the hub-sync design once it exists.
+**Notes.** States each rule as decided, with the remaining choices awaiting the maintainer in §18 and the not-yet-specified parts (SPEC-REG-MODES, SPEC-REG- MIGRATE, SPEC-REG-COMMANDS) named; those items edit this spec from now on. §15 (binding, credentials, the owner) is the block SPEC-AUTHORITY moves into the authority spec. Non-vacuity, run 2026-10-18, one break at a time in a scratch root, each red with exactly its own finding: an appended "(Withdrawn ...)" note; the first cited case file renamed; the count changed to 999; the hub- sync design's link removed; and, for the table gate, a copy of the spec with one generated row deleted (--spec). The three registration suites (1,281 tests) pass unchanged; they stay gated on the SPEC-REG-* items.
 
 ### `SPEC-STATE-INTENT` &mdash; Platform spec L3: the state and intent specification (kinds, slots, channels, states, end reasons, requested and applied, initiators, composition)
 

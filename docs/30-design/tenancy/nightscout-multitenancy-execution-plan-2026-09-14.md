@@ -300,7 +300,9 @@ OpenAPI spec, `indexedFields`, the nsschema model and the `walker` (§3.4).
 ### 2.6.1 D18 — two-tier controller registration
 
 D11 says *what* `devicestatus` decomposes into is declared by a registered controller description.
-D18 says who may declare it and what a declaration may carry.
+D18 says who may declare it and what a declaration may carry. The contract that implements D18, D19
+and D20 is maintained in the [registration](../platform/spec/registration.md) and
+[identity](../platform/spec/identity.md) specifications.
 
 | tier | who writes it | purpose | what changes for the controller |
 |---|---|---|---|

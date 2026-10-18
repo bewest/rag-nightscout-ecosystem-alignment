@@ -63,19 +63,19 @@ in `tools/nsschema/`, which checks the cases but is not a hub. *Implemented*: a 
 
 | | |
 |---|---|
-| **Spec today** | [hub-sync §3.1](nightscout-hub-sync-architecture-2026-09-11.md#31-registration) (the grammar); [§3.5](nightscout-hub-sync-architecture-2026-09-11.md#35-negotiation) (capability document, submit, per-element results, fallback, owner actions); [§3.6](nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances) (content-addressed definitions, leased instances, labels, read selection, projected views, retention); [§3.7](nightscout-hub-sync-architecture-2026-09-11.md#37-version-scoped-quirks-and-the-two-ids) rules 1–4 (version-scoped quirks) |
+| **Spec** | [spec/registration.md](spec/registration.md): the grammar, the capability document, the product resource and fallback, definitions, instances, channels and roles, labels, typed writes, read selection, projected views, retention, binding and the owner, version-scoped quirks, open choices, 186 cases |
 | **Evidence** | [controller descriptions](PROPOSAL-controller-descriptions-2026-09-11.md) (the well-known tier); [intent and workflow landscape](nightscout-intent-workflow-landscape-2026-10-09.md) §8–§9 (what a registration must declare); [control-plane reconciliation](../tenancy/nightscout-control-plane-reconciliation-2026-09-11.md) (the upstream RFC's kind/instance split) |
 | **Schemas, cases** | `specs/sync/controller-state-model.schema.json`, `hub-capabilities.schema.json`, `registration-submit.schema.json`, `controller-instance.schema.json`; generated registrations in `specs/sync/registrations/`; 54 cases in `specs/sync/conformance/`, 103 in `conformance/instances/` |
 | **Decisions** | [D18](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#261-d18--two-tier-controller-registration) and its [addendum](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#d18-addendum--an-extensible-grammar-maintainer-2026-10-12); [D19](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#262-d19--definitions-and-instances-maintainer-2026-10-14) |
 | **Open** | `SPEC-REG-MODES`, `SPEC-REG-MIGRATE`; implementation `HUB-REG-CRM`, `HUB-REG-CRM-SEAM`, `HUB-REG-CRM-ADMIN`; adoption `HUB-REG-NOCTURNE`, `PROPOSAL-REG-CONTROLLERS`; §3.7's choices 2, 3, 4, 6, 7, 9, 10, 11 and 12 await the maintainer |
 | **Audit** | every typed record carries its instance, its definition id and its role's provenance; projected documents carry `projectedFrom`; records are attributed to the registration and its bound credential, never to a namespace string |
-| **Status** | specified |
+| **Status** | specified (`SPEC-REGISTRATION`) |
 
 ## L3 State and intent
 
 | | |
 |---|---|
-| **Spec today** | `stateSpans` in [hub-sync §3.1](nightscout-hub-sync-architecture-2026-09-11.md#31-registration) (slot, states, end reasons, wire carrier, requested and applied, initiators, composition, `acceptsFromHub`); slot sharing and `sameAs` in [§3.6](nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances) and [§3.7](nightscout-hub-sync-architecture-2026-09-11.md#37-version-scoped-quirks-and-the-two-ids) rule 2 |
+| **Spec today** | `stateSpans` in [hub-sync §3.1](nightscout-hub-sync-architecture-2026-09-11.md#31-registration) (slot, states, end reasons, wire carrier, requested and applied, initiators, composition, `acceptsFromHub`); channels, the shared slot list and `sameAs` in [registration §9](spec/registration.md#9-channels-roles-and-provenance) |
 | **Evidence** | [intent and workflow landscape](nightscout-intent-workflow-landscape-2026-10-09.md) (per-controller matrix, end encodings, how each hub decides what is active, command lifecycles); [effects and versioning](nightscout-effects-and-versioning-2026-09-11.md) (effect separated from motivation); [authority model](../../10-domain/authority-model.md) |
 | **Schemas** | `specs/sync/controller-state-model.schema.json` (`stateSpans`, `composition`, `commands`); `specs/sync/shared-slots.yaml`; `specs/sync/therapy-effect.schema.json`; `specs/sync/effect-remapping.yaml` |
 | **Open** | iAPS has no registration; end-reason vocabularies for Trio override and temporary target and for AndroidAPS profile switch, AndroidAPS initiator values and every command vocabulary are undeclared (landscape §10); `LAB-TRIO-INTENT` |
@@ -86,7 +86,7 @@ in `tools/nsschema/`, which checks the cases but is not a hub. *Implemented*: a 
 
 | | |
 |---|---|
-| **Spec today** | [write contract](../tenancy/write-contract-spec-2026-10-07.md) §2–§3 (one write step, the re-send rule, every path's writes reaching the storage socket); [hub-sync §3.2](nightscout-hub-sync-architecture-2026-09-11.md#32-the-contract-the-hub-returns) (cursor envelope and batch write); [replay-fidelity proposal §1](PROPOSAL-replay-fidelity-changes-2026-09-11.md#1-sync-cost-should-be-o1-in-the-number-of-resources) (one history read across collections on API v3); §3.5's fallback and load-versus-definite refusal rule; [D6](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions) (the change feed under multi) |
+| **Spec today** | [write contract](../tenancy/write-contract-spec-2026-10-07.md) §2–§3 (one write step, the re-send rule, every path's writes reaching the storage socket); [hub-sync §3.2](nightscout-hub-sync-architecture-2026-09-11.md#32-the-contract-the-hub-returns) (cursor envelope and batch write); [replay-fidelity proposal §1](PROPOSAL-replay-fidelity-changes-2026-09-11.md#1-sync-cost-should-be-o1-in-the-number-of-resources) (one history read across collections on API v3); [registration §6](spec/registration.md#6-the-controllers-side-fallback-and-refused-writes) (fallback, load versus definite refusals); [D6](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions) (the change feed under multi) |
 | **Evidence** | [hub-sync §2](nightscout-hub-sync-architecture-2026-09-11.md#2-what-sync-costs-now) (`make schema-sync-cost`: up to 5,760, 2,016 and 1,440 requests a day for AndroidAPS, Loop and Trio against 576 for two requests a cycle; source-derived upper bounds, not traffic); the write contract's measured matrix |
 | **Open** | `WRITE-CONTRACT`, `WC-STEP-PATCH`, `ID-BATCH-RESULTS` (blocked). Not specified anywhere: socket delivery of typed records, cursor semantics under concurrent writers, and migrating stored typed records when a definition changes version (rule 4 of the D18 addendum converts nothing without a declared mapping) |
 | **Audit** | one change event per write call; a matched re-send stores no second copy and is answered with the stored ids; each mapping the hub applies is recorded as `quirksApplied` |
@@ -96,7 +96,7 @@ in `tools/nsschema/`, which checks the cases but is not a hub. *Implemented*: a 
 
 | | |
 |---|---|
-| **Spec today** | binding, credential kind, owner actions and the block state in [hub-sync §3.5](nightscout-hub-sync-architecture-2026-09-11.md#35-negotiation); roles, provenance, command-sink binding and command routing in [§3.6](nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances) |
+| **Spec today** | binding, credential kind, owner actions and authorisation in [registration §15](spec/registration.md#15-binding-credentials-and-the-owner); roles, provenance, command-sink binding and command routing in [registration §9](spec/registration.md#9-channels-roles-and-provenance) |
 | **Evidence** | [agent trust boundaries](agent-trust-boundaries-2026-10-18.md) (develop, interpret and act; a proposal lifecycle, proposed and not specified); [configuration and delegation §5](../tenancy/nightscout-configuration-and-delegation-2026-09-10.md#5-new-data-and-delegation-between-agents) (what a delegation design must provide); [control-plane reconciliation](../tenancy/nightscout-control-plane-reconciliation-2026-09-11.md); [authority model](../../10-domain/authority-model.md) |
 | **Decisions** | [D13–D17](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions) (credential root, listeners, auth plane; D17 row 2 open) |
 | **Open** | `SPEC-REG-COMMANDS` (the command API itself is not specified); delegation of a principal's authority to a caregiver, app or agent, and proposals awaiting approval, are not specified |
@@ -107,12 +107,13 @@ in `tools/nsschema/`, which checks the cases but is not a hub. *Implemented*: a 
 
 For someone new to the series: this page, then the [glossary](spec/glossary.md), then
 [intent and workflow landscape](nightscout-intent-workflow-landscape-2026-10-09.md) §2 and §9 for
-why the contract exists, then hub-sync §3.5–§3.7 for the contract itself.
+why the contract exists, then the [identity](spec/identity.md) and [registration](spec/registration.md)
+specifications for the contract itself.
 
 ## Planned layout
 
 Each layer's living specification has, or will have, its own undated file under `spec/`:
-[identity](spec/identity.md) is written; `registration`, `state-intent`, `sync-transport` and
-`authority` are queued as `SPEC-REGISTRATION`, `SPEC-STATE-INTENT`, `SPEC-SYNC-TRANSPORT` and
-`SPEC-AUTHORITY`. The dated documents
+[identity](spec/identity.md) and [registration](spec/registration.md) are written; `state-intent`,
+`sync-transport` and `authority` are queued as `SPEC-STATE-INTENT`, `SPEC-SYNC-TRANSPORT` and
+`SPEC-AUTHORITY`. `SPEC-AUTHORITY` moves registration §15 into the authority specification. The dated documents
 above stay where they are as snapshots, and each moved section leaves a pointer to its new home.

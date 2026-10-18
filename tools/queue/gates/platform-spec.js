@@ -32,6 +32,10 @@ const SOURCES = {
     'docs/30-design/tenancy/write-contract-spec-2026-10-07.md',
     'docs/60-research/tenancy/identifier-format-2026-10-17.md',
   ],
+  registration: [
+    'docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md',
+    'docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md',
+  ],
 };
 const NARRATION = [
   /decided otherwise/i,
@@ -82,7 +86,7 @@ if (text !== null) {
     for (let i = start + 1; i < lines.length && !/^## /.test(lines[i]); i++) section.push(lines[i]);
     const stated = section.join('\n').match(/^(\d+) cases/m);
     const cases = section
-      .map((l) => l.match(/^\| `([a-z0-9-]+\/[a-z0-9-]+)` \|/))
+      .map((l) => l.match(/^\| `([a-z0-9-]+(?:\/[a-z0-9-]+)?)` \|/))
       .filter(Boolean)
       .map((m) => m[1]);
     findings.push({
