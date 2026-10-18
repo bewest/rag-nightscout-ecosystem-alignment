@@ -8441,7 +8441,21 @@
 
 
 <h1 id="authority--identity-model">Authority &amp; Identity Model<a class="headerlink" href="#authority--identity-model" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-09-16 at <code>1a10007b4</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>05f2a0d2e</code>.</em></p>
+<p><em>Contributor-facing.</em> <strong>Status 2026-10-18: prior art, partly replaced by D18 and D19.</strong> Current
+decisions: <a href="../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>.
+Under D18 the hub observes and records; overlapping intents are composed by the controller, and the
+hub never derives the result (<a href="../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">execution plan §2.6.1</a>).
+So the authority hierarchy used as a hub-side conflict rule, the conflict scenarios and the
+composition invariants below are rules a controller may apply, not the hub's. Still prior art: the
+agent as an actor, scopes that separate proposing from acting (the upstream RFC's <code>suggest</code>), and
+the delegation-grant shape. Instances, roles and command routing are specified in
+<a href="../30-design/platform/nightscout-hub-sync-architecture-2026-09-11.html#36-definitions-and-instances">hub-sync §3.6</a>
+(D19). An agent initiator is written in the open-vocabulary form <code>{value: other, controllerTerm}</code>;
+no <code>agent</code> value is added (maintainer, 2026-10-18). Map of what exists:
+<a href="../30-design/platform/agent-trust-boundaries-2026-10-18.html">agents in the ecosystem</a>.
+<strong>Corrected in place 2026-10-18:</strong> the "Conflict resolution" row and enhancement 2 of "Nightscout
+Implementation", and the scope of "Safety Invariants", to D18.</p>
 <p>This document defines the authority hierarchy and identity model used for conflict resolution when multiple actors interact with AID systems.</p>
 <hr />
 <h2 id="why-nightscout-roles-gateway-exists">Why Nightscout Roles Gateway Exists<a class="headerlink" href="#why-nightscout-roles-gateway-exists" title="Permanent link">&para;</a></h2>
@@ -8667,7 +8681,7 @@ equivalent.</p>
 <tr>
 <td>Conflict resolution</td>
 <td>Not implemented</td>
-<td>Last write wins</td>
+<td>Last write wins. Outside the hub's role under D18: the controller composes, the hub records the result</td>
 </tr>
 <tr>
 <td>Audit trail</td>
@@ -8679,7 +8693,7 @@ equivalent.</p>
 <h3 id="proposed-enhancements">Proposed Enhancements<a class="headerlink" href="#proposed-enhancements" title="Permanent link">&para;</a></h3>
 <ol>
 <li><strong>OIDC Actor Identity</strong> — Replace <code>enteredBy</code> with verified identity claims</li>
-<li><strong>Authority Enforcement</strong> — Check authority before accepting mutations</li>
+<li><strong>Authority Enforcement</strong> — Check a writer's permission before accepting mutations; resolving conflicts between accepted intents is the controller's (D18)</li>
 <li><strong>Delegation System</strong> — Formal grant/revoke for caregivers and agents</li>
 <li><strong>Conflict Audit</strong> — Log conflict resolutions for review</li>
 </ol>
@@ -8741,6 +8755,7 @@ equivalent.</p>
 5. Access granted per policy</p>
 <hr />
 <h2 id="safety-invariants">Safety Invariants<a class="headerlink" href="#safety-invariants" title="Permanent link">&para;</a></h2>
+<p>These bind whoever composes intents, which under D18 is the controller, not the hub.</p>
 <h3 id="never-violated">Never Violated<a class="headerlink" href="#never-violated" title="Permanent link">&para;</a></h3>
 <ol>
 <li><strong>Human always wins</strong> — Human-initiated action cannot be blocked by lower authority</li>

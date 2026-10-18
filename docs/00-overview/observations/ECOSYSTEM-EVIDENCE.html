@@ -2583,10 +2583,10 @@
 
 
 <h1 id="the-nightscout-ecosystem-what-it-consists-of-what-depends-on-it-and-what-keeping-it-current-takes">The Nightscout ecosystem: what it consists of, what depends on it, and what keeping it current takes<a class="headerlink" href="#the-nightscout-ecosystem-what-it-consists-of-what-depends-on-it-and-what-keeping-it-current-takes" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-17 at <code>38395a913</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>079d5dbe3</code>.</em></p>
 <p><em>For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
 </em><em>Observations</em><em> (part 1 of the overview; <a href="../index.html">how the overview is organised</a>). Living
-page, assembled 2026-10-02 against this repository at <code>e3d7b65c</code>; §7 added 2026-10-16 at <code>66403e0f</code>. It describes; it recommends
+page, assembled 2026-10-02 against this repository at <code>e3d7b65c</code>; §7 added 2026-10-16 at <code>66403e0f</code>; §7.1's agent tools and MCP servers checked 2026-10-18 at <code>5a9a49cc</code>. It describes; it recommends
 nothing. Each section names the date and the source or command of its figures; where a figure
 lives in a generated table or a record, this page links to that one home instead of copying it.
 Re-measure before quoting.</em></p>
@@ -3019,7 +3019,8 @@ answer.</p>
 <h2 id="7-research-analysis-and-test-tools">7. Research, analysis and test tools<a class="headerlink" href="#7-research-analysis-and-test-tools" title="Permanent link">&para;</a></h2>
 <p>Measured 2026-10-16 against this repository at <code>66403e0f</code> and the clones in <code>externals/</code> (last
 commit dates from <code>git -C externals/&lt;repo&gt; log -1 --format=%cs</code>); the g7sim, pod and trio-test-harness rows on
-2026-10-17 (detail in the <a href="../../60-research/programme/device-simulators-2026-10-17.html">device-simulators record</a>). Listed by kind, not ranked.</p>
+2026-10-17 (detail in the <a href="../../60-research/programme/device-simulators-2026-10-17.html">device-simulators record</a>); the nightscout-cgm-skill and Lumose rows and the MCP servers on 2026-10-18, from each
+repository's README and, where named, its source, through the GitHub API. Listed by kind, not ranked.</p>
 <h3 id="71-research-tools-elsewhere-in-the-ecosystem">7.1 Research tools elsewhere in the ecosystem<a class="headerlink" href="#71-research-tools-elsewhere-in-the-ecosystem" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3105,14 +3106,14 @@ commit dates from <code>git -C externals/&lt;repo&gt; log -1 --format=%cs</code>
 </tr>
 <tr>
 <td><a href="https://github.com/shanselman/nightscout-cgm-skill">nightscout-cgm-skill</a></td>
-<td>an agent skill for analysing Nightscout CGM data</td>
+<td>an agent skill: the agent runs a local Python script (<code>scripts/cgm.py</code>) that copies a site's CGM data into SQLite and computes time in range, GMI, AGP, patterns and an HTML report; it reads only. The README configures the credential as <code>token=</code> in <code>NIGHTSCOUT_URL</code>, and says health data "never leaves your machine except to fetch from your own Nightscout server"; the script's printed output becomes conversation text, sent to whichever model backs the assistant</td>
 <td>MIT</td>
 <td>2026-06-07</td>
 </tr>
 <tr>
-<td><a href="https://github.com/GlycemicGPT/GlycemicGPT">GlycemicGPT</a></td>
-<td>an open-source AI diabetes platform connecting to CGM and pump; its README opens with a safety warning</td>
-<td>GPL</td>
+<td><a href="https://github.com/lumose-health/GlycemicGPT">Lumose</a> (repository <code>GlycemicGPT</code>)</td>
+<td>a self-hosted diabetes platform with AI briefs, pattern detection, chat and caregiver alerts; reads Dexcom G7 by cloud API, Tandem t:slim X2 and Mobi and Medtronic 680G/770G/780G over Bluetooth (Mobi and Medtronic marked not verified on hardware), and a Nightscout site. The user chooses the AI provider, and the README says "that choice determines where your health data is processed": local providers keep it on the user's network, cloud providers receive it. Its CONTRIBUTING says pull requests that introduce therapeutic write primitives will not be merged; its README says AI suggestions for insulin dosing, carb ratio or correction factor must be verified with the healthcare team. Release v0.15.0</td>
+<td>GPL-3.0</td>
 <td>2026-08-18</td>
 </tr>
 <tr>
@@ -3133,6 +3134,80 @@ commit dates from <code>git -C externals/&lt;repo&gt; log -1 --format=%cs</code>
 author of the first six rows. Its data warehouse and analysis code are not public; this
 repository's <a href="../../60-research/collaboration/oref-inv-003-replication-brief.html">replication brief</a>
 describes what was replicated and the aggregate-only exchange proposed.</p>
+<p><strong>Nightscout MCP servers.</strong> A Model Context Protocol server offers an assistant tools, resources and
+prompts over stdio or HTTP, and calls a Nightscout site with the credential it is configured with.
+Last commit is the default branch's, in UTC, from the GitHub API on 2026-10-18; the Nocturne row is
+read from source.</p>
+<table>
+<thead>
+<tr>
+<th>server</th>
+<th>licence</th>
+<th>last commit</th>
+<th>transport</th>
+<th>write tools</th>
+<th>credential to Nightscout</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/lozit/mcp-nightscout">lozit/mcp-nightscout</a></td>
+<td>MIT</td>
+<td>2026-10-08</td>
+<td>stdio only</td>
+<td>none; five read tools with server-side aggregates. Version 0.0.0, not published</td>
+<td>a <code>readable</code> subject token kept in the OS keychain; refuses <code>API_SECRET</code> at start</td>
+</tr>
+<tr>
+<td><a href="https://github.com/oliver-virt/nightscout-mcp">oliver-virt/nightscout-mcp</a></td>
+<td>MIT</td>
+<td>2026-08-22</td>
+<td>Streamable HTTP; refuses to start without a bearer token for MCP clients</td>
+<td>none; leaves out the bolus wizard preview (<code>bwp</code>)</td>
+<td>a <code>readable</code> token, never <code>API_SECRET</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/ColebyPearson/nightscout-mcp">ColebyPearson/nightscout-mcp</a></td>
+<td>MIT</td>
+<td>2026-07-07</td>
+<td>stdio</td>
+<td>none; 44 read tools, among them ISF and carb-ratio checks against the profile, a Dynamic ISF adjustment-factor recommender and a fitted "suggested DIA" (<code>dia_fit_estimate</code>)</td>
+<td>a <code>readable</code> token; refuses <code>API_SECRET</code>; requires <code>https://</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/b77ai/nightscout">b77ai/nightscout</a></td>
+<td>MIT</td>
+<td>2026-07-10</td>
+<td>HTTP at <code>/mcp</code> (Docker); MCP clients authenticate by bearer header or by the token in the path (<code>POST /mcp/&lt;token&gt;</code>), or not at all when <code>MCP_AUTH_TOKEN</code> is unset</td>
+<td><code>log_treatment</code>, <code>remove_treatment</code>, <code>update_nightscout_profile</code></td>
+<td><code>API_SECRET</code> (SHA-1) or a <code>readable</code> token</td>
+</tr>
+<tr>
+<td><a href="https://github.com/jeremyclee/nightscout-mcp-js">jeremyclee/nightscout-mcp-js</a></td>
+<td>MIT</td>
+<td>2026-05-20</td>
+<td>stdio</td>
+<td><code>create_treatment</code>, only when <code>NIGHTSCOUT_ALLOW_WRITE_TREATMENTS</code> is exactly <code>true</code></td>
+<td><code>API_SECRET</code> (plain or SHA-1) or a token; the README's example configuration uses <code>API_SECRET</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/ssuppe/nightscout-mcp">ssuppe/nightscout-mcp</a></td>
+<td>MIT</td>
+<td>2025-07-19</td>
+<td>HTTP at <code>localhost:3000/mcp</code>; no MCP-client authentication described</td>
+<td>none (API v1 reads)</td>
+<td>a token in <code>.env</code></td>
+</tr>
+<tr>
+<td>Nocturne <code>src/Tools/Nocturne.Tools.McpServer</code></td>
+<td>AGPL-3.0 (README)</td>
+<td><code>ca52034e8</code>, 2026-08-23</td>
+<td>stdio, or SSE with <code>--web</code></td>
+<td><code>CreateEntry</code> (a glucose entry, through API v1)</td>
+<td>an API base URL; no credential setting in its configuration or API client (read at <code>42275c812</code>)</td>
+</tr>
+</tbody>
+</table>
 <h3 id="72-tools-built-in-this-repository">7.2 Tools built in this repository<a class="headerlink" href="#72-tools-built-in-this-repository" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3215,6 +3290,8 @@ across training and test folds; with folds grouped by person, every feature set 
   current.</li>
 <li>Vendor dates marked "announced" or "estimated" will move.</li>
 <li>Nothing here measures user numbers, installations or outcomes beyond the studies cited.</li>
+<li>The agent-tool and MCP-server rows of §7.1 are read from READMEs and source on 2026-10-18; none
+  was run against a site.</li>
 </ul>
 
 

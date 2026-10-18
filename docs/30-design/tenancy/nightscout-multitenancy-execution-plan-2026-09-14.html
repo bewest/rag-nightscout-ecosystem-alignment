@@ -2319,6 +2319,8 @@
       
         
       
+        
+      
     
     
     
@@ -5436,14 +5438,14 @@
 
 
 <h1 id="multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs">Multitenancy execution plan: decisions, tasks, and the context each one needs<a class="headerlink" href="#multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-17 at <code>9ed0468be</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>b3536bbfb</code>.</em></p>
 <p><em>Contributor- and maintainer-facing.</em></p>
 <p><strong>Status: living document — the decision record.</strong> Decisions D1–D20 are the maintainer's
 (2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16) and are all <strong>adopted</strong>, except <strong>D17 row 2</strong>
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is <strong>adopted in principle,
 gated</strong> on the edge's production conditions and the compliance question (<code>T30-ORY-PROOF</code> held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. <strong>Item state lives
-in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5a9a49cc14c2e40959f9d84a995445ddeffac534/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
+in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b3536bbfb28cea113878fc5ecefddbd626b00d44/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
 <a href="../../../queue/QUEUE.html"><code>queue/QUEUE.md</code></a>, measured by <code>make queue-status</code>); defect facts live
 in the <a href="../remedial/nightscout-backfix-register.html">backfix register</a>. Measured facts below name
 their date and commit.</p>
@@ -6363,6 +6365,24 @@ the reason code <code>ambiguous-command-destination</code>, with four new cases;
 <code>boundTo</code>, with a <code>transfer-role</code> grant recorded on the stored role as <code>grantedBy: transfer-role</code>,
 §3.5's <code>release</code> and <code>transfer</code> modelled as instance-case requests, and eight new cases. 103
 instance cases. The choices made beyond the rows are listed in the queue item.)</em></p>
+<p><strong>Decided 2026-10-18 (maintainer)</strong>, on how an agent is recorded as initiator (D18's initiator
+vocabularies; <a href="../platform/nightscout-intent-workflow-landscape-2026-10-09.html">intent landscape</a> P5).</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>point</th>
+<th>decision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>17</td>
+<td>an agent as initiator</td>
+<td><strong>no <code>agent</code> value is added.</strong> An agent initiator is written in the open-vocabulary form <code>{value: other, controllerTerm}</code> (addendum rule 3), as §3.6 of the hub-sync design does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. The grammar's <code>initiators</code> element lists strings in each controller's own vocabulary, with no shared list and no <code>other</code> form; applying the form there is not yet specified. Map: <a href="../platform/agent-trust-boundaries-2026-10-18.html">agents in the ecosystem</a></td>
+</tr>
+</tbody>
+</table>
 <h3 id="27-d12--what-each-repository-is-for">2.7 D12 — what each repository is for<a class="headerlink" href="#27-d12--what-each-repository-is-for" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
