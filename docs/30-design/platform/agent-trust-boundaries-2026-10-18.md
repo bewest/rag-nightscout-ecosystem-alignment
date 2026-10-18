@@ -285,7 +285,7 @@ person running it, would be the manufacturer of such a function.
   ([process models](../../00-overview/perspective/PROCESS-MODELS.md)).
 - A shared initiator list (§4.2).
 - A therapy-state version a proposal could bind to (§4.3).
-- Whether the proposal lifecycle of §4.3 belongs in `SPEC-REG-COMMANDS` or in a separate item.
+- Whether the proposal lifecycle of §4.3 belongs in `SPEC-REG-COMMANDS` or in a separate item. *(Decided 2026-10-18, maintainer: in `SPEC-REG-COMMANDS`; §4.3 records it.)*
 - Read audit, purpose limitation and real revocation for a delegated reader (§3.1).
 - Which of the authority model and upstream `conflict-resolution.md` becomes the source for the
   grant shape ([hub-sync §5.2](nightscout-hub-sync-architecture-2026-09-11.md#52-liveness-and-channel-ownership--open-here-already-drafted-upstream)).

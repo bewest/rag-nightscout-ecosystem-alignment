@@ -155,7 +155,7 @@ specification is written.
 
 | | |
 |---|---|
-| **Spec** | [spec/authority.md](spec/authority.md): principals and credentials (AU1–AU5), the binding and credential kind, the owner's actions, the authorisation of registrations and namespaces, who may receive a command, delegation as requirements DR1–DR7 with what is decided around it, what is recorded for audit, 56 cases |
+| **Spec** | [spec/authority.md](spec/authority.md): principals and credentials (AU1–AU5), the binding and credential kind, the owner's actions, the authorisation of registrations and namespaces, who may receive a command, delegation as requirements DR1–DR7 with what is decided around it, what is recorded for audit, 70 cases |
 | **Evidence** | [agent trust boundaries](agent-trust-boundaries-2026-10-18.md) (develop, interpret and act; a proposal lifecycle, proposed and not specified); [configuration and delegation §5](../tenancy/nightscout-configuration-and-delegation-2026-09-10.md#5-new-data-and-delegation-between-agents) (what a delegation design must provide); [control-plane reconciliation](../tenancy/nightscout-control-plane-reconciliation-2026-09-11.md); [authority model](../../10-domain/authority-model.md) |
 | **Decisions** | [D13–D17](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions) (credential root, listeners, auth plane; D17 row 2 open) |
 | **Open** | `SPEC-REG-COMMANDS` (the command API and the proposal record, to be the `commands` specification); delegation (authority §7); D17 row 2; the owner choices in authority §9 |

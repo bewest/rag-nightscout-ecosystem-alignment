@@ -16660,7 +16660,7 @@ items:
       namespaces (registration §15, moved), who may receive a command
       (registration §9's command-sink binding, moved), delegation as the
       requirements DR1-DR7 with what is decided around it, and what is
-      recorded for audit; 56 registration cases listed by name pattern.
+      recorded for audit; 70 registration cases listed by name pattern.
       registration.md §15 and the command-sink paragraph become pointers;
       glossary, index, and pointers in configuration-and-delegation §5.4,
       the agents page §4.2 and the execution plan's D17. spec_cases.py
@@ -16680,8 +16680,8 @@ items:
           a case that does not exist, states a count that differs from its
           table, or when the index, the registration spec, the
           configuration-and-delegation document, the agents page or the
-          execution plan does not link to it. GREEN on 2026-10-18: 71
-          checks, 56 cases.
+          execution plan does not link to it. GREEN on 2026-10-18: 85
+          checks, 70 cases.
       - run: python3 -m tools.nsschema.spec_cases authority --check
         kind: static
         describe: >
@@ -16704,7 +16704,20 @@ items:
       first passed, because registration.md links its sibling as
       authority.md and the break only removed spec/authority.md; the break
       now removes sibling links too and is red for all six specs; the test
-      break is CONTROL-INVALID.
+      break is CONTROL-INVALID. Adversarial review, 2026-10-18, applied:
+      the owner's actions run on ns-tenant-admin or with API_SECRET on
+      single, and ns-realtime is a data listener (AU2); AU1 says never Ory
+      and adds the compliance-owner condition; AU3 adds the opaque-token
+      caveat (BF-25), the D13 amendment and that it is not on dev; AU4
+      cites registration question 4 and leaves grants to §7; DR2 states
+      15.0.8 as unbounded (v1 pass-through, the allowlist on dev only,
+      BF-72 open, mechanism only); an approval binds to the payload hash,
+      and A12 versions the hub's record, not the controller's state; §8
+      states current state, not history, and that owner actions are not
+      recorded by actor or time; D18's validation-and-enactment moved to
+      the decided list; the case patterns drop update-stale-etag and the
+      two pin precondition cases and add 15 missing cases (70); owner
+      actions with no case are listed in §9.
 
   - id: SPEC-RECORDS
     title: "Platform spec L1: the records specification (observation primitives, decomposition of today's documents, effective-dated settings snapshots)"

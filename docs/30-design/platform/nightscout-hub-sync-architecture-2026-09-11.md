@@ -286,7 +286,7 @@ only the shapes a registration declared does not.
 
 The capability document, the product resource, per-element results, the controller's fallback, and
 the binding, credential kind and owner's actions are maintained in the
-[registration specification](spec/registration.md) §4–§6 and §15, with 54 conformance cases. The
+[registration specification](spec/registration.md) §4–§6 and the [authority specification](spec/authority.md) §3–§5, with 54 conformance cases. The
 text of this section as specified through 2026-10-17, with its decisions and case table, is at
 [`b3536bbf`](https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b3536bbfb28cea113878fc5ecefddbd626b00d44/docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md#35-negotiation).
 
