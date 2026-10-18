@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/spec/glossary.html">
       
       
-        <link rel="prev" href="index.html">
+        <link rel="prev" href="authority.html">
       
       
         <link rel="next" href="identity.html">
@@ -2718,6 +2718,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -2770,6 +2774,34 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="authority.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authority (L5)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
               
             
               
@@ -3023,6 +3055,34 @@
     
   
     State and intent (L3)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sync-transport.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sync transport (L4)
   
 
     
@@ -5217,7 +5277,7 @@
 
 
 <h1 id="platform-glossary">Platform glossary<a class="headerlink" href="#platform-glossary" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>273f0df72</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>27c3f991e</code>.</em></p>
 <p><em>Contributor-facing. Living, current at <code>main</code> <code>5a9a49cc</code> (2026-10-18). Each term links to where
 it is specified; the definition here is a summary, and the linked section is the authority. Therapy
 terms (profile, override, temporary target) are in the <a href="../../../10-domain/glossary.html">domain glossary</a>.
@@ -5388,9 +5448,10 @@ registered collection from one cursor. <a href="../nightscout-hub-sync-architect
 <p><strong><code>quirksApplied</code>, <code>slotMapping</code>.</strong> What the hub records on a reply and on the stored record when
 it applied a quirk mapping or decided a channel by <code>sameAs</code>, so a mapped value is never silent.</p>
 <h2 id="l5-authority">L5 Authority<a class="headerlink" href="#l5-authority" title="Permanent link">&para;</a></h2>
+<p>Specified in the <a href="authority.html">authority specification</a>.</p>
 <p><strong>Binding (<code>boundTo</code>), credential kind.</strong> The subject (or, in single mode, the shared secret) a
 product or instance is bound to; only it may update or retire it. <code>credentialKind</code> records whether
-a subject token or <code>API_SECRET</code> last wrote it. <a href="registration.html#15-binding-credentials-and-the-owner">REG §15</a>.</p>
+a subject token or <code>API_SECRET</code> last wrote it. <a href="authority.html#3-binding-and-credential-kind">authority §3</a>.</p>
 <p><strong>Owner, owner actions.</strong> The tenant owner, acting on <code>ns-tenant-admin</code> (or with <code>API_SECRET</code> in
 single mode). The owner may retire, block, unblock, release, transfer, free namespaces, transfer a
 role and pin a version, and never edits a registration's content.</p>

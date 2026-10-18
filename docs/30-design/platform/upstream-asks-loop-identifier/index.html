@@ -2716,6 +2716,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -4992,7 +4996,7 @@
 
 
 <h1 id="upstream-ask-the-loop-developers-identifier-proposal">Upstream ask: the Loop developers' <code>identifier</code> proposal<a class="headerlink" href="#upstream-ask-the-loop-developers-identifier-proposal" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>9d78d2483</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>0cc93a684</code>.</em></p>
 <p><em>Contributor-facing. </em><em>DRAFT, not yet sent. For maintainer review.</em><em> Queue item <code>LOOP-ID-REPLY</code>.
 Facts checked 2026-10-17 at cgm-remote-monitor <code>15.0.8</code> (<code>92d08342</code>) and <code>dev</code> <code>fade2299</code>, Loop at
 LoopWorkspace <code>548b332</code> (NightscoutService <code>2cef489</code>, LoopKit <code>d9f1437</code>) and NightscoutKit <code>4ec9fd1</code>,
@@ -5017,9 +5021,10 @@ otherwise:</p>
 <li>If neither is sent, the collection's time key applies (entries <code>sysTime</code> + <code>type</code>, treatments
    <code>created_at</code> + <code>eventType</code>); this fallback may be deprecated later.</li>
 </ol>
-<p>Tie-break (proposed, queue <code>ID-CLIENT-OID-DECISION</code>): when a write carries both and they point at
-different records, <code>_id</code> decides. That differs from D20 rule 5's identifier-first order and from
-v1 treatments today (<code>identifier</code> present drops <code>_id</code>, <code>server/treatments.js:356-362</code> @15.0.8).
+<p>Tie-break (maintainer, 2026-10-18; queue <code>ID-CLIENT-OID-DECISION</code>): when a write carries both and
+they point at different records, <code>identifier</code> decides, as in D20 rule 5 and v1 treatments today
+(<code>identifier</code> present drops <code>_id</code>, <code>server/treatments.js:356-362</code> @15.0.8). An earlier draft
+proposed <code>_id</code>-first; it was reversed to keep today's behaviour.
 Every write reply returns both ids (rule 5).</p>
 <p>The one server change it needs, v1 entries and device status matching on <code>identifier</code>, is queue
 item <code>ID-SIMPLE-MATCH</code>; it ships with BF-169 after 15.0.9 (maintainer, 2026-10-17; see
@@ -5177,7 +5182,7 @@ model is generally workable; the previous, longer version is in git history at <
 <p>Decisions cited: <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">D20 rule 5 and rule 7</a>
 (<code>18397441</code>, 2026-10-16); <a href="../../tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-10-12">write contract §3 (U4, U6) and §6.1</a>
 (2026-10-12); <a href="../nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">hub-sync design §3.7</a>
-(<code>write.ids</code>, <code>matchedBy</code>); cases in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/a70794c070d5c92b126b1344e1c49d13dcd7d4f1/specs/sync/conformance/quirks"><code>specs/sync/conformance/quirks/</code></a>;
+(<code>write.ids</code>, <code>matchedBy</code>); cases in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/0cc93a684c050751d9b1d2d209302451a58e64ca/specs/sync/conformance/quirks"><code>specs/sync/conformance/quirks/</code></a>;
 <a href="../../../../traceability/sync-identity-gaps.html">GAP-SYNC-032</a> ("send <code>syncIdentifier</code> as
 <code>identifier</code>") and REQ-BATCH-003 (per-item results) in
 <a href="../../../../traceability/sync-identity-requirements.html">sync-identity-requirements</a>.</p>
@@ -5218,6 +5223,13 @@ send <code>identifier</code>) is the direction the reply takes.</p>
 <td>reply rewritten around the simple contract (three rules, tie-break <code>_id</code> decides, one server change after 15.0.9); previous version at <code>dd6febcc</code> in git history</td>
 <td><code>ID-SIMPLE-MATCH</code>, <code>ID-CLIENT-OID-DECISION</code> (queue)</td>
 </tr>
+<tr>
+<td>2026-10-18</td>
+<td>revised</td>
+<td>—</td>
+<td>open questions become six concrete cases with today's behaviour, our default and an answer column; tie-break reversed to <code>identifier</code> decides (maintainer)</td>
+<td><code>ID-CLIENT-OID-DECISION</code>; write contract §6.1</td>
+</tr>
 </tbody>
 </table>
 <p>When the reply is sent, add its date, channel and link. When they answer, add a row and the
@@ -5233,8 +5245,8 @@ decision row it produces.</p>
 <li><strong>Q1–Q3 and the <code>date</code> question.</strong> The rewritten reply takes no position on them; they are in
   its "Later, only if needed" list. The <code>date</code> behaviour on API v3 is reproduced
   (<a href="../../../../tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.html">lab results</a>).</li>
-<li><strong>Tie-break.</strong> The reply proposes that <code>_id</code> decides when the two ids disagree, which departs
-  from D20 rule 5's order. Confirm before sending (<code>ID-CLIENT-OID-DECISION</code>).</li>
+<li><strong>Tie-break.</strong> Settled 2026-10-18: <code>identifier</code> decides, keeping D20 rule 5 and today's v1
+  treatments behaviour (<code>ID-CLIENT-OID-DECISION</code>).</li>
 <li><strong>Push first.</strong> The reply links pages on the project site; the gh-pages build of 2026-10-17
   (<code>de66763c</code>) has every linked page and anchor, including the folder's <code>index.html</code> the rewritten
   reply links. BF-169 is cited by number only.</li>

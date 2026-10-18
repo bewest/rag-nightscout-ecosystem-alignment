@@ -2929,6 +2929,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -5570,6 +5574,7 @@ The statistics API proposal specifies an MCP resource provider over a documented
 </tbody>
 </table>
 <h3 id="42-the-upstream-rfc-under-d18">4.2 The upstream RFC under D18<a class="headerlink" href="#42-the-upstream-rfc-under-d18" title="Permanent link">&para;</a></h3>
+<p><em>What is decided about authority, and what delegation would need, is maintained in the <a href="spec/authority.html">authority specification</a>.</em></p>
 <p>D18 makes the hub responsible for observability and the controller responsible for sending,
 syncing and reconciling; the hub records the controller's result and never composes intents
 (<a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">execution plan §2.6.1</a>).
@@ -5677,7 +5682,7 @@ its source, 2026-10-18; not reproduced here). That is evidence for the binding r
 and for its open question: an approval that names neither the payload nor the state does not
 bind to either, and an HTTP status says nothing about what the controller did.</p>
 <p><strong>Where it would be specified.</strong> Command delivery is <code>SPEC-REG-COMMANDS</code> in the
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a70794c070d5c92b126b1344e1c49d13dcd7d4f1/queue/work-queue.yaml">work queue</a>: not started, blocked on <code>SPEC-REG-MODES</code>; the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0cc93a684c050751d9b1d2d209302451a58e64ca/queue/work-queue.yaml">work queue</a>: not started, blocked on <code>SPEC-REG-MODES</code>; the
 <a href="spec/registration.html#9-channels-roles-and-provenance">registration specification §9</a> leaves the command API to it. The proposal record is folded into that item
 (maintainer, 2026-10-18), with gate cases for an approval bound to one payload hash, an expired
 proposal, and a proposal from a credential with no propose role; the open question above is its
@@ -5734,7 +5739,7 @@ person running it, would be the manufacturer of such a function.</p>
   (<a href="../../00-overview/perspective/PROCESS-MODELS.html">process models</a>).</li>
 <li>A shared initiator list (§4.2).</li>
 <li>A therapy-state version a proposal could bind to (§4.3).</li>
-<li>Whether the proposal lifecycle of §4.3 belongs in <code>SPEC-REG-COMMANDS</code> or in a separate item.</li>
+<li>Whether the proposal lifecycle of §4.3 belongs in <code>SPEC-REG-COMMANDS</code> or in a separate item. <em>(Decided 2026-10-18, maintainer: in <code>SPEC-REG-COMMANDS</code>; §4.3 records it.)</em></li>
 <li>Read audit, purpose limitation and real revocation for a delegated reader (§3.1).</li>
 <li>Which of the authority model and upstream <code>conflict-resolution.md</code> becomes the source for the
   grant shape (<a href="nightscout-hub-sync-architecture-2026-09-11.html#52-liveness-and-channel-ownership--open-here-already-drafted-upstream">hub-sync §5.2</a>).</li>

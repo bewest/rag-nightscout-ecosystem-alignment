@@ -2718,6 +2718,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -2770,6 +2774,34 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="authority.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authority (L5)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
               
             
               
@@ -3146,56 +3178,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="15. Binding, credentials and the owner">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#151-binding-and-credential-kind" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        15.1 Binding and credential kind
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#152-the-owners-actions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        15.2 The owner's actions
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#153-authorisation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        15.3 Authorisation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#154-namespaces" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        15.4 Namespaces
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -3266,6 +3248,34 @@
     
   
     State and intent (L3)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sync-transport.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sync transport (L4)
   
 
     
@@ -5589,56 +5599,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="15. Binding, credentials and the owner">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#151-binding-and-credential-kind" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        15.1 Binding and credential kind
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#152-the-owners-actions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        15.2 The owner's actions
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#153-authorisation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        15.3 Authorisation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#154-namespaces" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        15.4 Namespaces
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -5703,7 +5663,7 @@
 
 
 <h1 id="registration-l2">Registration (L2)<a class="headerlink" href="#registration-l2" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>0c1615544</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>27c3f991e</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>8d2b93ed</code> (2026-10-18). Layer L2 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>; ids are defined in
 the <a href="identity.html">identity specification</a>. Specified, not implemented: no hub serves any of this.
@@ -5958,7 +5918,7 @@ is <code>&lt;submit.href&gt;/&lt;vendor&gt;/&lt;product&gt;</code>, each segment
 <tr>
 <td><code>POST …/unblock</code>, <code>…/release</code>, <code>…/transfer</code>, <code>…/free-namespaces</code></td>
 <td>owner</td>
-<td>§15</td>
+<td><a href="authority.html#4-the-owners-actions">authority §4</a></td>
 <td><code>If-Match</code></td>
 </tr>
 </tbody>
@@ -6031,7 +5991,7 @@ name and type. Otherwise an element is rejected for:</p>
 <tbody>
 <tr>
 <td><code>namespace-not-owned</code></td>
-<td>the credential has stated namespace roots and none covers the namespace (§15.4)</td>
+<td>the credential has stated namespace roots and none covers the namespace (<a href="authority.html#5-authorisation-of-registrations">authority §5</a>)</td>
 </tr>
 <tr>
 <td><code>namespace-claimed</code></td>
@@ -6212,7 +6172,9 @@ and replay inputs carry no version in grammar v1 and are not compared.</p>
 </table>
 <p>Inside a meaning member, <code>description</code>, <code>evidence</code> and a carrier's <code>writtenWhen</code> are prose and not
 compared, and order is not meaning: an array of strings compares as a sorted set, an array of
-objects as the sorted list of their canonical forms. <code>availability</code> is a promise level, so an
+objects as the sorted list of their canonical forms. A carrier path written <code>{path: x}</code> with no
+typing member compares as the bare string <code>x</code>; one that declares a unit or type does not.
+<code>availability</code> is a promise level, so an
 experimental kind can be released at the same version. <code>sensitivity</code> is meaning, so a later
 definition cannot relabel data stored under an earlier one.</p>
 <p><strong>Well-known references.</strong> A stateSpans entry whose kind is exactly a kind of the hub's catalogue
@@ -6301,17 +6263,9 @@ are granted, and it writes the elements on that channel as their carriers. The h
 on the owner's listing (channel, role, claimant, holder) until the claimant drops the claim or
 lapses; <code>holder: null</code> when the holder has lapsed or dropped the role. <code>simulated</code> roles never
 contend with <code>device</code> roles or with each other.</p>
-<p><strong>Command-sink binding.</strong> A <code>device</code> command-sink role goes only to an instance whose binding
-equals the product's <code>boundTo</code>, or to one the owner moved it to with <code>transfer-role</code> (stored with
-<code>grantedBy: transfer-role</code>); any other <code>device</code> claim is refused <code>not-registration-owner</code> for that
-role, after the channel checks and before exclusivity. A <code>simulated</code> command-sink claim is open to
-any permitted subject and never receives a routed command. Source roles are open to any permitted
-subject. When a product's <code>boundTo</code> changes (the owner's <code>transfer</code> or <code>release</code>, or a released
-registration bound by its next writer), every <code>device</code> command-sink role held by an instance whose
-binding no longer matches is dropped at once and stored refused <code>not-registration-owner</code>, and that
-instance's etag changes; roles with <code>grantedBy: transfer-role</code> are kept. A held <code>device</code>
-command-sink survives renewal only when the instance matches the binding or the role carries
-<code>grantedBy</code>.</p>
+<p><strong>Command-sink binding.</strong> Which instance may hold a <code>device</code> command-sink role, and what a change
+of a product's binding does to it, is <a href="authority.html#6-who-may-receive-a-command">authority §6</a>.
+Source roles are open to any permitted subject.</p>
 <p><strong>Handoff.</strong> A role passes when its holder drops it (a renewal without it, or <code>DELETE</code>), when the
 holder's lease lapses, or when the owner transfers it. A lapsed or dropped role is not
 auto-assigned: a claimant is granted it on its own next renewal, which re-evaluates every claim.</p>
@@ -6391,93 +6345,8 @@ and it is not the product's current registration (otherwise <code>definition-ref
 <code>definition-in-use</code> or <code>definition-current</code>). Each record's declared horizon retention decides when
 the record goes.</p>
 <h2 id="15-binding-credentials-and-the-owner">15. Binding, credentials and the owner<a class="headerlink" href="#15-binding-credentials-and-the-owner" title="Permanent link">&para;</a></h2>
-<p><code>SPEC-AUTHORITY</code> will carry this section into the authority specification.</p>
-<h3 id="151-binding-and-credential-kind">15.1 Binding and credential kind<a class="headerlink" href="#151-binding-and-credential-kind" title="Permanent link">&para;</a></h3>
-<p>A create or update binds the registration to the credential that wrote it: <code>boundTo: {kind:
-subject, subject}</code>, never the token, so a token rotated on the same subject changes nothing; or
-<code>{kind: api-secret}</code> for the shared secret on <code>single</code>, which any holder of the secret presents. The
-stored registration records <code>credentialKind</code> (<code>subject</code>, <code>api-secret</code>, or <code>other</code> with the hub's
-term), the kind that last created or updated it; both are returned with it. <code>API_SECRET</code> against a
-subject-bound registration is <code>not-registration-owner</code> on the data path. A released registration
-(<code>boundTo: null</code>) is bound by the next credential with the permission that updates it, even with
-identical content (200, not a no-op); it records <code>bindingEvent: next-writer</code>, kept by later updates
-under the same binding and cleared by a release or transfer, and not in the etag. When a
-single-tenant site moves into a tenant, a registration bound to <code>api-secret</code> is bound to the
-tenant's root credential, a further credential kind; the etag changes with <code>boundTo</code> (decided;
-the mechanics are <code>SPEC-REG-MODES</code> and <code>SPEC-REG-MIGRATE</code>).</p>
-<h3 id="152-the-owners-actions">15.2 The owner's actions<a class="headerlink" href="#152-the-owners-actions" title="Permanent link">&para;</a></h3>
-<p>On the owner's listener. The owner never edits a registration's content (an owner <code>PUT</code> is 403
-<code>not-authorised</code>) and never submits one. An action other than retire answers outcome <code>applied</code>
-with the resource after it; a request for what is already the case is a no-op.</p>
-<table>
-<thead>
-<tr>
-<th>action</th>
-<th>effect</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>retire</td>
-<td>§5.5</td>
-</tr>
-<tr>
-<td>block</td>
-<td>state <code>blocked</code>, recording the interrupted state as <code>blockedFrom</code>; etag changes; declaration, binding and stored data kept frozen; the controller's writes and typed writes are refused 403 <code>blocked-by-owner</code>. With <code>If-None-Match: *</code> it blocks an identity with nothing stored (stored with no registration), and a create for it is 403</td>
-</tr>
-<tr>
-<td>unblock</td>
-<td>restores the interrupted state (<code>active</code>, or <code>retired</code>); removes a pre-emptive block; never reactivates a retired registration. A blocked registration is unblocked before it is retired (409 <code>blocked-by-owner</code> otherwise)</td>
-</tr>
-<tr>
-<td>release</td>
-<td><code>boundTo: null</code>; §15.1; drops non-matching <code>device</code> command-sinks (§9)</td>
-</tr>
-<tr>
-<td>transfer</td>
-<td>binds to a named subject; drops non-matching <code>device</code> command-sinks (§9)</td>
-</tr>
-<tr>
-<td>free-namespaces</td>
-<td>a retired registration's namespaces are no longer held by it (409 <code>not-retired</code> otherwise); its declaration and stored data stay readable</td>
-</tr>
-<tr>
-<td>transfer-role</td>
-<td>moves one role from its holder to a live instance that claims it with <code>device</code> provenance (409 <code>role-not-granted</code>, <code>role-not-claimed</code> or <code>not-live</code> otherwise); <code>If-Match</code> the etag of the instance it is moved from; both instances' etags change; the moved role records <code>grantedBy: transfer-role</code></td>
-</tr>
-<tr>
-<td>pin-version, unpin-version</td>
-<td>§12</td>
-</tr>
-<tr>
-<td>listing</td>
-<td>every instance with its roles, labels and liveness; the overlaps; <code>registrations</code> (every stored product with its <code>boundTo</code>, <code>credentialKind</code> and <code>bindingEvent</code>); <code>slotNameObservations</code>; observed aliases only when asked</td>
-</tr>
-</tbody>
-</table>
-<p>An owner action on the data listener is 403 <code>not-authorised</code>.</p>
-<h3 id="153-authorisation">15.3 Authorisation<a class="headerlink" href="#153-authorisation" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>The submitter is the controller, a device.</strong> It holds the native per-tenant credential (D17
-  row 1). Submit, update, read and retire are on the data listener with that credential. Under
-  <code>TENANCY_MODE=multi</code> there is no deployment secret (D13) and the credential's token is signed
-  with the tenant's key (D14), so a registration is per tenant and a controller on two tenants
-  registers twice. On <code>single</code>, <code>API_SECRET</code> may also register and is recorded as <code>api-secret</code>.</li>
-<li><strong>Permissions.</strong> Submitting needs <code>api:registrations:create</code> and retiring
-  <code>api:registrations:delete</code>, granted by the tenant owner on <code>ns-tenant-admin</code> (D16). Updating and
-  retiring also need the binding.</li>
-<li><strong>Storage.</strong> Registrations, definitions and instances are tenant data: per tenant, under RLS
-  under <code>multi</code> (D3), never in the public capability document.</li>
-</ul>
-<h3 id="154-namespaces">15.4 Namespaces<a class="headerlink" href="#154-namespaces" title="Permanent link">&para;</a></h3>
-<p>First to claim, per tenant. A credential with no stated namespace roots may claim any namespace no
-other registration on the tenant holds. A hub may restrict a credential to owner-granted roots; a
-registration may then declare a namespace equal to or below one of them (<code>com.example</code> covers
-<code>com.example.negotiation.targets</code>; <code>com.examplefoo</code> does not), else <code>namespace-not-owned</code>. Either
-way a namespace another registration holds is <code>namespace-claimed</code>. A retired registration holds its
-namespaces until the owner frees them. Readers spanning tenants interpret a field by the
-declaration carried with it, never by its namespace. A published list of namespace conventions may
-record use; it is never a check.</p>
+<p>The binding and credential kind, the owner's actions, the authorisation of registrations and
+namespaces are maintained in the <a href="authority.html">authority specification</a> §3–§5.</p>
 <h2 id="16-version-scoped-quirks">16. Version-scoped quirks<a class="headerlink" href="#16-version-scoped-quirks" title="Permanent link">&para;</a></h2>
 <p>The <a href="../../../../specs/quirks/index.html">quirks registry</a> records how stored documents deviate,
 per collection and project, with measured prevalence.</p>
@@ -6576,11 +6445,9 @@ by any controller author:</p>
 <h2 id="18-open-choices">18. Open choices<a class="headerlink" href="#18-open-choices" title="Permanent link">&para;</a></h2>
 <p>Rules the specification chose that await the maintainer's confirmation:</p>
 <ul>
-<li><strong>Product (§5, §15):</strong> unblock restores the interrupted state; a blocked registration is
-  unblocked before it is retired; <code>credentialKind</code> is the kind that last created or updated it;
-  reactivation reclaims a freed namespace only if no other registration holds it; the cases assume
-  a controller does not treat an element as not accepted merely because it depends on an ignored
-  member.</li>
+<li><strong>Product (§5):</strong> the cases assume a controller does not treat an element as not accepted
+  merely because it depends on an ignored member. The binding and owner choices are in
+  <a href="authority.html#9-open">authority §9</a>.</li>
 <li><strong>Definitions and instances (§7–§12):</strong> a definition <code>PUT</code> never binds a released product;
   definitions and instances are refused for a retired product; the instance etag covers granted
   roles; every listed role, including an <code>other</code> role, is exclusive among <code>device</code> instances; a
@@ -6598,7 +6465,7 @@ by any controller author:</p>
 <li><strong>Identity:</strong> two choices are listed in <a href="identity.html#5-open-decisions">identity §5</a>.</li>
 </ul>
 <p>Not yet specified: the contract per tenancy mode (<code>SPEC-REG-MODES</code>), the mechanics of registration
-state across a site's move into a tenant, whose binding rule §15.1 states (<code>SPEC-REG-MIGRATE</code>), and the command API (<code>SPEC-REG-COMMANDS</code>).</p>
+state across a site's move into a tenant, whose binding rule <a href="authority.html#3-binding-and-credential-kind">authority §3</a> states (<code>SPEC-REG-MIGRATE</code>), and the command API (<code>SPEC-REG-COMMANDS</code>).</p>
 <h2 id="19-conformance-cases">19. Conformance cases<a class="headerlink" href="#19-conformance-cases" title="Permanent link">&para;</a></h2>
 <p>186 cases, under <code>specs/sync/conformance/</code>: 54 for the product resource and negotiation at the
 top level, 103 under <code>instances/</code> and 29 under <code>quirks/</code>. Each refusal names the passing case that

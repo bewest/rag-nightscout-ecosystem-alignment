@@ -5506,14 +5506,14 @@
 
 
 <h1 id="multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs">Multitenancy execution plan: decisions, tasks, and the context each one needs<a class="headerlink" href="#multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>060a98fce</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>27c3f991e</code>.</em></p>
 <p><em>Contributor- and maintainer-facing.</em></p>
 <p><strong>Status: living document — the decision record.</strong> Decisions D1–D20 are the maintainer's
 (2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16) and are all <strong>adopted</strong>, except <strong>D17 row 2</strong>
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is <strong>adopted in principle,
 gated</strong> on the edge's production conditions and the compliance question (<code>T30-ORY-PROOF</code> held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. <strong>Item state lives
-in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a70794c070d5c92b126b1344e1c49d13dcd7d4f1/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
+in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0cc93a684c050751d9b1d2d209302451a58e64ca/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
 <a href="../../../queue/QUEUE.html"><code>queue/QUEUE.md</code></a>, measured by <code>make queue-status</code>); defect facts live
 in the <a href="../remedial/nightscout-backfix-register.html">backfix register</a>. Measured facts below name
 their date and commit.</p>
@@ -6679,6 +6679,7 @@ The tenant-owner plane is the first surface that is <strong>per-tenant and not t
 the first real consumer of that extraction, which must exist before the third listener does. It
 lands on <code>T30-WIRING</code>.</p>
 <h4 id="d17--by-audience">D17 — by audience<a class="headerlink" href="#d17--by-audience" title="Permanent link">&para;</a></h4>
+<p><em>The rules that follow from D13–D17 for registrations, owners and commands are maintained in the <a href="../platform/spec/authority.html">authority specification</a>.</em></p>
 <table>
 <thead>
 <tr>

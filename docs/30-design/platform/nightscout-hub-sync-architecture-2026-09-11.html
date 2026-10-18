@@ -3029,6 +3029,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -5752,6 +5756,7 @@ structurally inferred.</p>
 instance.</strong> That distinction is the subject of §5.2 and is where this design
 is least complete.</p>
 <h3 id="32-the-contract-the-hub-returns">3.2 The contract the hub returns<a class="headerlink" href="#32-the-contract-the-hub-returns" title="Permanent link">&para;</a></h3>
+<p><em>The sync read, write and cursor rules are maintained in the <a href="spec/sync-transport.html">sync-transport specification</a> §4; the measured cost in its §3.</em></p>
 <p>Everything the hub offers is derived from the registration, so a controller
 never negotiates a query shape at request time:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>GET  /api/v4/sync?cursor=&lt;opaque&gt;     → one envelope, every registered
@@ -5809,7 +5814,7 @@ only the shapes a registration declared does not.</p>
 <h3 id="35-negotiation">3.5 Negotiation<a class="headerlink" href="#35-negotiation" title="Permanent link">&para;</a></h3>
 <p>The capability document, the product resource, per-element results, the controller's fallback, and
 the binding, credential kind and owner's actions are maintained in the
-<a href="spec/registration.html">registration specification</a> §4–§6 and §15, with 54 conformance cases. The
+<a href="spec/registration.html">registration specification</a> §4–§6 and the <a href="spec/authority.html">authority specification</a> §3–§5, with 54 conformance cases. The
 text of this section as specified through 2026-10-17, with its decisions and case table, is at
 <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b3536bbfb28cea113878fc5ecefddbd626b00d44/docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md#35-negotiation"><code>b3536bbf</code></a>.</p>
 <h3 id="36-definitions-and-instances">3.6 Definitions and instances<a class="headerlink" href="#36-definitions-and-instances" title="Permanent link">&para;</a></h3>

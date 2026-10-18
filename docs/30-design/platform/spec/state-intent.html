@@ -16,7 +16,7 @@
         <link rel="prev" href="registration.html">
       
       
-        <link rel="next" href="../upstream-asks-device-simulators/index.html">
+        <link rel="next" href="sync-transport.html">
       
       
         
@@ -2718,6 +2718,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -2770,6 +2774,34 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="authority.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authority (L5)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
               
             
               
@@ -3006,13 +3038,52 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-what-is-active-at-a-time-not-yet-specified" class="md-nav__link">
+  <a href="#6-what-is-active-at-a-time" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. What is active at a time (not yet specified)
+        6. What is active at a time
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="6. What is active at a time">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-what-decides-each-measured-disagreement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 What decides each measured disagreement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-choices-for-the-maintainer-to-confirm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Choices for the maintainer to confirm
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3053,6 +3124,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sync-transport.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sync transport (L4)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -5200,13 +5299,52 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-what-is-active-at-a-time-not-yet-specified" class="md-nav__link">
+  <a href="#6-what-is-active-at-a-time" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. What is active at a time (not yet specified)
+        6. What is active at a time
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="6. What is active at a time">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-what-decides-each-measured-disagreement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 What decides each measured disagreement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-choices-for-the-maintainer-to-confirm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Choices for the maintainer to confirm
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -5261,7 +5399,7 @@
 
 
 <h1 id="state-and-intent-l3">State and intent (L3)<a class="headerlink" href="#state-and-intent-l3" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>060a98fce</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>a96f14935</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>92a7d31b</code> (2026-10-18). Layer L3 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. The grammar members
 named here are part of the <a href="registration.html">registration specification</a> §3; how a hub accepts
@@ -5357,7 +5495,7 @@ read from Loop, Trio, iAPS and AndroidAPS source and measured where it says so.<
 </tr>
 <tr>
 <td>S6</td>
-<td><strong>The wire carrier.</strong> <code>wire</code> says how today's documents carry instances of the kind: the collection; <code>eventType</code>, or <code>documentIdentifier</code> for a single named document (such as one in the v3 <code>settings</code> collection); a <code>discriminator</code> (<code>path</code> and <code>test</code>: <code>exists</code>, <code>is-object</code>, <code>equals</code> with a <code>value</code>, or <code>{value: other, controllerTerm}</code>); <code>paths</code>, each a dotted path string or a typed path <code>{path, unit, type or typeRef}</code> that carries the typing members of a field declaration (<a href="registration.html#3-the-grammar">registration G2</a>), so a carrier field can declare its unit (AndroidAPS declares <code>timeshift</code> in milliseconds); <code>vocabularies</code> (closed value sets by path), <code>unpublishedFields</code> and <code>writtenWhen</code>; <code>durationField</code>, the path that carries the duration, and <code>durationUnit</code> (<code>seconds</code>, <code>minutes</code>, <code>milliseconds</code>); <code>identity</code>, the fields that identify one instance across amendments; <code>indefinite</code>, how an open-ended instance is written; <code>endedEncoding</code>, how an early end is written (<code>amend-duration</code>, <code>delete-and-repost</code>, <code>repost-same-created_at</code>, <code>zero-duration-record</code>, <code>sampled-state</code>, or <code>{value: other, controllerTerm}</code>); <code>cancelBeforeStartEncoding</code> (<code>delete</code>, <code>soft-delete</code>, <code>zero-duration-record</code>); and <code>endReasonPath</code>, or null when the reason is not sent and can only be inferred from the encoding. <code>wire: null</code> means the controller keeps the intent and publishes no instance record.</td>
+<td><strong>The wire carrier.</strong> <code>wire</code> says how today's documents carry instances of the kind: the collection; <code>eventType</code>, or <code>documentIdentifier</code> for a single named document (such as one in the v3 <code>settings</code> collection); a <code>discriminator</code> (<code>path</code> and <code>test</code>: <code>exists</code>, <code>is-object</code>, <code>equals</code> with a <code>value</code>, or <code>{value: other, controllerTerm}</code>); <code>paths</code>, each a dotted path string or a typed path <code>{path, unit, type or typeRef}</code> that carries the typing members of a field declaration (<a href="registration.html#3-the-grammar">registration G2</a>), so a carrier field can declare its unit (AndroidAPS declares <code>timeshift</code> in milliseconds); a typed path with no typing member names the same field, with the same meaning, as the bare string; <code>vocabularies</code> (closed value sets by path), <code>unpublishedFields</code> and <code>writtenWhen</code>; <code>durationField</code>, the path that carries the duration, and <code>durationUnit</code> (<code>seconds</code>, <code>minutes</code>, <code>milliseconds</code>); <code>identity</code>, the fields that identify one instance across amendments; <code>indefinite</code>, how an open-ended instance is written; <code>endedEncoding</code>, how an early end is written (<code>amend-duration</code>, <code>delete-and-repost</code>, <code>repost-same-created_at</code>, <code>zero-duration-record</code>, <code>sampled-state</code>, or <code>{value: other, controllerTerm}</code>); <code>cancelBeforeStartEncoding</code> (<code>delete</code>, <code>soft-delete</code>, <code>zero-duration-record</code>); and <code>endReasonPath</code>, or null when the reason is not sent and can only be inferred from the encoding. <code>wire: null</code> means the controller keeps the intent and publishes no instance record.</td>
 </tr>
 <tr>
 <td>S7</td>
@@ -5584,59 +5722,157 @@ evidence. A <code>TherapyEffect</code> is a span (<code>startTimestamp</code>, <
 <p><code>disclosure</code> controls what a record states, not what an observer could infer from it: a recurring
 effect is itself a signal. The remapping is lossy for Trio's override, whose wire document carries a
 preset name and no effect.</p>
-<h2 id="6-what-is-active-at-a-time-not-yet-specified">6. What is active at a time (not yet specified)<a class="headerlink" href="#6-what-is-active-at-a-time-not-yet-specified" title="Permanent link">&para;</a></h2>
-<p>No rule says how a hub answers "what was active at time t" from the records. The two hubs
-disagree, measured by <code>LAB-HUB-ACTIVE-STATE</code> on one synthetic record set
-(<a href="../nightscout-intent-workflow-landscape-2026-10-09.html#5-how-the-hubs-decide-what-is-active">landscape §5</a>).
-For each disagreement, the declaration that already carries the answer, and what is missing:</p>
+<h2 id="6-what-is-active-at-a-time">6. What is active at a time<a class="headerlink" href="#6-what-is-active-at-a-time" title="Permanent link">&para;</a></h2>
+<p>How a hub answers "what was active at time t" from the records a controller wrote and the kinds it
+declared. Proposed, for the maintainer to confirm (§6.3, ten choices): specified with synthetic cases and a
+reference function (<code>tools/nsschema/active_state.py</code>), not implemented by any hub. The hub reports
+instances and which are active; it never combines them (S1).</p>
+<h3 id="61-rules">6.1 Rules<a class="headerlink" href="#61-rules" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
-<th>disagreement (measured)</th>
-<th>declaration that settles it</th>
-<th>missing</th>
+<th>#</th>
+<th>rule</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>a temporary target followed by a cancel: cgm-remote-monitor truncates the target; Nocturne records the cancel as a separate open span</td>
-<td><code>wire.endedEncoding</code>: <code>repost-same-created_at</code> for Trio, <code>amend-duration</code> for AndroidAPS</td>
-<td>the rule that an end encoding ends the instance it names and is not an instance; and a declaration for the writers that end with a zero-duration record (careportal, nightguard, iAPS), none of which has a registration (landscape §4)</td>
+<td>A1</td>
+<td><strong>Per product and kind.</strong> Instances are derived per <code>(vendor, product)</code> and kind, from that product's records only. Instances of two products are both reported, even on one shared slot; neither ends the other.</td>
 </tr>
 <tr>
-<td>Loop's devicestatus override <code>duration</code>: seconds in cgm-remote-monitor, minutes in Nocturne</td>
-<td>Loop's <code>applied</code> carrier: <code>durationField: override.duration</code>, <code>durationUnit: seconds</code> (seconds remaining, read from NightscoutService and NightscoutKit)</td>
-<td>the rule that a reader takes a duration's unit from the carrier's declaration</td>
+<td>A2</td>
+<td><strong>Identity makes an instance.</strong> A record belongs to a kind's requested layer by its <code>wire</code> carrier (collection, <code>eventType</code>, discriminator) and, when the kind declares a <code>requested</code> carrier, by that carrier too. Records whose <code>wire.identity</code> fields are equal are one instance; its content is the last live write the hub received for that identity. Two records with equal identity at the same instant are one instance, never two.</td>
 </tr>
 <tr>
-<td>a timed profile switch after a permanent one: cgm-remote-monitor falls back to the permanent profile, Nocturne has no profile after expiry</td>
-<td><code>overlay</code></td>
-<td>AndroidAPS's <code>profileSwitch</code> declares no <code>overlay</code> (its <code>runningMode</code> does); whether AndroidAPS returns to the earlier profile is not established here</td>
+<td>A3</td>
+<td><strong>Start is the record's own time.</strong> An instance starts at its record's <code>timeField</code> (<code>created_at</code> when none is declared), never at the time in its <code>_id</code> or the time the hub received it (<a href="identity.html#1-rules">identity I3</a>).</td>
 </tr>
 <tr>
-<td>AndroidAPS <code>timeshift</code>: milliseconds in cgm-remote-monitor, hours in Nocturne</td>
-<td>the profile switch <code>wire</code> path <code>{path: timeshift, unit: milliseconds}</code>, and <code>originalTimeshift</code> in milliseconds on the effective profile switch (read from AndroidAPS)</td>
-<td>the rule that a reader takes a field's unit from the typed path</td>
+<td>A4</td>
+<td><strong>End from the declared duration.</strong> An instance ends at its start plus <code>durationField</code> in <code>durationUnit</code>. A record carrying the <code>indefinite</code> sentinel, or no duration, is open-ended.</td>
 </tr>
 <tr>
-<td>two temporary targets at the same millisecond: cgm-remote-monitor keeps the first; Nocturne stores both, so list reads agree and latest-span reads disagree once the first ends</td>
-<td><code>wire.identity</code>: <code>created_at</code> + <code>eventType</code> for Trio, <code>identifier</code> for AndroidAPS</td>
-<td>the rule that equal identity is one instance amended, not two</td>
+<td>A5</td>
+<td><strong>End encodings.</strong> An amendment that shortens an instance (<code>amend-duration</code>, <code>repost-same-created_at</code>, or <code>delete-and-repost</code> under one identity) ends it early, with end reason <code>cancelled</code>; one that runs its duration ends <code>expired</code>. Under <code>zero-duration-record</code>, a zero-duration record ends the latest-starting instance of the kind and product that started strictly before it and is active at its time, with <code>cancelled</code>, and is not an instance itself; an instance starting at the marker's own time is not ended. The end reason describes an instance once it has ended; an amendment that shortens an instance is read as an early end, and an edit that only shortens it reads the same.</td>
 </tr>
 <tr>
-<td>an earlier open override backfilled after a later one: Nocturne leaves two open spans</td>
-<td><code>supersedes</code></td>
-<td>the rule that supersession orders by instance start, not by arrival</td>
+<td>A6</td>
+<td><strong>Deletion.</strong> A delete removes the write it names: by <code>_id</code>, as a delete by id carries no other field, or by identity. A soft delete (a write with <code>isValid: false</code>) removes its identity. An instance with no live write left is listed as ended <code>deletedBeforeStart</code>, and is never active and ends nothing, when the delete was received before its start; otherwise it is not reported, as a deleted document is not today. A re-post received before the delete of the record it replaces still amends the instance.</td>
+</tr>
+<tr>
+<td>A7</td>
+<td><strong>Supersession by start.</strong> Under <code>supersedes</code>, an instance ends at the start of the next instance of the same kind and product that starts after it and before its end, with <code>superseded</code>. Order is by start, never by arrival, so a backfilled earlier instance is ended by the later one whichever arrived first. Two instances that start at the same instant: the one whose last write was received later supersedes.</td>
+</tr>
+<tr>
+<td>A8</td>
+<td><strong>Overlay.</strong> Under <code>overlay</code>, a timed instance applies over an open-ended one without ending it; the open-ended one is not active while the timed one is, and is active again when it ends.</td>
+</tr>
+<tr>
+<td>A9</td>
+<td><strong>Overlap is reported, not resolved.</strong> For a kind that is <code>exclusiveWithinSlot</code> and declares neither <code>supersedes</code> nor <code>overlay</code>, overlapping instances are all reported active, each marked <code>overlap</code>.</td>
+</tr>
+<tr>
+<td>A10</td>
+<td><strong>Requested and applied are separate layers.</strong> Wire records matching the requested carrier give the requested layer (A2); <code>applied</code> records give the applied layer. Each applied record is in effect from its <code>timeField</code> until its own end or the next applied record of the same carrier and product, whichever is first; a record whose <code>activeField</code> is false ends what the earlier one put in effect. An applied carrier sampled per cycle (<code>devicestatus</code>) gives an applied layer only when it declares <code>activeField</code>; without one its values are the controller's composed result (S1) and name no intent, so no instance is reported from them. A request with no applied record is reported as requested only.</td>
+</tr>
+<tr>
+<td>A11</td>
+<td><strong>Units are declared, never assumed.</strong> A duration is read only in its declared <code>durationUnit</code>. A kind whose carrier has a duration and no unit yields no instances and is reported unreadable; the other kinds still answer. A field's unit is reported from its typed path, and a path with no unit carries none.</td>
+</tr>
+<tr>
+<td>A12</td>
+<td><strong>A state version.</strong> A product's state version at a time is <code>sha256:</code> over the RFC 8785 canonical JSON of its active rows with each instance's content. It changes when an instance starts, ends or is amended, including an amendment that changes only what the instance says. It versions the hub's record of what the controller reported, not the controller's own state: an approval bound to it (<code>SPEC-REG-COMMANDS</code>) is checked by the controller against its own state before it enacts anything (D18).</td>
+</tr>
+<tr>
+<td>A13</td>
+<td><strong>Sampled state.</strong> A kind whose <code>endedEncoding</code> is <code>sampled-state</code> has no instance records: each record carries the current value, which holds from the record's time until the next record of the kind and product. The value reported is the first declared path's.</td>
 </tr>
 </tbody>
 </table>
-<p>Both hubs ignore a stored <code>Temporary Override Cancel</code> (measured), so they agree; that careportal does not store one is read-derived.</p>
-<p>The lab ran each hub's storage and active-state code directly on SQLite for Nocturne, not either
-hub's HTTP write path; on PostgreSQL the same-millisecond tie may break differently.</p>
-<p>The rule is <code>SPEC-ACTIVE-STATE</code>. It also has to give the therapy state a version an approval can
-be bound to: D19's etags version the registration, not the controller's active intents, so nothing
-yet tells an approver that the state an agent read is still the state the controller holds
-(<code>SPEC-REG-COMMANDS</code>).</p>
+<h3 id="62-what-decides-each-measured-disagreement">6.2 What decides each measured disagreement<a class="headerlink" href="#62-what-decides-each-measured-disagreement" title="Permanent link">&para;</a></h3>
+<p><code>LAB-HUB-ACTIVE-STATE</code> measured cgm-remote-monitor and Nocturne disagreeing on one synthetic record
+set (<a href="../nightscout-intent-workflow-landscape-2026-10-09.html#5-how-the-hubs-decide-what-is-active">landscape §5</a>).
+The lab ran each hub's storage and active-state code directly, Nocturne on SQLite, not either hub's
+HTTP write path. The rules give one answer for each; it is not always either hub's.</p>
+<table>
+<thead>
+<tr>
+<th>disagreement (measured)</th>
+<th>rule and declaration</th>
+<th>case</th>
+<th>against the hubs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a temporary target followed by a cancel: cgm-remote-monitor truncates the target; Nocturne records the cancel as an open span of its own</td>
+<td>A5, for a kind declaring <code>zero-duration-record</code></td>
+<td><code>active-state/zero-duration-ends-instance</code></td>
+<td>cgm-remote-monitor's answer</td>
+</tr>
+<tr>
+<td>Loop's devicestatus override <code>duration</code>: seconds in cgm-remote-monitor, minutes in Nocturne</td>
+<td>A3, A10, A11; Loop's applied carrier declares <code>override.timestamp</code>, <code>override.active</code> and seconds (NightscoutService <code>StoredDosingDecision.swift:118-136</code>)</td>
+<td><code>active-state/applied-duration-in-declared-unit</code></td>
+<td>cgm-remote-monitor's answer</td>
+</tr>
+<tr>
+<td>a timed profile switch after a permanent one: cgm-remote-monitor falls back to the permanent profile; Nocturne has none after expiry</td>
+<td>A4, A7, A8; AndroidAPS's profile switch declares duration 0 as permanent, <code>overlay</code> and <code>supersedes</code> (AndroidAPS <code>AppRepository.kt:408-415</code>, <code>ProfileSwitchDao.kt:37</code>)</td>
+<td><code>active-state/permanent-profile-switch-returns</code></td>
+<td>cgm-remote-monitor's answer</td>
+</tr>
+<tr>
+<td>AndroidAPS <code>timeshift</code>: milliseconds in cgm-remote-monitor, hours in Nocturne</td>
+<td>A11; the profile switch declares <code>{path: timeshift, unit: milliseconds}</code></td>
+<td><code>active-state/field-unit-from-declaration</code></td>
+<td>cgm-remote-monitor's answer</td>
+</tr>
+<tr>
+<td>two temporary targets at the same millisecond: cgm-remote-monitor keeps the first; Nocturne stores both</td>
+<td>A2 for equal identity (the last received write); A7 for different identities</td>
+<td><code>active-state/equal-identity-same-instant</code></td>
+<td>neither: cgm-remote-monitor keeps the first write, the rules the last (§6.3 choice 1)</td>
+</tr>
+<tr>
+<td>an earlier open override backfilled after a later one: Nocturne leaves two open spans</td>
+<td>A7</td>
+<td><code>active-state/backfill-supersedes-by-start</code></td>
+<td>cgm-remote-monitor's list answer</td>
+</tr>
+</tbody>
+</table>
+<p>Both hubs ignore a stored <code>Temporary Override Cancel</code> (measured), so they agree; that careportal
+does not store one is read-derived. The writers that end with a zero-duration record (careportal,
+nightguard, iAPS) have no registration, so A5 applies to them once one declares
+<code>zero-duration-record</code>. AndroidAPS's running mode reads its duration from <code>originalDuration</code> in
+milliseconds, 0 when permanent, because its wire <code>duration</code> is 0 for loop modes and a 10-year
+placeholder for an open-ended loop-disabled mode (<code>RunningModeExtension.kt:25-97</code>), and it is
+resolved like the profile switch (<code>AppRepository.kt:451-458</code>).</p>
+<h3 id="63-choices-for-the-maintainer-to-confirm">6.3 Choices for the maintainer to confirm<a class="headerlink" href="#63-choices-for-the-maintainer-to-confirm" title="Permanent link">&para;</a></h3>
+<ol>
+<li>The last received write is an instance's content (A2), so a late, stale re-send of an older
+   version would win. The alternative, the latest by the record's own time, needs a time that
+   changes on amendment, which no carrier declares.</li>
+<li>A record deleted after its start is not reported (A6), rather than listed as <code>cancelled</code>.</li>
+<li>Two instances starting at the same instant: the later received supersedes (A7).</li>
+<li>Overlay is checked before supersession, so a timed instance never ends an open-ended one of an
+   overlay kind (A8).</li>
+<li>An applied record holds until the next one or its own end, with no staleness limit (A10): a
+   controller that stops uploading leaves its last applied record in effect until that record ends,
+   or indefinitely if it is open-ended.</li>
+<li>A carrier with a duration and no unit is not read (A11), rather than read in a default unit.</li>
+<li>The state version covers content (A12), so any amendment of an active instance changes it.</li>
+<li>A zero-duration record ends only an instance already running (A5). A zero-duration record
+   written to cancel a target scheduled for later (careportal, nightguard and iAPS cancel before
+   start this way) does not cancel it, because nothing on the record says which future instance
+   it names.</li>
+<li>An amendment that shortens an instance is read as an early end (<code>cancelled</code>, A5), so an edit
+   from 60 to 45 minutes made before the 45th minute reads the same as a cancel.</li>
+<li>Per-cycle values that name no intent give no applied instance (A10), so Trio's and iAPS's
+    applied state is reported as composed values only.</li>
+</ol>
 <h2 id="7-commands-as-controllers-handle-them-today">7. Commands, as controllers handle them today<a class="headerlink" href="#7-commands-as-controllers-handle-them-today" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5698,11 +5934,7 @@ receive a reply. Two hub writes reach no controller: Nocturne's <code>POST /api/
 careportal or nightguard temporary target for a controller that does not download treatments.</p>
 <h2 id="8-open">8. Open<a class="headerlink" href="#8-open" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>The active-state rule</strong> and a therapy-state version (§6): <code>SPEC-ACTIVE-STATE</code>.</li>
-<li><strong>A typed path with no typing members</strong> (S6): whether <code>{path: x}</code> means the same as the bare
-  string <code>x</code> at one version. The reference comparison of a kind's meaning
-  (<code>tools/nsschema/negotiate.py</code>) treats the two as different, so a controller that rewrites one
-  as the other at the same version is rejected <code>version-conflict</code>.</li>
+<li><strong>The active-state choices</strong> (§6.3), for the maintainer to confirm.</li>
 <li><strong>Undeclared vocabularies</strong> (§3): for <code>PROPOSAL-REG-CONTROLLERS</code> to confirm with each controller's
   authors.</li>
 <li><strong>Effect and motivation</strong> (§5): proposed, not adopted.</li>
@@ -5714,9 +5946,10 @@ careportal or nightguard temporary target for a controller that does not downloa
   on app lifecycle.</li>
 </ul>
 <h2 id="9-conformance-cases">9. Conformance cases<a class="headerlink" href="#9-conformance-cases" title="Permanent link">&para;</a></h2>
-<p>15 cases exercise how a kind's declaration is accepted: its meaning and version, a well-known
-reference, its acceptance policy, <code>sameAs</code> and catalogue mappings. The meaning of the declarations
-themselves (§6) has no case yet. The registrations' validity is checked by
+<p>59 cases: 15 exercise how a kind's declaration is accepted (its meaning and version, a well-known
+reference, its acceptance policy, <code>sameAs</code> and catalogue mappings), and 44 under
+<code>active-state/</code> exercise what is active at a time (§6), checked by
+<code>tools/nsschema/test_active_state.py</code>, whose expectations are written by hand. The registrations' validity is checked by
 <code>tools/nsschema/test_registration_grammar.py</code> and <code>make schema-sync-model</code> (<code>--check</code> fails on
 drift).</p>
 <!-- BEGIN GENERATED: state-intent-cases (tools/nsschema/spec_cases.py) -->
@@ -5819,6 +6052,270 @@ drift).</p>
 <td>A typed write on a sameAs channel says the channel was declared</td>
 <td>200 written</td>
 <td></td>
+</tr>
+<tr>
+<td><code>active-state/applied-duration-in-declared-unit</code></td>
+<td>An applied sample is in effect from its own time, for its duration in the declared unit</td>
+<td>rules A3, A10, A11</td>
+<td><code>applied-duration-unit-minutes</code></td>
+</tr>
+<tr>
+<td><code>active-state/applied-duration-unit-minutes</code></td>
+<td>The same samples declared in minutes stay in effect for twenty hours</td>
+<td>rules A11</td>
+<td></td>
+</tr>
+<tr>
+<td><code>active-state/applied-inactive-sample-ends</code></td>
+<td>A sample saying the intent is not in effect ends the earlier sample</td>
+<td>rules A10</td>
+<td><code>applied-duration-in-declared-unit</code></td>
+</tr>
+<tr>
+<td><code>active-state/backfill-supersedes-by-start</code></td>
+<td>An earlier instance received later is still ended by the later-starting one</td>
+<td>rules A7</td>
+<td><code>in-order-same-result</code></td>
+</tr>
+<tr>
+<td><code>active-state/delete-after-start-withdraws</code></td>
+<td>A record deleted after its start and not re-posted is not reported</td>
+<td>rules A6</td>
+<td></td>
+</tr>
+<tr>
+<td><code>active-state/delete-and-repost-amends</code></td>
+<td>A delete followed by a re-post of the same identity amends the instance</td>
+<td>rules A2, A6</td>
+<td><code>delete-after-start-withdraws</code></td>
+</tr>
+<tr>
+<td><code>active-state/delete-by-id-withdraws</code></td>
+<td>A delete that names only the record's _id removes it, as a DELETE by id does</td>
+<td>rules A6</td>
+<td><code>delete-and-repost-amends</code></td>
+</tr>
+<tr>
+<td><code>active-state/deleted-before-start-does-not-supersede</code></td>
+<td>A record deleted before its start ends nothing</td>
+<td>rules A6, A7</td>
+<td><code>deleted-before-start</code></td>
+</tr>
+<tr>
+<td><code>active-state/deleted-before-start</code></td>
+<td>A record deleted before its start is listed as ended, deleted before start, and is never active</td>
+<td>rules A6</td>
+<td><code>scheduled-not-deleted</code></td>
+</tr>
+<tr>
+<td><code>active-state/different-identity-same-instant</code></td>
+<td>Different identities at one instant are two instances; the later received supersedes</td>
+<td>rules A2, A7</td>
+<td></td>
+</tr>
+<tr>
+<td><code>active-state/different-identity-supersedes</code></td>
+<td>A different identity is a new instance, which supersedes the earlier one at its start</td>
+<td>rules A2, A7</td>
+<td></td>
+</tr>
+<tr>
+<td><code>active-state/equal-identity-same-instant</code></td>
+<td>Two records with equal identity at one instant are one instance, as last received</td>
+<td>rules A2</td>
+<td><code>different-identity-same-instant</code></td>
+</tr>
+<tr>
+<td><code>active-state/equal-start-last-write-wins</code></td>
+<td>At an equal start, the instance whose last write was received later supersedes</td>
+<td>rules A7</td>
+<td><code>different-identity-same-instant</code></td>
+</tr>
+<tr>
+<td><code>active-state/exclusive-overlap-reported</code></td>
+<td>Overlapping instances of an exclusive kind that does not supersede are both reported, as an overlap</td>
+<td>rules A9</td>
+<td><code>exclusive-supersedes</code></td>
+</tr>
+<tr>
+<td><code>active-state/exclusive-supersedes</code></td>
+<td>The same records under a superseding kind: one instance</td>
+<td>rules A7</td>
+<td></td>
+</tr>
+<tr>
+<td><code>active-state/field-unit-from-declaration</code></td>
+<td>A field's unit is reported from its typed path</td>
+<td>rules A11</td>
+<td><code>field-unit-undeclared</code></td>
+</tr>
+<tr>
+<td><code>active-state/field-unit-undeclared</code></td>
+<td>A path with no declared unit carries none</td>
+<td>rules A11</td>
+<td></td>
+</tr>
+<tr>
+<td><code>active-state/forced-mode-is-applied-not-requested</code></td>
+<td>A constraint-forced mode is in the applied layer only, when the kind declares a requested carrier</td>
+<td>rules A10</td>
+<td><code>forced-mode-without-requested-carrier</code></td>
+</tr>
+<tr>
+<td><code>active-state/forced-mode-without-requested-carrier</code></td>
+<td>Without a requested carrier, the forced record is also taken as a request</td>
+<td>rules A10</td>
+<td></td>
+</tr>
+<tr>
+<td><code>active-state/in-order-same-result</code></td>
+<td>Received in time order, the same instances</td>
+<td>rules A7</td>
+<td></td>
+</tr>
+<tr>
+<td><code>active-state/marker-at-next-start</code></td>
+<td>An end marker at the instant the next target starts ends only the earlier one</td>
+<td>rules A5</td>
+<td><code>zero-duration-ends-instance</code></td>
+</tr>
+<tr>
+<td><code>active-state/no-end-marker</code></td>
+<td>Without an end marker the instance runs its duration</td>
+<td>rules A5</td>
+<td></td>
+</tr>
+<tr>
+<td><code>active-state/overlay-returns-to-open-ended</code></td>
+<td>A timed instance applies over an open-ended one, which applies again when it ends</td>
+<td>rules A8</td>
+<td><code>supersedes-without-overlay</code></td>
+</tr>
+<tr>
+<td><code>active-state/permanent-after-temporary-supersedes</code></td>
+<td>A permanent switch that starts during a temporary one supersedes it</td>
+<td>rules A7, A8</td>
+<td></td>
+</tr>
+<tr>
+<td><code>active-state/permanent-profile-switch-returns</code></td>
+<td>A permanent profile switch (duration 0) stays active and applies again after a temporary one</td>
+<td>rules A4, A8</td>
+<td><code>permanent-after-temporary-supersedes</code></td>
+</tr>
+<tr>
+<td><code>active-state/products-never-supersede-each-other</code></td>
+<td>Instances of two products on one slot are both reported; neither ends the other</td>
+<td>rules A1</td>
+<td><code>same-product-supersedes</code></td>
+</tr>
+<tr>
+<td><code>active-state/repost-before-delete</code></td>
+<td>A re-post received before the delete of the old record, and a delete that names only _id</td>
+<td>rules A2, A6</td>
+<td><code>delete-and-repost-amends</code></td>
+</tr>
+<tr>
+<td><code>active-state/repost-same-identity-amends</code></td>
+<td>A re-post with the same identity amends the instance it names</td>
+<td>rules A2, A5</td>
+<td><code>different-identity-supersedes</code></td>
+</tr>
+<tr>
+<td><code>active-state/requested-and-applied</code></td>
+<td>With the applied record, both layers are reported</td>
+<td>rules A10</td>
+<td></td>
+</tr>
+<tr>
+<td><code>active-state/requested-without-applied</code></td>
+<td>A request with no applied record is reported as requested only</td>
+<td>rules A10</td>
+<td><code>requested-and-applied</code></td>
+</tr>
+<tr>
+<td><code>active-state/running-mode-open-ended</code></td>
+<td>The same mode, not shortened, stays active</td>
+<td>rules A4</td>
+<td></td>
+</tr>
+<tr>
+<td><code>active-state/running-mode-original-duration</code></td>
+<td>A loop-disabled mode shortened in originalDuration ends, whatever its placeholder wire duration</td>
+<td>rules A4, A5</td>
+<td><code>running-mode-open-ended</code></td>
+</tr>
+<tr>
+<td><code>active-state/same-product-supersedes</code></td>
+<td>The same records from one product: the later supersedes</td>
+<td>rules A7</td>
+<td></td>
+</tr>
+<tr>
+<td><code>active-state/sampled-state-latest-value</code></td>
+<td>A sampled-state kind is the latest sample's value, each sample holding until the next</td>
+<td>rules A13</td>
+<td></td>
+</tr>
+<tr>
+<td><code>active-state/scheduled-not-deleted</code></td>
+<td>The same scheduled record, not deleted, is active from its start</td>
+<td>rules A2</td>
+<td></td>
+</tr>
+<tr>
+<td><code>active-state/soft-delete-before-start</code></td>
+<td>A soft delete before the start is a deletion before start</td>
+<td>rules A6</td>
+<td><code>soft-delete-not-applied</code></td>
+</tr>
+<tr>
+<td><code>active-state/soft-delete-not-applied</code></td>
+<td>The same scheduled target, not deleted, is active</td>
+<td>rules A6</td>
+<td></td>
+</tr>
+<tr>
+<td><code>active-state/state-version-amended</code></td>
+<td>An amendment to an active instance changes the state version</td>
+<td>rules A12</td>
+<td></td>
+</tr>
+<tr>
+<td><code>active-state/state-version-content-changed</code></td>
+<td>An amendment that changes only what an active instance says changes the state version</td>
+<td>rules A12</td>
+<td><code>state-version-tracks-active-set</code></td>
+</tr>
+<tr>
+<td><code>active-state/state-version-tracks-active-set</code></td>
+<td>The state version is stable while the active set is, and changes when it changes</td>
+<td>rules A12</td>
+<td><code>state-version-amended</code></td>
+</tr>
+<tr>
+<td><code>active-state/supersedes-without-overlay</code></td>
+<td>Without overlay, a superseding kind ends the open-ended instance for good</td>
+<td>rules A7, A8</td>
+<td></td>
+</tr>
+<tr>
+<td><code>active-state/unattributed-applied-is-not-an-instance</code></td>
+<td>Per-cycle values that name no intent are not an applied instance</td>
+<td>rules A10</td>
+<td><code>applied-duration-in-declared-unit</code></td>
+</tr>
+<tr>
+<td><code>active-state/undeclared-unit-kind-unreadable</code></td>
+<td>A kind whose duration has no declared unit yields nothing and is reported unreadable; other kinds still answer</td>
+<td>rules A11</td>
+<td><code>no-end-marker</code></td>
+</tr>
+<tr>
+<td><code>active-state/zero-duration-ends-instance</code></td>
+<td>A zero-duration record ends the instance active at its time and is not an instance</td>
+<td>rules A5</td>
+<td><code>no-end-marker</code></td>
 </tr>
 </tbody>
 </table>

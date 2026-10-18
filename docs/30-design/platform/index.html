@@ -2716,6 +2716,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -4945,7 +4949,7 @@
 
 
 <h1 id="platform-contracts-where-each-piece-is-specified">Platform contracts: where each piece is specified<a class="headerlink" href="#platform-contracts-where-each-piece-is-specified" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>273f0df72</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>9736bd659</code>.</em></p>
 <p><em>Contributor-facing. Living index, current at <code>main</code> <code>010e1661</code> (2026-10-18). Terms are defined in
 the <a href="spec/glossary.html">platform glossary</a>.</em></p>
 <p>This page maps the work on how controllers (Loop, Trio, AndroidAPS and others) and hubs
@@ -5073,19 +5077,19 @@ reader brings, and each has its own rules, conformance cases and gate.</p>
 <td><code>SPEC-REG-COMMANDS</code></td>
 </tr>
 <tr>
-<td><code>sync-transport</code></td>
+<td><a href="spec/sync-transport.html">sync-transport</a></td>
 <td>how are writes matched, ordered and delivered over REST and the socket, and at what cost?</td>
 <td>L4</td>
-<td>T</td>
-<td>queued</td>
+<td>T1–T15</td>
+<td>written</td>
 <td><code>SPEC-SYNC-TRANSPORT</code></td>
 </tr>
 <tr>
-<td><code>authority</code></td>
+<td><a href="spec/authority.html">authority</a></td>
 <td>who may register, write, own, route or act for someone else?</td>
 <td>L5</td>
-<td>A</td>
-<td>queued</td>
+<td>AU1–AU5, DR1–DR7</td>
+<td>written</td>
 <td><code>SPEC-AUTHORITY</code></td>
 </tr>
 </tbody>
@@ -5110,10 +5114,9 @@ proposal and acknowledgement lifecycle has its own cases and review, and from <e
 says who may rather than what happens. <em>Authority</em> is kept apart from <em>registration</em> so that
 binding, the owner's actions and delegation are read in one place.</p>
 <p><strong>What moves when the queued files are written:</strong>
-- registration §15 (binding, credentials, the owner) moves to <em>authority</em>;
 - command routing in registration §9 moves to <em>commands</em>;</p>
-<p>Each file should stay readable in a sitting. <em>Registration</em> is the largest, at about 820 lines, and
-shrinks when §15 and routing move out.</p>
+<p>Each file should stay readable in a sitting. <em>Registration</em> is the largest; command routing in its §9 moves to <em>commands</em> when that
+specification is written.</p>
 <p><strong>How they are kept.</strong></p>
 <ol>
 <li><strong>One home per rule.</strong> Other specifications link to it by section and never restate it.
@@ -5258,7 +5261,7 @@ shrinks when §15 and routing move out.</p>
 <tbody>
 <tr>
 <td><strong>Spec</strong></td>
-<td><a href="spec/state-intent.html">spec/state-intent.md</a>: rules S1–S12 (composition reported by the controller, kinds, slots, states, end reasons, the wire carrier, requested and applied, initiators, definitions, acceptance, the controller's command contract), the declared kinds (generated), composition per controller, effect and motivation (proposed), the active-state gap, 15 cases; channels from slots are <a href="spec/registration.html#9-channels-roles-and-provenance">registration §9</a></td>
+<td><a href="spec/state-intent.html">spec/state-intent.md</a>: rules S1–S12 and A1–A12 (composition reported by the controller, kinds, slots, states, end reasons, the wire carrier, requested and applied, initiators, definitions, acceptance, the controller's command contract), the declared kinds (generated), composition per controller, effect and motivation (proposed), what is active at a time, 59 cases; channels from slots are <a href="spec/registration.html#9-channels-roles-and-provenance">registration §9</a></td>
 </tr>
 <tr>
 <td><strong>Evidence</strong></td>
@@ -5270,7 +5273,7 @@ shrinks when §15 and routing move out.</p>
 </tr>
 <tr>
 <td><strong>Open</strong></td>
-<td><code>SPEC-ACTIVE-STATE</code> (what is active at a time, and a therapy-state version); <code>SCHEMA-INTENT-GAPS</code> (initiators' <code>other</code> form, units on requested and applied carriers, typed carrier fields); undeclared vocabularies for <code>PROPOSAL-REG-CONTROLLERS</code>; <code>LAB-TRIO-INTENT</code></td>
+<td>the active-state choices (state and intent §6.3); undeclared vocabularies for <code>PROPOSAL-REG-CONTROLLERS</code>; <code>LAB-TRIO-INTENT</code></td>
 </tr>
 <tr>
 <td><strong>Audit</strong></td>
@@ -5278,7 +5281,7 @@ shrinks when §15 and routing move out.</p>
 </tr>
 <tr>
 <td><strong>Status</strong></td>
-<td>specified for declarations (<code>SPEC-STATE-INTENT</code>); not specified for what is active at a time, where <code>LAB-HUB-ACTIVE-STATE</code> measured cgm-remote-monitor and Nocturne disagreeing (state and intent §6)</td>
+<td>specified for declarations (<code>SPEC-STATE-INTENT</code>) and, as a proposal with ten choices to confirm, for what is active at a time (rules A1–A12, <code>SPEC-ACTIVE-STATE</code>), where <code>LAB-HUB-ACTIVE-STATE</code> measured cgm-remote-monitor and Nocturne disagreeing</td>
 </tr>
 </tbody>
 </table>
@@ -5292,16 +5295,16 @@ shrinks when §15 and routing move out.</p>
 </thead>
 <tbody>
 <tr>
-<td><strong>Spec today</strong></td>
-<td><a href="../tenancy/write-contract-spec-2026-10-07.html">write contract</a> §2–§3 (one write step, the re-send rule, every path's writes reaching the storage socket); <a href="nightscout-hub-sync-architecture-2026-09-11.html#32-the-contract-the-hub-returns">hub-sync §3.2</a> (cursor envelope and batch write); <a href="PROPOSAL-replay-fidelity-changes-2026-09-11.html#1-sync-cost-should-be-o1-in-the-number-of-resources">replay-fidelity proposal §1</a> (one history read across collections on API v3); <a href="spec/registration.html#6-the-controllers-side-fallback-and-refused-writes">registration §6</a> (fallback, load versus definite refusals); <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">D6</a> (the change feed under multi)</td>
+<td><strong>Spec</strong></td>
+<td><a href="spec/sync-transport.html">spec/sync-transport.md</a>: rules T1–T15 (the write step, re-send outcomes, server write times, the change event; the measured cost; the sync read and write, the merged cursor, one opaque cursor, the low watermark, the socket as fast path; typed records on the socket; definitions and versions), 13 cases. Drawn from the <a href="../tenancy/write-contract-spec-2026-10-07.html">write contract</a> §2–§3 and §6.1, <a href="nightscout-hub-sync-architecture-2026-09-11.html#32-the-contract-the-hub-returns">hub-sync §3.2</a> and the <a href="PROPOSAL-replay-fidelity-changes-2026-09-11.html#1-sync-cost-should-be-o1-in-the-number-of-resources">replay-fidelity proposal §1</a></td>
 </tr>
 <tr>
 <td><strong>Evidence</strong></td>
-<td><a href="nightscout-hub-sync-architecture-2026-09-11.html#2-what-sync-costs-now">hub-sync §2</a> (<code>make schema-sync-cost</code>: up to 5,760, 2,016 and 1,440 requests a day for AndroidAPS, Loop and Trio against 576 for two requests a cycle; source-derived upper bounds, not traffic); the write contract's measured matrix</td>
+<td><code>make schema-sync-cost</code> on 2026-10-18: endpoints each client's code declares, read from source (AndroidAPS <code>7e1d537d49</code> 26, three never called; Loop 7; Trio 5), not calls per cycle (sync-transport §3); the write contract's measured matrix; <code>lib/server/srv-dates.js</code> on <code>dev</code> <code>fade2299</code></td>
 </tr>
 <tr>
 <td><strong>Open</strong></td>
-<td><code>WRITE-CONTRACT</code>, <code>WC-STEP-PATCH</code>, <code>ID-BATCH-RESULTS</code> (blocked). Not specified anywhere: socket delivery of typed records, cursor semantics under concurrent writers, and migrating stored typed records when a definition changes version (rule 4 of the D18 addendum converts nothing without a declared mapping)</td>
+<td><code>WRITE-CONTRACT</code>, <code>WC-STEP-PATCH</code>, <code>ID-BATCH-RESULTS</code> (blocked); BF-164 (which writes reach the socket); the choices in sync-transport §8; the in-flight window under <code>single</code></td>
 </tr>
 <tr>
 <td><strong>Audit</strong></td>
@@ -5309,7 +5312,7 @@ shrinks when §15 and routing move out.</p>
 </tr>
 <tr>
 <td><strong>Status</strong></td>
-<td>the write matrix is evidenced; the write step is specified; the typed sync transport is not</td>
+<td>the write path is decided and specified (T1–T4; T3 merged on <code>dev</code>); the sync read, cursor and socket rules are proposed and specified with 13 cases (<code>SPEC-SYNC-TRANSPORT</code>); typed socket delivery and versions are proposed without cases</td>
 </tr>
 </tbody>
 </table>
@@ -5323,8 +5326,8 @@ shrinks when §15 and routing move out.</p>
 </thead>
 <tbody>
 <tr>
-<td><strong>Spec today</strong></td>
-<td>binding, credential kind, owner actions and authorisation in <a href="spec/registration.html#15-binding-credentials-and-the-owner">registration §15</a>; roles, provenance, command-sink binding and command routing in <a href="spec/registration.html#9-channels-roles-and-provenance">registration §9</a></td>
+<td><strong>Spec</strong></td>
+<td><a href="spec/authority.html">spec/authority.md</a>: principals and credentials (AU1–AU5), the binding and credential kind, the owner's actions, the authorisation of registrations and namespaces, who may receive a command, delegation as requirements DR1–DR7 with what is decided around it, what is recorded for audit, 70 cases</td>
 </tr>
 <tr>
 <td><strong>Evidence</strong></td>
@@ -5336,7 +5339,7 @@ shrinks when §15 and routing move out.</p>
 </tr>
 <tr>
 <td><strong>Open</strong></td>
-<td><code>SPEC-REG-COMMANDS</code> (the command API and the proposal record in front of a command, to be the <code>commands</code> specification); <code>SPEC-AUTHORITY</code> (delegation of a principal's authority to a caregiver, app or agent)</td>
+<td><code>SPEC-REG-COMMANDS</code> (the command API and the proposal record, to be the <code>commands</code> specification); delegation (authority §7); D17 row 2; the owner choices in authority §9</td>
 </tr>
 <tr>
 <td><strong>Audit</strong></td>
@@ -5344,7 +5347,7 @@ shrinks when §15 and routing move out.</p>
 </tr>
 <tr>
 <td><strong>Status</strong></td>
-<td>specified for registration and routing; not specified for commands and delegation</td>
+<td>specified for registration, owners and command destinations (<code>SPEC-AUTHORITY</code>); delegation and the command API are not specified</td>
 </tr>
 </tbody>
 </table>

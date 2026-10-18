@@ -2716,6 +2716,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -2997,10 +3001,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-we-will-do" class="md-nav__link">
+  <a href="#six-cases-what-should-nightscout-do" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What we will do
+        Six cases: what should Nightscout do?
       
     </span>
   </a>
@@ -3008,10 +3012,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#later-only-if-needed" class="md-nav__link">
+  <a href="#what-we-will-do" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Later, only if needed
+        What we will do
       
     </span>
   </a>
@@ -5038,10 +5042,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-we-will-do" class="md-nav__link">
+  <a href="#six-cases-what-should-nightscout-do" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What we will do
+        Six cases: what should Nightscout do?
       
     </span>
   </a>
@@ -5049,10 +5053,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#later-only-if-needed" class="md-nav__link">
+  <a href="#what-we-will-do" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Later, only if needed
+        What we will do
       
     </span>
   </a>
@@ -5078,7 +5082,7 @@
 
   <h1>Reply.body</h1>
 
-<p><em>Living document, last changed 2026-10-17 at <code>cfddb6ff8</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>0cc93a684</code>.</em></p>
 <p><strong>Re: client-supplied identifiers for Nightscout</strong></p>
 <p>Thank you for writing this up. We agree with the core of the ask, and most of what Loop needs
 already works. Much of the confusion comes from our API documentation, not the design: API v3's
@@ -5100,10 +5104,10 @@ sends. That sentence is wrong; we track it as BF-169.</p>
    <code>sysTime</code> + <code>type</code>, treatments <code>created_at</code> + <code>eventType</code>. This fallback may be deprecated
    later.</li>
 </ol>
-<p><strong>Tie-break (proposed):</strong> if a write carries both and they point at different records, <code>_id</code>
-decides. This differs from rule 5 of our design decision D20, which tries <code>identifier</code> first, and
-from v1 treatments today, which drop <code>_id</code> when <code>identifier</code> is present. We will record it as a
-decision. Rule 5 also says what every write reply should carry:</p>
+<p><strong>Tie-break:</strong> if a write carries both and they point at different records, <code>identifier</code>
+decides. That is what v1 treatments do today (they drop <code>_id</code> when <code>identifier</code> is present), what
+rule 5 of our design decision D20 says, and what your proposal implies, since <code>identifier</code> is the
+key clients own. Rule 5 also says what every write reply should carry:</p>
 <blockquote>
 <p><strong>Two ids, one rule.</strong> … Every write reply returns both.
 (<a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">D20 rule 5</a>)</p>
@@ -5206,19 +5210,73 @@ the comparison slightly differently).</p>
   (<a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.html">lab</a>).</li>
 <li><strong>Older servers store the field and ignore it.</strong></li>
 </ul>
+<h2 id="six-cases-what-should-nightscout-do">Six cases: what should Nightscout do?<a class="headerlink" href="#six-cases-what-should-nightscout-do" title="Permanent link">&para;</a></h2>
+<p>To make the contract unambiguous, we would like your answer for each case. "Our default" is what
+our decisions so far would give (write contract, 2026-10-12), chosen to keep today's clients
+working. Where it says <em>open</em>, we have no default yet.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>case</th>
+<th>today</th>
+<th>our default</th>
+<th>your answer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>The watch uploads a G7 reading. Later the phone uploads the same reading: same <code>identifier</code>, other <code>device</code>, time 1.5 s later</td>
+<td>v1 entries: two records. API v3: 400</td>
+<td>one record, updated with the later upload's fields (merge on match)</td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Loop re-sends a carb entry after the user edits its amount or time, same <code>identifier</code></td>
+<td>v1 treatments: updated. API v3: 400 if the time changed</td>
+<td>updated (merge); an explicit <code>PUT</code> replaces</td>
+<td></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Loop re-sends an identical record after a timeout</td>
+<td>v1 entries and treatments: matched, but a treatment matched by time is answered without <code>_id</code> (BF-165). v1 device status: stored again. API v3: matched</td>
+<td>success, and the reply carries the stored <code>_id</code> and <code>identifier</code></td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td>A record is deleted, then the same <code>identifier</code> arrives again</td>
+<td>API v3 (soft delete): the record comes back. v1 (hard delete): a new record</td>
+<td><em>open</em></td>
+<td></td>
+</tr>
+<tr>
+<td>5</td>
+<td>An older app sends no <code>identifier</code></td>
+<td>each collection's time key</td>
+<td>keep the time key; requiring <code>identifier</code> would be announced as a later version boundary</td>
+<td></td>
+</tr>
+<tr>
+<td>6</td>
+<td>One write carries an <code>_id</code> and an <code>identifier</code> that name different stored records</td>
+<td>v1 treatments: <code>identifier</code> wins, <code>_id</code> is dropped</td>
+<td><code>identifier</code> wins, as today (the tie-break above)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>For case 1, if you would rather Nightscout keep the first upload unchanged, or refuse the second,
+please say so and what the phone should do next. An error reply makes NightscoutKit treat the
+batch as failed.</p>
 <h2 id="what-we-will-do">What we will do<a class="headerlink" href="#what-we-will-do" title="Permanent link">&para;</a></h2>
 <p>One server change: v1 entries and device status match on <code>identifier</code> the way treatments do.
-With it, the swagger fix (BF-169). Both land after 15.0.9, which is frozen as <code>dev</code> stands. Could you confirm that the simple contract fits Loop?</p>
-<h2 id="later-only-if-needed">Later, only if needed<a class="headerlink" href="#later-only-if-needed" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Whether a re-send with changed fields is an edit or a duplicate, and versioning, HealthKit-style.</li>
-<li>Whether the proposed length limit and character set above become server checks, and when (a
-  character check would reject Loop's current space-containing ids, so it would start as a warning).</li>
-<li>Per-record results in batch replies.</li>
-<li>A unique index on <code>identifier</code>.</li>
-<li>API v3's immutable <code>date</code> and <code>device</code> on an identifier match (400 today, measured in the lab above).</li>
-<li>Device status's identical-body retry rule, once <code>identifier</code> is matched.</li>
-</ul>
+With it, the swagger fix (BF-169). Both land after 15.0.9, which is frozen as <code>dev</code> stands. Your
+answers above decide the rest. Later, and only if needed: identifier length and character
+checks (a warning first), results per record in a batch, and a unique index on <code>identifier</code>.</p>
 <p>Details and evidence are in our
 <a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/upstream-asks-loop-identifier/index.html">notes on your proposal</a>.</p>
 <p>Where would you like to continue?</p>
