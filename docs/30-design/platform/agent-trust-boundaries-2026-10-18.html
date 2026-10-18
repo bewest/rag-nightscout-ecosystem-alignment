@@ -1800,6 +1800,8 @@
       
         
       
+        
+      
     
     
     
@@ -5567,7 +5569,7 @@ Neither covers the controller's therapy state — which override is active, whic
 on board — so neither tells an approver that the state the agent read is still the state the
 controller holds.</p>
 <p><strong>Where it would be specified.</strong> Command delivery is <code>SPEC-REG-COMMANDS</code> in the
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/73aac62eca7a87532477d7928f12cc5dcb41831f/queue/work-queue.yaml">work queue</a>: not started, blocked on <code>SPEC-REG-MODES</code>; §3.6 says
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/92a7d31bc077ccd67f44ae4ff74040e495a46285/queue/work-queue.yaml">work queue</a>: not started, blocked on <code>SPEC-REG-MODES</code>; §3.6 says
 "The command API itself is not specified here." The proposal record is folded into that item
 (maintainer, 2026-10-18), with gate cases for an approval bound to one payload hash, an expired
 proposal, and a proposal from a credential with no propose role; the open question above is its

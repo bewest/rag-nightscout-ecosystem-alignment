@@ -1616,6 +1616,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1761,6 +1767,34 @@
   
   
     <li class="md-nav__item">
+      <a href="id-absent-decision.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Id absent decision
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="id-client-oid-decision.html" class="md-nav__link">
         
   
@@ -1789,6 +1823,34 @@
   
   
     <li class="md-nav__item">
+      <a href="id-delete-reuse-decision.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Id delete reuse decision
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="id-format-decision.html" class="md-nav__link">
         
   
@@ -1797,6 +1859,34 @@
     
   
     Id format decision
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="id-scope-decision.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Id scope decision
   
 
     
@@ -2623,7 +2713,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-17 at <code>9bd19200f</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>0e70c2a81</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -2690,16 +2780,34 @@ repository.</p>
 <td>Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev</td>
 </tr>
 <tr>
+<td><a href="id-absent-decision.html"><code>ID-ABSENT-DECISION</code></a></td>
+<td>&mdash;</td>
+<td><code>needs-decision</code></td>
+<td>Decide: a write that carries no identifier (and no _id) - keep the time-key fallback, deprecate it, or require identifier?</td>
+</tr>
+<tr>
 <td><a href="id-client-oid-decision.html"><code>ID-CLIENT-OID-DECISION</code></a></td>
 <td>&mdash;</td>
 <td><code>needs-decision</code></td>
 <td>Decide: may a client set _id (an ObjectId it creates), and which field wins when identifier and _id match different records?</td>
 </tr>
 <tr>
+<td><a href="id-delete-reuse-decision.html"><code>ID-DELETE-REUSE-DECISION</code></a></td>
+<td>&mdash;</td>
+<td><code>needs-decision</code></td>
+<td>Decide: after a delete, what does a re-send of the same identifier (or _id) do - resurrect, refuse, or create new?</td>
+</tr>
+<tr>
 <td><a href="id-format-decision.html"><code>ID-FORMAT-DECISION</code></a></td>
 <td>&mdash;</td>
 <td><code>needs-decision</code></td>
 <td>Decide: the client identifier's format (opaque string with limits; UUID not required)</td>
+</tr>
+<tr>
+<td><a href="id-scope-decision.html"><code>ID-SCOPE-DECISION</code></a></td>
+<td>&mdash;</td>
+<td><code>needs-decision</code></td>
+<td>Decide: is identifier unique per collection, across collections, and per tenant under TENANCY_MODE=multi?</td>
 </tr>
 <tr>
 <td><a href="id-v3-immutable-decision.html"><code>ID-V3-IMMUTABLE-DECISION</code></a></td>

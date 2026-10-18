@@ -1800,6 +1800,8 @@
       
         
       
+        
+      
     
     
     
@@ -5333,6 +5335,21 @@ uses today's v1 by-<code>_id</code> routes needs a UUID (§6).</p>
 <td>API v3 refuses it (400, reproduced by <code>LOOP-ID-V3-IMMUTABLE</code>); v1 does not</td>
 </tr>
 <tr>
+<td><code>ID-ABSENT-DECISION</code></td>
+<td>a write with no <code>identifier</code>: keep the time-key fallback, deprecate it, or require <code>identifier</code>?</td>
+<td>today v1 entries and treatments fall back to a time key, API v3 to its fallback fields; v1 device status has no key</td>
+</tr>
+<tr>
+<td><code>ID-DELETE-REUSE-DECISION</code></td>
+<td>after a delete, does a re-send of the same <code>identifier</code> resurrect, get refused, or create new?</td>
+<td>API v3 resurrects a soft-deleted record on POST (measured 2026-10-18, <a href="../../../10-domain/record-identity-reference.html">record identity reference</a>)</td>
+</tr>
+<tr>
+<td><code>ID-SCOPE-DECISION</code></td>
+<td>is <code>identifier</code> unique per collection, across collections, and per tenant?</td>
+<td>per collection today (each collection is its own MongoDB collection and index); the rules above do not say</td>
+</tr>
+<tr>
 <td>D20 choice 6 (<a href="../nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">text</a>)</td>
 <td>is <code>identifier</code> null in the reply when the client sent none and the path assigns none?</td>
 <td>I4 states null, pending confirmation</td>
@@ -5345,7 +5362,7 @@ uses today's v1 by-<code>_id</code> routes needs a UUID (§6).</p>
 </tbody>
 </table>
 <h2 id="6-today-in-cgm-remote-monitor">6. Today, in cgm-remote-monitor<a class="headerlink" href="#6-today-in-cgm-remote-monitor" title="Permanent link">&para;</a></h2>
-<p>Read-derived unless marked, at <code>official/dev</code> <code>fade2299</code> except where another revision is named.</p>
+<p>Read-derived unless marked, at <code>official/dev</code> <code>fade2299</code> except where another revision is named. Measured per collection and path at 15.0.8 and <code>fade2299</code> in the <a href="../../../10-domain/record-identity-reference.html">record identity reference</a> (2026-10-18).</p>
 <ul>
 <li><strong>API v1 treatments</strong> match a re-send on <code>identifier</code>, and drop a client <code>_id</code> when <code>identifier</code>
   is present (<code>lib/server/treatments.js:356-362</code> at 15.0.8).</li>

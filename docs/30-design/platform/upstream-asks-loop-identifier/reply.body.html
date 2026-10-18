@@ -1800,6 +1800,8 @@
       
         
       
+        
+      
     
     
     
@@ -4993,7 +4995,8 @@ sends. That sentence is wrong; we track it as BF-169.</p>
 <h2 id="the-contract-in-three-rules">The contract, in three rules<a class="headerlink" href="#the-contract-in-three-rules" title="Permanent link">&para;</a></h2>
 <ol>
 <li><strong><code>_id</code> is a MongoDB ObjectId (24 hex characters) or absent.</strong> A client that keeps a local
-   cache may create its own ObjectId and send it. ObjectIds are designed to be made by clients
+   cache may create its own ObjectId and send it over API v1. (API v3 stores a body <code>_id</code> as sent, so
+   a 24-hex value becomes a string there; measured 2026-10-18, <a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/10-domain/record-identity-reference.html">record identity reference</a>.) ObjectIds are designed to be made by clients
    without coordination (a timestamp, a random part and a counter). Other values in <code>_id</code> are not
    valid. For compatibility, <code>UUID_HANDLING</code> (on by default) moves any string <code>_id</code> that is not 24
    hex characters to <code>identifier</code> on treatments and entries, and the server assigns the ObjectId.</li>

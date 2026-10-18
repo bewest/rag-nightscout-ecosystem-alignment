@@ -2248,7 +2248,7 @@
 
 
 <h1 id="roadmap--what-comes-next-and-in-what-order">Roadmap — what comes next, and in what order<a class="headerlink" href="#roadmap--what-comes-next-and-in-what-order" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-17 at <code>9bd19200f</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>0e70c2a81</code>.</em></p>
 <p><em>Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. Contributor-facing. Living document: prose dated
 2026-10-08 against cgm-remote-monitor <code>official/dev</code> <code>fade2299</code> and <code>official/master</code> <code>92d08342</code>
 (tag <code>15.0.8</code>). The two order tables are generated from <code>queue/work-queue.yaml</code>, and
@@ -2767,6 +2767,13 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">5</td>
+<td><code>ID-ABSENT-DECISION</code></td>
+<td>Decide: a write that carries no identifier (and no _id) - keep the time-key fall</td>
+<td><code>needs-decision</code></td>
+<td><code>LOOP-ID-REPLY</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
 <td><code>ID-CLIENT-OID-DECISION</code></td>
 <td>Decide: may a client set _id (an ObjectId it creates), and which field wins when</td>
 <td><code>needs-decision</code></td>
@@ -2774,8 +2781,22 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">5</td>
+<td><code>ID-DELETE-REUSE-DECISION</code></td>
+<td>Decide: after a delete, what does a re-send of the same identifier (or _id) do -</td>
+<td><code>needs-decision</code></td>
+<td><code>LOOP-ID-REPLY</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
 <td><code>ID-FORMAT-DECISION</code></td>
 <td>Decide: the client identifier's format (opaque string with limits; UUID not requ</td>
+<td><code>needs-decision</code></td>
+<td><code>LOOP-ID-REPLY</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td><code>ID-SCOPE-DECISION</code></td>
+<td>Decide: is identifier unique per collection, across collections, and per tenant</td>
 <td><code>needs-decision</code></td>
 <td><code>LOOP-ID-REPLY</code></td>
 </tr>

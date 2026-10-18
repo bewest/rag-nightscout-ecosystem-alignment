@@ -1800,6 +1800,8 @@
       
         
       
+        
+      
     
     
     
@@ -4867,6 +4869,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#related" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -4885,7 +4898,7 @@
 
 
 <h1 id="upstream-ask-the-loop-developers-identifier-proposal">Upstream ask: the Loop developers' <code>identifier</code> proposal<a class="headerlink" href="#upstream-ask-the-loop-developers-identifier-proposal" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-17 at <code>509eabce1</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>9d78d2483</code>.</em></p>
 <p><em>Contributor-facing. </em><em>DRAFT, not yet sent. For maintainer review.</em><em> Queue item <code>LOOP-ID-REPLY</code>.
 Facts checked 2026-10-17 at cgm-remote-monitor <code>15.0.8</code> (<code>92d08342</code>) and <code>dev</code> <code>fade2299</code>, Loop at
 LoopWorkspace <code>548b332</code> (NightscoutService <code>2cef489</code>, LoopKit <code>d9f1437</code>) and NightscoutKit <code>4ec9fd1</code>,
@@ -5070,7 +5083,7 @@ model is generally workable; the previous, longer version is in git history at <
 <p>Decisions cited: <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">D20 rule 5 and rule 7</a>
 (<code>18397441</code>, 2026-10-16); <a href="../../tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-10-12">write contract §3 (U4, U6) and §6.1</a>
 (2026-10-12); <a href="../nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">hub-sync design §3.7</a>
-(<code>write.ids</code>, <code>matchedBy</code>); cases in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/73aac62eca7a87532477d7928f12cc5dcb41831f/specs/sync/conformance/quirks"><code>specs/sync/conformance/quirks/</code></a>;
+(<code>write.ids</code>, <code>matchedBy</code>); cases in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/92a7d31bc077ccd67f44ae4ff74040e495a46285/specs/sync/conformance/quirks"><code>specs/sync/conformance/quirks/</code></a>;
 <a href="../../../../traceability/sync-identity-gaps.html">GAP-SYNC-032</a> ("send <code>syncIdentifier</code> as
 <code>identifier</code>") and REQ-BATCH-003 (per-item results) in
 <a href="../../../../traceability/sync-identity-requirements.html">sync-identity-requirements</a>.</p>
@@ -5131,6 +5144,13 @@ decision row it produces.</p>
 <li><strong>Push first.</strong> The reply links pages on the project site; the gh-pages build of 2026-10-17
   (<code>de66763c</code>) has every linked page and anchor, including the folder's <code>index.html</code> the rewritten
   reply links. BF-169 is cited by number only.</li>
+</ul>
+<h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../../../10-domain/record-identity-reference.html">Record identity reference</a> (living, as of
+  2026-10-18): what every v1, API v3 and socket path does with <code>_id</code>, <code>identifier</code> and the time
+  keys, for entries, treatments, devicestatus, profile and food, at 15.0.8 and dev <code>fade2299</code>,
+  each claim measured or read (<a href="../../../../tools/lab/record-identity/index.html">lab</a>).</li>
 </ul>
 
 
