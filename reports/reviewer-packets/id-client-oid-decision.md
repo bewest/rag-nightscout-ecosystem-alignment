@@ -69,6 +69,14 @@ BF-99..102); only PUT and by-id reads and deletes converted with ObjectID().
 MongoDB never required _id to be an ObjectId. Since #8758 (dev) a re-sent
 24-hex _id is matched. A client-set _id cannot serve the phone-and-watch case
 (two devices create two ObjectIds), so identifier is needed either way.
+Recommended answer, as the rewritten Loop reply proposes it (2026-10-17, for
+the maintainer to confirm): (1) yes, a client may send an ObjectId it creates
+as _id; any other _id value is not valid (UUID_HANDLING keeps moving a UUID
+_id to identifier); (2) when the two match different records, _id decides. (2)
+departs from D20 rule 5's identifier-first order and from v1 treatments today,
+which drop _id when identifier is present (lib/server/treatments.js:356-362 at
+15.0.8), so the decision amends rule 5. Otherwise "later, only if needed"
+under the simple contract.
 
 ---
 

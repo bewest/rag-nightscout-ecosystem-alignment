@@ -61,7 +61,11 @@ maintainer, after the Loop maintainers answer
 ## Notes carried on the item
 
 The three paths disagree today. The reply asks Loop whether an identified
-record's time can be corrected by a re-send.
+record's time can be corrected by a re-send. 2026-10-17: the rewritten Loop
+reply no longer asks this; it lists the v3 immutable date and device, and
+edit-versus-duplicate, under "later, only if needed". After ID-SIMPLE-MATCH, a
+v1 entries re-send with the same identifier and a new time would update the
+stored entry, as v1 treatments do.
 
 ---
 

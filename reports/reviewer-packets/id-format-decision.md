@@ -72,7 +72,9 @@ match only themselves. API v3 computes uuid.v5(device_date[_eventType],
 106). A random UUID cannot serve the phone-and-watch case, where both devices
 must derive the same value; AndroidAPS keys on pump event ids. Not required:
 changing an existing client's identifiers, which would break matching against
-records it already stored.
+records it already stored. 2026-10-17: the rewritten Loop reply states only "a
+string, UUID recommended" and lists the limit, character set and case under
+"later, only if needed"; decide when a client or ID-VALIDATE needs it.
 
 ---
 

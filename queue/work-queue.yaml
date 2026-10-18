@@ -3509,6 +3509,72 @@ items:
       someone managing diabetes, which is why this cut is the one to
       slow down on.
 
+  - id: ID-SIMPLE-MATCH
+    title: "API v1 entries and devicestatus match on identifier like treatments (the simple contract)"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@fade2299
+    worktree: externals/cgm-remote-monitor-official
+    state: blocked
+    pr: []
+    blast_radius: >
+      Small and standalone, one PR to dev with BF-169 (BFQ-169).
+      lib/server/entries.js upsertQueryFor (301-319 at fade2299): match
+      identifier first, as treatments do, then sysTime+type. lib/server/devicestatus.js
+      create (92-172 at fade2299; insertMany unordered after #8758's
+      withoutStoredIds at 57-90): a status carrying identifier is upserted on it,
+      the rest are inserted as today. Tests for both. No change to treatments,
+      API v3 or the websocket.
+    review: maintainer - re-send behaviour clients see changes
+    operator_visible: >
+      An app that labels each glucose reading or loop status with its own id
+      can send it again without a second copy being stored.
+    semver: minor
+    semver_reason: >
+      Versioning policy section 2, question 10: the same write stores a
+      different set of records (a re-send that today adds a second entry or
+      devicestatus becomes a match on the stored one). By rule R3 one minor
+      row makes the release a minor, and 15.0.9 is decided as a patch
+      (RT-VERSION, RT-COUNT-COMPAT), so it cannot go into 15.0.9.
+    register: []
+    gates:
+      - no-gate: >
+          Not started. Gate to write: tools/lab/v3-identifier-immutable's
+          "v1 entries: same identifier, date +60 s" cell, which reads stored
+          n=2 on 15.0.8 and fade2299 (results 2026-10-17), must read n=1 on
+          the fix branch, with the later date stored; plus a v1 devicestatus
+          case (same identifier POSTed twice: n=2 today, n=1 after). Red
+          control: the same lab against fade2299. The lab needs docker and two
+          archived builds, so it is not wired as a queue gate here; a mocha
+          case in the PR is the CI gate.
+    blocks_on: [RT-0, RT-REBASE]
+    evidence:
+      - docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md
+      - tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md
+      - docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
+    notes: >
+      Decided by the maintainer 2026-10-17: not in 15.0.9; lands on dev
+      after cut 1's rebase, with BFQ-169. 15.0.9 is dev as it stands at
+      fade2299 (releases/cgm-remote-monitor-15.0.9/contents.md), and any
+      merge to dev moves the head off the candidate whose re-approval RT-0
+      owes. blocks_on names RT-REBASE because no separate item marks cut
+      1's catch-up merge done; only cut 1's part is needed (RT-1 blocks on
+      the same two).
+
+      Why after the rebase: RT-REBASE records that each further merge to dev
+      raises the cuts' catch-up cost. Cuts 2-5 already change both files
+      this item touches: `git diff --name-only $(git merge-base fade2299
+      <cut>) <cut> -- lib/server/entries.js lib/server/devicestatus.js`
+      lists entries.js on cut 2 and both files on cuts 3, 4 and 5 (measured
+      2026-10-17); cut 1 touches neither. Landing after the catch-up merge
+      keeps this change out of that merge's conflicts.
+
+      The tenancy item ID-FIRST-MATCH absorbs this rule into the write step
+      once WC-STEP-PATCH exists (it blocks on this item). Background: the
+      simple contract in the Loop reply (LOOP-ID-REPLY) - _id an ObjectId
+      or absent; identifier when _id is absent; the time key when neither.
+
 # ---------------------------------------------------------------------------
 # PARCEL: register-open
 #
@@ -5241,7 +5307,7 @@ items:
           stored record on the natural key with a different identifier -> a
           second record, the first untouched. Control: drop the identifier
           clause from one path and cell (1) goes red there.
-    blocks_on: [WC-STEP-PATCH]
+    blocks_on: [WC-STEP-PATCH, ID-SIMPLE-MATCH]
     evidence:
       - docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
@@ -5255,6 +5321,13 @@ items:
       syncIdentifier as identifier (the reply names syncIdentifier as Loop's
       treatment identity), matching on it alone would fold those pairs into
       one record. The reply draft does not raise this yet.
+
+      Re-shaped 2026-10-17: the v1 entries and devicestatus identifier match
+      ships first, on dev, as the release-train item ID-SIMPLE-MATCH
+      (maintainer: after 15.0.9, after cut 1's rebase). This item keeps the
+      socket dbAdd match and the Q1 adoption rule, and absorbs
+      ID-SIMPLE-MATCH's rule into the write step once WC-STEP-PATCH exists.
+      The rewritten Loop reply lists Q1 under "later, only if needed".
 
   - id: ID-BATCH-RESULTS
     title: "Release 2 (minor): per-item results in v1 batch replies; one bad item no longer fails the batch"
@@ -5339,6 +5412,10 @@ items:
       existing client's identifiers, which would break matching against
       records it already stored.
 
+      2026-10-17: the rewritten Loop reply states only "a string, UUID
+      recommended" and lists the limit, character set and case under
+      "later, only if needed"; decide when a client or ID-VALIDATE needs it.
+
   - id: ID-CLIENT-OID-DECISION
     title: "Decide: may a client set _id (an ObjectId it creates), and which field wins when identifier and _id match different records?"
     parcel: tenancy
@@ -5376,6 +5453,16 @@ items:
       ObjectId. Since #8758 (dev) a re-sent 24-hex _id is matched. A
       client-set _id cannot serve the phone-and-watch case (two devices
       create two ObjectIds), so identifier is needed either way.
+
+      Recommended answer, as the rewritten Loop reply proposes it
+      (2026-10-17, for the maintainer to confirm): (1) yes, a client may
+      send an ObjectId it creates as _id; any other _id value is not valid
+      (UUID_HANDLING keeps moving a UUID _id to identifier); (2) when the two
+      match different records, _id decides. (2) departs from D20 rule 5's
+      identifier-first order and from v1 treatments today, which drop _id
+      when identifier is present (lib/server/treatments.js:356-362 at
+      15.0.8), so the decision amends rule 5. Otherwise "later, only if
+      needed" under the simple contract.
 
   - id: ID-VALIDATE
     title: "Release 2 (minor): validate identifier on every collection; empty and null mean absent"
@@ -5483,6 +5570,12 @@ items:
     notes: >
       The three paths disagree today. The reply asks Loop whether an
       identified record's time can be corrected by a re-send.
+
+      2026-10-17: the rewritten Loop reply no longer asks this; it lists the
+      v3 immutable date and device, and edit-versus-duplicate, under "later,
+      only if needed". After ID-SIMPLE-MATCH, a v1 entries re-send with the
+      same identifier and a new time would update the stored entry, as v1
+      treatments do.
 
   - id: ID-UNIQUE-INDEX
     title: "Partial unique index on identifier, retry-as-update on duplicate key, start-up safe on existing duplicates"
@@ -12782,7 +12875,7 @@ items:
           computed only when none is sent. A fix's gate greps both swagger
           files for "The client should not create the identifier"; control:
           fade2299 still has it.
-    blocks_on: []
+    blocks_on: [ID-SIMPLE-MATCH]
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
@@ -12792,6 +12885,12 @@ items:
       for PUT and PATCH and stays; only the "should not create ... the server
       automatically assigns it" sentence is wrong. lib/api3/doc/ and README.md
       do not repeat it (read at fade2299).
+
+      Decided by the maintainer 2026-10-17: ships with ID-SIMPLE-MATCH, in
+      the same PR, on dev after cut 1's rebase; not in 15.0.9. A docs-only
+      change is a patch and could ride a re-cut 15.0.9 candidate if the RC is
+      re-cut for another reason; that is the one exception worth weighing,
+      not a plan.
   - id: RT-PR-8781
     title: "#8781 - treatment retries keep srvCreated, empty identities match, history clock survives a restart (AndyLow91; BF-141, BF-143, BF-144), merged for 15.0.9"
     parcel: release-train

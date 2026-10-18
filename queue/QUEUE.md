@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 234 |
+| items | 235 |
 | runnable gates | 283 |
-| explicit `no-gate:` markers | 274 |
+| explicit `no-gate:` markers | 275 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 274 of the 557 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 275 of the 558 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -45,7 +45,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-progress` | 4 | BFQ-46, BFQ-ENV, OID-LAB, LOOP-ID-REPLY |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
-| `blocked` | 29 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, WC-STEP-PATCH, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-72, BFQ-52, BFQ-93, BFQ-95, BFQ-67, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-152, BFQ-154, BFQ-156 |
+| `blocked` | 30 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, WC-STEP-PATCH, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-72, BFQ-52, BFQ-93, BFQ-95, BFQ-67, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-152, BFQ-154, BFQ-156 |
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 87 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 9 | RT-0, T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-V3-IMMUTABLE-DECISION, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164 |
@@ -1019,7 +1019,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 ## Modernization release train
 
-`parcel: release-train` &mdash; 32 items
+`parcel: release-train` &mdash; 33 items
 
 The adopted order (maintainer, 2026-09-15): 15.0.9, then cut 1, then cut 2,
 then cuts 3+5 combined, then a deprecation release, then cut 4. The premise of
@@ -1044,6 +1044,7 @@ that costs.
 | `RT-3` | Cuts 3+5 combined - dependency release | `blocked` | `chore/nightscout-modernization` | major | 1 run + 2 no-gate |
 | `RT-4` | Deprecation release - folded into 15.0.9's release notes (maintainer, 2026-09-23) | `merged-upstream` | `-` | minor | 1 run + 1 no-gate |
 | `RT-5` | Cut 4 - chore/mime-exposure-review, the one to slow down on | `blocked` | `chore/mime-exposure-review` | major | 2 run + 2 no-gate |
+| `ID-SIMPLE-MATCH` | API v1 entries and devicestatus match on identifier like treatments (the simple contract) | `blocked` | `-` | minor | 0 run + 1 no-gate |
 | `RT-CONNECT-PIN-CUTS` | BF-65 - cuts 1-3 ship the leaking connector to upgraders first | `gate-not-met` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6` | patch | 1 run + 1 no-gate |
 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | `chore/compose-mongodb6, chore/mime-exposure-review, chore/nightscout-modernization` | n/a | 2 run + 2 no-gate |
 | `RT-BOOTERROR` | BF-63 - the page that reports a boot error crashes on cut 4's boot errors | `gate-not-met` | `-` | patch | 3 run + 1 no-gate |
@@ -1591,6 +1592,37 @@ that costs.
 - `docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md`
 
 **Notes.** Last on the adopted train, after RT-3 (policy §8.3). The legacy bridge removal has moved to cut 1 (RT-1), so cut 4's remainder is trusted proxies, DOMPurify, Moment, MIME, webpack and ESLint; a trial merge of the rehearsal rh/cut4 into the lifted cut 1 conflicts only in legacy files and manifests. The published cut 4 is 175 commits behind dev 153e5658 with 22 conflicting paths (RT-REBASE, 2026-09-24). Decisions: - 2026-09-23 (maintainer): BF-61's hard stop is intended. MMCONNECT_* is usually the primary data source, so a misconfigured one shows the error page naming the fix. Under that decision the named fix must boot (CONNECT_COUNTRY_CODE alone does not, unless connect is in ENABLE), the messages must not name a release number, and cut4-total-outage.js passes only when each stopping shape names a fix that boots. All three are done on rh/cut1-retire-legacy c043fb2d, where the gate is green (it is red on rh/cut4). - 2026-09-23 (maintainer): deprecate and remove mmconnect as early as possible (it does not work and carries deprecated dependencies); RT-4's separate release is dropped. If a Connect migration misbehaves, the symptom is that a user's glucose data stops arriving: a data-availability failure for someone managing diabetes, which is why this cut is the one to slow down on.
+
+### `ID-SIMPLE-MATCH` &mdash; API v1 entries and devicestatus match on identifier like treatments (the simple contract)
+
+| | |
+|---|---|
+| state (claimed) | `blocked` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@fade2299` |
+| worktree | `externals/cgm-remote-monitor-official` |
+| semver | `minor` |
+| review | maintainer - re-send behaviour clients see changes |
+| blocks on | `RT-0`, `RT-REBASE` |
+
+**Blast radius.** Small and standalone, one PR to dev with BF-169 (BFQ-169). lib/server/entries.js upsertQueryFor (301-319 at fade2299): match identifier first, as treatments do, then sysTime+type. lib/server/devicestatus.js create (92-172 at fade2299; insertMany unordered after #8758's withoutStoredIds at 57-90): a status carrying identifier is upserted on it, the rest are inserted as today. Tests for both. No change to treatments, API v3 or the websocket.
+
+**What an operator sees.** An app that labels each glucose reading or loop status with its own id can send it again without a second copy being stored.
+
+**Why `minor`.** Versioning policy section 2, question 10: the same write stores a different set of records (a re-send that today adds a second entry or devicestatus becomes a match on the stored one). By rule R3 one minor row makes the release a minor, and 15.0.9 is decided as a patch (RT-VERSION, RT-COUNT-COMPAT), so it cannot go into 15.0.9.
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started. Gate to write: tools/lab/v3-identifier-immutable's "v1 entries: same identifier, date +60 s" cell, which reads stored n=2 on 15.0.8 and fade2299 (results 2026-10-17), must read n=1 on the fix branch, with the later date stored; plus a v1 devicestatus case (same identifier POSTed twice: n=2 today, n=1 after). Red control: the same lab against fade2299. The lab needs docker and two archived builds, so it is not wired as a queue gate here; a mocha case in the PR is the CI gate.
+
+**Evidence.**
+
+- `docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md`
+- `tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md`
+- `docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md`
+
+**Notes.** Decided by the maintainer 2026-10-17: not in 15.0.9; lands on dev after cut 1's rebase, with BFQ-169. 15.0.9 is dev as it stands at fade2299 (releases/cgm-remote-monitor-15.0.9/contents.md), and any merge to dev moves the head off the candidate whose re-approval RT-0 owes. blocks_on names RT- REBASE because no separate item marks cut 1's catch-up merge done; only cut 1's part is needed (RT-1 blocks on the same two). Why after the rebase: RT- REBASE records that each further merge to dev raises the cuts' catch-up cost. Cuts 2-5 already change both files this item touches: `git diff --name-only $(git merge-base fade2299 <cut>) <cut> -- lib/server/entries.js lib/server/devicestatus.js` lists entries.js on cut 2 and both files on cuts 3, 4 and 5 (measured 2026-10-17); cut 1 touches neither. Landing after the catch-up merge keeps this change out of that merge's conflicts. The tenancy item ID-FIRST-MATCH absorbs this rule into the write step once WC-STEP-PATCH exists (it blocks on this item). Background: the simple contract in the Loop reply (LOOP-ID-REPLY) - _id an ObjectId or absent; identifier when _id is absent; the time key when neither.
 
 ### `RT-CONNECT-PIN-CUTS` &mdash; BF-65 - cuts 1-3 ship the leaking connector to upgraders first
 
@@ -5363,6 +5395,7 @@ distinction is the only thing that makes the register mean anything - widening
 | review | maintainer |
 | ships to operators today | **yes** |
 | register | `BF-169` |
+| blocks on | `ID-SIMPLE-MATCH` |
 
 **Blast radius.** Documentation only: the identifierField description in lib/api3/swagger.yaml and the same text in lib/api3/swagger.json (served at /api3-docs). No code change.
 
@@ -5378,7 +5411,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Filed 2026-10-17 while checking the Loop maintainers' proposal that Nightscout accept a client-supplied identifier. The text "this field is immutable by the client (it cannot be updated or patched)" is accurate for PUT and PATCH and stays; only the "should not create ... the server automatically assigns it" sentence is wrong. lib/api3/doc/ and README.md do not repeat it (read at fade2299).
+**Notes.** Filed 2026-10-17 while checking the Loop maintainers' proposal that Nightscout accept a client-supplied identifier. The text "this field is immutable by the client (it cannot be updated or patched)" is accurate for PUT and PATCH and stays; only the "should not create ... the server automatically assigns it" sentence is wrong. lib/api3/doc/ and README.md do not repeat it (read at fade2299). Decided by the maintainer 2026-10-17: ships with ID-SIMPLE-MATCH, in the same PR, on dev after cut 1's rebase; not in 15.0.9. A docs-only change is a patch and could ride a re-cut 15.0.9 candidate if the RC is re-cut for another reason; that is the one exception worth weighing, not a plan.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 
@@ -6597,7 +6630,7 @@ alarm-readiness items, and the seam branch refresh.
 | worktree | `externals/work/crm-seam` |
 | semver | `minor` |
 | review | maintainer, plus a second human - re-send behaviour clients see changes |
-| blocks on | `WC-STEP-PATCH` |
+| blocks on | `WC-STEP-PATCH`, `ID-SIMPLE-MATCH` |
 
 **Blast radius.** The write step's match rule, applied on: lib/server/entries.js upsertQueryFor (today sysTime+type unless identifier is present after UUID normalisation); lib/server/devicestatus.js create (insertMany becomes an upsert on identifier when one is present); lib/server/websocket.js dbAdd; lib/server/treatments.js upsertQueryFor gains the adoption rule.
 
@@ -6615,7 +6648,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
 - `docs/60-research/tenancy/identifier-duplicates-2026-10-17.md`
 
-**Notes.** Q1 rule as proposed in LOOP-ID-REPLY: an identified write that finds no identifier match may adopt a stored record with NO identifier on the natural key; never one with a different identifier. ID-DUP-MEASURE found Loop writing one syncIdentifier to a Suspend Pump and a Temp Basal at the same instant (9 pairs at one site); if Loop sends syncIdentifier as identifier (the reply names syncIdentifier as Loop's treatment identity), matching on it alone would fold those pairs into one record. The reply draft does not raise this yet.
+**Notes.** Q1 rule as proposed in LOOP-ID-REPLY: an identified write that finds no identifier match may adopt a stored record with NO identifier on the natural key; never one with a different identifier. ID-DUP-MEASURE found Loop writing one syncIdentifier to a Suspend Pump and a Temp Basal at the same instant (9 pairs at one site); if Loop sends syncIdentifier as identifier (the reply names syncIdentifier as Loop's treatment identity), matching on it alone would fold those pairs into one record. The reply draft does not raise this yet. Re- shaped 2026-10-17: the v1 entries and devicestatus identifier match ships first, on dev, as the release-train item ID-SIMPLE-MATCH (maintainer: after 15.0.9, after cut 1's rebase). This item keeps the socket dbAdd match and the Q1 adoption rule, and absorbs ID-SIMPLE-MATCH's rule into the write step once WC-STEP-PATCH exists. The rewritten Loop reply lists Q1 under "later, only if needed".
 
 ### `ID-BATCH-RESULTS` &mdash; Release 2 (minor): per-item results in v1 batch replies; one bad item no longer fails the batch
 
@@ -6675,7 +6708,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md`
 - `docs/60-research/tenancy/identifier-duplicates-2026-10-17.md`
 
-**Notes.** Today: v1 recognises only UUID-shaped values as identifiers in by-id routes (UUID_RE, case-insensitive, lib/server/query.js:12 at dev fade2299), while stored identifiers are compared exactly, so Loop's upper-case override UUIDs match only themselves. API v3 computes uuid.v5(device_date[_eventType], "NightscoutRocks!") when none is sent (lib/api3/shared/operationTools.js:6, 106). A random UUID cannot serve the phone-and-watch case, where both devices must derive the same value; AndroidAPS keys on pump event ids. Not required: changing an existing client's identifiers, which would break matching against records it already stored.
+**Notes.** Today: v1 recognises only UUID-shaped values as identifiers in by-id routes (UUID_RE, case-insensitive, lib/server/query.js:12 at dev fade2299), while stored identifiers are compared exactly, so Loop's upper-case override UUIDs match only themselves. API v3 computes uuid.v5(device_date[_eventType], "NightscoutRocks!") when none is sent (lib/api3/shared/operationTools.js:6, 106). A random UUID cannot serve the phone-and-watch case, where both devices must derive the same value; AndroidAPS keys on pump event ids. Not required: changing an existing client's identifiers, which would break matching against records it already stored. 2026-10-17: the rewritten Loop reply states only "a string, UUID recommended" and lists the limit, character set and case under "later, only if needed"; decide when a client or ID-VALIDATE needs it.
 
 ### `ID-CLIENT-OID-DECISION` &mdash; Decide: may a client set _id (an ObjectId it creates), and which field wins when identifier and _id match different records?
 
@@ -6705,7 +6738,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md`
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
-**Notes.** Read at the tags: no release up to 15.0.6 converted a client _id on POST (it was passed to MongoDB as sent, so 24-hex values were stored as strings, BF-99..102); only PUT and by-id reads and deletes converted with ObjectID(). MongoDB never required _id to be an ObjectId. Since #8758 (dev) a re-sent 24-hex _id is matched. A client-set _id cannot serve the phone-and-watch case (two devices create two ObjectIds), so identifier is needed either way.
+**Notes.** Read at the tags: no release up to 15.0.6 converted a client _id on POST (it was passed to MongoDB as sent, so 24-hex values were stored as strings, BF-99..102); only PUT and by-id reads and deletes converted with ObjectID(). MongoDB never required _id to be an ObjectId. Since #8758 (dev) a re-sent 24-hex _id is matched. A client-set _id cannot serve the phone-and-watch case (two devices create two ObjectIds), so identifier is needed either way. Recommended answer, as the rewritten Loop reply proposes it (2026-10-17, for the maintainer to confirm): (1) yes, a client may send an ObjectId it creates as _id; any other _id value is not valid (UUID_HANDLING keeps moving a UUID _id to identifier); (2) when the two match different records, _id decides. (2) departs from D20 rule 5's identifier-first order and from v1 treatments today, which drop _id when identifier is present (lib/server/treatments.js:356-362 at 15.0.8), so the decision amends rule 5. Otherwise "later, only if needed" under the simple contract.
 
 ### `ID-VALIDATE` &mdash; Release 2 (minor): validate identifier on every collection; empty and null mean absent
 
@@ -6794,7 +6827,7 @@ alarm-readiness items, and the seam branch refresh.
 - `tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md`
 - `docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md`
 
-**Notes.** The three paths disagree today. The reply asks Loop whether an identified record's time can be corrected by a re-send.
+**Notes.** The three paths disagree today. The reply asks Loop whether an identified record's time can be corrected by a re-send. 2026-10-17: the rewritten Loop reply no longer asks this; it lists the v3 immutable date and device, and edit-versus-duplicate, under "later, only if needed". After ID-SIMPLE-MATCH, a v1 entries re-send with the same identifier and a new time would update the stored entry, as v1 treatments do.
 
 ### `ID-UNIQUE-INDEX` &mdash; Partial unique index on identifier, retry-as-update on duplicate key, start-up safe on existing duplicates
 

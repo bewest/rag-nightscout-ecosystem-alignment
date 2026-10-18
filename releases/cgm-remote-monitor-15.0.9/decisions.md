@@ -92,3 +92,4 @@ shipping release, and this repository is public.*
 | BF-52: the age push is sent once, even when the exact check is missed | `BFQ-52` |
 | Each cut is renumbered when it is rebased | `RT-VERSION` |
 | The cuts are prepared now against the 15.0.9 candidate and ship after 15.0.9. **Open:** separate releases or one combined major | `RT-1` to `RT-5` |
+| **v1 entries and device status matching on `identifier` is not in 15.0.9** (2026-10-17). It is a minor under the [versioning policy](../../docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md#2-the-decision-procedure) (question 10: a re-send stores a different set of records), and 15.0.9 is a patch built from `dev` as it stands. It lands on `dev` after cut 1's rebase, in one PR with the BF-169 swagger correction. It is the one server change the [Loop identifier reply](../../docs/30-design/platform/upstream-asks-loop-identifier/README.md) proposes | `ID-SIMPLE-MATCH`, `BFQ-169` |
