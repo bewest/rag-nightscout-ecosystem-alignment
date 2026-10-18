@@ -1,4 +1,4 @@
-# Platform glossary
+# Platform glossary: the terms the seven specifications share, and where each is defined
 
 *Contributor-facing. Living, current at `main` `5a9a49cc` (2026-10-18). Each term links to where
 it is specified; the definition here is a summary, and the linked section is the authority. Therapy

@@ -1,4 +1,4 @@
-# State and intent (L3)
+# L3 State and intent: what was requested, applied and active, who started it, and why it ended
 
 *Contributor-facing. Living specification, current at `main` `92a7d31b` (2026-10-18). Layer L3 of
 the [platform index](../README.md); terms are in the [glossary](glossary.md). The grammar members
@@ -8,11 +8,15 @@ them is there too. Decisions: [D18](../../tenancy/nightscout-multitenancy-execut
 initiators ([execution plan §2.6.3](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16)
 row 17). Queue: `SPEC-STATE-INTENT`.*
 
+*Specification 4 of 7 in the [reading order](../README.md#reading-order); after registration, whose grammar it uses, and before commands. Expect rules S1–S12 and A1–A13, the declared kinds per controller, composition, what is active at a time, and the conformance cases.*
+
 A controller manages *intent*: a preset is activated, several intents run at once and combine, the
 controller applies something that may differ from what was asked, and the intent ends for a
 reason. Nightscout's collections manage *entities*. This page says how a controller declares its
 intent model, so that a reader can tell what was requested, what was applied, who started it and
-why it ended, and what the hub may and may not conclude from the records.
+why it ended, and what the hub may and may not conclude from the records. Status: rules S1–S12 are specified;
+the active-state rules A1–A13 are proposed and specified with cases; §3, §4 and §7 are evidenced;
+§5 is proposed; none is implemented.
 
 The evidence is the [intent and workflow landscape](../nightscout-intent-workflow-landscape-2026-10-09.md),
 read from Loop, Trio, iAPS and AndroidAPS source and measured where it says so.

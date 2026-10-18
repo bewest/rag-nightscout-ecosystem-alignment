@@ -1,4 +1,4 @@
-# Platform contracts: where each piece is specified
+# Platform contracts: the index to six layers and seven specifications
 
 *Contributor-facing. Living index, current at `main` `010e1661` (2026-10-18). Terms are defined in
 the [platform glossary](spec/glossary.md).*
@@ -30,10 +30,12 @@ The material is organised in six layers. A lower layer never depends on a higher
 Audit fidelity is not a separate layer. Each layer's section below lists what it records for
 audit.
 
-**Status words used here.** *Evidenced*: measured or read from source in the corpus or controller
-code. *Specified*: a contract with synthetic conformance cases and a reference decision function
-in `tools/nsschema/`, which checks the cases but is not a hub. *Implemented*: a hub serves it. On
-2026-10-18, no hub implements any L2, L3 or L5 contract on this page.
+**Status words used here and in every specification's header.** *Evidenced*: measured or read
+from source in the corpus or controller code. *Decided*: the maintainer decided it, recorded in the
+execution plan. *Proposed*: written as a rule for the maintainer to decide. *Specified*: a contract
+with synthetic conformance cases and a reference decision function in `tools/nsschema/`, which
+checks the cases but is not a hub. *Implemented*: a hub serves it. On 2026-10-18 the L2, L3 and L5
+contracts are specified and not implemented; the first hub implementation is `HUB-REG-CRM`.
 
 ## The specification set
 
@@ -159,9 +161,35 @@ moved from its §9 to *commands* §2.
 | **Audit** | the owner's listing shows every product's binding, credential kind and binding event, every instance's roles and liveness, and every overlap |
 | **Status** | specified for registration, owners and command destinations (`SPEC-AUTHORITY`); the command record, outcomes and proposals are proposed in [commands](spec/commands.md) (`SPEC-REG-COMMANDS`); delegation is not specified |
 
+## Ideas borrowed from Kubernetes
+
+Several parts of this design take what Kubernetes does well for declared, typed resources, and
+apply it to controllers that share a hub:
+
+| idea | in Kubernetes | here |
+|---|---|---|
+| one object shape | `apiVersion`, `kind`, `metadata`, `spec` | every registration and definition has the same four members ([registration §3](spec/registration.md#3-the-grammar)) |
+| declared spec, reported status | `spec` is what is wanted, `status` what is observed | a definition declares what a controller's data means; the owner's listing reports what the hub granted, refused and saw overlap ([registration §7–§9](spec/registration.md#7-definitions)); a command record separates the request from its state ([commands §4](spec/commands.md#4-the-command-record-proposed)) |
+| reconciliation | a controller drives observed state toward its spec | the controller reconciles; each instance renewal re-evaluates every claim, and the hub records what it observes ([registration §8–§9](spec/registration.md#8-instances)) |
+| leases | `coordination.k8s.io` Lease for liveness and leadership | instances hold leases; a lapsed holder loses its roles and is never a command destination ([registration §8](spec/registration.md#8-instances)) |
+| labels and selectors | key-value labels, selected by queries | instance labels and read selection ([registration §10, §12](spec/registration.md#10-labels)) |
+| typed extension resources | CustomResourceDefinitions, versioned, with conversion | controller-owned definitions with namespaced extensions, version-scoped quirks and projected views for older readers ([registration §7, §13, §16](spec/registration.md#7-definitions)) |
+| admission | requests are checked and refused with a reason before they are stored | each element is accepted or refused with a reason code, and nothing is rewritten ([registration §5](spec/registration.md#5-the-product-resource)) |
+
+What the hub does with these is narrower than a Kubernetes control plane: it schedules nothing and
+acts on no therapy. It records, routes and refuses; the controller decides and enacts (D18).
+
 ## Reading order
 
 For someone new to the series: this page, then the [glossary](spec/glossary.md), then
 [intent and workflow landscape](nightscout-intent-workflow-landscape-2026-10-09.md) §2 and §9 for
-why the contract exists, then the specifications in layer order: [identity](spec/identity.md),
-[records](spec/records.md), [registration](spec/registration.md), [state and intent](spec/state-intent.md).
+why the contract exists, then the seven specifications in layer order:
+
+1. [identity](spec/identity.md) (L0): every other specification uses its ids;
+2. [records](spec/records.md) (L1): the typed observations a hub stores;
+3. [registration](spec/registration.md) (L2): how a controller declares what those records mean,
+   the largest file;
+4. [state and intent](spec/state-intent.md) (L3): requested, applied and active state;
+5. [commands](spec/commands.md) (L3, L5): requests and proposals that reach a controller;
+6. [sync-transport](spec/sync-transport.md) (L4): how all of the above moves;
+7. [authority](spec/authority.md) (L5): who may do each of the above.

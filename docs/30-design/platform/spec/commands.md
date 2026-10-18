@@ -1,4 +1,4 @@
-# Commands (L3, L5)
+# L3 and L5 Commands: how a request or a proposal reaches a controller, and how its outcome comes back
 
 *Contributor-facing. Living specification, current at `main` `9736bd65` (2026-10-18). Layers L3
 and L5 of the [platform index](../README.md); terms are in the [glossary](glossary.md). Decisions:
@@ -6,13 +6,15 @@ and L5 of the [platform index](../README.md); terms are in the [glossary](glossa
 and the maintainer's decisions of 2026-10-14 to 2026-10-18 recorded with them; the proposal
 record was folded into this item on 2026-10-18. Queue: `SPEC-REG-COMMANDS`.*
 
+*Specification 5 of 7 in the [reading order](../README.md#reading-order); after state and intent, whose acceptance policy (S10, S11) it builds on, and before sync-transport. Expect where a command goes, the command path today, rules CM1–CM20 for the command record, outcomes, proposals and delivery in each mode, compatibility with each controller, and the conformance cases.*
+
 How a request to change therapy reaches a controller through a hub, what the hub records about it,
 how the controller's outcome comes back, and the proposal and approval that can stand in front of
 a command. The hub routes and records; it never decides whether a change is safe, never alters
 what was asked, and never doses (D18). Validation and enactment stay the controller's.
 
-§2 states where a command goes, which is specified. Everything from §4 on is proposed: no hub
-serves a command API, and no rule there is decided.
+Status: §2 is specified; §3 and §8 are evidenced; §4–§7 are proposed and specified with cases;
+none is implemented.
 
 ## 1. Files
 
@@ -63,7 +65,8 @@ to Loop.
 Senders are the careportal's Loop plugin (`lib/plugins/loop.js:110-180` on `dev`) and the
 NightscoutKit fork LoopCaregiver uses, for overrides, bolus and carbs when its newer
 remote-command option is off; LoopCaregiver sends closed-loop and automatic-bolus changes to
-`/api/v2/remotecommands` whatever the option, a route no hub serves. Trio, LoopFollow and
+`/api/v2/remotecommands` whatever the option, a route neither cgm-remote-monitor nor Nocturne
+implements. Trio, LoopFollow and
 AndroidAPS do not call this route.
 
 **Everything else is data.** `Temporary Target`, `Profile Switch` and `Announcement` treatments are
@@ -168,7 +171,7 @@ was run.
 | path | hub in the path | sender authentication | freshness | correlation | outcome today | against §4–§7 |
 |---|---|---|---|---|---|---|
 | careportal or LoopCaregiver → hub → Loop (APNs) | yes | one-time password for bolus and carbs, single use and kept by Loop; none for overrides | `expiration`, checked when present; the hub adds five minutes | none; Loop's de-duplication on `sent-at` is in memory and lost on restart | a `Note` with free text on failure; on success the resulting record (an override carries its remote trigger) and, to a direct sender that included encrypted return details, a reply push | outside §4–§7: Loop registers no instance and holds no command sink, and these senders give no expiry, so the route has no record, no routing and a hub-set expiry. A hub keeps it as it is or retires it; bringing it under these rules needs Loop to register |
-| LoopCaregiver "Remote Commands 2" (experimental, off by default; closed-loop and automatic-bolus changes always) | expects `/api/v2/remotecommands`, which no hub serves | one-time password | none on the record | the record's `_id` | `Pending` → `InProgress` → `Success` or `Error` | the closest to CM1 and CM7: its states map to `pending`, `acknowledged`, `succeeded`, and `failed` or `refused`; who may change a status is not stated, and no Loop build in the checkouts reads it |
+| LoopCaregiver "Remote Commands 2" (experimental, off by default; closed-loop and automatic-bolus changes always) | expects `/api/v2/remotecommands`, which neither cgm-remote-monitor nor Nocturne implements | one-time password | none on the record | the record's `_id` | `Pending` → `InProgress` → `Success` or `Error` | the closest to CM1 and CM7: its states map to `pending`, `acknowledged`, `succeeded`, and `failed` or `refused`; who may change a status is not stated, and no Loop build in the checkouts reads it |
 | LoopFollow → Loop or Trio (direct APNs) | no; the device token is read from the hub's profile | as above; Trio encrypts the whole payload with a shared secret | Loop: as above; Trio: ±600 s around the sender's time, fixed, no expiry field | none | a reply push to the sender; a `Note` on failure | outside the hub; a hub sees only the resulting records |
 | AndroidAPS client control (`dev`, not released) | the `settings` collection carries it; the hub reads none of it | HMAC per paired client, a strictly increasing counter | ±5 min and `validUntil` (unbounded by default; its senders set 8 s, 60 s or 5 min) | the counter | signed `Executing`, `Done` (`Ok`, `Failed`, `Expired`), and a late `Delivery` `Failed` | the only path whose outcome names its command; its doses are two-step, computed and capped on the controller between prepare and commit |
 | AndroidAPS SMS | no | allowed number, one-time password and PIN | 5 min to confirm | the message thread | an SMS reply | outside the hub |

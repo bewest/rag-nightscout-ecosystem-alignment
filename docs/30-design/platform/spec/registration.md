@@ -1,14 +1,16 @@
-# Registration (L2)
+# L2 Registration: how a controller declares what its data means, and how a hub accepts it
 
 *Contributor-facing. Living specification, current at `main` `8d2b93ed` (2026-10-18). Layer L2 of
 the [platform index](../README.md); terms are in the [glossary](glossary.md); ids are defined in
-the [identity specification](identity.md). Specified, not implemented: no hub serves any of this.
+the [identity specification](identity.md). Status: specified, not implemented; the first hub implementation is `HUB-REG-CRM`.
 Decisions: [D18](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#261-d18--two-tier-controller-registration)
 and its [addendum](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#d18-addendum--an-extensible-grammar-maintainer-2026-10-12),
 [D19](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#262-d19--definitions-and-instances-maintainer-2026-10-14),
 [D20](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16)
 and the maintainer's decisions of 2026-10-14, 2026-10-16 and 2026-10-17 recorded there. Queue:
 `SPEC-REGISTRATION`.*
+
+*Specification 3 of 7 in the [reading order](../README.md#reading-order), and the largest; after records, before state and intent, which uses its grammar. Expect rules G1–G5 and Q1–Q4, the grammar, the capability document, products, definitions, instances, channels and roles, labels, typed writes, projected views, quirks, and the conformance cases.*
 
 A controller declares what its data means; the hub accepts the declaration element by element,
 stores typed records for what it accepts, and tells the controller to write everything else in
@@ -540,7 +542,7 @@ Rules the specification chose that await the maintainer's confirmation:
   fails the check; declaration entries are measured only by hub records.
 - **Identity:** two choices are listed in [identity §5](identity.md#5-open-decisions).
 
-Not yet specified: the contract per tenancy mode (`SPEC-REG-MODES`), the mechanics of registration
+Open: the contract per tenancy mode (`SPEC-REG-MODES`), the mechanics of registration
 state across a site's move into a tenant, whose binding rule [authority §3](authority.md#3-binding-and-credential-kind) states (`SPEC-REG-MIGRATE`). The command API is proposed in the [commands specification](commands.md).
 
 ## 19. Conformance cases

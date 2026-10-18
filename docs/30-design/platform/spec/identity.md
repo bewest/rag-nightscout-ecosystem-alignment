@@ -1,11 +1,13 @@
-# Identity (L0)
+# L0 Identity: how records, definitions, instances and subjects are named
 
 *Contributor-facing. Living specification, current at `main` `5a9a49cc` (2026-10-18). Layer L0 of
-the [platform index](../README.md); terms are in the [glossary](glossary.md). Specified, not
-implemented, except where §6 describes today's behaviour. Decisions:
+the [platform index](../README.md); terms are in the [glossary](glossary.md). Status:
+specified, not implemented; §6, today's behaviour, is evidenced. Decisions:
 [D20](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16)
 and the [write contract's §6.1](../../tenancy/write-contract-spec-2026-10-07.md#61-decided-2026-10-12).
 Queue: `SPEC-ID`.*
+
+*Specification 1 of 7 in the [reading order](../README.md#reading-order); every other specification uses these ids. Expect rules I1–I9, the contract ids, the match order per collection, the `identifier` format, today's behaviour in cgm-remote-monitor, and the conformance cases.*
 
 This page defines how records, definitions, instances and subjects are identified, and how a hub
 decides that a write is a re-send of something it already stores. Every other layer uses these

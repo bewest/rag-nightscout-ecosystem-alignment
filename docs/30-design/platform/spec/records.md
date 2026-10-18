@@ -1,12 +1,13 @@
-# Records (L1)
+# L1 Records: the typed observations a hub stores, and how today's documents decompose into them
 
 *Contributor-facing. Living specification, current at `main` `92a7d31b` (2026-10-18). Layer L1 of
 the [platform index](../README.md); terms are in the [glossary](glossary.md); record ids are in the
-[identity specification](identity.md). Evidenced, not implemented: the catalogue is generated from
-a shipped typed model and the corpus, and no hub stores these records behind the registration
-contract yet. Decision: [D11](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#26-d11--devicestatus-is-a-decomposition-problem-not-a-column-selection-problem),
+[identity specification](identity.md). Status: evidenced, not implemented: the catalogue is
+generated from a shipped typed model and the corpus. Decision: [D11](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#26-d11--devicestatus-is-a-decomposition-problem-not-a-column-selection-problem),
 for `devicestatus`; the rest of this page is proposed (§2).
 Queue: `SPEC-RECORDS`.*
+
+*Specification 2 of 7 in the [reading order](../README.md#reading-order); after identity, before registration, which declares what these records mean. Expect rules R1–R9, the generated catalogue of primitives and their evidence grades, decomposition, settings snapshots, and named test checks.*
 
 A controller sends what it has, in the shape it has it: a treatment, a device status, a profile.
 The hub keeps that document and also decomposes it into typed observation primitives, so queries

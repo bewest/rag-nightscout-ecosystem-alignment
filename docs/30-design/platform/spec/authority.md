@@ -1,4 +1,4 @@
-# Authority (L5)
+# L5 Authority: who may register, write, own a site, receive a command, and act for someone else
 
 *Contributor-facing. Living specification, current at `main` `1b69c295` (2026-10-18). Layer L5 of
 the [platform index](../README.md); terms are in the [glossary](glossary.md). Decisions:
@@ -8,10 +8,12 @@ the [platform index](../README.md); terms are in the [glossary](glossary.md). De
 and the maintainer's decisions of 2026-10-14 to 2026-10-18 recorded with them. Queue:
 `SPEC-AUTHORITY`.*
 
+*Specification 7 of 7 in the [reading order](../README.md#reading-order); last, because it authorises what the others define. Expect rules AU1–AU5, binding and credential kinds, the owner's actions, namespaces, command destinations, delegation requirements DR1–DR7, what is recorded for audit, and the conformance cases.*
+
 Who may register a controller's definitions, write under them, act as a site's owner, receive a
 command, and act for someone else. The hub routes and records; it never decides whether a change
-to therapy is safe, and it never doses (D18). §2–§6 are decided or specified; §7 says what
-delegation would have to provide, because no design for it is decided.
+to therapy is safe, and it never doses (D18). Status: §2–§6 are decided or
+specified; §7 states delegation's requirements, and its design is open.
 
 ## 1. Files
 
@@ -114,8 +116,8 @@ a command are proposed in [commands §4–§7](commands.md#4-the-command-record-
 
 ## 7. Delegation (not decided)
 
-Delegation lets a principal give a caregiver, an app or an agent a part of their authority. Nothing
-in Nightscout implements it, and no design is decided.
+Delegation lets a principal give a caregiver, an app or an agent a part of their authority.
+Status: requirements stated (DR1–DR7); design open; not implemented.
 
 **What is decided around it:**
 
@@ -146,12 +148,13 @@ qualified review
 
 **Proposed constraints**, carried from
 [agents in the ecosystem §4.3](../agent-trust-boundaries-2026-10-18.md#43-what-a-proposal-lifecycle-would-add--proposed-not-specified)
-and not yet decided: read access never confers a propose or act role, so a `readable` credential,
-or a tool holding one, cannot be promoted to either; and an approval binds to the exact change, by
-the SHA-256 of its canonical payload. What an approval binds as "the state it was based on" has no
-home yet: [state and intent A12](state-intent.md#61-rules) versions the hub's record of what the
-controller reported, not the controller's own state, so it can tell an approver that the hub's
-record changed but never that the controller's state is unchanged.
+and specified as proposed rules in [commands §6](commands.md#6-proposals-and-approvals-proposed):
+read access never confers a propose or act role, so a `readable` credential, or a tool holding one,
+cannot be promoted to either (CM12); an approval binds to the exact change, by the SHA-256 of its
+canonical payload (CM13); and the state a proposal was based on is the hub's state version
+([state and intent A12](state-intent.md#61-rules)), checked by the hub at approval (CM15). That
+version is the hub's record of what the controller reported, so it can tell an approver that the
+record changed, never that the controller's own state is unchanged.
 
 **Prior art.** The upstream agent control-plane RFC's `agent` issuer type, its `suggest` scope
 ("can propose, human must approve") and its `DelegationGrant` (who granted, to whom, scopes,

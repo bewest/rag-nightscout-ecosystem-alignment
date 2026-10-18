@@ -1,4 +1,4 @@
-# Sync transport (L4)
+# L4 Sync transport: how writes are matched, ordered and delivered over REST and the socket, and at what cost
 
 *Contributor-facing. Living specification, current at `main` `df621fa7` (2026-10-18). Layer L4 of
 the [platform index](../README.md); terms are in the [glossary](glossary.md); how a re-send is
@@ -7,8 +7,12 @@ matched is in the [identity specification](identity.md) §3. Decisions: the
 (2026-10-12) and [D6](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions)
 (the change feed under multi). Queue: `SPEC-SYNC-TRANSPORT`.*
 
+*Specification 6 of 7 in the [reading order](../README.md#reading-order); after the layers whose records it moves, before authority. Expect the decided write path (T1–T4), each client's declared sync endpoints, the proposed read, cursor and socket rules (T5–T15), and the conformance cases.*
+
 How writes are applied, ordered and delivered, over REST and the socket, and what a client pays to
-stay in sync. §2 is the write path, with each rule's status; §3 is what each client's sync code
+stay in sync. Status: the write path is decided, except re-sends of `devicestatus` (T2), and T3 is on `dev`;
+§3 is evidenced; §4–§6 are
+proposed, and §4 is specified with cases. §2 is the write path, with each rule's status; §3 is what each client's sync code
 can call, read from its source; §4–§6 are proposed and specified with cases where a rule can be
 checked by one.
 
@@ -83,8 +87,8 @@ number of collections. Request counts and payload sizes on the wire are not meas
 | **older client** | today's per-collection reads and writes | unchanged: per-collection `history`, v1 and the v1 socket stay |
 | **newer client** | no `history` envelope: it reads per collection, as AndroidAPS does today | one read and one write per cycle (T5, T7), with the socket for latency (T10) |
 
-Nothing is retired. A capability member that says a hub serves T5 and T7 is not yet in the
-capability document.
+Nothing is retired. The capability document member that would say a hub serves T5 and T7 is open
+(§8).
 
 ## 8. Open
 
@@ -115,8 +119,8 @@ capability document.
 13 cases under `specs/sync/conformance/sync-transport/`, checked by
 `tools/nsschema/test_sync_cursor.py`, whose expectations are written by hand. Each is a timeline of
 writes, each taking its `srvModified` at one step and becoming visible at the same or a later one
-(or failing), and the client's history reads and socket events. The typed socket (§5) and versions (§6) have no
-case yet.
+(or failing), and the client's history reads and socket events. The typed socket (§5) and versions (§6) are
+proposed without cases.
 
 <!-- BEGIN GENERATED: sync-transport-cases (tools/nsschema/spec_cases.py) -->
 | case | shows | expected | control |
