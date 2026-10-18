@@ -1,4 +1,4 @@
-# Replay fidelity: the concrete changes, per project
+# Replay fidelity: the concrete changes, per project — proposal
 
 *What this is: a proposal (contributor-facing). Read after the [controller-descriptions
 proposal](PROPOSAL-controller-descriptions-2026-09-11.md); leads to the [sync-transport

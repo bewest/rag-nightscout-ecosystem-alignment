@@ -1,4 +1,4 @@
-# Controller descriptions: Nightscout describes the controllers it already recognises
+# Controller descriptions: Nightscout describes the controllers it already recognises — proposal
 
 *What this is: a proposal (contributor-facing). Read after the [hub-and-spoke sync
 sketch](nightscout-hub-sync-architecture-2026-09-11.md); leads to the [replay-fidelity
