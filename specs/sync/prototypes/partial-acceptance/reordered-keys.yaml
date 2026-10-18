@@ -1,0 +1,55 @@
+id: reordered-keys
+description: >-
+  The approver's display holds the meal with its keys in another order (as
+  written below), and the controller receives every object with its keys
+  reversed. Canonical JSON makes both equal to the proposal, so every variant
+  approves and enacts. A second approval lists the accepted elements in the
+  reverse order: V1 and V2 match elements by id; V3 hashes the whole payload,
+  in which the element list's order is part of the content, and refuses.
+plan:
+  frame:
+    kind: plan
+    days: [mon, tue, wed, thu, fri]
+    endDate: "2026-11-30"
+    confirmation: morning
+  elements:
+    - id: eating-soon
+      content: {kind: temporary-target, startOffsetMinutes: -60, durationMinutes: 60, target: {low: 80, high: 80, units: mg/dL}}
+    - id: meal
+      content: {kind: meal, time: "12:30", carbs: {grams: 45}, bolus: with-meal}
+steps:
+  - {kind: propose, subject: agent}
+  - kind: approve
+    subject: person
+    proposal: p1
+    accept: [eating-soon, meal]
+    alter: {meal: {bolus: with-meal, carbs: {grams: 45}, time: "12:30", kind: meal}}
+    reorder: true
+  - {kind: deliver, command: c1, tamper: {op: reorder}}
+  - {kind: propose, subject: agent}
+  - {kind: approve, subject: person, proposal: p2, accept: [eating-soon, meal], reverseElements: true}
+expected:
+  V1,V2:
+    steps:
+      - {status: 201, proposalId: p1}
+      - {status: 201, commandId: c1}
+      - {state: succeeded, elements: [eating-soon, meal]}
+      - {status: 201, proposalId: p2}
+      - {status: 201, commandId: c2}
+    proposals:
+      p1: {state: approved, accepted: [eating-soon, meal], declined: []}
+      p2: {state: approved, accepted: [eating-soon, meal], declined: []}
+    enacted:
+      c1: [eating-soon, meal]
+  V3:
+    steps:
+      - {status: 201, proposalId: p1}
+      - {status: 201, commandId: c1}
+      - {state: succeeded, elements: [eating-soon, meal]}
+      - {status: 201, proposalId: p2}
+      - {status: 409, code: hash-mismatch}
+    proposals:
+      p1: {state: approved, accepted: [eating-soon, meal], declined: []}
+      p2: {state: open}
+    enacted:
+      c1: [eating-soon, meal]

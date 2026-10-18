@@ -1,0 +1,67 @@
+id: accept-rest-later
+description: >-
+  The person accepts the eating-soon element, and a week later wants the meal
+  too. Decided for this prototype: an approval closes its proposal in every
+  variant, with the declined elements on record, so a further approval of
+  the same proposal is refused proposal-closed and the meal comes back as a
+  new proposal (decision 4: an adjustment is a new proposal). The person
+  cannot approve a proposal they made (CM14), so the agent proposes again.
+  In V3 the first acceptance already needed a reject and a new proposal.
+plan:
+  frame:
+    kind: plan
+    days: [mon, tue, wed, thu, fri]
+    endDate: "2026-11-30"
+    confirmation: morning
+  elements:
+    - id: eating-soon
+      content: {kind: temporary-target, startOffsetMinutes: -60, durationMinutes: 60, target: {low: 80, high: 80, units: mg/dL}}
+    - id: meal
+      content: {kind: meal, time: "12:30", carbs: {grams: 45}, bolus: with-meal}
+steps:
+  - {kind: propose, subject: agent}
+  - {kind: approve, subject: person, proposal: p1, accept: [eating-soon]}
+  - {kind: deliver, command: c1, only: [V1, V2]}
+  - {kind: approve, subject: person, proposal: p1, accept: [meal], only: [V1, V2]}
+  - {kind: reject, subject: person, proposal: p1, only: [V3]}
+  - {kind: propose, subject: agent, elements: [eating-soon], only: [V3]}
+  - {kind: approve, subject: person, proposal: p2, accept: [eating-soon], only: [V3]}
+  - {kind: deliver, command: c1, only: [V3]}
+  - {kind: propose, subject: agent, elements: [meal]}
+  - {kind: approve, subject: person, proposal: p2, accept: [meal], only: [V1, V2]}
+  - {kind: approve, subject: person, proposal: p3, accept: [meal], only: [V3]}
+  - {kind: deliver, command: c2}
+expected:
+  V1,V2:
+    steps:
+      - {status: 201, proposalId: p1}
+      - {status: 201, commandId: c1}
+      - {state: succeeded, elements: [eating-soon]}
+      - {status: 409, code: proposal-closed}
+      - {status: 201, proposalId: p2}
+      - {status: 201, commandId: c2}
+      - {state: succeeded, elements: [meal]}
+    proposals:
+      p1: {state: approved, accepted: [eating-soon], declined: [meal]}
+      p2: {state: approved, accepted: [meal], declined: []}
+    enacted:
+      c1: [eating-soon]
+      c2: [meal]
+  V3:
+    steps:
+      - {status: 201, proposalId: p1}
+      - {status: 422, code: partial-not-supported}
+      - {status: 200}
+      - {status: 201, proposalId: p2}
+      - {status: 201, commandId: c1}
+      - {state: succeeded, elements: [eating-soon]}
+      - {status: 201, proposalId: p3}
+      - {status: 201, commandId: c2}
+      - {state: succeeded, elements: [meal]}
+    proposals:
+      p1: {state: rejected}
+      p2: {state: approved, accepted: [eating-soon], declined: []}
+      p3: {state: approved, accepted: [meal], declined: []}
+    enacted:
+      c1: [eating-soon]
+      c2: [meal]

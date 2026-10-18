@@ -1,0 +1,48 @@
+id: accept-one
+description: >-
+  PL1.3. The person accepts the eating-soon element and declines the meal.
+  V1 and V2 make one command with the eating-soon element only and record the
+  meal as declined. V3 refuses the partial approval; the person rejects and
+  the agent proposes the plan again without the meal.
+plan:
+  frame:
+    kind: plan
+    days: [mon, tue, wed, thu, fri]
+    endDate: "2026-11-30"
+    confirmation: morning
+  elements:
+    - id: eating-soon
+      content: {kind: temporary-target, startOffsetMinutes: -60, durationMinutes: 60, target: {low: 80, high: 80, units: mg/dL}}
+    - id: meal
+      content: {kind: meal, time: "12:30", carbs: {grams: 45}, bolus: with-meal}
+steps:
+  - {kind: propose, subject: agent}
+  - {kind: approve, subject: person, proposal: p1, accept: [eating-soon]}
+  - {kind: deliver, command: c1, only: [V1, V2]}
+  - {kind: reject, subject: person, proposal: p1, only: [V3]}
+  - {kind: propose, subject: agent, elements: [eating-soon], only: [V3]}
+  - {kind: approve, subject: person, proposal: p2, accept: [eating-soon], only: [V3]}
+  - {kind: deliver, command: c1, only: [V3]}
+expected:
+  V1,V2:
+    steps:
+      - {status: 201, proposalId: p1}
+      - {status: 201, commandId: c1}
+      - {state: succeeded, elements: [eating-soon]}
+    proposals:
+      p1: {state: approved, accepted: [eating-soon], declined: [meal]}
+    enacted:
+      c1: [eating-soon]
+  V3:
+    steps:
+      - {status: 201, proposalId: p1}
+      - {status: 422, code: partial-not-supported}
+      - {status: 200}
+      - {status: 201, proposalId: p2}
+      - {status: 201, commandId: c1}
+      - {state: succeeded, elements: [eating-soon]}
+    proposals:
+      p1: {state: rejected}
+      p2: {state: approved, accepted: [eating-soon], declined: []}
+    enacted:
+      c1: [eating-soon]

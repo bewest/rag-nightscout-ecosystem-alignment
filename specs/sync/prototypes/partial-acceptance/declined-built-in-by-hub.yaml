@@ -1,0 +1,50 @@
+id: declined-built-in-by-hub
+description: >-
+  A faulty hub builds the command from the whole proposal instead of the
+  accepted elements, and binds the command to what it built. The controller
+  receives a payload and binding from the same hub, so in V1 and V2 it enacts
+  the declined meal (the CM10 limit: only a signature by the approver would
+  show it). V3 never builds a subset, so the fault has nothing to get wrong.
+  The invariant tests expect this case to break "never an element no approval
+  named" in V1 and V2.
+hubFault: include-declined
+plan:
+  frame:
+    kind: plan
+    days: [mon, tue, wed, thu, fri]
+    endDate: "2026-11-30"
+    confirmation: morning
+  elements:
+    - id: eating-soon
+      content: {kind: temporary-target, startOffsetMinutes: -60, durationMinutes: 60, target: {low: 80, high: 80, units: mg/dL}}
+    - id: meal
+      content: {kind: meal, time: "12:30", carbs: {grams: 45}, bolus: with-meal}
+steps:
+  - {kind: propose, subject: agent}
+  - {kind: approve, subject: person, proposal: p1, accept: [eating-soon], only: [V1, V2]}
+  - {kind: reject, subject: person, proposal: p1, only: [V3]}
+  - {kind: propose, subject: agent, elements: [eating-soon], only: [V3]}
+  - {kind: approve, subject: person, proposal: p2, accept: [eating-soon], only: [V3]}
+  - {kind: deliver, command: c1}
+expected:
+  V1,V2:
+    steps:
+      - {status: 201, proposalId: p1}
+      - {status: 201, commandId: c1}
+      - {state: succeeded, elements: [eating-soon, meal]}
+    proposals:
+      p1: {state: approved, accepted: [eating-soon], declined: [meal]}
+    enacted:
+      c1: [eating-soon, meal]
+  V3:
+    steps:
+      - {status: 201, proposalId: p1}
+      - {status: 200}
+      - {status: 201, proposalId: p2}
+      - {status: 201, commandId: c1}
+      - {state: succeeded, elements: [eating-soon]}
+    proposals:
+      p1: {state: rejected}
+      p2: {state: approved, accepted: [eating-soon], declined: []}
+    enacted:
+      c1: [eating-soon]

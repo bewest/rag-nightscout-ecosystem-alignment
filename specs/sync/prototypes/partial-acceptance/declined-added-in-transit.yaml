@@ -1,0 +1,53 @@
+id: declined-added-in-transit
+description: >-
+  The declined meal element is added to the command between the hub and the
+  controller. V1's controller finds an element no hash binds; V2's and V3's
+  find the whole hash changed. Nothing is enacted.
+plan:
+  frame:
+    kind: plan
+    days: [mon, tue, wed, thu, fri]
+    endDate: "2026-11-30"
+    confirmation: morning
+  elements:
+    - id: eating-soon
+      content: {kind: temporary-target, startOffsetMinutes: -60, durationMinutes: 60, target: {low: 80, high: 80, units: mg/dL}}
+    - id: meal
+      content: {kind: meal, time: "12:30", carbs: {grams: 45}, bolus: with-meal}
+steps:
+  - {kind: propose, subject: agent}
+  - {kind: approve, subject: person, proposal: p1, accept: [eating-soon], only: [V1, V2]}
+  - {kind: reject, subject: person, proposal: p1, only: [V3]}
+  - {kind: propose, subject: agent, elements: [eating-soon], only: [V3]}
+  - {kind: approve, subject: person, proposal: p2, accept: [eating-soon], only: [V3]}
+  - kind: deliver
+    command: c1
+    tamper: {op: add, element: {id: meal, content: {kind: meal, time: "12:30", carbs: {grams: 45}, bolus: with-meal}}}
+expected:
+  V1:
+    steps:
+      - {status: 201, proposalId: p1}
+      - {status: 201, commandId: c1}
+      - {state: refused, reason: unbound-element}
+    proposals:
+      p1: {state: approved, accepted: [eating-soon], declined: [meal]}
+    enacted: {}
+  V2:
+    steps:
+      - {status: 201, proposalId: p1}
+      - {status: 201, commandId: c1}
+      - {state: refused, reason: hash-mismatch}
+    proposals:
+      p1: {state: approved, accepted: [eating-soon], declined: [meal]}
+    enacted: {}
+  V3:
+    steps:
+      - {status: 201, proposalId: p1}
+      - {status: 200}
+      - {status: 201, proposalId: p2}
+      - {status: 201, commandId: c1}
+      - {state: refused, reason: hash-mismatch}
+    proposals:
+      p1: {state: rejected}
+      p2: {state: approved, accepted: [eating-soon], declined: []}
+    enacted: {}

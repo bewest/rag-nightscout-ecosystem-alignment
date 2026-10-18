@@ -1,0 +1,49 @@
+id: transit-altered-element
+description: >-
+  An element's content is changed between the hub and the controller. Every
+  variant's controller refuses hash-mismatch, for a whole plan and (V1, V2)
+  for an accepted part.
+plan:
+  frame:
+    kind: plan
+    days: [mon, tue, wed, thu, fri]
+    endDate: "2026-11-30"
+    confirmation: morning
+  elements:
+    - id: eating-soon
+      content: {kind: temporary-target, startOffsetMinutes: -60, durationMinutes: 60, target: {low: 80, high: 80, units: mg/dL}}
+    - id: meal
+      content: {kind: meal, time: "12:30", carbs: {grams: 45}, bolus: with-meal}
+steps:
+  - {kind: propose, subject: agent}
+  - {kind: approve, subject: person, proposal: p1, accept: [eating-soon, meal]}
+  - kind: deliver
+    command: c1
+    tamper: {op: alter, element: meal, content: {kind: meal, time: "12:30", carbs: {grams: 90}, bolus: with-meal}}
+  - {kind: propose, subject: agent, only: [V1, V2]}
+  - {kind: approve, subject: person, proposal: p2, accept: [eating-soon], only: [V1, V2]}
+  - kind: deliver
+    command: c2
+    only: [V1, V2]
+    tamper: {op: alter, element: eating-soon, content: {kind: temporary-target, startOffsetMinutes: -60, durationMinutes: 240, target: {low: 80, high: 80, units: mg/dL}}}
+expected:
+  V1,V2:
+    steps:
+      - {status: 201, proposalId: p1}
+      - {status: 201, commandId: c1}
+      - {state: refused, reason: hash-mismatch}
+      - {status: 201, proposalId: p2}
+      - {status: 201, commandId: c2}
+      - {state: refused, reason: hash-mismatch}
+    proposals:
+      p1: {state: approved, accepted: [eating-soon, meal], declined: []}
+      p2: {state: approved, accepted: [eating-soon], declined: [meal]}
+    enacted: {}
+  V3:
+    steps:
+      - {status: 201, proposalId: p1}
+      - {status: 201, commandId: c1}
+      - {state: refused, reason: hash-mismatch}
+    proposals:
+      p1: {state: approved, accepted: [eating-soon, meal], declined: []}
+    enacted: {}

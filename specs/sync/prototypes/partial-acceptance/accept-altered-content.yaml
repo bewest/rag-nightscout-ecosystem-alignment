@@ -1,0 +1,37 @@
+id: accept-altered-content
+description: >-
+  The approver's display holds content that differs from the proposal: a
+  larger meal, then a frame with a later end date. Every variant refuses with
+  hash-mismatch and the proposal stays open.
+plan:
+  frame:
+    kind: plan
+    days: [mon, tue, wed, thu, fri]
+    endDate: "2026-11-30"
+    confirmation: morning
+  elements:
+    - id: eating-soon
+      content: {kind: temporary-target, startOffsetMinutes: -60, durationMinutes: 60, target: {low: 80, high: 80, units: mg/dL}}
+    - id: meal
+      content: {kind: meal, time: "12:30", carbs: {grams: 45}, bolus: with-meal}
+steps:
+  - {kind: propose, subject: agent}
+  - kind: approve
+    subject: person
+    proposal: p1
+    accept: [eating-soon, meal]
+    alter: {meal: {kind: meal, time: "12:30", carbs: {grams: 60}, bolus: with-meal}}
+  - kind: approve
+    subject: person
+    proposal: p1
+    accept: [eating-soon, meal]
+    frameView: {kind: plan, days: [mon, tue, wed, thu, fri], endDate: "2026-12-31", confirmation: morning}
+expected:
+  V1,V2,V3:
+    steps:
+      - {status: 201, proposalId: p1}
+      - {status: 409, code: hash-mismatch}
+      - {status: 409, code: hash-mismatch}
+    proposals:
+      p1: {state: open}
+    enacted: {}

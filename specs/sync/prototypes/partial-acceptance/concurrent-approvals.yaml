@@ -1,0 +1,49 @@
+id: concurrent-approvals
+description: >-
+  The person and a caregiver approve the same plan at about the same time,
+  accepting different parts. The model is sequential: the first approval
+  closes the proposal and the second is refused proposal-closed, so one
+  command reaches the controller. In V3 both approvals accept the whole plan.
+  The proposer cannot approve its own proposal (CM14).
+plan:
+  frame:
+    kind: plan
+    days: [mon, tue, wed, thu, fri]
+    endDate: "2026-11-30"
+    confirmation: morning
+  elements:
+    - id: eating-soon
+      content: {kind: temporary-target, startOffsetMinutes: -60, durationMinutes: 60, target: {low: 80, high: 80, units: mg/dL}}
+    - id: meal
+      content: {kind: meal, time: "12:30", carbs: {grams: 45}, bolus: with-meal}
+steps:
+  - {kind: propose, subject: agent}
+  - {kind: approve, subject: agent, proposal: p1, accept: [eating-soon, meal]}
+  - {kind: approve, subject: person, proposal: p1, accept: [eating-soon], only: [V1, V2]}
+  - {kind: approve, subject: caregiver, proposal: p1, accept: [meal], only: [V1, V2]}
+  - {kind: approve, subject: person, proposal: p1, accept: [eating-soon, meal], only: [V3]}
+  - {kind: approve, subject: caregiver, proposal: p1, accept: [eating-soon, meal], only: [V3]}
+  - {kind: deliver, command: c1}
+expected:
+  V1,V2:
+    steps:
+      - {status: 201, proposalId: p1}
+      - {status: 403, code: self-approval}
+      - {status: 201, commandId: c1}
+      - {status: 409, code: proposal-closed}
+      - {state: succeeded, elements: [eating-soon]}
+    proposals:
+      p1: {state: approved, accepted: [eating-soon], declined: [meal]}
+    enacted:
+      c1: [eating-soon]
+  V3:
+    steps:
+      - {status: 201, proposalId: p1}
+      - {status: 403, code: self-approval}
+      - {status: 201, commandId: c1}
+      - {status: 409, code: proposal-closed}
+      - {state: succeeded, elements: [eating-soon, meal]}
+    proposals:
+      p1: {state: approved, accepted: [eating-soon, meal], declined: []}
+    enacted:
+      c1: [eating-soon, meal]

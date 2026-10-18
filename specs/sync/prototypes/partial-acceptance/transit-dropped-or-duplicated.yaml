@@ -1,0 +1,48 @@
+id: transit-dropped-or-duplicated
+description: >-
+  An accepted element is dropped in transit, and in a second command an
+  element is sent twice. Every controller refuses; V1 names which check
+  failed, V2 and V3 report hash-mismatch.
+plan:
+  frame:
+    kind: plan
+    days: [mon, tue, wed, thu, fri]
+    endDate: "2026-11-30"
+    confirmation: morning
+  elements:
+    - id: eating-soon
+      content: {kind: temporary-target, startOffsetMinutes: -60, durationMinutes: 60, target: {low: 80, high: 80, units: mg/dL}}
+    - id: meal
+      content: {kind: meal, time: "12:30", carbs: {grams: 45}, bolus: with-meal}
+steps:
+  - {kind: propose, subject: agent}
+  - {kind: approve, subject: person, proposal: p1, accept: [eating-soon, meal]}
+  - {kind: deliver, command: c1, tamper: {op: drop, element: meal}}
+  - {kind: propose, subject: agent}
+  - {kind: approve, subject: person, proposal: p2, accept: [eating-soon, meal]}
+  - {kind: deliver, command: c2, tamper: {op: duplicate, element: eating-soon}}
+expected:
+  V1:
+    steps:
+      - {status: 201, proposalId: p1}
+      - {status: 201, commandId: c1}
+      - {state: refused, reason: missing-element}
+      - {status: 201, proposalId: p2}
+      - {status: 201, commandId: c2}
+      - {state: refused, reason: duplicate-element}
+    proposals:
+      p1: {state: approved, accepted: [eating-soon, meal], declined: []}
+      p2: {state: approved, accepted: [eating-soon, meal], declined: []}
+    enacted: {}
+  V2,V3:
+    steps:
+      - {status: 201, proposalId: p1}
+      - {status: 201, commandId: c1}
+      - {state: refused, reason: hash-mismatch}
+      - {status: 201, proposalId: p2}
+      - {status: 201, commandId: c2}
+      - {state: refused, reason: hash-mismatch}
+    proposals:
+      p1: {state: approved, accepted: [eating-soon, meal], declined: []}
+      p2: {state: approved, accepted: [eating-soon, meal], declined: []}
+    enacted: {}

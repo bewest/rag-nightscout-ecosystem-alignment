@@ -183,10 +183,14 @@ the plan runs. A hub-side "refuse if dosed since" check helps only the moment-le
    [15.0.9 journey map](../../60-research/remedial/journey-map-15.0.9.md), with the rules and
    cases each step needs.
 
+**Answered later the same day:** the self-approval refusal applies to agents only, and the
+person may withdraw any proposal (CM14); the hub refuses an approval when doses or carbs arrived
+since the proposal (CM22), and the controller checks doses since before it enacts (CM23). How a
+plan accepted in parts binds to its approval is prototyped in
+[partial acceptance](partial-acceptance-prototype-2026-10-18.md); what approval a plan needs, by
+risk and by evidence, is drafted in [evidence-weighted approval](evidence-weighted-approval-2026-10-18.md).
+
 **Still open:**
 
-- **The dose check** for moment-level proposals: a hub refusal when doses or carbs arrived since
-  the proposal, or leave it to the controller and show doses since in the outstanding list. The
-  journeys are meant to settle it.
 - **Out-of-band data:** agents keep it; the hub receives proposals, confirmations and minimised
   evaluations only.
