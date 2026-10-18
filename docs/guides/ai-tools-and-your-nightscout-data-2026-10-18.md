@@ -1,6 +1,7 @@
 # Giving an AI tool access to your Nightscout data
 
-*User-facing.* Written 2026-10-18 for people who use Nightscout for themselves or a family member.
+*What this is: a guide (user-facing). Read after the [guides list](README.md); leads to the
+checklist near the end of this page.* Written 2026-10-18 for people who use Nightscout for themselves or a family member.
 This page is general information, not medical advice. Talk with your diabetes care team before
 changing anything about your treatment.
 
