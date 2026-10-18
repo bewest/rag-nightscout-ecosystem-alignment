@@ -1,0 +1,16 @@
+## control: lines only in the planted run (+) or only in the clean run (-)
++ a	entries	2
++ a	entries	49765
++ a	treatments	27082
++ a	treatments	28911
++ entries	CGM manager (Loop/Trio)	identifier	G6 form: <6 alnum> <digits>	1	a
++ entries	CGM manager (Loop/Trio)	identifier	contains colon (<= 16)	1	a
++ entries	xDrip+	_id	alnum24 non-hex	2022	aj
++ treatments	Loop	syncIdentifier	G7 form: <decimal> <token> <digits>	1	a
++ treatments	Loop	syncIdentifier	sentinel word	1	a
++ treatments	Trio	id	uuid-upper v4	47455	ab
+- a	entries	49762
+- a	treatments	27080
+- a	treatments	28908
+- entries	xDrip+	_id	alnum24 non-hex	2021	j
+- treatments	Trio	id	uuid-upper v4	47454	b

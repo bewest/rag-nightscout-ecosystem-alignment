@@ -1,0 +1,75 @@
+## documents per site and collection
+L	entries	69719
+L	treatments	30306
+a	entries	49762
+a	treatments	28908
+b	entries	49986
+b	treatments	48690
+c	entries	93677
+c	treatments	26514
+d	entries	87930
+d	treatments	22976
+e	entries	67224
+e	treatments	30748
+f	entries	50217
+f	treatments	15584
+g	entries	50464
+g	treatments	26410
+h	entries	20034
+h	treatments	21289
+i	entries	100535
+i	treatments	31152
+j	entries	29324
+j	treatments	436
+k	entries	50687
+k	treatments	24983
+
+## shape counts: collection, client class, field, shape, documents, sites
+entries	CGM manager (Loop/Trio)	_id	hex24 (ObjectId form)	220675	Labdeghk
+entries	Dexcom app	_id	hex24 (ObjectId form)	128294	Lde
+entries	LibreLinkUp	_id	alnum24 non-hex	13096	j
+entries	Loop	_id	hex24 (ObjectId form)	75	b
+entries	Trio	_id	hex24 (ObjectId form)	18856	k
+entries	no-device	_id	uuid-upper v4	48864	b
+entries	other	_id	hex24 (ObjectId form)	320	Ladegjk
+entries	redacted device	_id	hex24 (ObjectId form)	244429	cfi
+entries	share2	_id	hex24 (ObjectId form)	28773	d
+entries	xDrip+	_id	alnum24 non-hex	2021	j
+entries	xDrip+	_id	hex24 (ObjectId form)	14156	j
+treatments	Loop	_id	hex24 (ObjectId form)	257364	Labcdefghik
+treatments	Loop	_id	uuid-upper v4	2064	abcdeghik
+treatments	Loop	identifier	hex other length (exactly 32)	489	L
+treatments	Loop	identifier	uuid-upper v4	16	Li
+treatments	Loop	syncIdentifier	digits	13	L
+treatments	Loop	syncIdentifier	hex other length (exactly 14)	103	L
+treatments	Loop	syncIdentifier	hex other length (exactly 18)	16	L
+treatments	Loop	syncIdentifier	hex other length (exactly 20)	49	L
+treatments	Loop	syncIdentifier	hex other length (exactly 32)	29982	L
+treatments	Loop	syncIdentifier	hex other length (exactly 60)	41695	abcdefghik
+treatments	Loop	syncIdentifier	hex other length (exactly 62)	51245	abcdefghik
+treatments	Loop	syncIdentifier	hex other length (exactly 64)	976	abcdefghik
+treatments	Loop	syncIdentifier	hex other length (exactly 68)	75421	abcdefghik
+treatments	Loop	syncIdentifier	hex other length (exactly 70)	17409	abcdefghik
+treatments	Loop	syncIdentifier	hex other length (exactly 72)	31537	abcdefghik
+treatments	Loop	syncIdentifier	other space-separated [h64 X3{/}]	2	i
+treatments	Loop	syncIdentifier	other space-separated [h68 X3{/}]	318	i
+treatments	Loop	syncIdentifier	other space-separated [h70 X3{/}]	160	i
+treatments	Loop	syncIdentifier	other space-separated [h72 X3{/}]	23	i
+treatments	Loop	syncIdentifier	uuid-upper v4	6862	Labcdefghik
+treatments	Trio	_id	hex24 (ObjectId form)	48130	b
+treatments	Trio	id	uuid-upper v4	47454	b
+treatments	other free-text	_id	hex24 (ObjectId form)	2	a
+treatments	xDrip4iOS	_id	hex24 (ObjectId form)	436	j
+
+## documents with a non-UUID, non-ObjectId value in identifier/syncIdentifier/uuid/id/NSCLIENT_ID
+L	treatments	30163
+a	treatments	27080
+b	treatments	516
+c	treatments	25810
+d	treatments	22376
+e	treatments	30075
+f	treatments	15043
+g	treatments	24805
+h	treatments	20190
+i	treatments	30355
+k	treatments	22536
