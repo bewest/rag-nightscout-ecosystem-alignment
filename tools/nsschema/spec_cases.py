@@ -8,7 +8,9 @@ blocks between markers named <layer>-<block>:
 
 `cases` rows come from the case files themselves (title, control, expected
 status, outcome and reason codes); `kinds` rows come from the well-known
-registrations in specs/sync/registrations/. Neither can drift from its source.
+registrations in specs/sync/registrations/; `primitives` and `proposed` rows
+come from the observation catalogue, specs/sync/primitives.yaml. None can drift
+from its source.
 
     python3 -m tools.nsschema.spec_cases registration           # rewrite
     python3 -m tools.nsschema.spec_cases registration --check   # exit 1 if stale
@@ -26,9 +28,11 @@ CASES = ROOT / "specs" / "sync" / "conformance"
 SPEC = ROOT / "docs" / "30-design" / "platform" / "spec"
 
 REGISTRATIONS = ROOT / "specs" / "sync" / "registrations"
+PRIMITIVES = ROOT / "specs" / "sync" / "primitives.yaml"
 
 # Which cases each specification's table covers: whole directories, or a list.
 LAYERS = {
+    "records": {"primitives": PRIMITIVES, "proposed": PRIMITIVES},
     "registration": {"cases": [("", CASES), ("instances/", CASES / "instances"), ("quirks/", CASES / "quirks")]},
     "state-intent": {
         "kinds": ["loop", "trio", "androidaps"],
@@ -116,9 +120,32 @@ def kind_rows(controllers):
     return out
 
 
+def primitive_rows(catalogue):
+    out = ["| primitive | group | typed by | fields | measured | declared | what it is |",
+           "|---|---|---|---:|---:|---:|---|"]
+    for name, spec in yaml.safe_load(catalogue.read_text())["primitives"].items():
+        grades = [f.get("evidence") for f in spec.get("fields", [])]
+        out.append("| `%s` | %s | %s | %d | %d | %d | %s |" % (
+            name, cell(spec.get("group", "")), cell(spec.get("typed_by", "")), len(grades),
+            grades.count("measured"), grades.count("declared"), cell(spec.get("description", ""))))
+    return out
+
+
+def proposed_rows(catalogue):
+    out = ["| field | input of | recorded today |", "|---|---|---|"]
+    for item in yaml.safe_load(catalogue.read_text()).get("proposed_not_carried_by_any_primitive", []):
+        out.append("| `%s` | %s | %s |" % (
+            item["field"], cell(item.get("algorithm", "")), cell(item.get("status_today", ""))))
+    return out
+
+
 def rows(layer, block="cases"):
     if block == "kinds":
         return kind_rows(LAYERS[layer]["kinds"])
+    if block == "primitives":
+        return primitive_rows(LAYERS[layer][block])
+    if block == "proposed":
+        return proposed_rows(LAYERS[layer][block])
     out = ["| case | shows | expected | control |", "|---|---|---|---|"]
     for prefix, path in case_paths(LAYERS[layer]["cases"]):
         case = yaml.safe_load(path.read_text())

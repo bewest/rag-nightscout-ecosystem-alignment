@@ -123,9 +123,12 @@ spec:
       - override.multiplier
       - override.currentCorrectionRange
       - override.duration
+      durationField: override.duration
+      durationUnit: seconds
       linkToRequest: null
       description: Written with each loop cycle's devicestatus; active is false when no override
-        is on. override.duration is the remaining time in seconds.
+        is on. override.duration is the remaining time in seconds, absent for an indefinite
+        override.
     initiators:
       vocabulary: EnactTrigger
       values:
@@ -178,6 +181,13 @@ spec:
       basis: read
     - claim: devicestatus override status; duration is seconds remaining
       source: NightscoutService fe075ef NightscoutServiceKit/Extensions/StoredDosingDecision.swift:118-136
+      basis: read
+    - claim: 'override.duration: round(actualEndDate - now), a TimeInterval in seconds; nil
+        (field not written) for an indefinite override'
+      source: NightscoutService fe075ef NightscoutServiceKit/Extensions/StoredDosingDecision.swift:129
+      basis: read
+    - claim: OverrideStatus writes duration as the TimeInterval unchanged
+      source: NightscoutKit 4ec9fd1 Sources/NightscoutKit/Models/OverrideStatus.swift:17,44-46
       basis: read
     - claim: preset fields uploaded in profile.loopSettings.overridePresets
       source: NightscoutKit 4ec9fd1 Sources/NightscoutKit/Models/TemporaryScheduleOverride.swift:28-49

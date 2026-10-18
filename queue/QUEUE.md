@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 249 |
-| runnable gates | 290 |
-| explicit `no-gate:` markers | 284 |
+| items | 250 |
+| runnable gates | 294 |
+| explicit `no-gate:` markers | 283 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 284 of the 574 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 283 of the 577 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 72 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
+| `not-started` | 71 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-ACTIVE-STATE |
 | `in-progress` | 4 | BFQ-46, BFQ-ENV, OID-LAB, LOOP-ID-REPLY |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -49,7 +49,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 87 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 12 | RT-0, T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164 |
-| `done` | 27 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT |
+| `done` | 29 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-RECORDS, SCHEMA-INTENT-GAPS |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
 | `answered` | 2 | RT-D3, RT-PROPAGATION |
@@ -123,6 +123,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-166** BF-166 - a profile re-sent with its own _id answers 500
 - **BFQ-168** BF-168 - the context chart's window sometimes cannot be dragged back to now
 - **BFQ-169** BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a client-supplied one
+- **BFQ-170** BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent
 - **BFQ-134** BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 - **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
 - **BFQ-133** BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one (fixed by BF-146's #8784), merged for 15.0.9
@@ -2151,7 +2152,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 113 items
+`parcel: register-open` &mdash; 114 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2255,6 +2256,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-167` | BF-167 - devicestatus remove()'s filter is not pinned by any test | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `BFQ-168` | BF-168 - the context chart's window sometimes cannot be dragged back to now | `merged-upstream` | `bf/brush-extent` | patch | 2 run + 1 no-gate |
 | `BFQ-169` | BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a client-supplied one | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-170` | BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `merged-upstream` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -5413,6 +5415,38 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Notes.** Filed 2026-10-17 while checking the Loop maintainers' proposal that Nightscout accept a client-supplied identifier. The text "this field is immutable by the client (it cannot be updated or patched)" is accurate for PUT and PATCH and stays; only the "should not create ... the server automatically assigns it" sentence is wrong. lib/api3/doc/ and README.md do not repeat it (read at fade2299). Decided by the maintainer 2026-10-17: ships with ID-SIMPLE-MATCH, in the same PR, on dev after cut 1's rebase; not in 15.0.9. A docs-only change is a patch and could ride a re-cut 15.0.9 candidate if the RC is re-cut for another reason; that is the one exception worth weighing, not a plan.
 
+### `BFQ-170` &mdash; BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@fade2299` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-170` |
+
+**Blast radius.** lib/api3/generic/create/operation.js (or the v3 storage insertOne in lib/api3/storage/mongoCollection/modify.js): what v3 create does with a body _id. No v1, socket or read-path change.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `minor`.** Versioning policy section 2, question 10, for option (a): a record written with an upper-case 24-hex _id comes back from v1 with its _id in lower case, a differently-shaped body for the same query. Option (b), refusing a body _id with 400, would instead be question 3 (an accepted input narrowed) and a major under R1, though no corpus client sends one. The number follows the option the maintainer picks.
+
+**Gates.**
+
+- **NO GATE** &mdash; Filed only. Reproduced over HTTP by tools/lab/record-identity (results/record-identity-2026-10-18.md), cases "v3 treatments POST: 24-hex _id in body, no identifier" and "v3 treatments POST: identifier + 24-hex _id in body": stored _id:string=sent on 15.0.8 92d08342 and fade2299. A fix's gate is those two cells reading _id:oid=sent (option a) or 400 with nothing stored (option b) on the fix build, with fade2299 as the red control; the write-contract matrix cells <col> v3 resend-hex and v3 resend-upper cover the other collections.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `tools/lab/record-identity/results/record-identity-2026-10-18.md`
+- `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
+
+**Notes.** Candidate C1 of the write-contract note (section 7), filed 2026-10-18. On 15.0.8 a v1 find[_id] for the record misses it (query.js converts to an ObjectId); on dev v1 matches both forms (object-id-forms matchEitherForm), except an upper-case string asked for in lower case. Both read, not measured. No corpus client sends _id to v3; the Loop reply's rule 1 says a client ObjectId _id holds over v1 only. Natural vehicle for option (a): OID-STORAGE- HELPER, one storage-level rule for writes by _id, which would give v3 create the same toStoredId conversion v1 uses. C2 (a {"$oid": ...} body _id answers 500 on v3) is the same code path. ID-CLIENT-OID-DECISION's answer (may a client set _id) bears on whether option (b) is acceptable.
+
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 
 | | |
@@ -7745,9 +7779,9 @@ reproduced ones.
 | `SPEC-STATE-INTENT` | Platform spec L3: the state and intent specification (kinds, slots, states, end reasons, requested and applied, initiators, composition) | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 2 run |
 | `SPEC-SYNC-TRANSPORT` | Platform spec L4: the change and sync specification (write step, re-send rule, cursor, history, socket delivery, definition-version migration) | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `SPEC-AUTHORITY` | Platform spec L5: the authority specification (binding, credential kind, owner actions, roles and provenance, command routing; delegation and proposals as open design) | `not-started` | `main` | n/a | 0 run + 1 no-gate |
-| `SPEC-RECORDS` | Platform spec L1: the records specification (observation primitives, decomposition of today's documents, effective-dated settings snapshots) | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `SPEC-RECORDS` | Platform spec L1: the records specification (observation primitives, decomposition of today's documents, effective-dated settings snapshots) | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 2 run |
 | `SPEC-ACTIVE-STATE` | Decide and specify what a hub reports as active at a time, and a therapy-state version an approval can bind to | `not-started` | `main` | n/a | 0 run + 1 no-gate |
-| `SCHEMA-INTENT-GAPS` | Registration grammar: the initiators other form, duration units on requested and applied carriers, typed carrier fields | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `SCHEMA-INTENT-GAPS` | Registration grammar: the initiators other form, duration units on requested and applied carriers, typed carrier fields | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 2 run |
 
 ### `LAB-G7-TWO-DISPLAY` &mdash; Lab: two displays on one real G7 sensor report the same seconds counter for each reading, live and backfill
 
@@ -8551,16 +8585,16 @@ reproduced ones.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `done` |
 | repo | `rag-nightscout-ecosystem-alignment` |
-| branch | `main` |
-| base | `main@010e1661` |
+| branch | `docs/platform-spec-index-2026-10-18` |
+| base | `main@92a7d31b` |
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer |
 | blocks on | `SPEC-ID` |
 
-**Blast radius.** docs/30-design/platform/spec/records.md (new) from specs/sync/primitives.yaml, D11, the hub-sync design §3.3 and §4.3, controller-settings.schema.json, sensitivity.yaml and the dated evidence (typed schema evidence, primitive coverage, devicestatus and profile fidelity); pointers in those documents; the index row; a SOURCES entry in the gate.
+**Blast radius.** docs/30-design/platform/spec/records.md (new): rules R1-R9, generated tables of the 16 primitives with their evidence grades and of the 19 proposed fields (from specs/sync/primitives.yaml), decomposition measured per collection, the settings snapshot and completeness, sensitivity labels, and 10 named checks. Pointers in the coverage, fidelity and hub-sync documents (§3.3, §4.3) and the execution plan's D11; the coverage document's stale per-primitive table corrected in place; index and glossary. tools/queue/gates/platform-spec.js accepts named tests (`tools/...py::test_x`) as a spec's checks and verifies each is defined; platform-spec-control.sh copies tools/nsschema into its scratch root and refuses a break that does not apply. spec_cases.py gains `primitives` and `proposed` blocks. No rule, schema or test changes.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -8568,14 +8602,18 @@ reproduced ones.
 
 **Gates.**
 
-- **NO GATE** &mdash; Not started. The gate will be `node tools/queue/gates/platform-spec.js records`, red under each control break, plus a generated table of the observation primitives with their evidence grades from primitives.yaml (`spec_cases records --check`), so a regraded field turns the table stale.
+- `[static]` `node tools/queue/gates/platform-spec.js records`
+  - FAILS when the records spec is missing, carries amendment narration, cites a test its file does not define, states a check count that differs from its table, or when the index, the coverage document, the hub-sync design, the fidelity document or the execution plan does not link to it. GREEN on 2026-10-18: 25 checks.
+- `[static]` `python3 -m tools.nsschema.spec_cases records --check`
+  - FAILS when the generated primitive or proposed-field tables differ from what specs/sync/primitives.yaml produces, so a regraded field turns the table stale.
 
 **Evidence.**
 
+- `docs/30-design/platform/spec/records.md`
 - `specs/sync/primitives.yaml`
 - `docs/30-design/platform/nightscout-primitive-coverage-2026-09-11.md`
 
-**Notes.** Added 2026-10-18 when the specification set was settled: L1 had no specification item. Carries what replay and audit need from a record: which observation it is, its evidence grade, which composite document it came from, and the settings in effect. Unmeasured and to be stated as such: devicestatus and profile decomposition coverage.
+**Notes.** Non-vacuity, run 2026-10-18 in a scratch root, each break red with exactly its own finding: an appended "(Withdrawn ...)" note; the first cited test renamed; the count changed to 999; the coverage document's link removed; and, for the table gate, a copy with the ApsSnapshot row deleted (--spec). The first run of the controls was red for the wrong reason: the scratch root lacked tools/nsschema, so every test check failed under every break; the control now copies it, and a break that does not apply (a case break on a spec that cites no case) exits CONTROL-INVALID instead of passing. The coverage document's §2 table gave ApsSnapshot 14 measured and 11 declared; the catalogue as committed gives 23 and 2, with unchanged totals (84, 50). Fidelity audit (2026-10-18) applied before commit: the 22 unroutable treatments carry Nightscout's documented `Suspend Pump`, which Nocturne's V4 constant reverses (the draft blamed the data); D11 is scoped to devicestatus and the other rules marked proposed; R9 states both unlabelled-field rules (identifying in the label assignment, withhold in a registration); low_confidence fields are still counted; routing is not decomposition; the bolusVolume and tempBasalAdjustment shares; read-derived caveats; two check rows narrowed to what their tests assert. The catalogue generator's truncated and fallback reasons are kept out of the generated table.
 
 ### `SPEC-ACTIVE-STATE` &mdash; Decide and specify what a hub reports as active at a time, and a therapy-state version an approval can bind to
 
@@ -8611,16 +8649,16 @@ reproduced ones.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `done` |
 | repo | `rag-nightscout-ecosystem-alignment` |
-| branch | `main` |
-| base | `main@010e1661` |
+| branch | `docs/platform-spec-index-2026-10-18` |
+| base | `main@73aac62e` |
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer |
 | blocks on | `SPEC-STATE-INTENT` |
 
-**Blast radius.** specs/sync/controller-state-model.schema.json (additive, must-ignore): initiators.values items take a string or {value: other, controllerTerm}; the carrier definition gains durationField and durationUnit wherever wire has them; carrier paths may carry a typed field declaration (unit, type). The three generated registrations regenerated (Loop's applied override carrier gains its unit), the synthetic fixture extended, state and intent S6-S8 and §8 updated.
+**Blast radius.** specs/sync/controller-state-model.schema.json (additive, must-ignore): initiators.values items take a string or the otherTerm form; durationField and durationUnit move from wire into $defs/carrier, so requested and applied declare their own; carrier paths items take a path string or a carrierPath {path, fieldTyping members, type xor typeRef}. Generated registrations: Loop's applied override declares override.duration in seconds; AndroidAPS's profile switch wire path timeshift and effective switch path originalTimeshift declare milliseconds. Fixture uses every new form. State and intent S6-S8, §6 and §8 and registration G2-G3 updated; the agent page and execution plan row 17 corrected to say the grammar now carries the other form.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -8628,14 +8666,17 @@ reproduced ones.
 
 **Gates.**
 
-- **NO GATE** &mdash; Not started. The gate will be tools/nsschema/test_registration_grammar.py with a case per addition and its rejection control (a bare unknown initiator string still rejected, an unknown unit rejected), `make schema-sync-model --check` green, and the registration suites unchanged.
+- `[unit]` `python3 -m pytest -q tools/nsschema/test_registration_grammar.py`
+  - FAILS when a new form is not accepted where specified, a malformed one is accepted (an other-form object without controllerTerm, an unknown duration unit, a typed path without `path` or with both type and typeRef), or a generated registration declares a unit that differs from its source read. GREEN on 2026-10-18: 60 tests (46 before).
+- `[static]` `make schema-sync-model && git diff --exit-code specs/sync/registrations`
+  - FAILS when the generated registrations differ from what the generator produces from its source reads.
 
 **Evidence.**
 
 - `specs/sync/controller-state-model.schema.json`
 - `docs/30-design/platform/spec/state-intent.md`
 
-**Notes.** The agent-initiator form was decided 2026-10-18 (execution plan row 17) and is recorded in the agents page §7 as not yet in the grammar. The unit gaps are the two the hub active-state lab measured as disagreements (Loop's devicestatus override duration, AndroidAPS timeshift). Adding members is a minor change under must-ignore (registration G1); no kind's meaning changes unless a registration declares the new member.
+**Notes.** Done 2026-10-18 by a background agent in worktree rag-alignment-intent-gaps (commit 113f98c7, cherry-picked). Source reads: Loop's applied override duration is seconds remaining (NightscoutService fe075ef StoredDosingDecision.swift:129, NightscoutKit 4ec9fd1 OverrideStatus.swift:17,44-46); AndroidAPS timeshift and originalTimeshift are milliseconds (7e1d537d49 PS.kt:22, EPS.kt:24, ProfileFunctionImpl.kt:218, CommandQueueImplementation.kt:202, TreatmentMapper.kt:510,540, RemoteTreatment.kt:85,101), agreeing with the hub active-state lab and MAP- AAPS-PROFILESWITCH. A free initiator string stays valid (the controller's own vocabulary); only a malformed other-form object is rejected. Non-vacuity: eight weakenings, one at a time, each red for the right reason (strings-only initiators, any-object initiators, durationUnit removed from carrier, "hours" added to the units, path not required, strings-only paths, the type-xor- typeRef rule dropped, fieldTyping dropped). Suites: tools/nsschema 1675 passed; the three registration suites 1,281 unchanged. Open, in state and intent §8: the reference meaning comparison treats a typed path {path: x} with no typing members as different from the bare string x, so rewriting one as the other at one version would be refused version-conflict.
 
 ---
 

@@ -293,7 +293,8 @@ OpenAPI spec, `indexedFields`, the nsschema model and the `walker` (§3.4).
   The remaining 179 nodes stay in JSONB.
 - **Do not widen the column list to anticipate decomposition.** The normalised series are separate
   relations with their own schemas.
-- **Decomposition must sit above the seam, like coercion** (§3.4). The 56-of-166 dropped-path
+- **Decomposition must sit above the seam, like coercion** (§3.4). The record rules are maintained
+  in the [records specification](../platform/spec/records.md). The 56-of-166 dropped-path
   finding that motivates it ({M} motivation (a)) is a fidelity problem; fixing it in the multitenant
   backend only would leave single-tenant behind, which D4 forbids.
 
@@ -563,7 +564,7 @@ vocabularies; [intent landscape](../platform/nightscout-intent-workflow-landscap
 
 | # | point | decision |
 |---|---|---|
-| 17 | an agent as initiator | **no `agent` value is added.** An agent initiator is written in the open-vocabulary form `{value: other, controllerTerm}` (addendum rule 3), as the registration specification §9 does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. The grammar's `initiators` element lists strings in each controller's own vocabulary, with no shared list and no `other` form; applying the form there is not yet specified. Map: [agents in the ecosystem](../platform/agent-trust-boundaries-2026-10-18.md) |
+| 17 | an agent as initiator | **no `agent` value is added.** An agent initiator is written in the open-vocabulary form `{value: other, controllerTerm}` (addendum rule 3), as the registration specification §9 does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. The grammar's `initiators.values` take strings in each controller's own vocabulary, with no shared list, or the `other` form ([state and intent S8](../platform/spec/state-intent.md#2-rules)). Map: [agents in the ecosystem](../platform/agent-trust-boundaries-2026-10-18.md) |
 
 ### 2.7 D12 — what each repository is for
 

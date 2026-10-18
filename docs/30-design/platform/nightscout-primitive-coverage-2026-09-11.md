@@ -1,6 +1,6 @@
 # Is there enough evidence for a unified primitive catalogue? A coverage assessment
 
-*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current — the catalogue it assesses is `specs/sync/primitives.yaml`.** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current — the catalogue it assesses is `specs/sync/primitives.yaml`; the rules built on it are maintained in the [records specification](spec/records.md).** *Corrected 2026-10-18:* §2's per-primitive table predates the catalogue's regrading; the totals (84 measured, 50 declared) stand, and the current per-primitive counts are generated in the records specification §3 (for example `ApsSnapshot` 23 measured and 2 declared, not 14 and 11). Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
 
 Date: 2026-09-11.
 

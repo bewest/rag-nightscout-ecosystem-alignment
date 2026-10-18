@@ -250,6 +250,8 @@ page limits.
 
 ### 3.3 Composite on the wire, primitive in storage
 
+*Maintained in the [records specification](spec/records.md) R1–R3.*
+
 The edge device sends what it has, in the shape it has it. The hub
 decomposes on write:
 
@@ -348,6 +350,8 @@ built on derived inputs tests the replayer as much as the algorithm, so the
 two columns should never be collapsed.
 
 ### 4.3 Settings as a first-class, effective-dated resource
+
+*Maintained in the [records specification](spec/records.md) R5–R8 and §5.*
 
 The missing piece is small and additive. A `ControllerSettings` snapshot,
 versioned and effective-dated, published on change rather than per cycle:
