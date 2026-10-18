@@ -178,7 +178,8 @@ the plan runs. A hub-side "refuse if dosed since" check helps only the moment-le
    plans and commands) without acting on it.
 4. **Revision:** an adjustment is a new proposal. A plan may be accepted in parts: the approver
    accepts some of its elements and not others, and the approval names what it accepted.
-5. **Next:** write PL1–PL5 and the moment cases as journeys in the format of the
+5. **Next:** write PL1–PL5 and the moment cases as journeys, now in
+   [command journeys](command-journeys-2026-10-18.md), in the format of the
    [15.0.9 journey map](../../60-research/remedial/journey-map-15.0.9.md), with the rules and
    cases each step needs.
 
