@@ -71,7 +71,7 @@ Rules:
 |---|---|
 | G1 | **Must-ignore.** Within a grammar major, a reader keeps members it does not know as written and does not interpret or serve them. No object in the grammar is closed. |
 | G2 | **Typed declarations.** A typed field carries `type`, a restricted JSON Schema fragment (`type`, `enum`, `minimum`, `maximum`, `format`, `items`, `properties`, `required`; closed; an object lists its properties), or `typeRef` to a Nightscout-published definition such as a ControllerSettings field; plus `unit`, `range`, `horizon`, `sensitivity` and `evidence`. `settings.fields[]` and `replayInputs[]` take a name or a typed declaration. An extension or extension field without a type is rejected. A field with no sensitivity label falls under `sensitivity.unlabelledPolicy`, `withhold` when absent. |
-| G3 | **Open vocabularies.** `endedEncoding`, command `transport`, `replayInputs[].status`, the discriminator `test` and `endReasons` take a shared value or `{value: other, controllerTerm}`. |
+| G3 | **Open vocabularies.** `endedEncoding`, command `transport`, `replayInputs[].status`, the discriminator `test` and `endReasons` take a shared value or `{value: other, controllerTerm}`. A hub renders an unknown term as "other: *term*" instead of rejecting the registration. |
 | G4 | **Per-element versions.** Each stateSpans kind and each extension may declare `version`, or `versions` (`served`, one `stored`, optional lossless `mappings`). Without a declared mapping nothing is converted. |
 | G5 | **Horizons.** Documents, kinds, fields, settings and extensions may declare a `horizon`: `cycle`, `span`, `effective-dated`, `definition` or `aggregate`, each with its own cadence and retention. `availability` includes `experimental`, stored as declared with no well-known mapping and no long-term promise. |
 
@@ -152,7 +152,8 @@ settings and inputs) belongs to the registration as a whole.
 
 Each element is `accepted`, `accepted-with-ignored-members` (with the ignored members as dotted
 paths), or `rejected` with reasons. Ignored members are those the grammar does not define plus
-those `interprets` does not cover; they are kept as written. An element is `not-interpreted` when a
+those `interprets` does not cover; they are kept as written. Ignored members outside any element are
+listed at registration level. An element is `not-interpreted` when a
 member that defines it is ignored: a kind's `category`; an extension's `fields`,
 `version`/`versions` and each field's `name`, `type` and `typeRef`; a typed setting's or input's
 name and type. Otherwise an element is rejected for:
@@ -164,7 +165,7 @@ name and type. Otherwise an element is rejected for:
 | `untyped-extension` | an extension without a type declaration |
 | `unsupported-type-keyword` | a keyword or format outside `typeFragment`, including in a `typeRef` target |
 | `limit-exceeded` | over `maxFieldsPerExtension` or `maxTypeDepth` |
-| `invalid-element` | an element that fails the grammar |
+| `invalid-element` | an extension that fails the grammar; for a stateSpans kind, a restated member of a `wellKnownRef` entry or a `sameAs` that breaks §9's checks (any other grammar failure outside `spec.extensions` rejects the whole registration as `invalid-registration`, §5.2) |
 | `version-plan-invalid`, `unsupported-availability`, `unsupported-horizon` | checked only where the hub interprets them |
 | `version-conflict`, `unknown-well-known-kind` | §7 |
 | `unknown-shared-slot` | §9 |
@@ -207,10 +208,13 @@ rejected element; an unknown result, reason or `carrierView`; a rejected registr
 precondition; a retired or blocked registration; no response (a submit answered 429 or any 5xx is
 no response); no capability document, no `submit`, or a grammar major the hub does not list.
 
+A controller that depends on an ignored member may treat that element as not accepted.
+
 An accepted element whose `carrierView` is `served` is written typed only. One whose view is not
 served is written typed only, or typed and as its carrier when the element declares
 `dualWriteLink` (`typedIdPath`, `carrierIdPath`): the record is linked by (instance id, the
-controller's record id), so counting and de-duplication follow the link.
+controller's record id), so counting and de-duplication follow the link. Writing both is for an
+element with no declared carrier mapping, and while an app moves over.
 
 A typed write refused for load (429 or any 5xx, with or without `Retry-After`) is retried with
 backoff, no sooner than `Retry-After` when sent, until it succeeds. It is never written as its
@@ -281,7 +285,10 @@ experimental kind can be released at the same version. `sensitivity` is meaning,
 definition cannot relabel data stored under an earlier one.
 
 **Well-known references.** A stateSpans entry whose kind is exactly a kind of the hub's catalogue
-names it instead of copying it: `wellKnownRef: {catalogue, kind, version}`. The entry carries only
+names it instead of copying it: `wellKnownRef: {catalogue, kind, version}`, where `catalogue` is the
+`id` of an entry in the capability document's `wellKnown.kinds[]`, `kind` is the catalogue kind's
+`kind` (else its `category`) and `version` its stored version. `wellKnownRef` is additive under
+must-ignore. The entry carries only
 `category` and `kind` (the catalogue kind's), the reference, `availability`, `description` and
 `evidence`; a restated member is rejected `invalid-element`. Its meaning, version, slot, carrier and
 `sameAs` are the catalogue kind's, so an identical copy agrees with a reference and a differing copy
@@ -350,10 +357,11 @@ views and exports.
 - if the slot is on the hub's shared slot list (`wellKnown.slots`, shipped from
   `specs/sync/shared-slots.yaml`: `override`, `loopMode`, `temporaryTarget`), the channel is that
   shared slot, contended across products;
-- if the kind declares `sameAs: <shared slot>` on a hub that lists that slot, the channel is the
-  shared slot;
-- otherwise the slot is the product's own channel, `<vendor>/<product>/<slot>`: instances of one
-  product contend on it, and equal names from different products do not.
+- if the kind declares `sameAs: <shared slot>` on a hub that interprets `sameAs` and lists that
+  slot, the channel is the shared slot;
+- otherwise the slot is the product's own channel, `<vendor>/<product>/<slot>`: on the wire the
+  channel keeps the slot's name and its roles are scoped to the product; instances of one product
+  contend on it, and equal names from different products do not.
 
 Every other element's channel is `<vendor>/<product>/<element id>`. A slot name containing `/`
 derives no shared channel. A role on a channel the instance's definition does not derive is
@@ -497,7 +505,10 @@ term), the kind that last created or updated it; both are returned with it. `API
 subject-bound registration is `not-registration-owner` on the data path. A released registration
 (`boundTo: null`) is bound by the next credential with the permission that updates it, even with
 identical content (200, not a no-op); it records `bindingEvent: next-writer`, kept by later updates
-under the same binding and cleared by a release or transfer, and not in the etag.
+under the same binding and cleared by a release or transfer, and not in the etag. When a
+single-tenant site moves into a tenant, a registration bound to `api-secret` is bound to the
+tenant's root credential, a further credential kind; the etag changes with `boundTo` (decided;
+the mechanics are `SPEC-REG-MODES` and `SPEC-REG-MIGRATE`).
 
 ### 15.2 The owner's actions
 
@@ -550,10 +561,11 @@ per collection and project, with measured prevalence.
 
 | # | rule |
 |---|---|
-| Q1 | **`affects`.** An entry may carry `affects: [{vendor, product, versions}]`, `versions` a range over the vendor's own version strings (`*`, or whitespace-separated comparators `=`, `>=`, `>`, `<=`, `<` that must all hold; dot-separated parts compare numerically, numbers before text), stated only where the corpus or source shows it, else `unmeasured` with the reason. `seen` lists versions the evidence shows. Each claim says `measured` or `read-derived`. `versionSource` says where `make schema-quirks` reads a version: in the same document, or by co-occurrence (the nearest version-bearing document of the same site within a window), labelled as co-occurrence and never copied into a range. |
-| Q2 | **Catalogue for older versions, `sameAs` for newer.** A newer definition declares its own mapping (`sameAs`, §9). Versions released before registration get it from a registry entry with `applies_to: declarations` (`declaration: {member: slot, value, sameAs}`, with `affects`), published as `wellKnown.mappings[]` (`{quirk, vendor, product, versions, slot, sameAs}`). When an older controller's write is described by its well-known registration and the hub knows the writer's version and it is in `versions`, the hub attributes the records to the shared slot. With no known version it applies no mapping. A mapping changes which channel records are shown on and which overlaps the owner sees, never whether they are stored. |
-| Q3 | **Recorded, never silent.** Each mapping the hub applies is recorded on the reply and on the stored record as `quirksApplied: [{quirk, member, action, sameAs?}]`, `action` one of `moved-to-identifier`, `dropped`, `same-as`. A write whose channel a `sameAs` decided carries `slotMapping: {slot, channel, by}`, `by` being `declared`, `catalogue` (with the entry's id) or `name`. |
-| Q4 | **Lifecycle.** `proposed` → `active` → `historical` → `retired`. `make schema-quirks` writes which statuses the measurement supports and why not the others; `make schema-quirks-check` fails a `historical` or `retired` claim it does not support and never fails a `proposed` one. `historical` needs no recent document, zero live instances of an affected version in a hub's de-identified instance listing (unmeasured without one), and a detector whose evidence the hub's mapping does not erase. `retired` also needs no stored document that depends on the mapping. Recent is within `RECENT_DAYS` = 365 days of the newest snapshot's collection date. Declaration entries are measured by a hub's recorded mappings. |
+| Q1 | **`affects`.** It applies to stored documents and to declarations (slot names, units, vocabulary). An entry may carry `affects: [{vendor, product, versions}]`, `versions` a range over the vendor's own version strings (`*`, or whitespace-separated comparators `=`, `>=`, `>`, `<=`, `<` that must all hold; dot-separated parts compare numerically, numbers before text), stated only where the corpus or source shows it, else `unmeasured` with the reason. `seen` lists versions the evidence shows. Each claim says `measured` or `read-derived`. `versionSource` says where `make schema-quirks` reads a version: in the same document, or by co-occurrence (the nearest version-bearing document of the same site within a window), labelled as co-occurrence and never copied into a range. Entries without `affects` keep their project-level attribution. |
+| Q2 | **Catalogue for older versions, `sameAs` for newer.** A newer definition declares its own mapping (`sameAs`, §9). Versions released before registration get it from a registry entry with `applies_to: declarations` (`declaration: {member: slot, value, sameAs}`, with `affects`), published as `wellKnown.mappings[]` (`{quirk, vendor, product, versions, slot, sameAs}`). When an older controller's write is described by its well-known registration and the hub knows the writer's version and it is in `versions`, the hub attributes the records to the shared slot. The means by which the hub identifies the writer and its version are not specified; with no known version it applies no mapping. A mapping changes which channel records are shown on and which overlaps the owner sees, never whether they are stored. |
+| Q3 | **Recorded, never silent.** Each mapping the hub applies is recorded on the reply and on the stored record or document as `quirksApplied: [{quirk, member, action, sameAs?}]`, `action` one of `moved-to-identifier`, `dropped`, `same-as`. A write whose channel a `sameAs` decided carries `slotMapping: {slot, channel, by}`, `by` being `declared`, `catalogue` (with the entry's id) or `name`. |
+| Q4a | **Entry members.** Beside `affects`, an entry may carry `retired`, and `mapping: {action, flag, erasesEvidence}` for what a hub does with the quirk: QUIRK-TREATMENTS-006 and QUIRK-ENTRIES-004 carry `{action: move-to-identifier, flag: UUID_HANDLING, erasesEvidence: true}`, because a mapped write no longer shows the quirk in storage. QUIRK-TREATMENTS-007 (Trio's treatment model sending its UUID as `id`) is a measured, version-scoped entry with no mapping: cgm-remote-monitor matches such treatments by `created_at` + `eventType`, and whether Trio should send `identifier` goes to `PROPOSAL-REG-CONTROLLERS`. |
+| Q4 | **Lifecycle.** `proposed` → `active` → `historical` → `retired`. `make schema-quirks` writes which statuses the measurement supports and why not the others; `make schema-quirks-check` fails a `historical` or `retired` claim it does not support and never fails a `proposed` one. `historical` needs no recent document, zero live instances of an affected version in a hub's de-identified instance listing (unmeasured without one), and a detector whose evidence the hub's mapping does not erase (an entry whose `mapping` has `erasesEvidence: true` becomes `historical` only through Q3 records). `retired` also needs no stored document that depends on the mapping. Recent is within `RECENT_DAYS` = 365 days of the newest snapshot's collection date. Declaration entries are measured by a hub's recorded mappings. |
 
 No declaration entry is listed: which slots share a meaning is evidence for the controller authors
 (`PROPOSAL-REG-CONTROLLERS`). Candidates, read from the well-known registrations and not confirmed
@@ -567,8 +579,7 @@ by any controller author:
 | `temporaryTarget` or `override` | Loop `preMeal` | a Loop override preset with its own slot and no carrier of its own |
 | none | AndroidAPS `profileSwitch`, `scene` | no counterpart in Loop or Trio |
 
-The `_id` entries (QUIRK-TREATMENTS-006, QUIRK-ENTRIES-004, QUIRK-TREATMENTS-007) are in
-[identity I9 and §6](identity.md#6-today-in-cgm-remote-monitor).
+How the `_id` entries are applied on a write is in [identity I9](identity.md#1-rules).
 
 ## 17. Compatibility
 
@@ -602,8 +613,8 @@ Rules the specification chose that await the maintainer's confirmation:
   fails the check; declaration entries are measured only by hub records.
 - **Identity:** two choices are listed in [identity §5](identity.md#5-open-decisions).
 
-Not yet specified: the contract per tenancy mode (`SPEC-REG-MODES`), registration state across a
-site's move into a tenant (`SPEC-REG-MIGRATE`), and the command API (`SPEC-REG-COMMANDS`).
+Not yet specified: the contract per tenancy mode (`SPEC-REG-MODES`), the mechanics of registration
+state across a site's move into a tenant, whose binding rule §15.1 states (`SPEC-REG-MIGRATE`), and the command API (`SPEC-REG-COMMANDS`).
 
 ## 19. Conformance cases
 
