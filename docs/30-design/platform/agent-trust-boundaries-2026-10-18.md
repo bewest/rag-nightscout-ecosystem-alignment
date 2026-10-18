@@ -50,6 +50,23 @@ The controller projects own their contribution rules; this repository points at 
 | cgm-remote-monitor | no rule on AI-generated contributions | `CONTRIBUTING.md` on `dev`, last changed `20e5ad2a` (2026-09-06) |
 | Nocturne | no `CONTRIBUTING.md`; `AGENTS.md` and `CLAUDE.md` at the root give instructions to coding agents | `AGENTS.md` last changed `49d61d177` (2026-09-27) |
 
+**What the rules are about, and how the projects use agents themselves.** The rules govern who
+verifies and owns a change, not whether a tool was used. AndroidAPS gives its reason: "Verifying and
+reviewing AI-generated code reliably takes maintainers more time than the AI took to produce it, and
+unverified code is a risk we cannot accept". LoopWorkspace's and Trio's rules say "Do not submit
+AI-heavy or 'vibe-coded' pull requests; we welcome thoughtful use of tooling, but contributions need
+to be intentionally designed." Each project's own development uses coding agents (measured
+2026-10-18 over each branch's latest 300 commits through the GitHub commits API, counting commits
+whose message names a coding agent, nearly all as a `Co-Authored-By` trailer; a lower bound, since
+attribution is optional):
+
+| Branch | Commits read (dates) | Naming a coding agent | Agent instructions in the tree |
+|---|---|---|---|
+| AndroidAPS `dev` | 300 (2026-10-07 to 2026-10-16) | 6 (Claude, Copilot) | `CLAUDE.md`, 28 KB, 28 commits since 2026-01-10 |
+| Trio `dev` | 300 (2026-09-11 to 2026-10-18) | 28 (Claude) | none at the root |
+| Loop `next-dev` | 300 (2025-10-07 to 2026-10-17) | 1 (Claude, 2026-04-23) | none at the root |
+| LoopKit `next-dev` | 300 (2025-08-22 to 2026-10-18) | 1 (Claude, 2026-04-23) | none at the root |
+
 **What exists in this repository.**
 
 | Item | Where | Status |
@@ -150,8 +167,7 @@ Read against that:
 
 **An agent as initiator** (maintainer, 2026-10-18). No `agent` value is added to any initiator
 vocabulary. An agent initiator is written in the open-vocabulary form `{value: other,
-controllerTerm}`, as hub-sync §3.6 does for an agent's roles: no controller records an agent as
-initiator today, so there is no cowpath to name. Recorded in the [execution
+controllerTerm}`, as hub-sync §3.6 does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. Recorded in the [execution
 plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16)
 (row 17). The registration grammar's `initiators` element today lists strings in the controller's
 own vocabulary (`specs/sync/controller-state-model.schema.json`), with no shared list and no

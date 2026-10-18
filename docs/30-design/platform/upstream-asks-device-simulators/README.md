@@ -10,7 +10,10 @@ been sent.** Each project's maintainers decide what, if anything, to do with an 
 ## How to use these drafts
 
 - **Send in your own words.** LoopWorkspace's and Trio's CONTRIBUTING both say they "do not accept
-  pull requests that are largely AI-generated or submitted without careful engineering judgment".
+  pull requests that are largely AI-generated or submitted without careful engineering judgment",
+  and that they "welcome thoughtful use of tooling, but contributions need to be intentionally
+  designed"; the rule is about who verifies and owns a change, and both projects' own commits name
+  coding agents ([agents in the ecosystem §2](../agent-trust-boundaries-2026-10-18.md#2-develop)).
   These drafts are messages, not pull requests, but read and rewrite each one before it goes out,
   and author any resulting PR yourself.
 - **Use the channel each project names.** Quoted in the table. LoopKit/pod and LoopKit/LoopWorkspace
