@@ -1,0 +1,114 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §4. Times are seconds; expectations authored by hand.
+id: cancel-after-fetch-is-a-request
+title: A cancel after hand-over is a request the controller decides
+rules:
+- CM25
+- CM21
+description: c1 is fetched; s-care cancels it (202, still fetched); the next fetch
+  carries the cancel; the controller refuses c1 with reason cancelled and reports
+  it.
+control: cancel-pending-is-final
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+  i-agent:
+    tenant: A
+    subject: s-agent
+    product: AgentTool
+    definitionId: sha256:d-agent
+    sinks: {}
+    proposes:
+    - override
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+  s-agent:
+    tenant: A
+    permissions:
+    - api:proposals:create
+stateVersions:
+  A:
+    ControllerA:
+    - - 0
+      - v1
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 100
+- at: 15
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+- at: 20
+  kind: cancel
+  tenant: A
+  subject: s-care
+  command: c1
+- at: 25
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+- at: 26
+  kind: enact
+  instance: i-ctl-a
+  command: c1
+  received:
+    action: start
+    preset: example
+- at: 27
+  kind: report
+  tenant: A
+  subject: s-ctl-a
+  command: c1
+  state: refused
+  reason: cancelled
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+  - status: 200
+    commands:
+    - c1
+  - status: 202
+    state: fetched
+    cancelRequested: true
+  - status: 200
+    commands: []
+    cancels:
+    - c1
+  - state: refused
+    reason: cancelled
+  - status: 200
+  commands:
+    c1:
+      state: refused
+      destination: i-ctl-a

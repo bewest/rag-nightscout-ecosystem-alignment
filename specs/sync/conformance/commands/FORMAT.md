@@ -55,6 +55,8 @@ calls:
      reason: limit}                    # optional
   - {at: 15, kind: read, tenant: A, command: c1}
   - {at: 16, kind: restart, instance: i-ctl-a}                # the controller restarts (CM21)
+  - {at: 17, kind: outstanding, tenant: A, subject: s-care, channel: override}   # CM24
+  - {at: 18, kind: cancel, tenant: A, subject: s-care, command: c1}            # CM25
   - {at: 20, kind: propose, tenant: A, subject: s-agent, instance: i-agent, channel: override,
      product: ControllerA,             # optional
      instanceId: i-ctl-a,              # optional: the instance the proposer read (CM13)
@@ -68,12 +70,17 @@ end: 100                               # optional: the time final states are rea
 expected:
   calls:                               # one entry per call, in order
     - {status: 201, commandId: c1, state: pending}                  # command accepted
+    - {status: 201, commandId: c2, state: pending,                  # ... with other items outstanding (CM24)
+       outstanding: {proposals: [], commands: [c1], dosesSince: []}}
+    - {status: 200, proposals: [p1], commands: [c1], dosesSince: [25]}  # outstanding
+    - {status: 200, state: cancelled} | {status: 202, state: fetched, cancelRequested: true}  # cancel
     - {status: 409, code: no-command-destination, commandId: c2}    # refused at routing, recorded as not-routed
     - {status: 422, code: expiry-required}                          # refused, not recorded
     - {status: 200, commandId: c1, state: sent}                     # requestId re-send: the first command
     - {sent: true}                                                  # push
     - {sent: false, reason: withheld | expired | not-pending}
     - {status: 200, commands: [c1]}                                 # fetch
+    - {status: 200, commands: [], cancels: [c1]}                    # fetch carrying a cancel (CM25)
     - {state: succeeded} | {state: refused, reason: hash-mismatch}  # enact: the controller's check
     - {state: ignored, reason: duplicate}                           # enact: a commandId already decided (CM21)
     - {}                                                            # restart

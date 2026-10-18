@@ -90,8 +90,8 @@ considered:
     not-provided: Not sending is the sender's decision; a command the hub refuses at routing is recorded not-routed and answered (CM1).
     duration: A command is one request; how long its effect lasts is in its payload, which the controller reads and the hub does not (CM5).
   CA-CMD-CANCEL:
-    provided: No cancel is specified; once one is, a cancel after hand-over can only ask the controller (UCA-CMD-015).
-    timing: As provided.
+    provided: A cancel before hand-over is final, and after hand-over it is a request the controller decides once (CM25, CM21); a cancel is never enacted on the pump.
+    timing: A cancel after an outcome is refused already-final and the outcome stands (CM25).
     duration: A cancel is one event.
   CA-CMD-DELIVER:
     duration: Delivery is one event; a command delivered more than once is under provided.
@@ -149,10 +149,10 @@ ucas:
     text: A sender sends a second command for the same intent while the first is pending, sent, fetched or unconfirmed, and both are enacted.
     hazards: [HAZ-1]
     severity: S4
-    constraints: [CM3, CM4]
+    constraints: [CM3, CM4, CM24]
     status: gap
     open: commands §9
-    note: CM4 returns the first command only when the sender gives the same requestId, and CM3 keeps a command that may have been enacted from reading as safe to re-send; nothing shows a sender a channel's outstanding commands, and a command without a requestId is always new.
+    note: CM24 shows the sender what is outstanding with each reply, and nothing refuses a second command; a command without a requestId is always new, and the controller's own check (CM23) is the last guard for doses.
   - id: UCA-CMD-002
     action: CA-CMD-SEND
     type: provided
@@ -318,9 +318,9 @@ ucas:
     text: A sender cannot cancel a pending command after the reason for it went away, such as a meal not eaten.
     hazards: [HAZ-1]
     severity: S3
-    constraints: [CM3]
-    status: gap
-    open: commands §9
+    constraints: [CM3, CM25]
+    status: covered
+    verification: [commands/cancel-pending-is-final, commands/cancel-after-fetch-is-a-request, commands/cancel-by-person, tools/nsschema/test_commands.py::test_never_delivered_after_cancel]
 
   # --- proposal ---
   - id: UCA-PROP-001

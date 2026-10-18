@@ -20,8 +20,8 @@ then read as the constraints that prevent them. Where no rule prevents one, the 
 gap and the specification lists it as open.
 
 Status: the loops are drawn from the specifications, which are proposed or specified and not
-implemented. Of 72 entries, 43 are covered by a rule and a case, 6 are the controller's
-responsibility (D18), 3 have a rule and no case, and 20 are gaps, each listed in its
+implemented. Of 72 entries, 44 are covered by a rule and a case, 6 are the controller's
+responsibility (D18), 3 have a rule and no case, and 19 are gaps, each listed in its
 specification's open items.
 
 ## 1. Files
@@ -132,7 +132,7 @@ flowchart LR
 <!-- BEGIN GENERATED: stpa-command -->
 | id | type | unsafe control action or feedback | hazards | severity | prevented by | status |
 |---|---|---|---|---|---|---|
-| UCA-CMD-001 | provided | A sender sends a second command for the same intent while the first is pending, sent, fetched or unconfirmed, and both are enacted. | HAZ-1 | S4 | CM3, CM4 | gap: commands §9 |
+| UCA-CMD-001 | provided | A sender sends a second command for the same intent while the first is pending, sent, fetched or unconfirmed, and both are enacted. | HAZ-1 | S4 | CM3, CM4, CM24 | gap: commands §9 |
 | UCA-CMD-002 | provided | A retry of one request is treated as a new command. | HAZ-1 | S4 | CM4 | covered |
 | UCA-CMD-003 | timing | A command is enacted long after it was sent, when the sender's reason for it no longer holds. | HAZ-1 | S3 | CM3, CM10 | covered |
 | UCA-CMD-004 | provided | A command reaches an instance other than the live device holder of the channel's command sink, such as a lapsed former holder, the newest instance, or a simulator. | HAZ-1 | S4 | commands §2, CM1, CM2 | covered |
@@ -150,7 +150,7 @@ flowchart LR
 | FB-CMD-003 | incorrect | A command reads as done because it was sent or fetched. | HAZ-3 | S3 | CM7, CM17 | covered |
 | FB-CMD-004 | absent | The sender learns nothing after the hub accepts a command, with no record of it and no outcome. | HAZ-3, HAZ-5 | S3 | CM1, CM7 | covered |
 | UCA-CMD-014 | provided | A process other than the destination that holds its credential, such as another app sharing API_SECRET under single, fetches the command, which moves it to fetched and out of the controller's next fetch, or reports its outcome. | HAZ-2, HAZ-3 | S3 | CM7, CM18 | gap: commands §9 |
-| UCA-CMD-015 | not-provided | A sender cannot cancel a pending command after the reason for it went away, such as a meal not eaten. | HAZ-1 | S3 | CM3 | gap: commands §9 |
+| UCA-CMD-015 | not-provided | A sender cannot cancel a pending command after the reason for it went away, such as a meal not eaten. | HAZ-1 | S3 | CM3, CM25 | covered |
 <!-- END GENERATED: stpa-command -->
 
 ### 4.2 A proposal and its approval
@@ -310,16 +310,14 @@ vocabulary says what each one has to get right.
 
 ## 6. What the analysis found
 
-20 gaps, each listed in its specification's open items:
+19 gaps, each listed in its specification's open items:
 
 - **Commands** ([§9](commands.md#9-open)):
-  - a sender or approver does not see a channel's outstanding commands, so a second command, or
-    a second approval inside the controller's upload lag, is enacted as well (UCA-CMD-001,
-    UCA-PROP-007);
+  - a sender or approver sees a channel's outstanding commands (CM24) but nothing refuses a second
+    command, or a second approval inside the controller's upload lag (UCA-CMD-001, UCA-PROP-007);
   - an approval does not check that the destination's definition is unchanged (UCA-PROP-008);
   - another process holding the destination's credential can fetch or report a command
     (UCA-CMD-014);
-  - a sender cannot cancel a pending command (UCA-CMD-015);
   - nothing limits open proposals (UCA-PROP-002) or the operator's maximum expiry (UCA-AUTH-006);
   - no definition declares a payload's shape for an approver's display (UCA-PROP-004);
   - a late failure after success, and a command enacted in part, cannot be recorded

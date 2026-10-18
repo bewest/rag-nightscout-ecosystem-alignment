@@ -64,6 +64,10 @@ per tenant and per channel:
 | enact once | the controller rule in §1 | delivery is at least once (UCA-CMD-006) |
 | limit open proposals | per proposing instance and channel | flooding (UCA-PROP-002) |
 
+List outstanding, cancel and enact once are now specified as
+[CM24, CM25 and CM21](spec/commands.md#4-the-command-record-proposed); the proposal limit is
+still open.
+
 **Not added:** reordering (no precedent; a pump's command queue is the controller's own) and
 superseding one command by another (supersession is a property of intents, S3 and A7, and a
 superseding override is a new command).

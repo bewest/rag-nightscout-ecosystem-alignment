@@ -1,6 +1,6 @@
 """commands.py — what a hub does with a command and a proposal (SPEC-REG-COMMANDS).
 
-A reference decision function for §2 and rules CM1-CM20 of
+A reference decision function for §2 and rules CM1-CM25 of
 docs/30-design/platform/spec/commands.md: routing to the holder of a device
 command sink on the command's own tenant, the command record and its states,
 outcomes reported by the destination only, proposals and approvals bound to
@@ -15,10 +15,10 @@ import hashlib
 
 from nsschema.negotiate import canonical_json
 
-FINAL = ("succeeded", "failed", "refused", "not-routed", "undeliverable", "expired")
+FINAL = ("succeeded", "failed", "refused", "not-routed", "undeliverable", "expired", "cancelled")
 HANDED_OVER = ("sent", "fetched")
 CONTROLLER_STATES = ("acknowledged", "succeeded", "failed", "refused")
-REASONS = ("hash-mismatch", "expired", "not-accepted", "limit", "doses-since")
+REASONS = ("hash-mismatch", "expired", "not-accepted", "limit", "doses-since", "cancelled")
 
 
 def payload_hash(payload):
@@ -117,7 +117,54 @@ class Hub:
             "state": "pending" if destination else "not-routed", "code": code}
         if code:
             return {"status": 409, "code": code, "commandId": cid}
-        return {"status": 201, "commandId": cid, "state": "pending"}
+        result = {"status": 201, "commandId": cid, "state": "pending"}
+        others = self._outstanding(tenant, call["channel"], call["at"], exclude=cid)
+        if others["proposals"] or others["commands"]:
+            result["outstanding"] = others
+        return result
+
+    def _outstanding(self, tenant, channel, at, exclude=None):
+        """CM24: what is not final on a channel, and doses since the earliest of it."""
+        proposals, commands, since = [], [], []
+        for pid, p in self.proposals.items():
+            if p["tenant"] == tenant and p["channel"] == channel and pid != exclude:
+                self._proposal({"proposal": pid, "tenant": tenant, "at": at})
+                if p["state"] == "open":
+                    proposals.append(pid)
+                    since.append(p["at"])
+        for cid, c in self.commands.items():
+            if c["tenant"] == tenant and c["channel"] == channel and cid != exclude:
+                if self._settle(cid, at) not in FINAL:
+                    commands.append(cid)
+                    since.append(c["createdAt"])
+        products = self.case.get("declares", {}).get(tenant, {}).get(channel, [])
+        doses = sorted(t for product in products
+                       for t in self.case.get("doseRecords", {}).get(tenant, {}).get(product, [])
+                       if since and min(since) <= t <= at)
+        return {"proposals": proposals, "commands": commands, "dosesSince": doses}
+
+    def outstanding(self, call):
+        if not any(self._permitted(call, p) for p in
+                   ("api:commands:read", "api:commands:create", "api:proposals:read")):
+            return {"status": 403, "code": "not-authorised"}
+        return dict(status=200, **self._outstanding(call["tenant"], call["channel"], call["at"]))
+
+    def cancel(self, call):
+        """CM25: before hand-over a cancel is final; after it, a request to the controller."""
+        c = self.commands.get(call["command"])
+        if c is None or c["tenant"] != call["tenant"]:
+            return {"status": 404}
+        person = (self._subject(call) or {}).get("person", False)
+        if call["subject"] != c["subject"] and not person:
+            return {"status": 403, "code": "not-authorised"}
+        state = self._settle(call["command"], call["at"])
+        if state in FINAL:
+            return {"status": 409, "code": "already-final"}
+        if state == "pending":
+            c["state"] = "cancelled"
+            return {"status": 200, "state": "cancelled"}
+        c["cancelRequested"] = True
+        return {"status": 202, "state": state, "cancelRequested": True}
 
     def _expiry(self, call):
         if call.get("expiresAt") is None or call["expiresAt"] <= call["at"]:
@@ -168,14 +215,21 @@ class Hub:
             return {"status": 404}
         if inst["subject"] != call["subject"]:
             return {"status": 403, "code": "not-registration-owner"}
-        got = []
+        got, cancels = [], []
         for cid, c in self.commands.items():
             if c["destination"] != call["instance"] or c["tenant"] != call["tenant"]:
                 continue
             if self._settle(cid, call["at"]) in ("pending", "sent"):
                 c["state"] = "fetched"
                 got.append(cid)
-        return {"status": 200, "commands": got}
+            elif c.get("cancelRequested") and not c.get("cancelDelivered") \
+                    and self._settle(cid, call["at"]) not in FINAL:
+                c["cancelDelivered"] = True
+                cancels.append(cid)
+        result = {"status": 200, "commands": got}
+        if cancels:
+            result["cancels"] = cancels
+        return result
 
     def enact(self, call):
         """CM10 and CM21: the controller's own checks before it enacts. A commandId
@@ -185,6 +239,8 @@ class Hub:
         if call["command"] in decided:
             return {"state": "ignored", "reason": "duplicate"}
         decided.add(call["command"])
+        if c.get("cancelDelivered"):
+            return {"state": "refused", "reason": "cancelled"}
         received = call.get("received", c["payload"])
         if payload_hash(received) != c["payloadHash"]:
             return {"state": "refused", "reason": "hash-mismatch"}

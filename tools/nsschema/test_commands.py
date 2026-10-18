@@ -1,6 +1,6 @@
 """What a hub does with a command and a proposal (queue item SPEC-REG-COMMANDS).
 
-Commands §2 and rules CM1-CM20. Each case under
+Commands §2 and rules CM1-CM25. Each case under
 specs/sync/conformance/commands/ carries hand-authored expectations; the
 reference in commands.py must reproduce every call's result and the final
 state of every command and proposal. Four invariants hold on every case,
@@ -108,3 +108,20 @@ def test_never_enacted_twice(cid):
                for call, got in zip(case["calls"], commands.run(case)["calls"])
                if call["kind"] == "enact" and got.get("state") == "succeeded"]
     assert len(enacted) == len(set(enacted)), enacted
+
+
+@pytest.mark.parametrize("cid", sorted(CASES))
+def test_never_delivered_after_cancel(cid):
+    # CM25: a command cancelled before hand-over is never sent or fetched afterwards.
+    case = CASES[cid]
+    cancelled_at = {}
+    for call, got in zip(case["calls"], commands.run(case)["calls"]):
+        if call["kind"] == "cancel" and got.get("state") == "cancelled":
+            cancelled_at[call["command"]] = call["at"]
+        delivered = []
+        if call["kind"] == "push" and got.get("sent"):
+            delivered = [call["command"]]
+        if call["kind"] == "fetch" and got.get("status") == 200:
+            delivered = got["commands"]
+        for c in delivered:
+            assert c not in cancelled_at, (c, call["at"])

@@ -49,7 +49,7 @@ reader brings, and each has its own rules, conformance cases and gate.
 | [records](spec/records.md) | what typed observations and settings snapshots exist, and how do today's documents decompose into them? | L1 | R1–R9 | written | `SPEC-RECORDS` |
 | [registration](spec/registration.md) | how does a controller declare what its data means, and how does a hub accept it and attribute what is written? | L2 | G1–G5, Q1–Q4 | written | `SPEC-REGISTRATION` |
 | [state and intent](spec/state-intent.md) | what was requested, applied and active, who started it, and why did it end? | L3 | S1–S12 | written | `SPEC-STATE-INTENT` |
-| [commands](spec/commands.md) | how does a request or a proposal reach a controller, and how does its outcome come back? | L3, L5 | CM1–CM23 | written | `SPEC-REG-COMMANDS` |
+| [commands](spec/commands.md) | how does a request or a proposal reach a controller, and how does its outcome come back? | L3, L5 | CM1–CM25 | written | `SPEC-REG-COMMANDS` |
 | [sync-transport](spec/sync-transport.md) | how are writes matched, ordered and delivered over REST and the socket, and at what cost? | L4 | T1–T15 | written | `SPEC-SYNC-TRANSPORT` |
 | [authority](spec/authority.md) | who may register, write, own, route or act for someone else? | L5 | AU1–AU5, DR1–DR7 | written | `SPEC-AUTHORITY` |
 

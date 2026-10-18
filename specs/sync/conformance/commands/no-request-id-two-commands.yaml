@@ -3,6 +3,7 @@ id: no-request-id-two-commands
 title: Without a requestId, identical requests are two commands
 rules:
 - CM4
+- CM24
 description: Two identical requests with no requestId create c1 and c2.
 mode: single
 maxExpirySeconds: 3600
@@ -58,6 +59,11 @@ expected:
   - status: 201
     commandId: c2
     state: pending
+    outstanding:
+      proposals: []
+      commands:
+      - c1
+      dosesSince: []
   commands:
     c1:
       state: pending

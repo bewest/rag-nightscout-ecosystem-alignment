@@ -1,0 +1,112 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §4. Times are seconds; expectations authored by hand.
+id: outstanding-lists-open-items
+title: A follower reads a channel's open proposal, pending command and doses since
+rules:
+- CM24
+description: p1 is open and c1 pending on override; a dose record reached the hub
+  at 25, after the earliest of them; a follower with api:commands:read lists them.
+control: outstanding-excludes-final
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+  i-agent:
+    tenant: A
+    subject: s-agent
+    product: AgentTool
+    definitionId: sha256:d-agent
+    sinks: {}
+    proposes:
+    - override
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+  s-agent:
+    tenant: A
+    permissions:
+    - api:proposals:create
+  s-follower:
+    tenant: A
+    permissions:
+    - api:commands:read
+stateVersions:
+  A:
+    ControllerA:
+    - - 0
+      - v1
+doseRecords:
+  A:
+    ControllerA:
+    - 5
+    - 25
+calls:
+- at: 10
+  kind: propose
+  tenant: A
+  subject: s-agent
+  instance: i-agent
+  channel: override
+  payload:
+    action: start
+    preset: example
+  basedOn: v1
+  expiresAt: 100
+- at: 20
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 100
+- at: 30
+  kind: outstanding
+  tenant: A
+  subject: s-follower
+  channel: override
+expected:
+  calls:
+  - status: 201
+    proposalId: p1
+  - status: 201
+    commandId: c1
+    state: pending
+    outstanding:
+      proposals:
+      - p1
+      commands: []
+      dosesSince: []
+  - status: 200
+    proposals:
+    - p1
+    commands:
+    - c1
+    dosesSince:
+    - 25
+  proposals:
+    p1:
+      state: open
+  commands:
+    c1:
+      state: pending
+      destination: i-ctl-a
