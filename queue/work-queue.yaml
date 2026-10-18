@@ -16000,8 +16000,8 @@ items:
       bound to one payload hash (CM11-CM16), delivery in each mode (CM17-CM20:
       fetch, push only inside a bound request, the tenant's push
       credentials); compatibility with Loop, LoopCaregiver, LoopFollow, Trio
-      and AndroidAPS read from source; 92 cases (5 routing cases from the
-      registration suite, 87 under specs/sync/conformance/commands/).
+      and AndroidAPS read from source; 114 cases (5 routing cases from the
+      registration suite, 109 under specs/sync/conformance/commands/).
       tools/nsschema/commands.py is the reference; test_commands.py checks
       it and four invariants on every case. The authority case list drops
       the five routing cases (65). Pointers in registration §9 and §18,
@@ -16021,8 +16021,8 @@ items:
           FAILS when the spec is missing, carries amendment narration, names
           a case that does not exist, states a count that differs from its
           table, or when the registration spec, the authority spec or the
-          agents page does not link to it. GREEN on 2026-10-18: 106 checks,
-          92 cases.
+          agents page does not link to it. GREEN on 2026-10-18: 128 checks,
+          114 cases.
       - run: python3 -m tools.nsschema.spec_cases commands --check
         kind: static
         describe: >
@@ -16035,7 +16035,7 @@ items:
           or when on any case a command reaches another tenant, is sent or
           fetched at or after its expiry, is pushed unbound under multi, or
           an approved command carries a payload its approval did not name.
-          GREEN on 2026-10-18: 578 tests.
+          GREEN on 2026-10-18: 728 tests.
     blocks_on: []
     evidence:
       - docs/30-design/platform/spec/commands.md
@@ -16043,7 +16043,8 @@ items:
       - docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: >
-      Written before SPEC-REG-MODES at the maintainer's request (2026-10-18);
+      The maintainer asked for this item on 2026-10-18 while SPEC-REG-MODES
+      was not started;
       what a mode changes beyond fetch, push and push credentials (the
       storage key and credential kinds a record names) is left to that item,
       so blocks_on is cleared and the dependency is stated in commands §7
@@ -16054,8 +16055,21 @@ items:
       the rules (order of checks, CM2 covering sent, reports from a
       destination that lost its role, late reports replacing hub-inferred
       states, invalid-reason, payload-too-large, destination-changed).
-      Non-vacuity, 2026-10-18: 32 weakenings of commands.py, one per rule
-      or check, each red; the narration, case, count and pointer breaks of
+      Adversarial review, 2026-10-18, applied: a command handed over and
+      then past its expiry or its destination's lease reads `unconfirmed`,
+      never `expired` or `undeliverable`, which a sender would read as safe
+      to re-send (the high finding); the legacy Loop route is stated to be
+      outside the rules; CM10 says the hash detects change in transit only;
+      a proposal is routed when made and an approval refused when the
+      destination changed, whether or not an instance was named; basedOn is
+      required; a refused approval leaves the proposal open; the re-send
+      key covers channel and product; proposals obey the size limit; 404
+      for another tenant's instance; A12 and S11 repointed; §8 cells
+      corrected; the controller check before approval listed as open. The
+      case author added 22 cases for these.
+      Non-vacuity, 2026-10-18: 43 weakenings of commands.py, one per rule
+      or check, each red (two first written were CONTROL-INVALID or an
+      equivalent mutant and were rewritten); the narration, case, count and pointer breaks of
       the platform-spec control each red with their own finding, the test
       break CONTROL-INVALID. Compatibility findings that bear on the rules
       are listed in §8 and §9 (AndroidAPS's late delivery failure after

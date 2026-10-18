@@ -583,7 +583,8 @@ transfer ([plan §2.6.2](../../30-design/tenancy/nightscout-multitenancy-executi
 D20 scopes quirks to the versions that produce them and splits the client-assigned `identifier`
 from the hub-assigned `_id` ([hub-sync §3.7](../../30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md#37-version-scoped-quirks-and-the-two-ids)).
 An agent would register its own instance; role types are open "so roles such as proposing versus
-acting can be added for agents" (D19 rule 5). **Open:** the command API (`SPEC-REG-COMMANDS`), the
+acting can be added for agents" (D19 rule 5). **Open:** the command API, proposed in the
+[commands specification](../../30-design/platform/spec/commands.md) and not decided, the
 contract per tenancy mode (`SPEC-REG-MODES`), the first hub (`HUB-REG-CRM`), the proposals to
 Nocturne and the controllers, all not started ([queue](../../../queue/work-queue.yaml)); and how an
 agent is scoped, limited and revoked, which no decision covers.

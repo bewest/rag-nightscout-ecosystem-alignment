@@ -1,0 +1,81 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §6. Times are seconds; expectations authored by hand.
+id: approve-no-holder
+title: An approval when no instance holds the sink any more is refused at routing
+rules:
+- CM13
+- CM1
+description: i-ctl-a holds command-sink over [0, 30) and nothing takes it over; the approval at 50 is
+  409 no-command-destination, creates no command (not even a not-routed one) and leaves p1 open.
+control: approve-before-sink-lapses
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - 30
+  i-agent:
+    tenant: A
+    subject: s-agent
+    product: AgentTool
+    definitionId: sha256:d-agent
+    sinks: {}
+    proposes:
+    - override
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+  s-agent:
+    tenant: A
+    permissions:
+    - api:proposals:create
+stateVersions:
+  A:
+    ControllerA:
+    - - 0
+      - v1
+calls:
+- at: 20
+  kind: propose
+  tenant: A
+  subject: s-agent
+  instance: i-agent
+  channel: override
+  payload:
+    action: start
+    preset: example
+  basedOn: v1
+  expiresAt: 100
+- at: 50
+  kind: approve
+  tenant: A
+  subject: s-care
+  proposal: p1
+  approves:
+    action: start
+    preset: example
+expected:
+  calls:
+  - status: 201
+    proposalId: p1
+  - status: 409
+    code: no-command-destination
+  proposals:
+    p1:
+      state: open
+  commands: {}

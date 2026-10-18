@@ -1,0 +1,93 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §6. Times are seconds; expectations authored by hand.
+id: propose-instance-own-tenant
+title: The proposing instance's own subject proposes on its own tenant
+rules:
+- CM6
+- CM12
+description: 'Control for propose-instance-other-tenant-404: s-agent proposes on tenant A as i-agent.'
+mode: multi
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+  i-agent:
+    tenant: A
+    subject: s-agent
+    product: AgentTool
+    definitionId: sha256:d-agent
+    sinks: {}
+    proposes:
+    - override
+  i-ctl-b:
+    tenant: B
+    subject: s-ctl-b
+    product: ControllerA
+    definitionId: sha256:d-b
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+declares:
+  A:
+    override:
+    - ControllerA
+  B:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+  s-agent:
+    tenant: A
+    permissions:
+    - api:proposals:create
+  s-agent-b:
+    tenant: B
+    permissions:
+    - api:proposals:create
+  s-ctl-b:
+    tenant: B
+    permissions: []
+stateVersions:
+  A:
+    ControllerA:
+    - - 0
+      - v1
+  B:
+    ControllerA:
+    - - 0
+      - v1
+calls:
+- at: 20
+  kind: propose
+  tenant: A
+  subject: s-agent
+  instance: i-agent
+  channel: override
+  payload:
+    action: start
+    preset: example
+  basedOn: v1
+  expiresAt: 100
+expected:
+  calls:
+  - status: 201
+    proposalId: p1
+  proposals:
+    p1:
+      state: open
+  commands: {}

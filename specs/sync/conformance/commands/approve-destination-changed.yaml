@@ -61,7 +61,7 @@ instances:
     tenant: A
     subject: s-ctl-a
     product: ControllerA
-    definitionId: sha256:d-a
+    definitionId: sha256:d-a2
     simulated: false
     sinks:
       override:

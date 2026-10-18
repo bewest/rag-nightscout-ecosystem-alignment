@@ -1,0 +1,80 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §5. Times are seconds; expectations authored by hand.
+id: report-on-unconfirmed-after-expiry-accepted
+title: A report on a command unconfirmed at expiry is accepted and replaces it
+rules:
+- CM3
+- CM9
+description: c1 was fetched before its expiry at 100 and reads unconfirmed at 150; the controller then
+  reports succeeded at 160, which is accepted.
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 100
+- at: 20
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+- at: 150
+  kind: read
+  tenant: A
+  command: c1
+- at: 160
+  kind: report
+  tenant: A
+  subject: s-ctl-a
+  command: c1
+  state: succeeded
+- at: 170
+  kind: read
+  tenant: A
+  command: c1
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+  - status: 200
+    commands:
+    - c1
+  - status: 200
+    state: unconfirmed
+  - status: 200
+  - status: 200
+    state: succeeded
+  commands:
+    c1:
+      state: succeeded
+      destination: i-ctl-a

@@ -1,0 +1,74 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §5. Times are seconds; expectations authored by hand.
+id: pending-expires-report-refused
+title: A pending command expires, and a report after expired is refused
+rules:
+- CM3
+- CM9
+description: c1 is never pushed or fetched, so at its expiry at 100 it becomes expired, a final state;
+  a later report from the destination is 409 already-final.
+control: report-on-unconfirmed-after-expiry-accepted
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 100
+- at: 150
+  kind: read
+  tenant: A
+  command: c1
+- at: 160
+  kind: report
+  tenant: A
+  subject: s-ctl-a
+  command: c1
+  state: succeeded
+- at: 170
+  kind: read
+  tenant: A
+  command: c1
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+  - status: 200
+    state: expired
+  - status: 409
+    code: already-final
+  - status: 200
+    state: expired
+  commands:
+    c1:
+      state: expired
+      destination: i-ctl-a

@@ -1,11 +1,13 @@
-# Synthetic. SPEC-REG-COMMANDS; commands §5. Times are seconds; expectations authored by hand.
-id: report-after-expired-replaces
-title: A report after expired is accepted and replaces it
+# Synthetic. SPEC-REG-COMMANDS; commands §4. Times are seconds; expectations authored by hand.
+id: pushed-then-lapse-unconfirmed
+title: A command handed to a push and then losing its destination is unconfirmed, and a report replaces
+  it
 rules:
+- CM2
 - CM9
-- CM3
-description: c1 was fetched before its expiry at 100 and reads expired at 150; the controller then reports
-  succeeded at 160, which is accepted and replaces expired.
+description: c1 is pushed to i-ctl-a, which loses command-sink at 20 without fetching. The controller
+  may have it, so c1 reads unconfirmed, not undeliverable; i-ctl-a's subject then reports succeeded, which
+  is accepted and replaces unconfirmed.
 mode: single
 maxExpirySeconds: 3600
 instances:
@@ -18,7 +20,7 @@ instances:
     sinks:
       override:
       - 0
-      - null
+      - 20
 declares:
   A:
     override:
@@ -41,23 +43,23 @@ calls:
   payload:
     action: start
     preset: example
-  expiresAt: 100
-- at: 20
-  kind: fetch
-  tenant: A
-  subject: s-ctl-a
-  instance: i-ctl-a
-- at: 150
+  expiresAt: 600
+- at: 10
+  kind: push
+  bound: A
+  command: c1
+  via: socket
+- at: 25
   kind: read
   tenant: A
   command: c1
-- at: 160
+- at: 30
   kind: report
   tenant: A
   subject: s-ctl-a
   command: c1
   state: succeeded
-- at: 170
+- at: 35
   kind: read
   tenant: A
   command: c1
@@ -66,11 +68,9 @@ expected:
   - status: 201
     commandId: c1
     state: pending
+  - sent: true
   - status: 200
-    commands:
-    - c1
-  - status: 200
-    state: expired
+    state: unconfirmed
   - status: 200
   - status: 200
     state: succeeded

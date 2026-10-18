@@ -16,7 +16,7 @@ import hashlib
 from nsschema.negotiate import canonical_json
 
 FINAL = ("succeeded", "failed", "refused", "not-routed", "undeliverable", "expired")
-HUB_INFERRED = ("undeliverable", "expired")
+HANDED_OVER = ("sent", "fetched")
 CONTROLLER_STATES = ("acknowledged", "succeeded", "failed", "refused")
 REASONS = ("hash-mismatch", "expired", "not-accepted", "limit")
 
@@ -81,26 +81,33 @@ class Hub:
         return subject is not None and permission in subject.get("permissions", [])
 
     def _effective(self, cid, at):
-        """CM2, CM3: hub-set states are evaluated lazily at a time."""
+        """CM2, CM3: hub-set states are evaluated lazily at a time. A command
+        never handed over ends undeliverable or expired; one that was handed
+        over becomes unconfirmed, because the controller may have enacted it."""
         c = self.commands[cid]
-        if c["state"] in FINAL:
-            return c["state"]
-        if c["state"] in ("pending", "sent"):
-            inst = self.case["instances"][c["destination"]]
+        state = c["state"]
+        if state in FINAL or state in CONTROLLER_STATES or state == "unconfirmed":
+            return state
+        inst = self.case["instances"][c["destination"]]
+        if state == "pending":
             if not _holds(inst, c["channel"], at):
                 return "undeliverable"
-        if at >= c["expiresAt"] and c["state"] not in CONTROLLER_STATES:
-            return "expired"
-        return c["state"]
+            if at >= c["expiresAt"]:
+                return "expired"
+        if state == "sent" and not _holds(inst, c["channel"], at):
+            return "unconfirmed"
+        if state in HANDED_OVER and at >= c["expiresAt"]:
+            return "unconfirmed"
+        return state
 
     def _settle(self, cid, at):
         self.commands[cid]["state"] = self._effective(cid, at)
         return self.commands[cid]["state"]
 
-    def _new_command(self, call, payload, expires, proposal_id=None, product=None):
+    def _new_command(self, call, payload, expires, proposal_id=None, product=None, routed=None):
         tenant = call["tenant"]
         cid = "c%d" % (len(self.commands) + 1)
-        destination, code = _route(self.case, tenant, call["channel"], product, call["at"])
+        destination, code = routed or _route(self.case, tenant, call["channel"], product, call["at"])
         self.commands[cid] = {
             "tenant": tenant, "channel": call["channel"], "destination": destination,
             "payload": payload, "payloadHash": payload_hash(payload), "expiresAt": expires,
@@ -127,14 +134,15 @@ class Hub:
             return {"status": 413, "code": "payload-too-large"}
         key = (call["tenant"], call["subject"], call.get("requestId"))
         if call.get("requestId") is not None and key in self.request_ids:
-            cid = self.request_ids[key]
-            if self.commands[cid]["payloadHash"] != payload_hash(call["payload"]):
+            cid, request = self.request_ids[key]
+            if request != (call["channel"], call.get("product"), payload_hash(call["payload"])):
                 return {"status": 409, "code": "request-id-reused"}
             return {"status": 200, "commandId": cid, "state": self._public(cid, call["at"])}
         result = self._new_command(call, call["payload"], call["expiresAt"],
                                    product=call.get("product"))
         if call.get("requestId") is not None:
-            self.request_ids[key] = result["commandId"]
+            self.request_ids[key] = (result["commandId"], (
+                call["channel"], call.get("product"), payload_hash(call["payload"])))
         return result
 
     def _public(self, cid, at):
@@ -154,8 +162,9 @@ class Hub:
 
     def fetch(self, call):
         inst = self.case["instances"].get(call["instance"])
-        if (inst is None or inst["subject"] != call["subject"]
-                or inst["tenant"] != call["tenant"]):
+        if inst is None or inst["tenant"] != call["tenant"]:
+            return {"status": 404}
+        if inst["subject"] != call["subject"]:
             return {"status": 403, "code": "not-registration-owner"}
         got = []
         for cid, c in self.commands.items():
@@ -191,7 +200,7 @@ class Hub:
                 and reason.get("controllerTerm"))):
             return {"status": 422, "code": "invalid-reason"}
         state = self._settle(call["command"], call["at"])
-        if state in FINAL and state not in HUB_INFERRED:
+        if state in FINAL:
             return {"status": 409, "code": "already-final"}
         c["state"] = call["state"]
         c["reportedHash"] = payload_hash(call.get("checked", c["payload"]))
@@ -208,15 +217,32 @@ class Hub:
         if not self._permitted(call, "api:proposals:create"):
             return {"status": 403, "code": "not-authorised"}
         inst = self.case["instances"].get(call["instance"])
-        if inst is None or inst["subject"] != call["subject"] or inst["tenant"] != call["tenant"]:
+        if inst is None or inst["tenant"] != call["tenant"]:
+            return {"status": 404}
+        if inst["subject"] != call["subject"]:
             return {"status": 403, "code": "not-registration-owner"}
         if call["channel"] not in inst.get("proposes", []):
             return {"status": 403, "code": "role-not-granted"}
+        if len(canonical_json(call["payload"])) > self.case.get("maxPayloadBytes", 4096):
+            return {"status": 413, "code": "payload-too-large"}
         bad = self._expiry(call)
         if bad:
             return {"status": 422, "code": bad}
+        if call.get("basedOn") is None:
+            return {"status": 422, "code": "based-on-required"}
+        destination, code = _route(self.case, call["tenant"], call["channel"], call.get("product"),
+                                   call["at"])
+        if code:
+            return {"status": 409, "code": code}
+        named = call.get("instanceId")
+        if named and (named not in self.case["instances"]
+                      or self.case["instances"][named]["tenant"] != call["tenant"]):
+            return {"status": 404}
+        if named and named != destination:
+            return {"status": 409, "code": "destination-changed"}
         pid = "p%d" % (len(self.proposals) + 1)
-        self.proposals[pid] = dict(call, state="open", payloadHash=payload_hash(call["payload"]))
+        self.proposals[pid] = dict(call, state="open", payloadHash=payload_hash(call["payload"]),
+                                   destination=destination)
         return {"status": 201, "proposalId": pid}
 
     def _proposal(self, call):
@@ -241,17 +267,18 @@ class Hub:
             return {"status": 409, "code": "proposal-closed"}
         if payload_hash(call["approves"]) != p["payloadHash"]:
             return {"status": 409, "code": "hash-mismatch"}
-        destination, _ = _route(self.case, p["tenant"], p["channel"], p.get("product"), call["at"])
-        if destination and p.get("instanceId") and destination != p["instanceId"]:
+        destination, code = _route(self.case, p["tenant"], p["channel"], p.get("product"), call["at"])
+        if code:
+            return {"status": 409, "code": code}
+        if destination != p["destination"]:
             return {"status": 409, "code": "destination-changed"}
-        if destination and p.get("basedOn") is not None:
-            product = self.case["instances"][destination]["product"]
-            if _state_version(self.case, p["tenant"], product, call["at"]) != p["basedOn"]:
-                return {"status": 409, "code": "state-changed"}
+        product = self.case["instances"][destination]["product"]
+        if _state_version(self.case, p["tenant"], product, call["at"]) != p["basedOn"]:
+            return {"status": 409, "code": "state-changed"}
         p["state"] = "approved"
         made = dict(call, channel=p["channel"])
         return self._new_command(made, p["payload"], p["expiresAt"], proposal_id=call["proposal"],
-                                 product=p.get("product"))
+                                 routed=(destination, None))
 
     def reject(self, call):
         p = self._proposal(call)

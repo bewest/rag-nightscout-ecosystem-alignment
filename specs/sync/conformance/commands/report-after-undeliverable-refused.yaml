@@ -1,11 +1,12 @@
 # Synthetic. SPEC-REG-COMMANDS; commands §5. Times are seconds; expectations authored by hand.
-id: report-after-undeliverable-replaces
-title: A report after undeliverable is accepted and replaces it
+id: report-after-undeliverable-refused
+title: 'A report after undeliverable is refused: the state is final'
 rules:
-- CM9
 - CM2
-description: c1 is pushed to i-ctl-a, which loses command-sink at 20 without fetching, so c1 reads undeliverable;
-  i-ctl-a's subject then reports succeeded, which is accepted and replaces undeliverable.
+- CM9
+description: Nothing is pushed or fetched before i-ctl-a loses command-sink at 20, so c1 is undeliverable,
+  a final state; a later report from i-ctl-a's subject is 409 already-final.
+control: pushed-then-lapse-unconfirmed
 mode: single
 maxExpirySeconds: 3600
 instances:
@@ -42,11 +43,6 @@ calls:
     action: start
     preset: example
   expiresAt: 600
-- at: 10
-  kind: push
-  bound: A
-  command: c1
-  via: socket
 - at: 25
   kind: read
   tenant: A
@@ -66,13 +62,13 @@ expected:
   - status: 201
     commandId: c1
     state: pending
-  - sent: true
   - status: 200
     state: undeliverable
+  - status: 409
+    code: already-final
   - status: 200
-  - status: 200
-    state: succeeded
+    state: undeliverable
   commands:
     c1:
-      state: succeeded
+      state: undeliverable
       destination: i-ctl-a

@@ -88,8 +88,10 @@ def test_never_pushed_unbound(cid):
 
 
 @pytest.mark.parametrize("cid", sorted(CASES))
-def test_approved_payload_is_enacted_payload(cid):
-    # CM13: a command made by an approval carries the payload its approval named.
+def test_approved_command_carries_approved_hash(cid):
+    # CM13: a command made by an approval carries the payload hash its approval
+    # named. What a controller receives is the case's `enact.received`, so a
+    # hub that swapped the payload at delivery is shown by CM10's cases, not here.
     case = CASES[cid]
     result = commands.run(case)
     for call, got in zip(case["calls"], result["calls"]):

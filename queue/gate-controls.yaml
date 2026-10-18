@@ -2264,7 +2264,7 @@ controls:
     proves: >
       run 2026-10-18: a scratch copy whose approvals never compare the
       approved hash with the proposal's fails approve-hash-mismatch and the
-      approved-payload invariant (exit 1). 31 further weakenings, one per
+      approved-hash invariant (exit 1). 42 further weakenings, one per
       rule or check, were each red the same day. The script exits 90
       CONTROL-INVALID if its replaced text no longer occurs once.
 

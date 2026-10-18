@@ -1,0 +1,72 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §4. Times are seconds; expectations authored by hand.
+id: request-id-other-channel-refused
+title: The same requestId and payload on another channel is refused
+rules:
+- CM4
+description: 'The re-send names channel target instead of override, with the same requestId, product and
+  payload: 409 request-id-reused.'
+control: request-id-same-channel-returns-first
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+      target:
+      - 0
+      - null
+declares:
+  A:
+    override:
+    - ControllerA
+    target:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 600
+  requestId: r1
+- at: 20
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: target
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 600
+  requestId: r1
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+  - status: 409
+    code: request-id-reused
+  commands:
+    c1:
+      state: pending
+      destination: i-ctl-a

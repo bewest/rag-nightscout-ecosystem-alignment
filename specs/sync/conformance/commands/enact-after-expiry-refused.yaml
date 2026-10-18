@@ -3,7 +3,8 @@ id: enact-after-expiry-refused
 title: The controller refuses a command past expiresAt by its own clock
 rules:
 - CM10
-description: c1 was fetched before its expiry at 100 but is enacted at 150; the controller refuses expired.
+description: 'c1 was fetched before its expiry at 100 but is enacted at 150; the controller refuses expired.
+  With no report, the hub reads c1 unconfirmed at 150: it was fetched, so it may have been enacted.'
 control: enact-identical-payload-succeeds
 mode: single
 maxExpirySeconds: 3600
@@ -65,5 +66,5 @@ expected:
     reason: expired
   commands:
     c1:
-      state: expired
+      state: unconfirmed
       destination: i-ctl-a
