@@ -10,7 +10,7 @@ riskClasses:
   ControllerA:
     eatingSoon: R1
     schoolOverride: R2
-    exerciseTarget: R3
+    exerciseTarget: R1
     mealBolus: R4
     basalProfile: R5
     maxBolus: R6
@@ -56,6 +56,7 @@ subjects:
     tenant: A
     permissions:
     - api:commands:create
+    delegate: true
   s-ctl-a:
     tenant: A
     permissions: []

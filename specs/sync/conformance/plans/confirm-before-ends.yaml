@@ -3,14 +3,15 @@ id: confirm-before-ends
 title: A confirmation one second before endsAt is accepted
 rules:
 - PN12
-description: The plan ends at 200; a confirmation at 199 for an occurrence at 250 is accepted.
+description: 'The proposer confirms at 198 an occurrence at 199, inside the plan that
+  ends at 200: accepted.'
 mode: single
 maxExpirySeconds: 3600
 riskClasses:
   ControllerA:
     eatingSoon: R1
     schoolOverride: R2
-    exerciseTarget: R3
+    exerciseTarget: R1
     mealBolus: R4
     basalProfile: R5
     maxBolus: R6
@@ -56,6 +57,7 @@ subjects:
     tenant: A
     permissions:
     - api:commands:create
+    delegate: true
   s-ctl-a:
     tenant: A
     permissions: []
@@ -105,6 +107,13 @@ calls:
     startsAt: 100
     endsAt: 200
     requiredReviews: []
+- at: 29
+  kind: evaluate
+  tenant: A
+  subject: s-risk
+  proposal: p1
+  review: independent-check
+  note: independent check
 - at: 30
   kind: approvePlan
   tenant: A
@@ -126,18 +135,19 @@ calls:
   subject: s-ctl-a
   command: c1
   state: succeeded
-- at: 199
+- at: 198
   kind: confirm
   tenant: A
   subject: s-agent
   instance: i-agent
   plan: p1
   occurrence: d1
-  occursAt: 250
+  occursAt: 199
 expected:
   calls:
   - status: 201
     proposalId: p1
+  - status: 201
   - status: 201
     commandId: c1
     state: pending

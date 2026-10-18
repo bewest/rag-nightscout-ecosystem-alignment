@@ -16151,11 +16151,11 @@ items:
     repo: rag-nightscout-ecosystem-alignment
     branch: docs/plans-2026-10-18
     base: main@b081a15c
-    state: in-progress
+    state: done
     pr: []
     blast_radius: >
       docs/30-design/platform/spec/plans.md (new, specification 6 of 8):
-      rules PN1-PN16 for the plan object and its structural floors, the
+      rules PN1-PN18 for the plan object and its structural floors, the
       approval that accepts elements by id and hash with required reviews,
       definition and per-channel state checks, the command that carries the
       accepted plan, the controller's hold and the hub's read-only mirror,
@@ -16207,6 +16207,24 @@ items:
       weakening of PN16 stayed green; 20 weakenings of plans.py, each red.
       Values for clinical review (the advance window, risk classes,
       withdrawal signals, the reduced portion) are open in plans §9.
+      Adversarial review, 2026-10-18, applied: an R3+ plan needs at least one
+      independent review and a person or delegate approver (an agent's
+      credential never approves, FL5); standing carbs only beside standing
+      insulin and standing insulin only with its accepted eating-soon
+      companion, checked over the accepted elements; the person can end a
+      plan the controller may hold (approved, active or ending), ending again
+      re-sends the end, and an end command cannot be cancelled; a report on an
+      approved plan shows the hold; a skipped or finished occurrence cannot be
+      confirmed or approved, and a skip or an end cancels queued occurrence
+      commands; occurrence times inside the plan and the advance window for
+      confirmations; the proposer's role re-checked on each confirmation and
+      its skip allowed (an agent's withdrawal); R5 occurrences need the
+      person; element channels route to the destination; occurrence commands
+      are listed on element channels (PN17, PN18 added). 30 cases added for
+      the findings and the eight weakenings the review found green (104
+      cases); the invariants now check command elements byte for byte, read
+      risk classes from the case, check approvers and skips; 25 weakenings
+      each red.
 
   - id: SPEC-COMPAT-APPS
     title: "One table of every listed app against every layer: today's behaviour, and what changes with a newer hub"

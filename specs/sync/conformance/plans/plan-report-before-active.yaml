@@ -1,9 +1,10 @@
 # Synthetic. SPEC-PLANS; plans §5. Times are seconds; expectations authored by hand.
 id: plan-report-before-active
-title: An occurrence report on a plan not yet active is refused
+title: A controller report on an approved plan shows that the controller holds it
 rules:
 - PN11
-description: 'The plan is approved but not reported held: d1 ran is 409 plan-not-active.'
+description: 'The plan command was not reported on, but the controller reports occurrence
+  d1 ran: accepted, and the mirror becomes active (PN11).'
 control: plan-report-occurrence-ran
 mode: single
 maxExpirySeconds: 3600
@@ -11,7 +12,7 @@ riskClasses:
   ControllerA:
     eatingSoon: R1
     schoolOverride: R2
-    exerciseTarget: R3
+    exerciseTarget: R1
     mealBolus: R4
     basalProfile: R5
     maxBolus: R6
@@ -57,6 +58,7 @@ subjects:
     tenant: A
     permissions:
     - api:commands:create
+    delegate: true
   s-ctl-a:
     tenant: A
     permissions: []
@@ -106,6 +108,13 @@ calls:
     startsAt: 100
     endsAt: 100000
     requiredReviews: []
+- at: 29
+  kind: evaluate
+  tenant: A
+  subject: s-risk
+  proposal: p1
+  review: independent-check
+  note: independent check
 - at: 30
   kind: approvePlan
   tenant: A
@@ -128,10 +137,10 @@ expected:
   - status: 201
     proposalId: p1
   - status: 201
+  - status: 201
     commandId: c1
     state: pending
-  - status: 409
-    code: plan-not-active
+  - status: 200
   commands:
     c1:
       state: pending
@@ -142,9 +151,10 @@ expected:
       state: approved
   plans:
     p1:
-      state: approved
+      state: active
       accepted:
       - soon
       - meal
       declined: []
-      occurrences: {}
+      occurrences:
+        d1: ran

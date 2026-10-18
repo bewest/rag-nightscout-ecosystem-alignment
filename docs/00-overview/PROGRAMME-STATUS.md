@@ -214,7 +214,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | `tenancy` | 8 |  |  | 1 | 13 |  |  | 7 | 3 | 1 |  |  | **33** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 10 |  |  |  | **18** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
-| `platform` | 11 | 2 |  |  |  |  |  |  | 19 |  |  |  | **32** |
+| `platform` | 11 | 1 |  |  |  |  |  |  | 20 |  |  |  | **32** |
 
 <!-- END GENERATED: state-matrix -->
 

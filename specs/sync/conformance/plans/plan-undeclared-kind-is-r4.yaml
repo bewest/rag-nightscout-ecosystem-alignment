@@ -4,7 +4,8 @@ title: A kind with no declared risk class is treated as R4
 rules:
 - PN3
 - PN4
-description: 'walkTarget is not in ControllerA''s risk classes; standing with no conditions: 422 standing-conditions-required.'
+description: 'walkTarget is not in ControllerA''s risk classes; standing with no conditions:
+  422 standing-conditions-required.'
 control: plan-undeclared-kind-with-conditions
 mode: single
 maxExpirySeconds: 3600
@@ -12,7 +13,7 @@ riskClasses:
   ControllerA:
     eatingSoon: R1
     schoolOverride: R2
-    exerciseTarget: R3
+    exerciseTarget: R1
     mealBolus: R4
     basalProfile: R5
     maxBolus: R6
@@ -58,6 +59,7 @@ subjects:
     tenant: A
     permissions:
     - api:commands:create
+    delegate: true
   s-ctl-a:
     tenant: A
     permissions: []

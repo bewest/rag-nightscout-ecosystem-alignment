@@ -97,24 +97,90 @@ def test_never_a_declined_element(cid):
 
 @pytest.mark.parametrize("cid", sorted(CASES))
 def test_every_command_comes_from_a_call(cid):
-    # PN10: the hub schedules nothing; every command was made by a call at its time.
+    # PN10: the hub schedules nothing; each command was made at the time of the call
+    # whose reply named it.
     case = resolved(CASES[cid])
-    made_at = {call["at"] for call in case["calls"] if call["kind"] in CREATING}
-    for c in RUNS[cid]["hub"].commands.values():
-        assert c["createdAt"] in made_at
+    named = {}
+    for call, got in zip(case["calls"], RUNS[cid]["calls"]):
+        if got.get("commandId") and got.get("status") in (201, 409):
+            named.setdefault(got["commandId"], call["at"])
+    for command_id, c in RUNS[cid]["hub"].commands.items():
+        assert named.get(command_id) == c["createdAt"], command_id
+
+
+@pytest.mark.parametrize("cid", sorted(CASES))
+def test_command_elements_are_the_proposed_elements(cid):
+    # PN5, PN8, PN13: every element a command carries is the proposed element, byte for
+    # byte, and a plan command's hash is the hash of what it carries.
+    hub = RUNS[cid]["hub"]
+    for c in hub.commands.values():
+        payload = c["payload"]
+        if not isinstance(payload, dict) or payload.get("planId") not in hub.proposals:
+            continue
+        proposed = {e["id"]: e for e in hub.proposals[payload["planId"]]["payload"]["elements"]}
+        carried = list(payload.get("elements", [])) + ([payload["element"]] if "element" in payload else [])
+        for e in carried:
+            assert plans.element_hash(e) == plans.element_hash(proposed[e["id"]]), e["id"]
+        assert c["payloadHash"] == plans.payload_hash(payload)
 
 
 @pytest.mark.parametrize("cid", sorted(CASES))
 def test_standing_insulin_and_carbs_carry_conditions(cid):
-    # PN4: an accepted standing R3 or R4 element carries withdrawal criteria and the mitigation.
+    # PN4: an accepted standing R3 or R4 element carries withdrawal criteria, the mitigation
+    # and an accepted companion, and standing carbs come with standing insulin. Classes are
+    # read from the case, not from the reference.
     case = CASES[cid]
     hub = RUNS[cid]["hub"]
     for pid, m in hub.plans.items():
-        product = hub.case["instances"][m["destination"]]["product"]
-        for e in m["elements"].values():
-            if e["path"] == "standing" and hub._risk(product, e["kind"]) in ("R3", "R4"):
+        product = case["instances"][m["destination"]]["product"]
+        classes = case.get("riskClasses", {}).get(product, {})
+        standing = [e for e in m["elements"].values() if e["path"] == "standing"]
+        risks = [classes.get(e["kind"], "R4") for e in standing]
+        for e, risk in zip(standing, risks):
+            if risk in ("R3", "R4"):
                 cond = e.get("standingConditions") or {}
-                assert cond.get("withdrawal") and cond.get("mitigation") == "reduced-portion", (case["id"], pid)
+                assert cond.get("withdrawal") and cond.get("mitigation") == "reduced-portion", (cid, pid)
+                assert cond.get("companion") in m["accepted"], (cid, pid)
+        if "R3" in risks:
+            assert "R4" in risks, (cid, pid)
+
+
+@pytest.mark.parametrize("cid", sorted(CASES))
+def test_insulin_approvals_come_from_a_person_or_delegate(cid):
+    # PN6, PN13 (FL5): a plan with an accepted R3+ element, and an R3+ occurrence, are
+    # approved by the person or a delegate; an R5 occurrence by the person.
+    case = resolved(CASES[cid])
+    hub = RUNS[cid]["hub"]
+    for call, got in zip(case["calls"], RUNS[cid]["calls"]):
+        subject = case["subjects"].get(call.get("subject"), {})
+        human = subject.get("person") or subject.get("delegate")
+        if call["kind"] == "approvePlan" and got.get("status") == 201:
+            p = hub.proposals[call["proposal"]]
+            kinds = {e["id"]: e["kind"] for e in p["payload"]["elements"]}
+            classes = case.get("riskClasses", {}).get(p["product"], {})
+            if any(classes.get(kinds[a["element"]], "R4") >= "R3" for a in call["accepts"]):
+                assert human, call["at"]
+        if call["kind"] == "approveOccurrence" and got.get("status") == 201:
+            m = hub.plans[call["plan"]]
+            product = case["instances"][m["destination"]]["product"]
+            risk = case.get("riskClasses", {}).get(product, {}).get(m["elements"][call["element"]]["kind"], "R4")
+            if risk >= "R3":
+                assert human, call["at"]
+            if risk == "R5":
+                assert subject.get("person"), call["at"]
+
+
+@pytest.mark.parametrize("cid", sorted(CASES))
+def test_nothing_after_a_skip(cid):
+    # PN14: once an occurrence is skipped, it is never confirmed or approved again.
+    case = resolved(CASES[cid])
+    skipped = set()
+    for call, got in zip(case["calls"], RUNS[cid]["calls"]):
+        key = (call.get("plan"), call.get("occurrence"))
+        if call["kind"] == "skip" and got.get("status") == 201:
+            skipped.add(key)
+        if call["kind"] in ("confirm", "approveOccurrence") and got.get("status") == 201:
+            assert key not in skipped, key
 
 
 @pytest.mark.parametrize("cid", sorted(CASES))

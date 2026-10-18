@@ -3,7 +3,8 @@ id: approve-element-hash-mismatch
 title: An approval naming the wrong hash for an element is refused
 rules:
 - PN5
-description: 'soon is named with a hash that is not its own: 409 hash-mismatch; p1 stays open.'
+description: 'soon is named with a hash that is not its own: 409 hash-mismatch; p1
+  stays open.'
 control: approve-one-of-two-elements
 mode: single
 maxExpirySeconds: 3600
@@ -11,7 +12,7 @@ riskClasses:
   ControllerA:
     eatingSoon: R1
     schoolOverride: R2
-    exerciseTarget: R3
+    exerciseTarget: R1
     mealBolus: R4
     basalProfile: R5
     maxBolus: R6
@@ -57,6 +58,7 @@ subjects:
     tenant: A
     permissions:
     - api:commands:create
+    delegate: true
   s-ctl-a:
     tenant: A
     permissions: []
@@ -106,6 +108,13 @@ calls:
     startsAt: 100
     endsAt: 100000
     requiredReviews: []
+- at: 29
+  kind: evaluate
+  tenant: A
+  subject: s-risk
+  proposal: p1
+  review: independent-check
+  note: independent check
 - at: 30
   kind: approvePlan
   tenant: A
@@ -118,6 +127,7 @@ expected:
   calls:
   - status: 201
     proposalId: p1
+  - status: 201
   - status: 409
     code: hash-mismatch
   commands: {}

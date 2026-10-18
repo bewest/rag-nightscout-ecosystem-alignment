@@ -4,8 +4,8 @@ title: A review by the proposer does not count
 rules:
 - PN6
 - CM16
-description: 's-agent, the proposer, attaches risk-check itself: the evaluation is accepted but the approval
-  is 409 review-required.'
+description: 's-agent, the proposer, attaches risk-check itself: the evaluation is
+  accepted but the approval is 409 review-required.'
 control: approve-review-by-other-subject
 mode: single
 maxExpirySeconds: 3600
@@ -13,7 +13,7 @@ riskClasses:
   ControllerA:
     eatingSoon: R1
     schoolOverride: R2
-    exerciseTarget: R3
+    exerciseTarget: R1
     mealBolus: R4
     basalProfile: R5
     maxBolus: R6
@@ -59,6 +59,7 @@ subjects:
     tenant: A
     permissions:
     - api:commands:create
+    delegate: true
   s-ctl-a:
     tenant: A
     permissions: []
@@ -117,6 +118,13 @@ calls:
   proposal: p1
   review: risk-check
   note: example review
+- at: 29
+  kind: evaluate
+  tenant: A
+  subject: s-risk
+  proposal: p1
+  review: independent-check
+  note: independent check
 - at: 30
   kind: approvePlan
   tenant: A
@@ -131,6 +139,7 @@ expected:
   calls:
   - status: 201
     proposalId: p1
+  - status: 201
   - status: 201
   - status: 409
     code: review-required

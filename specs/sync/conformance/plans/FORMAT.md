@@ -16,7 +16,13 @@ riskClasses:                           # per product, element kind: R0-R6; undec
   ControllerA: {eatingSoon: R1, mealBolus: R4, schoolOverride: R2, basalProfile: R5, maxBolus: R6}
 channelVersions:                       # per tenant, product, channel: [[from, version], ...] (PN7)
   A: {ControllerA: {override: [[0, v1], [500, v2]]}}
+subjects:
+  s-person: {tenant: A, person: true, permissions: [api:commands:create]}    # the person (CM14, PN6)
+  s-care: {tenant: A, delegate: true, permissions: [api:commands:create]}    # a delegate acting for them
+  s-agent-2: {tenant: A, agent: true, permissions: [api:commands:create]}    # an agent's credential
 instances:
+  i-agent:
+    proposesChanges: [[38, []]]               # optional: its propose roles from a time on (PN12)
   i-ctl-a:
     definitionId: sha256:d-a
     definitionChanges: [[400, sha256:d-a2]]   # optional: the instance renews under another definition
@@ -30,7 +36,8 @@ calls:
          - {id: soon, kind: eatingSoon, channel: override, path: standing, content: {...}}
          - {id: meal, kind: mealBolus, channel: example/bolus, path: standing, content: {...},
             standingConditions: {mitigation: reduced-portion,
-                                 withdrawal: [{signal: location, evaluatedBy: controller}]}}
+                                 withdrawal: [{signal: location, evaluatedBy: controller}],
+                                 companion: soon}}
        trigger: {...}                  # stored unread
        startsAt: 100
        endsAt: 100000
@@ -47,6 +54,8 @@ calls:
   - {at: 80, kind: planReport, tenant: A, subject: s-ctl-a, plan: p1,
      occurrence: d1, occurrenceState: ran}            # or planState: ended
   - {at: 90, kind: endPlan, tenant: A, subject: s-person, plan: p1}
+  - {at: 91, kind: outstanding, tenant: A, subject: s-follower, channel: example/bolus}   # PN18
+  - {at: 92, kind: cancel, tenant: A, subject: s-person, command: c4}                    # CM25
   - {at: 95, kind: readPlan, tenant: A, subject: s-follower, plan: p1}
 expected:
   calls:

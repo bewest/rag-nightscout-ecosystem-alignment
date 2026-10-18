@@ -1,19 +1,23 @@
 # Synthetic. SPEC-PLANS; plans §3. Times are seconds; expectations authored by hand.
 id: plan-r3-standing-agent-evaluated
-title: A standing R3 element with an agent-evaluated criterion is accepted
+title: Standing carbs beside standing insulin, with agent-evaluated withdrawal, are
+  accepted
 rules:
 - PN4
-description: 'exerciseTarget (R3) standing, criterion activity evaluatedBy agent, reduced-portion: 201.'
+description: 'mealCarbs (R3) and mealBolus (R4) are both standing with a location
+  criterion evaluated by the agent, the reduced portion and the eating-soon companion:
+  201 (PN4).'
 mode: single
 maxExpirySeconds: 3600
 riskClasses:
   ControllerA:
     eatingSoon: R1
     schoolOverride: R2
-    exerciseTarget: R3
+    exerciseTarget: R1
     mealBolus: R4
     basalProfile: R5
     maxBolus: R6
+    mealCarbs: R3
 channelVersions:
   A:
     ControllerA:
@@ -56,6 +60,7 @@ subjects:
     tenant: A
     permissions:
     - api:commands:create
+    delegate: true
   s-ctl-a:
     tenant: A
     permissions: []
@@ -94,17 +99,30 @@ calls:
       path: standing
       content:
         target: eating-soon
-    - id: gym
-      kind: exerciseTarget
-      channel: override
+    - id: carbs
+      kind: mealCarbs
+      channel: example/carbs
       path: standing
       content:
-        target: exercise
+        carbs: usual-lunch
       standingConditions:
         mitigation: reduced-portion
         withdrawal:
-        - signal: activity
+        - signal: location
           evaluatedBy: agent
+        companion: soon
+    - id: meal
+      kind: mealBolus
+      channel: example/bolus
+      path: standing
+      content:
+        bolus: usual-lunch-reduced
+      standingConditions:
+        mitigation: reduced-portion
+        withdrawal:
+        - signal: location
+          evaluatedBy: agent
+        companion: soon
     trigger:
       weekdays: lunch
     startsAt: 100
@@ -119,3 +137,4 @@ expected:
     p1:
       state: open
   plans: {}
+control: plan-standing-carbs-alone

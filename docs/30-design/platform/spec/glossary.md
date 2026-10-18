@@ -241,8 +241,8 @@ of its payload; only the destination reports the outcome, and `sent` or `fetched
 **Plan, occurrence, mirror.** Proposed. A *plan* is a recurring intent with elements, a trigger,
 bounds and an end date, proposed and approved in parts, then held and run by the controller; an
 *occurrence* is one time it runs, confirmed, approved, skipped or reported by the controller; the
-*mirror* is the hub's read-only record of the plan and its occurrences, moved only by the
-controller's reports ([plans](plans.md)).
+*mirror* is the hub's read-only record of the plan and its occurrences: what the controller
+reports, and the skips and ends the hub was asked for ([plans](plans.md)).
 
 **Delegation, proposal.** A *delegation* would let a principal grant a caregiver, app or agent a
 scoped, expiring, revocable authority; it is not specified. A *proposal* records an intended

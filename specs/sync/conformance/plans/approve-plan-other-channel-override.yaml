@@ -3,14 +3,15 @@ id: approve-plan-other-channel-override
 title: A channel outside the plan changing does not stale it
 rules:
 - PN7
-description: 'example/temp-basal, which no element acts on, moves at 25: the whole plan is approved.'
+description: 'example/temp-basal, which no element acts on, moves at 25: the whole
+  plan is approved.'
 mode: single
 maxExpirySeconds: 3600
 riskClasses:
   ControllerA:
     eatingSoon: R1
     schoolOverride: R2
-    exerciseTarget: R3
+    exerciseTarget: R1
     mealBolus: R4
     basalProfile: R5
     maxBolus: R6
@@ -61,6 +62,7 @@ subjects:
     tenant: A
     permissions:
     - api:commands:create
+    delegate: true
   s-ctl-a:
     tenant: A
     permissions: []
@@ -110,6 +112,13 @@ calls:
     startsAt: 100
     endsAt: 100000
     requiredReviews: []
+- at: 29
+  kind: evaluate
+  tenant: A
+  subject: s-risk
+  proposal: p1
+  review: independent-check
+  note: independent check
 - at: 30
   kind: approvePlan
   tenant: A
@@ -124,6 +133,7 @@ expected:
   calls:
   - status: 201
     proposalId: p1
+  - status: 201
   - status: 201
     commandId: c1
     state: pending

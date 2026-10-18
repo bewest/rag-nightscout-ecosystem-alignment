@@ -5,8 +5,8 @@ rules:
 - PN1
 - PN7
 - CM13
-description: The proposal expires at 25; the approval at 30 is 409 proposal-expired and the proposal is
-  expired at the end.
+description: The proposal expires at 25; the approval at 30 is 409 proposal-expired
+  and the proposal is expired at the end.
 control: plan-proposed-and-approved
 mode: single
 maxExpirySeconds: 3600
@@ -14,7 +14,7 @@ riskClasses:
   ControllerA:
     eatingSoon: R1
     schoolOverride: R2
-    exerciseTarget: R3
+    exerciseTarget: R1
     mealBolus: R4
     basalProfile: R5
     maxBolus: R6
@@ -60,6 +60,7 @@ subjects:
     tenant: A
     permissions:
     - api:commands:create
+    delegate: true
   s-ctl-a:
     tenant: A
     permissions: []
@@ -109,6 +110,13 @@ calls:
     startsAt: 100
     endsAt: 100000
     requiredReviews: []
+- at: 29
+  kind: evaluate
+  tenant: A
+  subject: s-risk
+  proposal: p1
+  review: independent-check
+  note: independent check
 - at: 30
   kind: approvePlan
   tenant: A
@@ -123,6 +131,7 @@ expected:
   calls:
   - status: 201
     proposalId: p1
+  - status: 201
   - status: 409
     code: proposal-expired
   commands: {}

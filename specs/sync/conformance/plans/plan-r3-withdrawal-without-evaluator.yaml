@@ -3,7 +3,8 @@ id: plan-r3-withdrawal-without-evaluator
 title: Each withdrawal criterion names who evaluates it
 rules:
 - PN4
-description: 'exerciseTarget (R3) standing; its one criterion has a signal but no evaluatedBy: 422 standing-conditions-required.'
+description: A standing carbs element (R3) whose withdrawal criterion names no evaluator
+  is refused standing-conditions-required.
 control: plan-r3-standing-agent-evaluated
 mode: single
 maxExpirySeconds: 3600
@@ -11,10 +12,11 @@ riskClasses:
   ControllerA:
     eatingSoon: R1
     schoolOverride: R2
-    exerciseTarget: R3
+    exerciseTarget: R1
     mealBolus: R4
     basalProfile: R5
     maxBolus: R6
+    mealCarbs: R3
 channelVersions:
   A:
     ControllerA:
@@ -57,6 +59,7 @@ subjects:
     tenant: A
     permissions:
     - api:commands:create
+    delegate: true
   s-ctl-a:
     tenant: A
     permissions: []
@@ -95,16 +98,17 @@ calls:
       path: standing
       content:
         target: eating-soon
-    - id: gym
-      kind: exerciseTarget
-      channel: override
+    - id: carbs
+      kind: mealCarbs
+      channel: example/carbs
       path: standing
       content:
-        target: exercise
+        carbs: usual-lunch
       standingConditions:
         mitigation: reduced-portion
         withdrawal:
-        - signal: activity
+        - signal: location
+        companion: soon
     trigger:
       weekdays: lunch
     startsAt: 100

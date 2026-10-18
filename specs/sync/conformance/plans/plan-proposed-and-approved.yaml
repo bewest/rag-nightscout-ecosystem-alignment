@@ -6,15 +6,16 @@ rules:
 - PN5
 - PN8
 - PN11
-description: s-agent proposes a two-element plan; s-person accepts both. One command carries the plan,
-  pending for i-ctl-a; the mirror is approved with nothing declined, and a follower reads it.
+description: s-agent proposes a two-element plan; s-person accepts both. One command
+  carries the plan, pending for i-ctl-a; the mirror is approved with nothing declined,
+  and a follower reads it.
 mode: single
 maxExpirySeconds: 3600
 riskClasses:
   ControllerA:
     eatingSoon: R1
     schoolOverride: R2
-    exerciseTarget: R3
+    exerciseTarget: R1
     mealBolus: R4
     basalProfile: R5
     maxBolus: R6
@@ -60,6 +61,7 @@ subjects:
     tenant: A
     permissions:
     - api:commands:create
+    delegate: true
   s-ctl-a:
     tenant: A
     permissions: []
@@ -109,6 +111,13 @@ calls:
     startsAt: 100
     endsAt: 100000
     requiredReviews: []
+- at: 29
+  kind: evaluate
+  tenant: A
+  subject: s-risk
+  proposal: p1
+  review: independent-check
+  note: independent check
 - at: 30
   kind: approvePlan
   tenant: A
@@ -128,6 +137,7 @@ expected:
   calls:
   - status: 201
     proposalId: p1
+  - status: 201
   - status: 201
     commandId: c1
     state: pending

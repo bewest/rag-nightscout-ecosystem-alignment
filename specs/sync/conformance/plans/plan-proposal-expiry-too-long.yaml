@@ -4,8 +4,8 @@ title: A plan proposal open beyond plans.maxProposalSeconds is refused
 rules:
 - PN1
 - CM3
-description: 'expiresAt is one second beyond maxProposalSeconds (172800) after the request: 422 expiry-too-long,
-  nothing recorded.'
+description: 'expiresAt is one second beyond maxProposalSeconds (172800) after the
+  request: 422 expiry-too-long, nothing recorded.'
 control: plan-proposal-open-past-command-expiry
 mode: single
 maxExpirySeconds: 3600
@@ -13,7 +13,7 @@ riskClasses:
   ControllerA:
     eatingSoon: R1
     schoolOverride: R2
-    exerciseTarget: R3
+    exerciseTarget: R1
     mealBolus: R4
     basalProfile: R5
     maxBolus: R6
@@ -59,6 +59,7 @@ subjects:
     tenant: A
     permissions:
     - api:commands:create
+    delegate: true
   s-ctl-a:
     tenant: A
     permissions: []

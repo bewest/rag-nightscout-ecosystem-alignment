@@ -3,7 +3,8 @@ id: approve-plan-state-changed
 title: A plan whose accepted element's channel moved is refused
 rules:
 - PN7
-description: 'override moves to v2 at 25; soon (on override) is accepted at 30: 409 state-changed.'
+description: 'override moves to v2 at 25; soon (on override) is accepted at 30: 409
+  state-changed.'
 control: approve-plan-unrelated-channel-changed
 mode: single
 maxExpirySeconds: 3600
@@ -11,7 +12,7 @@ riskClasses:
   ControllerA:
     eatingSoon: R1
     schoolOverride: R2
-    exerciseTarget: R3
+    exerciseTarget: R1
     mealBolus: R4
     basalProfile: R5
     maxBolus: R6
@@ -59,6 +60,7 @@ subjects:
     tenant: A
     permissions:
     - api:commands:create
+    delegate: true
   s-ctl-a:
     tenant: A
     permissions: []
@@ -108,6 +110,13 @@ calls:
     startsAt: 100
     endsAt: 100000
     requiredReviews: []
+- at: 29
+  kind: evaluate
+  tenant: A
+  subject: s-risk
+  proposal: p1
+  review: independent-check
+  note: independent check
 - at: 30
   kind: approvePlan
   tenant: A
@@ -120,6 +129,7 @@ expected:
   calls:
   - status: 201
     proposalId: p1
+  - status: 201
   - status: 409
     code: state-changed
   commands: {}
