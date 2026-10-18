@@ -3,7 +3,8 @@
 > **Sources**: Loop, AAPS, Trio, Nightscout  
 > **Last Updated**: 2026-01-28  
 > **Corrected 2026-10-09** against source; see [intent and workflow across the landscape](../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md) §11.  
-> **Corrected 2026-10-17** against source: the Trio architecture no longer routes commands through Nightscout, the Nightscout relay is shown sending to Loop only, and the summary table now shows Loop's optional response notification, matching GAP-REMOTE-004. Revisions read: cgm-remote-monitor `a8888f0d`, LoopWorkspace `548b332` (NightscoutService `2cef489`), Trio `0b29cd534`, LoopFollow `4a74b781`. See [technical control loops](../60-research/structures-2026-10-17/technical-loops.md) §4. Also 2026-10-17 (DOCS-REMOTE-FOLLOWUP): Trio's shared secret is configured in Trio and the sending app, not in Nightscout.
+> **Corrected 2026-10-17** against source: the Trio architecture no longer routes commands through Nightscout, the Nightscout relay is shown sending to Loop only, and the summary table now shows Loop's optional response notification, matching GAP-REMOTE-004. Revisions read: cgm-remote-monitor `a8888f0d`, LoopWorkspace `548b332` (NightscoutService `2cef489`), Trio `0b29cd534`, LoopFollow `4a74b781`. See [technical control loops](../60-research/structures-2026-10-17/technical-loops.md) §4. Also 2026-10-17 (DOCS-REMOTE-FOLLOWUP): Trio's shared secret is configured in Trio and the sending app, not in Nightscout.  
+> **Also 2026-10-18:** the Command Flow Summary adds a sequence of the remote bolus paths and where each has an acknowledgement.
 
 ## Overview
 
@@ -18,6 +19,50 @@ Remote bolus commands allow caregivers to trigger insulin delivery from outside 
 | **AAPS** | Wear OS | None (local) | Bluetooth | N/A |
 | **Trio** | APNs push | Shared secret | AES-256 | Configurable |
 | **Nightscout** | HTTP→APNs | API secret | TLS | 5 minutes |
+
+The sequence below shows, for a remote bolus, which channel carries the request and where an
+acknowledgement comes back. Solid arrows are requests and records; dashed arrows are replies.
+
+```mermaid
+sequenceDiagram
+  accTitle: Remote bolus paths and where an acknowledgement exists
+  accDescr: Through the Nightscout relay to Loop there is no reply; the outcome appears on Nightscout only as the uploaded bolus or a free-text Note. Direct pushes to Loop or Trio get an APNs reply without a command id. AAPS replies by SMS. AAPS client control in the 4.0.0 prereleases writes signed acknowledgements correlated with the command on the Nightscout settings collection.
+  participant S as Caregiver app
+  participant N as Nightscout
+  participant P as APNs or SMS
+  participant C as Controller
+  alt Loop, relayed by Nightscout
+    S->>N: bolus request
+    N->>P: push, no return address
+    P->>C: notification
+    Note over C: Loop: one-time code, expiry, max bolus
+    C->>N: bolus record, or Note on failure
+    Note over S,N: no reply to the sender
+  else Loop or Trio, direct push
+    S->>P: push (Trio: encrypted under a shared secret)
+    P->>C: notification
+    Note over C: Loop: as relayed. Trio: decrypts,<br/>timestamp window, bolus limits
+    C-->>S: reply over APNs, no command id
+    C->>N: Note on failure
+  else AAPS, SMS
+    S->>C: SMS command
+    C-->>S: SMS asking for confirmation
+    S->>C: SMS: one-time code and PIN
+    Note over C: bolus constraints, minimum time between remote boluses
+    C-->>S: SMS reply with the result
+  else AAPS client control, 4.0.0 prerelease
+    S->>N: signed prepare, then signed commit
+    N-->>C: synced
+    C->>N: signed acks: Executing, Done, late Delivery Failed
+    N-->>S: acks correlated by the command counter
+  end
+```
+
+*Source: [intent and workflow landscape](../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md)
+§6 (`docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md:199-209`) and
+[technical control loops](../60-research/structures-2026-10-17/technical-loops.md) §3.3 paths A, B,
+C, E and F (`docs/60-research/structures-2026-10-17/technical-loops.md:234-239`), at `b081a15c`.
+Read-derived. Each path is drawn on its own in landscape §6.1.*
 
 ---
 
