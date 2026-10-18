@@ -247,6 +247,8 @@ class Site:
         self.ext_dir, self.externals = load_externals()
         landing_cfg = yaml.safe_load((SITE_TOOLS / "landing.yaml").read_text())
         self.landing = landing_cfg["sections"]
+        # per-directory reading order for any folder (landing sections use `pages`)
+        self.orders = landing_cfg.get("orders") or {}
         self.home = landing_cfg.get("home")
         # staged under another name (repo path -> staged path)
         self.stage_as = {"README.md": "repository-readme.md"} if self.home else {}
@@ -661,13 +663,25 @@ class Site:
 
     # ---------------- nav ----------------
     def section_nav(self, d: str, order: list[str] | None = None, skip=frozenset()):
+        """An order entry names a page in `d`, or a subfolder with a trailing '/',
+        which is then placed at that point instead of after the pages."""
         pages, subdirs = self.children(d)
         idx = self.index_of[d]
         items = [idx]
-        ordered = []
-        for name in order or []:
+        ordered, placed = [], set()
+
+        def sub(s):
+            return {posixpath.basename(s) + "/": self.section_nav(s, skip=skip)}
+
+        for name in order if order is not None else self.orders.get(d, []):
+            if name.endswith("/"):
+                s = posixpath.join(d, name.rstrip("/"))
+                if s in subdirs and s not in skip and s not in placed:
+                    ordered.append(sub(s))
+                    placed.add(s)
+                continue
             p = posixpath.join(d, name)
-            if p in pages and p != idx:
+            if p in pages and p != idx and p not in ordered:
                 ordered.append(p)
         rest = [p for p in pages if p != idx and p not in ordered]
         if d in self.nav_groups:
@@ -677,9 +691,9 @@ class Site:
         if d in self.gallery_dirs:
             items.append({"Gallery": posixpath.join(d, GALLERY_NAME)})
         for s in subdirs:
-            if s in skip:
+            if s in skip or s in placed:
                 continue
-            items.append({posixpath.basename(s) + "/": self.section_nav(s, skip=skip)})
+            items.append(sub(s))
         return items
 
     def grouped(self, d: str, pages: list[str]) -> list:

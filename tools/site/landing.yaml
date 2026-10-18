@@ -1,7 +1,8 @@
 # Hand-written landing sections, placed first in the site nav in this order.
 # Each section names a repo directory. Pages listed under `pages` come first,
 # in the order given; any other staged page in the directory follows,
-# alphabetically. Subdirectories follow as sub-sections.
+# alphabetically. Subdirectories follow as sub-sections, unless one is placed
+# by name with a trailing '/'.
 # `index` (optional) is a hand-written landing page staged as <dir>/index.md
 # when the directory has no README.md or index.md of its own.
 # `home` is the site root page (index.md). The repository README.md is then
@@ -10,10 +11,18 @@ home: tools/site/landing/home.md
 sections:
   - title: Overview
     dir: docs/00-overview
-    # README.md is the section index; it presents the three parts
-    # (observations/, perspective/, then the proposals). The subdirectories
-    # follow the pages below as sub-sections.
+    # README.md is the section index. The order follows it: part 1
+    # (observations/), part 2 (perspective/), part 3 (the recommendations),
+    # then the operational pages. A name ending in '/' places a subfolder.
     pages:
+      - observations/
+      - perspective/
+      - ECOSYSTEM-PROGRAMME.md
+      - SPONSORED-TEAM-PROPOSAL.md
+      - COLLABORATION-MODEL.md
+      - QUALITY-SYSTEM.md
+      - PARTNER-READINESS.md
+      - WHY-ORGANISE.md
       - REVIEWER-ONBOARDING.md
       - mission.md
       - PROGRAMME-STATUS.md
@@ -21,10 +30,6 @@ sections:
       - NEEDS-A-HUMAN.md
       - DEFINITION-OF-DONE.md
       - DOCUMENT-CONTROL.md
-      - ECOSYSTEM-PROGRAMME.md
-      - SPONSORED-TEAM-PROPOSAL.md
-      - COLLABORATION-MODEL.md
-      - QUALITY-SYSTEM.md
   - title: Releases
     dir: releases
     pages:
@@ -35,3 +40,46 @@ sections:
     pages:
       - README.md
       - QUEUE.md
+
+# Reading order for folders outside the landing sections (and for subfolders of
+# them). Same form as `pages`: page names in order, a trailing '/' places a
+# subfolder; anything unlisted follows, pages alphabetically, then subfolders.
+orders:
+  docs/00-overview/observations:
+    - HISTORY.md
+    - GOVERNANCE-TODAY.md
+    - ECOSYSTEM-EVIDENCE.md
+  docs/00-overview/perspective:
+    - INFRASTRUCTURE-TRANSITION.md
+    - PRECEDENTS.md
+    - ACCOUNTABILITY-THRESHOLDS.md
+    - STRUCTURES.md
+    - PROCESS-MODELS.md
+  # README's reading order: the index, the landscape (§2, §9), the
+  # specifications; then the evidence and analyses, maps and research
+  # notes, proposals, and outreach drafts.
+  docs/30-design/platform:
+    - nightscout-intent-workflow-landscape-2026-10-09.md
+    - spec/
+    - nightscout-typed-schema-evidence-2026-09-10.md
+    - nightscout-primitive-coverage-2026-09-11.md
+    - nightscout-devicestatus-profile-fidelity-2026-09-10.md
+    - nightscout-extensibility-models-2026-09-10.md
+    - nightscout-effects-and-versioning-2026-09-11.md
+    - nightscout-hub-sync-architecture-2026-09-11.md
+    - agent-trust-boundaries-2026-10-18.md
+    - algorithm-audition-2026-10-18.md
+    - PROPOSAL-controller-descriptions-2026-09-11.md
+    - PROPOSAL-replay-fidelity-changes-2026-09-11.md
+    - upstream-asks-loop-identifier/
+    - upstream-asks-device-simulators/
+  # The README's layer order, L0 to L5, after the glossary.
+  docs/30-design/platform/spec:
+    - glossary.md
+    - identity.md
+    - records.md
+    - registration.md
+    - state-intent.md
+    - commands.md
+    - sync-transport.md
+    - authority.md
