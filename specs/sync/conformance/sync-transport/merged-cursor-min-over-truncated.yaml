@@ -4,8 +4,8 @@ title: A page truncated in one collection holds the cursor at that collection's 
 rules:
 - T6
 control: single-page-complete
-description: "The merged-cursor rule of the replay-fidelity proposal \xA71.3: advancing to the largest\
-  \ value returned would skip t3, which treatments had not yet returned."
+description: "The merged-cursor rule of the replay-fidelity proposal \xA71.3. Both collections are truncated,\
+  \ at 20 and at 18; advancing to 20 would skip e3 at 19. t2 comes back twice and is kept once."
 collections:
 - treatments
 - entries
@@ -32,6 +32,16 @@ writes:
   committedAt: 0
 - collection: entries
   id: e2
+  srvModified: 18
+  takenAt: 0
+  committedAt: 0
+- collection: entries
+  id: e3
+  srvModified: 19
+  takenAt: 0
+  committedAt: 0
+- collection: entries
+  id: e4
   srvModified: 40
   takenAt: 0
   committedAt: 0
@@ -54,19 +64,23 @@ expected:
       entries:
       - e1
       - e2
-    cursor: 20
+    cursor: 18
     complete: false
   - kind: history
     collections:
       treatments:
+      - t2
       - t3
       entries:
-      - e2
+      - e3
+      - e4
     cursor: 40
     complete: true
   received:
-  - e1
-  - e2
-  - t1
-  - t2
-  - t3
+  - e1@15
+  - e2@18
+  - e3@19
+  - e4@40
+  - t1@10
+  - t2@20
+  - t3@30

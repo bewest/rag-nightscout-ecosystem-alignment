@@ -1,0 +1,44 @@
+# Synthetic. SPEC-SYNC-TRANSPORT; sync-transport §4. Steps are logical; expectations authored by hand.
+id: failed-write-released
+title: A write that fails releases its value, and the cursor moves on
+rules:
+- T9
+control: in-flight-write-not-skipped
+description: A write that fails releases its value, and the cursor moves on.
+collections:
+- treatments
+writes:
+- collection: treatments
+  id: w
+  srvModified: 20
+  takenAt: 0
+  committedAt: null
+  failedAt: 2
+- collection: treatments
+  id: x
+  srvModified: 30
+  takenAt: 0
+  committedAt: 0
+calls:
+- kind: history
+  at: 1
+  limit: 5
+  cursor: 0
+- kind: history
+  at: 3
+  limit: 5
+  cursor: last
+expected:
+  calls:
+  - kind: history
+    collections: {}
+    cursor: 19
+    complete: true
+  - kind: history
+    collections:
+      treatments:
+      - x
+    cursor: 30
+    complete: true
+  received:
+  - x@30

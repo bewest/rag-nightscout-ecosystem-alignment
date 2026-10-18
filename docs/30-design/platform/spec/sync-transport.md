@@ -8,8 +8,9 @@ matched is in the [identity specification](identity.md) §3. Decisions: the
 (the change feed under multi). Queue: `SPEC-SYNC-TRANSPORT`.*
 
 How writes are applied, ordered and delivered, over REST and the socket, and what a client pays to
-stay in sync. §2 is the write path the maintainer has decided; §3 is what sync costs today,
-measured; §4–§6 are proposed and specified with cases where a rule can be checked by one.
+stay in sync. §2 is the write path, with each rule's status; §3 is what each client's sync code
+can call, read from its source; §4–§6 are proposed and specified with cases where a rule can be
+checked by one.
 
 ## 1. Files
 
@@ -18,45 +19,47 @@ measured; §4–§6 are proposed and specified with cases where a rule can be ch
 | [write contract](../../tenancy/write-contract-spec-2026-10-07.md) | the measured write matrix, the write step and the re-send rule this page states as rules |
 | `tools/nsschema/sync_cost.py` | `make schema-sync-cost`: distinct endpoints each client's sync path can call, from its own source |
 | `tools/nsschema/sync_cursor.py` | reference decision function for the cursor rules (§4); it checks the cases and is not a hub |
-| `specs/sync/conformance/sync-transport/` | 9 synthetic cases (§9) |
+| `specs/sync/conformance/sync-transport/` | 13 synthetic cases (§9) |
 
 ## 2. The write path
 
 | # | rule | status |
 |---|---|---|
 | T1 | **One write step.** Every path that writes (API v1, API v3, the socket, in-process callers such as nightscout-connect) writes through one step, which decides per item, in order: the `_id` form, the target (identity §3), the outcome (`inserted`, `merged`, `replaced`, `unchanged`, `deleted`, `not-found`, `refused`), the server dates, the storage write, and then one change event for the call. Each item is answered with its outcome and both ids (identity I4). | specified (`WRITE-CONTRACT`, blocked) |
-| T2 | **Re-send outcomes.** A re-send that matches a stored record merges into it (JSON Merge Patch: a field sent as `null` is removed); an explicit update (v1 `PUT`, v3 `PUT`) replaces. An identical re-send keeps each path's behaviour today: rewritten on API v1, v3 and in-process, answered unchanged on the socket and for devicestatus. The socket keeps its ±2 s similar-treatment match as an explicit option. `activity` gets server dates and soft delete like the other collections. The step ships first with today's behaviour pinned (a patch), then these changes (a minor). | decided 2026-10-12 |
-| T3 | **Server write times.** `srvModified` and `srvCreated` are the server's, in milliseconds since the epoch, set on every write to a collection API v3 serves, by any path; a value a client sends is replaced. Within one process every `srvModified` is unique and never goes backwards, even when the clock does, and boot restores the clock from stored records. | merged on `dev` (`lib/server/srv-dates.js` at `fade2299`, read) |
-| T4 | **The change event.** One event per write call: the collection, the operation, the stored documents (or the removed ids), the largest `srvModified` in the call, and the origin. Under `TENANCY_MODE=multi` the event is read from the replication slot (D6), so every field but `runtime` and `origin` is derived from the committed row. | specified (write contract §2.4) |
+| T2 | **Re-send outcomes.** For treatments, entries, profile, food and activity, a re-send that matches a stored record merges into it (JSON Merge Patch: a field sent as `null` is removed); an explicit update (v1 `PUT`, v3 `PUT`) replaces. An identical re-send keeps each path's behaviour today: rewritten on API v1, v3 and in-process, answered unchanged on the socket. For devicestatus, a re-send with the same `created_at` and `device` is a retry only when its body is identical, answered unchanged; a differing body is a new record. The socket keeps its ±2 s similar-treatment match as an explicit option. `activity` gets server dates and soft delete like the other collections. The step ships first with today's behaviour pinned (a patch), then these changes (a minor). | decided 2026-10-12; devicestatus reopened the same day, because Loop writes distinct statuses that share `created_at` and `device` |
+| T3 | **Server write times.** `srvModified` and `srvCreated` are the server's, in milliseconds since the epoch, set on every write to a collection API v3 serves, by any path; a value a client sends is replaced. Within one process every `srvModified` is unique and never goes backwards, even when the clock does, and boot restores the clock from stored records before any writer starts. A hard delete leaves no `srvModified`, so history does not show it; a soft delete does. | merged on `dev` (`lib/server/srv-dates.js`, `lib/api3/generic/create/insert.js:27` at `fade2299`, read) |
+| T4 | **The change event.** One event per write call: the collection, the operation, the stored documents (or the removed ids), the largest `srvModified` among its records, and the origin. Under `TENANCY_MODE=multi` the event is read from the replication slot (D6), so every field but `runtime` and `origin` is derived from the committed row; how the slot reader groups one call's rows into one event is not specified. | specified (write contract §2.4) |
 
-## 3. What sync costs today
+## 3. What each client's sync code can call
 
-`make schema-sync-cost`, run 2026-10-18: distinct endpoints each client's sync path can call per
-five-minute cycle, priced at 288 cycles a day. It is a source-derived upper bound, not a packet
-capture: a cycle with nothing to send makes fewer calls, and a catch-up after an outage makes
-more.
+`make schema-sync-cost`, run 2026-10-18, counts the distinct endpoints each client's Nightscout
+code declares, read from its source. It is not a count of calls per cycle: some endpoints are
+called only on first load or on a user action, and AndroidAPS declares three that nothing outside
+its SDK calls (`createSettings`, `patchSettings`, `getSettingsModifiedSince`, read 2026-10-18). The
+units differ: AndroidAPS is counted by method and path, Loop and Trio by path alone, so their reads
+and writes to one path count once.
 
-| client (source read) | API | endpoints | watermark | delta read | upper bound a day | two requests a cycle |
-|---|---|---:|---|---|---:|---:|
-| AndroidAPS `7e1d537d49` (dev; `core/nssdk/.../NightscoutApi.kt`) | v3 | 26 | yes | per collection | 7,488 | 576 |
-| Loop: NightscoutKit `4ec9fd12a1` | v1 | 7 | no | no | 2,016 | 576 |
-| Trio `0b29cd5341` | v1 | 5 | no | no | 1,440 | 576 |
+| client (source read) | API | endpoints declared | watermark | delta read |
+|---|---|---:|---|---|
+| AndroidAPS `7e1d537d49` (dev; `core/nssdk/.../NightscoutApi.kt`) | v3 | 26 | yes | per collection |
+| Loop: NightscoutKit `4ec9fd12a1` | v1 | 7 (one an authentication check) | no | no |
+| Trio `0b29cd5341` | v1 | 5 | no | no |
 
-The client that uses API v3 as designed has the largest fan-out, because v3 gives it one delta read
-per collection. AndroidAPS's count includes the dev-only `settings` calls of its client control.
-The dated documents' figure of 20 for AndroidAPS was measured on its earlier client
-(`NightscoutRemoteService.kt`). Payload size and real request counts are not measured.
+What this shows is the shape, not a price: API v3 gives a client one delta read per collection, so
+the client that uses v3 as designed reads each collection separately, and every typed collection
+added to the model adds a read. T5 and T7 make one read and one write per cycle whatever the
+number of collections. Request counts and payload sizes on the wire are not measured.
 
 ## 4. The sync read and write (proposed)
 
 | # | rule |
 |---|---|
 | T5 | **One read across collections.** `GET /api/v3/history/{cursor}?collections=&limit=` answers `{cursor, complete, collections: {name: [records]}}` for every collection the credential may read (each checked as `api:<collection>:read`); a collection it may not read is left out. Per-collection `history` stays. |
-| T6 | **The merged cursor.** With a page limit per collection, the cursor returned is the smallest last `srvModified` among the collections that were truncated, or the hub's watermark (T9) when none was; `complete` is true only when no collection was truncated. A client reads again from the returned cursor while `complete` is false. A record can come back twice across pages; the client keeps one (T10). |
+| T6 | **The merged cursor.** A page returns records with `srvModified` above the cursor and at or below the low watermark (T9), up to a limit per collection, and never ends inside a group of records that share one `srvModified`. The cursor returned is the smallest last `srvModified` among the collections that were truncated, or the low watermark when none was; `complete` is true only when no collection was truncated. A client reads again from the returned cursor while `complete` is false. A record can come back twice across pages; the client keeps one (T10). |
 | T7 | **One write across collections.** `POST /api/v3/batch` takes `[{collection, doc}]` and answers each item as T1 does; a batch is idempotent per record. |
 | T8 | **One opaque cursor.** The sync cursor is opaque to clients. Under `single` it is a `srvModified` watermark; under `multi` it is the replication slot's position (D6), which is commit-ordered. An event cursor, if one is added, is the same cursor. |
-| T9 | **A low watermark.** The cursor a hub hands out never passes a write that has taken its `srvModified` but is not yet visible to readers: it is at most one less than the smallest such value, and at most the largest value taken. Under `single` the hub tracks the values it has taken and not yet stored; under `multi` the slot's position gives this. |
-| T10 | **The socket is the fast path; history is the record.** A socket event carries the record and the hub's low watermark (T9) at the time the record became visible, not the record's own `srvModified`. A client that reconnects reads history from the last cursor it holds and misses nothing. A record received both ways is one record, by `identifier` (or `_id`) and `srvModified`. |
+| T9 | **A low watermark.** Over the collections the reader may read, the low watermark is one less than the smallest `srvModified` taken by a write not yet visible, or the largest value taken when none is in flight. A value is released when its write becomes visible or fails. No page returns a record above it and no cursor passes it, so a slow write is never skipped and a page cannot loop. The same rule applies to the per-collection history read. Under `single` the hub tracks the values it has taken and not yet stored; under `multi` the slot's position gives this. Computing it over readable collections only keeps a reader from learning when collections it cannot read were written. |
+| T10 | **The socket is the fast path; history is the record.** A socket event delivers a record; it never moves the client's history cursor. The client reads history from the cursor its last history read returned: after a reconnect, and from time to time while connected, so a write that produced no event (T12), or one in a collection it did not subscribe to, still arrives. A record version received both ways is kept once, by `identifier` (or `_id`) and `srvModified`; an update is a new version. |
 
 ## 5. Typed records on the socket (proposed)
 
@@ -87,34 +90,48 @@ capability document.
 
 1. **Choices for the maintainer:** the T5 and T7 paths; whether a typed re-send under a new
    definition replaces or merges (T15); whether a page carries definitions inline (T14) or only
-   their ids; a capability member for the sync envelope.
-2. **The in-flight window under `single`.** `srv-dates.js` takes a value just before the write, so
-   a slow write can become visible after a reader has passed its value; T9 closes this only once
-   the hub tracks values it has taken and not stored. How often it happens is not measured.
-3. **BF-164** (T12).
-4. **The write step** (`WRITE-CONTRACT`, `WC-STEP-PATCH`, `ID-BATCH-RESULTS`) is blocked behind the
+   their ids; a capability member for the sync envelope; how often a connected client reads
+   history (T10). Letting socket events move the cursor would save those reads, but only once
+   every write to a subscribed collection produces an event (T12), with each event naming the
+   cursor before it so a client can tell it missed none.
+2. **The in-flight window today.** `srv-dates.js` takes a value just before the write, and the
+   per-collection history read returns the largest `srvModified` it found as its `ETag` and
+   `Last-Modified` (`lib/api3/generic/history/operation.js:45-50` at `fade2299`, read). A slow write
+   can therefore become visible after a reader has passed its value, for every API v3 client
+   today. T9 closes this once the hub tracks the values it has taken. How often it happens is not
+   measured.
+3. **Several writers on one site.** T3's uniqueness and T9's tracking hold within one process. A
+   second process, or a writer that goes to the database directly, can produce equal or
+   out-of-order values; T6 keeps equal values on one page, and `multi` (T8) orders by commit, but
+   `single` with more than one writer is not covered.
+4. **BF-164** (T12).
+5. **The write step** (`WRITE-CONTRACT`, `WC-STEP-PATCH`, `ID-BATCH-RESULTS`) is blocked behind the
    storage seam refresh.
-5. **Not measured:** payload size; real request counts; `srvModified` order under several writers
+6. **Not measured:** payload size; real request counts; `srvModified` order under several writers
    on one site; the replication-slot path (T4.1 in the execution plan).
 
 ## 9. Conformance cases
 
-9 cases under `specs/sync/conformance/sync-transport/`, checked by
+13 cases under `specs/sync/conformance/sync-transport/`, checked by
 `tools/nsschema/test_sync_cursor.py`, whose expectations are written by hand. Each is a timeline of
-writes, each taking its `srvModified` at one step and becoming visible at the same or a later one,
-and the client's history reads and socket events. The typed socket (§5) and versions (§6) have no
+writes, each taking its `srvModified` at one step and becoming visible at the same or a later one
+(or failing), and the client's history reads and socket events. The typed socket (§5) and versions (§6) have no
 case yet.
 
 <!-- BEGIN GENERATED: sync-transport-cases (tools/nsschema/spec_cases.py) -->
 | case | shows | expected | control |
 |---|---|---|---|
-| `sync-transport/duplicate-delivery-is-one-record` | A record received by event and by history is one record | rules T10 |  |
-| `sync-transport/event-carries-low-watermark` | A socket event carries the low watermark, not its record's srvModified | rules T9, T10 | `socket-resume-after-disconnect` |
-| `sync-transport/in-flight-write-not-skipped` | The cursor stays below a write that has taken its srvModified and is not yet visible | rules T9 | `no-write-in-flight` |
+| `sync-transport/duplicate-delivery-is-one-record` | A record version received by event and by history is kept once | rules T10 |  |
+| `sync-transport/equal-values-at-page-boundary` | A page never ends inside a group of records with the same srvModified | rules T6 |  |
+| `sync-transport/failed-write-released` | A write that fails releases its value, and the cursor moves on | rules T9 | `in-flight-write-not-skipped` |
+| `sync-transport/in-flight-write-not-skipped` | Nothing above a write still in flight is returned, so the cursor cannot pass it | rules T9 | `no-write-in-flight` |
 | `sync-transport/merged-cursor-min-over-truncated` | A page truncated in one collection holds the cursor at that collection's last value | rules T6 | `single-page-complete` |
-| `sync-transport/no-write-in-flight` | With nothing in flight the cursor reaches the latest value | rules T9 |  |
+| `sync-transport/no-write-in-flight` | With nothing in flight the page reaches the latest value | rules T9 |  |
 | `sync-transport/nothing-new` | A read with nothing newer returns no records and keeps the cursor | rules T6 |  |
 | `sync-transport/single-page-complete` | With a large enough limit one page is complete | rules T6 |  |
-| `sync-transport/socket-resume-after-disconnect` | A client that reconnects reads history from the cursor its last event carried | rules T10 |  |
-| `sync-transport/unreadable-collection-omitted` | A collection the credential cannot read is left out | rules T5 |  |
+| `sync-transport/socket-resume-after-disconnect` | After a disconnect the client reads history from its last history cursor | rules T10 |  |
+| `sync-transport/truncated-above-watermark-no-stall` | Records above the low watermark wait for the next read, so a truncated page cannot loop | rules T6, T9 | `in-flight-write-not-skipped` |
+| `sync-transport/unreadable-collection-omitted` | A collection the credential cannot read is left out and does not move its cursor | rules T5, T9 |  |
+| `sync-transport/update-is-a-new-version` | An update to a record already received is received again, as a new version | rules T10 | `duplicate-delivery-is-one-record` |
+| `sync-transport/write-without-event-not-lost` | A write that produced no event is still read, because events never move the cursor | rules T10, T12 | `socket-resume-after-disconnect` |
 <!-- END GENERATED: sync-transport-cases -->

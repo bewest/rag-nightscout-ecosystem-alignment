@@ -146,11 +146,11 @@ shrinks when §15 and routing move out.
 
 | | |
 |---|---|
-| **Spec** | [spec/sync-transport.md](spec/sync-transport.md): rules T1–T15 (the write step, re-send outcomes, server write times, the change event; the measured cost; the sync read and write, the merged cursor, one opaque cursor, the low watermark, the socket as fast path; typed records on the socket; definitions and versions), 9 cases. Drawn from the [write contract](../tenancy/write-contract-spec-2026-10-07.md) §2–§3 and §6.1, [hub-sync §3.2](nightscout-hub-sync-architecture-2026-09-11.md#32-the-contract-the-hub-returns) and the [replay-fidelity proposal §1](PROPOSAL-replay-fidelity-changes-2026-09-11.md#1-sync-cost-should-be-o1-in-the-number-of-resources) |
-| **Evidence** | `make schema-sync-cost` on 2026-10-18: upper bounds of 7,488, 2,016 and 1,440 requests a day for AndroidAPS (`7e1d537d49`, 26 endpoints), Loop and Trio, against 576 for two requests a cycle (sync-transport §3; source-derived, not traffic); the write contract's measured matrix; `lib/server/srv-dates.js` on `dev` `fade2299` |
+| **Spec** | [spec/sync-transport.md](spec/sync-transport.md): rules T1–T15 (the write step, re-send outcomes, server write times, the change event; the measured cost; the sync read and write, the merged cursor, one opaque cursor, the low watermark, the socket as fast path; typed records on the socket; definitions and versions), 13 cases. Drawn from the [write contract](../tenancy/write-contract-spec-2026-10-07.md) §2–§3 and §6.1, [hub-sync §3.2](nightscout-hub-sync-architecture-2026-09-11.md#32-the-contract-the-hub-returns) and the [replay-fidelity proposal §1](PROPOSAL-replay-fidelity-changes-2026-09-11.md#1-sync-cost-should-be-o1-in-the-number-of-resources) |
+| **Evidence** | `make schema-sync-cost` on 2026-10-18: endpoints each client's code declares, read from source (AndroidAPS `7e1d537d49` 26, three never called; Loop 7; Trio 5), not calls per cycle (sync-transport §3); the write contract's measured matrix; `lib/server/srv-dates.js` on `dev` `fade2299` |
 | **Open** | `WRITE-CONTRACT`, `WC-STEP-PATCH`, `ID-BATCH-RESULTS` (blocked); BF-164 (which writes reach the socket); the choices in sync-transport §8; the in-flight window under `single` |
 | **Audit** | one change event per write call; a matched re-send stores no second copy and is answered with the stored ids; each mapping the hub applies is recorded as `quirksApplied` |
-| **Status** | the write path is decided and specified (T1–T4; T3 merged on `dev`); the sync read, cursor and socket rules are proposed and specified with cases (`SPEC-SYNC-TRANSPORT`); typed socket delivery and versions are proposed without cases |
+| **Status** | the write path is decided and specified (T1–T4; T3 merged on `dev`); the sync read, cursor and socket rules are proposed and specified with 13 cases (`SPEC-SYNC-TRANSPORT`); typed socket delivery and versions are proposed without cases |
 
 ## L5 Authority
 

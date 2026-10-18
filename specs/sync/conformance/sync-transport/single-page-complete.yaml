@@ -30,6 +30,16 @@ writes:
   committedAt: 0
 - collection: entries
   id: e2
+  srvModified: 18
+  takenAt: 0
+  committedAt: 0
+- collection: entries
+  id: e3
+  srvModified: 19
+  takenAt: 0
+  committedAt: 0
+- collection: entries
+  id: e4
   srvModified: 40
   takenAt: 0
   committedAt: 0
@@ -49,11 +59,15 @@ expected:
       entries:
       - e1
       - e2
+      - e3
+      - e4
     cursor: 40
     complete: true
   received:
-  - e1
-  - e2
-  - t1
-  - t2
-  - t3
+  - e1@15
+  - e2@18
+  - e3@19
+  - e4@40
+  - t1@10
+  - t2@20
+  - t3@30

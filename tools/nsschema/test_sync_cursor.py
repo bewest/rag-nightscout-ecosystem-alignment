@@ -38,16 +38,21 @@ def test_received(cid):
 
 @pytest.mark.parametrize("cid", sorted(CASES))
 def test_nothing_written_is_lost(cid):
-    # Every write visible by the last call's step reaches a client that reads
-    # until complete: the property every rule here exists for.
+    # The latest version of every readable record visible by the last
+    # history read reaches the client, when it reads from the start.
     case = CASES[cid]
-    if any(c.get("cursor") not in (None, "last", 0) for c in case["calls"]):
+    reads = [c for c in case["calls"] if c["kind"] == "history"]
+    if not reads or reads[0].get("cursor") not in (0, None, "last"):
         pytest.skip("starts from a cursor past some writes")
-    last = max([c["at"] for c in case["calls"] if c["kind"] == "history"] or [0])
+    last = max(c["at"] for c in reads)
     readable = case.get("readable", case["collections"])
-    visible = sorted(w["id"] for w in case["writes"]
-                     if w["committedAt"] <= last and w["collection"] in readable)
-    assert sync_cursor.run(case)["received"] == visible
+    latest = {}
+    for w in case["writes"]:
+        if w["collection"] in readable and w.get("committedAt") is not None and w["committedAt"] <= last:
+            if w["id"] not in latest or w["srvModified"] > latest[w["id"]]:
+                latest[w["id"]] = w["srvModified"]
+    received = set(sync_cursor.run(case)["received"])
+    assert {"%s@%s" % kv for kv in latest.items()} <= received
 
 
 @pytest.mark.parametrize("cid", sorted(c for c in CASES if CASES[c].get("control")))

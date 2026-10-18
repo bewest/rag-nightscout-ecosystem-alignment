@@ -1,9 +1,10 @@
 # Synthetic. SPEC-SYNC-TRANSPORT; sync-transport §4. Steps are logical; expectations authored by hand.
 id: unreadable-collection-omitted
-title: A collection the credential cannot read is left out
+title: A collection the credential cannot read is left out and does not move its cursor
 rules:
 - T5
-description: A collection the credential cannot read is left out.
+- T9
+description: A collection the credential cannot read is left out and does not move its cursor.
 collections:
 - treatments
 - entries
@@ -31,7 +32,7 @@ expected:
     collections:
       treatments:
       - t1
-    cursor: 20
+    cursor: 10
     complete: true
   received:
-  - t1
+  - t1@10

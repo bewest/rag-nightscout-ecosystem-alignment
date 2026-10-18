@@ -1,0 +1,46 @@
+# Synthetic. SPEC-SYNC-TRANSPORT; sync-transport §4. Steps are logical; expectations authored by hand.
+id: update-is-a-new-version
+title: An update to a record already received is received again, as a new version
+rules:
+- T10
+control: duplicate-delivery-is-one-record
+description: An update to a record already received is received again, as a new version.
+collections:
+- treatments
+writes:
+- collection: treatments
+  id: t1
+  srvModified: 10
+  takenAt: 0
+  committedAt: 0
+- collection: treatments
+  id: t1
+  srvModified: 25
+  takenAt: 2
+  committedAt: 2
+calls:
+- kind: history
+  at: 1
+  limit: 5
+  cursor: 0
+- kind: history
+  at: 3
+  limit: 5
+  cursor: last
+expected:
+  calls:
+  - kind: history
+    collections:
+      treatments:
+      - t1
+    cursor: 10
+    complete: true
+  - kind: history
+    collections:
+      treatments:
+      - t1
+    cursor: 25
+    complete: true
+  received:
+  - t1@10
+  - t1@25

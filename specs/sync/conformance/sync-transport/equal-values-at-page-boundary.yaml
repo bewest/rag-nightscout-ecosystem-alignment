@@ -1,0 +1,53 @@
+# Synthetic. SPEC-SYNC-TRANSPORT; sync-transport §4. Steps are logical; expectations authored by hand.
+id: equal-values-at-page-boundary
+title: A page never ends inside a group of records with the same srvModified
+rules:
+- T6
+description: Values are unique within one process (T3), not across writers; a page that ended after a
+  would skip b.
+collections:
+- treatments
+writes:
+- collection: treatments
+  id: a
+  srvModified: 10
+  takenAt: 0
+  committedAt: 0
+- collection: treatments
+  id: b
+  srvModified: 10
+  takenAt: 0
+  committedAt: 0
+- collection: treatments
+  id: c
+  srvModified: 20
+  takenAt: 0
+  committedAt: 0
+calls:
+- kind: history
+  at: 1
+  limit: 1
+  cursor: 0
+- kind: history
+  at: 1
+  limit: 1
+  cursor: last
+expected:
+  calls:
+  - kind: history
+    collections:
+      treatments:
+      - a
+      - b
+    cursor: 10
+    complete: false
+  - kind: history
+    collections:
+      treatments:
+      - c
+    cursor: 20
+    complete: true
+  received:
+  - a@10
+  - b@10
+  - c@20

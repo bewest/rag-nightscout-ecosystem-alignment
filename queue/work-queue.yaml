@@ -16592,13 +16592,13 @@ items:
           a case that does not exist, states a count that differs from its
           table, or when the index, the write contract, the hub-sync design
           or the replay-fidelity proposal does not link to it. GREEN on
-          2026-10-18: 23 checks, 9 cases.
+          2026-10-18: 27 checks, 13 cases.
       - run: python3 -m pytest -q tools/nsschema/test_sync_cursor.py
         kind: unit
         describe: >
           FAILS when the cursor reference does not reproduce a case's
           hand-authored calls and received records, or when a client reading
-          until complete misses a visible write. GREEN on 2026-10-18: 39
+          until complete misses a visible write. GREEN on 2026-10-18: 58
           passed, 1 skipped (a case that starts past some writes).
       - run: python3 -m tools.nsschema.spec_cases sync-transport --check
         kind: static
@@ -16628,6 +16628,22 @@ items:
       breaks (narration, case, count, pointer) were each red with their own
       finding; the test break is CONTROL-INVALID (the spec cites no test).
       Proposed rules carry their choices in §8 for the maintainer.
+      Adversarial review (2026-10-18) applied before main moved. T10 as
+      first written let a socket event move the client's cursor to the low
+      watermark, which skips any write that produced no event (BF-164, or a
+      collection not subscribed): events now never move the cursor. A page
+      above the low watermark with the cursor clamped below it could loop;
+      pages now stop at the watermark and a failed write releases its
+      value. Equal srvModified values split across pages were lost; a page
+      now keeps a group whole. The watermark is over readable collections
+      only. T2 had devicestatus merging; it is identical-retry-only and
+      reopened. The cost table called declared endpoints "requests a day";
+      it now counts what each client declares, with AndroidAPS's three
+      never-called settings endpoints named (createSettings, patchSettings,
+      getSettingsModifiedSince have no caller outside the SDK, read). 13
+      cases (four added); ten weakenings each red, two only after their
+      cases were strengthened (a read from an explicit cursor hid moved
+      events; one truncated collection hid min versus max).
 
   - id: SPEC-AUTHORITY
     title: "Platform spec L5: the authority specification (binding, credential kind, owner actions, roles and provenance, command routing; delegation and proposals as open design)"

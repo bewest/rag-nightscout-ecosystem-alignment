@@ -1,0 +1,45 @@
+# Synthetic. SPEC-SYNC-TRANSPORT; sync-transport §4. Steps are logical; expectations authored by hand.
+id: write-without-event-not-lost
+title: A write that produced no event is still read, because events never move the cursor
+rules:
+- T10
+- T12
+control: socket-resume-after-disconnect
+description: e1 was written through API v1 and reached no socket (BF-164); t1 produced an event. Had the
+  event moved the cursor to 20, the next read would skip e1.
+collections:
+- treatments
+- entries
+writes:
+- collection: entries
+  id: e1
+  srvModified: 10
+  takenAt: 0
+  committedAt: 0
+- collection: treatments
+  id: t1
+  srvModified: 20
+  takenAt: 1
+  committedAt: 1
+calls:
+- kind: event
+  id: t1
+- kind: history
+  at: 2
+  limit: 5
+  cursor: last
+expected:
+  calls:
+  - kind: event
+    id: t1
+  - kind: history
+    collections:
+      treatments:
+      - t1
+      entries:
+      - e1
+    cursor: 20
+    complete: true
+  received:
+  - e1@10
+  - t1@20

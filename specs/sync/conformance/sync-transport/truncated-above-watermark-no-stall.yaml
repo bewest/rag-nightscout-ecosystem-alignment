@@ -1,0 +1,70 @@
+# Synthetic. SPEC-SYNC-TRANSPORT; sync-transport §4. Steps are logical; expectations authored by hand.
+id: truncated-above-watermark-no-stall
+title: Records above the low watermark wait for the next read, so a truncated page cannot loop
+rules:
+- T6
+- T9
+control: in-flight-write-not-skipped
+description: w takes 20 and is slow; x, y and z are visible. A page that returned x and y with the cursor
+  held at 19 would return them again for ever.
+collections:
+- treatments
+writes:
+- collection: treatments
+  id: w
+  srvModified: 20
+  takenAt: 0
+  committedAt: 5
+- collection: treatments
+  id: x
+  srvModified: 30
+  takenAt: 0
+  committedAt: 0
+- collection: treatments
+  id: y
+  srvModified: 40
+  takenAt: 0
+  committedAt: 0
+- collection: treatments
+  id: z
+  srvModified: 50
+  takenAt: 0
+  committedAt: 0
+calls:
+- kind: history
+  at: 1
+  limit: 2
+  cursor: 0
+- kind: history
+  at: 6
+  limit: 2
+  cursor: last
+- kind: history
+  at: 6
+  limit: 2
+  cursor: last
+expected:
+  calls:
+  - kind: history
+    collections: {}
+    cursor: 19
+    complete: true
+  - kind: history
+    collections:
+      treatments:
+      - w
+      - x
+    cursor: 30
+    complete: false
+  - kind: history
+    collections:
+      treatments:
+      - y
+      - z
+    cursor: 50
+    complete: true
+  received:
+  - w@20
+  - x@30
+  - y@40
+  - z@50
