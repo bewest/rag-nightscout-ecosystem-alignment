@@ -822,3 +822,24 @@ def test_a_typed_write_outcome_never_rechecks():
     assert not _errors(validator, case)
     case["expected"]["typedWrite"]["recheck"] = True
     assert _errors(validator, case)
+
+
+# A carrier path declared as {path} with no typing member is the bare string
+# (state and intent S6); one that declares a unit is a different meaning.
+def _override_with_paths(paths):
+    return {"category": "Override", "slot": "override",
+            "applied": {"collection": "devicestatus", "paths": paths}}
+
+
+def test_typed_path_without_typing_means_the_bare_path():
+    bare = negotiate.meaning("stateSpans", _override_with_paths(["override.duration"]))
+    for form in ({"path": "override.duration"},
+                 {"path": "override.duration", "description": "seconds remaining"}):
+        assert negotiate.meaning("stateSpans", _override_with_paths([form])) == bare
+
+
+def test_typed_path_with_a_unit_is_a_different_meaning():
+    bare = negotiate.meaning("stateSpans", _override_with_paths(["override.duration"]))
+    typed = negotiate.meaning(
+        "stateSpans", _override_with_paths([{"path": "override.duration", "unit": "seconds"}]))
+    assert typed != bare

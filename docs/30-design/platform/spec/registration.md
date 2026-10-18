@@ -280,7 +280,9 @@ and replay inputs carry no version in grammar v1 and are not compared.
 
 Inside a meaning member, `description`, `evidence` and a carrier's `writtenWhen` are prose and not
 compared, and order is not meaning: an array of strings compares as a sorted set, an array of
-objects as the sorted list of their canonical forms. `availability` is a promise level, so an
+objects as the sorted list of their canonical forms. A carrier path written `{path: x}` with no
+typing member compares as the bare string `x`; one that declares a unit or type does not.
+`availability` is a promise level, so an
 experimental kind can be released at the same version. `sensitivity` is meaning, so a later
 definition cannot relabel data stored under an earlier one.
 

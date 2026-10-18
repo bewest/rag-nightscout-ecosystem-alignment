@@ -107,12 +107,21 @@ REFERENCE_MEMBERS = frozenset({"category", "kind", "wellKnownRef", "availability
                                "description", "evidence"})
 
 
+def _path(item):
+    """A carrier path declared as {path} with no typing member names the same
+    field as the bare path string (prose members are not meaning)."""
+    if isinstance(item, dict) and set(item) - NOT_MEANING == {"path"}:
+        return item["path"]
+    return item
+
+
 def _norm(value, is_map=False):
     """Order carries no meaning: an array of strings compares as a sorted
     list, an array of objects as a sorted list of their canonical forms."""
     if isinstance(value, dict):
-        return {k: _norm(v, k in _MEANING_MAPS) for k, v in value.items()
-                if is_map or k not in NOT_MEANING}
+        return {k: _norm([_path(i) for i in v] if k == "paths" and isinstance(v, list) else v,
+                         k in _MEANING_MAPS)
+                for k, v in value.items() if is_map or k not in NOT_MEANING}
     if isinstance(value, list):
         items = [_norm(v) for v in value]
         if all(isinstance(v, str) for v in items):
