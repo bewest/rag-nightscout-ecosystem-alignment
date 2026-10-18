@@ -1,4 +1,4 @@
-# Why organise: an accountable party for the ecosystem, and why now
+# Why organise: an accountable party for the ecosystem, and why now — proposal
 
 *What this is: a proposal (part 3 of the overview, recommendations; [how the overview is organised](README.md)), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after [partner readiness](PARTNER-READINESS.md); leads to [the work itself](README.md#the-work-itself), starting with [reviewer onboarding](REVIEWER-ONBOARDING.md). **DRAFT PROPOSAL for discussion.** Living page, written 2026-10-17. It draws together evidence from
 [partner readiness](PARTNER-READINESS.md), [what we believe, and how it works](perspective/PROCESS-MODELS.md),
