@@ -5,7 +5,7 @@
 **measured**. Sources and commits are in §1. Current decisions: [execution plan
 §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
 **Corrected in place 2026-10-12:** §5 is measured on both hubs (TL;DR and §12 follow it); the §10 rows for the hub-sync design and `specs/sync/registrations/` record what the
-registrations now declare and what remains; the registrations row also records the D18 addendum grammar (`SCHEMA-REG-EXT`, 2026-10-12). **Also 2026-10-18:** §2 records the maintainer's decision on agent initiators (P5). The rules this evidence supports are maintained in the [state and intent specification](spec/state-intent.md).
+registrations now declare and what remains; the registrations row also records the D18 addendum grammar (`SCHEMA-REG-EXT`, 2026-10-12). **Also 2026-10-18:** §2 records the maintainer's decision on agent initiators (P5); the AndroidAPS items marked **4.0.0 prerelease** ship in `4.0.0-beta1` and `4.0.0-rc1` (§1). The rules this evidence supports are maintained in the [state and intent specification](spec/state-intent.md).
 
 **The question.** Nightscout's API v1 and v3 manage *entities*: create, read, update and delete
 documents in `treatments`, `devicestatus`, `profile`. AID controllers increasingly manage
@@ -29,7 +29,7 @@ controller is responsible for sending data accurately and for syncing and reconc
 |---|---|
 | **Single records** | Entity CRUD works. Every controller keeps one document per instance and amends or deletes it. Each encodes identity and "ended" differently (§4) |
 | **Six things CRUD cannot carry** | definition identity, concurrent intent slots with a composition rule, requested vs applied, end reason, initiator, and the command → acknowledgement → outcome link (§2) |
-| **Every controller already built them** | each in its own place: AAPS on the NS `settings` collection (dev), Loop and Trio over APNs replies and failure `Note`s, iAPS over NS `Announcement` treatments. None of it is typed, and most of it is invisible to the hub (§3, §6) |
+| **Every controller already built them** | each in its own place: AAPS on the NS `settings` collection (4.0.0 prereleases), Loop and Trio over APNs replies and failure `Note`s, iAPS over NS `Announcement` treatments. None of it is typed, and most of it is invisible to the hub (§3, §6) |
 | **The hubs disagree on "what is active now"** | Measured on both hubs: cgm-remote-monitor and Nocturne differ on temp-target cancel, devicestatus override duration units, profile fallback after a timed switch, AAPS timeshift units, and out-of-order override backfill; they agree on `Temporary Override Cancel` (§5) |
 | **Composition is controller-specific** | Loop: pre-meal target wins, override factor applies. Trio/iAPS: temp target wins the target, override factors apply. AAPS: temp target replaces targets, profile-switch percentage has already scaled basal/ISF/CR. No hub composes, and under the stated roles none should (§7) |
 | **Cowpaths already exist** | Loop and Trio publish preset definitions in the `profile` document; Nightscout's careportal builds its remote-override picker from Loop's. AAPS dev publishes scene and automation definitions plus active-scene state. These are registrations in all but name (§8) |
@@ -43,7 +43,7 @@ controller is responsible for sending data accurately and for syncing and reconc
 | Loop (LoopWorkspace) | `f841285`; Loop `c2fddb76`, LoopKit `325bd820`, NightscoutService `fe075ef` | NightscoutKit `4ec9fd1` (the revision Loop pins) |
 | Trio | `e41c9db37` | dev 1.0.1.5; the algorithm runs as a Swift port (`OpenAPS.swift:689-719`), `trio-oref/lib` is vendored and its rules match |
 | iAPS | `6cb69e7` (2026-10-04) | shallow clone, read only; still runs oref JS with middleware |
-| AndroidAPS | `7e1d537d49` (dev, 2026-09-23) | release `3.4.2.6` (`598e2eb39c`) is not an ancestor; items marked **dev-only** are absent from the release |
+| AndroidAPS | `7e1d537d49` (dev, 2026-09-23) | release `3.4.2.6` (`598e2eb39c`) is not an ancestor; items marked **4.0.0 prerelease** are absent from that release and present in `4.0.0-beta1` (2026-10-08) and `4.0.0-rc1` (2026-10-16), both descendants of `7e1d537d49` ([questionnaire defaults §1](integration-questionnaire-defaults-2026-10-18.md#1-sources)) |
 | cgm-remote-monitor | `official/dev` `fade2299` | |
 | Nocturne | `42275c812` | |
 | LoopCaregiver | `2305718` | pins a NightscoutKit fork not available locally |
@@ -79,12 +79,12 @@ row 17; [agents in the ecosystem §4.2](agent-trust-boundaries-2026-10-18.md#42-
 
 | | Loop | Trio | iAPS | AAPS |
 |---|---|---|---|---|
-| **P1 definition** | `TemporaryScheduleOverridePreset` with UUID; activation copies the preset; presets uploaded in `profile.loopSettings.overridePresets` **without id**; remote enactment by name | one `OverrideStored` entity, `isPreset` flag; activation mutates the preset row; presets in `profile.overridePresets` {name, duration, percentage, target}; remote by name | separate `OverridePresets` and append-only `Override` log; presets not sent to Nightscout | named profiles in the store; ProfileSwitch copies blocks; TT presets in preferences; **dev-only** Scenes with definition id |
-| **P2 slots** | `override` + `preMeal`, concurrent | override + temp target, concurrent | override + temp target, concurrent | ProfileSwitch + TT, concurrent; RunningMode (temporary over permanent); **dev-only** one Scene |
+| **P1 definition** | `TemporaryScheduleOverridePreset` with UUID; activation copies the preset; presets uploaded in `profile.loopSettings.overridePresets` **without id**; remote enactment by name | one `OverrideStored` entity, `isPreset` flag; activation mutates the preset row; presets in `profile.overridePresets` {name, duration, percentage, target}; remote by name | separate `OverridePresets` and append-only `Override` log; presets not sent to Nightscout | named profiles in the store; ProfileSwitch copies blocks; TT presets in preferences; **4.0.0 prerelease** Scenes with definition id |
+| **P2 slots** | `override` + `preMeal`, concurrent | override + temp target, concurrent | override + temp target, concurrent | ProfileSwitch + TT, concurrent; RunningMode (temporary over permanent); **4.0.0 prerelease** one Scene |
 | **P3 requested vs applied** | `dosingEnabled` (intent) vs `automaticDosingEnabled` (gated by CGM and pump); only intent uploaded | applied ISF/CR/target in `devicestatus.openaps.suggested/enacted`, not linked to the override | as Trio | **ProfileSwitch** (request) vs **EffectiveProfileSwitch** (written only after the pump accepts); RunningMode requested vs `autoForced` |
 | **P4 end** | derived from `End {natural, early, deleted}`; wire: amended `duration`, or DELETE | wire: delete + re-post with actual duration, new `_id` | ends on expiry, carbs, glucose above/below threshold, chain to next preset; reason in debug log only | shorten `duration` on the same `identifier`; invalidate = v3 soft delete |
 | **P5 initiator** | `EnactTrigger {local, remote(addr)}`; phone and watch both `local`; Siri is `remote("Siri")`; remote bolus/carbs lose it | `AdjustmentSource {app, remote, shortcut, watch}` in debug log only; `enteredBy: "Trio"` always | automation is an initiator (end triggers, chain) | `Sources` enum (~80 values) in the local `UserEntry` log, **not synced**; TT `reason: Automation` is the only wire proxy |
-| **P6 commands** | APNs; TOTP for bolus/carbs only; optional APNs reply without correlation id; failure as `Note` | APNs, AES-GCM, ±600 s window; reply to sender over APNs; failure `Note` | Nightscout `Announcement` treatments; authorisation is NS write access; no acknowledgement | SMS with TOTP+PIN; **dev-only** signed envelopes on NS `settings`: prepare/commit, `validUntil`, ack Executing → Done{Ok, Failed, Expired} → Delivery{Failed} |
+| **P6 commands** | APNs; TOTP for bolus/carbs only; optional APNs reply without correlation id; failure as `Note` | APNs, AES-GCM, ±600 s window; reply to sender over APNs; failure `Note` | Nightscout `Announcement` treatments; authorisation is NS write access; no acknowledgement | SMS with TOTP+PIN; **4.0.0 prerelease** signed envelopes on NS `settings`: prepare/commit, `validUntil`, ack Executing → Done{Ok, Failed, Expired} → Delivery{Failed} |
 | **Unique, needs typing** | retroactive application of override factors over the history window; pre-meal end triggers; GBAF and IRC (stored locally, not uploaded) | `smbIsOff`, scheduled SMB-off hours, ISF/CR scope, `smbMinutes`/`uamMinutes`, `dosingMode` | maxIOB, autoISF set, basal toggle, glucose-threshold end conditions, preset chaining | EPS scaled vs PS base `profileJson`; RunningMode `RESUME`; scenes with revert-only-if-still-owned |
 
 ### 3.1 Loop
@@ -132,7 +132,7 @@ row 17; [agents in the ecosystem §4.2](agent-trust-boundaries-2026-10-18.md#42-
   PS is written by a user, SMS, automation, scene or NS sync; the profile is pushed to the pump;
   **only if the pump accepts** is an EPS written. A failed or pending change is visible on the wire
   only as a PS with no following EPS. The EPS is uploaded as `eventType: "Note"`, recognised by
-  `originalProfileName`; its `profileJson` is scaled, the PS's is the base profile. **dev-only:**
+  `originalProfileName`; its `profileJson` is scaled, the PS's is the base profile. **4.0.0 prerelease:**
   `EPS.originalPsId` links the two locally and is not sent.
 - **`percentage` scales overall insulin needs.** `ProfileSealed.convertToNonCustomizedProfile`:
   basal × p/100, ISF × 100/p, IC × 100/p; targets only time-shifted (pinned by
@@ -140,14 +140,14 @@ row 17; [agents in the ecosystem §4.2](agent-trust-boundaries-2026-10-18.md#42-
   percentage enters the TDD-based ISF formula instead.
 - **RunningMode** has a requested layer and a constraint-forced layer (`autoForced: true`,
   `reasons`), both uploaded as `OpenAPS Offline`; open-ended `DISABLED_LOOP` is sent with a
-  10-year duration and `originalDuration: 0`. **dev-only:** `RunningModeReconciler` drives the
+  10-year duration and `originalDuration: 0`. **4.0.0 prerelease:** `RunningModeReconciler` drives the
   pump from the mode record and re-checks drift at startup.
 - **Temp targets** have a closed reason vocabulary (`Custom, Hypo, Activity, Eating Soon,
   Automation, Wear`); a new TT ends the running one; inbound merges are shorten-only.
 - **Accepting remote intent is opt-in per type.** The pump-owning phone applies NS-originated PS,
   TT and RunningMode records only if `NsClientAcceptProfileSwitch`, `…TempTarget`,
   `…RunningMode` are on; all default off.
-- **dev-only client control and scenes.** Commands and acknowledgements travel as documents in
+- **Client control and scenes (4.0.0 prerelease).** Commands and acknowledgements travel as documents in
   the NS v3 `settings` collection under fixed identifiers; scene and automation definitions are
   published under `aaps`, active-scene state (with the NS identifiers of the records the scene
   created) under `aaps-state`. Scene revert shortens only records the scene still owns.
@@ -204,7 +204,7 @@ honoured only by controllers that download them (Trio; AAPS behind an opt-in).
 | LoopCaregiver "Remote Commands 2" (status Pending → InProgress → Success/Error) | **expects** a hub collection; neither hub has one | — | — | — |
 | Any client → iAPS (`Announcement` treatment) | the request is the treatment | no | no | no |
 | Careportal / nightguard TT → Trio, AAPS | the request is the treatment | no | indistinguishable from enacted | no |
-| AAPSClient → AAPS (**dev-only**, NS `settings`) | yes, signed | `Executing` ack | `Done/Ok` ack | `Done/Failed`, `Expired`, `Delivery/Failed` |
+| AAPSClient → AAPS (**4.0.0 prerelease**, NS `settings`) | yes, signed | `Executing` ack | `Done/Ok` ack | `Done/Failed`, `Expired`, `Delivery/Failed` |
 
 Neither hub forwards a reply channel in the APNs payload it builds, so hub-routed commands cannot
 receive a reply; that channel exists only on direct APNs. The RFC's `DeliveryRequest.requestType`
@@ -234,7 +234,7 @@ the hub; that section is inconsistent with the roles and would need revising.
 | Loop | `profile.loopSettings` | `overridePresets` (symbol, name, duration, target, scale factor), `preMealTargetRange`, `dosingEnabled`, `dosingStrategy`, APNs coordinates | preset id; workout target; GBAF, IRC |
 | Trio | `profile` | `overridePresets` (name, duration, percentage, target), APNs coordinates | ISF/CR scope, SMB settings, id |
 | iAPS | a non-Nightscout service | presets | everything, as far as the hub is concerned |
-| AAPS (**dev-only**) | NS `settings`, identifiers `aaps` and `aaps-state` | scene, automation, QuickWizard and insulin definitions; active scene with component record identifiers | a schema other software can read |
+| AAPS (**4.0.0 prerelease**) | NS `settings`, identifiers `aaps` and `aaps-state` | scene, automation, QuickWizard and insulin definitions; active scene with component record identifiers | a schema other software can read |
 
 Nightscout's careportal already builds its remote-override picker from
 `profile.loopSettings.overridePresets`. Each row is a registration in practice: a controller
@@ -270,7 +270,7 @@ Derived from §3–§8. Each element is something at least one controller does t
 | [Controller descriptions](PROPOSAL-controller-descriptions-2026-09-11.md) | kind/instance split, `decomposesTo` (D11), `.well-known` catalogue | §4 ("static, not CRD-style, no new endpoints") is superseded in part by D18; it describes the well-known tier |
 | [Hub-and-spoke sync](nightscout-hub-sync-architecture-2026-09-11.md) | registration-derived contract, cursor + batch | `stateSpans` in the schema has no slots, end reasons, initiators or command contract. *2026-10-12: the schema now has them (see the next row); the document is corrected in place* |
 | [Effects and versioning](nightscout-effects-and-versioning-2026-09-11.md) | effect vs motivation; `TherapyEffect` as a span | AAPS percentage is an insulin-needs scale; Trio "481" is 399 distinct; Trio `notes` is a preset name |
-| `specs/sync/registrations/{loop,trio,androidaps}.yaml` | structural discriminators. **Since 2026-10-12** (`make schema-sync-model`, schema extended additively): every intent kind declares its slot and which slots coexist, states, the wire carrier (§4), requested vs applied, initiators, definitions and acceptance policy, each with `read`/`measured` evidence; `composition` is declared as reported by the controller and `commands` per §6. Added: Loop pre-meal (declared with `wire: null`, not published), Loop `dosingEnabled`, Trio `dosingMode` (§3.2; the `dosingMode` in this row's original text is Trio's), AAPS RunningMode, the AAPS PS → EPS pair, dev-only AAPS Scene. AAPS `Override` removed. **Also 2026-10-12** (`SCHEMA-REG-EXT`, D18 addendum rules 1–5): the grammar is must-ignore with typed, reverse-DNS-namespaced `extensions`, typed field declarations, `other` + `controllerTerm` for the open lists, per-kind `versions` and declared horizons; the three registrations gained `typeRef` to ControllerSettings definitions read from their own algorithm family, a `cycle` horizon on the `devicestatus` document and an `effective-dated` horizon on `settings`; a synthetic fixture (`registrations/fixtures/`) uses every rule | still undeclared, because this document does not establish them: iAPS (no registration exists); end-reason vocabularies for Trio override and temp target and for AAPS profile switch; AAPS `Sources` values; command vocabularies; where AAPS reports the composed target; a `scheduled` state for any kind except Loop's override. The declarations are read-derived except the counts §3 marks **measured**. Not typed, rather than guessed: per-cycle state, and `suspendThreshold`, whose ControllerSettings definition is labelled oref0 but was read from Loop's source; no generated field carries a sensitivity label, so each falls to `unlabelledPolicy: withhold` |
+| `specs/sync/registrations/{loop,trio,androidaps}.yaml` | structural discriminators. **Since 2026-10-12** (`make schema-sync-model`, schema extended additively): every intent kind declares its slot and which slots coexist, states, the wire carrier (§4), requested vs applied, initiators, definitions and acceptance policy, each with `read`/`measured` evidence; `composition` is declared as reported by the controller and `commands` per §6. Added: Loop pre-meal (declared with `wire: null`, not published), Loop `dosingEnabled`, Trio `dosingMode` (§3.2; the `dosingMode` in this row's original text is Trio's), AAPS RunningMode, the AAPS PS → EPS pair, AAPS Scene (4.0.0 prerelease). AAPS `Override` removed. **Also 2026-10-12** (`SCHEMA-REG-EXT`, D18 addendum rules 1–5): the grammar is must-ignore with typed, reverse-DNS-namespaced `extensions`, typed field declarations, `other` + `controllerTerm` for the open lists, per-kind `versions` and declared horizons; the three registrations gained `typeRef` to ControllerSettings definitions read from their own algorithm family, a `cycle` horizon on the `devicestatus` document and an `effective-dated` horizon on `settings`; a synthetic fixture (`registrations/fixtures/`) uses every rule | still undeclared, because this document does not establish them: iAPS (no registration exists); end-reason vocabularies for Trio override and temp target and for AAPS profile switch; AAPS `Sources` values; command vocabularies; where AAPS reports the composed target; a `scheduled` state for any kind except Loop's override. The declarations are read-derived except the counts §3 marks **measured**. Not typed, rather than guessed: per-cycle state, and `suspendThreshold`, whose ControllerSettings definition is labelled oref0 but was read from Loop's source; no generated field carries a sensitivity label, so each falls to `unlabelledPolicy: withhold` |
 | Upstream RFC | Definition/Instance, DeliveryRequest/Observation/Reconciliation, kind vs instance | request types for override/TT/carbs/mode; `requested`/`rejected` states; hub-side composition in `conflict-resolution.md`; `bridge-rules.md` reads `devicestatus.loop.override` and AAPS `devicestatus.configuration`, neither of which is on the wire |
 | Nocturne `StateSpan` | right container for observed state; supersession; overlap for activity categories | no request/applied distinction, no end reason, metadata untyped; the §5 unit and cancel differences |
 

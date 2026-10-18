@@ -59,8 +59,8 @@ Heads: `gh api repos/<owner>/<repo>/commits/<branch> --jq .sha`; staleness:
 (Loop `c2fddb76`, Trio `e41c9db37`, AndroidAPS `7e1d537d49`); where a cell here and a registration
 differ, this page is at the newer commit.
 
-**One change since the earlier evidence.** Items the [intent
-landscape](nightscout-intent-workflow-landscape-2026-10-09.md) marks AndroidAPS **dev-only**
+**AndroidAPS 4.0.0 prereleases.** Items the [intent
+landscape](nightscout-intent-workflow-landscape-2026-10-09.md) marks AndroidAPS **4.0.0 prerelease**
 (scenes, client control on the NS `settings` collection) are in the `4.0.0-beta1` (2026-10-08) and
 `4.0.0-rc1` (2026-10-16) prereleases (H: `gh api repos/nightscout/AndroidAPS/contents/plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/SettingsIdentifiers.kt?ref=4.0.0-beta1`).
 Client-control envelopes are authenticated with HMAC-SHA256 over a shared secret (R `A ClientControlCrypto.kt:10-24`).
