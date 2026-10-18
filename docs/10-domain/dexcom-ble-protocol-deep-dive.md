@@ -15,7 +15,7 @@ The Dexcom G6 and G7 continuous glucose monitors use Bluetooth Low Energy (BLE) 
 | Aspect | G6 | G7 |
 |--------|----|----|
 | Authentication | AES-128-ECB challenge-response | J-PAKE (Password Authenticated Key Exchange) |
-| Connection Slots | 2 (allows xDrip + Dexcom app) | 1 (exclusive connection) |
+| Connection Slots | 2 (allows xDrip + Dexcom app) | one per display type (phone, watch, receiver, pump, …), so a phone and a watch each hold their own; see [G7 slots](#g7-one-slot-per-display-type) *(corrected 2026-10-18; previously "1 (exclusive connection)")* |
 | Glucose Opcode | 0x30/0x31 or 0x4E/0x4F | 0x4E/0x4F only |
 | Calibration | Factory + user calibration | Factory calibration only |
 | Warmup Period | 2 hours | 27 minutes |
@@ -561,6 +561,23 @@ G6 transmitters support two simultaneous Bluetooth connections:
 - Different value = Alternate slot
 
 **Source**: `externals/xdrip-js/lib/transmitter.js:73`
+
+### G7: one slot per display type
+
+*Added 2026-10-18.* The G7 holds one connection slot per display type: phone 2, watch 3,
+receiver 4, pump 5, and others (G7SensorKit `next-dev` `e17129d`, `G7DisplayType.swift:18-28`). A
+client states its type during authentication; Juggluco sends `0d 00 02`, phone
+(`DexGattCallback.java:391` @`75399d7`). Slots in use set bits in the advertisement's
+types-in-use byte (`G7DisplayType.swift:31-33`; g7sim `7c039de` `sensor.go:295-302`). G7SensorKit
+`next-dev` notes that a watch app takes its own slot alongside the phone's
+(`G7CGMManager.swift:283-284`), and xDrip4iOS describes each Bluetooth channel as an independent
+authentication slot inside the sensor (`c268542e` `CGMG7Transmitter.swift:8-13`). So a phone and a
+watch reading one sensor directly hold separate connections with separate keys [read, not run].
+
+Whether every slot sees the same per-reading seconds counter is analysed in
+[identifier format §7](../60-research/tenancy/identifier-format-2026-10-17.md#7-is-the-g7-seconds-counter-shared-across-devices):
+every implementation read treats it as the sensor's session clock; no two-display capture exists
+yet (queue `LAB-G7-TWO-DISPLAY`).
 
 ---
 

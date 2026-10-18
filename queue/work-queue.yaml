@@ -14368,6 +14368,79 @@ items:
 
       Done 2026-10-17, both statements verified wrong in source and corrected: Trio generates and stores the shared secret (RemoteControlConfigStateModel.swift:7-37), reads it only to verify commands (TrioRemoteControl.swift:29), and uploads only its device token, bundle and team identifiers to Nightscout (NightscoutManager.swift:838-853), Trio 0b29cd534; LoopFollow 4a74b781 sends remote carbs via APNs for Loop (LoopAPNSCarbsView.swift:563-564) and Trio (TRC/MealView.swift:346), its only Nightscout call on the remote settings screen being a profile read (RemoteSettingsViewModel.swift:256).
 
+  - id: DOCS-G7-SLOTS
+    title: "Correct the Dexcom BLE deep dive: the G7 holds one connection slot per display type, not one exclusive connection"
+    parcel: docs-truth
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main
+    state: done
+    pr: []
+    blast_radius: >
+      docs/10-domain/dexcom-ble-protocol-deep-dive.md (G6-vs-G7 table row
+      "Connection Slots"; new subsection "G7: one slot per display type").
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: programme documentation
+    register: []
+    gates:
+      - run: sh -c '! grep -qF "| 1 (exclusive connection) |" docs/10-domain/dexcom-ble-protocol-deep-dive.md'
+        kind: static
+        describe: >
+          FAILS while the deep dive says the G7 has one exclusive connection.
+          RED on 2026-10-18 against the uncorrected file, GREEN after.
+    blocks_on: []
+    evidence:
+      - docs/60-research/tenancy/identifier-format-2026-10-17.md
+    notes: >
+      Found by the identifier-format §7 research on 2026-10-17. Done
+      2026-10-18: G7SensorKit next-dev e17129d G7DisplayType.swift:18-28
+      (phone 2, watch 3, receiver 4, pump 5), G7CGMManager.swift:283-284;
+      xDrip4iOS c268542e CGMG7Transmitter.swift:8-13; Juggluco 75399d7
+      DexGattCallback.java:391; g7sim 7c039de sensor.go:295-302. Read, not
+      run.
+
+  - id: LAB-G7-TWO-DISPLAY
+    title: "Lab: two displays on one real G7 sensor report the same seconds counter for each reading, live and backfill"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: ""
+    base: main
+    state: not-started
+    pr: []
+    blast_radius: >
+      A capture lab and a results note; no code in any app. Its result
+      settles whether g7:<serial>:<seconds> is device-independent, which the
+      Loop reply's option 3 relies on.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: research
+    register: []
+    gates:
+      - no-gate: >
+          Needs a real G7 sensor and two devices; g7sim cannot settle it
+          because it models one counter per sensor by construction. The
+          gate to write: per 5-minute window, counter minus age is equal on
+          both displays for every reading both received, and backfill after
+          a forced gap matches; control: a deliberately offset counter fails.
+    blocks_on: []
+    evidence:
+      - docs/60-research/tenancy/identifier-format-2026-10-17.md
+      - docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md
+    notes: >
+      Design in identifier-format-2026-10-17 §7.6: one real sensor; Loop
+      next-dev as the phone display plus a second client of a different
+      display type (watch or another app holding a different slot) paired
+      a day or more after activation; compare counter minus age window by
+      window, and backfill after a forced disconnect; read the 0x4A serial
+      on both. Commit only counts and comparisons, never serials, keys or
+      readings (health data). Also record whether any restart or grace
+      period changes the counter or the session byte. Every implementation
+      read (G7SensorKit, xDrip+, xDrip4iOS, Juggluco, DiaBLE) treats the
+      counter as the sensor's session clock.
+
   - id: LOOP-ID-RECORDS
     title: "Correct BF-116's claim that Loop sends identifier on devicestatus, and the docs that call the v3 identifier server-assigned"
     parcel: docs-truth

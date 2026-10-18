@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 235 |
-| runnable gates | 283 |
-| explicit `no-gate:` markers | 275 |
+| items | 237 |
+| runnable gates | 284 |
+| explicit `no-gate:` markers | 276 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 275 of the 558 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 276 of the 560 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 66 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `not-started` | 67 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 4 | BFQ-46, BFQ-ENV, OID-LAB, LOOP-ID-REPLY |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -49,7 +49,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 87 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 9 | RT-0, T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-V3-IMMUTABLE-DECISION, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164 |
-| `done` | 22 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE |
+| `done` | 23 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-G7-SLOTS, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
 | `answered` | 2 | RT-D3, RT-PROPAGATION |
@@ -6929,7 +6929,7 @@ alarm-readiness items, and the seam branch refresh.
 
 ## Document-truth sweeps
 
-`parcel: docs-truth` &mdash; 16 items
+`parcel: docs-truth` &mdash; 17 items
 
 Rule 6 work. Agents read SECTIONS, not documents, so a fact stated twice and
 differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
@@ -6951,6 +6951,7 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 | `DOCS-DATA-RIGHTS-LAW` | Bring the data-rights pages up to date: EU Data Act, the current DMCA medical-device data exemption and the 2027 rulemaking, the Washington health-data act | `done` | `main` | n/a | 3 run |
 | `DOCS-VENDOR-FACTS` | Update vendor facts across the repo: Abbott's partner list, MiniMed's separation from Medtronic, Diabeloop in twiist (verify each first) | `done` | `main` | n/a | 2 run |
 | `DOCS-REMOTE-FOLLOWUP` | Re-check two remote-command statements found while correcting DOCS-REMOTE-PATHS: where Trio's shared secret is configured, and LoopFollow's remote carbs path | `done` | `main` | n/a | 2 run |
+| `DOCS-G7-SLOTS` | Correct the Dexcom BLE deep dive: the G7 holds one connection slot per display type, not one exclusive connection | `done` | `main` | n/a | 1 run |
 | `LOOP-ID-RECORDS` | Correct BF-116's claim that Loop sends identifier on devicestatus, and the docs that call the v3 identifier server-assigned | `done` | `records/loop-identifier-2026-10-17` | n/a | 3 run |
 
 ### `DOC-SEQUENCING` &mdash; phase0-pr-sequencing contradicts itself on the branch count
@@ -7423,6 +7424,35 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 
 **Notes.** Found by the DOCS-REMOTE-PATHS correction on 2026-10-17 and left out of that item's scope; both are read-derived suspicions, not yet verified. (1) remote- bolus-comparison.md:172 says Trio's shared secret is "Configured in Nightscout + Trio"; in source the sender (e.g. LoopFollow) holds the secret and Trio uploads only its device token to Nightscout (Trio 0b29cd534 NightscoutManager.swift:838-853, SecureMessenger.swift:30; LoopFollow 4a74b781 SecureMessenger.swift). (2) loopfollow-deep-dive.md:343 lists LoopFollow's remote carbs as "Via NS", while LoopFollow's RemoteType has no Nightscout path (Remote/RemoteType.swift). Re-read both at the pinned revisions in workspace.lock.json before editing; if either statement turns out to be right, record that and retire the gate rather than editing the page. Describe paths only; nothing about how any command's protection could be bypassed. Done 2026-10-17, both statements verified wrong in source and corrected: Trio generates and stores the shared secret (RemoteControlConfigStateModel.swift:7-37), reads it only to verify commands (TrioRemoteControl.swift:29), and uploads only its device token, bundle and team identifiers to Nightscout (NightscoutManager.swift:838-853), Trio 0b29cd534; LoopFollow 4a74b781 sends remote carbs via APNs for Loop (LoopAPNSCarbsView.swift:563-564) and Trio (TRC/MealView.swift:346), its only Nightscout call on the remote settings screen being a profile read (RemoteSettingsViewModel.swift:256).
 
+### `DOCS-G7-SLOTS` &mdash; Correct the Dexcom BLE deep dive: the G7 holds one connection slot per display type, not one exclusive connection
+
+| | |
+|---|---|
+| state (claimed) | `done` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** docs/10-domain/dexcom-ble-protocol-deep-dive.md (G6-vs-G7 table row "Connection Slots"; new subsection "G7: one slot per display type").
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** programme documentation
+
+**Gates.**
+
+- `[static]` `sh -c '! grep -qF "| 1 (exclusive connection) |" docs/10-domain/dexcom-ble-protocol-deep-dive.md'`
+  - FAILS while the deep dive says the G7 has one exclusive connection. RED on 2026-10-18 against the uncorrected file, GREEN after.
+
+**Evidence.**
+
+- `docs/60-research/tenancy/identifier-format-2026-10-17.md`
+
+**Notes.** Found by the identifier-format §7 research on 2026-10-17. Done 2026-10-18: G7SensorKit next-dev e17129d G7DisplayType.swift:18-28 (phone 2, watch 3, receiver 4, pump 5), G7CGMManager.swift:283-284; xDrip4iOS c268542e CGMG7Transmitter.swift:8-13; Juggluco 75399d7 DexGattCallback.java:391; g7sim 7c039de sensor.go:295-302. Read, not run.
+
 ### `LOOP-ID-RECORDS` &mdash; Correct BF-116's claim that Loop sends identifier on devicestatus, and the docs that call the v3 identifier server-assigned
 
 | | |
@@ -7551,7 +7581,7 @@ flag rule: versioning policy section 5.7.
 
 ## Controller registration and intent observability
 
-`parcel: platform` &mdash; 19 items
+`parcel: platform` &mdash; 20 items
 
 D18 (maintainer, 2026-10-09): two-tier controller registration - well-known
 declarations for backwards compatibility, controller-owned typed registrations
@@ -7562,6 +7592,7 @@ reproduced ones.
 
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
+| `LAB-G7-TWO-DISPLAY` | Lab: two displays on one real G7 sensor report the same seconds counter for each reading, live and backfill | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `LAB-TRIO-INTENT` | Simulator lab: Trio override expiry, temp-target upload repeats, downloaded temp-target echo | `not-started` | `main` | n/a | 1 run + 1 no-gate |
 | `SCHEMA-REG-EXT` | Registration grammar: must-ignore, typed extensions, open vocabularies, per-kind versions, horizons (D18 addendum rules 1-5) | `done` | `main` | n/a | 2 run |
 | `SPEC-REG-NEGOTIATE` | Registration negotiation: the hub capability document, submit and fallback contract (D18 addendum rule 6) | `done` | `main` | n/a | 1 run |
@@ -7581,6 +7612,35 @@ reproduced ones.
 | `LAB-HUB-ACTIVE-STATE` | Lab: cgm-remote-monitor and Nocturne answer 'what is active at t' for the same intent records | `done` | `main` | n/a | 1 run |
 | `LOOP-ID-REPLY` | Draft a reply to the Loop maintainers' proposal that Nightscout accept a client-supplied identifier | `in-progress` | `main` | n/a | 0 run + 1 no-gate |
 | `LOOP-ID-V3-IMMUTABLE` | Reproduce over HTTP that API v3 answers a re-send with the same identifier and a different date, device or eventType with 400 | `done` | `records/loop-identifier-2026-10-17` | n/a | 1 run + 1 no-gate |
+
+### `LAB-G7-TWO-DISPLAY` &mdash; Lab: two displays on one real G7 sensor report the same seconds counter for each reading, live and backfill
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `-` |
+| base | `main` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** A capture lab and a results note; no code in any app. Its result settles whether g7:<serial>:<seconds> is device-independent, which the Loop reply's option 3 relies on.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** research
+
+**Gates.**
+
+- **NO GATE** &mdash; Needs a real G7 sensor and two devices; g7sim cannot settle it because it models one counter per sensor by construction. The gate to write: per 5-minute window, counter minus age is equal on both displays for every reading both received, and backfill after a forced gap matches; control: a deliberately offset counter fails.
+
+**Evidence.**
+
+- `docs/60-research/tenancy/identifier-format-2026-10-17.md`
+- `docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md`
+
+**Notes.** Design in identifier-format-2026-10-17 §7.6: one real sensor; Loop next-dev as the phone display plus a second client of a different display type (watch or another app holding a different slot) paired a day or more after activation; compare counter minus age window by window, and backfill after a forced disconnect; read the 0x4A serial on both. Commit only counts and comparisons, never serials, keys or readings (health data). Also record whether any restart or grace period changes the counter or the session byte. Every implementation read (G7SensorKit, xDrip+, xDrip4iOS, Juggluco, DiaBLE) treats the counter as the sensor's session clock.
 
 ### `LAB-TRIO-INTENT` &mdash; Simulator lab: Trio override expiry, temp-target upload repeats, downloaded temp-target echo
 
