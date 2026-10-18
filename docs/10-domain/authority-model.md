@@ -1,296 +1,122 @@
-# Authority & Identity Model
+# Authority and identity model
 
-*Contributor-facing.* **Status 2026-10-18: prior art, partly replaced by D18 and D19.** Current
-decisions: [execution plan §1](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
-Under D18 the hub observes and records; overlapping intents are composed by the controller, and the
-hub never derives the result ([execution plan §2.6.1](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#261-d18--two-tier-controller-registration)).
-So the authority hierarchy used as a hub-side conflict rule, the conflict scenarios and the
-composition invariants below are rules a controller may apply, not the hub's. Still prior art: the
-agent as an actor, scopes that separate proposing from acting (the upstream RFC's `suggest`), and
-the delegation-grant shape. Instances, roles and command routing are specified in
-[registration specification §8–§9](../30-design/platform/spec/registration.md#9-channels-roles-and-provenance)
-(D19). An agent initiator is written in the open-vocabulary form `{value: other, controllerTerm}`;
-no `agent` value is added (maintainer, 2026-10-18). Map of what exists:
-[agents in the ecosystem](../30-design/platform/agent-trust-boundaries-2026-10-18.md).
-**Corrected in place 2026-10-18:** the "Conflict resolution" row and enhancement 2 of "Nightscout
-Implementation", and the scope of "Safety Invariants", to D18.
+*What this is: a reference (contributor-facing). Read after the [authority
+specification](../30-design/platform/spec/authority.md); leads to [agents in the
+ecosystem](../30-design/platform/agent-trust-boundaries-2026-10-18.md).* **Status 2026-10-18:
+proposed. The rules are in the authority and commands specifications; this page keeps what they
+do not carry: why identity is federated rather than stored, and a worked delegation grant.**
+Current decisions: [execution plan §1](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+The page's longer text, with authority levels, conflict scenarios and safety invariants, is in
+git: [full text at `85c645c8`](https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/85c645c8b003b61dc07ea31f8a7002711493b18a/docs/10-domain/authority-model.md).
 
-This document defines the authority hierarchy and identity model used for conflict resolution when multiple actors interact with AID systems.
+## Where each rule is specified
 
----
+| question | specified in |
+|---|---|
+| Who is a principal, and how each authenticates | [authority AU1–AU4](../30-design/platform/spec/authority.md#2-principals-and-credentials): devices hold a native per-tenant credential; owners and caregivers are to sign in through Ory Kratos on hosted sites; everything binds to a subject, never a token |
+| What a credential may do today | [authority AU5](../30-design/platform/spec/authority.md#2-principals-and-credentials): writes per collection, reading one bit |
+| Who started an intent, including an agent | [state and intent S8](../30-design/platform/spec/state-intent.md#2-rules): a value in the controller's own vocabulary; an agent initiator is `{value: other, controllerTerm}`, and no `agent` value is added |
+| An agent's role | [registration §9](../30-design/platform/spec/registration.md#9-channels-roles-and-provenance): an `other` role the hub lists |
+| Proposing a change, and approving one | [commands CM11–CM16](../30-design/platform/spec/commands.md#6-proposals-and-approvals-proposed): read access confers no propose role (CM12); an approval binds to the payload's hash (CM13); approving is sending (CM14) |
+| Who may receive a command | [authority §6](../30-design/platform/spec/authority.md#6-who-may-receive-a-command); [commands §2](../30-design/platform/spec/commands.md#2-where-a-command-goes) |
+| Combining overlapping intents | the controller's ([state and intent S1](../30-design/platform/spec/state-intent.md#2-rules)); the hub records the result and ranks no writer above another |
+| What delegation must provide | [authority §7, DR1–DR7](../30-design/platform/spec/authority.md#7-delegation-not-decided); the grant's design is open ([authority §9](../30-design/platform/spec/authority.md#9-open) item 6) |
+| What is recorded for audit | [authority §8](../30-design/platform/spec/authority.md#8-what-is-recorded-for-audit); [commands CM1](../30-design/platform/spec/commands.md#4-the-command-record-proposed) |
 
-## Why Nightscout Roles Gateway Exists
+Authority levels, a hierarchy among writers, conflict scenarios and composition invariants are
+not hub rules: the controller composes and validates (D18). Where each idea of the earlier draft in
+cgm-remote-monitor's `docs/proposals` now lives is in the [control-plane supersession
+map](../30-design/tenancy/nightscout-control-plane-reconciliation-2026-09-11.md).
 
-Before diving into technical details, it's important to understand the philosophical foundation for identity-based access control in Nightscout.
+## Why identity is federated
 
-### The Credential Dilemma
+### The credential dilemma
 
-Nightscout has deliberately avoided implementing traditional username/password authentication. This isn't a gap—it's a conscious design choice driven by:
+Nightscout does not implement username and password authentication, by choice:
 
-1. **Liability and Risk:** Managing custom credentials exposes the project to breach liability. Nightscout has chosen not to accept the risk of being "hacked" in the traditional credential-theft sense.
+1. **Liability and risk.** Managing custom credentials exposes the project to breach liability.
+2. **Informed consent over gatekeeping.** Access is granted by consent, not by proving knowledge
+   of a secret.
+3. **Several people per site.** A personal site still has several users: the person with
+   diabetes, caregivers, school health staff, clinicians, each with their own identity provider.
+4. **Observed practice.** People share "mongo strings" in support threads, share passwords with
+   apps and caregivers, and accept third-party client credentials. More password flows add to
+   this.
 
-2. **Informed Consent over Gatekeeping:** Nightscout prioritizes users exercising their data rights. Access is granted by consent, not by proving knowledge of a secret.
+The rationale is [ADR-003: No custom credentials](../90-decisions/adr-003-no-custom-credentials.md).
 
-3. **Multi-User Reality:** Even "personal" Nightscout instances have multiple users—the person with diabetes, caregivers, school health staff, endocrinologists. Each may use different identity providers (Google, Apple, clinic SSO). The authentication complexity is the same whether personal or multi-tenant.
+### Zero-trust direction
 
-4. **Observed Antipatterns:** Experience has shown that username/password flows degrade security hygiene. Users share "mongo strings" in support threads, share passwords with apps and caregivers, and accept third-party client credentials. More password flows compound these problems.
+Nightscout Roles Gateway moves toward:
 
-### Zero Trust Direction
+- every request authenticated through federated identity (Google, Apple, clinic SSO);
+- short-lived tokens instead of long-lived passwords;
+- explicit consent: a person joins a group by consenting, not by receiving a password;
+- policy-driven access: schedules and roles decide access, not possession of a credential.
 
-Rather than managing credentials, Nightscout Roles Gateway moves toward "zero trust" principles:
+The gateway's access modes are anonymous (A), identity-mapped through OAuth2/OIDC (B) and
+`API_SECRET` for older clients (C); its consent flow is invitation, OAuth2 login, consent to
+identity visibility, a `joined_groups` record, then access by policy
+([access modes](../../externals/nightscout-roles-gateway/docs/access-modes.md),
+[policies and permissions](../../externals/nightscout-roles-gateway/docs/policies-and-permissions.md)).
 
-- **Never trust, always verify** — Every request is authenticated via federated identity
-- **Identity federation** — External providers (Google, Apple, SSO) manage credentials
-- **Short-lived tokens** — JWT tokens expire, unlike passwords stored forever
-- **Explicit consent** — Users join groups by consciously consenting, not by receiving a password
-- **Policy-driven access** — Schedules and roles control access, not credential possession
+## Delegation grants
 
-For the full rationale, see [ADR-003: No Custom Credentials](../90-decisions/adr-003-no-custom-credentials.md).
+*Proposed; not implemented.* A worked example of a grant meeting [DR1–DR7](../30-design/platform/spec/authority.md#7-delegation-not-decided),
+offered as input to the grant's design. A person lets an agent propose exercise and sleep
+overrides for four months, within limits:
 
----
-
-## Overview
-
-In multi-user AID systems, conflicts arise when different actors (humans, caregivers, AI agents, controllers) attempt to modify the same state. This model defines:
-
-1. **Who can make changes** (identity)
-2. **What changes they can make** (permissions)
-3. **How conflicts are resolved** (authority hierarchy)
-
----
-
-> **This document is a near-duplicate of upstream prior art.**
-> `cgm-remote-monitor/docs/proposals/conflict-resolution.md` (added
-> 2026-01-01) carries the same authority levels, the same five conflict
-> scenarios, and the same delegation-grant structure. Two trees maintaining
-> one model is the failure this alignment work exists to prevent, so one of
-> them should become the source and the other a pointer. Which one is a
-> maintainer's call, not this repository's. See
-> [Reconciling the agentic control plane RFC](../30-design/tenancy/nightscout-control-plane-reconciliation-2026-09-11.md)
-> §6, edit 10.
->
-> What is *not* duplicated, and is this document's own contribution, is the
-> preamble above: the credential rationale and the zero-trust direction that
-> say why identity is federated rather than stored. Upstream has no
-> equivalent.
-
----
-
-## Actor Types
-
-### Primary Actors
-
-| Actor Type | Description | Authority Level | Examples |
-|------------|-------------|-----------------|----------|
-| **Human (Primary)** | Person with diabetes or primary caregiver | 100 (Highest) | User activating exercise override |
-| **Human (Caregiver)** | Delegated caregiver with explicit permissions | 80 | Parent adjusting child's settings |
-| **Agent** | AI/automated system with delegated authority | 50 | AI suggesting sleep mode |
-| **Controller** | AID algorithm on device | 30 | Loop activating temp basal |
-| **System** | Automated infrastructure | 10 | Background sync processes |
-
-### Identity Structure
-
-Each actor has a unique identity:
-
-```yaml
-IssuerIdentity:
-  issuerType: "human" | "controller" | "agent" | "caregiver" | "system"
-  issuerId: string          # Unique identifier
-  authority: "primary" | "delegated" | "automated"
-  delegatedBy: string       # If delegated, who granted authority
-  delegationScopes: [string] # What actions are permitted
-```
-
----
-
-## Authority Rules
-
-### Core Principles
-
-1. **Higher authority wins** — Higher authority can always override lower authority
-2. **Equal authority uses time** — Same authority level = last write wins
-3. **Lower cannot override higher** — Lower authority cannot supersede higher authority actions
-4. **Controller respects human** — Controller cannot override active human overrides
-
-### Authority Hierarchy
-
-```
-┌─────────────────────────────────────────┐
-│           HUMAN (PRIMARY)               │  ← Can do anything
-│         Authority Level: 100            │
-└───────────────────┬─────────────────────┘
-                    │
-┌───────────────────▼─────────────────────┐
-│          HUMAN (CAREGIVER)              │  ← Delegated by primary
-│         Authority Level: 80             │
-└───────────────────┬─────────────────────┘
-                    │
-┌───────────────────▼─────────────────────┐
-│              AGENT                      │  ← Delegated by primary/caregiver
-│         Authority Level: 50             │
-└───────────────────┬─────────────────────┘
-                    │
-┌───────────────────▼─────────────────────┐
-│            CONTROLLER                   │  ← Automated, follows policy
-│         Authority Level: 30             │
-└─────────────────────────────────────────┘
-```
-
----
-
-## Delegation Model
-
-### Delegation Grants
-
-Humans can delegate authority to agents with constraints:
-
-```javascript
+```json
 {
-  "grantId": "uuid",
-  "grantedBy": "human-user-id",
-  "grantedTo": "agent-id",
-  
-  "scopes": [
-    "override.activate:exercise",
-    "override.activate:sleep",
-    "override.suggest:*"
-  ],
-  
+  "grantId": "8e0c3f5a-…",
+  "grantedBy": "<the person's subject>",
+  "grantedTo": "<the subject of the agent's credential>",
+  "permissions": ["api:proposals:create"],
+  "roles": [{"channel": "override", "role": {"value": "other", "controllerTerm": "propose"}}],
+  "purpose": "suggest activity overrides from the calendar",
   "constraints": {
-    "maxOverrideDuration": 14400,    // 4 hours max
-    "allowedOverrideTypes": ["exercise", "sleep", "preMeal"],
-    "maxActivationsPerDay": 6,
-    "validTimeWindows": [
-      { "start": "06:00", "end": "22:00" }
-    ]
+    "allowedPresets": ["Exercise", "Sleep"],
+    "maxDurationMinutes": 240,
+    "maxProposalsPerDay": 6,
+    "validTimeWindows": [{"start": "06:00", "end": "22:00"}]
   },
-  
-  "grantedAt": "2026-01-01T00:00:00Z",
-  "expiresAt": "2026-12-31T23:59:59Z"
+  "grantedAt": "2026-10-18T00:00:00Z",
+  "expiresAt": "2027-02-18T00:00:00Z"
 }
 ```
 
-### Delegation Validation
+- **Subjects, not tokens** ([AU4](../30-design/platform/spec/authority.md#2-principals-and-credentials)):
+  rotating the agent's token changes nothing the grant names.
+- **Propose, not act.** The grant gives `api:proposals:create` and a propose role, never
+  `api:commands:create`, so every change still needs an approval bound to its payload hash
+  ([CM12–CM14](../30-design/platform/spec/commands.md#6-proposals-and-approvals-proposed)).
+- **Purpose and expiry are fields** (DR3), and revocation is a write to the grant (DR6).
+- **`maxProposalsPerDay`** is one answer to proposal volume, which the commands specification
+  lists as open ([commands §9](../30-design/platform/spec/commands.md#9-open), UCA-PROP-002).
 
-Before executing a delegated action:
+Before accepting a proposal under a grant, a hub would check that the grant exists, has not
+expired or been revoked, names the sender's subject, covers the permission and role, and that the
+proposal is within its constraints and time window. Whether the change is safe stays the
+controller's own validation (D18).
 
-1. Check grant exists and is not expired
-2. Verify action matches granted scopes
-3. Confirm within constraints (time, frequency, duration)
-4. Validate within time windows
+## Current state (gaps)
 
----
+Read from cgm-remote-monitor `dev` `fade2299`.
 
-## Conflict Scenarios
+| concept | status | where it is specified |
+|---|---|---|
+| `enteredBy` | implemented: free text, not verified | an identifying field, never an identity ([authority §8](../30-design/platform/spec/authority.md#8-what-is-recorded-for-audit)) |
+| verified identity for owners and caregivers | not implemented | [AU1](../30-design/platform/spec/authority.md#2-principals-and-credentials) (Kratos, adopted in principle and gated) |
+| delegation grants | not implemented | [authority §7](../30-design/platform/spec/authority.md#7-delegation-not-decided) (requirements; design open) |
+| proposals and approvals | not implemented | [commands §6](../30-design/platform/spec/commands.md#6-proposals-and-approvals-proposed) (proposed) |
+| audit | partial: `srvCreated` and `srvModified` on writes; reads not recorded | [authority §8](../30-design/platform/spec/authority.md#8-what-is-recorded-for-audit) |
 
-### Scenario 1: Override Supersession
+## Cross-references
 
-**Situation**: Human starts "Exercise" override, then Agent tries to start "High Activity" override.
-
-**Resolution**:
-- Compare authority levels
-- Human (100) > Agent (50)
-- Agent request is blocked unless human explicitly delegates
-
-### Scenario 2: Controller vs Human Override
-
-**Situation**: Human has active override; controller tries to adjust.
-
-**Resolution**:
-- Controller respects human override bounds
-- Controller can make adjustments **within** the override's limits
-- Controller cannot end or modify the human-initiated override
-
-### Scenario 3: Agent Rate Limiting
-
-**Situation**: Agent activates/deactivates same override repeatedly.
-
-**Resolution**:
-- Rate limiting prevents flip-flopping
-- Max activations per hour: 4
-- Cooldown after end: 15 minutes
-- Human confirmation required after 2 activations
-
----
-
-## Nightscout Implementation
-
-### Current State (Gaps)
-
-| Concept | Status | Notes |
-|---------|--------|-------|
-| `enteredBy` field | Implemented | Free-form nickname, not verified |
-| Authority levels | Not implemented | All writes treated equally |
-| Delegation grants | Not implemented | Proposed in OIDC RFC |
-| Conflict resolution | Not implemented | Last write wins. Outside the hub's role under D18: the controller composes, the hub records the result |
-| Audit trail | Partial | `srvCreated`/`srvModified` tracked |
-
-### Proposed Enhancements
-
-1. **OIDC Actor Identity** — Replace `enteredBy` with verified identity claims
-2. **Authority Enforcement** — Check a writer's permission before accepting mutations; resolving conflicts between accepted intents is the controller's (D18)
-3. **Delegation System** — Formal grant/revoke for caregivers and agents
-4. **Conflict Audit** — Log conflict resolutions for review
-
----
-
-## Gateway Implementation
-
-The Nightscout Roles Gateway implements identity-based access control:
-
-### Access Modes
-
-| Mode | Description | Identity Required |
-|------|-------------|-------------------|
-| Mode A | Anonymous/Public | No |
-| Mode B | Identity-Mapped | Yes (via OAuth2/OIDC) |
-| Mode C | API Secret Bypass | No (legacy compatibility) |
-
-### Permission Types
-
-| Type | Description |
-|------|-------------|
-| `default` | Standard allow/deny |
-| `nsjwt` | Exchange for Nightscout JWT with Shiro permissions |
-
-### Consent Tracking
-
-Identity-based access requires explicit consent:
-1. User receives invitation
-2. User logs in via OAuth2
-3. User consents to identity visibility
-4. `joined_groups` record created
-5. Access granted per policy
-
----
-
-## Safety Invariants
-
-These bind whoever composes intents, which under D18 is the controller, not the hub.
-
-### Never Violated
-
-1. **Human always wins** — Human-initiated action cannot be blocked by lower authority
-2. **Safety limits respected** — Composed effects never exceed safety limits
-3. **Conservative composition** — When in doubt, choose the safer option
-4. **Audit everything** — All conflict resolutions are logged
-5. **Explicit revocation** — Delegations must be explicitly revoked
-
----
-
-## Cross-References
-
-- [ADR-003: No Custom Credentials](../90-decisions/adr-003-no-custom-credentials.md)
-- [Nightscout Conflict Resolution Proposal](../../externals/cgm-remote-monitor-official/docs/proposals/conflict-resolution.md)
-- [NRG Access Modes](../../externals/nightscout-roles-gateway/docs/access-modes.md)
-- [NRG Policies and Permissions](../../externals/nightscout-roles-gateway/docs/policies-and-permissions.md)
-- [OIDC Actor Identity Proposal](../../externals/cgm-remote-monitor-official/docs/proposals/oidc-actor-identity-proposal.md)
-
----
-
-## Revision History
-
-| Date | Author | Changes |
-|------|--------|---------|
-| 2026-01-17 | Agent | Added "Why NRG Exists" philosophy section, linked ADR-003 |
-| 2026-01-16 | Agent | Initial extraction from conflict-resolution.md and NRG docs |
+- [ADR-003: No custom credentials](../90-decisions/adr-003-no-custom-credentials.md)
+- [Trusted identity providers](trusted-identity-providers.md)
+- The earlier draft in cgm-remote-monitor's `docs/proposals`:
+  [conflict-resolution.md](../../externals/cgm-remote-monitor-official/docs/proposals/conflict-resolution.md),
+  [oidc-actor-identity-proposal.md](../../externals/cgm-remote-monitor-official/docs/proposals/oidc-actor-identity-proposal.md)
+- [NRG access modes](../../externals/nightscout-roles-gateway/docs/access-modes.md),
+  [NRG policies and permissions](../../externals/nightscout-roles-gateway/docs/policies-and-permissions.md)

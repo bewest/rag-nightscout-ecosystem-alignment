@@ -391,8 +391,9 @@ Two properties worth keeping in any adoption:
 
 * **Supersession, not last-write-wins.** When a human and a controller both
   set an override, or two controllers overlap, the resolution has to be
-  recorded rather than implied. `authority-model.md` has already worked
-  through those conflict scenarios.
+  recorded rather than implied. The controller resolves them and declares
+  how (`supersedes`, [state and intent S3](spec/state-intent.md#2-rules));
+  the hub records the result.
 * **`DataExclusion` as a first-class span.** A sensor warm-up or a known-bad
   stretch is not missing data, it is data known to be unusable, and a replay
   that cannot tell the difference will silently score itself against noise.
@@ -430,7 +431,7 @@ missing half**, and it carves the problem at a joint this series did not:
 | `ControllerInstanceRegistration` | Per *running instance*: `instanceId`, `pumpBinding.connectedSince`, `cgmBinding`, `registeredAt`, **`lastSeenAt`** | **nothing** | This *is* liveness, and we have no equivalent |
 | `CapabilitySnapshot` | Liveness over time: `pumpConnected`, `closedLoopEnabled`, `suspended`, `lastLoopTime`, reservoir, battery | `StateSpan` categories `PumpConnectivity`, `PumpMode` | Same phenomenon, different container — theirs a point snapshot, ours a span. Reconcilable; a span is the stronger form for replay |
 | `bridge-rules.md` detection | `if (devicestatus.loop) … if (devicestatus.openaps) …` | our structural discriminator | **Independently identical.** Two efforts reached the same answer, which is the strongest evidence in this document that it is the right one |
-| Authority hierarchy, composition, delegation grants | `conflict-resolution.md` | `docs/10-domain/authority-model.md` | **Duplicated.** Near-identical authority levels, conflict scenarios and grant structures exist in both trees. This is the clearest single place to converge |
+| Authority hierarchy, composition, delegation grants | `conflict-resolution.md` | `docs/10-domain/authority-model.md` | Composition is the controller's ([state and intent S1](spec/state-intent.md#2-rules)); delegation's requirements are [authority §7](spec/authority.md#7-delegation-not-decided); `authority-model.md` keeps the credential rationale and a worked grant |
 | Global monotonic event cursor | `assignEventCursor`, `/events?cursor=` | §3.2's opaque server watermark | Same role, different implementation. Whether they are one cursor is an open design question |
 
 **The kind/instance split is the answer to the liveness question**, and it is
