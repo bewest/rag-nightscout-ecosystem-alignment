@@ -5459,15 +5459,14 @@ items:
       client-set _id cannot serve the phone-and-watch case (two devices
       create two ObjectIds), so identifier is needed either way.
 
-      Recommended answer, as the rewritten Loop reply proposes it
-      (2026-10-17, for the maintainer to confirm): (1) yes, a client may
-      send an ObjectId it creates as _id; any other _id value is not valid
-      (UUID_HANDLING keeps moving a UUID _id to identifier); (2) when the two
-      match different records, _id decides. (2) departs from D20 rule 5's
-      identifier-first order and from v1 treatments today, which drop _id
-      when identifier is present (lib/server/treatments.js:356-362 at
-      15.0.8), so the decision amends rule 5. Otherwise "later, only if
-      needed" under the simple contract.
+      Maintainer, 2026-10-18: (2) identifier decides when the two match
+      different records, keeping D20 rule 5's identifier-first order and v1
+      treatments' behaviour today (lib/server/treatments.js:356-362 at
+      15.0.8); the reply's earlier _id-first proposal is reversed. (1) still
+      recommended, pending Loop's answer: a client may send an ObjectId it
+      creates as _id over v1 (API v3 stores it as a string, BF-170); any
+      other _id value is not valid (UUID_HANDLING keeps moving a non-24-hex
+      string _id to identifier).
 
   - id: ID-ABSENT-DECISION
     title: "Decide: a write that carries no identifier (and no _id) - keep the time-key fallback, deprecate it, or require identifier?"

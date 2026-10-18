@@ -28,9 +28,10 @@ otherwise:
 3. If neither is sent, the collection's time key applies (entries `sysTime` + `type`, treatments
    `created_at` + `eventType`); this fallback may be deprecated later.
 
-Tie-break (proposed, queue `ID-CLIENT-OID-DECISION`): when a write carries both and they point at
-different records, `_id` decides. That differs from D20 rule 5's identifier-first order and from
-v1 treatments today (`identifier` present drops `_id`, `server/treatments.js:356-362` @15.0.8).
+Tie-break (maintainer, 2026-10-18; queue `ID-CLIENT-OID-DECISION`): when a write carries both and
+they point at different records, `identifier` decides, as in D20 rule 5 and v1 treatments today
+(`identifier` present drops `_id`, `server/treatments.js:356-362` @15.0.8). An earlier draft
+proposed `_id`-first; it was reversed to keep today's behaviour.
 Every write reply returns both ids (rule 5).
 
 The one server change it needs, v1 entries and device status matching on `identifier`, is queue
@@ -119,6 +120,7 @@ send `identifier`) is the direction the reply takes.
 | 2026-10-17 | received | private page shared with the maintainer | Loop developers' proposal: client `identifier`, unique sparse index, upsert, v1 by-identifier routes; Q1–Q3 | this README; to be weighed against D20 rule 5, write contract §6.1, and [ADR-002](../../../90-decisions/adr-002-sync-identity-strategy.md) (Proposed) |
 | — | to send | not chosen | [reply.body.md](reply.body.md); adds (2026-10-17) a question back: is the watch-and-phone case a re-send to acknowledge or an edit to apply? Our decision of record (write contract Q1, merge on match) answers "update" | `ID-V3-IMMUTABLE-DECISION` (queue), beside write contract §6.1 Q1 |
 | 2026-10-17 | rewritten | — | reply rewritten around the simple contract (three rules, tie-break `_id` decides, one server change after 15.0.9); previous version at `dd6febcc` in git history | `ID-SIMPLE-MATCH`, `ID-CLIENT-OID-DECISION` (queue) |
+| 2026-10-18 | revised | — | open questions become six concrete cases with today's behaviour, our default and an answer column; tie-break reversed to `identifier` decides (maintainer) | `ID-CLIENT-OID-DECISION`; write contract §6.1 |
 
 When the reply is sent, add its date, channel and link. When they answer, add a row and the
 decision row it produces.
@@ -134,8 +136,8 @@ decision row it produces.
 - **Q1–Q3 and the `date` question.** The rewritten reply takes no position on them; they are in
   its "Later, only if needed" list. The `date` behaviour on API v3 is reproduced
   ([lab results](../../../../tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md)).
-- **Tie-break.** The reply proposes that `_id` decides when the two ids disagree, which departs
-  from D20 rule 5's order. Confirm before sending (`ID-CLIENT-OID-DECISION`).
+- **Tie-break.** Settled 2026-10-18: `identifier` decides, keeping D20 rule 5 and today's v1
+  treatments behaviour (`ID-CLIENT-OID-DECISION`).
 - **Push first.** The reply links pages on the project site; the gh-pages build of 2026-10-17
   (`de66763c`) has every linked page and anchor, including the folder's `index.html` the rewritten
   reply links. BF-169 is cited by number only.

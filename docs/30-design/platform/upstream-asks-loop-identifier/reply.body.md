@@ -22,10 +22,10 @@ Code references are to cgm-remote-monitor `15.0.8` (`92d08342`) and `dev` at `fa
    `sysTime` + `type`, treatments `created_at` + `eventType`. This fallback may be deprecated
    later.
 
-**Tie-break (proposed):** if a write carries both and they point at different records, `_id`
-decides. This differs from rule 5 of our design decision D20, which tries `identifier` first, and
-from v1 treatments today, which drop `_id` when `identifier` is present. We will record it as a
-decision. Rule 5 also says what every write reply should carry:
+**Tie-break:** if a write carries both and they point at different records, `identifier`
+decides. That is what v1 treatments do today (they drop `_id` when `identifier` is present), what
+rule 5 of our design decision D20 says, and what your proposal implies, since `identifier` is the
+key clients own. Rule 5 also says what every write reply should carry:
 
 > **Two ids, one rule.** … Every write reply returns both.
 > ([D20 rule 5](https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16))
@@ -111,7 +111,7 @@ working. Where it says *open*, we have no default yet.
 | 3 | Loop re-sends an identical record after a timeout | v1 entries and treatments: matched, but a treatment matched by time is answered without `_id` (BF-165). v1 device status: stored again. API v3: matched | success, and the reply carries the stored `_id` and `identifier` | |
 | 4 | A record is deleted, then the same `identifier` arrives again | API v3 (soft delete): the record comes back. v1 (hard delete): a new record | *open* | |
 | 5 | An older app sends no `identifier` | each collection's time key | keep the time key; requiring `identifier` would be announced as a later version boundary | |
-| 6 | One write carries an `_id` and an `identifier` that name different stored records | v1 treatments: `identifier` wins, `_id` is dropped | *open*: `_id` wins (the tie-break above), or `identifier` wins as today | |
+| 6 | One write carries an `_id` and an `identifier` that name different stored records | v1 treatments: `identifier` wins, `_id` is dropped | `identifier` wins, as today (the tie-break above) | |
 
 For case 1, if you would rather Nightscout keep the first upload unchanged, or refuse the second,
 please say so and what the phone should do next. An error reply makes NightscoutKit treat the
