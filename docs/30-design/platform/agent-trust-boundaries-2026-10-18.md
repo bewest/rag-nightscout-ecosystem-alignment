@@ -206,8 +206,10 @@ controller holds.
 
 **Where it would be specified.** Command delivery is `SPEC-REG-COMMANDS` in the
 [work queue](../../../queue/work-queue.yaml): not started, blocked on `SPEC-REG-MODES`; §3.6 says
-"The command API itself is not specified here." A proposal record, if adopted, would sit in front
-of it.
+"The command API itself is not specified here." The proposal record is folded into that item
+(maintainer, 2026-10-18), with gate cases for an approval bound to one payload hash, an expired
+proposal, and a proposal from a credential with no propose role; the open question above is its
+first.
 
 ## 5. Evaluating an algorithm before it acts
 

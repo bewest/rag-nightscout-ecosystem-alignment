@@ -15758,7 +15758,7 @@ items:
       credential) and D17 row 2 if it lands.
 
   - id: SPEC-REG-COMMANDS
-    title: "Hub command delivery to a command-sink instance, specified for single and multi mode"
+    title: "Hub command delivery to a command-sink instance, with the proposal record in front of it, specified for single and multi mode"
     parcel: platform
     repo: rag-nightscout-ecosystem-alignment
     branch: main
@@ -15772,7 +15772,15 @@ items:
       is inferred when one product declares it, else
       ambiguous-command-destination) and its transport, for both modes, in the
       hub-sync design with conformance cases. §3.6 says "The command API
-      itself is not specified here." Ships nothing.
+      itself is not specified here." Since 2026-10-18 (maintainer: fold
+      the proposal lifecycle in here) also the proposal record in front of
+      a command, from agents in the ecosystem §4.3: propose → validate →
+      (evaluate) → approve | reject → command → outcome. A proposal names
+      the proposing instance and its propose role ({value: other,
+      controllerTerm}), the target instanceId and definitionId, an expiry
+      and the SHA-256 of the payload's RFC 8785 canonical JSON; an approval
+      names that hash; the controller checks the hash before enacting and
+      reports the outcome correlated to the proposal. Ships nothing.
     review: maintainer
     operator_visible: ""
     semver: n/a
@@ -15786,12 +15794,19 @@ items:
           delivered under multi (such emissions are withheld), with the
           control that the same producer delivers in single; and red when a
           command reaches a sink on another tenant, with the control of the
-          same command on its own tenant.
+          same command on its own tenant. For proposals: red when an
+          approval of payload hash A enacts payload B, with the control that
+          the same approval enacts A; red when an expired proposal is
+          approved, with the control of the same proposal before expiry;
+          and red when a credential with no propose role (a `readable`
+          token, or an MCP server holding one) creates a proposal, with the
+          control of the same request from a propose-role holder.
     blocks_on: [SPEC-REG-MODES]
     evidence:
       - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
       - docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md
+      - docs/30-design/platform/agent-trust-boundaries-2026-10-18.md
     notes: >
       Today's carriers, read-derived on crm-seam 81a1f6ce. Loop's remote
       commands go out as APNs pushes configured from
@@ -15806,7 +15821,17 @@ items:
       alarms and live updates are off under multi (plan §7a). A command
       transport has to state which of these it uses and whether it runs
       inside a request. The hub routes a command; it never decides or
-      composes dosing (D18, D19 rule 6).
+      composes dosing (D18, D19 rule 6). Proposals (folded in 2026-10-18):
+      validation and enactment stay the controller's (D18), the hub routes
+      and records and does not judge whether a change is safe, and read
+      access never confers a propose or act role. Prior art is the upstream
+      agent control-plane RFC's `suggest` scope ("can propose, human must
+      approve") and `DelegationGrant`, mapped in agents in the ecosystem
+      §4.2. First open question: what an approval binds "the state it was
+      based on" to. D19's product and instance etags version the
+      registration, not the controller's therapy state (active override,
+      profile, insulin on board), so nothing yet tells an approver that the
+      state the agent read is still the state the controller holds (§4.3).
 
   - id: SPEC-REG-MIGRATE
     title: "Registration state across a single-tenant site's move into a tenant, and back"

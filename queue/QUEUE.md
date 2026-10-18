@@ -7605,7 +7605,7 @@ reproduced ones.
 | `SPEC-REG-MODES` | Registration contract in single and multi mode: storage key, credential kinds, owner listener, capability document scope, legacy id form | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `HUB-REG-CRM-SEAM` | cgm-remote-monitor: carry the registration store onto the storage seam, so single (MongoDB, PostgreSQL) and multi serve one contract | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `HUB-REG-CRM-ADMIN` | cgm-remote-monitor: the registration owner's actions on ns-tenant-admin under TENANCY_MODE=multi | `not-started` | `-` | n/a | 0 run + 1 no-gate |
-| `SPEC-REG-COMMANDS` | Hub command delivery to a command-sink instance, specified for single and multi mode | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `SPEC-REG-COMMANDS` | Hub command delivery to a command-sink instance, with the proposal record in front of it, specified for single and multi mode | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `SPEC-REG-MIGRATE` | Registration state across a single-tenant site's move into a tenant, and back | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `HUB-REG-NOCTURNE` | Nocturne: propose the registration grammar and negotiation as a shared contract, with the hub active-state evidence | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `PROPOSAL-REG-CONTROLLERS` | Open-source AID controllers: propose registration, instances and negotiation, with pre-filled declarations | `not-started` | `main` | n/a | 0 run + 1 no-gate |
@@ -8035,7 +8035,7 @@ reproduced ones.
 
 **Notes.** No queue item builds ns-tenant-admin itself (searched 2026-10-16: the queue names it only in the notes of T30-AUTH and SPEC-REG-DECISIONS). The D16 process-topology question is for the maintainer before this starts. The owner's authentication there is native today (the tenant root credential) and D17 row 2 if it lands.
 
-### `SPEC-REG-COMMANDS` &mdash; Hub command delivery to a command-sink instance, specified for single and multi mode
+### `SPEC-REG-COMMANDS` &mdash; Hub command delivery to a command-sink instance, with the proposal record in front of it, specified for single and multi mode
 
 | | |
 |---|---|
@@ -8048,7 +8048,7 @@ reproduced ones.
 | review | maintainer |
 | blocks on | `SPEC-REG-MODES` |
 
-**Blast radius.** Expected: the command request, its routing (already specified in §3.6: the live device command-sink holder, else no-command-destination; since 2026-10-17 an unshared slot's product is inferred when one product declares it, else ambiguous-command-destination) and its transport, for both modes, in the hub- sync design with conformance cases. §3.6 says "The command API itself is not specified here." Ships nothing.
+**Blast radius.** Expected: the command request, its routing (already specified in §3.6: the live device command-sink holder, else no-command-destination; since 2026-10-17 an unshared slot's product is inferred when one product declares it, else ambiguous-command-destination) and its transport, for both modes, in the hub- sync design with conformance cases. §3.6 says "The command API itself is not specified here." Since 2026-10-18 (maintainer: fold the proposal lifecycle in here) also the proposal record in front of a command, from agents in the ecosystem §4.3: propose → validate → (evaluate) → approve | reject → command → outcome. A proposal names the proposing instance and its propose role ({value: other, controllerTerm}), the target instanceId and definitionId, an expiry and the SHA-256 of the payload's RFC 8785 canonical JSON; an approval names that hash; the controller checks the hash before enacting and reports the outcome correlated to the proposal. Ships nothing.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -8056,15 +8056,16 @@ reproduced ones.
 
 **Gates.**
 
-- **NO GATE** &mdash; Not started. The gate will be conformance cases for a command routed, refused no-command-destination, and delivered, in each mode. Red when a command produced with no tenant bound is reported delivered under multi (such emissions are withheld), with the control that the same producer delivers in single; and red when a command reaches a sink on another tenant, with the control of the same command on its own tenant.
+- **NO GATE** &mdash; Not started. The gate will be conformance cases for a command routed, refused no-command-destination, and delivered, in each mode. Red when a command produced with no tenant bound is reported delivered under multi (such emissions are withheld), with the control that the same producer delivers in single; and red when a command reaches a sink on another tenant, with the control of the same command on its own tenant. For proposals: red when an approval of payload hash A enacts payload B, with the control that the same approval enacts A; red when an expired proposal is approved, with the control of the same proposal before expiry; and red when a credential with no propose role (a `readable` token, or an MCP server holding one) creates a proposal, with the control of the same request from a propose-role holder.
 
 **Evidence.**
 
 - `docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md`
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md`
+- `docs/30-design/platform/agent-trust-boundaries-2026-10-18.md`
 
-**Notes.** Today's carriers, read-derived on crm-seam 81a1f6ce. Loop's remote commands go out as APNs pushes configured from env.extendedSettings.loop (lib/server/loop.js:14-56); T3.3 makes extendedSettings per tenant, and the configuration surface census classes LOOP_APNS_KEY, LOOP_APNS_KEY_ID and LOOP_DEVELOPER_TEAM_ID as per-tenant secrets (§B.4, TS). Socket emissions under multi go to the bound tenant's room and are withheld when no tenant is bound (lib/server/socket-tenancy.js:258-266; the call sites are lib/api3/alarmSocket.js:237, lib/server/websocket.js:47 and lib/api3/storageSocket.js:181), and the load cycle runs unbound, so alarms and live updates are off under multi (plan §7a). A command transport has to state which of these it uses and whether it runs inside a request. The hub routes a command; it never decides or composes dosing (D18, D19 rule 6).
+**Notes.** Today's carriers, read-derived on crm-seam 81a1f6ce. Loop's remote commands go out as APNs pushes configured from env.extendedSettings.loop (lib/server/loop.js:14-56); T3.3 makes extendedSettings per tenant, and the configuration surface census classes LOOP_APNS_KEY, LOOP_APNS_KEY_ID and LOOP_DEVELOPER_TEAM_ID as per-tenant secrets (§B.4, TS). Socket emissions under multi go to the bound tenant's room and are withheld when no tenant is bound (lib/server/socket-tenancy.js:258-266; the call sites are lib/api3/alarmSocket.js:237, lib/server/websocket.js:47 and lib/api3/storageSocket.js:181), and the load cycle runs unbound, so alarms and live updates are off under multi (plan §7a). A command transport has to state which of these it uses and whether it runs inside a request. The hub routes a command; it never decides or composes dosing (D18, D19 rule 6). Proposals (folded in 2026-10-18): validation and enactment stay the controller's (D18), the hub routes and records and does not judge whether a change is safe, and read access never confers a propose or act role. Prior art is the upstream agent control-plane RFC's `suggest` scope ("can propose, human must approve") and `DelegationGrant`, mapped in agents in the ecosystem §4.2. First open question: what an approval binds "the state it was based on" to. D19's product and instance etags version the registration, not the controller's therapy state (active override, profile, insulin on board), so nothing yet tells an approver that the state the agent read is still the state the controller holds (§4.3).
 
 ### `SPEC-REG-MIGRATE` &mdash; Registration state across a single-tenant site's move into a tenant, and back
 
