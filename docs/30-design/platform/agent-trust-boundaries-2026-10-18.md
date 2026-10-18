@@ -176,6 +176,8 @@ Read against that:
 | append-only audit with issuer and authority | prior art |
 | Conflict rules: override composition inside the hub, "Human > Agent > Controller" | **outside the hub's role.** Composition is controller-specific ([intent landscape §7](nightscout-intent-workflow-landscape-2026-10-09.md#7-composition-who-combines-overlapping-intents)); the [control-plane reconciliation](../tenancy/nightscout-control-plane-reconciliation-2026-09-11.md) records the same |
 
+The same earlier draft's integration questionnaire has a default answer per controller, read from source, in [integration questionnaire defaults](integration-questionnaire-defaults-2026-10-18.md).
+
 **An agent as initiator** (maintainer, 2026-10-18). No `agent` value is added to any initiator
 vocabulary. An agent initiator is written in the open-vocabulary form `{value: other,
 controllerTerm}`, as the [registration specification §9](spec/registration.md#9-channels-roles-and-provenance) does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. Recorded in the [execution

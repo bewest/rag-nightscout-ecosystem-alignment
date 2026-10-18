@@ -1,6 +1,6 @@
 # Reconciling the agentic control plane RFC with what the corpus measured
 
-*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current as analysis of the RFC; no decision rests on it.** Current decisions: [execution plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). **Corrected in place 2026-10-09:** §3.4 counts are distinct documents across the corpus's two overlapping snapshots. The RFC's hub-side override composition (`conflict-resolution.md`) is outside the hub's role under D18.
+*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current as analysis of the RFC; no decision rests on it.** Current decisions: [execution plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). **Corrected in place 2026-10-09:** §3.4 counts are distinct documents across the corpus's two overlapping snapshots. The RFC's hub-side override composition (`conflict-resolution.md`) is outside the hub's role under D18. **Corrected in place 2026-10-18:** §7's "No — ask" rows, and every other question, now have defaults read from each controller's source in [integration questionnaire defaults](../platform/integration-questionnaire-defaults-2026-10-18.md); the questionnaire has 16 questions, not twenty; and §3.5's `loop.enacted.received` is a constant in Loop's writer, not a pump acknowledgement (that page, C7).
 
 Date: 2026-09-11. Tenth in the series, and the
 first one addressed **to cgm-remote-monitor's own `docs/proposals/` set**
