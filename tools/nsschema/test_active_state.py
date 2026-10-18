@@ -81,11 +81,11 @@ def test_state_version(cid):
     assert version(case, spec["equal"][0][0]).startswith("sha256:")
 
 
-def test_an_undeclared_unit_is_never_assumed():
-    case = yaml.safe_load(yaml.safe_dump(CASES["no-end-marker"]))
-    del case["declarations"][0]["stateSpans"][0]["wire"]["durationUnit"]
-    with pytest.raises(ValueError):
-        active_state.instances(case)
+@pytest.mark.parametrize("cid", sorted(CASES))
+def test_unreadable_kinds(cid):
+    # A11: a unit is never assumed; the kind is reported, the rest still answers.
+    case = CASES[cid]
+    assert active_state.unreadable(case) == case["expected"].get("unreadable", [])
 
 
 def test_the_hub_never_composes():

@@ -379,6 +379,8 @@ _AAPS_SPANS = [
         "kind": "ProfileSwitch",
         "slot": "profileSwitch",
         "exclusiveWithinSlot": True,
+        "overlay": True,
+        "supersedes": True,
         "coexistsWith": ["temporaryTarget", "runningMode", "scene"],
         "states": ["active", "ended"],
         "wire": {
@@ -390,6 +392,10 @@ _AAPS_SPANS = [
                       "originalProfileName", "durationInMilliseconds"],
             "durationField": "duration",
             "durationUnit": "minutes",
+            "indefinite": {
+                "field": "duration", "value": 0,
+                "description": "A permanent profile switch has duration 0.",
+            },
             "endedEncoding": "amend-duration",
             "cancelBeforeStartEncoding": "soft-delete",
             "endReasonPath": None,
@@ -430,6 +436,12 @@ _AAPS_SPANS = [
                            "full sync, which apply inbound records regardless.",
         },
         "evidence": [
+            ev("a permanent profile switch has duration 0; the active switch is the latest "
+               "temporary one active at t or the latest permanent one at or before t, "
+               "whichever started later, so a temporary switch overlays a permanent one and "
+               "a later switch supersedes",
+               f"{AAPS} database/impl/src/commonMain/kotlin/app/aaps/database/AppRepository.kt:408-415; "
+               "database/impl/src/commonMain/kotlin/app/aaps/database/daos/ProfileSwitchDao.kt:37"),
             ev("PS -> EPS written only if the pump accepts; EPS uploaded as Note recognised "
                "by originalProfileName", f"{LANDSCAPE} §3.3"),
             ev("EPS wire: eventType Note, scaled profileJson, original* fields",
@@ -521,6 +533,7 @@ _AAPS_SPANS = [
         "slot": "runningMode",
         "exclusiveWithinSlot": True,
         "overlay": True,
+        "supersedes": True,
         "coexistsWith": ["profileSwitch", "temporaryTarget", "scene"],
         "states": ["active", "ended"],
         "endReasons": [{"reason": "cancelled", "controllerTerm": "RESUME"}],
@@ -534,14 +547,15 @@ _AAPS_SPANS = [
                                       "DISABLED_LOOP", "SUPER_BOLUS", "DISCONNECTED_PUMP",
                                       "SUSPENDED_BY_PUMP", "SUSPENDED_BY_USER",
                                       "SUSPENDED_BY_DST"]},
-            "durationField": "duration",
-            "durationUnit": "minutes",
+            "durationField": "originalDuration",
+            "durationUnit": "milliseconds",
             "indefinite": {
                 "field": "originalDuration", "value": 0,
-                "description": "Open-ended DISABLED_LOOP is sent with a 10-year duration and "
-                               "originalDuration 0. OPEN_LOOP, CLOSED_LOOP and "
-                               "CLOSED_LOOP_LGS are sent with duration 0 and their own "
-                               "duration in originalDuration.",
+                "description": "originalDuration carries every mode's own duration in "
+                               "milliseconds, 0 when permanent. The wire duration is 0 for "
+                               "OPEN_LOOP, CLOSED_LOOP and CLOSED_LOOP_LGS and a 10-year "
+                               "placeholder for an open-ended DISABLED_LOOP, so it is not the "
+                               "duration field.",
             },
             "endedEncoding": "amend-duration",
             "cancelBeforeStartEncoding": "soft-delete",
@@ -576,6 +590,11 @@ _AAPS_SPANS = [
                "originalDuration 0; RESUME is an error on the wire",
                f"{AAPS} plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/"
                "nsclientV3/extensions/RunningModeExtension.kt:25-97"),
+            ev("the active mode is the latest temporary mode active at t or the latest "
+               "permanent (duration 0) mode at or before t, whichever started later: a "
+               "temporary mode overlays a permanent one, and a later mode supersedes",
+               f"{AAPS} database/impl/src/commonMain/kotlin/app/aaps/database/AppRepository.kt:451-458; "
+               "database/impl/src/commonMain/kotlin/app/aaps/database/daos/RunningModeDao.kt:32-35"),
             ev("mode vocabulary; RESUME cancels a temporary mode",
                f"{AAPS} core/data/src/commonMain/kotlin/app/aaps/core/data/model/RM.kt:43-63"),
             ev("NsClientAcceptRunningMode, default false",

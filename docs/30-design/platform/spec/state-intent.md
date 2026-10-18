@@ -110,7 +110,7 @@ preset name and no effect.
 ## 6. What is active at a time
 
 How a hub answers "what was active at time t" from the records a controller wrote and the kinds it
-declared. Proposed, for the maintainer to confirm (§6.3): specified with synthetic cases and a
+declared. Proposed, for the maintainer to confirm (§6.3, ten choices): specified with synthetic cases and a
 reference function (`tools/nsschema/active_state.py`), not implemented by any hub. The hub reports
 instances and which are active; it never combines them (S1).
 
@@ -119,38 +119,42 @@ instances and which are active; it never combines them (S1).
 | # | rule |
 |---|---|
 | A1 | **Per product and kind.** Instances are derived per `(vendor, product)` and kind, from that product's records only. Instances of two products are both reported, even on one shared slot; neither ends the other. |
-| A2 | **Identity makes an instance.** A record belongs to a kind by its carrier (collection, `eventType`, discriminator). Records whose `wire.identity` fields are equal are one instance; its content is the last write the hub received for that identity. Two records with equal identity at the same instant are one instance, never two. |
+| A2 | **Identity makes an instance.** A record belongs to a kind's requested layer by its `wire` carrier (collection, `eventType`, discriminator) and, when the kind declares a `requested` carrier, by that carrier too. Records whose `wire.identity` fields are equal are one instance; its content is the last live write the hub received for that identity. Two records with equal identity at the same instant are one instance, never two. |
 | A3 | **Start is the record's own time.** An instance starts at its record's `timeField` (`created_at` when none is declared), never at the time in its `_id` or the time the hub received it ([identity I3](identity.md#1-rules)). |
-| A4 | **End from the declared duration.** An instance ends at its start plus `durationField` in `durationUnit`. The `indefinite` sentinel, or no duration, is open-ended. |
-| A5 | **End encodings.** An amendment that shortens an instance (`amend-duration`, `repost-same-created_at`, or `delete-and-repost` under one identity) ends it early, with end reason `cancelled`; one that runs its duration ends `expired`. Under `zero-duration-record`, a zero-duration record ends the instance of the kind active at its time, with `cancelled`, and is not an instance itself. |
-| A6 | **Deletion.** A record deleted before its start, and not posted again, is listed as ended `deletedBeforeStart` and is never active. A record deleted after its start and not posted again is not reported, as a deleted document is not today. |
-| A7 | **Supersession by start.** Under `supersedes`, an instance ends at the start of the next instance of the same kind and product that starts after it and before its end, with `superseded`. Order is by start, never by arrival, so a backfilled earlier instance is ended by the later one whichever arrived first. Two instances that start at the same instant: the later received supersedes the earlier. |
+| A4 | **End from the declared duration.** An instance ends at its start plus `durationField` in `durationUnit`. A record carrying the `indefinite` sentinel, or no duration, is open-ended. |
+| A5 | **End encodings.** An amendment that shortens an instance (`amend-duration`, `repost-same-created_at`, or `delete-and-repost` under one identity) ends it early, with end reason `cancelled`; one that runs its duration ends `expired`. Under `zero-duration-record`, a zero-duration record ends the latest-starting instance of the kind and product that started strictly before it and is active at its time, with `cancelled`, and is not an instance itself; an instance starting at the marker's own time is not ended. The end reason describes an instance once it has ended; an amendment that shortens an instance is read as an early end, and an edit that only shortens it reads the same. |
+| A6 | **Deletion.** A delete removes the write it names: by `_id`, as a delete by id carries no other field, or by identity. A soft delete (a write with `isValid: false`) removes its identity. An instance with no live write left is listed as ended `deletedBeforeStart`, and is never active and ends nothing, when the delete was received before its start; otherwise it is not reported, as a deleted document is not today. A re-post received before the delete of the record it replaces still amends the instance. |
+| A7 | **Supersession by start.** Under `supersedes`, an instance ends at the start of the next instance of the same kind and product that starts after it and before its end, with `superseded`. Order is by start, never by arrival, so a backfilled earlier instance is ended by the later one whichever arrived first. Two instances that start at the same instant: the one whose last write was received later supersedes. |
 | A8 | **Overlay.** Under `overlay`, a timed instance applies over an open-ended one without ending it; the open-ended one is not active while the timed one is, and is active again when it ends. |
 | A9 | **Overlap is reported, not resolved.** For a kind that is `exclusiveWithinSlot` and declares neither `supersedes` nor `overlay`, overlapping instances are all reported active, each marked `overlap`. |
-| A10 | **Requested and applied are separate layers.** Wire records give the requested layer; `applied` records give the applied layer. Each applied record is in effect from its `timeField` until its own end or the next applied record of the same carrier and product, whichever is first; a record whose `activeField` is false ends what the earlier one put in effect. A request with no applied record is reported as requested only. |
-| A11 | **Units are declared, never assumed.** A duration is read only in its declared `durationUnit`; a carrier with a duration field and no unit is not read. A field's unit is reported from its typed path, and a path with no unit carries none. |
+| A10 | **Requested and applied are separate layers.** Wire records matching the requested carrier give the requested layer (A2); `applied` records give the applied layer. Each applied record is in effect from its `timeField` until its own end or the next applied record of the same carrier and product, whichever is first; a record whose `activeField` is false ends what the earlier one put in effect. An applied carrier sampled per cycle (`devicestatus`) gives an applied layer only when it declares `activeField`; without one its values are the controller's composed result (S1) and name no intent, so no instance is reported from them. A request with no applied record is reported as requested only. |
+| A11 | **Units are declared, never assumed.** A duration is read only in its declared `durationUnit`. A kind whose carrier has a duration and no unit yields no instances and is reported unreadable; the other kinds still answer. A field's unit is reported from its typed path, and a path with no unit carries none. |
 | A12 | **A state version.** A product's state version at a time is `sha256:` over the RFC 8785 canonical JSON of its active rows with each instance's content. It changes when an instance starts, ends or is amended, including an amendment that changes only what the instance says. It versions the hub's record of what the controller reported, not the controller's own state: an approval bound to it (`SPEC-REG-COMMANDS`) is checked by the controller against its own state before it enacts anything (D18). |
+| A13 | **Sampled state.** A kind whose `endedEncoding` is `sampled-state` has no instance records: each record carries the current value, which holds from the record's time until the next record of the kind and product. The value reported is the first declared path's. |
 
-### 6.2 Where each measured disagreement lands
+### 6.2 What decides each measured disagreement
 
 `LAB-HUB-ACTIVE-STATE` measured cgm-remote-monitor and Nocturne disagreeing on one synthetic record
 set ([landscape §5](../nightscout-intent-workflow-landscape-2026-10-09.md#5-how-the-hubs-decide-what-is-active)).
 The lab ran each hub's storage and active-state code directly, Nocturne on SQLite, not either hub's
-HTTP write path.
+HTTP write path. The rules give one answer for each; it is not always either hub's.
 
-| disagreement (measured) | rule | case |
-|---|---|---|
-| a temporary target followed by a cancel: cgm-remote-monitor truncates the target; Nocturne records the cancel as an open span of its own | A5 | `active-state/zero-duration-ends-instance` |
-| Loop's devicestatus override `duration`: seconds in cgm-remote-monitor, minutes in Nocturne | A3, A10, A11; Loop's applied carrier declares `override.timestamp`, `override.active` and seconds (read from NightscoutService `StoredDosingDecision.swift:118-136`) | `active-state/applied-duration-in-declared-unit` |
-| a timed profile switch after a permanent one: cgm-remote-monitor falls back to the permanent profile; Nocturne has none after expiry | A8, once the kind declares `overlay`; AndroidAPS's `profileSwitch` does not, and whether AndroidAPS returns to the earlier profile is not established here | `active-state/overlay-returns-to-open-ended` (shaped like `runningMode`, which declares it) |
-| AndroidAPS `timeshift`: milliseconds in cgm-remote-monitor, hours in Nocturne | A11; the profile switch declares `{path: timeshift, unit: milliseconds}` | `active-state/field-unit-from-declaration` |
-| two temporary targets at the same millisecond: cgm-remote-monitor keeps the first; Nocturne stores both | A2 for equal identity; A7 for different identities | `active-state/equal-identity-same-instant` |
-| an earlier open override backfilled after a later one: Nocturne leaves two open spans | A7 | `active-state/backfill-supersedes-by-start` |
+| disagreement (measured) | rule and declaration | case | against the hubs |
+|---|---|---|---|
+| a temporary target followed by a cancel: cgm-remote-monitor truncates the target; Nocturne records the cancel as an open span of its own | A5, for a kind declaring `zero-duration-record` | `active-state/zero-duration-ends-instance` | cgm-remote-monitor's answer |
+| Loop's devicestatus override `duration`: seconds in cgm-remote-monitor, minutes in Nocturne | A3, A10, A11; Loop's applied carrier declares `override.timestamp`, `override.active` and seconds (NightscoutService `StoredDosingDecision.swift:118-136`) | `active-state/applied-duration-in-declared-unit` | cgm-remote-monitor's answer |
+| a timed profile switch after a permanent one: cgm-remote-monitor falls back to the permanent profile; Nocturne has none after expiry | A4, A7, A8; AndroidAPS's profile switch declares duration 0 as permanent, `overlay` and `supersedes` (AndroidAPS `AppRepository.kt:408-415`, `ProfileSwitchDao.kt:37`) | `active-state/permanent-profile-switch-returns` | cgm-remote-monitor's answer |
+| AndroidAPS `timeshift`: milliseconds in cgm-remote-monitor, hours in Nocturne | A11; the profile switch declares `{path: timeshift, unit: milliseconds}` | `active-state/field-unit-from-declaration` | cgm-remote-monitor's answer |
+| two temporary targets at the same millisecond: cgm-remote-monitor keeps the first; Nocturne stores both | A2 for equal identity (the last received write); A7 for different identities | `active-state/equal-identity-same-instant` | neither: cgm-remote-monitor keeps the first write, the rules the last (§6.3 choice 1) |
+| an earlier open override backfilled after a later one: Nocturne leaves two open spans | A7 | `active-state/backfill-supersedes-by-start` | cgm-remote-monitor's list answer |
 
 Both hubs ignore a stored `Temporary Override Cancel` (measured), so they agree; that careportal
 does not store one is read-derived. The writers that end with a zero-duration record (careportal,
 nightguard, iAPS) have no registration, so A5 applies to them once one declares
-`zero-duration-record`.
+`zero-duration-record`. AndroidAPS's running mode reads its duration from `originalDuration` in
+milliseconds, 0 when permanent, because its wire `duration` is 0 for loop modes and a 10-year
+placeholder for an open-ended loop-disabled mode (`RunningModeExtension.kt:25-97`), and it is
+resolved like the profile switch (`AppRepository.kt:451-458`).
 
 ### 6.3 Choices for the maintainer to confirm
 
@@ -166,6 +170,14 @@ nightguard, iAPS) have no registration, so A5 applies to them once one declares
    or indefinitely if it is open-ended.
 6. A carrier with a duration and no unit is not read (A11), rather than read in a default unit.
 7. The state version covers content (A12), so any amendment of an active instance changes it.
+8. A zero-duration record ends only an instance already running (A5). A zero-duration record
+   written to cancel a target scheduled for later (careportal, nightguard and iAPS cancel before
+   start this way) does not cancel it, because nothing on the record says which future instance
+   it names.
+9. An amendment that shortens an instance is read as an early end (`cancelled`, A5), so an edit
+   from 60 to 45 minutes made before the 45th minute reads the same as a cancel.
+10. Per-cycle values that name no intent give no applied instance (A10), so Trio's and iAPS's
+    applied state is reported as composed values only.
 
 ## 7. Commands, as controllers handle them today
 
@@ -197,8 +209,8 @@ careportal or nightguard temporary target for a controller that does not downloa
 
 ## 9. Conformance cases
 
-43 cases: 15 exercise how a kind's declaration is accepted (its meaning and version, a well-known
-reference, its acceptance policy, `sameAs` and catalogue mappings), and 28 under
+59 cases: 15 exercise how a kind's declaration is accepted (its meaning and version, a well-known
+reference, its acceptance policy, `sameAs` and catalogue mappings), and 44 under
 `active-state/` exercise what is active at a time (§6), checked by
 `tools/nsschema/test_active_state.py`, whose expectations are written by hand. The registrations' validity is checked by
 `tools/nsschema/test_registration_grammar.py` and `make schema-sync-model` (`--check` fails on
@@ -228,26 +240,42 @@ drift).
 | `active-state/backfill-supersedes-by-start` | An earlier instance received later is still ended by the later-starting one |  | `in-order-same-result` |
 | `active-state/delete-after-start-withdraws` | A record deleted after its start and not re-posted is not reported |  |  |
 | `active-state/delete-and-repost-amends` | A delete followed by a re-post of the same identity amends the instance |  | `delete-after-start-withdraws` |
+| `active-state/delete-by-id-withdraws` | A delete that names only the record's _id removes it, as a DELETE by id does |  | `delete-and-repost-amends` |
+| `active-state/deleted-before-start-does-not-supersede` | A record deleted before its start ends nothing |  | `deleted-before-start` |
 | `active-state/deleted-before-start` | A record deleted before its start is listed as ended, deleted before start, and is never active |  | `scheduled-not-deleted` |
 | `active-state/different-identity-same-instant` | Different identities at one instant are two instances; the later received supersedes |  |  |
 | `active-state/different-identity-supersedes` | A different identity is a new instance, which supersedes the earlier one at its start |  |  |
 | `active-state/equal-identity-same-instant` | Two records with equal identity at one instant are one instance, as last received |  | `different-identity-same-instant` |
+| `active-state/equal-start-last-write-wins` | At an equal start, the instance whose last write was received later supersedes |  | `different-identity-same-instant` |
 | `active-state/exclusive-overlap-reported` | Overlapping instances of an exclusive kind that does not supersede are both reported, as an overlap |  | `exclusive-supersedes` |
 | `active-state/exclusive-supersedes` | The same records under a superseding kind: one instance |  |  |
 | `active-state/field-unit-from-declaration` | A field's unit is reported from its typed path |  | `field-unit-undeclared` |
 | `active-state/field-unit-undeclared` | A path with no declared unit carries none |  |  |
+| `active-state/forced-mode-is-applied-not-requested` | A constraint-forced mode is in the applied layer only, when the kind declares a requested carrier |  | `forced-mode-without-requested-carrier` |
+| `active-state/forced-mode-without-requested-carrier` | Without a requested carrier, the forced record is also taken as a request |  |  |
 | `active-state/in-order-same-result` | Received in time order, the same instances |  |  |
+| `active-state/marker-at-next-start` | An end marker at the instant the next target starts ends only the earlier one |  | `zero-duration-ends-instance` |
 | `active-state/no-end-marker` | Without an end marker the instance runs its duration |  |  |
 | `active-state/overlay-returns-to-open-ended` | A timed instance applies over an open-ended one, which applies again when it ends |  | `supersedes-without-overlay` |
+| `active-state/permanent-after-temporary-supersedes` | A permanent switch that starts during a temporary one supersedes it |  |  |
+| `active-state/permanent-profile-switch-returns` | A permanent profile switch (duration 0) stays active and applies again after a temporary one |  | `permanent-after-temporary-supersedes` |
 | `active-state/products-never-supersede-each-other` | Instances of two products on one slot are both reported; neither ends the other |  | `same-product-supersedes` |
+| `active-state/repost-before-delete` | A re-post received before the delete of the old record, and a delete that names only _id |  | `delete-and-repost-amends` |
 | `active-state/repost-same-identity-amends` | A re-post with the same identity amends the instance it names |  | `different-identity-supersedes` |
 | `active-state/requested-and-applied` | With the applied record, both layers are reported |  |  |
 | `active-state/requested-without-applied` | A request with no applied record is reported as requested only |  | `requested-and-applied` |
+| `active-state/running-mode-open-ended` | The same mode, not shortened, stays active |  |  |
+| `active-state/running-mode-original-duration` | A loop-disabled mode shortened in originalDuration ends, whatever its placeholder wire duration |  | `running-mode-open-ended` |
 | `active-state/same-product-supersedes` | The same records from one product: the later supersedes |  |  |
+| `active-state/sampled-state-latest-value` | A sampled-state kind is the latest sample's value, each sample holding until the next |  |  |
 | `active-state/scheduled-not-deleted` | The same scheduled record, not deleted, is active from its start |  |  |
+| `active-state/soft-delete-before-start` | A soft delete before the start is a deletion before start |  | `soft-delete-not-applied` |
+| `active-state/soft-delete-not-applied` | The same scheduled target, not deleted, is active |  |  |
 | `active-state/state-version-amended` | An amendment to an active instance changes the state version |  |  |
 | `active-state/state-version-content-changed` | An amendment that changes only what an active instance says changes the state version |  | `state-version-tracks-active-set` |
 | `active-state/state-version-tracks-active-set` | The state version is stable while the active set is, and changes when it changes |  | `state-version-amended` |
 | `active-state/supersedes-without-overlay` | Without overlay, a superseding kind ends the open-ended instance for good |  |  |
+| `active-state/unattributed-applied-is-not-an-instance` | Per-cycle values that name no intent are not an applied instance |  | `applied-duration-in-declared-unit` |
+| `active-state/undeclared-unit-kind-unreadable` | A kind whose duration has no declared unit yields nothing and is reported unreadable; other kinds still answer |  | `no-end-marker` |
 | `active-state/zero-duration-ends-instance` | A zero-duration record ends the instance active at its time and is not an instance |  | `no-end-marker` |
 <!-- END GENERATED: state-intent-cases -->

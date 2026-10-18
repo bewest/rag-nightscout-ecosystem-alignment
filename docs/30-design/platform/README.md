@@ -135,12 +135,12 @@ shrinks when §15 and routing move out.
 
 | | |
 |---|---|
-| **Spec** | [spec/state-intent.md](spec/state-intent.md): rules S1–S12 and A1–A12 (composition reported by the controller, kinds, slots, states, end reasons, the wire carrier, requested and applied, initiators, definitions, acceptance, the controller's command contract), the declared kinds (generated), composition per controller, effect and motivation (proposed), what is active at a time, 43 cases; channels from slots are [registration §9](spec/registration.md#9-channels-roles-and-provenance) |
+| **Spec** | [spec/state-intent.md](spec/state-intent.md): rules S1–S12 and A1–A12 (composition reported by the controller, kinds, slots, states, end reasons, the wire carrier, requested and applied, initiators, definitions, acceptance, the controller's command contract), the declared kinds (generated), composition per controller, effect and motivation (proposed), what is active at a time, 59 cases; channels from slots are [registration §9](spec/registration.md#9-channels-roles-and-provenance) |
 | **Evidence** | [intent and workflow landscape](nightscout-intent-workflow-landscape-2026-10-09.md) (per-controller matrix, end encodings, how each hub decides what is active, command lifecycles); [effects and versioning](nightscout-effects-and-versioning-2026-09-11.md) (effect separated from motivation); [authority model](../../10-domain/authority-model.md) |
 | **Schemas** | `specs/sync/controller-state-model.schema.json` (`stateSpans`, `composition`, `commands`); `specs/sync/shared-slots.yaml`; `specs/sync/therapy-effect.schema.json`; `specs/sync/effect-remapping.yaml` |
 | **Open** | the active-state choices (state and intent §6.3); undeclared vocabularies for `PROPOSAL-REG-CONTROLLERS`; `LAB-TRIO-INTENT` |
 | **Audit** | requested and applied are recorded separately; each span records its end reason and initiator in the controller's own vocabulary; composition is recorded as the controller reports it, never computed by the hub |
-| **Status** | specified for declarations (`SPEC-STATE-INTENT`) and, as a proposal with seven choices to confirm, for what is active at a time (rules A1–A12, `SPEC-ACTIVE-STATE`), where `LAB-HUB-ACTIVE-STATE` measured cgm-remote-monitor and Nocturne disagreeing |
+| **Status** | specified for declarations (`SPEC-STATE-INTENT`) and, as a proposal with ten choices to confirm, for what is active at a time (rules A1–A12, `SPEC-ACTIVE-STATE`), where `LAB-HUB-ACTIVE-STATE` measured cgm-remote-monitor and Nocturne disagreeing |
 
 ## L4 Change and sync
 

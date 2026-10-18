@@ -1,0 +1,61 @@
+# Synthetic. SPEC-ACTIVE-STATE; state and intent §6. Expectations authored by hand.
+id: unattributed-applied-is-not-an-instance
+title: Per-cycle values that name no intent are not an applied instance
+rules:
+- A10
+control: applied-duration-in-declared-unit
+description: 'Shaped like Trio''s applied carrier: post-composition values per loop cycle, not attributed
+  to the override or temporary target that produced them. No override record exists, so nothing is active.'
+declarations:
+- product: ControllerA
+  stateSpans:
+  - category: Override
+    kind: Override
+    slot: override
+    exclusiveWithinSlot: true
+    supersedes: true
+    states:
+    - active
+    - ended
+    wire:
+      collection: treatments
+      eventType: Exercise
+      identity:
+      - created_at
+      - eventType
+      durationField: duration
+      durationUnit: minutes
+      indefinite:
+        field: durationType
+        value: indefinite
+      endedEncoding: delete-and-repost
+    applied:
+      collection: devicestatus
+      discriminator:
+        path: openaps
+        test: is-object
+      paths:
+      - openaps.suggested.ISF
+      - openaps.suggested.current_target
+records:
+- product: ControllerA
+  collection: devicestatus
+  op: write
+  doc:
+    created_at: '2026-10-18T10:00:00Z'
+    openaps:
+      suggested:
+        ISF: 50
+- product: ControllerA
+  collection: devicestatus
+  op: write
+  doc:
+    created_at: '2026-10-18T10:05:00Z'
+    openaps:
+      suggested:
+        ISF: 50
+expected:
+  instances: []
+  activeAt:
+  - at: '2026-10-18T10:07:00Z'
+    active: []

@@ -1,0 +1,70 @@
+# Synthetic. SPEC-ACTIVE-STATE; state and intent §6. Expectations authored by hand.
+id: running-mode-open-ended
+title: The same mode, not shortened, stays active
+rules:
+- A4
+description: The same mode, not shortened, stays active.
+declarations:
+- product: ControllerA
+  stateSpans:
+  - category: LoopMode
+    kind: RunningMode
+    slot: runningMode
+    exclusiveWithinSlot: true
+    overlay: true
+    supersedes: true
+    wire:
+      collection: treatments
+      eventType: OpenAPS Offline
+      identity:
+      - identifier
+      durationField: originalDuration
+      durationUnit: milliseconds
+      indefinite:
+        field: originalDuration
+        value: 0
+      endedEncoding: amend-duration
+    applied:
+      collection: treatments
+      eventType: OpenAPS Offline
+      discriminator:
+        path: autoForced
+        test: equals
+        value: true
+    requested:
+      collection: treatments
+      eventType: OpenAPS Offline
+      discriminator:
+        path: autoForced
+        test: equals
+        value: false
+records:
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    identifier: r1
+    eventType: OpenAPS Offline
+    created_at: '2026-10-18T09:00:00Z'
+    mode: DISABLED_LOOP
+    duration: 5256000
+    originalDuration: 0
+    autoForced: false
+expected:
+  instances:
+  - product: ControllerA
+    kind: RunningMode
+    layer: requested
+    key: identifier=r1
+    start: '2026-10-18T09:00:00Z'
+    end: null
+    endReason: null
+  activeAt:
+  - at: '2026-10-18T09:40:00Z'
+    active:
+    - product: ControllerA
+      kind: RunningMode
+      layer: requested
+      key: identifier=r1
+      start: '2026-10-18T09:00:00Z'
+      end: null

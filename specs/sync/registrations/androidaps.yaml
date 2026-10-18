@@ -145,6 +145,8 @@ spec:
     kind: ProfileSwitch
     slot: profileSwitch
     exclusiveWithinSlot: true
+    overlay: true
+    supersedes: true
     coexistsWith:
     - temporaryTarget
     - runningMode
@@ -167,6 +169,10 @@ spec:
       - durationInMilliseconds
       durationField: duration
       durationUnit: minutes
+      indefinite:
+        field: duration
+        value: 0
+        description: A permanent profile switch has duration 0.
       endedEncoding: amend-duration
       cancelBeforeStartEncoding: soft-delete
       endReasonPath: null
@@ -210,6 +216,12 @@ spec:
       description: The preference is bypassed on the AAPSClient build and during a full sync,
         which apply inbound records regardless.
     evidence:
+    - claim: a permanent profile switch has duration 0; the active switch is the latest temporary
+        one active at t or the latest permanent one at or before t, whichever started later,
+        so a temporary switch overlays a permanent one and a later switch supersedes
+      source: AndroidAPS 7e1d537d49 database/impl/src/commonMain/kotlin/app/aaps/database/AppRepository.kt:408-415;
+        database/impl/src/commonMain/kotlin/app/aaps/database/daos/ProfileSwitchDao.kt:37
+      basis: read
     - claim: PS -> EPS written only if the pump accepts; EPS uploaded as Note recognised by
         originalProfileName
       source: docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md §3.3
@@ -328,6 +340,7 @@ spec:
     slot: runningMode
     exclusiveWithinSlot: true
     overlay: true
+    supersedes: true
     coexistsWith:
     - profileSwitch
     - temporaryTarget
@@ -360,14 +373,15 @@ spec:
         - SUSPENDED_BY_PUMP
         - SUSPENDED_BY_USER
         - SUSPENDED_BY_DST
-      durationField: duration
-      durationUnit: minutes
+      durationField: originalDuration
+      durationUnit: milliseconds
       indefinite:
         field: originalDuration
         value: 0
-        description: Open-ended DISABLED_LOOP is sent with a 10-year duration and originalDuration
-          0. OPEN_LOOP, CLOSED_LOOP and CLOSED_LOOP_LGS are sent with duration 0 and their
-          own duration in originalDuration.
+        description: originalDuration carries every mode's own duration in milliseconds, 0
+          when permanent. The wire duration is 0 for OPEN_LOOP, CLOSED_LOOP and CLOSED_LOOP_LGS
+          and a 10-year placeholder for an open-ended DISABLED_LOOP, so it is not the duration
+          field.
       endedEncoding: amend-duration
       cancelBeforeStartEncoding: soft-delete
       endReasonPath: null
@@ -411,6 +425,12 @@ spec:
     - claim: wire encoding per mode; DISABLED_LOOP open-ended = 10 years, originalDuration
         0; RESUME is an error on the wire
       source: AndroidAPS 7e1d537d49 plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/extensions/RunningModeExtension.kt:25-97
+      basis: read
+    - claim: 'the active mode is the latest temporary mode active at t or the latest permanent
+        (duration 0) mode at or before t, whichever started later: a temporary mode overlays
+        a permanent one, and a later mode supersedes'
+      source: AndroidAPS 7e1d537d49 database/impl/src/commonMain/kotlin/app/aaps/database/AppRepository.kt:451-458;
+        database/impl/src/commonMain/kotlin/app/aaps/database/daos/RunningModeDao.kt:32-35
       basis: read
     - claim: mode vocabulary; RESUME cancels a temporary mode
       source: AndroidAPS 7e1d537d49 core/data/src/commonMain/kotlin/app/aaps/core/data/model/RM.kt:43-63

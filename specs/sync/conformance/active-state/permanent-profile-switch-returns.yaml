@@ -1,0 +1,90 @@
+# Synthetic. SPEC-ACTIVE-STATE; state and intent §6. Expectations authored by hand.
+id: permanent-profile-switch-returns
+title: A permanent profile switch (duration 0) stays active and applies again after a temporary one
+rules:
+- A4
+- A8
+control: permanent-after-temporary-supersedes
+description: 'Declared as AndroidAPS''s profile switch: duration 0 is permanent; the active switch is
+  the latest temporary one active at t or the latest permanent one, whichever started later (AppRepository.kt:408-415
+  at 7e1d537d49). cgm-remote-monitor falls back to the permanent profile; Nocturne has none after expiry
+  (LAB-HUB-ACTIVE-STATE).'
+declarations:
+- product: ControllerA
+  stateSpans:
+  - category: ProfileState
+    kind: ProfileSwitch
+    slot: profileSwitch
+    exclusiveWithinSlot: true
+    overlay: true
+    supersedes: true
+    wire:
+      collection: treatments
+      eventType: Profile Switch
+      identity:
+      - identifier
+      durationField: duration
+      durationUnit: minutes
+      indefinite:
+        field: duration
+        value: 0
+      endedEncoding: amend-duration
+      cancelBeforeStartEncoding: soft-delete
+records:
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    identifier: p0
+    eventType: Profile Switch
+    created_at: '2026-10-18T09:00:00Z'
+    duration: 0
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    identifier: p1
+    eventType: Profile Switch
+    created_at: '2026-10-18T10:00:00Z'
+    duration: 60
+expected:
+  instances:
+  - product: ControllerA
+    kind: ProfileSwitch
+    layer: requested
+    key: identifier=p0
+    start: '2026-10-18T09:00:00Z'
+    end: null
+    endReason: null
+  - product: ControllerA
+    kind: ProfileSwitch
+    layer: requested
+    key: identifier=p1
+    start: '2026-10-18T10:00:00Z'
+    end: '2026-10-18T11:00:00Z'
+    endReason: expired
+  activeAt:
+  - at: '2026-10-18T09:30:00Z'
+    active:
+    - product: ControllerA
+      kind: ProfileSwitch
+      layer: requested
+      key: identifier=p0
+      start: '2026-10-18T09:00:00Z'
+      end: null
+  - at: '2026-10-18T10:30:00Z'
+    active:
+    - product: ControllerA
+      kind: ProfileSwitch
+      layer: requested
+      key: identifier=p1
+      start: '2026-10-18T10:00:00Z'
+      end: '2026-10-18T11:00:00Z'
+  - at: '2026-10-18T11:30:00Z'
+    active:
+    - product: ControllerA
+      kind: ProfileSwitch
+      layer: requested
+      key: identifier=p0
+      start: '2026-10-18T09:00:00Z'
+      end: null

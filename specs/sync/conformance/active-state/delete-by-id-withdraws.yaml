@@ -1,0 +1,50 @@
+# Synthetic. SPEC-ACTIVE-STATE; state and intent §6. Expectations authored by hand.
+id: delete-by-id-withdraws
+title: A delete that names only the record's _id removes it, as a DELETE by id does
+rules:
+- A6
+control: delete-and-repost-amends
+description: A delete that names only the record's _id removes it, as a DELETE by id does.
+declarations:
+- product: ControllerA
+  stateSpans:
+  - category: Override
+    kind: Override
+    slot: override
+    exclusiveWithinSlot: true
+    supersedes: true
+    states:
+    - active
+    - ended
+    wire:
+      collection: treatments
+      eventType: Exercise
+      identity:
+      - created_at
+      - eventType
+      durationField: duration
+      durationUnit: minutes
+      indefinite:
+        field: durationType
+        value: indefinite
+      endedEncoding: delete-and-repost
+records:
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    _id: o1
+    eventType: Exercise
+    created_at: '2026-10-18T10:00:00Z'
+    duration: 60
+- product: ControllerA
+  collection: treatments
+  op: delete
+  doc:
+    _id: o1
+  receivedAt: '2026-10-18T10:25:00Z'
+expected:
+  instances: []
+  activeAt:
+  - at: '2026-10-18T10:20:00Z'
+    active: []

@@ -1,0 +1,96 @@
+# Synthetic. SPEC-ACTIVE-STATE; state and intent §6. Expectations authored by hand.
+id: forced-mode-is-applied-not-requested
+title: A constraint-forced mode is in the applied layer only, when the kind declares a requested carrier
+rules:
+- A10
+control: forced-mode-without-requested-carrier
+description: A constraint-forced mode is in the applied layer only, when the kind declares a requested
+  carrier.
+declarations:
+- product: ControllerA
+  stateSpans:
+  - category: LoopMode
+    kind: RunningMode
+    slot: runningMode
+    exclusiveWithinSlot: true
+    overlay: true
+    supersedes: true
+    wire:
+      collection: treatments
+      eventType: OpenAPS Offline
+      identity:
+      - identifier
+      durationField: originalDuration
+      durationUnit: milliseconds
+      indefinite:
+        field: originalDuration
+        value: 0
+      endedEncoding: amend-duration
+    applied:
+      collection: treatments
+      eventType: OpenAPS Offline
+      discriminator:
+        path: autoForced
+        test: equals
+        value: true
+    requested:
+      collection: treatments
+      eventType: OpenAPS Offline
+      discriminator:
+        path: autoForced
+        test: equals
+        value: false
+records:
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    identifier: r1
+    eventType: OpenAPS Offline
+    created_at: '2026-10-18T09:00:00Z'
+    mode: DISABLED_LOOP
+    duration: 5256000
+    originalDuration: 0
+    autoForced: false
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    identifier: f1
+    eventType: OpenAPS Offline
+    created_at: '2026-10-18T09:10:00Z'
+    mode: DISABLED_LOOP
+    duration: 5256000
+    originalDuration: 0
+    autoForced: true
+expected:
+  instances:
+  - product: ControllerA
+    kind: RunningMode
+    layer: applied
+    key: RunningMode@2026-10-18T09:10:00Z
+    start: '2026-10-18T09:10:00Z'
+    end: null
+    endReason: null
+  - product: ControllerA
+    kind: RunningMode
+    layer: requested
+    key: identifier=r1
+    start: '2026-10-18T09:00:00Z'
+    end: null
+    endReason: null
+  activeAt:
+  - at: '2026-10-18T09:20:00Z'
+    active:
+    - product: ControllerA
+      kind: RunningMode
+      layer: applied
+      key: RunningMode@2026-10-18T09:10:00Z
+      start: '2026-10-18T09:10:00Z'
+      end: null
+    - product: ControllerA
+      kind: RunningMode
+      layer: requested
+      key: identifier=r1
+      start: '2026-10-18T09:00:00Z'
+      end: null

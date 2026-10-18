@@ -1,0 +1,84 @@
+# Synthetic. SPEC-ACTIVE-STATE; state and intent §6. Expectations authored by hand.
+id: undeclared-unit-kind-unreadable
+title: A kind whose duration has no declared unit yields nothing and is reported unreadable; other kinds
+  still answer
+rules:
+- A11
+control: no-end-marker
+description: A kind whose duration has no declared unit yields nothing and is reported unreadable; other
+  kinds still answer.
+declarations:
+- product: ControllerA
+  stateSpans:
+  - category: TemporaryTarget
+    kind: TempTarget
+    slot: temporaryTarget
+    exclusiveWithinSlot: true
+    supersedes: true
+    states:
+    - active
+    - ended
+    wire:
+      collection: treatments
+      eventType: Temporary Target
+      identity:
+      - _id
+      durationField: duration
+      endedEncoding: zero-duration-record
+  - category: Override
+    kind: Override
+    slot: override
+    exclusiveWithinSlot: true
+    supersedes: true
+    states:
+    - active
+    - ended
+    wire:
+      collection: treatments
+      eventType: Temporary Override
+      identity:
+      - _id
+      durationField: duration
+      durationUnit: minutes
+      indefinite:
+        field: durationType
+        value: indefinite
+      endedEncoding: amend-duration
+records:
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    _id: a1
+    eventType: Temporary Target
+    created_at: '2026-10-18T10:00:00Z'
+    duration: 60
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    _id: v1
+    eventType: Temporary Override
+    created_at: '2026-10-18T10:00:00Z'
+    duration: 60
+expected:
+  instances:
+  - product: ControllerA
+    kind: Override
+    layer: requested
+    key: _id=v1
+    start: '2026-10-18T10:00:00Z'
+    end: '2026-10-18T11:00:00Z'
+    endReason: expired
+  activeAt:
+  - at: '2026-10-18T10:10:00Z'
+    active:
+    - product: ControllerA
+      kind: Override
+      layer: requested
+      key: _id=v1
+      start: '2026-10-18T10:00:00Z'
+      end: '2026-10-18T11:00:00Z'
+  unreadable:
+  - product: ControllerA
+    kind: TempTarget

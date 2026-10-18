@@ -1,0 +1,77 @@
+# Synthetic. SPEC-ACTIVE-STATE; state and intent §6. Expectations authored by hand.
+id: equal-start-last-write-wins
+title: At an equal start, the instance whose last write was received later supersedes
+rules:
+- A7
+control: different-identity-same-instant
+description: At an equal start, the instance whose last write was received later supersedes.
+declarations:
+- product: ControllerA
+  stateSpans:
+  - category: TemporaryTarget
+    kind: TempTarget
+    slot: temporaryTarget
+    exclusiveWithinSlot: true
+    supersedes: true
+    states:
+    - active
+    - ended
+    wire:
+      collection: treatments
+      eventType: Temporary Target
+      identity:
+      - identifier
+      durationField: duration
+      durationUnit: minutes
+      endedEncoding: amend-duration
+records:
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    identifier: i1
+    eventType: Temporary Target
+    created_at: '2026-10-18T10:00:00Z'
+    duration: 60
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    identifier: i2
+    eventType: Temporary Target
+    created_at: '2026-10-18T10:00:00Z'
+    duration: 30
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    identifier: i1
+    eventType: Temporary Target
+    created_at: '2026-10-18T10:00:00Z'
+    duration: 60
+    notes: edited
+expected:
+  instances:
+  - product: ControllerA
+    kind: TempTarget
+    layer: requested
+    key: identifier=i1
+    start: '2026-10-18T10:00:00Z'
+    end: '2026-10-18T11:00:00Z'
+    endReason: expired
+  - product: ControllerA
+    kind: TempTarget
+    layer: requested
+    key: identifier=i2
+    start: '2026-10-18T10:00:00Z'
+    end: '2026-10-18T10:00:00Z'
+    endReason: superseded
+  activeAt:
+  - at: '2026-10-18T10:10:00Z'
+    active:
+    - product: ControllerA
+      kind: TempTarget
+      layer: requested
+      key: identifier=i1
+      start: '2026-10-18T10:00:00Z'
+      end: '2026-10-18T11:00:00Z'

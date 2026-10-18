@@ -16718,7 +16718,7 @@ items:
     pr: []
     blast_radius: >
       State and intent §6 turned from a gap into rules A1-A12 with a
-      disagreement map and seven choices for the maintainer (§6.3);
+      disagreement map and ten choices for the maintainer (§6.3);
       tools/nsschema/active_state.py (new reference function);
       tools/nsschema/test_active_state.py (new); 28 hand-authored cases
       under specs/sync/conformance/active-state/; the grammar's carrier gains
@@ -16739,7 +16739,7 @@ items:
           FAILS when the reference function does not reproduce a case's
           hand-authored instances, active sets or state-version relations, a
           case's declarations are not grammar-valid, or a control is missing
-          or identical to its case. GREEN on 2026-10-18: 131 tests over 28
+          or identical to its case. GREEN on 2026-10-18: 249 tests over 44
           cases.
       - run: python3 -m tools.nsschema.spec_cases state-intent --check
         kind: static
@@ -16753,7 +16753,7 @@ items:
       - specs/sync/conformance/active-state
     notes: >
       Proposed rules, specified with cases and a reference, for the
-      maintainer to confirm (§6.3 lists seven choices). Each measured
+      maintainer to confirm (§6.3 lists ten choices). Each measured
       hub disagreement is mapped to a rule and a case. Expectations were
       authored by hand from the rules, not computed by the function; one
       hand error (a 1,200-minute duration written as open-ended) was found
@@ -16768,6 +16768,25 @@ items:
       the end; the case state-version-content-changed was added so it goes
       red. tools/nsschema 1812 passed. Under D18 the rules say which
       instances are active, never what they mean together.
+      Adversarial review (2026-10-18) applied before main moved: with the
+      generated AndroidAPS declarations a permanent profile switch was
+      never active and a shortened loop-disabled mode stayed on; Trio's
+      unattributed per-cycle values read as an active override; sampled
+      state was unhandled; a record deleted before its start ended the
+      running one; deletes by _id only, re-posts before deletes, soft
+      deletes, a marker at the next start, equal starts and an undeclared
+      unit were wrong or aborted. Fixed: AndroidAPS profile switch declares
+      duration 0 as permanent, overlay and supersedes (AppRepository.kt
+      408-415, ProfileSwitchDao.kt 37), running mode reads originalDuration
+      in milliseconds and supersedes (RunningModeExtension.kt 25-97,
+      AppRepository.kt 451-458), all at 7e1d537d49; the requested carrier
+      filters the requested layer; A10 skips unattributed per-cycle values;
+      A13 for sampled state; A6 deletes by _id or identity and soft
+      deletes; an unreadable kind is reported, not fatal. Sixteen cases
+      added (44). Twenty-one weakenings, each red; the delete-by-_id one
+      first passed, so delete-by-id-withdraws was added. Three choices
+      added (zero-duration cancel before start, shortening read as early
+      end, unattributed values). tools/nsschema 1930 passed.
 
   - id: SCHEMA-INTENT-GAPS
     title: "Registration grammar: the initiators other form, duration units on requested and applied carriers, typed carrier fields"

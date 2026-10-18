@@ -1,0 +1,71 @@
+# Synthetic. SPEC-ACTIVE-STATE; state and intent §6. Expectations authored by hand.
+id: sampled-state-latest-value
+title: A sampled-state kind is the latest sample's value, each sample holding until the next
+rules:
+- A13
+description: Shaped like Trio's dosingMode, carried on every devicestatus.
+declarations:
+- product: ControllerA
+  stateSpans:
+  - category: LoopMode
+    kind: DosingMode
+    slot: loopMode
+    exclusiveWithinSlot: true
+    wire:
+      collection: devicestatus
+      discriminator:
+        path: openaps
+        test: is-object
+      paths:
+      - openaps.dosingMode
+      endedEncoding: sampled-state
+records:
+- product: ControllerA
+  collection: devicestatus
+  op: write
+  doc:
+    created_at: '2026-10-18T10:00:00Z'
+    openaps:
+      dosingMode: closed
+- product: ControllerA
+  collection: devicestatus
+  op: write
+  doc:
+    created_at: '2026-10-18T10:10:00Z'
+    openaps:
+      dosingMode: open
+expected:
+  instances:
+  - product: ControllerA
+    kind: DosingMode
+    layer: requested
+    key: DosingMode@2026-10-18T10:00:00Z
+    start: '2026-10-18T10:00:00Z'
+    end: '2026-10-18T10:10:00Z'
+    endReason: null
+  - product: ControllerA
+    kind: DosingMode
+    layer: requested
+    key: DosingMode@2026-10-18T10:10:00Z
+    start: '2026-10-18T10:10:00Z'
+    end: null
+    endReason: null
+  activeAt:
+  - at: '2026-10-18T10:05:00Z'
+    active:
+    - product: ControllerA
+      kind: DosingMode
+      layer: requested
+      key: DosingMode@2026-10-18T10:00:00Z
+      start: '2026-10-18T10:00:00Z'
+      end: '2026-10-18T10:10:00Z'
+      value: closed
+  - at: '2026-10-18T10:15:00Z'
+    active:
+    - product: ControllerA
+      kind: DosingMode
+      layer: requested
+      key: DosingMode@2026-10-18T10:10:00Z
+      start: '2026-10-18T10:10:00Z'
+      end: null
+      value: open

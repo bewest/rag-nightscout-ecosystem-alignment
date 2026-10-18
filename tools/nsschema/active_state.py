@@ -88,88 +88,29 @@ def _units(carrier):
     return out
 
 
-def _wire_instances(product, span, records):
-    """A2, A5, A6: one instance per identity, amended in received order."""
-    wire = span["wire"]
-    identity = wire.get("identity") or ["_id"]
-    encoding = wire.get("endedEncoding")
-    history = {}      # key -> list of (op, doc, receivedAt)
-    markers = []      # zero-duration end markers (A5)
-    order = []
-    for record in records:
-        if record.get("product") != product or not _matches(wire, record):
-            continue
-        doc = record.get("doc") or {}
-        if (encoding == "zero-duration-record" and record.get("op", "write") == "write"
-                and _get(doc, wire.get("durationField") or "duration") == 0):
-            markers.append(_start(wire, doc))
-            continue
-        key = "|".join("%s=%s" % (f, _get(doc, f)) for f in identity)
-        if key not in history:
-            order.append(key)
-        history.setdefault(key, []).append((record.get("op", "write"), doc,
-                                            record.get("receivedAt")))
-    instances = []
-    for key in order:
-        writes = [h for h in history[key] if h[0] == "write"]
-        last = history[key][-1]
-        if last[0] == "delete":
-            first = writes[0][1] if writes else {}
-            start = _start(wire, first)
-            received = last[2] and _time(last[2])
-            if start is not None and received is not None and received < start:
-                instances.append({"product": product, "kind": span["kind"], "layer": "requested",
-                                  "key": key, "start": start, "end": start,
-                                  "endReason": "deletedBeforeStart", "content": first})
-            continue  # a record withdrawn after its start is not reported
-        doc = writes[-1][1]
-        start = _start(wire, doc)
-        end = _end(wire, doc, start)
-        reason = "expired" if end is not None else None
-        earlier = [_end(wire, w[1], _start(wire, w[1])) for w in writes[:-1]]
-        if end is not None and any(e is None or e > end for e in earlier):
-            reason = "cancelled"   # an amendment ended it early (A5)
-        instances.append({"product": product, "kind": span["kind"], "layer": "requested",
-                          "key": key, "start": start, "end": end, "endReason": reason,
-                          "content": doc, "units": _units(wire), "received": len(instances)})
-    for at in markers:
-        for inst in instances:
-            if inst["start"] <= at and (inst["end"] is None or at < inst["end"]):
-                inst["end"], inst["endReason"] = at, "cancelled"
-    return instances
+def _requested_match(span, record):
+    """A10: the requested layer is the wire records that also match the
+    `requested` carrier when the kind declares one (AndroidAPS separates its
+    constraint-forced running mode by `autoForced`)."""
+    if not _matches(span["wire"], record):
+        return False
+    requested = span.get("requested")
+    return not requested or _matches(requested, record)
 
 
-def _supersede(span, instances):
-    """A7, A8: a later-starting instance of the same kind and product ends an
-    earlier one (by start, never by arrival); with overlay, a timed instance
-    does not end an open-ended one."""
-    if not span.get("supersedes"):
-        return
-    ordered = sorted(instances, key=lambda i: (i["start"], i.get("received", 0)))
-    for i, earlier in enumerate(ordered):
-        for later in ordered[i + 1:]:
-            if span.get("overlay") and earlier["end"] is None and later["end"] is not None:
-                continue
-            if earlier["end"] is None or later["start"] < earlier["end"]:
-                if later["start"] >= earlier["start"]:
-                    earlier["end"], earlier["endReason"] = later["start"], "superseded"
-                    break
-
-
-def _applied(product, span, records):
-    """A10: each applied record is in effect from its time until its own end or
-    the next applied record of the same carrier and product; a record saying
-    the intent is not active ends it."""
-    carrier = span.get("applied")
-    if not carrier:
-        return []
+def _sampled(product, span, records, carrier, layer):
+    """A10, A13: records sampled per cycle; each holds from its time until the
+    next sample of the same carrier and product, or its own end."""
     samples = []
     for record in records:
-        if record.get("product") == product and _matches(carrier, record):
+        if record.get("product") == product and record.get("op", "write") == "write" \
+                and _matches(carrier, record):
             doc = record.get("doc") or {}
             samples.append((_start(carrier, doc), doc))
     samples.sort(key=lambda s: s[0])
     active_path = carrier.get("activeField")
+    first = next((p if isinstance(p, str) else p.get("path")
+                  for p in carrier.get("paths") or []), None)
     out = []
     for n, (at, doc) in enumerate(samples):
         if active_path and _get(doc, active_path) is False:
@@ -178,26 +119,152 @@ def _applied(product, span, records):
         nxt = samples[n + 1][0] if n + 1 < len(samples) else None
         if nxt is not None and (end is None or nxt < end):
             end = nxt
-        out.append({"product": product, "kind": span["kind"], "layer": "applied",
-                    "key": "%s@%s" % (span["kind"], _iso(at)), "start": at, "end": end,
-                    "endReason": None, "content": doc, "units": _units(carrier)})
+        inst = {"product": product, "kind": span["kind"], "layer": layer,
+                "key": "%s@%s" % (span["kind"], _iso(at)), "start": at, "end": end,
+                "endReason": None, "content": doc, "units": _units(carrier)}
+        if layer == "requested" and first:
+            inst["value"] = _get(doc, first)
+        out.append(inst)
     return out
 
 
-def instances(case):
-    """Every instance the records describe, per product and kind (A1)."""
-    out = []
+def _wire_instances(product, span, records):
+    """A2, A5, A6: one instance per identity, amended in received order; a
+    delete removes the write it names, by `_id`, or by identity."""
+    wire = span["wire"]
+    identity = wire.get("identity") or ["_id"]
+    encoding = wire.get("endedEncoding")
+    if encoding == "sampled-state":
+        return _sampled(product, span, records, wire, "requested")
+    keyof = lambda doc: "|".join("%s=%s" % (f, _get(doc, f)) for f in identity)
+    writes = {}       # key -> [ {seq, doc, id, live} ]
+    by_id = {}        # _id -> key
+    killed = {}       # key -> receivedAt of the delete that removed its last live write
+    markers = []      # zero-duration end markers (A5)
+    order = []
+    for seq, record in enumerate(records):
+        if record.get("product") != product:
+            continue
+        doc = record.get("doc") or {}
+        op = record.get("op", "write")
+        soft = op == "write" and doc.get("isValid") is False
+        if op == "delete" or soft:
+            if doc.get("_id") in by_id and not soft:
+                key = by_id[doc["_id"]]
+                hit = [w for w in writes[key] if w["id"] == doc["_id"]]
+            elif _requested_match(span, record):
+                key = keyof(doc)
+                hit = writes.get(key, [])
+            else:
+                continue
+            for w in hit:
+                w["live"] = False
+            if key in writes and not any(w["live"] for w in writes[key]):
+                killed[key] = record.get("receivedAt")
+            continue
+        if not _requested_match(span, record):
+            continue
+        if (encoding == "zero-duration-record"
+                and _get(doc, wire.get("durationField") or "duration") == 0):
+            markers.append(_start(wire, doc))
+            continue
+        key = keyof(doc)
+        if key not in writes:
+            order.append(key)
+            writes[key] = []
+        writes[key].append({"seq": seq, "doc": doc, "id": doc.get("_id"), "live": True})
+        killed.pop(key, None)
+        if doc.get("_id") is not None:
+            by_id[doc["_id"]] = key
+    instances = []
+    for key in order:
+        live = [w for w in writes[key] if w["live"]]
+        if not live:
+            first = writes[key][-1]["doc"]
+            start = _start(wire, first)
+            received = killed.get(key)
+            if start is not None and received and _time(received) < start:
+                instances.append({"product": product, "kind": span["kind"], "layer": "requested",
+                                  "key": key, "start": start, "end": start,
+                                  "endReason": "deletedBeforeStart", "content": first,
+                                  "seq": writes[key][-1]["seq"]})
+            continue  # withdrawn after its start, or with no receipt time: not reported
+        doc = live[-1]["doc"]
+        start = _start(wire, doc)
+        end = _end(wire, doc, start)
+        reason = "expired" if end is not None else None
+        earlier = [_end(wire, w["doc"], _start(wire, w["doc"])) for w in writes[key][:-1]]
+        if end is not None and any(e is None or e > end for e in earlier):
+            reason = "cancelled"   # an amendment ended it early (A5)
+        instances.append({"product": product, "kind": span["kind"], "layer": "requested",
+                          "key": key, "start": start, "end": end, "endReason": reason,
+                          "content": doc, "units": _units(wire), "seq": live[-1]["seq"]})
+    for at in markers:
+        open_ = [i for i in instances if i["endReason"] != "deletedBeforeStart"
+                 and i["start"] < at and (i["end"] is None or at < i["end"])]
+        if open_:
+            target = max(open_, key=lambda i: (i["start"], i["seq"]))
+            target["end"], target["endReason"] = at, "cancelled"
+    return instances
+
+
+def _supersede(span, instances):
+    """A7, A8: a later-starting instance of the same kind and product ends an
+    earlier one (by start, never by arrival; at an equal start, the one whose
+    last write was received later); with overlay, a timed instance does not
+    end an open-ended one."""
+    if not span.get("supersedes"):
+        return
+    live = [i for i in instances if i["endReason"] != "deletedBeforeStart"]
+    ordered = sorted(live, key=lambda i: (i["start"], i["seq"]))
+    for i, earlier in enumerate(ordered):
+        for later in ordered[i + 1:]:
+            if span.get("overlay") and earlier["end"] is None and later["end"] is not None:
+                continue
+            if earlier["end"] is None or later["start"] < earlier["end"]:
+                earlier["end"], earlier["endReason"] = later["start"], "superseded"
+                break
+
+
+def _applied(product, span, records):
+    """A10: the applied layer. A carrier sampled per cycle (devicestatus) yields
+    one only when it declares `activeField`; otherwise its values are the
+    composed result (S1), not an instance of this kind."""
+    carrier = span.get("applied")
+    if not carrier:
+        return []
+    if carrier.get("collection") == "devicestatus" and not carrier.get("activeField"):
+        return []
+    return _sampled(product, span, records, carrier, "applied")
+
+
+def _derive(case):
+    out, unreadable = [], []
     records = case.get("records") or []
     for decl in case["declarations"]:
         product = decl["product"]
         for span in decl["stateSpans"]:
-            found = []
-            if span.get("wire"):
-                found = _wire_instances(product, span, records)
-                _supersede(span, found)
+            try:
+                found = []
+                if span.get("wire"):
+                    found = _wire_instances(product, span, records)
+                    _supersede(span, found)
+                found += _applied(product, span, records)
+            except ValueError as err:
+                unreadable.append({"product": product, "kind": span["kind"], "reason": str(err)})
+                continue
             out.extend(found)
-            out.extend(_applied(product, span, records))
-    return out
+    return out, unreadable
+
+
+def instances(case):
+    """Every instance the records describe, per product and kind (A1)."""
+    return _derive(case)[0]
+
+
+def unreadable(case):
+    """Kinds whose records cannot be read without assuming a unit (A11)."""
+    return [{"product": u["product"], "kind": u["kind"]} for u in _derive(case)[1]]
 
 
 def active_at(case, at):
@@ -224,6 +291,8 @@ def active_at(case, at):
             row["overlap"] = True
         if inst.get("units"):
             row["units"] = inst["units"]
+        if "value" in inst:
+            row["value"] = inst["value"]
         result.append(row)
     return sorted(result, key=lambda r: (r["product"], r["kind"], r["layer"], r["start"], r["key"]))
 

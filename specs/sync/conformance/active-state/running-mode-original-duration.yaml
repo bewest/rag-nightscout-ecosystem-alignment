@@ -1,0 +1,87 @@
+# Synthetic. SPEC-ACTIVE-STATE; state and intent §6. Expectations authored by hand.
+id: running-mode-original-duration
+title: A loop-disabled mode shortened in originalDuration ends, whatever its placeholder wire duration
+rules:
+- A4
+- A5
+control: running-mode-open-ended
+description: 'Declared as AndroidAPS''s running mode: originalDuration carries the mode''s own duration
+  in milliseconds, 0 when permanent; the wire duration is a 10-year placeholder for an open-ended loop-disabled
+  mode (RunningModeExtension.kt:25-97 at 7e1d537d49).'
+declarations:
+- product: ControllerA
+  stateSpans:
+  - category: LoopMode
+    kind: RunningMode
+    slot: runningMode
+    exclusiveWithinSlot: true
+    overlay: true
+    supersedes: true
+    wire:
+      collection: treatments
+      eventType: OpenAPS Offline
+      identity:
+      - identifier
+      durationField: originalDuration
+      durationUnit: milliseconds
+      indefinite:
+        field: originalDuration
+        value: 0
+      endedEncoding: amend-duration
+    applied:
+      collection: treatments
+      eventType: OpenAPS Offline
+      discriminator:
+        path: autoForced
+        test: equals
+        value: true
+    requested:
+      collection: treatments
+      eventType: OpenAPS Offline
+      discriminator:
+        path: autoForced
+        test: equals
+        value: false
+records:
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    identifier: r1
+    eventType: OpenAPS Offline
+    created_at: '2026-10-18T09:00:00Z'
+    mode: DISABLED_LOOP
+    duration: 5256000
+    originalDuration: 0
+    autoForced: false
+- product: ControllerA
+  collection: treatments
+  op: write
+  doc:
+    identifier: r1
+    eventType: OpenAPS Offline
+    created_at: '2026-10-18T09:00:00Z'
+    mode: DISABLED_LOOP
+    duration: 5256000
+    originalDuration: 1800000
+    autoForced: false
+expected:
+  instances:
+  - product: ControllerA
+    kind: RunningMode
+    layer: requested
+    key: identifier=r1
+    start: '2026-10-18T09:00:00Z'
+    end: '2026-10-18T09:30:00Z'
+    endReason: cancelled
+  activeAt:
+  - at: '2026-10-18T09:20:00Z'
+    active:
+    - product: ControllerA
+      kind: RunningMode
+      layer: requested
+      key: identifier=r1
+      start: '2026-10-18T09:00:00Z'
+      end: '2026-10-18T09:30:00Z'
+  - at: '2026-10-18T09:40:00Z'
+    active: []
