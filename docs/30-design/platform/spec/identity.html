@@ -16,7 +16,7 @@
         <link rel="prev" href="glossary.html">
       
       
-        <link rel="next" href="../upstream-asks-device-simulators/index.html">
+        <link rel="next" href="registration.html">
       
       
         
@@ -2678,6 +2678,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -2907,6 +2911,62 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="registration.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Registration (L2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="state-intent.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State and intent (L3)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -5033,7 +5093,7 @@
 
 
 <h1 id="identity-l0">Identity (L0)<a class="headerlink" href="#identity-l0" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>7c8824b7e</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>3fbabb345</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>5a9a49cc</code> (2026-10-18). Layer L0 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. Specified, not
 implemented, except where §6 describes today's behaviour. Decisions:
@@ -5145,7 +5205,7 @@ and the write contract's U1 and U6.</p>
 <p>An instance id is never derived from a device name, model, serial number or the free-text
 <code>devicestatus.device</code>. A hub cannot check that an id is random; the contract states it. Bindings
 are to a subject, never to a token. These are specified in the
-<a href="../nightscout-hub-sync-architecture-2026-09-11.html#36-definitions-and-instances">hub-sync design §3.5–§3.6</a>.</p>
+<a href="registration.html#7-definitions">registration specification §7–§8</a>.</p>
 <h2 id="3-match-order-per-collection">3. Match order per collection<a class="headerlink" href="#3-match-order-per-collection" title="Permanent link">&para;</a></h2>
 <p>The write step (write contract §2.2) resolves a re-send's target by trying keys in order; the
 first that resolves wins.</p>
@@ -5273,12 +5333,12 @@ uses today's v1 by-<code>_id</code> routes needs a UUID (§6).</p>
 <td>API v3 refuses it (400, reproduced by <code>LOOP-ID-V3-IMMUTABLE</code>); v1 does not</td>
 </tr>
 <tr>
-<td>hub-sync §3.7 choice 6</td>
+<td>D20 choice 6 (<a href="../nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">text</a>)</td>
 <td>is <code>identifier</code> null in the reply when the client sent none and the path assigns none?</td>
 <td>I4 states null, pending confirmation</td>
 </tr>
 <tr>
-<td>hub-sync §3.7 choice 7</td>
+<td>D20 choice 7</td>
 <td>does a typed re-send match across instances of one product?</td>
 <td>I7 states yes, pending confirmation</td>
 </tr>

@@ -1,0 +1,7676 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/spec/registration.html">
+      
+      
+        <link rel="prev" href="identity.html">
+      
+      
+        <link rel="next" href="state-intent.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Registration (L2) - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#registration-l2" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Registration (L2)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../site/pages/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24" id="__nav_5_24_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_24_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    30-design/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-telemetry-emitter-map-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor Telemetry Emitter Integration Map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-adoption-roadmap-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adoption roadmap: who builds what, in what order
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-integration-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Integration Guide for App Developers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-telemetry-backend-service-design-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Backend Service Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-telemetry-deployment-lifecycle-examples-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Deployment Lifecycle Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-telemetry-implementation-breakdown-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Implementation Breakdown
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-telemetry-lifecycle-policy-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Lifecycle Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-telemetry-local-integration-plan-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Local Integration Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-telemetry-scheduling-dedupe-model-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Scheduling and Dedupe Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ns2parquet-keyed-pseudonyms.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ns2parquet keyed pseudonyms: design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_13" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    platform/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24_13" id="__nav_5_24_13_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_24_13_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    platform/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROPOSAL-controller-descriptions-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: let Nightscout describe the controllers it already recognises
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROPOSAL-replay-fidelity-changes-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: the concrete changes that make Nightscout high-fidelity for replay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../agent-trust-boundaries-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agents in the ecosystem: develop, interpret, act
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-devicestatus-profile-fidelity-2026-09-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    devicestatus and profile: what survives, what is lost, and what was never written
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-effects-and-versioning-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Temporary effects, privacy-preserving projection, and which version this is
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-extensibility-models-2026-09-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extending the Nightscout document model: four designs, measured
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-hub-sync-architecture-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A hub-and-spoke sync model for AID controllers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-intent-workflow-landscape-2026-10-09.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intent, workflow and entity management across the AID controller landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-primitive-coverage-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Is there enough evidence for a unified primitive catalogue? A coverage assessment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-typed-schema-evidence-2026-09-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Typed schemas for Nightscout: what the documents actually contain
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_13_12" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    spec/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24_13_12" id="__nav_5_24_13_12_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_24_13_12_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24_13_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    spec/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="glossary.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platform glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="identity.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Identity (L0)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Registration (L2)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="registration.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Registration (L2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-two-tiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Two tiers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-grammar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The grammar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-capability-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The capability document
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-the-product-resource" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. The product resource
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. The product resource">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-identity-and-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Identity and methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-order-of-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Order of checks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-elements-and-their-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Elements and their results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-etag-and-idempotency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 Etag and idempotency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#55-retire" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5 Retire
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-the-controllers-side-fallback-and-refused-writes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. The controller's side: fallback and refused writes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-definitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Definitions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-instances" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Instances
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-channels-roles-and-provenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Channels, roles and provenance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-labels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Labels
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-typed-writes-and-attribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Typed writes and attribution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-read-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Read selection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-projected-views-for-older-readers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Projected views for older readers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-retention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Retention
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#15-binding-credentials-and-the-owner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. Binding, credentials and the owner
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="15. Binding, credentials and the owner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#151-binding-and-credential-kind" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15.1 Binding and credential kind
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#152-the-owners-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15.2 The owner's actions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#153-authorisation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15.3 Authorisation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#154-namespaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15.4 Namespaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#16-version-scoped-quirks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16. Version-scoped quirks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#17-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        17. Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#18-open-choices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        18. Open choices
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#19-conformance-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        19. Conformance cases
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="state-intent.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State and intent (L3)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../upstream-asks-device-simulators/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    upstream-asks-device-simulators/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../upstream-asks-loop-identifier/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    upstream-asks-loop-identifier/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../remedial/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tenancy/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../60-research/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../site/pages/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-two-tiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Two tiers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-grammar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The grammar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-capability-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The capability document
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-the-product-resource" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. The product resource
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. The product resource">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-identity-and-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Identity and methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-order-of-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Order of checks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-elements-and-their-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Elements and their results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-etag-and-idempotency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 Etag and idempotency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#55-retire" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5 Retire
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-the-controllers-side-fallback-and-refused-writes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. The controller's side: fallback and refused writes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-definitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Definitions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-instances" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Instances
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-channels-roles-and-provenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Channels, roles and provenance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-labels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Labels
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-typed-writes-and-attribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Typed writes and attribution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-read-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Read selection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-projected-views-for-older-readers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Projected views for older readers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-retention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Retention
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#15-binding-credentials-and-the-owner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. Binding, credentials and the owner
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="15. Binding, credentials and the owner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#151-binding-and-credential-kind" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15.1 Binding and credential kind
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#152-the-owners-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15.2 The owner's actions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#153-authorisation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15.3 Authorisation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#154-namespaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15.4 Namespaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#16-version-scoped-quirks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16. Version-scoped quirks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#17-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        17. Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#18-open-choices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        18. Open choices
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#19-conformance-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        19. Conformance cases
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="registration-l2">Registration (L2)<a class="headerlink" href="#registration-l2" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-10-18 at <code>010e16618</code>.</em></p>
+<p><em>Contributor-facing. Living specification, current at <code>main</code> <code>8d2b93ed</code> (2026-10-18). Layer L2 of
+the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>; ids are defined in
+the <a href="identity.html">identity specification</a>. Specified, not implemented: no hub serves any of this.
+Decisions: <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">D18</a>
+and its <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#d18-addendum--an-extensible-grammar-maintainer-2026-10-12">addendum</a>,
+<a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#262-d19--definitions-and-instances-maintainer-2026-10-14">D19</a>,
+<a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">D20</a>
+and the maintainer's decisions of 2026-10-14, 2026-10-16 and 2026-10-17 recorded there. Queue:
+<code>SPEC-REGISTRATION</code>.</em></p>
+<p>A controller declares what its data means; the hub accepts the declaration element by element,
+stores typed records for what it accepts, and tells the controller to write everything else in
+today's document shapes. Several running copies of a controller can share a site without
+overwriting one another. The hub records what each copy reports; it never decides dosing.</p>
+<p>Paths and permission names on this page are proposals. Every request below is on the data listener
+(<code>ns-api</code>, or <code>single</code>) unless it says the owner's listener (<code>ns-tenant-admin</code>, or <code>API_SECRET</code> on
+<code>single</code>).</p>
+<h2 id="1-files">1. Files<a class="headerlink" href="#1-files" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>file</th>
+<th>what it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>specs/sync/controller-state-model.schema.json</code></td>
+<td>the registration grammar (§3)</td>
+</tr>
+<tr>
+<td><code>specs/sync/hub-capabilities.schema.json</code></td>
+<td>the capability document (§4)</td>
+</tr>
+<tr>
+<td><code>specs/sync/registration-submit.schema.json</code></td>
+<td>requests, responses, stored registrations, definitions and instances, fallback, write replies, and the conformance case shapes</td>
+</tr>
+<tr>
+<td><code>specs/sync/controller-instance.schema.json</code></td>
+<td>the instance document (§8)</td>
+</tr>
+<tr>
+<td><code>specs/sync/shared-slots.yaml</code></td>
+<td>the shared slot list the well-known catalogue ships (§9)</td>
+</tr>
+<tr>
+<td><code>specs/quirks/quirk.schema.json</code>, <code>specs/quirks/*.yaml</code></td>
+<td>the quirks registry (§16)</td>
+</tr>
+<tr>
+<td><code>specs/sync/registrations/{loop,trio,androidaps}.yaml</code></td>
+<td>the well-known registrations, generated by <code>make schema-sync-model</code></td>
+</tr>
+<tr>
+<td><code>specs/sync/registrations/fixtures/example-testcontroller.yaml</code></td>
+<td>a synthetic registration that uses every grammar rule</td>
+</tr>
+<tr>
+<td><code>specs/sync/conformance/</code></td>
+<td>186 synthetic cases (§19)</td>
+</tr>
+<tr>
+<td><code>tools/nsschema/negotiate.py</code>, <code>instances.py</code>, <code>quirks_registration.py</code></td>
+<td>reference decision functions; they check that the cases are self-consistent and are not a hub</td>
+</tr>
+<tr>
+<td><code>tools/nsschema/test_registration_{negotiation,instances,quirks}.py</code></td>
+<td>the gates</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-two-tiers">2. Two tiers<a class="headerlink" href="#2-two-tiers" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>tier</th>
+<th>who writes it</th>
+<th>purpose</th>
+<th>what changes for the controller</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>well-known</strong></td>
+<td>the hub, generated from measurement</td>
+<td>today's writers are described as they are</td>
+<td>nothing</td>
+</tr>
+<tr>
+<td><strong>controller-owned</strong></td>
+<td>the controller, per release</td>
+<td>typed definitions for features unique to that controller, and the hub API derived from them</td>
+<td>it submits a registration when it wants typed support</td>
+</tr>
+</tbody>
+</table>
+<p>The hub ships the well-known registrations and serves them at <code>/.well-known/nightscout/controllers</code>.
+Precedence is controller-published, then operator-declared, then structurally inferred. A
+registration is an affordance: what a controller may sync, how often and with which filters
+(<code>cadence</code>, <code>queryProfile</code>) is declared by the controller, and the hub honours a declaration it can
+bound.</p>
+<h2 id="3-the-grammar">3. The grammar<a class="headerlink" href="#3-the-grammar" title="Permanent link">&para;</a></h2>
+<p>A registration (<code>apiVersion: nightscout.dev/sync/v1</code>) declares:</p>
+<ul>
+<li><strong>documents</strong>: the composite documents it writes, each with a structural discriminator (a
+  devicestatus carrying a <code>loop</code> object rather than an <code>openaps</code> one) and the observation
+  primitives it decomposes to. The free-text <code>device</code> string is never the discriminator.</li>
+<li><strong>stateSpans</strong>: one entry per intent kind; its meaning is specified in L3.</li>
+<li><strong>composition</strong>: how overlapping intents combine, as reported by the controller
+  (<code>reportedBy: controller</code>, <code>hubComputes: false</code>).</li>
+<li><strong>commands</strong>: transport, whether the hub is in the path, authorisation, expiry, acknowledgement.</li>
+<li><strong>replayInputs</strong>: every dosing input the controller could supply, with a status and a path; an
+  input it has but does not publish has a null path.</li>
+<li><strong>settings</strong>: the effective-dated configuration snapshot it publishes.</li>
+<li><strong>extensions</strong>: controller-specific typed data under reverse-DNS namespaces.</li>
+<li><strong>cadence</strong>, <strong>queryProfile</strong> and <strong>sensitivity</strong>.</li>
+</ul>
+<p>Rules:</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G1</td>
+<td><strong>Must-ignore.</strong> Within a grammar major, a reader keeps members it does not know as written and does not interpret or serve them. No object in the grammar is closed.</td>
+</tr>
+<tr>
+<td>G2</td>
+<td><strong>Typed declarations.</strong> A typed field carries <code>type</code>, a restricted JSON Schema fragment (<code>type</code>, <code>enum</code>, <code>minimum</code>, <code>maximum</code>, <code>format</code>, <code>items</code>, <code>properties</code>, <code>required</code>; closed; an object lists its properties), or <code>typeRef</code> to a Nightscout-published definition such as a ControllerSettings field; plus <code>unit</code>, <code>range</code>, <code>horizon</code>, <code>sensitivity</code> and <code>evidence</code>. <code>settings.fields[]</code> and <code>replayInputs[]</code> take a name or a typed declaration. An extension or extension field without a type is rejected. A field with no sensitivity label falls under <code>sensitivity.unlabelledPolicy</code>, <code>withhold</code> when absent.</td>
+</tr>
+<tr>
+<td>G3</td>
+<td><strong>Open vocabularies.</strong> <code>endedEncoding</code>, command <code>transport</code>, <code>replayInputs[].status</code>, the discriminator <code>test</code> and <code>endReasons</code> take a shared value or <code>{value: other, controllerTerm}</code>. A hub renders an unknown term as "other: <em>term</em>" instead of rejecting the registration.</td>
+</tr>
+<tr>
+<td>G4</td>
+<td><strong>Per-element versions.</strong> Each stateSpans kind and each extension may declare <code>version</code>, or <code>versions</code> (<code>served</code>, one <code>stored</code>, optional lossless <code>mappings</code>). Without a declared mapping nothing is converted.</td>
+</tr>
+<tr>
+<td>G5</td>
+<td><strong>Horizons.</strong> Documents, kinds, fields, settings and extensions may declare a <code>horizon</code>: <code>cycle</code>, <code>span</code>, <code>effective-dated</code>, <code>definition</code> or <code>aggregate</code>, each with its own cadence and retention. <code>availability</code> includes <code>experimental</code>, stored as declared with no well-known mapping and no long-term promise.</td>
+</tr>
+</tbody>
+</table>
+<p>The well-known registrations carry <code>typeRef</code> only where the ControllerSettings definition was read
+from the controller's own algorithm family, and horizons only on the <code>devicestatus</code> document
+(<code>cycle</code>) and <code>settings</code> (<code>effective-dated</code>). They declare no kind versions.</p>
+<h2 id="4-the-capability-document">4. The capability document<a class="headerlink" href="#4-the-capability-document" title="Permanent link">&para;</a></h2>
+<p><code>GET /.well-known/nightscout/sync</code>, beside the catalogue at <code>/.well-known/nightscout/controllers</code>
+(RFC 8615). It is unauthenticated, cacheable and about the hub software, not a person. Under
+<code>TENANCY_MODE=multi</code> each tenant's host serves the same deployment-level content. It never lists a
+tenant's registrations.</p>
+<table>
+<thead>
+<tr>
+<th>member</th>
+<th>states</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>grammar.versions[]</code></td>
+<td>each grammar major the hub reads and the minor it implements; a registration carries no minor</td>
+</tr>
+<tr>
+<td><code>grammar.interprets[]</code></td>
+<td>the grammar members the hub interprets, as dotted paths with <code>*</code> for an array item or map key; an entry covers its subtree. It covers at least <code>apiVersion</code>, <code>kind</code>, <code>metadata.vendor</code>, <code>metadata.product</code>, <code>metadata.tier</code>, <code>spec.cadence</code>, <code>spec.documents.*.collection</code> and <code>spec.documents.*.decomposesTo</code></td>
+</tr>
+<tr>
+<td><code>horizons.classes[]</code>, <code>horizons.availability[]</code></td>
+<td>the horizon classes and availability values the hub stores</td>
+</tr>
+<tr>
+<td><code>typeFragment.keywords[]</code>, <code>typeFragment.formats[]</code></td>
+<td>the type keywords and formats the hub can store, validate and index; includes <code>type</code></td>
+</tr>
+<tr>
+<td><code>limits</code></td>
+<td><code>maxRegistrationBytes</code> (RFC 8785 canonical JSON), <code>maxExtensions</code>, <code>maxFieldsPerExtension</code>, <code>maxTypeDepth</code></td>
+</tr>
+<tr>
+<td><code>wellKnown.catalogue</code>, <code>wellKnown.kinds[]</code></td>
+<td>each shipped registration's vendor, product, version range and <code>href</code></td>
+</tr>
+<tr>
+<td><code>wellKnown.slots</code>, <code>wellKnown.mappings[]</code></td>
+<td>the shared slot list (§9) and the catalogue mappings for older versions (§16)</td>
+</tr>
+<tr>
+<td><code>submit.href</code>, <code>submit.tiers</code>, <code>submit.permissions</code></td>
+<td>where a controller-owned registration is submitted, and the permissions it needs; absent when the hub takes no submissions</td>
+</tr>
+<tr>
+<td><code>instances</code></td>
+<td>present when the hub serves definitions and instances (§7–§8): <code>leaseSeconds</code> (at least 60), the instance id form (<code>uuid-v4</code>), the roles and channels it grants, and label bounds</td>
+</tr>
+</tbody>
+</table>
+<p>The document is must-ignore like the grammar. Its vocabularies (horizon classes, availability,
+keywords, formats) are closed lists that match the grammar's.</p>
+<p>A controller reads the capability document and its registration at launch and after a controller
+release, never on a timer, on a lease renewal or because a request was refused.</p>
+<h2 id="5-the-product-resource">5. The product resource<a class="headerlink" href="#5-the-product-resource" title="Permanent link">&para;</a></h2>
+<h3 id="51-identity-and-methods">5.1 Identity and methods<a class="headerlink" href="#51-identity-and-methods" title="Permanent link">&para;</a></h3>
+<p>A registration's identity within a tenant is <code>(metadata.vendor, metadata.product)</code>.
+<code>versionRange</code> is an attribute: a new release updates the same registration. The product resource
+is <code>&lt;submit.href&gt;/&lt;vendor&gt;/&lt;product&gt;</code>, each segment percent-encoded.</p>
+<table>
+<thead>
+<tr>
+<th>method</th>
+<th>who</th>
+<th>meaning</th>
+<th>precondition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PUT</code></td>
+<td>controller</td>
+<td>create or update</td>
+<td><code>If-None-Match: *</code> to create; <code>If-Match: &lt;etag&gt;</code> to update</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td>controller</td>
+<td>the stored registration with its current element results, binding and credential kind</td>
+<td>none</td>
+</tr>
+<tr>
+<td><code>DELETE</code></td>
+<td>controller</td>
+<td>retire</td>
+<td><code>If-Match</code></td>
+</tr>
+<tr>
+<td><code>DELETE</code></td>
+<td>owner</td>
+<td>retire</td>
+<td><code>If-Match</code></td>
+</tr>
+<tr>
+<td><code>POST …/block</code></td>
+<td>owner</td>
+<td>block</td>
+<td><code>If-Match</code>; <code>If-None-Match: *</code> when nothing is stored</td>
+</tr>
+<tr>
+<td><code>POST …/unblock</code>, <code>…/release</code>, <code>…/transfer</code>, <code>…/free-namespaces</code></td>
+<td>owner</td>
+<td>§15</td>
+<td><code>If-Match</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="52-order-of-checks">5.2 Order of checks<a class="headerlink" href="#52-order-of-checks" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Authorisation (403).</strong> The permission, then the binding: any credential other than the one
+   the registration is bound to is refused <code>not-registration-owner</code> for an update or retire. An
+   owner action is authorised by its listener and refused <code>not-authorised</code> elsewhere.</li>
+<li><strong>Preconditions.</strong> None sent: 428. A failed one: 412 with the current etag and state. Retiring
+   an identity with nothing stored: 404. Then the owner's block: a write to a blocked identity is
+   403 <code>blocked-by-owner</code>. The block is checked after the preconditions, so a controller holding
+   the etag from before the block gets 412 with <code>current.state: blocked</code>. A pre-emptive block
+   stores no registration, so a create's <code>If-None-Match: *</code> passes and the block answers 403.</li>
+<li><strong>The registration as a whole</strong>, each rejecting it entirely and storing nothing (422 unless
+   stated): <code>apiVersion</code> not among <code>grammar.versions</code> (<code>unsupported-grammar-major</code>); wrong <code>kind</code>,
+   or grammar-invalid outside <code>spec.extensions</code> (<code>invalid-registration</code>); identity differing from
+   the resource (<code>identity-mismatch</code>); a tier other than <code>controller-owned</code> (<code>wrong-tier</code>); over
+   <code>maxRegistrationBytes</code> (413) or <code>maxExtensions</code> (<code>limit-exceeded</code>).</li>
+<li><strong>Each element</strong> (§5.3).</li>
+</ol>
+<h3 id="53-elements-and-their-results">5.3 Elements and their results<a class="headerlink" href="#53-elements-and-their-results" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>element id</th>
+<th>from</th>
+<th>carrier when not accepted</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>stateSpans/&lt;kind, else category&gt;</code></td>
+<td><code>spec.stateSpans[]</code></td>
+<td>its <code>wire</code> (<code>write: carrier</code>); <code>none</code> when <code>wire</code> is null</td>
+</tr>
+<tr>
+<td><code>extensions/&lt;namespace&gt;</code></td>
+<td><code>spec.extensions</code></td>
+<td>its <code>carrier</code>; <code>none</code> when it declares none</td>
+</tr>
+<tr>
+<td><code>settings.fields/&lt;name&gt;</code></td>
+<td>a typed <code>settings.fields[]</code> entry</td>
+<td>written as today, name-only (<code>write: untyped</code>)</td>
+</tr>
+<tr>
+<td><code>replayInputs/&lt;input&gt;</code></td>
+<td>a typed <code>replayInputs[]</code> entry</td>
+<td>written as today, name-only (<code>write: untyped</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Everything else (documents, cadence, composition, commands, query profile, sensitivity, untyped
+settings and inputs) belongs to the registration as a whole.</p>
+<p>Each element is <code>accepted</code>, <code>accepted-with-ignored-members</code> (with the ignored members as dotted
+paths), or <code>rejected</code> with reasons. Ignored members are those the grammar does not define plus
+those <code>interprets</code> does not cover; they are kept as written. Ignored members outside any element are
+listed at registration level. An element is <code>not-interpreted</code> when a
+member that defines it is ignored: a kind's <code>category</code>; an extension's <code>fields</code>,
+<code>version</code>/<code>versions</code> and each field's <code>name</code>, <code>type</code> and <code>typeRef</code>; a typed setting's or input's
+name and type. Otherwise an element is rejected for:</p>
+<table>
+<thead>
+<tr>
+<th>reason</th>
+<th>when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>namespace-not-owned</code></td>
+<td>the credential has stated namespace roots and none covers the namespace (§15.4)</td>
+</tr>
+<tr>
+<td><code>namespace-claimed</code></td>
+<td>another registration on the tenant holds the namespace, whatever its state</td>
+</tr>
+<tr>
+<td><code>untyped-extension</code></td>
+<td>an extension without a type declaration</td>
+</tr>
+<tr>
+<td><code>unsupported-type-keyword</code></td>
+<td>a keyword or format outside <code>typeFragment</code>, including in a <code>typeRef</code> target</td>
+</tr>
+<tr>
+<td><code>limit-exceeded</code></td>
+<td>over <code>maxFieldsPerExtension</code> or <code>maxTypeDepth</code></td>
+</tr>
+<tr>
+<td><code>invalid-element</code></td>
+<td>an extension that fails the grammar; for a stateSpans kind, a restated member of a <code>wellKnownRef</code> entry or a <code>sameAs</code> that breaks §9's checks (any other grammar failure outside <code>spec.extensions</code> rejects the whole registration as <code>invalid-registration</code>, §5.2)</td>
+</tr>
+<tr>
+<td><code>version-plan-invalid</code>, <code>unsupported-availability</code>, <code>unsupported-horizon</code></td>
+<td>checked only where the hub interprets them</td>
+</tr>
+<tr>
+<td><code>version-conflict</code>, <code>unknown-well-known-kind</code></td>
+<td>§7</td>
+</tr>
+<tr>
+<td><code>unknown-shared-slot</code></td>
+<td>§9</td>
+</tr>
+</tbody>
+</table>
+<p>Reason codes are an open vocabulary (<code>other</code> with the hub's term); <code>detail</code> is for people.</p>
+<p>The outcome is <code>accepted</code> when every element is accepted and <code>partial</code> when at least one is
+rejected; both store the registration as written (201 on create, 200 on update). An accepted
+element may carry <code>carrierView</code> (§13). A controller that does not know an element result, reason
+or <code>carrierView</code> value treats the element as not accepted.</p>
+<h3 id="54-etag-and-idempotency">5.4 Etag and idempotency<a class="headerlink" href="#54-etag-and-idempotency" title="Permanent link">&para;</a></h3>
+<p>The etag is <code>sha256:</code> over the RFC 8785 canonical JSON of <code>{registration, state, boundTo}</code>
+(<code>registration</code> and <code>boundTo</code> null for a pre-emptive block), so it changes on every change of
+content, state or binding. The credential kind, the binding event and freed namespaces are stored
+beside it and are not in it. A request whose content and state are already stored is a no-op
+(200, <code>noop: true</code>, the stored etag), so a create retried after a lost response succeeds. A stale
+<code>If-Match</code> with different content is 412 <code>stale-etag</code>; <code>If-None-Match: *</code> over different content is
+412 <code>registration-exists</code>. The hub evaluates a stored registration against its current
+capabilities on every read, so an element's result can change after a hub upgrade while the stored
+registration and its etag do not.</p>
+<h3 id="55-retire">5.5 Retire<a class="headerlink" href="#55-retire" title="Permanent link">&para;</a></h3>
+<p>The bound controller retires with <code>api:registrations:delete</code>; the owner may also retire. Retiring
+sets the state to <code>retired</code>, changes the etag, and keeps the declaration and the binding frozen:
+data already stored under it stays stored and readable as declared, and no typed write is accepted
+for its elements. Its namespaces stay claimed until the owner frees them. A later <code>PUT</code> with the
+retired etag reactivates it; a freed namespace is claimed again only if no other registration holds
+it by then, and otherwise that extension is rejected <code>namespace-claimed</code>. The controller writes its
+carriers from the moment it retires.</p>
+<h2 id="6-the-controllers-side-fallback-and-refused-writes">6. The controller's side: fallback and refused writes<a class="headerlink" href="#6-the-controllers-side-fallback-and-refused-writes" title="Permanent link">&para;</a></h2>
+<p>An element is written through the typed API only when the response to this registration has
+outcome <code>accepted</code> or <code>partial</code> and the element's result is <code>accepted</code> or
+<code>accepted-with-ignored-members</code>. Everything else falls back to the element's carrier (§5.3): a
+rejected element; an unknown result, reason or <code>carrierView</code>; a rejected registration; a failed
+precondition; a retired or blocked registration; no response (a submit answered 429 or any 5xx is
+no response); no capability document, no <code>submit</code>, or a grammar major the hub does not list.</p>
+<p>A controller that depends on an ignored member may treat that element as not accepted.</p>
+<p>An accepted element whose <code>carrierView</code> is <code>served</code> is written typed only. One whose view is not
+served is written typed only, or typed and as its carrier when the element declares
+<code>dualWriteLink</code> (<code>typedIdPath</code>, <code>carrierIdPath</code>): the record is linked by (instance id, the
+controller's record id), so counting and de-duplication follow the link. Writing both is for an
+element with no declared carrier mapping, and while an app moves over.</p>
+<p>A typed write refused for load (429 or any 5xx, with or without <code>Retry-After</code>) is retried with
+backoff, no sooner than <code>Retry-After</code> when sent, until it succeeds. It is never written as its
+carrier, the record is not dropped and the write plan does not change, so a write the hub stored
+before failing cannot appear twice. Any other refusal is definite (<code>blocked-by-owner</code>, a retired or
+missing registration, <code>instance-required</code>, a typed route answering 404 after a hub rollback, or a
+4xx the controller does not know): the controller sends that record as its carrier at once and
+treats the element as not accepted until its next re-check (§4).</p>
+<p>The capability document carries everything the response depends on except the tenant's stored
+registrations with their bindings and blocks, the credential's grants, and whether the hub serves a
+carrier view of an element. A controller can predict most of the result before it submits; the
+response is authoritative.</p>
+<h2 id="7-definitions">7. Definitions<a class="headerlink" href="#7-definitions" title="Permanent link">&para;</a></h2>
+<p>The product resource registers what a controller's data means. Definitions let several releases
+and builds of one product coexist; instances (§8) say which copy is connected.</p>
+<table>
+<thead>
+<tr>
+<th>resource</th>
+<th>method</th>
+<th>who</th>
+<th>meaning</th>
+<th>precondition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;…&gt;/&lt;product&gt;</code></td>
+<td>as §5</td>
+<td>as §5</td>
+<td>the product: binding, state, owner actions, namespaces, etag, element results. Its body is a definition</td>
+<td>as §5</td>
+</tr>
+<tr>
+<td><code>&lt;…&gt;/&lt;product&gt;/definitions/&lt;definitionId&gt;</code></td>
+<td><code>PUT</code></td>
+<td>the credential the product is bound to</td>
+<td>add a definition, immutably</td>
+<td><code>If-None-Match: *</code> only</td>
+</tr>
+<tr>
+<td><code>&lt;…&gt;/&lt;product&gt;/instances/&lt;instanceId&gt;</code></td>
+<td><code>PUT</code></td>
+<td>any credential with <code>api:registrations:create</code></td>
+<td>create, renew or change an instance</td>
+<td>as §5</td>
+</tr>
+<tr>
+<td><code>&lt;…&gt;/&lt;product&gt;/instances/&lt;instanceId&gt;</code></td>
+<td><code>DELETE</code></td>
+<td>the credential the instance is bound to, with <code>api:registrations:delete</code></td>
+<td>release the instance and all its roles</td>
+<td><code>If-Match</code></td>
+</tr>
+</tbody>
+</table>
+<p>A hub that advertises <code>instances</code> serves the two added resources; one that does not serves
+neither, and §5 applies unchanged.</p>
+<p><strong>Identity.</strong> The definition id is defined in <a href="identity.html#2-contract-ids">identity §2</a>. A product
+<code>PUT</code>'s accepted or partial response names the <code>definitionId</code> the hub computed. Every definition
+the hub accepts is stored content-addressed: the product's current registration, every
+registration a product update replaced, and every definition added by <code>PUT</code>. Any number coexist
+under one product.</p>
+<p><strong>Adding one.</strong> Order of checks: (1) authorisation: the owner never adds one (403
+<code>not-authorised</code>); the permission; a registered product (404); the product's binding (403
+<code>not-registration-owner</code>). A definition <code>PUT</code> never binds a released product, because a binding
+changes the product's etag and a definition never does; the controller re-binds with a product
+<code>PUT</code>. (2) <code>If-None-Match: *</code> (428 otherwise); a blocked product is 403 <code>blocked-by-owner</code>, a
+retired one 409 <code>product-retired</code>. (3) The body's hash equals the path id (422
+<code>definition-id-mismatch</code>), then §5.2 step 3. (4) Element results as §5.3, plus the rules below. An
+identical retry is a 200 no-op. Adding a definition never changes the product resource or its
+etag, so instances of one product never contend on it.</p>
+<p><strong>Namespaces belong to the product</strong> across all its stored definitions: another product's
+definition declaring any of them is rejected <code>namespace-claimed</code> until the owner frees it.</p>
+<p><strong>One element at one version has one meaning.</strong> Within one product, an element of a new
+definition (a stateSpans kind or an extension namespace) whose stored version equals that of the
+same element in a stored definition, and whose meaning differs, is rejected <code>version-conflict</code>.
+This applies to definition <code>PUT</code>s and to product <code>PUT</code>s, where an update is compared with the
+registration it replaces, which stays stored. A different meaning needs a new version; definitions
+that agree, or declare different versions, coexist. The version compared is <code>version</code> or
+<code>versions.stored</code>; an element that declares none is one unversioned version. Typed settings fields
+and replay inputs carry no version in grammar v1 and are not compared.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>members that are meaning</th>
+<th>not meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>stateSpans kind</td>
+<td><code>category</code>, <code>kind</code>, <code>slot</code>, <code>exclusiveWithinSlot</code>, <code>coexistsWith</code>, <code>overlay</code>, <code>supersedes</code>, <code>states</code>, <code>endReasons</code>, <code>wire</code>, <code>dualWriteLink</code>, <code>requested</code>, <code>applied</code>, <code>initiators</code>, <code>definitions</code>, <code>acceptsFromHub</code>, <code>horizon</code>, <code>sameAs</code></td>
+<td><code>description</code>, <code>evidence</code>, <code>availability</code>, <code>version</code>/<code>versions</code>, members the grammar does not define</td>
+</tr>
+<tr>
+<td>extension</td>
+<td><code>carrier</code>, <code>dualWriteLink</code>, <code>horizon</code>, <code>fields</code> (compared by <code>name</code>)</td>
+<td><code>description</code>, <code>evidence</code>, <code>availability</code>, <code>version</code>/<code>versions</code></td>
+</tr>
+<tr>
+<td>extension field</td>
+<td><code>name</code>, <code>type</code>, <code>typeRef</code>, <code>unit</code>, <code>range</code>, <code>horizon</code>, <code>sensitivity</code></td>
+<td><code>description</code>, <code>evidence</code></td>
+</tr>
+</tbody>
+</table>
+<p>Inside a meaning member, <code>description</code>, <code>evidence</code> and a carrier's <code>writtenWhen</code> are prose and not
+compared, and order is not meaning: an array of strings compares as a sorted set, an array of
+objects as the sorted list of their canonical forms. <code>availability</code> is a promise level, so an
+experimental kind can be released at the same version. <code>sensitivity</code> is meaning, so a later
+definition cannot relabel data stored under an earlier one.</p>
+<p><strong>Well-known references.</strong> A stateSpans entry whose kind is exactly a kind of the hub's catalogue
+names it instead of copying it: <code>wellKnownRef: {catalogue, kind, version}</code>, where <code>catalogue</code> is the
+<code>id</code> of an entry in the capability document's <code>wellKnown.kinds[]</code>, <code>kind</code> is the catalogue kind's
+<code>kind</code> (else its <code>category</code>) and <code>version</code> its stored version. <code>wellKnownRef</code> is additive under
+must-ignore. The entry carries only
+<code>category</code> and <code>kind</code> (the catalogue kind's), the reference, <code>availability</code>, <code>description</code> and
+<code>evidence</code>; a restated member is rejected <code>invalid-element</code>. Its meaning, version, slot, carrier and
+<code>sameAs</code> are the catalogue kind's, so an identical copy agrees with a reference and a differing copy
+at that version is <code>version-conflict</code>. A reference to a kind the catalogue does not have at that
+version is rejected <code>unknown-well-known-kind</code>, and the controller writes that kind's carrier. Only a
+catalogue kind that declares a version can be referenced; the three well-known registrations
+declare none, so none of their kinds can be referenced until the generator versions them.</p>
+<h2 id="8-instances">8. Instances<a class="headerlink" href="#8-instances" title="Permanent link">&para;</a></h2>
+<p><strong>Identity.</strong> The instance id is defined in <a href="identity.html#2-contract-ids">identity §2</a>: a random
+lowercase UUID v4 supplied by the controller.</p>
+<p><strong>Body</strong> (<code>controller-instance.schema.json</code>): <code>apiVersion</code>, <code>kind: ControllerInstance</code>,
+<code>definitionId</code> (a stored definition of this product, else 422 <code>unknown-definition</code>), <code>roles[]</code> and
+<code>labels{}</code>. An instance carries no hardware identifiers; anything identifying a controller reports
+is a typed, sensitivity-labelled field of its definition.</p>
+<p><strong>Observed alias.</strong> The hub may record the free-text <code>devicestatus.device</code> it sees in an
+instance's writes as an observed alias, labelled <code>{level: identifying, category: device}</code>. It is
+withheld by default: absent from the owner's default listing (shown only when the owner asks for
+withheld members), never in the capability document, never in a default export, and never the
+instance's identity.</p>
+<p><strong>Order of checks for <code>PUT</code>.</strong> (1) Authorisation: the owner never writes an instance (403
+<code>not-authorised</code>); the permission; a registered product (404); an existing instance's binding (403
+<code>not-registration-owner</code>). An instance is bound to the subject that created it (or the shared
+secret on <code>single</code>), not to the product's binding, so a development build with its own subject may
+run a copy of a registered product. (2) Preconditions: none is 428; <code>If-None-Match: *</code> over a
+different stored body is 412; an <code>If-Match</code> that is not the current etag is 412 <code>stale-etag</code> with
+the current etag and lease; then a blocked product is 403 <code>blocked-by-owner</code> and a retired one 409
+<code>product-retired</code>. (3) The instance as a whole, each 422 with nothing stored: the id form
+(<code>invalid-instance-id</code>), labels (<code>invalid-label</code>), the schema (<code>invalid-instance</code>, including a role
+without provenance and a (channel, role) claimed twice), <code>unknown-definition</code>. (4) Each role (§9).</p>
+<p><strong>Lease.</strong> Each create or renewal sets <code>leaseExpiresAt</code> to now plus <code>instances.leaseSeconds</code>; the
+response carries it and per-role results (outcome <code>accepted</code>, or <code>partial</code> when a role is refused;
+201 on create, 200 on renewal). An instance that stops renewing lapses and holds no roles, with no
+housekeeping. A renewal is not a capability re-check.</p>
+<p><strong>Etag.</strong> <code>sha256:</code> over the canonical JSON of <code>{instance, boundTo, granted}</code>. The lease is outside
+it, so a renewal that changes nothing keeps it (<code>noop: true</code>) and a retried renewal still matches.
+A role granted on renewal, moved by the owner, or dropped by a rebind (§9) changes it, so the
+instance learns of the change through a 412 on its next renewal, and two owner actions racing on
+one instance meet 412. A create retried with the same body by the same subject is a renewal.</p>
+<p><strong><code>DELETE</code></strong> releases the instance and all its roles. Records it wrote keep its id.</p>
+<h2 id="9-channels-roles-and-provenance">9. Channels, roles and provenance<a class="headerlink" href="#9-channels-roles-and-provenance" title="Permanent link">&para;</a></h2>
+<p><strong>A role</strong> is <code>{channel, role, provenance}</code>:</p>
+<ul>
+<li><code>source</code>: the instance writes the channel's typed records as their source of record.</li>
+<li><code>command-sink</code>: the instance accepts hub-originated commands for the channel. Only on a channel
+  whose kind declares <code>acceptsFromHub.channels</code> with <code>command</code>, else <code>not-a-command-channel</code>.</li>
+<li><code>{value: other, controllerTerm}</code>: any other role, such as an agent's. A hub grants only the roles
+  its capability document lists (<code>unsupported-role</code> otherwise); a bare unknown string is invalid.</li>
+</ul>
+<p><code>provenance</code> is required and closed: <code>device</code> or <code>simulated</code>. One instance may mix them (a
+development build with a real CGM and a simulated pump). An unknown provenance refuses that role
+(<code>unknown-provenance</code>), never the instance. Only <code>device</code>-provenance data is therapy data in default
+views and exports.</p>
+<p><strong>Channels.</strong> For a stateSpans kind that declares a <code>slot</code>:</p>
+<ul>
+<li>if the slot is on the hub's shared slot list (<code>wellKnown.slots</code>, shipped from
+  <code>specs/sync/shared-slots.yaml</code>: <code>override</code>, <code>loopMode</code>, <code>temporaryTarget</code>), the channel is that
+  shared slot, contended across products;</li>
+<li>if the kind declares <code>sameAs: &lt;shared slot&gt;</code> on a hub that interprets <code>sameAs</code> and lists that
+  slot, the channel is the shared slot;</li>
+<li>otherwise the slot is the product's own channel, <code>&lt;vendor&gt;/&lt;product&gt;/&lt;slot&gt;</code>: on the wire the
+  channel keeps the slot's name and its roles are scoped to the product; instances of one product
+  contend on it, and equal names from different products do not.</li>
+</ul>
+<p>Every other element's channel is <code>&lt;vendor&gt;/&lt;product&gt;/&lt;element id&gt;</code>. A slot name containing <code>/</code>
+derives no shared channel. A role on a channel the instance's definition does not derive is
+refused <code>unknown-channel</code>. Two slots are joined only by a listed name or a declared <code>sameAs</code>, never
+because their names look alike: AndroidAPS's <code>runningMode</code> and Loop's and Trio's <code>loopMode</code> stay
+separate until a definition or a catalogue mapping says otherwise, as do names that differ only in
+case. The owner's listing records each unlisted slot name used by two or more products as
+<code>slotNameObservations</code>, for the catalogue to act on.</p>
+<p><strong><code>sameAs</code> checks</strong>, at a product or definition <code>PUT</code>: a shared slot the hub does not list, or a hub
+with no list, is <code>unknown-shared-slot</code>; a <code>sameAs</code> without a <code>slot</code> (or with <code>/</code> in it), on a slot
+whose own name is a different shared slot, or disagreeing with another entry of the definition that
+names the same slot, is <code>invalid-element</code>. A refused element goes as its carrier and its slot
+derives no channel, so it never joins another product's slot by name instead.</p>
+<p><strong>Exclusivity.</strong> Among live <code>device</code>-provenance instances of active products on the tenant, each
+(channel, role) has one holder. A second claimant is refused that role <code>role-held</code>; its other roles
+are granted, and it writes the elements on that channel as their carriers. The hub shows the overlap
+on the owner's listing (channel, role, claimant, holder) until the claimant drops the claim or
+lapses; <code>holder: null</code> when the holder has lapsed or dropped the role. <code>simulated</code> roles never
+contend with <code>device</code> roles or with each other.</p>
+<p><strong>Command-sink binding.</strong> A <code>device</code> command-sink role goes only to an instance whose binding
+equals the product's <code>boundTo</code>, or to one the owner moved it to with <code>transfer-role</code> (stored with
+<code>grantedBy: transfer-role</code>); any other <code>device</code> claim is refused <code>not-registration-owner</code> for that
+role, after the channel checks and before exclusivity. A <code>simulated</code> command-sink claim is open to
+any permitted subject and never receives a routed command. Source roles are open to any permitted
+subject. When a product's <code>boundTo</code> changes (the owner's <code>transfer</code> or <code>release</code>, or a released
+registration bound by its next writer), every <code>device</code> command-sink role held by an instance whose
+binding no longer matches is dropped at once and stored refused <code>not-registration-owner</code>, and that
+instance's etag changes; roles with <code>grantedBy: transfer-role</code> are kept. A held <code>device</code>
+command-sink survives renewal only when the instance matches the binding or the role carries
+<code>grantedBy</code>.</p>
+<p><strong>Handoff.</strong> A role passes when its holder drops it (a renewal without it, or <code>DELETE</code>), when the
+holder's lease lapses, or when the owner transfers it. A lapsed or dropped role is not
+auto-assigned: a claimant is granted it on its own next renewal, which re-evaluates every claim.</p>
+<p><strong>Command routing.</strong> A command for a channel goes to the live <code>device</code> instance holding
+<code>command-sink</code> on it. A command that names no product for a channel that is not shared goes to the
+one product that declares that channel; when more than one product declares it, it is refused 409
+<code>ambiguous-command-destination</code>, and naming the product (<code>request.identity</code>) resolves it.
+"Declares" reads every product's current registration and stored definitions, in any state. With
+no holder, or a channel no product declares, the command is refused <code>no-command-destination</code>; the
+hub never routes to a lapsed former holder, a <code>simulated</code> command sink or the product's latest
+instance. The command API itself is <code>SPEC-REG-COMMANDS</code>.</p>
+<p><strong>The hub never decides dosing.</strong> Exclusivity decides only which instance is the typed source of
+record for a channel and where a command for that channel is routed. A claimant refused a role keeps
+running and keeps writing its carriers; the hub records what each instance reports.
+<code>devicestatus</code> and other documents are not channels: writes to them are attributed by instance,
+and loop-status exclusivity is not specified until <code>devicestatus</code> decomposition is typed.</p>
+<h2 id="10-labels">10. Labels<a class="headerlink" href="#10-labels" title="Permanent link">&para;</a></h2>
+<p>String keys to string values, which distinguish, select and filter instances. A key is
+<code>&lt;reverse-DNS namespace&gt;/&lt;name&gt;</code> (<code>com.example.testcontroller/rig</code>); labels are not subject to
+namespace claims. The prefix <code>dev.nightscout/</code> is reserved for <code>dev.nightscout/purpose</code>
+(<code>therapy</code>, <code>development</code>, <code>lab</code>, <code>research</code>), <code>dev.nightscout/build</code> (<code>release</code>, <code>dev</code>) and
+<code>dev.nightscout/migration-group</code> (an opaque string shared by the old and new phone of one
+migration). A reader reads an unlisted value of the first two as <code>other</code>. Another key under the
+prefix, a key not in the form, a non-string value, or labels over <code>instances.labels</code> bounds are
+refused <code>invalid-label</code>. Labels carry no names, device names or serials. Provenance, never a label,
+decides what is therapy data.</p>
+<h2 id="11-typed-writes-and-attribution">11. Typed writes and attribution<a class="headerlink" href="#11-typed-writes-and-attribution" title="Permanent link">&para;</a></h2>
+<p>A hub that advertises <code>instances</code> requires an instance id on every typed write (proposed as a
+request header). An instance-less typed write is refused 422 <code>instance-required</code>, a definite
+refusal (§6). The writing instance must be live (409 <code>not-live</code>) and hold <code>source</code> on the element's
+channel (409 <code>role-held</code> when another instance does, <code>role-not-granted</code> otherwise), so a refused
+claimant's record goes as its carrier. An accepted typed record carries its instance, its
+definition and the role's provenance.</p>
+<p>Writes with no instance (older controllers, and anything the well-known tier describes) are
+attributed to an implicit unregistered instance of the product, which holds no roles and is never
+refused for exclusivity. Exclusivity never blocks a carrier write, from any instance. Readers
+attribute typed records to the registration and its bound credential; a namespace string proves
+nothing about authorship.</p>
+<p>The ids each write returns, and how a re-send is matched, are in <a href="identity.html#1-rules">identity §1</a>.</p>
+<h2 id="12-read-selection">12. Read selection<a class="headerlink" href="#12-read-selection" title="Permanent link">&para;</a></h2>
+<p>Writes need no selection: each instance names its definition. A view chooses, per versioned
+element of a product, the version it shows:</p>
+<ol>
+<li>the operator's capability document limits what is accepted at all: only versions of stored
+   definitions whose element the hub accepts today are candidates;</li>
+<li>the owner's pin, for the site's default views;</li>
+<li>the newest version run by a live instance holding a <code>device</code> <code>source</code> role on the element's
+   channel;</li>
+<li>the newest stored version.</li>
+</ol>
+<p>A view with a label selector (every selector key must have that value) uses only the live instances
+that match, whatever their provenance, and no pin. "Newest" compares dot-separated parts, numeric
+parts as numbers and before text. Pins are the owner's <code>pin-version</code> and <code>unpin-version</code>, a resource
+of their own per product with its own etag (<code>If-None-Match: *</code> for the first pin, <code>If-Match</code>
+after), so a pin never changes the product's etag or stored data. A pin names a version some stored
+definition stores (422 <code>unknown-version</code>).</p>
+<h2 id="13-projected-views-for-older-readers">13. Projected views for older readers<a class="headerlink" href="#13-projected-views-for-older-readers" title="Permanent link">&para;</a></h2>
+<p>An accepted element's <code>carrierView: served</code> requires a declared mapping: the catalogue's carrier
+for a referenced well-known kind, the kind's <code>wire</code>, or an extension's <code>carrier</code>. A hub that would
+serve a view of an element without one reports <code>not-served</code>, and the controller writes as §6
+says. For a served element, each typed record is served to API v1 and v3 readers as a projected
+document in the carrier's shape: the collection, <code>eventType</code>, start time and duration in the wire's
+unit (or its indefinite sentinel) from the mapping, and nothing the mapping does not declare. The
+projected document is labelled <code>projectedFrom: {definitionId, element, entities}</code>, is never stored
+as a source, and is read-only (409 <code>projected-read-only</code>); its ids are in
+<a href="identity.html#1-rules">identity I8</a>. Where one carrier document is projected from several entities,
+the id is the primary entity's and <code>entities</code> lists them all. A projection without a declared
+mapping is refused 409 <code>no-carrier-mapping</code>.</p>
+<p>A projected view is not a conversion between typed versions (G4).</p>
+<p>Prior art, read-derived at Nocturne <code>42275c812</code>: <code>V4ToLegacyProjectionService</code> and
+<code>LegacyTreatmentTables</code> serve v1–v3 reads from V4 records, project a meal bolus from a bolus and a
+carb intake under the bolus's id, and tell legacy mirrors from V4-native records with a
+<code>NativeOnly</code> filter; the projected treatment carries no projection marker.</p>
+<h2 id="14-retention">14. Retention<a class="headerlink" href="#14-retention" title="Permanent link">&para;</a></h2>
+<p>A definition may be removed only when no stored record references it, no live instance runs it,
+and it is not the product's current registration (otherwise <code>definition-referenced</code>,
+<code>definition-in-use</code> or <code>definition-current</code>). Each record's declared horizon retention decides when
+the record goes.</p>
+<h2 id="15-binding-credentials-and-the-owner">15. Binding, credentials and the owner<a class="headerlink" href="#15-binding-credentials-and-the-owner" title="Permanent link">&para;</a></h2>
+<p><code>SPEC-AUTHORITY</code> will carry this section into the authority specification.</p>
+<h3 id="151-binding-and-credential-kind">15.1 Binding and credential kind<a class="headerlink" href="#151-binding-and-credential-kind" title="Permanent link">&para;</a></h3>
+<p>A create or update binds the registration to the credential that wrote it: <code>boundTo: {kind:
+subject, subject}</code>, never the token, so a token rotated on the same subject changes nothing; or
+<code>{kind: api-secret}</code> for the shared secret on <code>single</code>, which any holder of the secret presents. The
+stored registration records <code>credentialKind</code> (<code>subject</code>, <code>api-secret</code>, or <code>other</code> with the hub's
+term), the kind that last created or updated it; both are returned with it. <code>API_SECRET</code> against a
+subject-bound registration is <code>not-registration-owner</code> on the data path. A released registration
+(<code>boundTo: null</code>) is bound by the next credential with the permission that updates it, even with
+identical content (200, not a no-op); it records <code>bindingEvent: next-writer</code>, kept by later updates
+under the same binding and cleared by a release or transfer, and not in the etag. When a
+single-tenant site moves into a tenant, a registration bound to <code>api-secret</code> is bound to the
+tenant's root credential, a further credential kind; the etag changes with <code>boundTo</code> (decided;
+the mechanics are <code>SPEC-REG-MODES</code> and <code>SPEC-REG-MIGRATE</code>).</p>
+<h3 id="152-the-owners-actions">15.2 The owner's actions<a class="headerlink" href="#152-the-owners-actions" title="Permanent link">&para;</a></h3>
+<p>On the owner's listener. The owner never edits a registration's content (an owner <code>PUT</code> is 403
+<code>not-authorised</code>) and never submits one. An action other than retire answers outcome <code>applied</code>
+with the resource after it; a request for what is already the case is a no-op.</p>
+<table>
+<thead>
+<tr>
+<th>action</th>
+<th>effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>retire</td>
+<td>§5.5</td>
+</tr>
+<tr>
+<td>block</td>
+<td>state <code>blocked</code>, recording the interrupted state as <code>blockedFrom</code>; etag changes; declaration, binding and stored data kept frozen; the controller's writes and typed writes are refused 403 <code>blocked-by-owner</code>. With <code>If-None-Match: *</code> it blocks an identity with nothing stored (stored with no registration), and a create for it is 403</td>
+</tr>
+<tr>
+<td>unblock</td>
+<td>restores the interrupted state (<code>active</code>, or <code>retired</code>); removes a pre-emptive block; never reactivates a retired registration. A blocked registration is unblocked before it is retired (409 <code>blocked-by-owner</code> otherwise)</td>
+</tr>
+<tr>
+<td>release</td>
+<td><code>boundTo: null</code>; §15.1; drops non-matching <code>device</code> command-sinks (§9)</td>
+</tr>
+<tr>
+<td>transfer</td>
+<td>binds to a named subject; drops non-matching <code>device</code> command-sinks (§9)</td>
+</tr>
+<tr>
+<td>free-namespaces</td>
+<td>a retired registration's namespaces are no longer held by it (409 <code>not-retired</code> otherwise); its declaration and stored data stay readable</td>
+</tr>
+<tr>
+<td>transfer-role</td>
+<td>moves one role from its holder to a live instance that claims it with <code>device</code> provenance (409 <code>role-not-granted</code>, <code>role-not-claimed</code> or <code>not-live</code> otherwise); <code>If-Match</code> the etag of the instance it is moved from; both instances' etags change; the moved role records <code>grantedBy: transfer-role</code></td>
+</tr>
+<tr>
+<td>pin-version, unpin-version</td>
+<td>§12</td>
+</tr>
+<tr>
+<td>listing</td>
+<td>every instance with its roles, labels and liveness; the overlaps; <code>registrations</code> (every stored product with its <code>boundTo</code>, <code>credentialKind</code> and <code>bindingEvent</code>); <code>slotNameObservations</code>; observed aliases only when asked</td>
+</tr>
+</tbody>
+</table>
+<p>An owner action on the data listener is 403 <code>not-authorised</code>.</p>
+<h3 id="153-authorisation">15.3 Authorisation<a class="headerlink" href="#153-authorisation" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>The submitter is the controller, a device.</strong> It holds the native per-tenant credential (D17
+  row 1). Submit, update, read and retire are on the data listener with that credential. Under
+  <code>TENANCY_MODE=multi</code> there is no deployment secret (D13) and the credential's token is signed
+  with the tenant's key (D14), so a registration is per tenant and a controller on two tenants
+  registers twice. On <code>single</code>, <code>API_SECRET</code> may also register and is recorded as <code>api-secret</code>.</li>
+<li><strong>Permissions.</strong> Submitting needs <code>api:registrations:create</code> and retiring
+  <code>api:registrations:delete</code>, granted by the tenant owner on <code>ns-tenant-admin</code> (D16). Updating and
+  retiring also need the binding.</li>
+<li><strong>Storage.</strong> Registrations, definitions and instances are tenant data: per tenant, under RLS
+  under <code>multi</code> (D3), never in the public capability document.</li>
+</ul>
+<h3 id="154-namespaces">15.4 Namespaces<a class="headerlink" href="#154-namespaces" title="Permanent link">&para;</a></h3>
+<p>First to claim, per tenant. A credential with no stated namespace roots may claim any namespace no
+other registration on the tenant holds. A hub may restrict a credential to owner-granted roots; a
+registration may then declare a namespace equal to or below one of them (<code>com.example</code> covers
+<code>com.example.negotiation.targets</code>; <code>com.examplefoo</code> does not), else <code>namespace-not-owned</code>. Either
+way a namespace another registration holds is <code>namespace-claimed</code>. A retired registration holds its
+namespaces until the owner frees them. Readers spanning tenants interpret a field by the
+declaration carried with it, never by its namespace. A published list of namespace conventions may
+record use; it is never a check.</p>
+<h2 id="16-version-scoped-quirks">16. Version-scoped quirks<a class="headerlink" href="#16-version-scoped-quirks" title="Permanent link">&para;</a></h2>
+<p>The <a href="../../../../specs/quirks/index.html">quirks registry</a> records how stored documents deviate,
+per collection and project, with measured prevalence.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q1</td>
+<td><strong><code>affects</code>.</strong> It applies to stored documents and to declarations (slot names, units, vocabulary). An entry may carry <code>affects: [{vendor, product, versions}]</code>, <code>versions</code> a range over the vendor's own version strings (<code>*</code>, or whitespace-separated comparators <code>=</code>, <code>&gt;=</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&lt;</code> that must all hold; dot-separated parts compare numerically, numbers before text), stated only where the corpus or source shows it, else <code>unmeasured</code> with the reason. <code>seen</code> lists versions the evidence shows. Each claim says <code>measured</code> or <code>read-derived</code>. <code>versionSource</code> says where <code>make schema-quirks</code> reads a version: in the same document, or by co-occurrence (the nearest version-bearing document of the same site within a window), labelled as co-occurrence and never copied into a range. Entries without <code>affects</code> keep their project-level attribution.</td>
+</tr>
+<tr>
+<td>Q2</td>
+<td><strong>Catalogue for older versions, <code>sameAs</code> for newer.</strong> A newer definition declares its own mapping (<code>sameAs</code>, §9). Versions released before registration get it from a registry entry with <code>applies_to: declarations</code> (<code>declaration: {member: slot, value, sameAs}</code>, with <code>affects</code>), published as <code>wellKnown.mappings[]</code> (<code>{quirk, vendor, product, versions, slot, sameAs}</code>). When an older controller's write is described by its well-known registration and the hub knows the writer's version and it is in <code>versions</code>, the hub attributes the records to the shared slot. The means by which the hub identifies the writer and its version are not specified; with no known version it applies no mapping. A mapping changes which channel records are shown on and which overlaps the owner sees, never whether they are stored.</td>
+</tr>
+<tr>
+<td>Q3</td>
+<td><strong>Recorded, never silent.</strong> Each mapping the hub applies is recorded on the reply and on the stored record or document as <code>quirksApplied: [{quirk, member, action, sameAs?}]</code>, <code>action</code> one of <code>moved-to-identifier</code>, <code>dropped</code>, <code>same-as</code>. A write whose channel a <code>sameAs</code> decided carries <code>slotMapping: {slot, channel, by}</code>, <code>by</code> being <code>declared</code>, <code>catalogue</code> (with the entry's id) or <code>name</code>.</td>
+</tr>
+<tr>
+<td>Q4a</td>
+<td><strong>Entry members.</strong> Beside <code>affects</code>, an entry may carry <code>retired</code>, and <code>mapping: {action, flag, erasesEvidence}</code> for what a hub does with the quirk: QUIRK-TREATMENTS-006 and QUIRK-ENTRIES-004 carry <code>{action: move-to-identifier, flag: UUID_HANDLING, erasesEvidence: true}</code>, because a mapped write no longer shows the quirk in storage. QUIRK-TREATMENTS-007 (Trio's treatment model sending its UUID as <code>id</code>) is a measured, version-scoped entry with no mapping: cgm-remote-monitor matches such treatments by <code>created_at</code> + <code>eventType</code>, and whether Trio should send <code>identifier</code> goes to <code>PROPOSAL-REG-CONTROLLERS</code>.</td>
+</tr>
+<tr>
+<td>Q4</td>
+<td><strong>Lifecycle.</strong> <code>proposed</code> → <code>active</code> → <code>historical</code> → <code>retired</code>. <code>make schema-quirks</code> writes which statuses the measurement supports and why not the others; <code>make schema-quirks-check</code> fails a <code>historical</code> or <code>retired</code> claim it does not support and never fails a <code>proposed</code> one. <code>historical</code> needs no recent document, zero live instances of an affected version in a hub's de-identified instance listing (unmeasured without one), and a detector whose evidence the hub's mapping does not erase (an entry whose <code>mapping</code> has <code>erasesEvidence: true</code> becomes <code>historical</code> only through Q3 records). <code>retired</code> also needs no stored document that depends on the mapping. Recent is within <code>RECENT_DAYS</code> = 365 days of the newest snapshot's collection date. Declaration entries are measured by a hub's recorded mappings.</td>
+</tr>
+</tbody>
+</table>
+<p>No declaration entry is listed: which slots share a meaning is evidence for the controller authors
+(<code>PROPOSAL-REG-CONTROLLERS</code>). Candidates, read from the well-known registrations and not confirmed
+by any controller author:</p>
+<table>
+<thead>
+<tr>
+<th>candidate</th>
+<th>slots</th>
+<th>differs in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>loopMode</code></td>
+<td>Loop <code>loopMode</code> (<code>dosingEnabled</code>, carried by the profile), Trio <code>loopMode</code> (<code>DosingMode</code>, devicestatus), AndroidAPS <code>runningMode</code> (<code>RunningMode</code>, treatments <code>OpenAPS Offline</code>)</td>
+<td>name, carrier, states; AndroidAPS's coexists with <code>profileSwitch</code>, <code>temporaryTarget</code> and <code>scene</code></td>
+</tr>
+<tr>
+<td><code>override</code></td>
+<td>Loop and Trio <code>override</code></td>
+<td>carrier <code>eventType</code> (<code>Temporary Override</code>, <code>Exercise</code>); Loop's coexists with <code>preMeal</code>, Trio's with <code>temporaryTarget</code></td>
+</tr>
+<tr>
+<td><code>temporaryTarget</code></td>
+<td>Trio and AndroidAPS <code>temporaryTarget</code></td>
+<td>coexistence lists</td>
+</tr>
+<tr>
+<td><code>temporaryTarget</code> or <code>override</code></td>
+<td>Loop <code>preMeal</code></td>
+<td>a Loop override preset with its own slot and no carrier of its own</td>
+</tr>
+<tr>
+<td>none</td>
+<td>AndroidAPS <code>profileSwitch</code>, <code>scene</code></td>
+<td>no counterpart in Loop or Trio</td>
+</tr>
+</tbody>
+</table>
+<p>How the <code>_id</code> entries are applied on a write is in <a href="identity.html#1-rules">identity I9</a>.</p>
+<h2 id="17-compatibility">17. Compatibility<a class="headerlink" href="#17-compatibility" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>older hub</th>
+<th>newer hub</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>older controller</strong></td>
+<td>today's documents</td>
+<td>no registration and no instance id: the well-known registration describes the writes by structural discriminator and carrier; they are attributed to the product's unregistered instance and never refused for exclusivity; catalogue mappings apply where the writer's version is known</td>
+</tr>
+<tr>
+<td><strong>newer controller</strong></td>
+<td>no capability document, no <code>submit</code>, no listed grammar major, or no <code>instances</code>: it submits nothing it cannot use and writes every element as its carrier; typed writes need no instance id on a hub without <code>instances</code></td>
+<td>typed registration, definitions, instances, roles and labels; per-element fallback for what is not accepted</td>
+</tr>
+</tbody>
+</table>
+<h2 id="18-open-choices">18. Open choices<a class="headerlink" href="#18-open-choices" title="Permanent link">&para;</a></h2>
+<p>Rules the specification chose that await the maintainer's confirmation:</p>
+<ul>
+<li><strong>Product (§5, §15):</strong> unblock restores the interrupted state; a blocked registration is
+  unblocked before it is retired; <code>credentialKind</code> is the kind that last created or updated it;
+  reactivation reclaims a freed namespace only if no other registration holds it; the cases assume
+  a controller does not treat an element as not accepted merely because it depends on an ignored
+  member.</li>
+<li><strong>Definitions and instances (§7–§12):</strong> a definition <code>PUT</code> never binds a released product;
+  definitions and instances are refused for a retired product; the instance etag covers granted
+  roles; every listed role, including an <code>other</code> role, is exclusive among <code>device</code> instances; a
+  typed write needs a granted <code>source</code> role; the owner transfers only to a live instance already
+  claiming the role with <code>device</code> provenance; pins are their own resource; "newest" is numeric by
+  part; a label selector ignores provenance and pins; the current registration keeps its
+  definition from removal; typed settings fields and replay inputs are outside <code>version-conflict</code>;
+  <code>wellKnownRef</code> needs a versioned catalogue kind; the permission names reuse
+  <code>api:registrations:create</code> and <code>delete</code>.</li>
+<li><strong>Quirks (§16):</strong> the shipped slot list holds the three names already used identically;
+  <code>unknown-shared-slot</code> refuses the element rather than falling back to the slot's own name;
+  catalogue mappings need a known writer version; <code>historical</code> needs a hub's instance listing; a
+  mapping that erases its evidence makes <code>historical</code> depend on Q3 records; a <code>proposed</code> entry never
+  fails the check; declaration entries are measured only by hub records.</li>
+<li><strong>Identity:</strong> two choices are listed in <a href="identity.html#5-open-decisions">identity §5</a>.</li>
+</ul>
+<p>Not yet specified: the contract per tenancy mode (<code>SPEC-REG-MODES</code>), the mechanics of registration
+state across a site's move into a tenant, whose binding rule §15.1 states (<code>SPEC-REG-MIGRATE</code>), and the command API (<code>SPEC-REG-COMMANDS</code>).</p>
+<h2 id="19-conformance-cases">19. Conformance cases<a class="headerlink" href="#19-conformance-cases" title="Permanent link">&para;</a></h2>
+<p>186 cases, under <code>specs/sync/conformance/</code>: 54 for the product resource and negotiation at the
+top level, 103 under <code>instances/</code> and 29 under <code>quirks/</code>. Each refusal names the passing case that
+differs from it in the aspect under test. Run with <code>python3 -m pytest
+tools/nsschema/test_registration_negotiation.py tools/nsschema/test_registration_instances.py
+tools/nsschema/test_registration_quirks.py</code>.</p>
+<!-- BEGIN GENERATED: registration-cases (tools/nsschema/spec_cases.py) -->
+<table>
+<thead>
+<tr>
+<th>case</th>
+<th>shows</th>
+<th>expected</th>
+<th>control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>accepted-api-secret-single</code></td>
+<td>In single mode a controller holding API_SECRET registers; the credential kind is recorded</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>accepted-dual-write-view-not-served</code></td>
+<td>An accepted element with a dual-write link and no projected view is written typed and as its carrier</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>accepted-dual-write-view-served</code></td>
+<td>When the hub serves a projected carrier view, an element with a dual-write link is written typed only</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>accepted-first-to-claim</code></td>
+<td>A submitter with no stated namespace roots claims a namespace no registration on the tenant holds</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>accepted-with-ignored-members</code></td>
+<td>Members the grammar does not define, and members this hub does not interpret, are ignored</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>accepted</code></td>
+<td>A controller-owned registration is created and every element is accepted</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>blocked-by-owner</code></td>
+<td>A controller update with the current etag of a blocked registration is refused</td>
+<td>403 rejected; blocked-by-owner</td>
+<td><code>update-accepted</code></td>
+</tr>
+<tr>
+<td><code>blocked-pre-emptive-create</code></td>
+<td>A create for an identity the owner blocked pre-emptively is refused</td>
+<td>403 rejected; blocked-by-owner</td>
+<td><code>accepted</code></td>
+</tr>
+<tr>
+<td><code>blocked-update-stale-etag</code></td>
+<td>A controller holding the etag from before a block gets 412 and reads that it is blocked</td>
+<td>412 precondition-failed; stale-etag</td>
+<td><code>update-accepted</code></td>
+</tr>
+<tr>
+<td><code>create-exists</code></td>
+<td>A create when a different registration is stored changes nothing</td>
+<td>412 precondition-failed; registration-exists</td>
+<td><code>create-retry-noop</code></td>
+</tr>
+<tr>
+<td><code>create-retry-noop</code></td>
+<td>A create retried with identical content succeeds as a no-op</td>
+<td>200 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>extensions-not-interpreted</code></td>
+<td>A hub that does not interpret extensions ignores the member and rejects each extension</td>
+<td>201 partial; not-interpreted</td>
+<td><code>accepted</code></td>
+</tr>
+<tr>
+<td><code>hub-without-submit</code></td>
+<td>A hub that publishes capabilities but takes no submissions: the controller writes its carriers</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>namespace-claimed-after-free</code></td>
+<td>A namespace the owner freed is claimed by another registration</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>newer-hub-older-controller</code></td>
+<td>An older controller submits nothing; the hub's well-known registration describes its writes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>not-authorised</code></td>
+<td>A credential without the registration permission cannot submit</td>
+<td>403 rejected; not-authorised</td>
+<td><code>accepted</code></td>
+</tr>
+<tr>
+<td><code>older-hub-no-capabilities</code></td>
+<td>An older hub publishes no capability document: the controller writes its carriers</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>older-hub-older-controller</code></td>
+<td>An older controller against an older hub: today's documents, nothing negotiated</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>owner-action-on-data-listener</code></td>
+<td>An owner action sent on the data listener is refused</td>
+<td>403 rejected; not-authorised</td>
+<td><code>owner-retire</code></td>
+</tr>
+<tr>
+<td><code>owner-block-api-secret-single</code></td>
+<td>In single mode API_SECRET performs the owner's block</td>
+<td>200 applied</td>
+<td></td>
+</tr>
+<tr>
+<td><code>owner-block-pre-emptive</code></td>
+<td>The owner blocks an identity with nothing stored</td>
+<td>201 applied</td>
+<td></td>
+</tr>
+<tr>
+<td><code>owner-block</code></td>
+<td>The tenant owner blocks a controller's registration</td>
+<td>200 applied</td>
+<td></td>
+</tr>
+<tr>
+<td><code>owner-free-namespaces-not-retired</code></td>
+<td>An active registration's namespaces cannot be freed</td>
+<td>409 rejected; not-retired</td>
+<td><code>owner-free-namespaces</code></td>
+</tr>
+<tr>
+<td><code>owner-free-namespaces</code></td>
+<td>The owner frees a retired registration's namespaces</td>
+<td>200 applied</td>
+<td></td>
+</tr>
+<tr>
+<td><code>owner-release</code></td>
+<td>The owner releases a registration from its subject</td>
+<td>200 applied</td>
+<td></td>
+</tr>
+<tr>
+<td><code>owner-retire</code></td>
+<td>The tenant owner retires a registration bound to a controller</td>
+<td>200 retired</td>
+<td></td>
+</tr>
+<tr>
+<td><code>owner-transfer</code></td>
+<td>The owner transfers a registration to a named subject</td>
+<td>200 applied</td>
+<td></td>
+</tr>
+<tr>
+<td><code>owner-unblock-retired</code></td>
+<td>Unblocking a registration that was retired before the block leaves it retired</td>
+<td>200 applied</td>
+<td></td>
+</tr>
+<tr>
+<td><code>owner-unblock</code></td>
+<td>The owner unblocks a registration that was active</td>
+<td>200 applied</td>
+<td></td>
+</tr>
+<tr>
+<td><code>rejected-limit-exceeded</code></td>
+<td>A registration over the hub's extension limit is rejected whole</td>
+<td>422 rejected; limit-exceeded</td>
+<td><code>accepted</code></td>
+</tr>
+<tr>
+<td><code>rejected-namespace-claimed-first-to-claim</code></td>
+<td>Without stated roots, a namespace another registration on the tenant holds is still refused</td>
+<td>201 partial; namespace-claimed</td>
+<td><code>accepted-first-to-claim</code></td>
+</tr>
+<tr>
+<td><code>rejected-namespace-claimed-retired</code></td>
+<td>A retired registration still holds its namespaces until the owner frees them</td>
+<td>201 partial; namespace-claimed</td>
+<td><code>namespace-claimed-after-free</code></td>
+</tr>
+<tr>
+<td><code>rejected-namespace-claimed</code></td>
+<td>An extension namespace already claimed by another registration on the tenant is rejected</td>
+<td>201 partial; namespace-claimed</td>
+<td><code>accepted</code></td>
+</tr>
+<tr>
+<td><code>rejected-namespace-not-owned</code></td>
+<td>An extension in a namespace the credential does not hold is rejected</td>
+<td>201 partial; namespace-not-owned</td>
+<td><code>accepted</code></td>
+</tr>
+<tr>
+<td><code>rejected-type-keyword-outside-subset</code></td>
+<td>A typed field using a keyword the hub cannot apply is rejected</td>
+<td>201 partial; unsupported-type-keyword</td>
+<td><code>accepted</code></td>
+</tr>
+<tr>
+<td><code>rejected-unsupported-availability</code></td>
+<td>A kind declared experimental is rejected by a hub that does not store experimental kinds</td>
+<td>201 partial; unsupported-availability</td>
+<td><code>accepted</code></td>
+</tr>
+<tr>
+<td><code>rejected-unsupported-grammar-major</code></td>
+<td>A registration in a grammar major the hub does not read is rejected whole</td>
+<td>422 rejected; unsupported-grammar-major</td>
+<td><code>accepted</code></td>
+</tr>
+<tr>
+<td><code>rejected-untyped-extension</code></td>
+<td>An extension field without a type declaration is rejected</td>
+<td>201 partial; untyped-extension</td>
+<td><code>accepted</code></td>
+</tr>
+<tr>
+<td><code>released-update-binds</code></td>
+<td>After a release, the next subject that updates the registration is bound to it</td>
+<td>200 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>retire-not-authorised</code></td>
+<td>A credential without api:registrations:delete cannot retire, even when bound</td>
+<td>403 rejected; not-authorised</td>
+<td><code>retire</code></td>
+</tr>
+<tr>
+<td><code>retire-not-registration-owner</code></td>
+<td>Another subject cannot retire a registration bound to the subject that created it</td>
+<td>403 rejected; not-registration-owner</td>
+<td><code>retire</code></td>
+</tr>
+<tr>
+<td><code>retire-roots-not-required</code></td>
+<td>The bound subject retires its registration without namespace roots covering it</td>
+<td>200 retired</td>
+<td></td>
+</tr>
+<tr>
+<td><code>retire</code></td>
+<td>The owning controller retires its registration; stored data is kept</td>
+<td>200 retired</td>
+<td></td>
+</tr>
+<tr>
+<td><code>typed-write-blocked-by-owner</code></td>
+<td>A typed write refused blocked-by-owner sends that record as its carrier</td>
+<td>201 accepted</td>
+<td><code>typed-write-load-503</code></td>
+</tr>
+<tr>
+<td><code>typed-write-load-429-retry-after</code></td>
+<td>A typed write refused 429 with Retry-After is retried after the stated delay</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>typed-write-load-502</code></td>
+<td>A typed write refused 502 is a load refusal, retried with backoff, not written as a carrier</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>typed-write-load-503</code></td>
+<td>A typed write refused 503 without Retry-After is retried with backoff, not written as a carrier</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>typed-write-route-404</code></td>
+<td>A typed route answering 404 after a hub rollback sends that record as its carrier</td>
+<td>201 accepted</td>
+<td><code>typed-write-load-429-retry-after</code></td>
+</tr>
+<tr>
+<td><code>update-accepted</code></td>
+<td>The owning controller updates its registration with the current etag</td>
+<td>200 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>update-api-secret-bound</code></td>
+<td>A registration bound to API_SECRET is updated by a holder of the secret</td>
+<td>200 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>update-api-secret-not-owner</code></td>
+<td>API_SECRET cannot update a registration bound to a subject</td>
+<td>403 rejected; not-registration-owner</td>
+<td><code>update-api-secret-bound</code></td>
+</tr>
+<tr>
+<td><code>update-not-registration-owner</code></td>
+<td>Another subject cannot update a registration bound to the subject that created it</td>
+<td>403 rejected; not-registration-owner</td>
+<td><code>update-token-rotated</code></td>
+</tr>
+<tr>
+<td><code>update-stale-etag</code></td>
+<td>An update carrying a stale etag changes nothing</td>
+<td>412 precondition-failed; stale-etag</td>
+<td><code>update-accepted</code></td>
+</tr>
+<tr>
+<td><code>update-token-rotated</code></td>
+<td>The bound subject updates its registration with a rotated token</td>
+<td>200 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/carrier-view-needs-mapping</code></td>
+<td>A projected view is served only with a declared mapping</td>
+<td>200 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/carrier-write-claimant</code></td>
+<td>Exclusivity never blocks a carrier write</td>
+<td>200 written</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/carrier-write-older-controller</code></td>
+<td>An older controller's write goes to the unregistered instance</td>
+<td>200 written</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/carrier-write-older-hub</code></td>
+<td>An older hub takes today's documents</td>
+<td>200 written</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/command-after-rebind-no-destination</code></td>
+<td>A command between the drop and the new holder's claim has no destination</td>
+<td>409 rejected; no-command-destination</td>
+<td><code>command-after-rebind-routed</code></td>
+</tr>
+<tr>
+<td><code>instances/command-after-rebind-routed</code></td>
+<td>After the new holder's claim, a command is routed to it</td>
+<td>200 routed</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/command-ambiguous-destination</code></td>
+<td>A command naming no product for a slot two products declare is refused as ambiguous</td>
+<td>409 rejected; ambiguous-command-destination</td>
+<td><code>command-named-product</code></td>
+</tr>
+<tr>
+<td><code>instances/command-inferred-one-product</code></td>
+<td>A command naming no product goes to the one product that declares its slot</td>
+<td>200 routed</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/command-named-product</code></td>
+<td>Naming the product resolves a command for a slot two products declare</td>
+<td>200 routed</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/command-no-destination-simulated</code></td>
+<td>A simulated command sink is never a command destination</td>
+<td>409 rejected; no-command-destination</td>
+<td><code>command-routed</code></td>
+</tr>
+<tr>
+<td><code>instances/command-not-routed-to-other-subject-simulator</code></td>
+<td>Another subject's simulated command sink is granted and never a command destination</td>
+<td>200 routed</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/command-routed</code></td>
+<td>A command for a channel goes to its command-sink holder</td>
+<td>200 routed</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/command-unknown-slot</code></td>
+<td>A command for a slot no product declares has no destination</td>
+<td>409 rejected; no-command-destination</td>
+<td><code>command-inferred-one-product</code></td>
+</tr>
+<tr>
+<td><code>instances/definition-blocked-by-owner</code></td>
+<td>No definition is added to a blocked product</td>
+<td>403 rejected; blocked-by-owner</td>
+<td><code>definition-put</code></td>
+</tr>
+<tr>
+<td><code>instances/definition-extension-version-conflict</code></td>
+<td>An extension typed differently at the same version is rejected</td>
+<td>201 partial; version-conflict</td>
+<td><code>definition-put</code></td>
+</tr>
+<tr>
+<td><code>instances/definition-id-mismatch</code></td>
+<td>A definition whose hash is not the path id is refused</td>
+<td>422 rejected; definition-id-mismatch</td>
+<td><code>definition-put</code></td>
+</tr>
+<tr>
+<td><code>instances/definition-namespace-claimed</code></td>
+<td>A namespace another product's definition declares is held</td>
+<td>201 partial; namespace-claimed</td>
+<td><code>definition-namespace-own</code></td>
+</tr>
+<tr>
+<td><code>instances/definition-namespace-own</code></td>
+<td>A product's own definitions share its namespaces</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/definition-not-registration-owner</code></td>
+<td>Another subject cannot add a definition</td>
+<td>403 rejected; not-registration-owner</td>
+<td><code>definition-put</code></td>
+</tr>
+<tr>
+<td><code>instances/definition-product-retired</code></td>
+<td>No definition is added to a retired product</td>
+<td>409 rejected; product-retired</td>
+<td><code>definition-put</code></td>
+</tr>
+<tr>
+<td><code>instances/definition-put</code></td>
+<td>A second definition is added to a product, content-addressed</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/definition-retry-noop</code></td>
+<td>An identical definition PUT is a no-op</td>
+<td>200 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/definition-same-meaning</code></td>
+<td>Non-meaning members may differ at the same version</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/definition-version-conflict</code></td>
+<td>A kind typed differently at the same version is rejected</td>
+<td>201 partial; version-conflict</td>
+<td><code>definition-put</code></td>
+</tr>
+<tr>
+<td><code>instances/definition-wellknown-copy-agrees</code></td>
+<td>A copy identical to a referenced catalogue kind agrees with the reference</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/definition-wellknown-copy-conflicts</code></td>
+<td>A copy that differs from a referenced catalogue kind conflicts</td>
+<td>201 partial; version-conflict</td>
+<td><code>definition-wellknown-copy-agrees</code></td>
+</tr>
+<tr>
+<td><code>instances/definition-wellknown-ref-restated</code></td>
+<td>A reference restates nothing of the kind</td>
+<td>201 partial; invalid-element</td>
+<td><code>definition-wellknown-ref</code></td>
+</tr>
+<tr>
+<td><code>instances/definition-wellknown-ref-unknown</code></td>
+<td>A reference to a kind the catalogue does not have</td>
+<td>201 partial; unknown-well-known-kind</td>
+<td><code>definition-wellknown-ref</code></td>
+</tr>
+<tr>
+<td><code>instances/definition-wellknown-ref</code></td>
+<td>A definition references a well-known kind instead of copying it</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/dual-write-linked</code></td>
+<td>A dual-write carrier links to its typed record by (instance, record id)</td>
+<td>200 written</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/dual-write-not-linked-across-instances</code></td>
+<td>Equal record ids from two instances never link</td>
+<td>200 written</td>
+<td><code>dual-write-linked</code></td>
+</tr>
+<tr>
+<td><code>instances/instance-blocked-product</code></td>
+<td>No instance for a blocked product</td>
+<td>403 rejected; blocked-by-owner</td>
+<td><code>instance-create</code></td>
+</tr>
+<tr>
+<td><code>instances/instance-command-sink-not-registration-owner</code></td>
+<td>A command-sink role goes only to an instance of the product's bound subject</td>
+<td>201 partial; not-registration-owner</td>
+<td><code>instance-create</code></td>
+</tr>
+<tr>
+<td><code>instances/instance-create-other-subject</code></td>
+<td>A second credential runs another copy of a registered product</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/instance-create-retry-noop</code></td>
+<td>An identical instance create retried is a renewal</td>
+<td>200 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/instance-create</code></td>
+<td>An instance is created with a lease and its roles</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/instance-delete-stale</code></td>
+<td>DELETE needs the current etag</td>
+<td>412 precondition-failed; stale-etag</td>
+<td><code>instance-delete</code></td>
+</tr>
+<tr>
+<td><code>instances/instance-delete</code></td>
+<td>DELETE releases an instance and all its roles</td>
+<td>200 released</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/instance-handoff-lapse</code></td>
+<td>A lapsed holder's role goes to the claimant on its renewal</td>
+<td>200 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/instance-handoff-release</code></td>
+<td>A holder that drops a role hands it to the claimant's renewal</td>
+<td>200 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/instance-invalid-id</code></td>
+<td>An instance id is a random UUID version 4</td>
+<td>422 rejected; invalid-instance-id</td>
+<td><code>instance-create</code></td>
+</tr>
+<tr>
+<td><code>instances/instance-label-not-namespaced</code></td>
+<td>A label key is <reverse-DNS namespace>/<name></td>
+<td>422 rejected; invalid-label</td>
+<td><code>instance-create</code></td>
+</tr>
+<tr>
+<td><code>instances/instance-label-not-string</code></td>
+<td>A label value is a string</td>
+<td>422 rejected; invalid-label</td>
+<td><code>instance-create</code></td>
+</tr>
+<tr>
+<td><code>instances/instance-label-old-prefix</code></td>
+<td>The reserved prefix is dev.nightscout/, not nightscout.dev/</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/instance-label-other-value</code></td>
+<td>An unlisted well-known value is accepted and read as other</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/instance-label-reserved-unknown</code></td>
+<td>Only the specified keys live under dev.nightscout/</td>
+<td>422 rejected; invalid-label</td>
+<td><code>instance-create</code></td>
+</tr>
+<tr>
+<td><code>instances/instance-missing-provenance</code></td>
+<td>A role without a provenance is invalid</td>
+<td>422 rejected; invalid-instance</td>
+<td><code>instance-create</code></td>
+</tr>
+<tr>
+<td><code>instances/instance-not-a-command-channel</code></td>
+<td>command-sink only where the kind accepts commands</td>
+<td>201 partial; not-a-command-channel</td>
+<td><code>instance-create</code></td>
+</tr>
+<tr>
+<td><code>instances/instance-not-registration-owner</code></td>
+<td>Another subject cannot renew an instance</td>
+<td>403 rejected; not-registration-owner</td>
+<td><code>instance-renew</code></td>
+</tr>
+<tr>
+<td><code>instances/instance-overlap-holder-lapsed</code></td>
+<td>An overlap stays listed with no holder after the holder lapses</td>
+<td>200 listed; role-held</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/instance-overlap-listed</code></td>
+<td>The owner's listing shows the overlap</td>
+<td>200 listed; role-held</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/instance-renew-after-transfer-stale</code></td>
+<td>After a transfer the former holder's renewal meets 412</td>
+<td>412 precondition-failed; stale-etag</td>
+<td><code>instance-renew-after-transfer</code></td>
+</tr>
+<tr>
+<td><code>instances/instance-renew-after-transfer</code></td>
+<td>The former holder renews with its current etag</td>
+<td>200 partial; role-held</td>
+<td><code>owner-transfer-role</code></td>
+</tr>
+<tr>
+<td><code>instances/instance-renew-holder-live</code></td>
+<td>A claimant's renewal stays refused while the holder is live</td>
+<td>200 partial; role-held</td>
+<td><code>instance-handoff-lapse</code></td>
+</tr>
+<tr>
+<td><code>instances/instance-renew-transferred-command-sink</code></td>
+<td>A command-sink role the owner transferred is kept on renewal</td>
+<td>200 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/instance-renew</code></td>
+<td>An instance renews its lease with If-Match</td>
+<td>200 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/instance-retired-product</code></td>
+<td>No instance for a retired product</td>
+<td>409 rejected; product-retired</td>
+<td><code>instance-create</code></td>
+</tr>
+<tr>
+<td><code>instances/instance-role-held</code></td>
+<td>A second device source for a slot is refused role-held</td>
+<td>201 partial; role-held</td>
+<td><code>instance-role-simulated</code></td>
+</tr>
+<tr>
+<td><code>instances/instance-role-simulated</code></td>
+<td>Simulated roles never contend with device roles</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/instance-unknown-channel</code></td>
+<td>A role on a channel the definition does not derive</td>
+<td>201 partial; unknown-channel</td>
+<td><code>instance-create</code></td>
+</tr>
+<tr>
+<td><code>instances/instance-unknown-definition</code></td>
+<td>An instance must name a stored definition of its product</td>
+<td>422 rejected; unknown-definition</td>
+<td><code>instance-create</code></td>
+</tr>
+<tr>
+<td><code>instances/instance-unknown-provenance</code></td>
+<td>A role with an unknown provenance is refused</td>
+<td>201 partial; unknown-provenance</td>
+<td><code>instance-create</code></td>
+</tr>
+<tr>
+<td><code>instances/instance-unsupported-role</code></td>
+<td>A role term the hub does not list is refused</td>
+<td>201 partial; unsupported-role</td>
+<td><code>instance-create</code></td>
+</tr>
+<tr>
+<td><code>instances/lapsed-role-not-auto-assigned</code></td>
+<td>A lapsed holder's role is not given to anyone until asked</td>
+<td>409 rejected; no-command-destination</td>
+<td><code>command-routed</code></td>
+</tr>
+<tr>
+<td><code>instances/listing-includes-withheld</code></td>
+<td>The owner may ask for withheld members</td>
+<td>200 listed</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/listing-shows-binding-event</code></td>
+<td>The owner's listing shows how a released registration was bound, and with what credential kind</td>
+<td>200 listed</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/listing-shows-rebind-drop</code></td>
+<td>The owner's listing shows a command-sink role dropped by a rebind</td>
+<td>200 listed; not-registration-owner</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/listing-withholds-alias</code></td>
+<td>The owner's default listing withholds observed aliases</td>
+<td>200 listed</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/observed-alias-recorded</code></td>
+<td>The free-text devicestatus.device is an observed alias</td>
+<td>200 written</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/owner-pin-stale</code></td>
+<td>A pin change needs the current pins etag</td>
+<td>412 precondition-failed; stale-etag</td>
+<td><code>owner-unpin-version</code></td>
+</tr>
+<tr>
+<td><code>instances/owner-pin-unknown-version</code></td>
+<td>A pin names a stored version</td>
+<td>422 rejected; unknown-version</td>
+<td><code>owner-pin-version</code></td>
+</tr>
+<tr>
+<td><code>instances/owner-pin-version</code></td>
+<td>The owner pins a version for the site's default views</td>
+<td>201 applied</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/owner-transfer-role-data-listener</code></td>
+<td>A transfer on the data listener is refused</td>
+<td>403 rejected; not-authorised</td>
+<td><code>owner-transfer-role</code></td>
+</tr>
+<tr>
+<td><code>instances/owner-transfer-role-not-claimed</code></td>
+<td>A role is transferred only to an instance that claims it</td>
+<td>409 rejected; role-not-claimed</td>
+<td><code>owner-transfer-role</code></td>
+</tr>
+<tr>
+<td><code>instances/owner-transfer-role-other-subject</code></td>
+<td>The owner transfers a command-sink role to another subject's instance</td>
+<td>200 applied</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/owner-transfer-role-stale</code></td>
+<td>A transfer with a stale etag fails its precondition</td>
+<td>412 precondition-failed; stale-etag</td>
+<td><code>owner-transfer-role</code></td>
+</tr>
+<tr>
+<td><code>instances/owner-transfer-role</code></td>
+<td>The owner transfers a role from its holder to a claimant</td>
+<td>200 applied</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/owner-unpin-version</code></td>
+<td>The owner removes a pin</td>
+<td>200 applied</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/product-update-new-version</code></td>
+<td>A product update with the retyped kind at a new version</td>
+<td>200 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/product-update-version-conflict</code></td>
+<td>A product update retyping a kind at the same version is rejected for that kind</td>
+<td>200 partial; version-conflict</td>
+<td><code>product-update-new-version</code></td>
+</tr>
+<tr>
+<td><code>instances/project-no-mapping</code></td>
+<td>No projection without a declared mapping</td>
+<td>409 rejected; no-carrier-mapping</td>
+<td><code>project-served</code></td>
+</tr>
+<tr>
+<td><code>instances/project-served</code></td>
+<td>An older reader is served a labelled, read-only projection</td>
+<td>200 projected</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/rebind-keeps-transferred-role</code></td>
+<td>A command-sink role the owner granted by transfer-role survives a rebind</td>
+<td>200 applied</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/rebind-new-holder-claims</code></td>
+<td>After a rebind an instance of the new binding claims the dropped command-sink</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/rebind-release-drops-command-sink</code></td>
+<td>A product release drops the device command-sink roles of its instances</td>
+<td>200 applied</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/rebind-transfer-drops-command-sink</code></td>
+<td>A product transfer drops the device command-sink of an instance that no longer matches</td>
+<td>200 applied</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/rebind-transfer-keeps-matching-instance</code></td>
+<td>A product transfer keeps the device command-sink of an instance that matches the new binding</td>
+<td>200 applied</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/retention-current</code></td>
+<td>The product's current registration is kept</td>
+<td>200 not-eligible; definition-current</td>
+<td><code>retention-eligible</code></td>
+</tr>
+<tr>
+<td><code>instances/retention-eligible</code></td>
+<td>A definition nothing references may be removed</td>
+<td>200 eligible</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/retention-in-use</code></td>
+<td>A definition a live instance runs is kept</td>
+<td>200 not-eligible; definition-in-use</td>
+<td><code>retention-eligible</code></td>
+</tr>
+<tr>
+<td><code>instances/retention-referenced</code></td>
+<td>A definition stored records reference is kept</td>
+<td>200 not-eligible; definition-referenced</td>
+<td><code>retention-eligible</code></td>
+</tr>
+<tr>
+<td><code>instances/select-capability-limit</code></td>
+<td>The operator's capabilities limit what any view shows</td>
+<td>200 selected</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/select-label-selector</code></td>
+<td>A lab view selects its own instances by label</td>
+<td>200 selected</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/select-live-device</code></td>
+<td>A default view shows the version the live device source runs</td>
+<td>200 selected</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/select-newest-stored</code></td>
+<td>With no live device source, the newest stored version</td>
+<td>200 selected</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/select-owner-pin</code></td>
+<td>The owner's pin wins over the live device's version</td>
+<td>200 selected</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/typed-write-attributed</code></td>
+<td>A typed write by the source holder is accepted and attributed</td>
+<td>200 written</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/typed-write-hub-without-instances</code></td>
+<td>A hub without instances needs no instance id</td>
+<td>200 written</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/typed-write-instance-required</code></td>
+<td>A hub with instances refuses an instance-less typed write</td>
+<td>422 rejected; instance-required</td>
+<td><code>typed-write-attributed</code></td>
+</tr>
+<tr>
+<td><code>instances/typed-write-role-held</code></td>
+<td>A typed write by a refused claimant is refused role-held</td>
+<td>409 rejected; role-held</td>
+<td><code>typed-write-attributed</code></td>
+</tr>
+<tr>
+<td><code>instances/typed-write-simulated</code></td>
+<td>A simulated source's typed write carries simulated provenance</td>
+<td>200 written</td>
+<td></td>
+</tr>
+<tr>
+<td><code>instances/write-projected-read-only</code></td>
+<td>A write to a projected document is refused</td>
+<td>409 rejected; projected-read-only</td>
+<td><code>write-stored-carrier</code></td>
+</tr>
+<tr>
+<td><code>instances/write-stored-carrier</code></td>
+<td>A write to a stored carrier document is accepted as today</td>
+<td>200 written</td>
+<td></td>
+</tr>
+<tr>
+<td><code>quirks/carrier-hex-id-kept</code></td>
+<td>A client ObjectId is kept as the ObjectId</td>
+<td>200 written</td>
+<td></td>
+</tr>
+<tr>
+<td><code>quirks/carrier-resend-identifier-first</code></td>
+<td>identifier is tried before _id</td>
+<td>200 written</td>
+<td></td>
+</tr>
+<tr>
+<td><code>quirks/carrier-resend-matches-identifier</code></td>
+<td>A re-send matches on identifier, with no cache of server ids</td>
+<td>200 written</td>
+<td></td>
+</tr>
+<tr>
+<td><code>quirks/carrier-resend-matches-objectid</code></td>
+<td>A client ObjectId still matches, in either case</td>
+<td>200 written</td>
+<td></td>
+</tr>
+<tr>
+<td><code>quirks/carrier-uuid-entries-moved</code></td>
+<td>The same handling on entries is QUIRK-ENTRIES-004</td>
+<td>200 written</td>
+<td></td>
+</tr>
+<tr>
+<td><code>quirks/carrier-uuid-id-dropped</code></td>
+<td>A non-ObjectId _id beside an identifier is dropped, recorded</td>
+<td>200 written</td>
+<td></td>
+</tr>
+<tr>
+<td><code>quirks/carrier-uuid-id-moved</code></td>
+<td>A non-ObjectId _id moves to identifier, recorded</td>
+<td>200 written</td>
+<td></td>
+</tr>
+<tr>
+<td><code>quirks/carrier-uuid-resend-matches</code></td>
+<td>A re-sent UUID _id matches the record it was moved from</td>
+<td>200 written</td>
+<td></td>
+</tr>
+<tr>
+<td><code>quirks/carrier-write-both-ids</code></td>
+<td>Every write reply returns both ids</td>
+<td>200 written</td>
+<td></td>
+</tr>
+<tr>
+<td><code>quirks/catalogue-mapping-applied</code></td>
+<td>An older version gets its slot mapping from the catalogue</td>
+<td>200 written</td>
+<td></td>
+</tr>
+<tr>
+<td><code>quirks/catalogue-mapping-version-outside</code></td>
+<td>A catalogue mapping applies only to the versions it affects</td>
+<td>200 written</td>
+<td></td>
+</tr>
+<tr>
+<td><code>quirks/catalogue-mapping-version-unknown</code></td>
+<td>No mapping when the hub does not know the version</td>
+<td>200 written</td>
+<td></td>
+</tr>
+<tr>
+<td><code>quirks/equal-names-unlisted-do-not-contend</code></td>
+<td>Equal slot names that the shared list does not hold do not contend</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>quirks/names-alike-do-not-contend</code></td>
+<td>Slots are never one because their names look alike</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>quirks/same-as-definition-accepted</code></td>
+<td>A slot declares the shared slot it means</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>quirks/same-as-no-shared-list</code></td>
+<td>A hub without a shared slot list honours no sameAs</td>
+<td>201 partial; unknown-shared-slot</td>
+<td><code>same-as-definition-accepted</code></td>
+</tr>
+<tr>
+<td><code>quirks/same-as-own-name-not-a-channel</code></td>
+<td>A slot that means a shared slot is not also its own channel</td>
+<td>201 partial; unknown-channel</td>
+<td><code>same-as-role-granted</code></td>
+</tr>
+<tr>
+<td><code>quirks/same-as-own-shared-name</code></td>
+<td>A shared slot means only itself</td>
+<td>201 partial; invalid-element</td>
+<td><code>same-as-definition-accepted</code></td>
+</tr>
+<tr>
+<td><code>quirks/same-as-role-granted</code></td>
+<td>A sameAs slot's role is on the shared channel</td>
+<td>201 accepted</td>
+<td></td>
+</tr>
+<tr>
+<td><code>quirks/same-as-role-held</code></td>
+<td>Equal shared slots contend for roles</td>
+<td>201 partial; role-held</td>
+<td><code>same-as-role-granted</code></td>
+</tr>
+<tr>
+<td><code>quirks/same-as-typed-write-declared</code></td>
+<td>A typed write on a sameAs channel says the channel was declared</td>
+<td>200 written</td>
+<td></td>
+</tr>
+<tr>
+<td><code>quirks/same-as-unknown-shared-slot</code></td>
+<td>sameAs must name a slot the hub lists</td>
+<td>201 partial; unknown-shared-slot</td>
+<td><code>same-as-definition-accepted</code></td>
+</tr>
+<tr>
+<td><code>quirks/same-as-unlisted-not-own-name</code></td>
+<td>An unlisted sameAs never falls back to the slot name</td>
+<td>201 partial; unknown-channel</td>
+<td><code>same-as-role-granted</code></td>
+</tr>
+<tr>
+<td><code>quirks/same-as-without-slot</code></td>
+<td>sameAs needs a slot</td>
+<td>201 partial; invalid-element</td>
+<td><code>same-as-definition-accepted</code></td>
+</tr>
+<tr>
+<td><code>quirks/slot-name-observation-recorded</code></td>
+<td>The owner's listing records an equal slot name from another product</td>
+<td>200 listed</td>
+<td></td>
+</tr>
+<tr>
+<td><code>quirks/typed-write-assigns-objectid</code></td>
+<td>A typed write gets an ObjectId the hub assigns and stores</td>
+<td>200 written</td>
+<td></td>
+</tr>
+<tr>
+<td><code>quirks/typed-write-resend-same-ids</code></td>
+<td>A typed re-send answers with the stored ids</td>
+<td>200 written</td>
+<td></td>
+</tr>
+<tr>
+<td><code>quirks/write-projected-read-only-by-objectid</code></td>
+<td>A write aimed at a projected _id is refused</td>
+<td>409 rejected; projected-read-only</td>
+<td><code>write-stored-carrier-by-objectid</code></td>
+</tr>
+<tr>
+<td><code>quirks/write-stored-carrier-by-objectid</code></td>
+<td>A write aimed at a stored document's _id is accepted</td>
+<td>200 written</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<!-- END GENERATED: registration-cases -->
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -2678,6 +2678,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -2899,6 +2903,62 @@
     
   
     Identity (L0)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="registration.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Registration (L2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="state-intent.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State and intent (L3)
   
 
     
@@ -5033,12 +5093,13 @@
 
 
 <h1 id="platform-glossary">Platform glossary<a class="headerlink" href="#platform-glossary" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>7c8824b7e</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>73aac62ec</code>.</em></p>
 <p><em>Contributor-facing. Living, current at <code>main</code> <code>5a9a49cc</code> (2026-10-18). Each term links to where
 it is specified; the definition here is a summary, and the linked section is the authority. Therapy
 terms (profile, override, temporary target) are in the <a href="../../../10-domain/glossary.html">domain glossary</a>.
 The <a href="../index.html">platform index</a> explains the layers.</em></p>
-<p><code>HS</code> below is <a href="../nightscout-hub-sync-architecture-2026-09-11.html">the hub-sync design</a>; <code>WC</code> is
+<p><code>HS</code> below is <a href="../nightscout-hub-sync-architecture-2026-09-11.html">the hub-sync design</a>, <code>REG</code> the
+<a href="registration.html">registration specification</a> and <code>ID</code> the <a href="identity.html">identity specification</a>; <code>WC</code> is
 <a href="../../tenancy/write-contract-spec-2026-10-07.html">the write contract</a>.</p>
 <h2 id="primitive-has-three-meanings">"Primitive" has three meanings<a class="headerlink" href="#primitive-has-three-meanings" title="Permanent link">&para;</a></h2>
 <p>The word appears across the series for three different things. Use the qualified term.</p>
@@ -5059,7 +5120,7 @@ The <a href="../index.html">platform index</a> explains the layers.</em></p>
 <tr>
 <td><strong>grammar member</strong></td>
 <td>a member of the registration grammar (<code>stateSpans</code>, <code>extensions</code>, <code>settings</code>, a type fragment)</td>
-<td><a href="../nightscout-hub-sync-architecture-2026-09-11.html#31-registration">HS §3.1</a>; <code>specs/sync/controller-state-model.schema.json</code></td>
+<td><a href="registration.html#3-the-grammar">REG §3</a>; <code>specs/sync/controller-state-model.schema.json</code></td>
 </tr>
 <tr>
 <td><strong>contract primitive</strong></td>
@@ -5071,14 +5132,14 @@ The <a href="../index.html">platform index</a> explains the layers.</em></p>
 <h2 id="l0-identity">L0 Identity<a class="headerlink" href="#l0-identity" title="Permanent link">&para;</a></h2>
 <p><strong><code>_id</code>.</strong> The storage key the hub assigns. On every hub's legacy surface (API v1 and v3) it is a
 24-hex value, on MongoDB and PostgreSQL alike. Its first four bytes are the hub's receipt time,
-not the record's time. <a href="../nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">HS §3.7</a> rules 5, 6 and 8.</p>
+not the record's time. <a href="identity.html#1-rules">ID I2, I3</a>.</p>
 <p><strong><code>identifier</code>.</strong> The sync identity the client assigns, stable across retries and devices. In the
 typed API it is the controller's record id. A UUID is recommended, not required. The proposed
 constraints are in <a href="../../../60-research/tenancy/identifier-format-2026-10-17.html#0-answer">identifier format §0</a>,
 and the format decision is open (<code>ID-FORMAT-DECISION</code>).</p>
 <p><strong>Two-id rule.</strong> Every write reply returns both <code>identifier</code> and <code>_id</code> and says which one matched
 (<code>matchedBy</code>). A re-send matches on <code>identifier</code> first, then on <code>_id</code>, so a client needs no cache
-of server ids. <a href="../nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">HS §3.7</a> rule 5.</p>
+of server ids. <a href="identity.html#1-rules">ID I4, I5</a>.</p>
 <p><strong><code>syncIdentifier</code>.</strong> A controller's own per-record sync key (Loop and LoopKit; Nocturne's V4
 update key is <code>(dataSource, syncIdentifier)</code>). It is not unique per record in stored data:
 13 Loop values each appear on 2 to 4 treatments (<a href="../../../60-research/tenancy/identifier-duplicates-2026-10-17.html">identifier duplicates</a>).
@@ -5088,9 +5149,9 @@ write path: entries <code>date</code>+<code>type</code>, profile <code>created_a
 devicestatus <code>created_at</code>+<code>device</code> for an identical body only; food and activity by id only. Today
 the key differs by path. <a href="identity.html#3-match-order-per-collection">Identity §3</a>.</p>
 <p><strong>Definition id.</strong> <code>sha256:</code> and the hex SHA-256 of the RFC 8785 canonical JSON of a definition as
-submitted. Equal content gives an equal id. <a href="../nightscout-hub-sync-architecture-2026-09-11.html#36-definitions-and-instances">HS §3.6</a>.</p>
+submitted. Equal content gives an equal id. <a href="identity.html#2-contract-ids">ID §2</a>.</p>
 <p><strong>Instance id.</strong> A random lowercase UUID v4 the controller generates once per running copy. It is
-never derived from a device name, model or serial. <a href="../nightscout-hub-sync-architecture-2026-09-11.html#36-definitions-and-instances">HS §3.6</a>.</p>
+never derived from a device name, model or serial. <a href="identity.html#2-contract-ids">ID §2</a>.</p>
 <p><strong>Subject.</strong> The opaque id of the principal a credential belongs to. Tokens rotate; the subject
 does not. Registrations and instances bind to the subject, never to a token.</p>
 <h2 id="l1-records">L1 Records<a class="headerlink" href="#l1-records" title="Permanent link">&para;</a></h2>
@@ -5105,7 +5166,7 @@ has it and the corpus does not show it), <code>proposed</code> (asked for). In r
 <code>read</code> (from source) or <code>measured</code>.</p>
 <p><strong>Quirk.</strong> A recorded way stored documents deviate from the documented shape, scoped by
 <code>affects: {vendor, product, versions}</code>, with a lifecycle <code>proposed</code> → <code>active</code> → <code>historical</code> →
-<code>retired</code>. <a href="../../../../specs/quirks/index.html">quirks registry</a>; <a href="../nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">HS §3.7</a> rules 1–4.</p>
+<code>retired</code>. <a href="../../../../specs/quirks/index.html">quirks registry</a>; <a href="registration.html#16-version-scoped-quirks">REG §16</a>.</p>
 <p><strong>Sensitivity label.</strong> A field's two-axis label (<code>specs/sync/sensitivity.yaml</code>). A field with no
 label is withheld by default (<code>unlabelledPolicy: withhold</code>).</p>
 <p><strong>Horizon.</strong> How long a value stays meaningful: <code>cycle</code>, <code>span</code>, <code>effective-dated</code>, <code>definition</code>
@@ -5113,7 +5174,7 @@ or <code>aggregate</code>, each with its own cadence and retention.</p>
 <h2 id="l2-definitions-and-instances">L2 Definitions and instances<a class="headerlink" href="#l2-definitions-and-instances" title="Permanent link">&para;</a></h2>
 <p><strong>Registration, product.</strong> A controller's declaration of what its data means, one per
 <code>(vendor, product)</code> per tenant. The product resource holds the binding, the state (<code>active</code>,
-<code>retired</code>, <code>blocked</code>), the etag and the per-element results. <a href="../nightscout-hub-sync-architecture-2026-09-11.html#35-negotiation">HS §3.5</a>.</p>
+<code>retired</code>, <code>blocked</code>), the etag and the per-element results. <a href="registration.html#5-the-product-resource">REG §5</a>.</p>
 <p><strong>Tier.</strong> <em>Well-known</em>: registrations the hub ships for controllers that declare nothing, so
 legacy writers need no change. <em>Controller-owned</em>: registrations a controller submits. <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">D18</a>.</p>
 <p><strong>Capability document.</strong> <code>GET /.well-known/nightscout/sync</code>: unauthenticated and cacheable. It says
@@ -5128,12 +5189,12 @@ Decided per element, from the response to this registration only.</p>
 <p><strong>Definition.</strong> An immutable, content-addressed statement of what a controller's data means. Many
 coexist under one product; ten simulators on one build share one. <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#262-d19--definitions-and-instances-maintainer-2026-10-14">D19</a>.</p>
 <p><strong>Meaning members, <code>version-conflict</code>.</strong> The members of a kind, extension or field that define
-what it means (HS §3.6's table). Within one product, one element at one version has one meaning. A
+what it means (<a href="registration.html#7-definitions">REG §7</a>'s table). Within one product, one element at one version has one meaning. A
 different meaning at the same version is rejected <code>version-conflict</code>; a new meaning needs a new
 version.</p>
 <p><strong>Instance.</strong> One running copy of a controller (a phone that doses, a development build, a
 simulator, the old and new phone during a migration). It names its definition, holds roles on
-channels and renews a lease. <a href="../nightscout-hub-sync-architecture-2026-09-11.html#36-definitions-and-instances">HS §3.6</a>.</p>
+channels and renews a lease. <a href="registration.html#8-instances">REG §8</a>.</p>
 <p><strong>Lease.</strong> An instance's liveness. Each create or renewal extends it by the hub's
 <code>instances.leaseSeconds</code>; an instance that stops renewing lapses and holds no roles.</p>
 <p><strong>Label.</strong> A string key and value on an instance, <code>&lt;reverse-DNS namespace&gt;/&lt;name&gt;</code>, for selecting
@@ -5155,19 +5216,20 @@ the link.</p>
 <p><strong>Retention.</strong> A definition is kept while any stored record references it, any live instance runs
 it, or it is the product's current registration.</p>
 <h2 id="l3-state-and-intent">L3 State and intent<a class="headerlink" href="#l3-state-and-intent" title="Permanent link">&para;</a></h2>
+<p>Specified in the <a href="state-intent.html">state and intent specification</a>.</p>
 <p><strong>Intent kind, <code>stateSpans</code> entry.</strong> One kind of state a controller exposes (an override, a
 temporary target, a loop mode). It declares its slot, states, end reasons, carrier, where the
 request and the applied effect are recorded, initiators, definitions and what it accepts from the
-hub. <a href="../nightscout-hub-sync-architecture-2026-09-11.html#31-registration">HS §3.1</a>.</p>
+hub. <a href="state-intent.html#2-rules">State and intent S2</a>.</p>
 <p><strong>Slot.</strong> The exclusivity group a kind occupies. Kinds in one slot exclude each other; a kind may
 declare which other slots coexist with it.</p>
 <p><strong>Channel.</strong> What roles are held on. For a kind with a slot, the channel is that slot. A slot is
 shared across products only through the hub's shared slot list or a declared <code>sameAs</code>; otherwise it
 is the product's own channel, <code>&lt;vendor&gt;/&lt;product&gt;/&lt;slot&gt;</code>. Other elements' channels are
-<code>&lt;vendor&gt;/&lt;product&gt;/&lt;element id&gt;</code>. <a href="../nightscout-hub-sync-architecture-2026-09-11.html#36-definitions-and-instances">HS §3.6</a>.</p>
+<code>&lt;vendor&gt;/&lt;product&gt;/&lt;element id&gt;</code>. <a href="registration.html#9-channels-roles-and-provenance">REG §9</a>.</p>
 <p><strong>Shared slot list, <code>sameAs</code>.</strong> <code>specs/sync/shared-slots.yaml</code> (<code>override</code>, <code>loopMode</code>,
 <code>temporaryTarget</code>). A kind declares <code>sameAs: &lt;shared slot&gt;</code> to join that channel. Two slots are
-never joined because their names look alike. <a href="../nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">HS §3.7</a> rule 2.</p>
+never joined because their names look alike. <a href="registration.html#9-channels-roles-and-provenance">REG §9</a>.</p>
 <p><strong>Requested, applied.</strong> What was asked for, and what the controller reports it put into effect.
 They are recorded separately; a request is not evidence that anything happened.</p>
 <p><strong>End reason.</strong> Why a span ended: expired, cancelled, superseded, deleted before start, ended by
@@ -5192,7 +5254,7 @@ binding. Creates send <code>If-None-Match: *</code>; updates send <code>If-Match
 a stale one is 412.</p>
 <p><strong>Load refusal, definite refusal.</strong> A typed write answered 429 or any 5xx is retried with backoff
 and never re-sent as its carrier. Any other refusal sends that record as its carrier at once.
-<a href="../nightscout-hub-sync-architecture-2026-09-11.html#35-negotiation">HS §3.5</a> decision 8.</p>
+<a href="registration.html#6-the-controllers-side-fallback-and-refused-writes">REG §6</a>.</p>
 <p><strong>Cursor, watermark.</strong> An opaque server position from which changes are read. API v3 has
 <code>lastModified</code> and per-collection <code>history/{from}</code>; the proposed sync envelope reads every
 registered collection from one cursor. <a href="../nightscout-hub-sync-architecture-2026-09-11.html#32-the-contract-the-hub-returns">HS §3.2</a>.</p>
@@ -5203,7 +5265,7 @@ it applied a quirk mapping or decided a channel by <code>sameAs</code>, so a map
 <h2 id="l5-authority">L5 Authority<a class="headerlink" href="#l5-authority" title="Permanent link">&para;</a></h2>
 <p><strong>Binding (<code>boundTo</code>), credential kind.</strong> The subject (or, in single mode, the shared secret) a
 product or instance is bound to; only it may update or retire it. <code>credentialKind</code> records whether
-a subject token or <code>API_SECRET</code> last wrote it. <a href="../nightscout-hub-sync-architecture-2026-09-11.html#35-negotiation">HS §3.5</a>.</p>
+a subject token or <code>API_SECRET</code> last wrote it. <a href="registration.html#15-binding-credentials-and-the-owner">REG §15</a>.</p>
 <p><strong>Owner, owner actions.</strong> The tenant owner, acting on <code>ns-tenant-admin</code> (or with <code>API_SECRET</code> in
 single mode). The owner may retire, block, unblock, release, transfer, free namespaces, transfer a
 role and pin a version, and never edits a registration's content.</p>

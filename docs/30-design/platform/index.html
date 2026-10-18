@@ -2676,6 +2676,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -4740,6 +4744,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#the-specification-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The specification set
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#l0-identity" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4816,17 +4831,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#planned-layout" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Planned layout
-      
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -4845,8 +4849,8 @@
 
 
 <h1 id="platform-contracts-where-each-piece-is-specified">Platform contracts: where each piece is specified<a class="headerlink" href="#platform-contracts-where-each-piece-is-specified" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>8d2b93ede</code>.</em></p>
-<p><em>Contributor-facing. Living index, current at <code>main</code> <code>5a9a49cc</code> (2026-10-18). Terms are defined in
+<p><em>Living document, last changed 2026-10-18 at <code>73aac62ec</code>.</em></p>
+<p><em>Contributor-facing. Living index, current at <code>main</code> <code>010e1661</code> (2026-10-18). Terms are defined in
 the <a href="spec/glossary.html">platform glossary</a>.</em></p>
 <p>This page maps the work on how controllers (Loop, Trio, AndroidAPS and others) and hubs
 (cgm-remote-monitor, Nocturne) agree on what records are, who wrote them, and how they move. The
@@ -4909,6 +4913,129 @@ audit.</p>
 code. <em>Specified</em>: a contract with synthetic conformance cases and a reference decision function
 in <code>tools/nsschema/</code>, which checks the cases but is not a hub. <em>Implemented</em>: a hub serves it. On
 2026-10-18, no hub implements any L2, L3 or L5 contract on this page.</p>
+<h2 id="the-specification-set">The specification set<a class="headerlink" href="#the-specification-set" title="Permanent link">&para;</a></h2>
+<p>Seven specifications and a glossary, one file each under <code>spec/</code>. Each answers one question a
+reader brings, and each has its own rules, conformance cases and gate.</p>
+<table>
+<thead>
+<tr>
+<th>file</th>
+<th>question</th>
+<th>layer</th>
+<th>rules</th>
+<th>status</th>
+<th>queue</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="spec/glossary.html">glossary</a></td>
+<td>what does this term mean, and where is it specified?</td>
+<td>all</td>
+<td>—</td>
+<td>written</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="spec/identity.html">identity</a></td>
+<td>which record, definition, instance or subject is this, and when is a write a re-send?</td>
+<td>L0</td>
+<td>I1–I9</td>
+<td>written</td>
+<td><code>SPEC-ID</code></td>
+</tr>
+<tr>
+<td><code>records</code></td>
+<td>what typed observations and settings snapshots exist, and how do today's documents decompose into them?</td>
+<td>L1</td>
+<td>R</td>
+<td>queued</td>
+<td><code>SPEC-RECORDS</code></td>
+</tr>
+<tr>
+<td><a href="spec/registration.html">registration</a></td>
+<td>how does a controller declare what its data means, and how does a hub accept it and attribute what is written?</td>
+<td>L2</td>
+<td>G1–G5, Q1–Q4</td>
+<td>written</td>
+<td><code>SPEC-REGISTRATION</code></td>
+</tr>
+<tr>
+<td><a href="spec/state-intent.html">state and intent</a></td>
+<td>what was requested, applied and active, who started it, and why did it end?</td>
+<td>L3</td>
+<td>S1–S12</td>
+<td>written</td>
+<td><code>SPEC-STATE-INTENT</code></td>
+</tr>
+<tr>
+<td><code>commands</code></td>
+<td>how does a request or a proposal reach a controller, and how does its outcome come back?</td>
+<td>L3, L5</td>
+<td>C</td>
+<td>queued</td>
+<td><code>SPEC-REG-COMMANDS</code></td>
+</tr>
+<tr>
+<td><code>sync-transport</code></td>
+<td>how are writes matched, ordered and delivered over REST and the socket, and at what cost?</td>
+<td>L4</td>
+<td>T</td>
+<td>queued</td>
+<td><code>SPEC-SYNC-TRANSPORT</code></td>
+</tr>
+<tr>
+<td><code>authority</code></td>
+<td>who may register, write, own, route or act for someone else?</td>
+<td>L5</td>
+<td>A</td>
+<td>queued</td>
+<td><code>SPEC-AUTHORITY</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why these boundaries.</strong> Each boundary falls where the reader, the rate of change or the review
+differs:</p>
+<ul>
+<li><em>identity</em> changes rarely and every other specification uses it;</li>
+<li><em>records</em> change with the observation catalogue and the corpus;</li>
+<li><em>registration</em> changes with hub releases, and is read by both controller and hub authors;</li>
+<li><em>state and intent</em> changes with controller releases and their vocabularies;</li>
+<li><em>commands</em> carry the safety review of anything that reaches a controller;</li>
+<li><em>sync-transport</em> changes with performance work;</li>
+<li><em>authority</em> changes with the tenancy and authentication decisions.</li>
+</ul>
+<p><strong>Why not more.</strong> The grammar stays in <em>registration</em>: declaring an element and accepting it are
+read together, and the meaning table is what decides <code>version-conflict</code>. Version-scoped quirks
+stay there because they are declarations and recorded mappings. The effect and motivation model
+stays in <em>state and intent</em> while it is a proposal.</p>
+<p><strong>Why not fewer.</strong> <em>Commands</em> are kept apart from <em>state and intent</em>, because the request,
+proposal and acknowledgement lifecycle has its own cases and review, and from <em>authority</em>, which
+says who may rather than what happens. <em>Authority</em> is kept apart from <em>registration</em> so that
+binding, the owner's actions and delegation are read in one place.</p>
+<p><strong>What moves when the queued files are written:</strong>
+- registration §15 (binding, credentials, the owner) moves to <em>authority</em>;
+- command routing in registration §9 moves to <em>commands</em>;
+- the observation catalogue and settings snapshots, specified today only in <code>specs/sync/primitives.yaml</code>,
+  <code>controller-settings.schema.json</code> and the dated evidence documents, go to <em>records</em>.</p>
+<p>Each file should stay readable in a sitting. <em>Registration</em> is the largest, at about 820 lines, and
+shrinks when §15 and routing move out.</p>
+<p><strong>How they are kept.</strong></p>
+<ol>
+<li><strong>One home per rule.</strong> Other specifications link to it by section and never restate it.
+   Decisions stay in the execution plan; defects stay in the backfix register.</li>
+<li><strong>Stable rule ids.</strong> A changed rule keeps its id; a removed id is not reused.</li>
+<li><strong>One skeleton.</strong> Each file has the same parts, in order:</li>
+<li>a header: audience, the commit it is current at, its layer, its decisions and its queue item;</li>
+<li>files, rules, the sections, compatibility and open items;</li>
+<li>its conformance cases.</li>
+<li><strong>Current rules only.</strong> History is in git. A section moved out of a dated document leaves its
+   heading, a pointer, and a link to its text at the commit it was taken from.</li>
+<li><strong>Generated, gated, one commit.</strong> Case and declaration tables are generated
+   (<code>python3 -m tools.nsschema.spec_cases &lt;layer&gt;</code>). <code>node tools/queue/gates/platform-spec.js
+   &lt;layer&gt;</code> checks a specification's cases, links and wording. A rule change lands with its schema
+   and case changes in one commit.</li>
+</ol>
 <h2 id="l0-identity">L0 Identity<a class="headerlink" href="#l0-identity" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -4963,7 +5090,7 @@ in <code>tools/nsschema/</code>, which checks the cases but is not a hub. <em>Im
 <tbody>
 <tr>
 <td><strong>Spec today</strong></td>
-<td><code>specs/sync/primitives.yaml</code> (the observation catalogue, graded <code>measured</code>, <code>declared</code> or <code>proposed</code>); <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#26-d11--devicestatus-is-a-decomposition-problem-not-a-column-selection-problem">D11</a> (devicestatus is decomposed, not given columns); <a href="nightscout-hub-sync-architecture-2026-09-11.html#33-composite-on-the-wire-primitive-in-storage">hub-sync §3.3</a></td>
+<td>queued as <code>SPEC-RECORDS</code>; today <code>specs/sync/primitives.yaml</code> (the observation catalogue, graded <code>measured</code>, <code>declared</code> or <code>proposed</code>); <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#26-d11--devicestatus-is-a-decomposition-problem-not-a-column-selection-problem">D11</a> (devicestatus is decomposed, not given columns); <a href="nightscout-hub-sync-architecture-2026-09-11.html#33-composite-on-the-wire-primitive-in-storage">hub-sync §3.3</a></td>
 </tr>
 <tr>
 <td><strong>Evidence</strong></td>
@@ -4997,8 +5124,8 @@ in <code>tools/nsschema/</code>, which checks the cases but is not a hub. <em>Im
 </thead>
 <tbody>
 <tr>
-<td><strong>Spec today</strong></td>
-<td><a href="nightscout-hub-sync-architecture-2026-09-11.html#31-registration">hub-sync §3.1</a> (the grammar); <a href="nightscout-hub-sync-architecture-2026-09-11.html#35-negotiation">§3.5</a> (capability document, submit, per-element results, fallback, owner actions); <a href="nightscout-hub-sync-architecture-2026-09-11.html#36-definitions-and-instances">§3.6</a> (content-addressed definitions, leased instances, labels, read selection, projected views, retention); <a href="nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">§3.7</a> rules 1–4 (version-scoped quirks)</td>
+<td><strong>Spec</strong></td>
+<td><a href="spec/registration.html">spec/registration.md</a>: the grammar, the capability document, the product resource and fallback, definitions, instances, channels and roles, labels, typed writes, read selection, projected views, retention, binding and the owner, version-scoped quirks, open choices, 186 cases</td>
 </tr>
 <tr>
 <td><strong>Evidence</strong></td>
@@ -5022,7 +5149,7 @@ in <code>tools/nsschema/</code>, which checks the cases but is not a hub. <em>Im
 </tr>
 <tr>
 <td><strong>Status</strong></td>
-<td>specified</td>
+<td>specified (<code>SPEC-REGISTRATION</code>)</td>
 </tr>
 </tbody>
 </table>
@@ -5036,8 +5163,8 @@ in <code>tools/nsschema/</code>, which checks the cases but is not a hub. <em>Im
 </thead>
 <tbody>
 <tr>
-<td><strong>Spec today</strong></td>
-<td><code>stateSpans</code> in <a href="nightscout-hub-sync-architecture-2026-09-11.html#31-registration">hub-sync §3.1</a> (slot, states, end reasons, wire carrier, requested and applied, initiators, composition, <code>acceptsFromHub</code>); slot sharing and <code>sameAs</code> in <a href="nightscout-hub-sync-architecture-2026-09-11.html#36-definitions-and-instances">§3.6</a> and <a href="nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">§3.7</a> rule 2</td>
+<td><strong>Spec</strong></td>
+<td><a href="spec/state-intent.html">spec/state-intent.md</a>: rules S1–S12 (composition reported by the controller, kinds, slots, states, end reasons, the wire carrier, requested and applied, initiators, definitions, acceptance, the controller's command contract), the declared kinds (generated), composition per controller, effect and motivation (proposed), the active-state gap, 15 cases; channels from slots are <a href="spec/registration.html#9-channels-roles-and-provenance">registration §9</a></td>
 </tr>
 <tr>
 <td><strong>Evidence</strong></td>
@@ -5049,7 +5176,7 @@ in <code>tools/nsschema/</code>, which checks the cases but is not a hub. <em>Im
 </tr>
 <tr>
 <td><strong>Open</strong></td>
-<td>iAPS has no registration; end-reason vocabularies for Trio override and temporary target and for AndroidAPS profile switch, AndroidAPS initiator values and every command vocabulary are undeclared (landscape §10); <code>LAB-TRIO-INTENT</code></td>
+<td><code>SPEC-ACTIVE-STATE</code> (what is active at a time, and a therapy-state version); <code>SCHEMA-INTENT-GAPS</code> (initiators' <code>other</code> form, units on requested and applied carriers, typed carrier fields); undeclared vocabularies for <code>PROPOSAL-REG-CONTROLLERS</code>; <code>LAB-TRIO-INTENT</code></td>
 </tr>
 <tr>
 <td><strong>Audit</strong></td>
@@ -5057,7 +5184,7 @@ in <code>tools/nsschema/</code>, which checks the cases but is not a hub. <em>Im
 </tr>
 <tr>
 <td><strong>Status</strong></td>
-<td>evidenced and declared in the generated registrations; <code>LAB-HUB-ACTIVE-STATE</code> measured cgm-remote-monitor and Nocturne disagreeing on what is active for the same records (landscape §5)</td>
+<td>specified for declarations (<code>SPEC-STATE-INTENT</code>); not specified for what is active at a time, where <code>LAB-HUB-ACTIVE-STATE</code> measured cgm-remote-monitor and Nocturne disagreeing (state and intent §6)</td>
 </tr>
 </tbody>
 </table>
@@ -5072,7 +5199,7 @@ in <code>tools/nsschema/</code>, which checks the cases but is not a hub. <em>Im
 <tbody>
 <tr>
 <td><strong>Spec today</strong></td>
-<td><a href="../tenancy/write-contract-spec-2026-10-07.html">write contract</a> §2–§3 (one write step, the re-send rule, every path's writes reaching the storage socket); <a href="nightscout-hub-sync-architecture-2026-09-11.html#32-the-contract-the-hub-returns">hub-sync §3.2</a> (cursor envelope and batch write); <a href="PROPOSAL-replay-fidelity-changes-2026-09-11.html#1-sync-cost-should-be-o1-in-the-number-of-resources">replay-fidelity proposal §1</a> (one history read across collections on API v3); §3.5's fallback and load-versus-definite refusal rule; <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">D6</a> (the change feed under multi)</td>
+<td><a href="../tenancy/write-contract-spec-2026-10-07.html">write contract</a> §2–§3 (one write step, the re-send rule, every path's writes reaching the storage socket); <a href="nightscout-hub-sync-architecture-2026-09-11.html#32-the-contract-the-hub-returns">hub-sync §3.2</a> (cursor envelope and batch write); <a href="PROPOSAL-replay-fidelity-changes-2026-09-11.html#1-sync-cost-should-be-o1-in-the-number-of-resources">replay-fidelity proposal §1</a> (one history read across collections on API v3); <a href="spec/registration.html#6-the-controllers-side-fallback-and-refused-writes">registration §6</a> (fallback, load versus definite refusals); <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">D6</a> (the change feed under multi)</td>
 </tr>
 <tr>
 <td><strong>Evidence</strong></td>
@@ -5103,7 +5230,7 @@ in <code>tools/nsschema/</code>, which checks the cases but is not a hub. <em>Im
 <tbody>
 <tr>
 <td><strong>Spec today</strong></td>
-<td>binding, credential kind, owner actions and the block state in <a href="nightscout-hub-sync-architecture-2026-09-11.html#35-negotiation">hub-sync §3.5</a>; roles, provenance, command-sink binding and command routing in <a href="nightscout-hub-sync-architecture-2026-09-11.html#36-definitions-and-instances">§3.6</a></td>
+<td>binding, credential kind, owner actions and authorisation in <a href="spec/registration.html#15-binding-credentials-and-the-owner">registration §15</a>; roles, provenance, command-sink binding and command routing in <a href="spec/registration.html#9-channels-roles-and-provenance">registration §9</a></td>
 </tr>
 <tr>
 <td><strong>Evidence</strong></td>
@@ -5115,7 +5242,7 @@ in <code>tools/nsschema/</code>, which checks the cases but is not a hub. <em>Im
 </tr>
 <tr>
 <td><strong>Open</strong></td>
-<td><code>SPEC-REG-COMMANDS</code> (the command API itself is not specified); delegation of a principal's authority to a caregiver, app or agent, and proposals awaiting approval, are not specified</td>
+<td><code>SPEC-REG-COMMANDS</code> (the command API and the proposal record in front of a command, to be the <code>commands</code> specification); <code>SPEC-AUTHORITY</code> (delegation of a principal's authority to a caregiver, app or agent)</td>
 </tr>
 <tr>
 <td><strong>Audit</strong></td>
@@ -5130,13 +5257,8 @@ in <code>tools/nsschema/</code>, which checks the cases but is not a hub. <em>Im
 <h2 id="reading-order">Reading order<a class="headerlink" href="#reading-order" title="Permanent link">&para;</a></h2>
 <p>For someone new to the series: this page, then the <a href="spec/glossary.html">glossary</a>, then
 <a href="nightscout-intent-workflow-landscape-2026-10-09.html">intent and workflow landscape</a> §2 and §9 for
-why the contract exists, then hub-sync §3.5–§3.7 for the contract itself.</p>
-<h2 id="planned-layout">Planned layout<a class="headerlink" href="#planned-layout" title="Permanent link">&para;</a></h2>
-<p>Each layer's living specification has, or will have, its own undated file under <code>spec/</code>:
-<a href="spec/identity.html">identity</a> is written; <code>registration</code>, <code>state-intent</code>, <code>sync-transport</code> and
-<code>authority</code> are queued as <code>SPEC-REGISTRATION</code>, <code>SPEC-STATE-INTENT</code>, <code>SPEC-SYNC-TRANSPORT</code> and
-<code>SPEC-AUTHORITY</code>. The dated documents
-above stay where they are as snapshots, and each moved section leaves a pointer to its new home.</p>
+why the contract exists, then the specifications in layer order: <a href="spec/identity.html">identity</a>,
+<a href="spec/registration.html">registration</a>, <a href="spec/state-intent.html">state and intent</a>.</p>
 
 
 

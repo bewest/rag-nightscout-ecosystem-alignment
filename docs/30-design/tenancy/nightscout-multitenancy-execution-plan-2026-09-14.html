@@ -5440,14 +5440,14 @@
 
 
 <h1 id="multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs">Multitenancy execution plan: decisions, tasks, and the context each one needs<a class="headerlink" href="#multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>b3536bbfb</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>3fbabb345</code>.</em></p>
 <p><em>Contributor- and maintainer-facing.</em></p>
 <p><strong>Status: living document — the decision record.</strong> Decisions D1–D20 are the maintainer's
 (2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16) and are all <strong>adopted</strong>, except <strong>D17 row 2</strong>
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is <strong>adopted in principle,
 gated</strong> on the edge's production conditions and the compliance question (<code>T30-ORY-PROOF</code> held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. <strong>Item state lives
-in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c3e4174067c45d98fb99b371f3ca29b638d54666/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
+in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/73aac62eca7a87532477d7928f12cc5dcb41831f/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
 <a href="../../../queue/QUEUE.html"><code>queue/QUEUE.md</code></a>, measured by <code>make queue-status</code>); defect facts live
 in the <a href="../remedial/nightscout-backfix-register.html">backfix register</a>. Measured facts below name
 their date and commit.</p>
@@ -5907,7 +5907,9 @@ OpenAPI spec, <code>indexedFields</code>, the nsschema model and the <code>walke
 </ul>
 <h3 id="261-d18--two-tier-controller-registration">2.6.1 D18 — two-tier controller registration<a class="headerlink" href="#261-d18--two-tier-controller-registration" title="Permanent link">&para;</a></h3>
 <p>D11 says <em>what</em> <code>devicestatus</code> decomposes into is declared by a registered controller description.
-D18 says who may declare it and what a declaration may carry.</p>
+D18 says who may declare it and what a declaration may carry. The contract that implements D18, D19
+and D20 is maintained in the <a href="../platform/spec/registration.html">registration</a> and
+<a href="../platform/spec/identity.html">identity</a> specifications.</p>
 <table>
 <thead>
 <tr>
