@@ -200,7 +200,7 @@ record of such a rule when it is proposed or approved away from the phone.
 6. **The plan channel** a product declares, and the capability document member that says a hub
    serves plans.
 7. **Independence of reviews:** whether a review by a second agent run by the same person or
-   operator counts toward PN6.
+   operator counts toward PN6 (UCA-PLAN-010 in the [control-loop analysis](control-loops.md)).
 8. **Doses since, for an occurrence approval:** CM24's list shows doses since the earliest
    outstanding item; whether an occurrence approval returns the doses since the previous
    occurrence.
@@ -209,7 +209,7 @@ record of such a rule when it is proposed or approved away from the phone.
 10. **Not specified:** an adjusted plan replacing one the controller holds (journey PL3.3); several
     plans active on one channel at once; occurrence reports for elements not accepted or dated
     after `endsAt`; a maximum plan length per risk class, for clinical review; a field on an
-    intent naming the plan and occurrence that started it.
+    intent naming the plan and occurrence that started it (FB-PLAN-004).
 
 ## 10. Conformance cases
 

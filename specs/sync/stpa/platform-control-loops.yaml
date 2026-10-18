@@ -82,6 +82,18 @@ loops:
       CA-AUTH-GRANT: {by: owner, to: hub, text: grant a credential or permission}
       CA-OWNER-ADMIN: {by: owner, to: hub, text: block, retire, free namespaces or pin a version}
       CA-OP-CONFIG: {by: operator, to: hub, text: set the hub's limits and tenancy mode}
+  plan:
+    title: A plan, approved once and run by the controller
+    specs: [plans §3, plans §4, plans §5, plans §6, plans §7]
+    actions:
+      CA-PLAN-PROPOSE: {by: proposer, to: hub, text: propose a plan}
+      CA-PLAN-APPROVE: {by: approver, to: hub, text: approve a plan's elements}
+      CA-PLAN-CONFIRM: {by: proposer, to: hub, text: confirm an occurrence under the plan's grant}
+      CA-PLAN-OCCURRENCE: {by: approver, to: hub, text: approve one occurrence of a per-occurrence element}
+      CA-PLAN-STOP: {by: person, to: hub, text: skip an occurrence or end the plan}
+      CA-PLAN-RUN: {by: controller, to: pump, text: run an occurrence}
+    feedback:
+      FB-PLAN-MIRROR: {from: hub, to: reader, text: the plan's mirror and its occurrences}
 
 # For each control action, every STPA type is either a UCA below or listed here with why it is
 # not hazardous on its own.
@@ -140,6 +152,26 @@ considered:
     not-provided: Without a setting the hub uses its default.
     timing: A setting applies to requests after it.
     duration: A setting lasts until changed.
+
+  CA-PLAN-PROPOSE:
+    not-provided: Without a plan the person acts in the moment, as with commands.
+    timing: A plan proposed early waits within its proposal expiry (PN1) and is checked at approval (PN7).
+  CA-PLAN-APPROVE:
+    not-provided: A plan not approved never reaches the controller.
+    duration: An approval is one event; the plan's life is its end date (UCA-PLAN-004).
+  CA-PLAN-CONFIRM:
+    not-provided: An occurrence that needs a confirmation and gets none does not run, and the controller reports it missed (PN10, PN11).
+    duration: A confirmation is one event and expires at its occurrence (PN12).
+  CA-PLAN-OCCURRENCE:
+    not-provided: A per-occurrence element without its approval does not run (PN13).
+    duration: An approval is one event and expires at its occurrence (PN13).
+  CA-PLAN-STOP:
+    duration: A skip is one occurrence; an end lasts until the controller reports ended (PN16).
+  CA-PLAN-RUN:
+    not-provided: An occurrence that does not run is reported withdrawn or missed (PN11); not running when a criterion cannot be evaluated with fresh data is the fail-closed outcome FL1 chooses (PN10).
+    duration: How long an occurrence's intent runs is its element's bounds, which the controller checks (PN10).
+  FB-PLAN-MIRROR:
+    delayed: A plan command handed over without a report leaves the mirror approved, and the person can still end the plan (PN9, PN16).
 
 ucas:
   # --- command ---
@@ -823,3 +855,284 @@ ucas:
     constraints: [CM3]
     status: gap
     open: commands §9
+
+  # --- plan ---
+  - id: UCA-PLAN-001
+    action: CA-PLAN-PROPOSE
+    type: provided
+    text: A plan proposes standing insulin or carbs with no way to withdraw an occurrence the live data contradicts.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [PN4]
+    status: covered
+    verification: [plans/plan-r4-standing-without-conditions, plans/plan-r4-standing-without-mitigation, plans/plan-r4-standing-empty-withdrawal, plans/plan-standing-carbs-alone]
+  - id: UCA-PLAN-002
+    action: CA-PLAN-PROPOSE
+    type: provided
+    text: A plan changes safety limits, or persistent settings on its own approval.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [PN4]
+    status: covered
+    verification: [plans/plan-r6-element-local-only, plans/plan-r5-standing-refused]
+  - id: UCA-PLAN-003
+    action: CA-PLAN-PROPOSE
+    type: provided
+    text: A plan element of a kind the controller does not class is treated as harmless.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [PN3]
+    status: covered
+    verification: [plans/plan-undeclared-kind-is-r4, plans/plan-undeclared-kind-with-conditions]
+  - id: UCA-PLAN-004
+    action: CA-PLAN-PROPOSE
+    type: duration
+    text: A plan runs with no end date, or for longer than the operator allows.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [PN4, PN15]
+    status: covered
+    verification: [plans/plan-ends-missing, plans/plan-too-long, plans/plan-at-max-length]
+  - id: UCA-PLAN-005
+    action: CA-PLAN-APPROVE
+    type: provided
+    text: An agent's credential, or the agent that proposed it, approves a plan that doses.
+    hazards: [HAZ-1, HAZ-4]
+    severity: S4
+    constraints: [PN6, CM14]
+    status: covered
+    verification: [plans/approve-plan-by-agent-subject, plans/approve-own-agent-plan-refused]
+  - id: UCA-PLAN-006
+    action: CA-PLAN-APPROVE
+    type: provided
+    text: A plan that doses is approved with no review from anyone but its proposer.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [PN6]
+    status: covered
+    verification: [plans/approve-r4-without-any-review, plans/approve-review-by-proposer-not-counted, plans/approve-review-missing]
+  - id: UCA-PLAN-007
+    action: CA-PLAN-APPROVE
+    type: provided
+    text: An approval keeps standing carbs or insulin while declining the element that makes them safe, the standing insulin or the eating-soon companion.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [PN4, PN7]
+    status: covered
+    verification: [plans/approve-drops-insulin-keeps-carbs, plans/approve-insulin-without-companion]
+  - id: UCA-PLAN-008
+    action: CA-PLAN-APPROVE
+    type: provided
+    text: The controller receives an element that was declined, or content other than what was proposed and reviewed.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [PN5, PN8]
+    status: covered
+    verification: [plans/approve-element-hash-mismatch, plans/approve-one-of-two-elements, tools/nsschema/test_plans.py::test_never_a_declined_element, tools/nsschema/test_plans.py::test_command_elements_are_the_proposed_elements]
+  - id: UCA-PLAN-009
+    action: CA-PLAN-APPROVE
+    type: provided
+    text: A plan is approved after the controller's definition changed, so its elements mean something else on the phone.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [PN7]
+    status: covered
+    verification: [plans/approve-plan-definition-changed, plans/approve-plan-definition-unchanged]
+  - id: UCA-PLAN-010
+    action: CA-PLAN-APPROVE
+    type: provided
+    text: Two agents run by one operator review each other's plans, and their reviews count as independent.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [PN6]
+    status: gap
+    open: plans §9
+  - id: UCA-PLAN-011
+    action: CA-PLAN-APPROVE
+    type: timing
+    text: A plan is approved after the intents on its own channels changed from the ones it was drafted against.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [PN7]
+    status: covered
+    verification: [plans/approve-plan-state-changed, plans/approve-plan-unrelated-channel-changed]
+  - id: UCA-PLAN-012
+    action: CA-PLAN-CONFIRM
+    type: provided
+    text: A subject other than the plan's proposer, or a proposer whose role was taken away, confirms an occurrence.
+    hazards: [HAZ-4, HAZ-1]
+    severity: S3
+    constraints: [PN12, CM12]
+    status: covered
+    verification: [plans/confirm-by-other-subject, plans/confirm-from-other-instance, plans/confirm-after-role-lost]
+  - id: UCA-PLAN-013
+    action: CA-PLAN-CONFIRM
+    type: provided
+    text: An agent's confirmation alone releases a dose.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [PN12, PN10]
+    status: controller
+    evidence: A confirmation is evidence that the occasion is happening; insulin runs only on the plan's recorded conditions or a human approval of the occurrence, which the controller checks before it runs (PN4, PN10, PN13).
+  - id: UCA-PLAN-014
+    action: CA-PLAN-CONFIRM
+    type: timing
+    text: An occurrence is confirmed too far ahead, after its time, or outside the plan's dates.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [PN12]
+    status: covered
+    verification: [plans/confirm-too-early, plans/confirm-occurrence-outside-plan, plans/confirm-at-ends]
+  - id: UCA-PLAN-015
+    action: CA-PLAN-CONFIRM
+    type: provided
+    text: An occurrence the person skipped is confirmed or approved again.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [PN12, PN14]
+    status: covered
+    verification: [plans/approve-occurrence-after-skip, plans/skip-cancels-pending-confirmation, tools/nsschema/test_plans.py::test_nothing_after_a_skip]
+  - id: UCA-PLAN-016
+    action: CA-PLAN-OCCURRENCE
+    type: provided
+    text: A per-occurrence dose is approved by an agent's credential, the proposing agent or a follower.
+    hazards: [HAZ-1, HAZ-4]
+    severity: S4
+    constraints: [PN13]
+    status: covered
+    verification: [plans/approve-occurrence-by-agent-subject, plans/approve-occurrence-by-agent-proposer, plans/approve-occurrence-by-follower, tools/nsschema/test_plans.py::test_insulin_approvals_come_from_a_person_or_delegate]
+  - id: UCA-PLAN-017
+    action: CA-PLAN-OCCURRENCE
+    type: timing
+    text: An occurrence is approved more than the advance window before it, or after its time.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [PN13]
+    status: covered
+    verification: [plans/approve-occurrence-too-early, plans/approve-occurrence-passed, plans/approve-occurrence-at-window-start]
+  - id: UCA-PLAN-018
+    action: CA-PLAN-OCCURRENCE
+    type: provided
+    text: A persistent settings occurrence is approved by a delegate rather than the person.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [PN13]
+    status: covered
+    verification: [plans/approve-r5-occurrence-by-delegate, plans/approve-r5-occurrence-by-person]
+  - id: UCA-PLAN-019
+    action: CA-PLAN-OCCURRENCE
+    type: provided
+    text: An occurrence's meal bolus is approved after the person already dosed for the meal on the phone.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [PN10, CM23]
+    status: controller
+    evidence: The controller checks the doses and carbs since before it runs an occurrence (PN10, CM23); whether an occurrence approval also returns the doses since is open (plans §9).
+  - id: UCA-PLAN-020
+    action: CA-PLAN-STOP
+    type: not-provided
+    text: The person cannot stop a plan the controller may hold, because its command was never reported on, its end was lost, or someone cancelled the end.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [PN16]
+    status: covered
+    verification: [plans/end-unconfirmed-plan, plans/end-plan-twice, plans/cancel-end-command-refused]
+  - id: UCA-PLAN-021
+    action: CA-PLAN-STOP
+    type: provided
+    text: A skip or an end leaves confirmations and approvals queued for the occurrences it stops.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [PN14, PN16, CM25]
+    status: covered
+    verification: [plans/skip-cancels-pending-confirmation, plans/end-cancels-pending-confirmation]
+  - id: UCA-PLAN-022
+    action: CA-PLAN-STOP
+    type: timing
+    text: A skip arrives after the controller already ran the occurrence, and the person believes it did not run.
+    hazards: [HAZ-3]
+    severity: S2
+    constraints: [PN11, PN14]
+    status: covered
+    verification: [plans/skip-then-controller-reports-skipped, plans/plan-report-occurrence-ran]
+  - id: UCA-PLAN-023
+    action: CA-PLAN-STOP
+    type: provided
+    text: A subject who is not the person, the approver or the proposer skips an occurrence or ends a plan.
+    hazards: [HAZ-2]
+    severity: S2
+    constraints: [PN14, PN16]
+    status: covered
+    verification: [plans/skip-by-other-subject, plans/end-plan-by-other-subject]
+  - id: UCA-PLAN-024
+    action: CA-PLAN-RUN
+    type: provided
+    text: An occurrence runs although live location or activity shows the meal is not happening.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [PN10, PN4]
+    status: controller
+    evidence: The plan's withdrawal criteria are recorded at approval (PN4); the controller evaluates them with data it judges fresh and does not run an occurrence it cannot evaluate (PN10). The proposing agent can also skip it (PN14).
+  - id: UCA-PLAN-025
+    action: CA-PLAN-RUN
+    type: provided
+    text: An occurrence runs twice, once on its confirmation and again on its approval.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [PN17, CM21]
+    status: controller
+    evidence: The controller runs each occurrence key at most once, whatever confirmations and approvals arrive for it (PN17), as it decides each command once (CM21).
+  - id: UCA-PLAN-026
+    action: CA-PLAN-RUN
+    type: timing
+    text: An occurrence runs after the plan's end date.
+    hazards: [HAZ-1]
+    severity: S3
+    constraints: [PN15]
+    status: controller
+    evidence: The controller ends the plan at endsAt and runs no occurrence after it (PN15); the hub refuses confirmations and approvals at or past endsAt (PN12).
+  - id: UCA-PLAN-027
+    action: CA-PLAN-RUN
+    type: provided
+    text: The hub sends an occurrence at its time, deciding when therapy changes.
+    hazards: [HAZ-1]
+    severity: S4
+    constraints: [PN10]
+    status: covered
+    verification: [tools/nsschema/test_plans.py::test_every_command_comes_from_a_call]
+  - id: FB-PLAN-001
+    action: FB-PLAN-MIRROR
+    type: incorrect
+    text: The mirror shows a plan active that the controller refused, failed or never reported holding.
+    hazards: [HAZ-3]
+    severity: S3
+    constraints: [PN9, PN11]
+    status: covered
+    verification: [plans/plan-held-active, plans/plan-refused-by-controller, plans/plan-failed-report-refuses-plan]
+  - id: FB-PLAN-002
+    action: FB-PLAN-MIRROR
+    type: incorrect
+    text: The mirror's occurrences are moved by someone other than the controller that holds the plan.
+    hazards: [HAZ-3]
+    severity: S3
+    constraints: [PN11, CM7]
+    status: covered
+    verification: [plans/plan-report-by-other-subject, plans/plan-report-on-refused-plan]
+  - id: FB-PLAN-003
+    action: FB-PLAN-MIRROR
+    type: absent
+    text: A caregiver looking at the bolus channel does not see a plan's pending bolus and sends one of their own.
+    hazards: [HAZ-3, HAZ-1]
+    severity: S4
+    constraints: [PN18, CM24]
+    status: covered
+    verification: [plans/outstanding-lists-occurrence-on-element-channel]
+  - id: FB-PLAN-004
+    action: FB-PLAN-MIRROR
+    type: absent
+    text: An intent the controller started from a plan carries nothing that names the plan and occurrence, so a reader cannot tell a planned override from a manual one.
+    hazards: [HAZ-3, HAZ-5]
+    severity: S2
+    constraints: [PN11, S8]
+    status: gap
+    open: plans §9
