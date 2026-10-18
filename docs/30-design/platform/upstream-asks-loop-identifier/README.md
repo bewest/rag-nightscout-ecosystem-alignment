@@ -18,11 +18,13 @@ What the reply proposes, and what Nightscout supports today except where the rep
 otherwise:
 
 1. `_id` is a MongoDB ObjectId (24 hex) or absent. A client may create its own ObjectId and send
-   it. Other values are not valid; `UUID_HANDLING` (default on) moves a UUID `_id` to
+   it. Other values are not valid; `UUID_HANDLING` (default on) moves any non-24-hex string `_id` to
    `identifier` on treatments and entries, as a compatibility rule.
-2. If `_id` is absent, the client sends `identifier`, a string (UUID recommended: v5 of a
-   source-derived key when devices must agree, v4 once for a manual entry). The server assigns
-   `_id`. One identifier names one record.
+2. If `_id` is absent, the client sends `identifier`, an opaque string compared exactly,
+   not necessarily a UUID: 1-256 characters from `A-Za-z0-9._~:-`, not exactly 24 hex, no
+   placeholders (`invalid`, `undefined`, `null`, `NaN`); a UUID is needed only for today's v1
+   by-`_id` routes ([identifier format](../../../60-research/tenancy/identifier-format-2026-10-17.md),
+   queue `ID-FORMAT-DECISION`). The server assigns `_id`. One identifier names one record.
 3. If neither is sent, the collection's time key applies (entries `sysTime` + `type`, treatments
    `created_at` + `eventType`); this fallback may be deprecated later.
 

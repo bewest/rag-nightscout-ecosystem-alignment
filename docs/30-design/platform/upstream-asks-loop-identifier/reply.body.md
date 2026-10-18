@@ -13,11 +13,10 @@ Code references are to cgm-remote-monitor `15.0.8` (`92d08342`) and `dev` at `fa
 1. **`_id` is a MongoDB ObjectId (24 hex characters) or absent.** A client that keeps a local
    cache may create its own ObjectId and send it. ObjectIds are designed to be made by clients
    without coordination (a timestamp, a random part and a counter). Other values in `_id` are not
-   valid. For compatibility, `UUID_HANDLING` (on by default) moves a UUID `_id` to `identifier` on
-   treatments and entries, and the server assigns the ObjectId.
-2. **If `_id` is absent, send `identifier`**: a string. We recommend a UUID: v5 of a
-   source-derived key when several devices must agree, v4 created once for a manual entry. The
-   server assigns `_id`. One identifier names one record.
+   valid. For compatibility, `UUID_HANDLING` (on by default) moves any string `_id` that is not 24
+   hex characters to `identifier` on treatments and entries, and the server assigns the ObjectId.
+2. **If `_id` is absent, send `identifier`**: an opaque string, compared exactly as sent. It does
+   not have to be a UUID. The server assigns `_id`. One identifier names one record.
 3. **If neither is sent**, the server falls back to the collection's time key: entries
    `sysTime` + `type`, treatments `created_at` + `eventType`. This fallback may be deprecated
    later.
@@ -31,6 +30,16 @@ decision. Rule 5 also says what every write reply should carry:
 > ([D20 rule 5](https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16))
 
 Returning both means a client never needs a cache of server ids to edit or delete what it sent.
+
+**What an `identifier` may contain (proposed).** 1 to 256 characters from `A-Z a-z 0-9 . _ ~ : -`.
+That keeps it usable in API v3 paths (`/api/v3/{collection}/{identifier}`), where a `/`, `%`, `?`,
+`#` or space breaks or needs escaping, and under MongoDB's index key limit. Not exactly 24 hex
+characters, which both APIs read as an `_id`. Never a placeholder such as `invalid`, `undefined`,
+`null` or `NaN`: once identifiers are matched, every reading sharing one would overwrite the last.
+A UUID (v4 for a record made on one device, or v5 of a source-derived key) is needed only for
+today's v1 by-`_id` routes (`find[_id]=`, `DELETE /api/v1/treatments/:id`), which recognise
+UUID-shaped values only. API v3 and `find[identifier]=` take any string
+([identifier format](https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/tenancy/identifier-format-2026-10-17.html)).
 
 ## What works today, and the one gap
 
@@ -49,10 +58,14 @@ Neither id alone solves two devices uploading one reading: both must arrive at t
 |---|---|
 | 1. one uploader at a time (today's workaround) | none |
 | 2. both devices agree on the timestamp: the phone adopts the watch's activation estimate for the loaned period | none: v1 entries already merge on `sysTime` + `type`. The match is exact, so the times must be identical to the millisecond. `device` need not match: it is not part of the v1 key (over API v3 it would, because the server computes `identifier` from `device` + `date`). The later upload's fields overwrite the stored ones (`$set`), so `device` becomes the phone's ([entries.js:127-136](https://github.com/nightscout/cgm-remote-monitor/blob/92d0834219aa771b5837dbcbf1baeb839a200cf6/lib/server/entries.js#L127-L136)) |
-| 3. a source-derived identifier, `g7:<serial>:<seconds>` or its UUIDv5 | entries match on `identifier` (the one change below) |
+| 3. a source-derived identifier, `g7:<serial>:<seconds>` or its UUIDv5 | entries match on `identifier` (the one change below). The inputs must come from the sensor: the real serial and the sensor's own seconds counter |
 | 4. server-side fuzzy time matching | avoid: it can merge readings from two real sensors |
 
-We recommend (3), with (2) as an interim that needs no server change. Precedents: FHIR keeps
+We recommend (3), with (2) as an interim that needs no server change. Today's G7 `syncIdentifier`
+would not serve (3) as it stands. It embeds each device's own activation estimate, as fractional
+hours, and the BLE name `DXCMxx` rather than the serial, and it falls back to `"invalid"`
+(G7SensorKit `dd91f46`, `G7CGMManager.swift:511-517`). Hashing it into a UUIDv5 would not help,
+because the input already differs between devices. Precedents: FHIR keeps
 the server id apart from the business `identifier`, and its conditional create answers 200 with
 the existing record when the identifier already matches
 ([Aidbox](https://www.health-samurai.io/docs/aidbox/api/rest-api/crud/create)). HealthKit pairs
@@ -79,7 +92,8 @@ With it, the swagger fix (BF-169). Both land after 15.0.9, which is frozen as `d
 ## Later, only if needed
 
 - Whether a re-send with changed fields is an edit or a duplicate, and versioning, HealthKit-style.
-- The identifier's length limit, character set and case comparison.
+- Whether the proposed length limit and character set above become server checks, and when (a
+  character check would reject Loop's current space-containing ids, so it would start as a warning).
 - Per-record results in batch replies.
 - A unique index on `identifier`.
 - API v3's immutable `date` and `device` on an identifier match (400 today, measured in the lab above).
