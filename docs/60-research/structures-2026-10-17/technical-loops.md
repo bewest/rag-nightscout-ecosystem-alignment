@@ -33,7 +33,7 @@ proposals; the drawings no longer carry markers for them.
 |---|---|---|
 | Loop (LoopWorkspace) | `f841285` (2026-09-19) | `LoopWorkspace/` (Loop, LoopKit, NightscoutService) |
 | Trio | `e41c9db37` (2026-09-22) | `Trio/` |
-| AndroidAPS | `7e1d537d49` (dev, 2026-09-23) | `AndroidAPS/` — release 3.4.2.6 is not an ancestor; **dev-only** marks items absent from the release, per the [intent and workflow landscape](../../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md) §1 |
+| AndroidAPS | `7e1d537d49` (dev, 2026-09-23) | `AndroidAPS/` — release 3.4.2.6 is not an ancestor; **dev-only** marks items absent from release 3.4.2.6; they ship in the 4.0.0-beta1 and 4.0.0-rc1 prereleases, per the [intent and workflow landscape](../../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md) §1 |
 | cgm-remote-monitor | `a8888f0d` (2026-09-09) | `cgm-remote-monitor-official/` (the `cgm-remote-monitor/` checkout is a 2014 revision and was not used) |
 | LoopCaregiver | `2305718` | `LoopCaregiver/` |
 | LoopFollow | `4a74b781` | `LoopFollow/` |
