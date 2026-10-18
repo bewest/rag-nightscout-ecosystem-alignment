@@ -3,7 +3,7 @@
 *What this is: a map (contributor-facing). Read after the [authority specification](spec/authority.md);
 leads to [auditioning a dosing algorithm](algorithm-audition-2026-10-18.md).* **Snapshot — describes
 2026-10-18. Status: current; a map of what exists and what is missing for each of develop, interpret
-and act. The proposal lifecycle in §4.3 is proposed, not specified.** Repository
+and act. The proposal lifecycle in §4.3 is proposed, not specified.** **Also 2026-10-18:** §1 adds the drawing 1·agents (the three domains as paths from an agent to the ecosystem). Repository
 facts are read at this repository's `5a9a49cc`; facts about other repositories and publications were
 checked 2026-10-18 through the GitHub API or the publisher's page, and each names its commit or
 date. Every claim is **read-derived** (from source or documents) unless marked **measured**. Current
@@ -35,6 +35,13 @@ puts them side by side and names what is missing.
 | **What goes wrong** | a defect ships to people who dose from or display the software | a wrong state read as right, a stale value read as current, a summary that misstates the data, data sent where the person did not expect | a change enacted that nobody approved, on stale state, or by an actor nobody can identify afterwards |
 | **Assurance it needs** | review by people who own the code, tests and simulators, release control | minimal and scoped read access, deterministic computation, a hub state that is right, a record of what was read | an authority grant, approval bound to the exact change, the controller's own validation and enactment, an outcome record |
 | **Who decides** | each project's maintainers | the person whose data it is, and whoever operates the site | the person, and the controller that owns the pump (D18) |
+
+![1·agents: a software agent reaches the ecosystem by three paths. Develop: it writes a code change that each project's maintainers review and release or refuse. Interpret: it is given a read credential, one role covering every record, which an MCP server or tool uses as an adapter over the hub's API, and the records or results go to wherever the model runs. Act, proposed: it proposes the exact change, a person approves it bound to the payload hash, the hub records and routes the command, and the controller validates and enacts it and returns a correlated outcome.](../../00-overview/perspective/diagrams/1-agents.svg)
+
+*1·agents. Dashed boxes and lines are proposed ([commands specification](spec/commands.md) §4–§7); the
+controller's validation and enactment exist today (D18). Source:
+[`tools/structure-diagrams/inputs/1-agents.yaml`](../../../tools/structure-diagrams/inputs/1-agents.yaml), drawn from §1–§4 of this page.
+Read-derived.*
 
 One tool can sit on two rows. An interpretation that ends in a recommended settings change is at
 the edge between Interpret and Act, and its regulatory status is a question for counsel (§6).

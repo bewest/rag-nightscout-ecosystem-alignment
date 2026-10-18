@@ -5,3 +5,15 @@
 {% block extrahead %}
   <meta name="robots" content="noindex, nofollow">
 {% endblock %}
+
+{#- Mermaid runtime, pinned, and only on pages that have a mermaid block.
+    mkdocs-material 9.7.7 fetches https://unpkg.com/mermaid@11/dist/mermaid.min.js
+    (a floating major) only when no global `mermaid` exists; this script defines
+    it first, so this exact version is the one used. tools/site/mermaid_check.py
+    (make diagrams-check) reads this URL and parses every block with it. -#}
+{% block scripts %}
+  {{ super() }}
+  {% if page and page.content and 'class="mermaid"' in page.content %}
+  <script src="https://unpkg.com/mermaid@11.17.2/dist/mermaid.min.js"></script>
+  {% endif %}
+{% endblock %}

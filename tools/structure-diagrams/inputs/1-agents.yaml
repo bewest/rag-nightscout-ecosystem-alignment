@@ -1,0 +1,30 @@
+# L1 · Agents: the three ways a software agent built on a language model reaches the ecosystem.
+# Source: docs/30-design/platform/agent-trust-boundaries-2026-10-18.md §1 (the three domains),
+# §2 (develop: each project's contribution rules and review), §3 (interpret: one read role, MCP is
+# an adapter, the data goes where the model runs) and §4 (act: no path of its own today; the
+# proposal → approval → command lifecycle is proposed in spec/commands.md §4-§7, D18 keeps
+# validation and enactment in the controller). Drawn 2026-10-18; read-derived.
+title: "1·agents · Agents: develop, interpret, act"
+nodes:
+  - {id: agent, label: "Software agent\n(language model)", kind: entity, level: 0, column: 1, icon: bot}
+  - {id: source, label: "Develop: source\ncode change", kind: commons, level: 1, column: 0, icon: git-branch}
+  - {id: release, label: "Review and release\n(each project's\nmaintainers)", kind: commons, level: 2, column: 0, icon: badge-check}
+  - {id: cred, label: "Interpret: read\ncredential (one role,\nevery record)", kind: commons, level: 1, column: 1, icon: key-round}
+  - {id: mcp, label: "MCP server or tool\n(an adapter over\nthe hub's API)", kind: entity, level: 2, column: 1, icon: waypoints}
+  - {id: model, label: "Model host\n(where the data\nread goes)", kind: entity, level: 3, column: 1, icon: cloud}
+  - {id: proposal, label: "Act: proposal\n(the exact change)", kind: commons, level: 1, column: 2, icon: file-text, status: proposed}
+  - {id: approval, label: "Approval bound to\nthe payload hash", kind: human, level: 2, column: 2, icon: clipboard-check, status: proposed}
+  - {id: command, label: "Command record\n(hub records\nand routes)", kind: commons, level: 3, column: 2, icon: server, status: proposed}
+  - {id: controller, label: "Controller\n(validates, enacts)", kind: org, level: 4, column: 2, icon: smartphone}
+edges:
+  - {from: agent, to: source, kind: control, label: "writes or\nchanges code"}
+  - {from: source, to: release, kind: control, label: "pull request"}
+  - {from: release, to: source, kind: feedback, label: "accepted\nor refused"}
+  - {from: agent, to: cred, kind: control, label: "is given"}
+  - {from: cred, to: mcp, kind: control, label: "reads what\nit allows"}
+  - {from: mcp, to: model, kind: data, label: "records or\ncomputed results"}
+  - {from: agent, to: proposal, kind: control, label: "proposes", status: proposed}
+  - {from: proposal, to: approval, kind: control, label: "a person\napproves", status: proposed}
+  - {from: approval, to: command, kind: control, label: "approved\npayload", status: proposed}
+  - {from: command, to: controller, kind: control, label: "routed to the\ncommand-sink", status: proposed}
+  - {from: controller, to: command, kind: feedback, label: "outcome,\ncorrelated", status: proposed}

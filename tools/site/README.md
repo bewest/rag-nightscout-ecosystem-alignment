@@ -60,6 +60,18 @@ want to see it.
    override in `tools/site/overrides/main.html` adds the noindex meta;
    `tools/site/hooks.py` loads the generated nav).
 
+## Mermaid
+
+`tools/site/overrides/main.html` pins the mermaid runtime (11.17.2 from unpkg) and adds it only to
+pages that have a mermaid block. mkdocs-material fetches its own floating `mermaid@11` only when no
+global `mermaid` exists, so the pinned script is the one used. `make diagrams-check` (`mermaid_check.py`) parses every
+```` ```mermaid ```` block in the tracked Markdown with that same version in headless Chrome and
+fails with `file:line`. It needs no network once the runtime is cached: the first run for a
+version downloads the npm tarball, checks it against the integrity recorded in the script, and
+keeps `dist/mermaid.min.js` under `~/.cache/nightscout-alignment/mermaid/<version>/`. To move
+the pin, change the URL in `overrides/main.html` and add the version's `npm view mermaid@<v>
+dist.integrity` to `INTEGRITY`.
+
 ## Exclusions
 
 `tools/site/exclusions.yaml` lists glob patterns for tracked paths that must not

@@ -5,7 +5,7 @@
 **measured**. Sources and commits are in §1. Current decisions: [execution plan
 §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
 **Corrected in place 2026-10-12:** §5 is measured on both hubs (TL;DR and §12 follow it); the §10 rows for the hub-sync design and `specs/sync/registrations/` record what the
-registrations now declare and what remains; the registrations row also records the D18 addendum grammar (`SCHEMA-REG-EXT`, 2026-10-12). **Also 2026-10-18:** §2 records the maintainer's decision on agent initiators (P5); the AndroidAPS items marked **4.0.0 prerelease** ship in `4.0.0-beta1` and `4.0.0-rc1` (§1); §4 and §5 carry figures generated from the registrations and the lab results (`tools/diagrams`). The rules this evidence supports are maintained in the [state and intent specification](spec/state-intent.md).
+registrations now declare and what remains; the registrations row also records the D18 addendum grammar (`SCHEMA-REG-EXT`, 2026-10-12). **Also 2026-10-18:** §2 records the maintainer's decision on agent initiators (P5); the AndroidAPS items marked **4.0.0 prerelease** ship in `4.0.0-beta1` and `4.0.0-rc1` (§1); §4 and §5 carry figures generated from the registrations and the lab results (`tools/diagrams`). §6.1 draws the remote-command paths of §6 as sequences (channels and acknowledgements only). The rules this evidence supports are maintained in the [state and intent specification](spec/state-intent.md).
 
 **The question.** Nightscout's API v1 and v3 manage *entities*: create, read, update and delete
 documents in `treatments`, `devicestatus`, `profile`. AID controllers increasingly manage
@@ -241,6 +241,139 @@ receive a reply; that channel exists only on direct APNs. The RFC's `DeliveryReq
 covers tempBasal, bolus, suspend and resume; the commands caregivers actually send — override,
 temp target, carbs, loop mode — have no request object, and `OverrideInstance.status` has no
 `requested` or `rejected` state.
+
+### 6.1 The paths as sequences
+
+*Added 2026-10-18.* One sequence per path in the table above. Solid arrows are requests and
+records; dashed arrows are replies and reads. Each drawing shows channels and acknowledgements
+only. Every drawing is **read-derived**; captions give the rows they are drawn from, at this
+repository's commit `b081a15c`.
+
+**Hub-relayed, to Loop.** The sender gets no reply; the hub learns the outcome only as the
+record Loop uploads or a free-text `Note`.
+
+```mermaid
+sequenceDiagram
+  accTitle: Hub-relayed command to Loop
+  accDescr: A careportal, Nocturne or LoopCaregiver sender asks the hub, which pushes through APNs to Loop without a return address. Loop validates, then uploads the resulting record or a free-text Note. The sender reads records to infer the outcome; no acknowledgement is correlated with the command.
+  participant S as Sender: careportal, Nocturne or LoopCaregiver
+  participant H as Hub
+  participant P as APNs
+  participant L as Loop
+  S->>H: command
+  Note over H: no request record is kept
+  H->>P: push, no return address
+  P->>L: notification
+  Note over L: duplicate check, expiry when present,<br/>one-time code for bolus and carbs only, limits
+  alt enacted
+    L->>H: resulting treatment or devicestatus, uploaded after enactment
+  else refused or failed
+    L->>H: Note treatment, free text
+  end
+  S-->>H: reads records to infer the outcome
+  Note over S,L: no acknowledgement correlated with the command
+```
+
+*Source: landscape §6 row 1 (`docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md:201`)
+and technical control loops §3.3 path A (`docs/60-research/structures-2026-10-17/technical-loops.md:234`), at `b081a15c`. Read-derived.*
+
+**Direct, from LoopFollow to Loop or Trio.** The reply goes to the sender over APNs and carries
+no command id; the hub sees a `Note` on failure.
+
+```mermaid
+sequenceDiagram
+  accTitle: Direct APNs command from LoopFollow to Loop or Trio
+  accDescr: LoopFollow reads the controller's push token from the hub profile and pushes through APNs itself. Loop replies to LoopFollow when given return information, without a command id, and uploads the result or a Note. Trio decrypts a payload sealed under a shared secret, replies before enactment and again once the pump accepts, and writes a Note only on error.
+  participant F as LoopFollow
+  participant H as Hub
+  participant P as APNs
+  participant C as Loop or Trio
+  H-->>F: push token, read from the profile
+  alt to Loop
+    F->>P: push with return information
+    P->>C: notification
+    Note over C: checks as on the hub-relayed path
+    C-->>F: reply over APNs, no command id
+    C->>H: resulting record, or Note on failure
+  else to Trio
+    F->>P: push, payload encrypted under a shared secret
+    P->>C: notification
+    Note over C: decrypts, timestamp window ±600 s,<br/>bolus limits, no one-time code
+    C-->>F: reply over APNs: initiating, before enactment
+    C-->>F: reply over APNs: started, once the pump accepts
+    C->>H: Note, on error only
+  end
+```
+
+*Source: landscape §6 rows 2–3 (`…landscape-2026-10-09.md:202-203`) and technical control loops §3.3
+paths B and C (`…technical-loops.md:235-236`), at `b081a15c`. Read-derived.*
+
+**Treatments downloaded by the controller.** The request is the record; nothing distinguishes
+enacted from ignored.
+
+```mermaid
+sequenceDiagram
+  accTitle: Treatment written to the hub and downloaded by Trio, iAPS or AndroidAPS
+  accDescr: Any client with hub write access stores a treatment, such as a temp target or, for iAPS, an Announcement. The controller downloads it and applies it only if its download setting allows. No acknowledgement exists; enacted and ignored look the same on the hub.
+  participant W as Hub writer: careportal, nightguard, any client
+  participant H as Hub
+  participant C as Trio, iAPS or AndroidAPS
+  W->>H: treatment: temp target, or Announcement for iAPS
+  Note over H: the request is the record
+  C->>H: downloads treatments
+  Note over C: Trio and AndroidAPS apply it only if download<br/>of that type is on (off by default), within limits
+  Note over W,C: no acknowledgement, enacted and ignored look the same
+```
+
+*Source: landscape §6 rows 5–6 (`…landscape-2026-10-09.md:205-206`) and technical control loops §3.3
+path D (`…technical-loops.md:237`), at `b081a15c`. Read-derived.*
+
+**SMS, to AndroidAPS.** The hub is not on this path; the reply is an SMS to the sender.
+
+```mermaid
+sequenceDiagram
+  accTitle: SMS command to AndroidAPS
+  accDescr: A sender on the allowed list texts a command; AndroidAPS asks for confirmation, the sender answers with a one-time code and PIN within five minutes, and AndroidAPS replies by SMS with the result. The hub is not on this path.
+  participant S as Sender phone, on the allowed list
+  participant A as AndroidAPS
+  S->>A: SMS command
+  Note over A: remote commands on (off by default),<br/>number on the allowed list
+  A-->>S: SMS asking for confirmation
+  S->>A: SMS: one-time code and PIN, within 5 min
+  Note over A: bolus constraints, minimum time<br/>between remote boluses
+  A-->>S: SMS reply with the result
+```
+
+*Source: technical control loops §3.3 path E (`…technical-loops.md:238`) and the questionnaire
+defaults F13 (`docs/30-design/platform/integration-questionnaire-defaults-2026-10-18.md:285-288`), at `b081a15c`. Read-derived.*
+
+**Client control, to AndroidAPS (4.0.0 prerelease).** The only path with a request record on the
+hub and acknowledgements correlated with it.
+
+```mermaid
+sequenceDiagram
+  accTitle: Client-control command from AAPSClient to AndroidAPS through the hub settings collection
+  accDescr: A paired AAPSClient writes a signed command to the hub settings collection. AndroidAPS verifies it and writes signed acknowledgements, Executing then Done with Ok, Failed or Expired, and a late Delivery Failed if the pump delivery fails afterwards, all correlated by the command counter. A bolus is two commands, prepare and commit; the prepare's acknowledgement carries the dose preview and the commit delivers it at most once.
+  participant C as AAPSClient, paired
+  participant H as Hub: settings collection
+  participant A as AndroidAPS
+  C->>H: signed command
+  H-->>A: synced
+  Note over A: signature, increasing counter,<br/>clock skew, validity window
+  A->>H: signed ack: Executing
+  A->>H: signed ack: Done, Ok or Failed or Expired
+  opt delivery fails after Done
+    A->>H: signed ack: Delivery Failed
+  end
+  H-->>C: acks, correlated by the command counter
+  Note over C,A: a bolus is prepare then commit: the prepare's Done<br/>carries the dose preview, the commit delivers it at most once
+```
+
+*Source: landscape §6 row 7 (`…landscape-2026-10-09.md:207`) and technical control loops §3.3 path F
+(`…technical-loops.md:239`), at `b081a15c`. Read-derived.*
+
+LoopCaregiver's "Remote Commands 2" (row 4) is not drawn: it expects a command collection with
+a status (Pending → InProgress → Success/Error) that neither hub has.
 
 ## 7. Composition: who combines overlapping intents
 
