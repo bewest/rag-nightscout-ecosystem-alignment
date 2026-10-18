@@ -98,20 +98,31 @@ the comparison slightly differently).
   ([lab](https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.html)).
 - **Older servers store the field and ignore it.**
 
+## Six cases: what should Nightscout do?
+
+To make the contract unambiguous, we would like your answer for each case. "Our default" is what
+our decisions so far would give (write contract, 2026-10-12), chosen to keep today's clients
+working. Where it says *open*, we have no default yet.
+
+| # | case | today | our default | your answer |
+|---|---|---|---|---|
+| 1 | The watch uploads a G7 reading. Later the phone uploads the same reading: same `identifier`, other `device`, time 1.5 s later | v1 entries: two records. API v3: 400 | one record, updated with the later upload's fields (merge on match) | |
+| 2 | Loop re-sends a carb entry after the user edits its amount or time, same `identifier` | v1 treatments: updated. API v3: 400 if the time changed | updated (merge); an explicit `PUT` replaces | |
+| 3 | Loop re-sends an identical record after a timeout | v1 entries and treatments: matched, but a treatment matched by time is answered without `_id` (BF-165). v1 device status: stored again. API v3: matched | success, and the reply carries the stored `_id` and `identifier` | |
+| 4 | A record is deleted, then the same `identifier` arrives again | API v3 (soft delete): the record comes back. v1 (hard delete): a new record | *open* | |
+| 5 | An older app sends no `identifier` | each collection's time key | keep the time key; requiring `identifier` would be announced as a later version boundary | |
+| 6 | One write carries an `_id` and an `identifier` that name different stored records | v1 treatments: `identifier` wins, `_id` is dropped | *open*: `_id` wins (the tie-break above), or `identifier` wins as today | |
+
+For case 1, if you would rather Nightscout keep the first upload unchanged, or refuse the second,
+please say so and what the phone should do next. An error reply makes NightscoutKit treat the
+batch as failed.
+
 ## What we will do
 
 One server change: v1 entries and device status match on `identifier` the way treatments do.
-With it, the swagger fix (BF-169). Both land after 15.0.9, which is frozen as `dev` stands. Could you confirm that the simple contract fits Loop?
-
-## Later, only if needed
-
-- Whether a re-send with changed fields is an edit or a duplicate, and versioning, HealthKit-style.
-- Whether the proposed length limit and character set above become server checks, and when (a
-  character check would reject Loop's current space-containing ids, so it would start as a warning).
-- Per-record results in batch replies.
-- A unique index on `identifier`.
-- API v3's immutable `date` and `device` on an identifier match (400 today, measured in the lab above).
-- Device status's identical-body retry rule, once `identifier` is matched.
+With it, the swagger fix (BF-169). Both land after 15.0.9, which is frozen as `dev` stands. Your
+answers above decide the rest. Later, and only if needed: identifier length and character
+checks (a warning first), results per record in a batch, and a unique index on `identifier`.
 
 Details and evidence are in our
 [notes on your proposal](https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/upstream-asks-loop-identifier/index.html).
