@@ -12,7 +12,7 @@ decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-pla
 **The question.** Software agents built on language models now touch this ecosystem in three
 different ways: they write and change the code of apps and servers, they read a person's data and
 explain it, and they could propose or start a therapy change. Each needs a different assurance, and
-most of what each needs is already written down here or upstream, in separate places. This page
+most of what each needs is already written down here or in cgm-remote-monitor's `docs/proposals`, in separate places. This page
 puts them side by side and names what is missing.
 
 ---
@@ -23,7 +23,7 @@ puts them side by side and names what is missing.
 |---|---|---|---|
 | **Develop** | writes or changes code | each controller project's own contribution rules; review and test work measured in the [evidence](../../00-overview/observations/ECOSYSTEM-EVIDENCE.md#4-where-the-maintenance-time-goes-today); simulator asks drafted (§2) | signed builds, an SBOM or a build-provenance record in any project surveyed |
 | **Interpret** | reads data and explains it | one read role; seven requirements for delegated reads; at least seven MCP servers and two agent tools that read a Nightscout site (§3) | scoped, purpose-bound or audited reads; a hub whose "what is active now" both hubs agree on |
-| **Act** | proposes or starts a therapy change | the upstream RFC's `agent` issuer, `suggest` scope and `DelegationGrant`; D19 instances, roles and command routing, specified (§4) | any path of its own for an agent; a proposal record, an approval bound to the exact change, a command API |
+| **Act** | proposes or starts a therapy change | the earlier draft's `agent` issuer, `suggest` scope and `DelegationGrant`, proposed to be superseded by the authority and commands specifications; D19 instances, roles and command routing, specified (§4) | any path of its own for an agent; an implemented proposal record, approval bound to the exact change, or command API (proposed in the [commands specification](spec/commands.md)) |
 
 ---
 
@@ -95,7 +95,7 @@ record in any project surveyed.
 |---|---|---|
 | The read role is one bit: `readable` is `*:*:read`, every collection, every field, all time | cgm-remote-monitor `lib/authorization/storage.js:235` at `dev` `fade2299`; [configuration and delegation §5.3](../tenancy/nightscout-configuration-and-delegation-2026-09-10.md#53-what-exists-today) | shipping |
 | Seven requirements for a delegated reader: scoped reads enforced in storage, bounded queries, purpose and expiry, answers rather than data, read audit, revocation that is real, minimization at the boundary | [configuration and delegation §5.4](../tenancy/nightscout-configuration-and-delegation-2026-09-10.md#54-what-a-delegation-design-would-have-to-provide) | requirements, stated 2026-09-10; the read role above is still one bit |
-| Delegation grants with scopes, constraints and expiry | [authority model](../../10-domain/authority-model.md) | designed, **not implemented** |
+| A worked delegation grant with constraints, purpose and expiry | [authority model](../../10-domain/authority-model.md#delegation-grants) | proposed, **not implemented** |
 | Tools that read a site for an agent: MCP servers, an agent skill, an AI platform | [evidence §7.1](../../00-overview/observations/ECOSYSTEM-EVIDENCE.md#71-research-tools-elsewhere-in-the-ecosystem) | third-party; the list lives there |
 
 Requirement 6 bears hardest on agents: once a model has read raw data, revoking the grant does not
@@ -154,37 +154,36 @@ An explanation is only as right as the numbers under it. Two layers come before 
 | Six things entity CRUD cannot carry, including the initiator (P5) and the command lifecycle (P6) | [intent landscape §2](nightscout-intent-workflow-landscape-2026-10-09.md#2-where-intent-differs-from-entity-management) | read-derived from Loop, Trio, iAPS, AAPS source |
 | A hub sees acceptance on no command path except AAPS `dev`'s, whose signed requests and correlated acknowledgements go through NS `settings`; elsewhere success shows as the resulting entity and failure as free text, or not at all | [intent landscape §6](nightscout-intent-workflow-landscape-2026-10-09.md#6-the-remote-command-lifecycle); [remote commands](../../10-domain/remote-commands-comparison.md); [remote bolus](../../10-domain/remote-bolus-comparison.md) | read-derived |
 | An automated agent has no path of its own: it holds a caregiver's credential and is indistinguishable from that caregiver (path H) | [technical loops §3](../../60-research/structures-2026-10-17/technical-loops.md#3-the-delegation-loop) | read-derived |
-| `issuerType: human \| controller \| agent`; scopes `read`, `suggest` (`override.suggest # Can propose, human must approve`), `activate`, `deliver`, `admin`; `DelegationGrant {grantId, grantedBy, grantedTo, scopes, constraints {maxOverrideDuration, allowedOverrideTypes, requireConfirmation, expiresAt}, grantedAt, revokedAt}`; append-only audit | upstream `docs/proposals/agent-control-plane-rfc.md` (draft v1.0, January 2026; read at official `b5ddd662`) | proposal, not implemented |
-| Authority levels (agent 50) and a grant with rate limits and time windows | [authority model](../../10-domain/authority-model.md) | designed, **not implemented** |
+| `issuerType: human \| controller \| agent`; scopes `read`, `suggest` (`override.suggest # Can propose, human must approve`), `activate`, `deliver`, `admin`; `DelegationGrant {grantId, grantedBy, grantedTo, scopes, constraints {maxOverrideDuration, allowedOverrideTypes, requireConfirmation, expiresAt}, grantedAt, revokedAt}`; append-only audit | `docs/proposals/agent-control-plane-rfc.md`, part of the earlier draft in cgm-remote-monitor's `docs/proposals` (draft v1.0, January 2026; read at official `b5ddd662`) | proposal, not implemented; proposed to be superseded (§4.2) |
 | D19 instances with leases, roles `source` / `command-sink` / `{value: other, controllerTerm}` ("any other role, such as an agent's"), required provenance `device` or `simulated`, a `device` command-sink only for the product's bound subject or by the owner's transfer (`grantedBy`), and routing that refuses rather than guesses (`no-command-destination`, 409 `ambiguous-command-destination`) | [registration specification §8–§9](spec/registration.md#9-channels-roles-and-provenance) | Specified, not implemented: no hub serves any of this |
 | An earlier controller registration protocol | [controller registration protocol proposal](../../60-research/controller-registration-protocol-proposal.md) | draft v2, 2026-01-17 |
 
-### 4.2 The upstream RFC under D18
+### 4.2 The earlier draft and the rules proposed to supersede it
 
-*What is decided about authority, and what delegation would need, is maintained in the [authority specification](spec/authority.md).*
+The authority and commands specifications are proposed to supersede the agent parts of the earlier
+draft in cgm-remote-monitor's `docs/proposals`; the [control-plane supersession
+map](../tenancy/nightscout-control-plane-reconciliation-2026-09-11.md) covers the rest of it.
 
-D18 makes the hub responsible for observability and the controller responsible for sending,
-syncing and reconciling; the hub records the controller's result and never composes intents
-([execution plan §2.6.1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#261-d18--two-tier-controller-registration)).
-Read against that:
-
-| RFC element | Under D18 and D19 |
+| earlier draft | proposed to be superseded by |
 |---|---|
-| `agent` as an issuer type | prior art: the actor exists |
-| `suggest` scope ("can propose, human must approve") | prior art: the distinction between proposing and acting |
-| `DelegationGrant` shape: who granted, to whom, scopes, constraints, expiry, revocation | prior art: the grant a proposal would cite |
-| append-only audit with issuer and authority | prior art |
-| Conflict rules: override composition inside the hub, "Human > Agent > Controller" | **outside the hub's role.** Composition is controller-specific ([intent landscape §7](nightscout-intent-workflow-landscape-2026-10-09.md#7-composition-who-combines-overlapping-intents)); the [control-plane reconciliation](../tenancy/nightscout-control-plane-reconciliation-2026-09-11.md) records the same |
+| `agent` as an issuer type | [state and intent S8](spec/state-intent.md#2-rules): an agent initiator is `{value: other, controllerTerm}`; [registration §9](spec/registration.md#9-channels-roles-and-provenance): an agent's role is an `other` role a hub lists |
+| `suggest` scope ("can propose, human must approve") | [commands CM11–CM14](spec/commands.md#6-proposals-and-approvals-proposed): a proposal needs `api:proposals:create` and a granted propose role; an approval names the payload hash and needs `api:commands:create`; a `readable` credential can do neither |
+| `DelegationGrant`: who granted, to whom, scopes, constraints, expiry, revocation | [authority §7, DR1–DR7](spec/authority.md#7-delegation-not-decided): requirements; the grant's shape is open ([authority §9](spec/authority.md#9-open) item 6) |
+| append-only audit with issuer and authority | [authority §8](spec/authority.md#8-what-is-recorded-for-audit); [commands CM1](spec/commands.md#4-the-command-record-proposed): a command is recorded before it is sent |
+| conflict rules: override composition inside the hub, "Human > Agent > Controller" | [state and intent S1](spec/state-intent.md#2-rules): the controller composes; the hub records the result (D18) |
 
-The same earlier draft's integration questionnaire has a default answer per controller, read from source, in [integration questionnaire defaults](integration-questionnaire-defaults-2026-10-18.md).
+The same draft's integration questionnaire has a default answer per controller, read from source, in [integration questionnaire defaults](integration-questionnaire-defaults-2026-10-18.md).
 
 **An agent as initiator** (maintainer, 2026-10-18). No `agent` value is added to any initiator
-vocabulary. An agent initiator is written in the open-vocabulary form `{value: other,
-controllerTerm}`, as the [registration specification §9](spec/registration.md#9-channels-roles-and-provenance) does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. Recorded in the [execution
+vocabulary; an agent initiator is written `{value: other, controllerTerm}`
+([state and intent S8](spec/state-intent.md#2-rules)), as an agent's role is
+([registration §9](spec/registration.md#9-channels-roles-and-provenance)). No controller records an
+agent as initiator today. The registrations are built for needs that are latent but measured and
+demonstrated — in the corpus, in controller source and in the labs — not only for what apps send
+now; the open form lets a controller, simulator or lab record an agent initiator today, and a
+shared value can be named once the corpus or a lab shows one in use. Recorded in the [execution
 plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16)
-(row 17). The registration grammar's `initiators.values` take strings in the controller's own
-vocabulary or the `{value: other, controllerTerm}` form, with no shared list
-([state and intent S8](spec/state-intent.md#2-rules); *corrected 2026-10-18 by `SCHEMA-INTENT-GAPS`*).
+(row 17).
 
 ### 4.3 What a proposal lifecycle would add — proposed, not specified
 
@@ -218,7 +217,7 @@ on board — so neither tells an approver that the state the agent read is still
 controller holds.
 
 **What one prototype shows.** A commercial controller prototype implemented the client side of
-the upstream agent control-plane RFC: sources including `agent`, delegation grants with
+the agent control-plane RFC of that earlier draft: sources including `agent`, delegation grants with
 auto-approve types, and an audit log held in memory. Its approval records only the reviewer, the
 time and a note against the proposal id — no payload hash and no state — and its remote-command
 "success" means the HTTP request succeeded, with no acknowledgement or outcome (read-derived from
@@ -286,10 +285,10 @@ person running it, would be the manufacturer of such a function.
   and source read.
 - Whether any controller project would accept an agent as a command sender at all, under any grant.
 - How an agent instance is scoped, limited and revoked: no decision covers it
-  ([process models](../../00-overview/perspective/PROCESS-MODELS.md)).
+  ([authority §9](spec/authority.md#9-open) item 6; [process models](../../00-overview/perspective/PROCESS-MODELS.md)).
 - A shared initiator list (§4.2).
-- A therapy-state version a proposal could bind to (§4.3).
-- Whether the proposal lifecycle of §4.3 belongs in `SPEC-REG-COMMANDS` or in a separate item. *(Decided 2026-10-18, maintainer: in `SPEC-REG-COMMANDS`; §4.3 records it.)*
+- A therapy-state version a proposal could bind to (§4.3): the hub's state version is proposed in [commands CM15](spec/commands.md#6-proposals-and-approvals-proposed); it versions the hub's record, not the controller's state.
 - Read audit, purpose limitation and real revocation for a delegated reader (§3.1).
-- Which of the authority model and upstream `conflict-resolution.md` becomes the source for the
-  grant shape ([hub-sync §5.2](nightscout-hub-sync-architecture-2026-09-11.md#52-liveness-and-channel-ownership--open-here-already-drafted-upstream)).
+- The delegation grant's shape, storage and checks ([authority §9](spec/authority.md#9-open) item 6).
+- Whether outstanding commands on a channel are shown to an approver or included in what the state
+  version check compares ([commands §9](spec/commands.md#9-open) item 7).
