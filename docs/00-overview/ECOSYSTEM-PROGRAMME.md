@@ -1,6 +1,6 @@
 # The Nightscout ecosystem programme — one page for the whole
 
-*Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. For the
+_Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. For the
 foundation board, the maintainers of the ecosystem projects, and the community. **Recommendation**
 (part 3 of the overview; [how the overview is organised](README.md)). **DRAFT PROPOSAL
 for discussion.** Written 2026-09-29 against this repository at `37beb699` and cgm-remote-monitor
@@ -8,7 +8,7 @@ for discussion.** Written 2026-09-29 against this repository at `37beb699` and c
 commons, adding reports and decision support, research tools, and the controller registrations of
 decisions D18–D20. The parts on consent, research access, cross-border data, decision support and
 regulatory terms need review by the foundation's counsel and a privacy, quality or clinical
-professional before any decision rests on them (§9). Nothing here is decided.*
+professional before any decision rests on them (§9). Nothing here is decided._
 
 ## 1. What this page is
 
