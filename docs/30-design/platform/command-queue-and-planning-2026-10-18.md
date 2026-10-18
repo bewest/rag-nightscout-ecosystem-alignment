@@ -3,7 +3,7 @@
 *What this is: a design note (contributor-facing). Read after [commands](spec/commands.md) and the
 [control-loop analysis](spec/control-loops.md); it prepares the maintainer's choices for commands
 §9 item 7 and the use cases that drive them.* **Snapshot — describes 2026-10-18. Status: proposed;
-nothing here is in a specification yet.** Every claim about a controller is **read-derived** from
+the maintainer's answers of 2026-10-18 are in §5; nothing here is in a specification yet.** Every claim about a controller is **read-derived** from
 source at the release named; nothing was run.
 
 **The question.** The control-loop analysis found that the command contract has no list of
@@ -163,21 +163,29 @@ the policy cases need *intents and definition* at approval and leave doses to th
 the plan runs. A hub-side "refuse if dosed since" check helps only the moment-level proposals
 (A1, A2, P1), and is limited there by the upload lag.
 
-## 5. Choices for the maintainer
+## 5. Decided and open
+
+**The maintainer's answers, 2026-10-18:**
 
 1. **Enact once:** adopt the controller rule of §1, with the hub's `commandId` carried to the
-   controller.
-2. **The outstanding list and cancel:** add both to commands as queue operations.
-3. **Where plans run:** on the controller, as a controller-owned recurring intent with triggers and
-   bounds (recommended), or on the hub.
-4. **The dose check:** for moment-level proposals only, a hub refusal when doses or carbs arrived
-   since the proposal; or leave it to the controller and show doses since in the outstanding
-   list.
-5. **Several orchestrators on one item:** whether an item is revised in place with its history or
-   replaced by a new proposal; whether a review can be required before approval; and whether the
-   person may always withdraw or cancel any item on their own therapy.
-6. **Out-of-band data:** agents keep it; the hub receives proposals, confirmations and minimised
-   evaluations only.
-7. **Journeys:** write PL1–PL5 and the moment cases as journeys in the format of the
+   controller; specified as [CM21](spec/commands.md#7-delivery-in-each-mode-proposed).
+2. **Plans run on the controller, and the hub mirrors them.** The controller holds and runs an
+   approved plan; the hub keeps a read-only copy of the plan and of each occurrence, so followers
+   and reviewers see the policy as well as the moments.
+3. **Several orchestrators on one item:** a plan or proposal can require named evaluations (a risk
+   check, a human reviewer) before it can be approved; the person can always withdraw or cancel
+   any item on their own therapy, whoever proposed it; followers can read the queue (proposals,
+   plans and commands) without acting on it.
+4. **Revision:** an adjustment is a new proposal. A plan may be accepted in parts: the approver
+   accepts some of its elements and not others, and the approval names what it accepted.
+5. **Next:** write PL1–PL5 and the moment cases as journeys in the format of the
    [15.0.9 journey map](../../60-research/remedial/journey-map-15.0.9.md), with the rules and
    cases each step needs.
+
+**Still open:**
+
+- **The dose check** for moment-level proposals: a hub refusal when doses or carbs arrived since
+  the proposal, or leave it to the controller and show doses since in the outstanding list. The
+  journeys are meant to settle it.
+- **Out-of-band data:** agents keep it; the hub receives proposals, confirmations and minimised
+  evaluations only.

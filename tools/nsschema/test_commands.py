@@ -98,3 +98,13 @@ def test_approved_command_carries_approved_hash(cid):
         if call["kind"] == "approve" and got.get("commandId"):
             made = result["hub"].commands[got["commandId"]]
             assert made["payloadHash"] == commands.payload_hash(call["approves"])
+
+
+@pytest.mark.parametrize("cid", sorted(CASES))
+def test_never_enacted_twice(cid):
+    # CM21: a controller instance enacts each commandId at most once.
+    case = CASES[cid]
+    enacted = [(call["instance"], call["command"])
+               for call, got in zip(case["calls"], commands.run(case)["calls"])
+               if call["kind"] == "enact" and got.get("state") == "succeeded"]
+    assert len(enacted) == len(set(enacted)), enacted

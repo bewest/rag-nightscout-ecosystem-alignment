@@ -48,6 +48,7 @@ calls:
      checked: {...},                   # optional: the payload whose hash the report names; default the command's
      reason: limit}                    # optional
   - {at: 15, kind: read, tenant: A, command: c1}
+  - {at: 16, kind: restart, instance: i-ctl-a}                # the controller restarts (CM21)
   - {at: 20, kind: propose, tenant: A, subject: s-agent, instance: i-agent, channel: override,
      product: ControllerA,             # optional
      instanceId: i-ctl-a,              # optional: the instance the proposer read (CM13)
@@ -68,6 +69,8 @@ expected:
     - {sent: false, reason: withheld | expired | not-pending}
     - {status: 200, commands: [c1]}                                 # fetch
     - {state: succeeded} | {state: refused, reason: hash-mismatch}  # enact: the controller's check
+    - {state: ignored, reason: duplicate}                           # enact: a commandId already decided (CM21)
+    - {}                                                            # restart
     - {status: 200} | {status: 403, code: not-registration-owner}   # report
     - {status: 200, state: fetched} | {status: 404}                 # read
     - {status: 201, proposalId: p1}                                 # propose

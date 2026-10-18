@@ -195,10 +195,10 @@ ucas:
     text: One command is delivered more than once, by a push and again by a fetch that returns sent commands, and the controller enacts it each time.
     hazards: [HAZ-1]
     severity: S4
-    constraints: [CM18]
-    status: gap
-    open: commands §9
-    note: Delivery is at least once by design (CM18 returns pending and sent commands). No rule requires a controller to enact one commandId at most once across restarts; Loop's de-duplication of its remote route is in memory (commands §8).
+    constraints: [CM18, CM21]
+    status: covered
+    verification: [commands/enact-push-then-fetch-once, commands/enact-after-restart-once, commands/enact-refused-then-redelivered-ignored, tools/nsschema/test_commands.py::test_never_enacted_twice]
+    note: Delivery is at least once by design (CM18); CM21 makes the controller decide each commandId once, across restarts. Today's controllers meet it in different ways (commands §8).
   - id: UCA-CMD-007
     action: CA-CMD-DELIVER
     type: provided

@@ -1,0 +1,85 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §7. Times are seconds; expectations authored by hand.
+id: enact-push-then-fetch-once
+title: A command pushed and then fetched is enacted once
+rules:
+- CM21
+- CM18
+description: c1 is pushed (sent), then returned again by a fetch, as CM18 allows;
+  the controller enacts it on the first delivery and ignores the second.
+control: enact-identical-payload-succeeds
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 100
+- at: 11
+  kind: push
+  bound: A
+  command: c1
+  via: socket
+- at: 12
+  kind: enact
+  instance: i-ctl-a
+  command: c1
+  received:
+    action: start
+    preset: example
+- at: 20
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+- at: 21
+  kind: enact
+  instance: i-ctl-a
+  command: c1
+  received:
+    action: start
+    preset: example
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+  - sent: true
+  - state: succeeded
+  - status: 200
+    commands:
+    - c1
+  - state: ignored
+    reason: duplicate
+  commands:
+    c1:
+      state: fetched
+      destination: i-ctl-a

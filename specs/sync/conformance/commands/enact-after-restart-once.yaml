@@ -1,0 +1,82 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §7. Times are seconds; expectations authored by hand.
+id: enact-after-restart-once
+title: A command delivered again after the controller restarts is not enacted again
+rules:
+- CM21
+description: The controller enacts c1, restarts, and receives c1 again before its
+  expiry; what it decided survives the restart.
+control: enact-identical-payload-succeeds
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 100
+- at: 20
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+- at: 21
+  kind: enact
+  instance: i-ctl-a
+  command: c1
+  received:
+    action: start
+    preset: example
+- at: 30
+  kind: restart
+  instance: i-ctl-a
+- at: 40
+  kind: enact
+  instance: i-ctl-a
+  command: c1
+  received:
+    action: start
+    preset: example
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+  - status: 200
+    commands:
+    - c1
+  - state: succeeded
+  - {}
+  - state: ignored
+    reason: duplicate
+  commands:
+    c1:
+      state: fetched
+      destination: i-ctl-a

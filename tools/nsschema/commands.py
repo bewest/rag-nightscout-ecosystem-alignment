@@ -69,6 +69,8 @@ class Hub:
         self.commands = {}
         self.proposals = {}
         self.request_ids = {}
+        # CM21: what each controller instance has decided, kept across restarts.
+        self.decided = {}
 
     def _subject(self, call):
         subject = self.case["subjects"].get(call["subject"])
@@ -176,14 +178,23 @@ class Hub:
         return {"status": 200, "commands": got}
 
     def enact(self, call):
-        """CM10: the controller's own checks before it enacts."""
+        """CM10 and CM21: the controller's own checks before it enacts. A commandId
+        the instance has already decided is not decided again."""
         c = self.commands[call["command"]]
+        decided = self.decided.setdefault(call["instance"], set())
+        if call["command"] in decided:
+            return {"state": "ignored", "reason": "duplicate"}
+        decided.add(call["command"])
         received = call.get("received", c["payload"])
         if payload_hash(received) != c["payloadHash"]:
             return {"state": "refused", "reason": "hash-mismatch"}
         if call["at"] >= c["expiresAt"]:
             return {"state": "refused", "reason": "expired"}
         return {"state": "succeeded"}
+
+    def restart(self, call):
+        """CM21: a controller restart; what it decided is kept."""
+        return {}
 
     def report(self, call):
         c = self.commands.get(call["command"])

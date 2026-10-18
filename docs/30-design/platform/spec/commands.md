@@ -6,7 +6,7 @@ and L5 of the [platform index](../README.md); terms are in the [glossary](glossa
 and the maintainer's decisions of 2026-10-14 to 2026-10-18 recorded with them; the proposal
 record was folded into this item on 2026-10-18. Queue: `SPEC-REG-COMMANDS`.*
 
-*Specification 5 of 7 in the [reading order](../README.md#reading-order); after state and intent, whose acceptance policy (S10, S11) it builds on, and before sync-transport. Expect where a command goes, the command path today, rules CM1–CM20 for the command record, outcomes, proposals and delivery in each mode, compatibility with each controller, and the conformance cases.*
+*Specification 5 of 7 in the [reading order](../README.md#reading-order); after state and intent, whose acceptance policy (S10, S11) it builds on, and before sync-transport. Expect where a command goes, the command path today, rules CM1–CM21 for the command record, outcomes, proposals and delivery in each mode, compatibility with each controller, and the conformance cases.*
 
 How a request to change therapy reaches a controller through a hub, what the hub records about it,
 how the controller's outcome comes back, and the proposal and approval that can stand in front of
@@ -158,6 +158,7 @@ propose → (evaluate) → approve | reject | withdraw | expire → command (§4
 | CM18 | **Fetch.** The destination reads its `pending` and `sent` commands with its own credential. This works the same in both modes, because the request is bound to the tenant; it is the path a hub must offer. A fetch returns only commands whose destination is that instance; a fetch naming an instance that is not the credential's own is 403 `not-registration-owner`, and an instance that no longer holds the role gets an empty list. |
 | CM19 | **Push only inside a bound request.** A push (a socket event to the destination, or a platform push such as APNs) is sent only inside a request already bound to the command's tenant, such as the request that accepted the command or approval, or a later request from the destination. Under `TENANCY_MODE=multi`, nothing is sent from a context with no tenant bound, such as the load cycle; an emission there, or one bound to another tenant, is withheld and the command stays `pending` until it is fetched. Under `single` the one tenant is always bound. |
 | CM20 | **Credentials for a platform push are the tenant's.** A platform push uses credentials held by the command's tenant, never the deployment's. |
+| CM21 | **Enacted once.** Delivery is at least once: a push may carry a command that a fetch returns again (CM18), and a platform may deliver a push twice. Every push and fetch carries the `commandId`. The controller decides each `commandId` once: it records the id when it first enacts or refuses the command, keeps that record across restarts until `expiresAt` by its own clock, and answers any later delivery of the id without enacting it and without a second outcome report. A sender who sends again without the same `requestId` makes a new command (CM4), which this rule does not catch. |
 
 What a mode changes beyond these, such as the storage key and the credential kinds a command
 record names, is the registration contract per mode (`SPEC-REG-MODES`, not written).
@@ -185,6 +186,15 @@ What in this table bears on the rules:
   bolus, so a refused bolus leaves carbs entered and the reply says failed. A single final state
   cannot say which part happened (§9).
 - **No controller computes a payload hash** (CM10); each checks its own authentication instead.
+- **No released controller de-duplicates by a hub's command id** (CM21). Loop's bolus and carbs
+  are single use through the one-time password, stored across restarts; its overrides are
+  de-duplicated in memory only, so a replay after a restart starts the override again. Trio
+  refuses a bolus when boluses since the command's own time reach 20 % of it, refuses a meal
+  when newer carbs exist, and has no check for overrides or temporary targets; its `dev` branch
+  carries a `command_id` it does not yet check. AndroidAPS client control's per-client counter
+  must strictly increase and is stored, which already meets CM21. The unreleased Remote Commands
+  2 controller stores the ids it handled, as CM21 asks, without pruning them (read at Loop
+  v3.14.9, Trio v1.0.2, AndroidAPS 4.0.0-rc1, 2026-10-18).
 - **Expiry is not uniform.** Loop checks an `expiration` only when one is sent; Trio checks a
   fixed window around the sender's time; AndroidAPS's `validUntil` is unbounded unless the sender
   sets it; Remote Commands 2 records carry none. CM3 requires one of every command.
@@ -217,9 +227,6 @@ What in this table bears on the rules:
    §7](authority.md#7-delegation-not-decided).
 6. **The registration contract per tenancy mode** (`SPEC-REG-MODES`).
 7. **Found by the [control-loop analysis](control-loops.md):**
-   - **Enacting a command once** (UCA-CMD-006). Delivery is at least once: a push may carry a
-     command that a fetch returns again (CM18). No rule requires a controller to enact one
-     `commandId` at most once, or to keep that record across a restart.
    - **Outstanding commands on a channel** (UCA-CMD-001, UCA-PROP-007). A sender or approver is
      not shown the channel's commands that are not final, and the state version changes only when
      the controller's records arrive (A12), so two approvals in that window both pass CM15. The
@@ -249,10 +256,11 @@ What in this table bears on the rules:
 The routing cases are part of the registration suite (`tools/nsschema/test_registration_instances.py`);
 the rest are checked by `tools/nsschema/test_commands.py` against `tools/nsschema/commands.py`,
 which also checks on every case that nothing reaches another tenant, nothing is sent or fetched
-at or after its expiry, nothing is pushed unbound under `multi`, and an approved command carries
-the payload hash its approval named (the case's `received` payload stands for what was delivered). CM20 has no case; CM17 has one, `sent-and-fetched-are-not-success`.
+at or after its expiry, nothing is pushed unbound under `multi`, an approved command carries
+the payload hash its approval named (the case's `received` payload stands for what was delivered),
+and no instance enacts a command twice (CM21). CM20 has no case; CM17 has one, `sent-and-fetched-are-not-success`.
 
-115 cases.
+119 cases.
 
 <!-- BEGIN GENERATED: commands-cases (tools/nsschema/spec_cases.py) -->
 | case | shows | expected | control |
@@ -286,8 +294,12 @@ the payload hash its approval named (the case's `received` payload stands for wh
 | `commands/approved-command-has-proposal-expiry` | The command an approval creates expires when the proposal would have | rules CM13, CM3 |  |
 | `commands/command-without-permission` | A sender without api:commands:create is refused and not recorded | rules CM5 | `route-to-holder` |
 | `commands/enact-after-expiry-refused` | The controller refuses a command past expiresAt by its own clock | rules CM10 | `enact-identical-payload-succeeds` |
+| `commands/enact-after-restart-once` | A command delivered again after the controller restarts is not enacted again | rules CM21 | `enact-identical-payload-succeeds` |
 | `commands/enact-hash-mismatch-refused` | The controller refuses a received payload whose hash differs | rules CM10, CM7, CM8 | `enact-identical-payload-succeeds` |
 | `commands/enact-identical-payload-succeeds` | The controller enacts a payload whose hash matches | rules CM10 |  |
+| `commands/enact-push-then-fetch-once` | A command pushed and then fetched is enacted once | rules CM21, CM18 | `enact-identical-payload-succeeds` |
+| `commands/enact-refused-then-redelivered-ignored` | A command refused on its first delivery is not enacted on a later one | rules CM21 | `enact-identical-payload-succeeds` |
+| `commands/enact-two-commands-same-payload` | Two commands with the same payload are two commands | rules CM21, CM4 | `enact-push-then-fetch-once` |
 | `commands/evaluate-by-command-sender` | A subject holding api:commands:create may read and so evaluate | rules CM16, CM11 |  |
 | `commands/evaluate-without-read` | A subject that may not read the proposal cannot evaluate it | rules CM16, CM11 | `evaluation-does-not-change-proposal` |
 | `commands/evaluation-does-not-change-proposal` | An evaluation is evidence and never changes the proposal | rules CM16 |  |

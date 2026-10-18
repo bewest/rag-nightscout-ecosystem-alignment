@@ -20,8 +20,8 @@ then read as the constraints that prevent them. Where no rule prevents one, the 
 gap and the specification lists it as open.
 
 Status: the loops are drawn from the specifications, which are proposed or specified and not
-implemented. Of 72 entries, 41 are covered by a rule and a case, 6 are the controller's
-responsibility (D18), 3 have a rule and no case, and 22 are gaps, each listed in its
+implemented. Of 72 entries, 42 are covered by a rule and a case, 6 are the controller's
+responsibility (D18), 3 have a rule and no case, and 21 are gaps, each listed in its
 specification's open items.
 
 ## 1. Files
@@ -137,7 +137,7 @@ flowchart LR
 | UCA-CMD-003 | timing | A command is enacted long after it was sent, when the sender's reason for it no longer holds. | HAZ-1 | S3 | CM3, CM10 | covered |
 | UCA-CMD-004 | provided | A command reaches an instance other than the live device holder of the channel's command sink, such as a lapsed former holder, the newest instance, or a simulator. | HAZ-1 | S4 | commands §2, CM1, CM2 | covered |
 | UCA-CMD-005 | provided | A command reaches an instance on another tenant, or a push for one tenant is sent with another tenant's or the deployment's credentials. | HAZ-4, HAZ-1 | S4 | CM6, CM19, CM20 | covered |
-| UCA-CMD-006 | provided | One command is delivered more than once, by a push and again by a fetch that returns sent commands, and the controller enacts it each time. | HAZ-1 | S4 | CM18 | gap: commands §9 |
+| UCA-CMD-006 | provided | One command is delivered more than once, by a push and again by a fetch that returns sent commands, and the controller enacts it each time. | HAZ-1 | S4 | CM18, CM21 | covered |
 | UCA-CMD-007 | provided | The payload a controller receives differs from the one the sender sent. | HAZ-1 | S4 | CM5, CM10 | covered |
 | UCA-CMD-008 | not-provided | A push is lost and the destination never receives the command, while the sender reads sent as delivered. | HAZ-2, HAZ-3 | S2 | CM17, CM18 | covered |
 | UCA-CMD-009 | timing | A command is sent or fetched at or after its expiry. | HAZ-1 | S3 | CM3 | covered |
@@ -302,7 +302,7 @@ vocabulary says what each one has to get right.
 | Instance leases | a heartbeat: each renewal is feedback that the instance is alive; a lapse removes its roles | a lease is minutes long, longer than moving a pump to another phone takes, so a command sent in that window reaches the old phone; what holds then is routing once, the old phone's controller reporting failed, and the owner's transfer-role; a lapsed holder is never a destination | [registration §8](registration.md#8-instances), UCA-ROUTE-005, UCA-ROUTE-008 |
 | The state version | optimistic concurrency, like an etag, on the hub's record of what a controller reported | it is a sensor reading with a lag of one upload cycle; it covers intents, not doses or carbs; commands approved and not yet enacted are outside it | [A12](state-intent.md#61-rules), CM15, UCA-PROP-007, UCA-PROP-012, FB-STATE-006 |
 | The command states | the hub's model of an actuator it cannot see | a state must never say less than the hub knows: a command that was handed over is `unconfirmed`, never `expired`, because a sender acts on the state | [commands §4](commands.md#4-the-command-record-proposed), FB-CMD-001 |
-| Delivery by push and fetch | two actuators for one action | at least once means duplicates; the receiving controller has to enact one command once | CM18, UCA-CMD-006 |
+| Delivery by push and fetch | two actuators for one action | at least once means duplicates; the receiving controller decides each command once (CM21) | CM18, CM21, UCA-CMD-006 |
 | Prepare and commit | feedback before action: the controller computes and caps a dose, then a second message commits it, as AndroidAPS `dev` does | a controller check before approval would give the approver the controller's own model, not the hub's | [commands §9](commands.md#9-open) item 2 |
 | Several controllers of one pump | the person, the algorithm, caregivers and agents all act on one controlled process | conflicting actions are resolved by one arbiter, the controller; the hub reports overlaps and never resolves them | [S1](state-intent.md#2-rules), [A9](state-intent.md#61-rules), FB-STATE-003 |
 | Reconciliation (from Kubernetes) | a controller drives its registration and instances toward what it declares; the hub records what it granted | reconciliation stops at the hub's records: the hub never reconciles therapy toward a desired state | [platform index](../README.md#ideas-borrowed-from-kubernetes), D18 |
@@ -310,11 +310,9 @@ vocabulary says what each one has to get right.
 
 ## 6. What the analysis found
 
-22 gaps, each listed in its specification's open items:
+21 gaps, each listed in its specification's open items:
 
 - **Commands** ([§9](commands.md#9-open)):
-  - a command can be enacted twice, because delivery is at least once and no rule asks a
-    controller to enact a `commandId` once (UCA-CMD-006);
   - a sender or approver does not see a channel's outstanding commands, so a second command, or
     a second approval inside the controller's upload lag, is enacted as well (UCA-CMD-001,
     UCA-PROP-007);

@@ -141,8 +141,11 @@ endpoint. Its nineteen settings, with their status in the corpus:
 | derivable | `maxDailyBasal` |
 | absent | `automaticBolusApplicationFactor`, `carbAbsorptionModel`, `gradualTransitionsThreshold`, `includePositiveVelocityAndRC`, `maxActiveInsulinMultiplier`, `maxIob`, `microBolusAllowed`, `recommendationInsulinModel`, `useIntegralRetrospectiveCorrection`, `useMidAbsorptionISF` |
 
-Dosing safety limits reach Nightscout from Loop alone, as `profile.loopSettings.*`; no oref0-family
-controller records `maxIob` there. This is read from controller source together with the corpus:
+Dosing safety limits reach Nightscout as settings from Loop, as `profile.loopSettings.*`; no
+oref0-family controller records `maxIob` there. An oref0 rig uploads its preferences, `max_iob`
+among them, with each device status (`devicestatus.preferences`; oref0 `d219baf9`
+`bin/ns-status.js:40-49,175-177`): configuration repeated every cycle, not a snapshot published
+on change (R5). This is read from controller source together with the corpus:
 the corpus alone would credit Trio with limits it never writes, and every AndroidAPS statement on
 this page is read from source. A registration's `settings.fields` may name a
 setting or declare it typed, by `typeRef` to its `ControllerSettings` definition
