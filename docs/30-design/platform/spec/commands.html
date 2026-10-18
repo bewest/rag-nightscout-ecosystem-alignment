@@ -2333,6 +2333,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -3312,6 +3316,62 @@
   
 
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../command-journeys-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command journeys: plans, confirmations and moment commands for one pump with many orchestrators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../command-queue-and-planning-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command queue and planning: outstanding commands, enacting once, and plans confirmed in advance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -5433,13 +5493,13 @@
 
 
 <h1 id="l3-and-l5-commands-how-a-request-or-a-proposal-reaches-a-controller-and-how-its-outcome-comes-back">L3 and L5 Commands: how a request or a proposal reaches a controller, and how its outcome comes back<a class="headerlink" href="#l3-and-l5-commands-how-a-request-or-a-proposal-reaches-a-controller-and-how-its-outcome-comes-back" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>82c610add</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>fa74d7def</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>9736bd65</code> (2026-10-18). Layers L3
 and L5 of the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. Decisions:
 <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">D18 and D19</a>
 and the maintainer's decisions of 2026-10-14 to 2026-10-18 recorded with them; the proposal
 record was folded into this item on 2026-10-18. Queue: <code>SPEC-REG-COMMANDS</code>.</em></p>
-<p><em>Specification 5 of 7 in the <a href="../index.html#reading-order">reading order</a>; after state and intent, whose acceptance policy (S10, S11) it builds on, and before sync-transport. Expect where a command goes, the command path today, rules CM1–CM20 for the command record, outcomes, proposals and delivery in each mode, compatibility with each controller, and the conformance cases.</em></p>
+<p><em>Specification 5 of 7 in the <a href="../index.html#reading-order">reading order</a>; after state and intent, whose acceptance policy (S10, S11) it builds on, and before sync-transport. Expect where a command goes, the command path today, rules CM1–CM21 for the command record, outcomes, proposals and delivery in each mode, compatibility with each controller, and the conformance cases.</em></p>
 <p>How a request to change therapy reaches a controller through a hub, what the hub records about it,
 how the controller's outcome comes back, and the proposal and approval that can stand in front of
 a command. The hub routes and records; it never decides whether a change is safe, never alters
@@ -5774,6 +5834,10 @@ reported as success or as failure.</p>
 <td>CM20</td>
 <td><strong>Credentials for a platform push are the tenant's.</strong> A platform push uses credentials held by the command's tenant, never the deployment's.</td>
 </tr>
+<tr>
+<td>CM21</td>
+<td><strong>Enacted once.</strong> Delivery is at least once: a push may carry a command that a fetch returns again (CM18), and a platform may deliver a push twice. Every push and fetch carries the <code>commandId</code>. The controller decides each <code>commandId</code> once: it records the id when it first enacts or refuses the command, keeps that record across restarts until <code>expiresAt</code> by its own clock, and answers any later delivery of the id without enacting it and without a second outcome report. A sender who sends again without the same <code>requestId</code> makes a new command (CM4), which this rule does not catch.</td>
+</tr>
 </tbody>
 </table>
 <p>What a mode changes beyond these, such as the storage key and the credential kinds a command
@@ -5851,6 +5915,15 @@ was run.</p>
   bolus, so a refused bolus leaves carbs entered and the reply says failed. A single final state
   cannot say which part happened (§9).</li>
 <li><strong>No controller computes a payload hash</strong> (CM10); each checks its own authentication instead.</li>
+<li><strong>No released controller de-duplicates by a hub's command id</strong> (CM21). Loop's bolus and carbs
+  are single use through the one-time password, stored across restarts; its overrides are
+  de-duplicated in memory only, so a replay after a restart starts the override again. Trio
+  refuses a bolus when boluses since the command's own time reach 20 % of it, refuses a meal
+  when newer carbs exist, and has no check for overrides or temporary targets; its <code>dev</code> branch
+  carries a <code>command_id</code> it does not yet check. AndroidAPS client control's per-client counter
+  must strictly increase and is stored, which already meets CM21. The unreleased Remote Commands
+  2 controller stores the ids it handled, as CM21 asks, without pruning them (read at Loop
+  v3.14.9, Trio v1.0.2, AndroidAPS 4.0.0-rc1, 2026-10-18).</li>
 <li><strong>Expiry is not uniform.</strong> Loop checks an <code>expiration</code> only when one is sent; Trio checks a
   fixed window around the sender's time; AndroidAPS's <code>validUntil</code> is unbounded unless the sender
   sets it; Remote Commands 2 records carry none. CM3 requires one of every command.</li>
@@ -5883,9 +5956,6 @@ was run.</p>
    §7</a>.</li>
 <li><strong>The registration contract per tenancy mode</strong> (<code>SPEC-REG-MODES</code>).</li>
 <li><strong>Found by the <a href="control-loops.html">control-loop analysis</a>:</strong></li>
-<li><strong>Enacting a command once</strong> (UCA-CMD-006). Delivery is at least once: a push may carry a
-     command that a fetch returns again (CM18). No rule requires a controller to enact one
-     <code>commandId</code> at most once, or to keep that record across a restart.</li>
 <li><strong>Outstanding commands on a channel</strong> (UCA-CMD-001, UCA-PROP-007). A sender or approver is
      not shown the channel's commands that are not final, and the state version changes only when
      the controller's records arrive (A12), so two approvals in that window both pass CM15. The
@@ -5914,9 +5984,10 @@ was run.</p>
 <p>The routing cases are part of the registration suite (<code>tools/nsschema/test_registration_instances.py</code>);
 the rest are checked by <code>tools/nsschema/test_commands.py</code> against <code>tools/nsschema/commands.py</code>,
 which also checks on every case that nothing reaches another tenant, nothing is sent or fetched
-at or after its expiry, nothing is pushed unbound under <code>multi</code>, and an approved command carries
-the payload hash its approval named (the case's <code>received</code> payload stands for what was delivered). CM20 has no case; CM17 has one, <code>sent-and-fetched-are-not-success</code>.</p>
-<p>115 cases.</p>
+at or after its expiry, nothing is pushed unbound under <code>multi</code>, an approved command carries
+the payload hash its approval named (the case's <code>received</code> payload stands for what was delivered),
+and no instance enacts a command twice (CM21). CM20 has no case; CM17 has one, <code>sent-and-fetched-are-not-success</code>.</p>
+<p>119 cases.</p>
 <!-- BEGIN GENERATED: commands-cases (tools/nsschema/spec_cases.py) -->
 <table>
 <thead>
@@ -6103,6 +6174,12 @@ the payload hash its approval named (the case's <code>received</code> payload st
 <td><code>enact-identical-payload-succeeds</code></td>
 </tr>
 <tr>
+<td><code>commands/enact-after-restart-once</code></td>
+<td>A command delivered again after the controller restarts is not enacted again</td>
+<td>rules CM21</td>
+<td><code>enact-identical-payload-succeeds</code></td>
+</tr>
+<tr>
 <td><code>commands/enact-hash-mismatch-refused</code></td>
 <td>The controller refuses a received payload whose hash differs</td>
 <td>rules CM10, CM7, CM8</td>
@@ -6113,6 +6190,24 @@ the payload hash its approval named (the case's <code>received</code> payload st
 <td>The controller enacts a payload whose hash matches</td>
 <td>rules CM10</td>
 <td></td>
+</tr>
+<tr>
+<td><code>commands/enact-push-then-fetch-once</code></td>
+<td>A command pushed and then fetched is enacted once</td>
+<td>rules CM21, CM18</td>
+<td><code>enact-identical-payload-succeeds</code></td>
+</tr>
+<tr>
+<td><code>commands/enact-refused-then-redelivered-ignored</code></td>
+<td>A command refused on its first delivery is not enacted on a later one</td>
+<td>rules CM21</td>
+<td><code>enact-identical-payload-succeeds</code></td>
+</tr>
+<tr>
+<td><code>commands/enact-two-commands-same-payload</code></td>
+<td>Two commands with the same payload are two commands</td>
+<td>rules CM21, CM4</td>
+<td><code>enact-push-then-fetch-once</code></td>
 </tr>
 <tr>
 <td><code>commands/evaluate-by-command-sender</code></td>

@@ -2333,6 +2333,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -3097,6 +3101,62 @@
   
 
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="command-journeys-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command journeys: plans, confirmations and moment commands for one pump with many orchestrators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="command-queue-and-planning-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command queue and planning: outstanding commands, enacting once, and plans confirmed in advance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -5680,7 +5740,7 @@ the item that specifies commands can take it or leave it.</p>
 </tr>
 <tr>
 <td>approve or reject</td>
-<td>a person holding the grant</td>
+<td>a subject that may send the command itself, never the one that proposed it (<a href="spec/commands.html#6-proposals-and-approvals-proposed">commands CM14</a>)</td>
 <td>an approval names the payload hash, so it binds to that exact change and no other; an expired proposal cannot be approved</td>
 </tr>
 <tr>
@@ -5719,7 +5779,9 @@ the <a href="spec/commands.html">commands specification</a> §4–§7 (<code>SPE
 was folded in by the maintainer on 2026-10-18), with cases for an approval bound to one payload
 hash, an expired proposal, and a proposal from a credential with no propose role. Its CM15 takes
 the open question above: an approval is refused when the hub's state version differs from the
-proposal's, which still says nothing about the controller's own state.</p>
+proposal's, which still says nothing about the controller's own state. What controllers do with
+outstanding commands, enacting each once (CM21), and plans confirmed in advance are in the
+<a href="command-queue-and-planning-2026-10-18.html">command queue and planning</a> design note.</p>
 <h2 id="5-evaluating-an-algorithm-before-it-acts">5. Evaluating an algorithm before it acts<a class="headerlink" href="#5-evaluating-an-algorithm-before-it-acts" title="Permanent link">&para;</a></h2>
 <p>An agent that proposes a change, and a developer who changes an algorithm, both need to know what
 the algorithm does with the inputs it gets.</p>

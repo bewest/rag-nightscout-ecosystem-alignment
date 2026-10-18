@@ -2333,6 +2333,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -3340,6 +3344,62 @@
   
 
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../command-journeys-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command journeys: plans, confirmations and moment commands for one pump with many orchestrators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../command-queue-and-planning-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command queue and planning: outstanding commands, enacting once, and plans confirmed in advance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -5489,7 +5549,7 @@
 
 
 <h1 id="l3-state-and-intent-what-was-requested-applied-and-active-who-started-it-and-why-it-ended">L3 State and intent: what was requested, applied and active, who started it, and why it ended<a class="headerlink" href="#l3-state-and-intent-what-was-requested-applied-and-active-who-started-it-and-why-it-ended" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>82c610add</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>fa74d7def</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>92a7d31b</code> (2026-10-18). Layer L3 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. The grammar members
 named here are part of the <a href="registration.html">registration specification</a> §3; how a hub accepts
@@ -5608,7 +5668,7 @@ read from Loop, Trio, iAPS and AndroidAPS source and measured where it says so.<
 </tr>
 <tr>
 <td>S11</td>
-<td><strong>The controller's command contract.</strong> <code>commands[]</code> declares each path by which commands reach the controller: <code>transport</code> (<code>apns</code>, <code>sms</code>, <code>nightscout-settings</code>, <code>nightscout-treatment</code>, or <code>{value: other, controllerTerm}</code>), <code>availability</code> (the AndroidAPS <code>nightscout-settings</code> path is dev-only), <code>hubInPath</code> (<code>no</code>, <code>optional</code>, <code>yes</code>), <code>authorisation</code>, <code>expiry</code>, <code>acknowledgement</code> (<code>states</code>, <code>replyChannel</code>, <code>correlationId</code>, <code>failureRecord</code>) and <code>evidence</code>. The hub's own command API and the proposal record in front of a command are the <a href="commands.html">commands specification</a>.</td>
+<td><strong>The controller's command contract.</strong> <code>commands[]</code> declares each path by which commands reach the controller: <code>transport</code> (<code>apns</code>, <code>sms</code>, <code>nightscout-settings</code>, <code>nightscout-treatment</code>, or <code>{value: other, controllerTerm}</code>), <code>availability</code> (the AndroidAPS <code>nightscout-settings</code> path is <code>dev-only</code>: in the 4.0.0 prereleases and absent from the latest release, 3.4.2.6), <code>hubInPath</code> (<code>no</code>, <code>optional</code>, <code>yes</code>), <code>authorisation</code>, <code>expiry</code>, <code>acknowledgement</code> (<code>states</code>, <code>replyChannel</code>, <code>correlationId</code>, <code>failureRecord</code>) and <code>evidence</code>. The hub's own command API and the proposal record in front of a command are the <a href="commands.html">commands specification</a>.</td>
 </tr>
 <tr>
 <td>S12</td>
@@ -6007,7 +6067,7 @@ resolved like the profile switch (<code>AppRepository.kt:451-458</code>).</p>
 <td>no</td>
 </tr>
 <tr>
-<td>AAPSClient → AndroidAPS (dev only, Nightscout <code>settings</code>)</td>
+<td>AAPSClient → AndroidAPS (4.0.0 prereleases, Nightscout <code>settings</code>)</td>
 <td>yes, signed</td>
 <td><code>Executing</code></td>
 <td><code>Done/Ok</code></td>

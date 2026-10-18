@@ -2333,6 +2333,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -3373,6 +3377,62 @@
   
 
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../command-journeys-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command journeys: plans, confirmations and moment commands for one pump with many orchestrators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../command-queue-and-planning-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command queue and planning: outstanding commands, enacting once, and plans confirmed in advance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -5555,7 +5615,7 @@
 
 
 <h1 id="l2l5-control-loops-what-each-mechanism-controls-and-the-unsafe-control-actions-its-rules-prevent">L2–L5 Control loops: what each mechanism controls, and the unsafe control actions its rules prevent<a class="headerlink" href="#l2l5-control-loops-what-each-mechanism-controls-and-the-unsafe-control-actions-its-rules-prevent" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>82c610add</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>fa74d7def</code>.</em></p>
 <p><em>Contributor-facing. Living specification analysis, current at <code>main</code> <code>85c645c8</code> (2026-10-18).
 Covers layers L2–L5 of the <a href="../index.html">platform index</a>; terms are in the
 <a href="glossary.html">glossary</a>. Decisions: <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">D18 and D19</a>.
@@ -5573,8 +5633,8 @@ long or too short. Each answer is an <em>unsafe control action</em> (UCA). The s
 then read as the constraints that prevent them. Where no rule prevents one, the analysis names the
 gap and the specification lists it as open.</p>
 <p>Status: the loops are drawn from the specifications, which are proposed or specified and not
-implemented. Of 72 entries, 41 are covered by a rule and a case, 6 are the controller's
-responsibility (D18), 3 have a rule and no case, and 22 are gaps, each listed in its
+implemented. Of 72 entries, 42 are covered by a rule and a case, 6 are the controller's
+responsibility (D18), 3 have a rule and no case, and 21 are gaps, each listed in its
 specification's open items.</p>
 <h2 id="1-files">1. Files<a class="headerlink" href="#1-files" title="Permanent link">&para;</a></h2>
 <table>
@@ -5797,8 +5857,8 @@ the hub's is its record; only the controller knows what the pump did.</p>
 <td>One command is delivered more than once, by a push and again by a fetch that returns sent commands, and the controller enacts it each time.</td>
 <td>HAZ-1</td>
 <td>S4</td>
-<td>CM18</td>
-<td>gap: commands §9</td>
+<td>CM18, CM21</td>
+<td>covered</td>
 </tr>
 <tr>
 <td>UCA-CMD-007</td>
@@ -6581,8 +6641,8 @@ vocabulary says what each one has to get right.</p>
 <tr>
 <td>Delivery by push and fetch</td>
 <td>two actuators for one action</td>
-<td>at least once means duplicates; the receiving controller has to enact one command once</td>
-<td>CM18, UCA-CMD-006</td>
+<td>at least once means duplicates; the receiving controller decides each command once (CM21)</td>
+<td>CM18, CM21, UCA-CMD-006</td>
 </tr>
 <tr>
 <td>Prepare and commit</td>
@@ -6611,11 +6671,9 @@ vocabulary says what each one has to get right.</p>
 </tbody>
 </table>
 <h2 id="6-what-the-analysis-found">6. What the analysis found<a class="headerlink" href="#6-what-the-analysis-found" title="Permanent link">&para;</a></h2>
-<p>22 gaps, each listed in its specification's open items:</p>
+<p>21 gaps, each listed in its specification's open items:</p>
 <ul>
 <li><strong>Commands</strong> (<a href="commands.html#9-open">§9</a>):</li>
-<li>a command can be enacted twice, because delivery is at least once and no rule asks a
-    controller to enact a <code>commandId</code> once (UCA-CMD-006);</li>
 <li>a sender or approver does not see a channel's outstanding commands, so a second command, or
     a second approval inside the controller's upload lag, is enacted as well (UCA-CMD-001,
     UCA-PROP-007);</li>
