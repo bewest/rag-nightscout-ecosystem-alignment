@@ -295,12 +295,248 @@ A device-independent G7 form needs only inputs both devices read from the sensor
 - **one spelling:** fixed scheme, separators and case (e.g. `g7:<serial>:<seconds>`), or its UUIDv5
   in the published namespace; both devices must produce the same bytes.
 
-To verify before relying on it (not checked here): that `messageTimestamp` ("seconds since pairing of
-the *message*", `G7GlucoseMessage.swift:18`) counts from the sensor session and not from each
-display's pairing slot. If it is per slot, a phone and a watch holding separate slots would see
-different counters and no sensor-relative key would agree.
+Whether `messageTimestamp` counts from the sensor session or from each display's pairing slot: see
+§7. Very probably the sensor session (shared by every display, and equal between live and backfill),
+not yet measured with two displays.
 
-## 7. Reproduce
+## 7. Is the G7 seconds counter shared across devices?
+
+**Answer: very probably yes, but nobody has measured it with two displays.** The value Loop keys
+on (`glucoseTimestamp` = the glucose message's counter minus its `age`, equal to a backfill record's
+`timestamp`) is the sensor's own session clock. It counts seconds from sensor activation. It does
+not start at each display's pairing. Every independent implementation read here, the official
+app's own field name, a captured session, and the sensor's expiry behaviour all point that way [R][M].
+Two caveats: no capture with two displays on one sensor exists in any repository or source opened
+here, and one implementation (xDrip4iOS) reads the field's relation to `age` the other way round
+(§7.3). So `g7:<serial>:<seconds since activation>` should be device-independent. Confirm it with
+the two-display capture in §7.6 before a client relies on it.
+
+Snapshot commits (all read 2026-10-17): G7SensorKit `main` `dd91f46` and `next-dev` `e17129d`
+(the local next-dev clone at `468eefc` is stale; `e17129d` was read from a fresh clone of
+LoopKit/G7SensorKit), xDrip+ `1ed760048`, xDrip4iOS (xdripswift) `c268542e`, DiaBLE `e6a909c`,
+Juggluco `75399d7` (default branch `primary`, read via `gh api`, no local clone), g7sim `7c039de`
+(matches GitHub `main`), AndroidAPS `7e1d537d49`, CGMBLEKit `ea224e7`, LibreTransmitter `4110512`,
+LibreLoop `e0282d0` and LibreCRKit `66920c6` (next-dev workspace).
+
+### 7.1 What each implementation says the counter counts from [R]
+
+The G7 glucose reply (opcode `0x4E`) carries a 4-byte counter at bytes 2-5 and a 2-byte `age` at
+bytes 10-11. A backfill record (9 bytes) carries a 3-byte counter at bytes 0-2. Every implementation
+below reads these at the same offsets.
+
+| implementation | `0x4E` bytes 2-5 called | what it counts from | reading's position | backfill record bytes 0-2 | same clock live and backfill? | builds an id from it? |
+|---|---|---|---|---|---|---|
+| G7SensorKit `main` | `messageTimestamp`, "Seconds since pairing of the *message*" (`G7GlucoseMessage.swift:18`) | activation: `activationDate = now − messageTimestamp` (`G7Sensor.swift:134`); lifetime, grace and warm-up are measured from it (`G7CGMManager.swift:121-152`) | `messageTimestamp − age` (`G7GlucoseMessage.swift:29-31`) | `timestamp`, "Seconds since pairing" (`G7BackfillMessage.swift:14,36`) | yes: both go through one `generateSyncIdentifier` and one activation date (`G7CGMManager.swift:505,547,554`) | yes, but prefixed with the per-device activation estimate (§6.4) |
+| G7SensorKit `next-dev` | same (`G7GlucoseMessage.swift:23`) | same (`G7Sensor.swift:392`); calibrations are written "on the sensor's seconds-since-activation clock" (`G7CalibrationMessage.swift:13-14`) | same | same (`G7BackfillMessage.swift:15`); backfill now tagged `isBackfill` (`G7CGMManager.swift:1227-1229`) | yes | same form (`G7CGMManager.swift:1171-1177`) |
+| xDrip+ (companion mode, listening to the Dexcom app's link) | `clock` (`cgm/dex/g7/EGlucoseRxMessage.java:49`) | activation: `activation_time = now − clock` (`g5model/DexTimeKeeper.java:48`, fed at `cgm/dex/ClassifierAction.java:56`) | live reading dated `now − age` by wall clock (`EGlucoseRxMessage.java:55`); it does not use the counter | 4-byte little-endian `dexTime` (`g5model/BackFillStream.java:94`) | yes: backfill is dated `activation + dexTime` (`ClassifierAction.java:131`) | no; dedupes by time window |
+| xDrip4iOS (xdripswift), primary mode | `transmitterTime`, "reading time measured from sensor start" (`DexcomG7GlucoseDataRxMessage.swift:78-80`) | sensor start: `sensorAge = transmitterTime + age` (`:87`) | **`transmitterTime`** (age is *added* to get the sensor's age now, `:86-90`) | `timeStampSincePairing`, "Seconds since pairing, ie sensorage + age of the message" (`DexcomG7BackfillMessage.swift:9,23,25`) | yes, but offset by `age` relative to the others (§7.3) | no |
+| xDrip4iOS, coexistence mode (listening to the Dexcom app) | the app's own link uses a `0x31` glucose frame with a counter at bytes 6-9, joined with a `0x25` clock reply giving transmitter start and sensor start (`DexcomG7GlucoseDataRxMessage.swift:132-157`; `CGMG7Transmitter.swift:1089-1100`; `DexcomTransmitterTimeRxMessage.swift:17,21`) | the transmitter's clock (`0x25` current time), with session start as a separate offset | `transmitterStart + counter` | — | — | no |
+| Juggluco | `secsSinceStart` (`Common/src/main/cpp/dexcom/java.cpp:37,84`) | sensor start: `starttime = now − secsSinceStart` (`:133`); warm-up and maximum life checked against it (`:151,173`) | `secsSinceStart − age` (`:96-97`) | `secsSinceStart` (`:328-329`) | yes: both store at index `(seconds)/300` in one stream (`:101-104`, `:338-340`, `DEXSECONDS` `:76`) | yes, internally: slot index `(secsSinceStart − age)/300` per sensor |
+| DiaBLE | `txTime` (`DiaBLE/DexcomG7.swift:269`), the field name it reports from the official app's `EGVResponse` class (`:256-266`) | activation: `activationDate = now − txTime` (`:270`) | `txTime − egvAge` (`:278`) | "seconds since pairing" (`:385`) | yes: backfill requests are sent as a `startTime-endTime` range on the same clock (`:292-294`) and records are dated from the same activation (`:386`) | yes, internally: `id = timestamp/60/5` (`:298,394`) |
+| g7sim (sensor-side model) | `sensorNow` (`g7/messages.go:58-60`) | one `Activation` per sensor state (`g7/state.go:64`); "A reading every 300 s from activation" (README `:229`, from sniffer measurements of a real sensor that the README cites) | `Reading.Time`, `age = sensorNow − Time` (`messages.go:63`) | `Reading.Time` (`messages.go:75-76`) | yes, by construction | — |
+| AndroidAPS | no G7 BLE driver; receives readings by broadcast or notification from another app (`plugins/source/.../DexcomPlugin.kt`, `notificationreader/PackageConfig.kt:40`) | — | — | — | — | — |
+
+**Do they agree?** On the clock, yes. Every implementation treats the counter as seconds since
+sensor activation (the "pairing" in G7SensorKit's comments is the sensor's start-up pairing; next-dev
+says "seconds-since-activation" outright). Every one converts it to a date as `now − counter`, and
+every one that reads backfill puts it on the same clock. The one disagreement is where a reading
+sits on that clock (§7.3).
+
+The alignment repo's own deep dives already say "seconds since sensor activation"
+([g7-protocol-specification.md](../../10-domain/g7-protocol-specification.md) lines 269, 312, 358),
+but they were read from the same code [R]. Its
+[dexcom-ble-protocol-deep-dive.md](../../10-domain/dexcom-ble-protocol-deep-dive.md) line 18 gives the
+G7 "1 (exclusive connection)" slot. That is contradicted by the slot model in G7SensorKit next-dev,
+g7sim, xDrip4iOS and DiaBLE (§7.2).
+
+### 7.2 A property of the sensor, or of the connection?
+
+The G7 holds **one slot per display type**: phone 2, watch 3, receiver 4, pump 5, and others
+(`G7DisplayType.swift:18-28` next-dev). A client says which type it is during authentication
+(Juggluco sends `0d 00 02`, phone, `DexGattCallback.java:391`). Held slots set bits in the
+advertisement's types-in-use byte (`G7DisplayType.swift:31-33`; g7sim `sensor.go:295-302`). G7SensorKit
+next-dev: "a watch app takes its own [slot], alongside the phone's" (`G7CGMManager.swift:283-284`,
+`G7Sensor.swift:190-192`). xDrip4iOS: each Bluetooth channel is "an independent authentication slot
+inside the sensor" (`CGMG7Transmitter.swift:8-13`). So a phone and a watch reading one sensor
+directly hold **separate connections with separate keys** [R].
+
+Nothing read here shows the counter is per slot, and five things show it is the sensor's:
+
+1. **The official app names it `txTime`** (transmitter time). It does so in DiaBLE's record of the
+   app's `EGVResponse` class (`DexcomG7.swift:256-259`) and in an app log line kept in G7SensorKit's
+   tests: `readEGV(txTime=40104,seq=136,session=1,age=4,...)` (`G7GlucoseMessageTests.swift:87`
+   @dd91f46). That is a sensor clock, not a link clock [R].
+2. **A captured session starts the counter at activation** [M]. In G7SensorKit's lifecycle vectors
+   (`G7GlucoseMessageTests.swift:33-43`), the first message is state *stopped* at counter 182,
+   sequence 1, session byte 0. The next messages are *warmup* at reading positions 200, 500, … and
+   *ok* from 1700. A session that began when this display paired would also look like this. But see 3.
+3. **The sensor's own expiry is on this clock** [M]. The same vector set's *expired* message has
+   reading position 907,385 s. A 10-day sensor's own `0x52` reply gives a session length of 907,200 s
+   (10 days + 12 h grace; g7sim `state.go:49-56`, from captured replies). The sensor marks itself
+   expired just past its session length on this counter. A per-display counter that started late
+   would put expiry late for that display. Loop's expiry display (`G7CGMManager.swift:134-144`),
+   Juggluco's maximum-life check (`java.cpp:151,173`) and xDrip4iOS's lifetime checks all rest on
+   the counter being session-relative. If the counter started at each display's pairing, all of
+   them would misplace expiry for a display paired after activation. None of them guards against
+   that case, and none of their issue trackers was searched for such a report.
+4. **Commands that write to shared sensor state use it.** A calibration (`0x34`) is sent as a time on
+   this clock (`G7CalibrationMessage.swift:13-14` next-dev; xDrip4iOS "converts its date into
+   transmitter time", `CGMG7Transmitter.swift:98-104`). The sensor then reports it back in the
+   calibration-bounds reply as `lastCalibrationTime`, beside a `sessionNumber` and `sessionSignature`
+   (`DexcomG7.swift:319-330`). One calibration applies to the sensor for every display, so the clock it
+   is expressed on must be one every display shares.
+5. **Backfill is requested by range on this clock** (`0x59` + start + end, `DexcomG7.swift:292-294`;
+   g7sim `handler_test.go:121-123`). The sensor serves records from one 24-hour store (g7sim models
+   one store; the backfill reply carries a first sequence number and first and last timestamps,
+   `DexcomG7.swift:362-369`).
+
+g7sim models exactly this: one `Activation` and one reading list per sensor, with every slot served
+the same `Reading` in a window (`state.go:11-18,64-71`; `sensor.go:421-431`). It is a model built on
+the same assumption, so it does not prove the assumption.
+
+An analogue on Dexcom's side: an EGV record in Dexcom's v3 API carries `transmitterId`,
+`transmitterTicks` (int64) and `displayDevice` (iOS, android or receiver) side by side
+([S] third-party schema mirror, apis.io "Dexcom API EGV record", opened 2026-10-17). Dexcom's own
+endpoint overview says `systemTime` is "the UTC time according to the device" and "not 'true' UTC
+time because of drift and/or user manipulation of the device's clock"
+([S] developer.dexcom.com/docs/dexcomv3/endpoint-overview, opened 2026-10-17). The schema keeps a
+transmitter tick count apart from the display's clock. It does not say whether two displays report
+the same ticks, and the official schema page did not load, so this is context only.
+
+### 7.3 Live and backfill: same value for the same reading?
+
+**Yes, on G7SensorKit's reading, which the captured data supports.** G7SensorKit, DiaBLE, Juggluco
+and g7sim put a live reading at `counter − age` and a backfill reading at the record's counter, and
+treat the two as equal. xDrip4iOS puts a live reading at `counter` and adds `age` to get the
+sensor's age. If xDrip4iOS were right, G7SensorKit's live key would sit `age` seconds before the
+same reading's backfill key.
+
+The lifecycle vectors settle it for one session [M]. Their `age` varies (5 or 7 s), and so does the raw
+counter mod 300 (205, 207). `counter − age` is constant mod 300 (200) for all seven readings after
+start-up. That holds only if `counter − age` is the reading's position on the sensor's 5-minute grid
+and `counter` is the time the message was sent.
+
+| vector (`G7GlucoseMessageTests.swift`) | counter | age | counter − age | (counter − age) mod 300 | counter mod 300 |
+|---|---|---|---|---|---|
+| lifecycle 1-5, 7 | 205 … 2005 | 5 | 200 … 2000 | 200 | 205 |
+| lifecycle 6 | 1707 | 7 | 1700 | 200 | 207 |
+
+Reproduce: decode the hex strings at `G7GlucoseMessageTests.swift:33-43` (bytes 2-5 and 10-11,
+little-endian).
+
+xDrip4iOS's offset matters only to xDrip4iOS. If it ever built a key from `transmitterTime`, its live
+and backfill keys for one reading would differ by `age`. It does not build one today.
+
+Two smaller points:
+
+- The backfill counter is 24-bit (`data[0..<3]`), good to 194 days, well past a 15.5-day session.
+  The live counter is 32-bit. A key should print the decimal value, not the bytes.
+- `sequence` is also sensor-side and appears in the backfill reply, but it is not a clean reading
+  index. In the lifecycle vectors it runs 1, 3, 4, … against positions 80, 200, 500, …, and a backfill
+  record does not carry it. The seconds counter is the better key.
+
+### 7.4 What identifies the sensor across devices
+
+| candidate | carried by | same on every device? | unique? | read by |
+|---|---|---|---|---|
+| BLE name `DXCM` + 2 characters | advertisement | yes | **no**: 2-character suffix, repeats across sensors (`DX02`/`DX01` for ONE+ and Stelo, g7sim `state.go:33-35`) | everyone; today's Loop `sensorID` |
+| **serial number** | `0x4A` transmitter-version reply, bytes 14-19, u48, "the number printed on the applicator and encoded in the package barcode, rendered in decimal" (`TransmitterVersionMessage.swift:10-23` next-dev) | yes: a sensor property | yes | G7SensorKit **next-dev only** (`serialNumberString`, `G7CGMManager.swift:579,594`); `main` has no `0x4A` parser (no `TransmitterVersionMessage` file at `dd91f46`); xDrip4iOS sends `0x4A` (`CGMG7Transmitter.swift:90-95`; whether it keeps the serial was not checked) |
+| `sessionNumber` + `sessionSignature` | calibration-bounds reply `0x32` (`DexcomG7.swift:319-330`); session byte 9 of `0x4E` (0 when *stopped*, 1 after, in the vectors) | presumably | signature meaning unknown | DiaBLE logs it; no one keys on it |
+| activation estimate `now − counter` | derived | **no**: receive latency and clock offset differ (§6.4) | — | today's Loop key |
+
+**Restart and extension.** The 12-hour grace period and the 15-day model are on the same counter.
+The `0x52` session length includes the grace period (907,200 s for 10-day, 1,339,200 s for 15-day,
+g7sim `state.go:49-56`). The captured *expired* reading is at 907,385 s, so the counter did not
+reset at the 10-day boundary [M]. No G7 implementation read here has a session-start command (the
+G7 opcode lists have stop `0x28` but no `0x26`: `G7Opcode.swift` next-dev, `DexcomG7.swift:18-48`), so
+none can restart a G7 session. Whether any unsupported restart method resets the counter or increments
+the session byte is **not known**. If one existed, the session number would belong in the key.
+
+### 7.5 Verdict
+
+`g7:<serial>:<seconds>`, where `<seconds>` = `messageTimestamp − age` for a live reading and the
+record's `timestamp` for backfill, printed in decimal, **is device-independent on everything read
+here**:
+
+- **Counter:** sensor-side, from activation, shared by live and backfill, measured on one captured
+  session.
+- **Serial:** sensor-side.
+- **Clock drift:** irrelevant. Neither input touches a receiving device's clock.
+- **5-minute slots:** no rounding is needed or wanted. The counter lands on the sensor's own grid
+  (`activation + k·300 + phase`, with phase 185-200 s in the post-warm-up vectors), so the exact integer is the key.
+  Rounding to a 300-s slot would only add a boundary risk.
+
+Caveats:
+
+- **Not measured with two displays.** Points 1-5 in §7.2 make a per-slot counter very unlikely, but
+  nothing rules it out.
+- **The serial needs `0x4A`.** G7SensorKit `main` does not send it. Until it does, Loop cannot form
+  this key, and a `DXCMxx` name is not a substitute (§6.4).
+- **Readings before the serial arrives.** The serial comes after the first glucose message
+  (`recordPendingSensorStart` waits for it, `G7CGMManager.swift:585-596` next-dev). Readings in that
+  gap should carry no `identifier` rather than a partial one.
+
+### 7.6 The lab that would settle it
+
+Use one real G7 sensor (g7sim cannot settle this, because it encodes the assumption) and two displays
+holding **different** slots:
+
+- A. A phone on Loop next-dev in direct mode (display type 2). G7SensorKit already logs every
+  `G7GlucoseMessage` with `messageTimestamp` and `age` and every `G7BackfillMessage`.
+- B. A watch-type or receiver-type client. Juggluco or xDrip4iOS primary mode on a second phone,
+  set to another display type, or a Dexcom receiver if its log can be exported.
+
+Steps:
+
+1. Run both for at least 2 hours, with B paired **at least a day after** sensor start. A per-pairing
+   counter would then differ by about 86,400 s, which is impossible to miss.
+2. For every 5-minute window, compare A's and B's `messageTimestamp − age`.
+3. Force a gap on B (out of range for 30 min), then compare B's backfill `timestamp`s with A's live
+   values for the same windows.
+4. Read `0x4A` on both and compare serials.
+
+Pass criterion: every shared window matches exactly. Record only the differences and counts, never
+the serial or raw frames, in anything committed. Once one real capture exists, g7sim can then
+regression-test that each client forms the same `g7:` string from the same bytes.
+
+### 7.7 Other CGMs: which have a shared counter?
+
+| CGM | counter | sensor-side? | today's client key | device-independent today? |
+|---|---|---|---|---|
+| **Dexcom G6** | transmitter seconds since *transmitter* activation (`0x25` current time; `Transmitter.swift:89,200` CGMBLEKit) | yes, one clock per transmitter, across sessions | CGMBLEKit: `"<transmitterID> <timestamp>"`, "consistent between backfill/live data" (`Glucose.swift:110-112` @ea224e7) | **yes in form** [R]. The transmitter ID is user-entered on every display and the clock is the transmitter's. Caveat: some G6 transmitters can be hard-reset (xDrip+ offers it, `DexTimeKeeper.java:39-41`), which restarts the clock and can repeat keys. |
+| **Dexcom G7 / ONE+ / Stelo** | seconds since activation (§7.1) | very probably (§7.2) | Loop: activation-estimate prefix (§6.4) | **no today**; yes with the serial and §7.5 form |
+| **Libre 3** | `lifeCount`, the sensor's minute counter (`RealtimeGlucoseReading.swift:6,153` LibreCRKit); "lets us back-derive activatedAt" (`LibreLoopSensorMonitor.swift:50-55`) | yes | LibreLoop (next-dev): `"libreloop-<serial>-<lifeCount>"` (`LibreLoopCGMManager+Pairing.swift:575,647,750`) | **yes in form** [R], except the `unknown` fallback at `:575` when the serial is missing (the same sentinel problem as C5) |
+| **Libre 2** (LibreTransmitter) | minutes since start, read from the sensor (`LibreTransmitterManagerV3.swift:381`) | yes | `"<startDate epoch><glucose>"` (`LibreGlucose.swift:33-35` @4110512): a date from the receiving device plus the value | **no**. The counter exists but is not used in the key. |
+
+Not checked here: how Libre 2/3 multi-reader access works (NFC by a second phone versus one BLE
+link at a time), and xDrip+/Juggluco/DiaBLE Libre keys.
+
+### 7.8 Implications
+
+**For the reply's option 3.** The source-derived identifier is sound for G7 if it uses only the
+serial and the sensor counter. Suggested wording:
+
+> For a G7, an identifier both devices can compute is `g7:<serial>:<seconds>`, where `<serial>` is the
+> sensor serial number from the transmitter-version (`0x4A`) reply and `<seconds>` is the sensor's
+> seconds-since-activation counter for the reading (`messageTimestamp − age` for a live reading, the
+> record's `timestamp` for backfill). Every G7 implementation we read (G7SensorKit, xDrip+, xDrip4iOS,
+> Juggluco, DiaBLE) treats that counter as the sensor's session clock, and a captured session lands on
+> its 5-minute grid only that way. We have not yet seen a capture with two displays on one sensor, so
+> we would confirm with one before relying on it. The activation date estimated from the receiving
+> device's clock must not be part of it.
+
+**For Loop.**
+
+- **Change the key:**
+  - drop the `activatedAt.hours` token;
+  - key on `serialNumberString`, which next-dev already reads;
+  - keep the counter it already uses (`glucoseTimestamp` / backfill `timestamp`, which agree);
+  - send no identifier until the serial is known.
+- **Leave `date` alone:** it can stay derived from the per-device activation estimate, since dates
+  are not compared for identity under the two-id rule.
+- **Before shipping:** the two-display capture in §7.6.
+
+## 8. Reproduce
 
 ```sh
 python3 -I docs/60-research/tenancy/identifier-format-2026-10-17/idshape.py
