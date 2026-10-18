@@ -2337,6 +2337,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -3384,6 +3388,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../evidence-weighted-approval-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evidence-weighted approval: what a plan or proposal needs before a controller acts on it
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../integration-questionnaire-defaults-2026-10-18.html" class="md-nav__link">
         
   
@@ -3392,6 +3424,34 @@
     
   
     Integration questionnaire: default answers for Loop, Trio, AndroidAPS and OpenAPS, read from their source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../partial-acceptance-prototype-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Partial acceptance: binding an approval that accepts part of a plan
   
 
     
@@ -5493,13 +5553,13 @@
 
 
 <h1 id="l3-and-l5-commands-how-a-request-or-a-proposal-reaches-a-controller-and-how-its-outcome-comes-back">L3 and L5 Commands: how a request or a proposal reaches a controller, and how its outcome comes back<a class="headerlink" href="#l3-and-l5-commands-how-a-request-or-a-proposal-reaches-a-controller-and-how-its-outcome-comes-back" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>fa74d7def</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>dea0f1b2a</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>9736bd65</code> (2026-10-18). Layers L3
 and L5 of the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. Decisions:
 <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">D18 and D19</a>
 and the maintainer's decisions of 2026-10-14 to 2026-10-18 recorded with them; the proposal
 record was folded into this item on 2026-10-18. Queue: <code>SPEC-REG-COMMANDS</code>.</em></p>
-<p><em>Specification 5 of 7 in the <a href="../index.html#reading-order">reading order</a>; after state and intent, whose acceptance policy (S10, S11) it builds on, and before sync-transport. Expect where a command goes, the command path today, rules CM1–CM21 for the command record, outcomes, proposals and delivery in each mode, compatibility with each controller, and the conformance cases.</em></p>
+<p><em>Specification 5 of 7 in the <a href="../index.html#reading-order">reading order</a>; after state and intent, whose acceptance policy (S10, S11) it builds on, and before sync-transport. Expect where a command goes, the command path today, rules CM1–CM23 for the command record, outcomes, proposals and delivery in each mode, compatibility with each controller, and the conformance cases.</em></p>
 <p>How a request to change therapy reaches a controller through a hub, what the hub records about it,
 how the controller's outcome comes back, and the proposal and approval that can stand in front of
 a command. The hub routes and records; it never decides whether a change is safe, never alters
@@ -5673,7 +5733,7 @@ intent §7</a>.</p>
 </tr>
 </tbody>
 </table>
-<p><strong>Order of checks.</strong> Where more than one refusal applies, the first wins: another tenant (404), then the sender's permission and ownership (403), then the request's own content (413, 422), then state (409). Among an approval's 409s the order is: the proposal's state (<code>proposal-expired</code>, <code>proposal-closed</code>), <code>hash-mismatch</code>, routing, <code>destination-changed</code>, <code>state-changed</code>. A push checks the binding (<code>withheld</code>) before the command's state, and applies only to a <code>pending</code> or <code>sent</code> command (<code>not-pending</code> otherwise).</p>
+<p><strong>Order of checks.</strong> Where more than one refusal applies, the first wins: another tenant (404), then the sender's permission and ownership (403), then the request's own content (413, 422), then state (409). Among an approval's 409s the order is: the proposal's state (<code>proposal-expired</code>, <code>proposal-closed</code>), <code>hash-mismatch</code>, routing, <code>destination-changed</code>, <code>state-changed</code>, <code>doses-since</code>. A push checks the binding (<code>withheld</code>) before the command's state, and applies only to a <code>pending</code> or <code>sent</code> command (<code>not-pending</code> otherwise).</p>
 <p><strong>States.</strong> The hub sets <code>pending</code>, <code>not-routed</code>, <code>sent</code>, <code>fetched</code>, <code>unconfirmed</code>, <code>undeliverable</code> and <code>expired</code>; only the
 destination sets <code>acknowledged</code>, <code>succeeded</code>, <code>failed</code> and <code>refused</code> (§5).</p>
 <table>
@@ -5760,7 +5820,7 @@ reported as success or as failure.</p>
 </tr>
 <tr>
 <td>CM8</td>
-<td><strong>Reasons.</strong> A refusal or failure reason is one of <code>hash-mismatch</code>, <code>expired</code>, <code>not-accepted</code> (the controller's acceptance preference is off, <a href="state-intent.html#2-rules">S10</a>), <code>limit</code> (a limit the controller enforces) or <code>{value: other, controllerTerm}</code>; a bare unknown string is refused 422 <code>invalid-reason</code>. The hub records the reason and does not interpret it.</td>
+<td><strong>Reasons.</strong> A refusal or failure reason is one of <code>hash-mismatch</code>, <code>expired</code>, <code>not-accepted</code> (the controller's acceptance preference is off, <a href="state-intent.html#2-rules">S10</a>), <code>limit</code> (a limit the controller enforces), <code>doses-since</code> (CM23) or <code>{value: other, controllerTerm}</code>; a bare unknown string is refused 422 <code>invalid-reason</code>. The hub records the reason and does not interpret it.</td>
 </tr>
 <tr>
 <td>CM9</td>
@@ -5769,6 +5829,10 @@ reported as success or as failure.</p>
 <tr>
 <td>CM10</td>
 <td><strong>The controller checks the hash.</strong> Before enacting, the controller recomputes <code>payloadHash</code> over the payload it received and refuses <code>hash-mismatch</code> when it differs from the hash the command carries. It also refuses a command past <code>expiresAt</code> by its own clock. These checks are the controller's, as all validation is (D18). The controller receives the payload and the hash from the same hub, so the check detects a payload changed in transit or storage; it does not show that a hub, or anything acting as one, delivered what an approver approved, and it does not authenticate the sender. Binding an approval to a payload end to end needs a signature by the sender or approver. Authentication between sender and controller, such as Loop's one-time password, Trio's shared secret or AndroidAPS's per-client signature (§8), stays the controller's, and the hub carries it unread.</td>
+</tr>
+<tr>
+<td>CM23</td>
+<td><strong>The controller checks doses since.</strong> Before it enacts a dose or carbs, the controller compares the doses and carbs it holds since the command was made, and refuses <code>doses-since</code> when its own rule says the command is no longer wanted. The rule and its threshold are the controller's, as all validation is (D18); Trio's refusal when boluses since reach 20 % of the request is one such rule (§8).</td>
 </tr>
 </tbody>
 </table>
@@ -5797,7 +5861,7 @@ reported as success or as failure.</p>
 </tr>
 <tr>
 <td>CM14</td>
-<td><strong>Who may approve.</strong> The approver holds the permission to send the command itself (<code>api:commands:create</code>), else 403 <code>not-authorised</code>; approving is sending. The subject that proposed cannot approve its own proposal (403 <code>self-approval</code>). Rejecting needs the same permission; withdrawing is the proposer's alone; either by anyone else is 403 <code>not-authorised</code>.</td>
+<td><strong>Who may approve.</strong> The approver holds the permission to send the command itself (<code>api:commands:create</code>), else 403 <code>not-authorised</code>; approving is sending. When the proposing instance's propose role is an agent's, the subject that proposed cannot approve it (403 <code>self-approval</code>); a person may approve a proposal they made from their own app. Rejecting needs the same permission. Withdrawing is the proposer's, and also the person's: the subject the tenant marks as acting for the person whose therapy it holds may withdraw any proposal. Either by anyone else is 403 <code>not-authorised</code>. How a capability document marks a propose role as an agent's is open (§9).</td>
 </tr>
 <tr>
 <td>CM15</td>
@@ -5806,6 +5870,10 @@ reported as success or as failure.</p>
 <tr>
 <td>CM16</td>
 <td><strong>Evaluations are evidence.</strong> Anyone who may read the proposal (CM11) may attach an evaluation: a risk check, a second model's opinion, a request for review. An evaluation never changes the proposal's state and never approves.</td>
+</tr>
+<tr>
+<td>CM22</td>
+<td><strong>Doses since the proposal.</strong> An approval is refused 409 <code>doses-since</code> when a dose or carb record for the target product reached the hub after the proposal was made and by the time of approval. The proposer could not have seen it, as <code>basedOn</code> (A12) does not cover doses or carbs. It is the hub's record, limited by the controller's upload lag; the controller's own check is CM23. A refused approval leaves the proposal open.</td>
 </tr>
 </tbody>
 </table>
@@ -5933,8 +6001,9 @@ was run.</p>
 <h2 id="9-open">9. Open<a class="headerlink" href="#9-open" title="Permanent link">&para;</a></h2>
 <ol>
 <li><strong>Choices for the maintainer:</strong></li>
-<li><strong>How a capability document marks a listed <code>other</code> role as proposing</strong> (CM12). Today it
-     lists role names only; nothing says which listed role may propose.</li>
+<li><strong>How a capability document marks a listed <code>other</code> role as proposing</strong> (CM12), and as an
+     agent's (CM14). Today it lists role names only; nothing says which listed role may propose,
+     or which belongs to an agent.</li>
 <li><strong>The command's expiry after an approval</strong> (CM13 proposes the proposal's <code>expiresAt</code>), or a
      new one set at approval within the proposal's.</li>
 <li><strong>Refusing a stale approval</strong> (CM15), or only showing the approver that the state version
@@ -5966,8 +6035,8 @@ was run.</p>
      instance that renewed under a new definition receives a payload approved under the old one.</li>
 <li><strong>Proposal volume</strong> (UCA-PROP-002). Nothing limits the open proposals one instance holds on
      a channel.</li>
-<li><strong>Doses since <code>basedOn</code></strong> (UCA-PROP-012). The state version covers active intents (A12), not
-     doses or carbs, so a dose proposal passes CM15 after the person has dosed locally.</li>
+<li><strong>Who acts for the person</strong> (CM14). Which subject the tenant marks as acting for the person
+     whose therapy it holds, and whether there may be more than one.</li>
 <li><strong>A process holding the destination's credential</strong> (UCA-CMD-014). CM7 and CM18 check the
      subject, not the process: under <code>single</code> every holder of <code>API_SECRET</code> is one subject, so
      another app can fetch a command, which moves it to <code>fetched</code> and out of the controller's
@@ -5987,7 +6056,7 @@ which also checks on every case that nothing reaches another tenant, nothing is 
 at or after its expiry, nothing is pushed unbound under <code>multi</code>, an approved command carries
 the payload hash its approval named (the case's <code>received</code> payload stands for what was delivered),
 and no instance enacts a command twice (CM21). CM20 has no case; CM17 has one, <code>sent-and-fetched-are-not-success</code>.</p>
-<p>119 cases.</p>
+<p>125 cases.</p>
 <!-- BEGIN GENERATED: commands-cases (tools/nsschema/spec_cases.py) -->
 <table>
 <thead>
@@ -6096,6 +6165,18 @@ and no instance enacts a command twice (CM21). CM20 has no case; CM17 has one, <
 <td><code>approve-named-instance-still-holder</code></td>
 </tr>
 <tr>
+<td><code>commands/approve-doses-before-proposal</code></td>
+<td>A dose that arrived before the proposal does not refuse its approval</td>
+<td>rules CM22</td>
+<td><code>approve-doses-since</code></td>
+</tr>
+<tr>
+<td><code>commands/approve-doses-since</code></td>
+<td>An approval is refused when a dose arrived after the proposal was made</td>
+<td>rules CM22</td>
+<td><code>approve-doses-before-proposal</code></td>
+</tr>
+<tr>
 <td><code>commands/approve-hash-mismatch</code></td>
 <td>An approval naming a different payload's hash is refused</td>
 <td>rules CM13</td>
@@ -6112,6 +6193,12 @@ and no instance enacts a command twice (CM21). CM20 has no case; CM17 has one, <
 <td>An approval when no instance holds the sink any more is refused at routing</td>
 <td>rules CM13, CM1</td>
 <td><code>approve-before-sink-lapses</code></td>
+</tr>
+<tr>
+<td><code>commands/approve-own-proposal-by-person</code></td>
+<td>A person approves a proposal they made themselves</td>
+<td>rules CM14</td>
+<td><code>self-approval-refused</code></td>
 </tr>
 <tr>
 <td><code>commands/approve-rejected-proposal</code></td>
@@ -6178,6 +6265,18 @@ and no instance enacts a command twice (CM21). CM20 has no case; CM17 has one, <
 <td>A command delivered again after the controller restarts is not enacted again</td>
 <td>rules CM21</td>
 <td><code>enact-identical-payload-succeeds</code></td>
+</tr>
+<tr>
+<td><code>commands/enact-dose-no-doses-since</code></td>
+<td>The controller enacts a dose when it has not dosed since the command was made</td>
+<td>rules CM23</td>
+<td><code>enact-dose-refused-doses-since</code></td>
+</tr>
+<tr>
+<td><code>commands/enact-dose-refused-doses-since</code></td>
+<td>The controller refuses a dose when it has dosed since the command was made</td>
+<td>rules CM23</td>
+<td><code>enact-dose-no-doses-since</code></td>
 </tr>
 <tr>
 <td><code>commands/enact-hash-mismatch-refused</code></td>
@@ -6706,6 +6805,12 @@ and no instance enacts a command twice (CM21). CM20 has no case; CM17 has one, <
 <td>Only the proposer may withdraw</td>
 <td>rules CM14</td>
 <td><code>withdraw-by-proposer</code></td>
+</tr>
+<tr>
+<td><code>commands/withdraw-by-person</code></td>
+<td>The person withdraws an agent's proposal</td>
+<td>rules CM14</td>
+<td><code>withdraw-by-other-subject</code></td>
 </tr>
 <tr>
 <td><code>commands/withdraw-by-proposer</code></td>
