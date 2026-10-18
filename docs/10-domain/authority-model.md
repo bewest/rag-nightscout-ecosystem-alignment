@@ -1,5 +1,20 @@
 # Authority & Identity Model
 
+*Contributor-facing.* **Status 2026-10-18: prior art, partly replaced by D18 and D19.** Current
+decisions: [execution plan §1](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+Under D18 the hub observes and records; overlapping intents are composed by the controller, and the
+hub never derives the result ([execution plan §2.6.1](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#261-d18--two-tier-controller-registration)).
+So the authority hierarchy used as a hub-side conflict rule, the conflict scenarios and the
+composition invariants below are rules a controller may apply, not the hub's. Still prior art: the
+agent as an actor, scopes that separate proposing from acting (the upstream RFC's `suggest`), and
+the delegation-grant shape. Instances, roles and command routing are specified in
+[hub-sync §3.6](../30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances)
+(D19). An agent initiator is written in the open-vocabulary form `{value: other, controllerTerm}`;
+no `agent` value is added (maintainer, 2026-10-18). Map of what exists:
+[agents in the ecosystem](../30-design/platform/agent-trust-boundaries-2026-10-18.md).
+**Corrected in place 2026-10-18:** the "Conflict resolution" row and enhancement 2 of "Nightscout
+Implementation", and the scope of "Safety Invariants", to D18.
+
 This document defines the authority hierarchy and identity model used for conflict resolution when multiple actors interact with AID systems.
 
 ---
@@ -207,13 +222,13 @@ Before executing a delegated action:
 | `enteredBy` field | Implemented | Free-form nickname, not verified |
 | Authority levels | Not implemented | All writes treated equally |
 | Delegation grants | Not implemented | Proposed in OIDC RFC |
-| Conflict resolution | Not implemented | Last write wins |
+| Conflict resolution | Not implemented | Last write wins. Outside the hub's role under D18: the controller composes, the hub records the result |
 | Audit trail | Partial | `srvCreated`/`srvModified` tracked |
 
 ### Proposed Enhancements
 
 1. **OIDC Actor Identity** — Replace `enteredBy` with verified identity claims
-2. **Authority Enforcement** — Check authority before accepting mutations
+2. **Authority Enforcement** — Check a writer's permission before accepting mutations; resolving conflicts between accepted intents is the controller's (D18)
 3. **Delegation System** — Formal grant/revoke for caregivers and agents
 4. **Conflict Audit** — Log conflict resolutions for review
 
@@ -250,6 +265,8 @@ Identity-based access requires explicit consent:
 ---
 
 ## Safety Invariants
+
+These bind whoever composes intents, which under D18 is the controller, not the hub.
 
 ### Never Violated
 

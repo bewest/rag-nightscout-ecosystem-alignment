@@ -23,8 +23,8 @@ current and the prose is stale.
 |---|---|---:|---:|---:|
 | **Remedial** | `phase0`, `register-open`, `docs-truth` | 153 | 44 | 7 |
 | **Modernization** | `release-train` | 33 | 5 | 1 |
-| **Multitenant** | `tenancy`, `platform` | 53 | 18 | 9 |
-| | **total** | **241** | **67** | **17** |
+| **Multitenant** | `tenancy`, `platform` | 58 | 21 | 9 |
+| | **total** | **246** | **70** | **17** |
 
 <!-- END GENERATED: horizons -->
 
@@ -211,7 +211,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | `tenancy` | 8 |  |  | 1 | 13 |  |  | 7 | 3 | 1 |  |  | **33** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 10 |  |  |  | **18** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
-| `platform` | 10 | 1 |  |  |  |  |  |  | 9 |  |  |  | **20** |
+| `platform` | 13 | 1 |  |  |  |  |  |  | 11 |  |  |  | **25** |
 
 <!-- END GENERATED: state-matrix -->
 
@@ -247,14 +247,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 206 | 85% |
+| Maintainer | 211 | 86% |
 | SECURITY reviewer | 16 | 7% |
 | Maintainer + a second human | 7 | 3% |
 | SAFETY reviewer | 6 | 2% |
 | Whoever edits it next | 3 | 1% |
 | Unassigned | 2 | 1% |
 | Upstream reviewers | 1 | 0% |
-| **total** | **241** | |
+| **total** | **246** | |
 
 <!-- END GENERATED: reviewer-load -->
 

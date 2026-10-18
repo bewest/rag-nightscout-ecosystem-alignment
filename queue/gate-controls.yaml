@@ -2075,3 +2075,47 @@ controls:
       site a; entries and treatments then report "no at a" and the count is
       2, so it exits 1. Run 2026-10-17: gate 0, control 1. Needs
       externals/ns-data in the main checkout.
+
+  - gate: |-
+      node tools/queue/gates/platform-spec.js identity
+    cwd: .
+    control: |-
+      tools/queue/gates/platform-spec-control.sh identity narration
+    positive-control: |-
+      node tools/queue/gates/platform-spec.js identity
+    control-kind: static
+    proves: >
+      run 2026-10-18: the control copies the gate's inputs to a scratch root
+      and appends "(Withdrawn 2026-10-18: control.)" to the identity spec;
+      the gate exits 1 with the one finding "no amendment narration
+      /\bwithdrawn\b/i". The script's other breaks were run the same day,
+      each exiting 1 with exactly its own finding: `case` (a cited case file
+      renamed), `count` (stated count 999 against 20 rows), `pointer` (the
+      hub-sync design's link removed).
+
+  - gate: |-
+      node tools/queue/gates/platform-spec.js registration
+    cwd: .
+    control: |-
+      tools/queue/gates/platform-spec-control.sh registration narration
+    positive-control: |-
+      node tools/queue/gates/platform-spec.js registration
+    control-kind: static
+    proves: >
+      run 2026-10-18: the narration break exits 1 with the one finding "no
+      amendment narration /\bwithdrawn\b/i". The script's `case`, `count`
+      and `pointer` breaks were run the same day, each exiting 1 with
+      exactly its own finding (instances/carrier-view-needs-mapping missing;
+      999 against 186 rows; the hub-sync design's link removed).
+
+  - gate: |-
+      python3 -m tools.nsschema.spec_cases registration --check
+    cwd: .
+    control: |-
+      T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && sed '/instances\/command-routed/d' docs/30-design/platform/spec/registration.md > "$T/r.md" && python3 -m tools.nsschema.spec_cases registration --check --spec "$T/r.md"
+    positive-control: |-
+      python3 -m tools.nsschema.spec_cases registration --check
+    control-kind: static
+    proves: >
+      run 2026-10-18: a copy of the spec with the generated row for
+      instances/command-routed deleted is reported stale and exits 1.

@@ -122,7 +122,12 @@ const PLANNED = new Map([
    + 'already BE this deliverable under another name. Not assumed here - deciding '
    + 'that is the item\'s work, not this gate\'s.'],
   ['reports/schema-census/impact-smoke.json',
-   'the declared --out of `make schema-impact-smoke` (Makefile L761-763).'],
+   'the declared --out of `make schema-impact-smoke` (Makefile L761-763).'],  ['docs/30-design/platform/spec/state-intent.md',
+   'SPEC-STATE-INTENT\'s deliverable (not-started); the item names its own output file.'],
+  ['docs/30-design/platform/spec/sync-transport.md',
+   'SPEC-SYNC-TRANSPORT\'s deliverable (not-started); the item names its own output file.'],
+  ['docs/30-design/platform/spec/authority.md',
+   'SPEC-AUTHORITY\'s deliverable (not-started); the item names its own output file.'],
 ]);
 
 // `externals/` is git-ignored by design (README, "Directory Structure"), so a

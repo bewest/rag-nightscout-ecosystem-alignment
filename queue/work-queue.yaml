@@ -15932,7 +15932,7 @@ items:
       credential) and D17 row 2 if it lands.
 
   - id: SPEC-REG-COMMANDS
-    title: "Hub command delivery to a command-sink instance, specified for single and multi mode"
+    title: "Hub command delivery to a command-sink instance, with the proposal record in front of it, specified for single and multi mode"
     parcel: platform
     repo: rag-nightscout-ecosystem-alignment
     branch: main
@@ -15946,7 +15946,15 @@ items:
       is inferred when one product declares it, else
       ambiguous-command-destination) and its transport, for both modes, in the
       hub-sync design with conformance cases. §3.6 says "The command API
-      itself is not specified here." Ships nothing.
+      itself is not specified here." Since 2026-10-18 (maintainer: fold
+      the proposal lifecycle in here) also the proposal record in front of
+      a command, from agents in the ecosystem §4.3: propose → validate →
+      (evaluate) → approve | reject → command → outcome. A proposal names
+      the proposing instance and its propose role ({value: other,
+      controllerTerm}), the target instanceId and definitionId, an expiry
+      and the SHA-256 of the payload's RFC 8785 canonical JSON; an approval
+      names that hash; the controller checks the hash before enacting and
+      reports the outcome correlated to the proposal. Ships nothing.
     review: maintainer
     operator_visible: ""
     semver: n/a
@@ -15960,12 +15968,19 @@ items:
           delivered under multi (such emissions are withheld), with the
           control that the same producer delivers in single; and red when a
           command reaches a sink on another tenant, with the control of the
-          same command on its own tenant.
+          same command on its own tenant. For proposals: red when an
+          approval of payload hash A enacts payload B, with the control that
+          the same approval enacts A; red when an expired proposal is
+          approved, with the control of the same proposal before expiry;
+          and red when a credential with no propose role (a `readable`
+          token, or an MCP server holding one) creates a proposal, with the
+          control of the same request from a propose-role holder.
     blocks_on: [SPEC-REG-MODES]
     evidence:
       - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
       - docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md
+      - docs/30-design/platform/agent-trust-boundaries-2026-10-18.md
     notes: >
       Today's carriers, read-derived on crm-seam 81a1f6ce. Loop's remote
       commands go out as APNs pushes configured from
@@ -15980,7 +15995,17 @@ items:
       alarms and live updates are off under multi (plan §7a). A command
       transport has to state which of these it uses and whether it runs
       inside a request. The hub routes a command; it never decides or
-      composes dosing (D18, D19 rule 6).
+      composes dosing (D18, D19 rule 6). Proposals (folded in 2026-10-18):
+      validation and enactment stay the controller's (D18), the hub routes
+      and records and does not judge whether a change is safe, and read
+      access never confers a propose or act role. Prior art is the upstream
+      agent control-plane RFC's `suggest` scope ("can propose, human must
+      approve") and `DelegationGrant`, mapped in agents in the ecosystem
+      §4.2. First open question: what an approval binds "the state it was
+      based on" to. D19's product and instance etags version the
+      registration, not the controller's therapy state (active override,
+      profile, insulin on board), so nothing yet tells an approver that the
+      state the agent read is still the state the controller holds (§4.3).
 
   - id: SPEC-REG-MIGRATE
     title: "Registration state across a single-tenant site's move into a tenant, and back"
@@ -16296,3 +16321,232 @@ items:
       store a second record. Not filed as a backfix (documented v3 rule; the
       open question is in the reply). Reply passage and README evidence row
       updated.
+
+  - id: SPEC-ID
+    title: "Platform spec L0: the identity specification as one living document (two ids, contract ids, match order, identifier format, open decisions)"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: docs/platform-spec-index-2026-10-18
+    base: main@5a9a49cc
+    state: done
+    pr: []
+    blast_radius: >
+      docs/30-design/platform/spec/identity.md (new), with the platform
+      index (docs/30-design/platform/README.md) and glossary
+      (spec/glossary.md) it hangs from; one pointer sentence each in the
+      hub-sync design §3.7 rule 5, the write contract's status block and the
+      identifier format research's status block; the gate
+      tools/queue/gates/platform-spec.js and its control
+      platform-spec-control.sh. No rule changes and no conformance case
+      changes: the spec restates D20 rules 5-8, walk-through rows 1-3 and the
+      write contract's U1, U6 and §6.1 as current rules.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: specification in this repository; ships nothing
+    register: []
+    gates:
+      - run: node tools/queue/gates/platform-spec.js identity
+        kind: static
+        describe: >
+          FAILS when the identity spec is missing, carries amendment
+          narration (DEFINITION-OF-DONE criterion 1), names a conformance
+          case that does not exist under specs/sync/conformance/, states a
+          case count that differs from its table, or when the platform index
+          or any of its three source documents does not link to it. GREEN on
+          2026-10-18: 34 checks, 20 cases.
+    blocks_on: []
+    evidence:
+      - docs/30-design/platform/spec/identity.md
+      - docs/30-design/platform/README.md
+      - docs/30-design/platform/spec/glossary.md
+    notes: >
+      First extraction of the platform reorganisation the maintainer approved
+      on 2026-10-18: six layers (L0 identity, L1 records, L2 definitions and
+      instances, L3 state and intent, L4 change and sync, L5 authority), each
+      with one undated living spec under docs/30-design/platform/spec/, the
+      dated documents kept as snapshots with a pointer. Non-vacuity, run
+      2026-10-18 with platform-spec-control.sh in a scratch root, one break
+      at a time, each red with exactly the one matching finding: an appended
+      "(Withdrawn ...)" note; a cited case file renamed; the stated count
+      changed to 999; the hub-sync design's link removed. Found while
+      writing it: no conformance case covers rule I7 across two instances
+      (typed-write-resend-same-ids re-sends from one instance), and the
+      write contract's §3 U2 ("an identical re-send is unchanged") was
+      dropped by §6.1 Q2 on 2026-10-12, which the first glossary draft had
+      repeated; the glossary and index were corrected before commit.
+
+  - id: SPEC-REGISTRATION
+    title: "Platform spec L2: the registration specification (grammar, negotiation, definitions, instances, labels, read selection, projected views, quirks rules 1-4) as one living document"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: docs/platform-spec-index-2026-10-18
+    base: main@8d2b93ed
+    state: done
+    pr: []
+    blast_radius: >
+      docs/30-design/platform/spec/registration.md (new) from the hub-sync
+      design §3.1 grammar rules, §3.5, §3.6 and §3.7 rules 1-4, with D18,
+      its addendum, D19, D20 and walk-through rows 1-16 applied; the
+      hub-sync design's §3.5-§3.7 replaced by their headings, a pointer and
+      a link to their full text at b3536bbf (1,654 to 524 lines); a pointer
+      in the execution plan §2.6.1; the platform index, glossary and
+      identity spec repointed; tools/nsschema/spec_cases.py (new) generates
+      the spec's case table from the case files; the gate's SOURCES entry.
+      No rule or conformance case changes.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: specification in this repository; ships nothing
+    register: []
+    gates:
+      - run: node tools/queue/gates/platform-spec.js registration
+        kind: static
+        describe: >
+          FAILS when the registration spec is missing, carries amendment
+          narration, names a case that does not exist, states a count that
+          differs from its table, or when the platform index, the hub-sync
+          design or the execution plan does not link to it. GREEN on
+          2026-10-18: 199 checks, 186 cases (54 + 103 + 29, every case
+          file under specs/sync/conformance/).
+      - run: python3 -m tools.nsschema.spec_cases registration --check
+        kind: static
+        describe: >
+          FAILS when the spec's generated case table differs from what the
+          case files (title, control, expected status, outcome and reason
+          codes) produce, so a case added, removed or retitled without
+          regenerating the table turns it red.
+    blocks_on: [SPEC-ID]
+    evidence:
+      - docs/30-design/platform/spec/registration.md
+      - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
+      - docs/30-design/platform/README.md
+    notes: >
+      States each rule as decided, with the remaining choices awaiting the
+      maintainer in §18 and the not-yet-specified parts (SPEC-REG-MODES,
+      SPEC-REG-MIGRATE, SPEC-REG-COMMANDS) named; those items edit this
+      spec from now on. §15 (binding, credentials, the owner) is the block
+      SPEC-AUTHORITY moves into the authority spec. Non-vacuity, run
+      2026-10-18, one break at a time in a scratch root, each red with
+      exactly its own finding: an appended "(Withdrawn ...)" note; the
+      first cited case file renamed; the count changed to 999; the hub-sync
+      design's link removed; and, for the table gate, a copy of the spec
+      with one generated row deleted (--spec). The three registration
+      suites (1,281 tests) pass unchanged; they stay gated on the
+      SPEC-REG-* items.
+
+  - id: SPEC-STATE-INTENT
+    title: "Platform spec L3: the state and intent specification (kinds, slots, channels, states, end reasons, requested and applied, initiators, composition)"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main@5a9a49cc
+    state: not-started
+    pr: []
+    blast_radius: >
+      docs/30-design/platform/spec/state-intent.md (new) from the
+      stateSpans grammar (hub-sync §3.1), slot sharing (§3.6, §3.7 rule 2),
+      the intent and workflow landscape §9-§10 and the generated
+      registrations; pointers in those documents; the index row; a SOURCES
+      entry in the gate. No rule or case changes.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: specification in this repository; ships nothing
+    register: []
+    gates:
+      - no-gate: >
+          Not started. The gate will be `node tools/queue/gates/platform-spec.js
+          state-intent`, red under each control break, plus `make
+          schema-sync-model --check` unchanged.
+    blocks_on: [SPEC-REGISTRATION]
+    evidence:
+      - docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md
+      - specs/sync/controller-state-model.schema.json
+    notes: >
+      Lists what is undeclared rather than guessing it: iAPS has no
+      registration; end-reason vocabularies for Trio override and temporary
+      target and AndroidAPS profile switch, AndroidAPS initiator values and
+      every command vocabulary (landscape §10). Carries the
+      LAB-HUB-ACTIVE-STATE disagreements as the reason the hub records
+      composition and active state as the controller reports them.
+
+  - id: SPEC-SYNC-TRANSPORT
+    title: "Platform spec L4: the change and sync specification (write step, re-send rule, cursor, history, socket delivery, definition-version migration)"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main@5a9a49cc
+    state: not-started
+    pr: []
+    blast_radius: >
+      docs/30-design/platform/spec/sync-transport.md (new) from the write
+      contract §2-§3 and §6.1, the hub-sync design §2-§3.2, the
+      replay-fidelity proposal §1 and §3.5's fallback rule; pointers in
+      those documents; the index row; a SOURCES entry in the gate. Unlike
+      the other extractions it also has to specify what no document does
+      yet: socket delivery of typed records, cursor semantics under
+      concurrent writers, and migrating stored typed records when a
+      definition changes version.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: specification in this repository; ships nothing
+    register: []
+    gates:
+      - no-gate: >
+          Not started. The gate will be `node tools/queue/gates/platform-spec.js
+          sync-transport`, red under each control break. The new parts need
+          conformance cases of their own and a reference function, gated
+          like the registration suites, each rejection paired with a passing
+          control and each rule shown non-vacuous by a weakening; and any
+          cost claim reproduced with `make schema-sync-cost` or measured,
+          never quoted.
+    blocks_on: [SPEC-ID]
+    evidence:
+      - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
+      - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
+      - docs/30-design/platform/PROPOSAL-replay-fidelity-changes-2026-09-11.md
+    notes: >
+      The cost-effectiveness goal (websocket plus REST, typed definitions,
+      less work to fully sync) lands here. Constraint carried from the write
+      contract: BF-164 (only API v3 writes reach the storage socket) is held
+      out pending a lab measurement and the AndroidAPS authors' answer, so
+      the spec states socket delivery for typed records without assuming
+      that question's outcome.
+
+  - id: SPEC-AUTHORITY
+    title: "Platform spec L5: the authority specification (binding, credential kind, owner actions, roles and provenance, command routing; delegation and proposals as open design)"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main@5a9a49cc
+    state: not-started
+    pr: []
+    blast_radius: >
+      docs/30-design/platform/spec/authority.md (new) from the hub-sync
+      design §3.5 (binding, owner actions, block) and §3.6 (roles,
+      provenance, command-sink binding, routing), D13-D17 and
+      configuration-and-delegation §5.4; pointers; the index row; a SOURCES
+      entry in the gate. Delegation and proposals are stated as open, with
+      what a design must provide, not specified here.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: specification in this repository; ships nothing
+    register: []
+    gates:
+      - no-gate: >
+          Not started. The gate will be `node tools/queue/gates/platform-spec.js
+          authority`, red under each control break, with the negotiation and
+          instance suites unchanged.
+    blocks_on: [SPEC-REGISTRATION]
+    evidence:
+      - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
+      - docs/30-design/tenancy/nightscout-configuration-and-delegation-2026-09-10.md
+    notes: >
+      Start from the agent trust-boundaries page once it lands on main and
+      from the upstream agent control-plane RFC (issuerType agent, the
+      suggest scope, DelegationGrant) rather than a new design. Whether
+      delegation and proposals become a SPEC-REG-PROPOSALS item or fold into
+      SPEC-REG-COMMANDS is the maintainer's open choice.

@@ -3,7 +3,8 @@
 *Contributor-facing.* **Snapshot, 2026-10-17.** Input to queue item `ID-FORMAT-DECISION` and to the
 reply in [upstream-asks-loop-identifier](../../30-design/platform/upstream-asks-loop-identifier/reply.body.md).
 Companion to [identifier duplicates](identifier-duplicates-2026-10-17.md), whose corpus, site labels
-and client classes this note reuses.
+and client classes this note reuses. The proposed constraints are carried in the
+[identity specification §4](../../30-design/platform/spec/identity.md#4-the-identifier-format).
 
 Marks: **[R]** read from code at the commit given; **[M]** measured, by
 [`identifier-format-2026-10-17/idshape.py`](identifier-format-2026-10-17/idshape.py) (corpus shapes,

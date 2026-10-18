@@ -300,7 +300,9 @@ OpenAPI spec, `indexedFields`, the nsschema model and the `walker` (§3.4).
 ### 2.6.1 D18 — two-tier controller registration
 
 D11 says *what* `devicestatus` decomposes into is declared by a registered controller description.
-D18 says who may declare it and what a declaration may carry.
+D18 says who may declare it and what a declaration may carry. The contract that implements D18, D19
+and D20 is maintained in the [registration](../platform/spec/registration.md) and
+[identity](../platform/spec/identity.md) specifications.
 
 | tier | who writes it | purpose | what changes for the controller |
 |---|---|---|---|
@@ -555,6 +557,13 @@ the reason code `ambiguous-command-destination`, with four new cases; row 15's e
 `boundTo`, with a `transfer-role` grant recorded on the stored role as `grantedBy: transfer-role`,
 §3.5's `release` and `transfer` modelled as instance-case requests, and eight new cases. 103
 instance cases. The choices made beyond the rows are listed in the queue item.)*
+
+**Decided 2026-10-18 (maintainer)**, on how an agent is recorded as initiator (D18's initiator
+vocabularies; [intent landscape](../platform/nightscout-intent-workflow-landscape-2026-10-09.md) P5).
+
+| # | point | decision |
+|---|---|---|
+| 17 | an agent as initiator | **no `agent` value is added.** An agent initiator is written in the open-vocabulary form `{value: other, controllerTerm}` (addendum rule 3), as §3.6 of the hub-sync design does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. The grammar's `initiators` element lists strings in each controller's own vocabulary, with no shared list and no `other` form; applying the form there is not yet specified. Map: [agents in the ecosystem](../platform/agent-trust-boundaries-2026-10-18.md) |
 
 ### 2.7 D12 — what each repository is for
 

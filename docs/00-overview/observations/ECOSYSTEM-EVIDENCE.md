@@ -2,7 +2,7 @@
 
 *For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
 **Observations** (part 1 of the overview; [how the overview is organised](../README.md)). Living
-page, assembled 2026-10-02 against this repository at `e3d7b65c`; §7 added 2026-10-16 at `66403e0f`. It describes; it recommends
+page, assembled 2026-10-02 against this repository at `e3d7b65c`; §7 added 2026-10-16 at `66403e0f`; §7.1's agent tools and MCP servers checked 2026-10-18 at `5a9a49cc`. It describes; it recommends
 nothing. Each section names the date and the source or command of its figures; where a figure
 lives in a generated table or a record, this page links to that one home instead of copying it.
 Re-measure before quoting.*
@@ -185,7 +185,8 @@ answer.
 
 Measured 2026-10-16 against this repository at `66403e0f` and the clones in `externals/` (last
 commit dates from `git -C externals/<repo> log -1 --format=%cs`); the g7sim, pod and trio-test-harness rows on
-2026-10-17 (detail in the [device-simulators record](../../60-research/programme/device-simulators-2026-10-17.md)). Listed by kind, not ranked.
+2026-10-17 (detail in the [device-simulators record](../../60-research/programme/device-simulators-2026-10-17.md)); the nightscout-cgm-skill and Lumose rows and the MCP servers on 2026-10-18, from each
+repository's README and, where named, its source, through the GitHub API. Listed by kind, not ranked.
 
 ### 7.1 Research tools elsewhere in the ecosystem
 
@@ -203,8 +204,8 @@ commit dates from `git -C externals/<repo> log -1 --format=%cs`); the g7sim, pod
 | [pod](https://github.com/LoopKit/pod) | an Omnipod DASH pod simulator, over Bluetooth on a Raspberry Pi or for an app in the iOS Simulator, with a control panel for reservoir, alerts and faults | GPL-3.0 | 2026-10-12 |
 | [trio-test-harness](https://github.com/jwoglom/trio-test-harness) | builds, installs, drives and screenshots Trio or Loop from any branch or PR on the iOS Simulator or a phone, with HTML or PR-comment reports | none | 2026-10-17 |
 | [babelbetes](https://github.com/nudgebg/babelbetes) | standardises publicly available clinical diabetes trial data | MIT (in `setup.py`) | 2026-07-21 |
-| [nightscout-cgm-skill](https://github.com/shanselman/nightscout-cgm-skill) | an agent skill for analysing Nightscout CGM data | MIT | 2026-06-07 |
-| [GlycemicGPT](https://github.com/GlycemicGPT/GlycemicGPT) | an open-source AI diabetes platform connecting to CGM and pump; its README opens with a safety warning | GPL | 2026-08-18 |
+| [nightscout-cgm-skill](https://github.com/shanselman/nightscout-cgm-skill) | an agent skill: the agent runs a local Python script (`scripts/cgm.py`) that copies a site's CGM data into SQLite and computes time in range, GMI, AGP, patterns and an HTML report; it reads only. The README configures the credential as `token=` in `NIGHTSCOUT_URL`, and says health data "never leaves your machine except to fetch from your own Nightscout server"; the script's printed output becomes conversation text, sent to whichever model backs the assistant | MIT | 2026-06-07 |
+| [Lumose](https://github.com/lumose-health/GlycemicGPT) (repository `GlycemicGPT`) | a self-hosted diabetes platform with AI briefs, pattern detection, chat and caregiver alerts; reads Dexcom G7 by cloud API, Tandem t:slim X2 and Mobi and Medtronic 680G/770G/780G over Bluetooth (Mobi and Medtronic marked not verified on hardware), and a Nightscout site. The user chooses the AI provider, and the README says "that choice determines where your health data is processed": local providers keep it on the user's network, cloud providers receive it. Its CONTRIBUTING says pull requests that introduce therapeutic write primitives will not be merged; its README says AI suggestions for insulin dosing, carb ratio or correction factor must be verified with the healthcare team. Release v0.15.0 | GPL-3.0 | 2026-08-18 |
 | [nightscout-reporter](https://github.com/zreptil/nightscout-reporter) | PDF reports from a Nightscout site; the README points to its Angular successor | own text | 2025-10-23 |
 | [oref0](https://github.com/openaps/oref0) autotune | settings tuning from logged data, in `bin/oref0-autotune*` | MIT | 2026-03-09 |
 
@@ -212,6 +213,21 @@ The OREF-INV-003 study ("What Drives Outcomes in oref Closed-Loop Insulin Delive
 author of the first six rows. Its data warehouse and analysis code are not public; this
 repository's [replication brief](../../60-research/collaboration/oref-inv-003-replication-brief.md)
 describes what was replicated and the aggregate-only exchange proposed.
+
+**Nightscout MCP servers.** A Model Context Protocol server offers an assistant tools, resources and
+prompts over stdio or HTTP, and calls a Nightscout site with the credential it is configured with.
+Last commit is the default branch's, in UTC, from the GitHub API on 2026-10-18; the Nocturne row is
+read from source.
+
+| server | licence | last commit | transport | write tools | credential to Nightscout |
+|---|---|---|---|---|---|
+| [lozit/mcp-nightscout](https://github.com/lozit/mcp-nightscout) | MIT | 2026-10-08 | stdio only | none; five read tools with server-side aggregates. Version 0.0.0, not published | a `readable` subject token kept in the OS keychain; refuses `API_SECRET` at start |
+| [oliver-virt/nightscout-mcp](https://github.com/oliver-virt/nightscout-mcp) | MIT | 2026-08-22 | Streamable HTTP; refuses to start without a bearer token for MCP clients | none; leaves out the bolus wizard preview (`bwp`) | a `readable` token, never `API_SECRET` |
+| [ColebyPearson/nightscout-mcp](https://github.com/ColebyPearson/nightscout-mcp) | MIT | 2026-07-07 | stdio | none; 44 read tools, among them ISF and carb-ratio checks against the profile, a Dynamic ISF adjustment-factor recommender and a fitted "suggested DIA" (`dia_fit_estimate`) | a `readable` token; refuses `API_SECRET`; requires `https://` |
+| [b77ai/nightscout](https://github.com/b77ai/nightscout) | MIT | 2026-07-10 | HTTP at `/mcp` (Docker); MCP clients authenticate by bearer header or by the token in the path (`POST /mcp/<token>`), or not at all when `MCP_AUTH_TOKEN` is unset | `log_treatment`, `remove_treatment`, `update_nightscout_profile` | `API_SECRET` (SHA-1) or a `readable` token |
+| [jeremyclee/nightscout-mcp-js](https://github.com/jeremyclee/nightscout-mcp-js) | MIT | 2026-05-20 | stdio | `create_treatment`, only when `NIGHTSCOUT_ALLOW_WRITE_TREATMENTS` is exactly `true` | `API_SECRET` (plain or SHA-1) or a token; the README's example configuration uses `API_SECRET` |
+| [ssuppe/nightscout-mcp](https://github.com/ssuppe/nightscout-mcp) | MIT | 2025-07-19 | HTTP at `localhost:3000/mcp`; no MCP-client authentication described | none (API v1 reads) | a token in `.env` |
+| Nocturne `src/Tools/Nocturne.Tools.McpServer` | AGPL-3.0 (README) | `ca52034e8`, 2026-08-23 | stdio, or SSE with `--web` | `CreateEntry` (a glucose entry, through API v1) | an API base URL; no credential setting in its configuration or API client (read at `42275c812`) |
 
 ### 7.2 Tools built in this repository
 
@@ -250,3 +266,5 @@ across training and test folds; with folds grouped by person, every feature set 
   current.
 - Vendor dates marked "announced" or "estimated" will move.
 - Nothing here measures user numbers, installations or outcomes beyond the studies cited.
+- The agent-tool and MCP-server rows of §7.1 are read from READMEs and source on 2026-10-18; none
+  was run against a site.

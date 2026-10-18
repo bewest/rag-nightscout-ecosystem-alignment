@@ -275,7 +275,8 @@ None of these is decided; each is a row in [the queue](../../queue/QUEUE.md).
 | `ID-SCOPE-DECISION` | is `identifier` unique per collection, across collections, per tenant |
 | `ID-SIMPLE-MATCH` | the one server change proposed: v1 entries and devicestatus match on `identifier` |
 
-Related: [Loop `identifier` proposal and reply](../30-design/platform/upstream-asks-loop-identifier/README.md),
+Related: [identity specification](../30-design/platform/spec/identity.md) (the L0 rules this page measures today's behaviour against),
+[Loop `identifier` proposal and reply](../30-design/platform/upstream-asks-loop-identifier/README.md),
 [identifier format research](../60-research/tenancy/identifier-format-2026-10-17.md),
 [identifier duplicates](../60-research/tenancy/identifier-duplicates-2026-10-17.md),
 [write contract](../30-design/tenancy/write-contract-spec-2026-10-07.md) (its §1.4 measures

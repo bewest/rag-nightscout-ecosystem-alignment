@@ -4,7 +4,7 @@
 **measured**. Sources and commits are in §1. Current decisions: [execution plan
 §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
 **Corrected in place 2026-10-12:** §5 is measured on both hubs (TL;DR and §12 follow it); the §10 rows for the hub-sync design and `specs/sync/registrations/` record what the
-registrations now declare and what remains; the registrations row also records the D18 addendum grammar (`SCHEMA-REG-EXT`, 2026-10-12).
+registrations now declare and what remains; the registrations row also records the D18 addendum grammar (`SCHEMA-REG-EXT`, 2026-10-12). **Also 2026-10-18:** §2 records the maintainer's decision on agent initiators (P5).
 
 **The question.** Nightscout's API v1 and v3 manage *entities*: create, read, update and delete
 documents in `treatments`, `devicestatus`, `profile`. AID controllers increasingly manage
@@ -68,6 +68,11 @@ Six properties. A controller's intent model has each of them; an entity collecti
 | P4 | **End reason** | expired, cancelled, superseded, deleted before start, ended by a trigger (carbs, glucose, loop off) | "ended" is encoded as a shortened `duration`, a delete, or a zero-duration record |
 | P5 | **Initiator** | phone, watch, shortcut, automation, caregiver, remote | recorded locally or in debug logs; on the wire only free-text `enteredBy` |
 | P6 | **Command lifecycle** | request → validate → apply → acknowledge, with a correlation id | no request record; success visible only as the resulting entity; failure as free text |
+
+*P5, decided 2026-10-18 (maintainer):* no `agent` value is added to any initiator vocabulary; an
+agent initiator is written in the open-vocabulary form `{value: other, controllerTerm}`, as the
+hub-sync design does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. ([execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16),
+row 17; [agents in the ecosystem §4.2](agent-trust-boundaries-2026-10-18.md#42-the-upstream-rfc-under-d18)).
 
 ## 3. Per-controller matrix
 
