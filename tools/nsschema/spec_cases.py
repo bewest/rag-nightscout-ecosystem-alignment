@@ -1,13 +1,14 @@
-"""Generate the conformance-case table inside a platform specification.
+"""Generate the tables inside a platform specification.
 
-A layer specification under docs/30-design/platform/spec/ lists the cases that
-check it between two markers:
+A layer specification under docs/30-design/platform/spec/ carries generated
+blocks between markers named <layer>-<block>:
 
     <!-- BEGIN GENERATED: registration-cases (tools/nsschema/spec_cases.py) -->
     <!-- END GENERATED: registration-cases -->
 
-The rows come from the case files themselves (title, control, expected status,
-outcome and reason codes), so the table cannot drift from the cases.
+`cases` rows come from the case files themselves (title, control, expected
+status, outcome and reason codes); `kinds` rows come from the well-known
+registrations in specs/sync/registrations/. Neither can drift from its source.
 
     python3 -m tools.nsschema.spec_cases registration           # rewrite
     python3 -m tools.nsschema.spec_cases registration --check   # exit 1 if stale
@@ -24,9 +25,31 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 CASES = ROOT / "specs" / "sync" / "conformance"
 SPEC = ROOT / "docs" / "30-design" / "platform" / "spec"
 
-# Which case directories each specification's table covers.
+REGISTRATIONS = ROOT / "specs" / "sync" / "registrations"
+
+# Which cases each specification's table covers: whole directories, or a list.
 LAYERS = {
-    "registration": [("", CASES), ("instances/", CASES / "instances"), ("quirks/", CASES / "quirks")],
+    "registration": {"cases": [("", CASES), ("instances/", CASES / "instances"), ("quirks/", CASES / "quirks")]},
+    "state-intent": {
+        "kinds": ["loop", "trio", "androidaps"],
+        "cases": [
+            "instances/definition-version-conflict",
+            "instances/definition-same-meaning",
+            "instances/product-update-version-conflict",
+            "instances/product-update-new-version",
+            "instances/definition-wellknown-ref",
+            "instances/definition-wellknown-copy-conflicts",
+            "instances/instance-not-a-command-channel",
+            "quirks/same-as-definition-accepted",
+            "quirks/same-as-without-slot",
+            "quirks/names-alike-do-not-contend",
+            "quirks/equal-names-unlisted-do-not-contend",
+            "quirks/catalogue-mapping-applied",
+            "quirks/catalogue-mapping-version-outside",
+            "quirks/catalogue-mapping-version-unknown",
+            "quirks/same-as-typed-write-declared",
+        ],
+    },
 }
 
 
@@ -47,30 +70,79 @@ def cell(text):
     return " ".join(str(text).split()).replace("|", "\\|")
 
 
-def rows(layer):
+def case_paths(spec):
+    for item in spec:
+        if isinstance(item, tuple):
+            prefix, folder = item
+            for path in sorted(folder.glob("*.yaml")):
+                yield prefix, path
+        else:
+            prefix, _, _ = item.rpartition("/")
+            yield (prefix + "/" if prefix else ""), CASES / ("%s.yaml" % item)
+
+
+def term(value):
+    if isinstance(value, dict) and "value" in value:
+        return "%s: %s" % (value["value"], value.get("controllerTerm", ""))
+    return "" if value is None else str(value)
+
+
+def declared(span, member):
+    """null in the grammar means "not published"; absent means not declared."""
+    if member not in span:
+        return "undeclared"
+    return "yes" if span[member] else "not published"
+
+
+def kind_rows(controllers):
+    out = ["| controller | kind | category | slot | coexists with | ended on the wire | requested | applied | initiators | accepts from hub |",
+           "|---|---|---|---|---|---|---|---|---|---|"]
+    for name in controllers:
+        reg = yaml.safe_load((REGISTRATIONS / ("%s.yaml" % name)).read_text())
+        product = reg["metadata"].get("product", name)
+        for span in reg["spec"].get("stateSpans", []):
+            wire = span.get("wire") or {}
+            where = "`%s`" % wire["eventType"] if wire.get("eventType") else wire.get("collection")
+            parts = [p for p in (where, term(wire.get("endedEncoding"))) if p]
+            ended = ", ".join(parts) if wire else "not published"
+            accepts = (span.get("acceptsFromHub") or {}).get("channels")
+            out.append("| %s | %s | %s | %s | %s | %s | %s | %s | %s | %s |" % (
+                cell(product),
+                cell((span.get("kind") or "—") + (" (%s)" % term(span["availability"]) if span.get("availability") else "")), cell(span.get("category", "")),
+                cell(term(span.get("slot"))), cell(", ".join(span.get("coexistsWith") or []) or "—"),
+                cell(ended), declared(span, "requested"), declared(span, "applied"),
+                cell((span.get("initiators") or {}).get("vocabulary") or "—"),
+                cell(", ".join(accepts) if accepts else "—")))
+    return out
+
+
+def rows(layer, block="cases"):
+    if block == "kinds":
+        return kind_rows(LAYERS[layer]["kinds"])
     out = ["| case | shows | expected | control |", "|---|---|---|---|"]
-    for prefix, folder in LAYERS[layer]:
-        for path in sorted(folder.glob("*.yaml")):
-            case = yaml.safe_load(path.read_text())
-            response = (case.get("expected") or {}).get("response") or {}
-            expected = " ".join(str(v) for v in (response.get("status"), response.get("outcome")) if v)
-            reasons = sorted(codes(response, set()))
-            if reasons:
-                expected += "; " + ", ".join(reasons)
-            control = case.get("control")
-            out.append("| `%s%s` | %s | %s | %s |" % (
-                prefix, path.stem, cell(case.get("title", "")), cell(expected),
-                "`%s`" % control if control else ""))
+    for prefix, path in case_paths(LAYERS[layer]["cases"]):
+        case = yaml.safe_load(path.read_text())
+        response = (case.get("expected") or {}).get("response") or {}
+        expected = " ".join(str(v) for v in (response.get("status"), response.get("outcome")) if v)
+        reasons = sorted(codes(response, set()))
+        if reasons:
+            expected += "; " + ", ".join(reasons)
+        control = case.get("control")
+        out.append("| `%s%s` | %s | %s | %s |" % (
+            prefix, path.stem, cell(case.get("title", "")), cell(expected),
+            "`%s`" % control if control else ""))
     return out
 
 
 def render(layer, text):
-    begin = "<!-- BEGIN GENERATED: %s-cases (tools/nsschema/spec_cases.py) -->" % layer
-    end = "<!-- END GENERATED: %s-cases -->" % layer
-    pattern = re.compile(re.escape(begin) + r".*?" + re.escape(end), re.S)
-    if not pattern.search(text):
-        raise SystemExit("no %s-cases markers in the specification" % layer)
-    return pattern.sub(lambda _: "\n".join([begin] + rows(layer) + [end]), text)
+    for block in LAYERS[layer]:
+        begin = "<!-- BEGIN GENERATED: %s-%s (tools/nsschema/spec_cases.py) -->" % (layer, block)
+        end = "<!-- END GENERATED: %s-%s -->" % (layer, block)
+        pattern = re.compile(re.escape(begin) + r".*?" + re.escape(end), re.S)
+        if not pattern.search(text):
+            raise SystemExit("no %s-%s markers in the specification" % (layer, block))
+        text = pattern.sub(lambda _: "\n".join([begin] + rows(layer, block) + [end]), text)
+    return text
 
 
 def main(argv=None):

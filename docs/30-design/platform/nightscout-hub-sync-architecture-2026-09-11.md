@@ -135,7 +135,8 @@ A controller declares its live state model once, against
   indefinite sentinel, how "ended" is encoded), where the request and the
   applied effect are each recorded, the initiator vocabulary, the definitions
   it is made from, and which hub-originated intent the controller accepts.
-  Each entry carries evidence marked `read` (from source) or `measured`. The
+  Each entry carries evidence marked `read` (from source) or `measured`. What each member means is
+  maintained in the [state and intent specification](spec/state-intent.md). The
   2026-09-11 form was categories with states and a supersession rule; that
   form still validates. *(Corrected 2026-10-12.)*
 * **composition** — how overlapping intents combine, declared as reported by

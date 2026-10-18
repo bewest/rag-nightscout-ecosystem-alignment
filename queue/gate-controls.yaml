@@ -2119,3 +2119,30 @@ controls:
     proves: >
       run 2026-10-18: a copy of the spec with the generated row for
       instances/command-routed deleted is reported stale and exits 1.
+
+  - gate: |-
+      node tools/queue/gates/platform-spec.js state-intent
+    cwd: .
+    control: |-
+      tools/queue/gates/platform-spec-control.sh state-intent narration
+    positive-control: |-
+      node tools/queue/gates/platform-spec.js state-intent
+    control-kind: static
+    proves: >
+      run 2026-10-18: the narration break exits 1 with the one finding "no
+      amendment narration /\bwithdrawn\b/i". The `case`, `count` and
+      `pointer` breaks were run the same day, each exiting 1 with exactly
+      its own finding (instances/definition-version-conflict missing; 999
+      against 15 rows; the landscape's link removed).
+
+  - gate: |-
+      python3 -m tools.nsschema.spec_cases state-intent --check
+    cwd: .
+    control: |-
+      T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && sed '/quirks\/names-alike-do-not-contend/d' docs/30-design/platform/spec/state-intent.md > "$T/s.md" && python3 -m tools.nsschema.spec_cases state-intent --check --spec "$T/s.md"
+    positive-control: |-
+      python3 -m tools.nsschema.spec_cases state-intent --check
+    control-kind: static
+    proves: >
+      run 2026-10-18: a copy with the generated row for
+      quirks/names-alike-do-not-contend deleted is reported stale and exits 1.

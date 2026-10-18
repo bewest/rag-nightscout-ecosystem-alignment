@@ -140,10 +140,12 @@ it, or it is the product's current registration.
 
 ## L3 State and intent
 
+Specified in the [state and intent specification](state-intent.md).
+
 **Intent kind, `stateSpans` entry.** One kind of state a controller exposes (an override, a
 temporary target, a loop mode). It declares its slot, states, end reasons, carrier, where the
 request and the applied effect are recorded, initiators, definitions and what it accepts from the
-hub. [HS §3.1](../nightscout-hub-sync-architecture-2026-09-11.md#31-registration).
+hub. [State and intent S2](state-intent.md#2-rules).
 
 **Slot.** The exclusivity group a kind occupies. Kinds in one slot exclude each other; a kind may
 declare which other slots coexist with it.
