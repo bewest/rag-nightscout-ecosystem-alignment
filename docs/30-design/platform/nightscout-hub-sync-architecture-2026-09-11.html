@@ -13,10 +13,10 @@
         <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.html">
       
       
-        <link rel="prev" href="nightscout-extensibility-models-2026-09-10.html">
+        <link rel="prev" href="nightscout-effects-and-versioning-2026-09-11.html">
       
       
-        <link rel="next" href="nightscout-intent-workflow-landscape-2026-10-09.html">
+        <link rel="next" href="agent-trust-boundaries-2026-10-18.html">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>A hub-and-spoke sync model for AID controllers - Nightscout ecosystem alignment</title>
+        <title>Hub-and-spoke sync for AID controllers: the original sketch - Nightscout ecosystem alignment</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#a-hub-and-spoke-sync-model-for-aid-controllers" class="md-skip">
+        <a href="#hub-and-spoke-sync-for-aid-controllers-the-original-sketch" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              A hub-and-spoke sync model for AID controllers
+              Hub-and-spoke sync for AID controllers: the original sketch
             
           </span>
         </div>
@@ -1988,7 +1988,7 @@
   <span class="md-ellipsis">
     
   
-    Adoption roadmap: who builds what, in what order
+    Hub-and-spoke adoption across projects: who builds what, in what order
   
 
     
@@ -2331,6 +2331,8 @@
       
         
       
+        
+      
     
     
     
@@ -2392,14 +2394,118 @@
   
   
     <li class="md-nav__item">
-      <a href="PROPOSAL-controller-descriptions-2026-09-11.html" class="md-nav__link">
+      <a href="nightscout-intent-workflow-landscape-2026-10-09.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Proposal: let Nightscout describe the controllers it already recognises
+    Intent, workflow and entity management across the AID controller landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="spec/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    spec/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-typed-schema-evidence-2026-09-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Typed schemas for Nightscout, measured against stored documents
   
 
     
@@ -2420,70 +2526,14 @@
   
   
     <li class="md-nav__item">
-      <a href="PROPOSAL-replay-fidelity-changes-2026-09-11.html" class="md-nav__link">
+      <a href="nightscout-primitive-coverage-2026-09-11.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Proposal: the concrete changes that make Nightscout high-fidelity for replay
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="agent-trust-boundaries-2026-10-18.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Agents in the ecosystem: develop, interpret, act
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="algorithm-audition-2026-10-18.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Auditioning a dosing algorithm: same inputs, shadow only
+    Evidence coverage of the primitive catalogue
   
 
     
@@ -2511,35 +2561,7 @@
   <span class="md-ellipsis">
     
   
-    devicestatus and profile: what survives, what is lost, and what was never written
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="nightscout-effects-and-versioning-2026-09-11.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Temporary effects, privacy-preserving projection, and which version this is
+    Replaying a dosing decision from devicestatus and profile: what is lost, and what was never written
   
 
     
@@ -2585,6 +2607,34 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-effects-and-versioning-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Therapy effects and the sync contract's version
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -2604,7 +2654,7 @@
   <span class="md-ellipsis">
     
   
-    A hub-and-spoke sync model for AID controllers
+    Hub-and-spoke sync for AID controllers: the original sketch
   
 
     
@@ -2622,7 +2672,7 @@
   <span class="md-ellipsis">
     
   
-    A hub-and-spoke sync model for AID controllers
+    Hub-and-spoke sync for AID controllers: the original sketch
   
 
     
@@ -2929,14 +2979,14 @@
   
   
     <li class="md-nav__item">
-      <a href="nightscout-intent-workflow-landscape-2026-10-09.html" class="md-nav__link">
+      <a href="agent-trust-boundaries-2026-10-18.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Intent, workflow and entity management across the AID controller landscape
+    Agents in the ecosystem: develop, interpret, act
   
 
     
@@ -2957,14 +3007,14 @@
   
   
     <li class="md-nav__item">
-      <a href="nightscout-primitive-coverage-2026-09-11.html" class="md-nav__link">
+      <a href="algorithm-audition-2026-10-18.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Is there enough evidence for a unified primitive catalogue? A coverage assessment
+    Auditioning a dosing algorithm: same inputs, shadow only
   
 
     
@@ -2985,14 +3035,42 @@
   
   
     <li class="md-nav__item">
-      <a href="nightscout-typed-schema-evidence-2026-09-10.html" class="md-nav__link">
+      <a href="PROPOSAL-controller-descriptions-2026-09-11.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Typed schemas for Nightscout: what the documents actually contain
+    Controller descriptions: Nightscout describes the controllers it already recognises — proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="PROPOSAL-replay-fidelity-changes-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Replay fidelity: the concrete changes, per project — proposal
   
 
     
@@ -3021,20 +3099,6 @@
       
         
       
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
     
     
     
@@ -3053,14 +3117,14 @@
   
   
   
-    <a href="spec/index.html" class="md-nav__link">
+    <a href="upstream-asks-loop-identifier/index.html" class="md-nav__link">
       
   
   
   <span class="md-ellipsis">
     
   
-    spec/
+    upstream-asks-loop-identifier/
   
 
     
@@ -3144,41 +3208,15 @@
   
   
   
-    
-    
-      
+    <li class="md-nav__item">
+      <a href="integration-questionnaire-defaults-2026-10-18.html" class="md-nav__link">
         
-          
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="upstream-asks-loop-identifier/index.html" class="md-nav__link">
-      
   
   
   <span class="md-ellipsis">
     
   
-    upstream-asks-loop-identifier/
+    Integration questionnaire: default answers for Loop, Trio, AndroidAPS and OpenAPS, read from their source
   
 
     
@@ -3186,13 +3224,7 @@
   
   
 
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
+      </a>
     </li>
   
 
@@ -5441,12 +5473,17 @@
 
 
 
-<h1 id="a-hub-and-spoke-sync-model-for-aid-controllers">A hub-and-spoke sync model for AID controllers<a class="headerlink" href="#a-hub-and-spoke-sync-model-for-aid-controllers" title="Permanent link">&para;</a></h1>
+<h1 id="hub-and-spoke-sync-for-aid-controllers-the-original-sketch">Hub-and-spoke sync for AID controllers: the original sketch<a class="headerlink" href="#hub-and-spoke-sync-for-aid-controllers-the-original-sketch" title="Permanent link">&para;</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Record</p>
 <p>Record as of 2026-09-11. A point-in-time document; it is not kept up to date.</p>
 </div>
-<p><em>Contributor-facing.</em> <strong>Snapshot — describes 2026-09-11. Status: current as analysis; the design it sketches is carried forward by <a href="PROPOSAL-controller-descriptions-2026-09-11.html">PROPOSAL-controller-descriptions</a> and <a href="PROPOSAL-replay-fidelity-changes-2026-09-11.html">PROPOSAL-replay-fidelity-changes</a>.</strong> Current decisions: <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>. <strong>Corrected in place 2026-10-12:</strong> §3.1's description of <code>stateSpans</code> and the schema field list in §5.2 now match the schema as extended for D18 from <a href="nightscout-intent-workflow-landscape-2026-10-09.html">intent and workflow across the landscape</a> §9. <strong>Also 2026-10-12:</strong> §3.1 lists <code>extensions</code> and the D18 addendum grammar rules 1–5 (<code>SCHEMA-REG-EXT</code>). <strong>Also 2026-10-12:</strong> §3.5 specifies negotiation, D18 addendum rule 6 (<code>SPEC-REG-NEGOTIATE</code>): the capability document, the submit, update and retire contract, the fallback rule, authorisation with open questions, and the conformance cases. <strong>Also 2026-10-14:</strong> §3.5's ten open questions are decided ("Decisions"), with the contract changes they imply listed for <code>SPEC-REG-DECISIONS</code>; §5.2's kind/instance split is adopted as D19. <strong>Also 2026-10-15:</strong> §3.5 is amended for those decisions (<code>SPEC-REG-DECISIONS</code>): first-to-claim namespaces, binding to the creating subject, the owner's actions on <code>ns-tenant-admin</code> and the <code>blocked</code> state, the credential kind, carrier views and dual-write links, and refused typed writes; 53 conformance cases. <strong>Also 2026-10-15:</strong> §3.6 specifies D19 (<code>SPEC-REG-INSTANCE</code>): content-addressed definitions, leased instances, channel roles with provenance and one source of record, labels under <code>dev.nightscout/</code> (corrected from D19's <code>nightscout.dev/</code>), read selection, the projected view for older readers and retention; 86 instance cases, and the 26 accepted or partial §3.5 cases gained <code>definitionId</code>. §3.5's file table said 53 cases after the amendment that made them 55; corrected in place. <strong>Also 2026-10-17:</strong> §1 embeds the drawings 3·hub-sync and 3·delegation. <strong>2026-10-18:</strong> §3.5–§3.7 are maintained in the <a href="spec/registration.html">registration</a> and <a href="spec/identity.html">identity</a> specifications; each section here keeps its heading, a pointer and a link to its full text at <code>b3536bbf</code>.</p>
+<p><em>What this is: an analysis (contributor-facing), the first sketch of the design the platform
+specifications now state. Read after <a href="nightscout-effects-and-versioning-2026-09-11.html">therapy effects and
+versioning</a>; leads to its successors, the
+<a href="PROPOSAL-controller-descriptions-2026-09-11.html">controller-descriptions</a> and
+<a href="PROPOSAL-replay-fidelity-changes-2026-09-11.html">replay-fidelity</a> proposals and the
+<a href="index.html#the-specification-set">specifications</a>.</em> <strong>Snapshot — describes 2026-09-11. Status: current as analysis; the design it sketches is carried forward by <a href="PROPOSAL-controller-descriptions-2026-09-11.html">PROPOSAL-controller-descriptions</a> and <a href="PROPOSAL-replay-fidelity-changes-2026-09-11.html">PROPOSAL-replay-fidelity-changes</a>.</strong> Current decisions: <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>. <strong>Corrected in place 2026-10-12:</strong> §3.1's description of <code>stateSpans</code> and the schema field list in §5.2 now match the schema as extended for D18 from <a href="nightscout-intent-workflow-landscape-2026-10-09.html">intent and workflow across the landscape</a> §9. <strong>Also 2026-10-12:</strong> §3.1 lists <code>extensions</code> and the D18 addendum grammar rules 1–5 (<code>SCHEMA-REG-EXT</code>). <strong>Also 2026-10-12:</strong> §3.5 specifies negotiation, D18 addendum rule 6 (<code>SPEC-REG-NEGOTIATE</code>): the capability document, the submit, update and retire contract, the fallback rule, authorisation with open questions, and the conformance cases. <strong>Also 2026-10-14:</strong> §3.5's ten open questions are decided ("Decisions"), with the contract changes they imply listed for <code>SPEC-REG-DECISIONS</code>; §5.2's kind/instance split is adopted as D19. <strong>Also 2026-10-15:</strong> §3.5 is amended for those decisions (<code>SPEC-REG-DECISIONS</code>): first-to-claim namespaces, binding to the creating subject, the owner's actions on <code>ns-tenant-admin</code> and the <code>blocked</code> state, the credential kind, carrier views and dual-write links, and refused typed writes; 53 conformance cases. <strong>Also 2026-10-15:</strong> §3.6 specifies D19 (<code>SPEC-REG-INSTANCE</code>): content-addressed definitions, leased instances, channel roles with provenance and one source of record, labels under <code>dev.nightscout/</code> (corrected from D19's <code>nightscout.dev/</code>), read selection, the projected view for older readers and retention; 86 instance cases, and the 26 accepted or partial §3.5 cases gained <code>definitionId</code>. §3.5's file table said 53 cases after the amendment that made them 55; corrected in place. <strong>Also 2026-10-17:</strong> §1 embeds the drawings 3·hub-sync and 3·delegation. <strong>2026-10-18:</strong> §3.5–§3.7 are maintained in the <a href="spec/registration.html">registration</a> and <a href="spec/identity.html">identity</a> specifications; each section here keeps its heading, a pointer and a link to its full text at <code>b3536bbf</code>.</p>
 <p>Date: 2026-09-11. Fifth in a series
 with
 <a href="nightscout-typed-schema-evidence-2026-09-10.html">Typed schemas</a>,
@@ -5454,7 +5491,7 @@ with
 <a href="nightscout-devicestatus-profile-fidelity-2026-09-10.html">devicestatus and profile fidelity</a>
 and
 <a href="../tenancy/nightscout-configuration-and-delegation-2026-09-10.html">Settings, extensibility and delegation</a>.</p>
-<p><strong>Nothing here is a proposal to merge. The deliverable is a design to argue
+<p><strong>The deliverable is a design to argue
 with, and the measurements that make it arguable.</strong></p>
 <hr />
 <h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>

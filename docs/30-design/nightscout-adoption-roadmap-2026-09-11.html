@@ -27,7 +27,7 @@
     
     
       
-        <title>Adoption roadmap: who builds what, in what order - Nightscout ecosystem alignment</title>
+        <title>Hub-and-spoke adoption across projects: who builds what, in what order - Nightscout ecosystem alignment</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#adoption-roadmap-who-builds-what-in-what-order" class="md-skip">
+        <a href="#hub-and-spoke-adoption-across-projects-who-builds-what-in-what-order" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Adoption roadmap: who builds what, in what order
+              Hub-and-spoke adoption across projects: who builds what, in what order
             
           </span>
         </div>
@@ -1997,7 +1997,7 @@
   <span class="md-ellipsis">
     
   
-    Adoption roadmap: who builds what, in what order
+    Hub-and-spoke adoption across projects: who builds what, in what order
   
 
     
@@ -2015,7 +2015,7 @@
   <span class="md-ellipsis">
     
   
-    Adoption roadmap: who builds what, in what order
+    Hub-and-spoke adoption across projects: who builds what, in what order
   
 
     
@@ -2534,6 +2534,8 @@
       
         
           
+        
+      
         
       
         
@@ -4766,13 +4768,16 @@
 
 
 
-<h1 id="adoption-roadmap-who-builds-what-in-what-order">Adoption roadmap: who builds what, in what order<a class="headerlink" href="#adoption-roadmap-who-builds-what-in-what-order" title="Permanent link">&para;</a></h1>
+<h1 id="hub-and-spoke-adoption-across-projects-who-builds-what-in-what-order">Hub-and-spoke adoption across projects: who builds what, in what order<a class="headerlink" href="#hub-and-spoke-adoption-across-projects-who-builds-what-in-what-order" title="Permanent link">&para;</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Record</p>
 <p>Record as of 2026-09-11. A point-in-time document; it is not kept up to date.</p>
 </div>
 <blockquote>
-<p><strong>Snapshot — describes each project's development branch on 2026-09-11.</strong> Status: current as
+<p><em>What this is: a proposal (contributor-facing). Read after the <a href="platform/nightscout-hub-sync-architecture-2026-09-11.html">hub-and-spoke sync
+sketch</a>; leads to the
+<a href="platform/PROPOSAL-controller-descriptions-2026-09-11.html">controller-descriptions proposal</a>.</em>
+<strong>Snapshot — describes each project's development branch on 2026-09-11.</strong> Status: current as
 the cross-project (hub-and-spoke) adoption proposal; not the cgm-remote-monitor release order,
 which is on the <a href="../00-overview/ROADMAP.html">roadmap</a>.</p>
 </blockquote>
@@ -5256,14 +5261,13 @@ Those are the two complaints this series started from.</p>
   than the number suggests, and AAPS's 2,434 include a multiplatform
   migration that touches everything. Worse, a six-month window opening
   2026-03-11 excluded cgm-remote-monitor's <code>docs/proposals/</code> set entirely —
-  the single most relevant prior art in this series — because it landed
+  the earlier draft of this series, written in this repository — because it landed
   2026-01-01. Both errors ran the same direction: <strong>counting recent commits
   systematically understates design work, which is bursty, and understates
   connectivity work, which is spread across submodules and sibling repos.</strong></li>
-<li><strong>No maintainer has been asked.</strong> Everything here is inferred from public
-  branches. Willingness, capacity and appetite are not observable from git,
-  and every phase that names a project is a proposal to that project, not a
-  plan for it.</li>
+<li><strong>Willingness, capacity and appetite.</strong> Everything here is read from public
+  branches, and these are not observable from git. Every phase that names a
+  project is a proposal to that project.</li>
 <li><strong>Whether AAPS's <code>settings</code> client is intended for controller settings at
   all.</strong> It is unwired, unreleased, and arrived inside a ktor migration
   commit, which makes incidental completeness at least as likely as intent.
@@ -5282,9 +5286,9 @@ Those are the two complaints this series started from.</p>
   multi-writer conflict resolution. What the tree can say about <em>live</em> is
   narrow and negative: <strong>nothing in <code>lib/</code> or <code>tests/</code> references any of
   these documents</strong>, the only mention outside the directory is one line in
-  <code>docs/INDEX.md</code>, and all four questionnaire responses are still <em>Pending</em>.
-  Drafted and parked is the reading; nobody has said so, and asking a
-  maintainer is still the only way to know.</li>
+  <code>docs/INDEX.md</code>, and all four questionnaire responses read <em>Pending</em>.
+  Default answers for every question, read from each controller's source,
+  are in the <a href="platform/integration-questionnaire-defaults-2026-10-18.html">integration questionnaire defaults</a>.</li>
 <li><strong>Whether the pump/CGM connectivity push has a shared bottleneck</strong> that a
   data-layer proposal could relieve. Five projects widening device coverage
   in parallel is the ecosystem's revealed priority; nothing here tests

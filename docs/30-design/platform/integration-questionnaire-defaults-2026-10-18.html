@@ -1,0 +1,7320 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/integration-questionnaire-defaults-2026-10-18.html">
+      
+      
+        <link rel="prev" href="upstream-asks-device-simulators/index.html">
+      
+      
+        <link rel="next" href="../remedial/index.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Integration questionnaire: default answers for Loop, Trio, AndroidAPS and OpenAPS, read from their source - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#integration-questionnaire-default-answers-for-loop-trio-androidaps-and-openaps-read-from-their-source" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Integration questionnaire: default answers for Loop, Trio, AndroidAPS and OpenAPS, read from their source
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24" id="__nav_5_24_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_24_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    30-design/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cgm-remote-monitor-telemetry-emitter-map-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor Telemetry Emitter Integration Map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-adoption-roadmap-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hub-and-spoke adoption across projects: who builds what, in what order
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-integration-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Integration Guide for App Developers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-backend-service-design-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Backend Service Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-deployment-lifecycle-examples-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Deployment Lifecycle Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-implementation-breakdown-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Implementation Breakdown
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-lifecycle-policy-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Lifecycle Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-local-integration-plan-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Local Integration Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-scheduling-dedupe-model-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Scheduling and Dedupe Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ns2parquet-keyed-pseudonyms.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ns2parquet keyed pseudonyms: design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_13" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    platform/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24_13" id="__nav_5_24_13_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_24_13_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    platform/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-intent-workflow-landscape-2026-10-09.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intent, workflow and entity management across the AID controller landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="spec/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    spec/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-typed-schema-evidence-2026-09-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Typed schemas for Nightscout, measured against stored documents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-primitive-coverage-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evidence coverage of the primitive catalogue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-devicestatus-profile-fidelity-2026-09-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Replaying a dosing decision from devicestatus and profile: what is lost, and what was never written
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-extensibility-models-2026-09-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extending the Nightscout document model: four designs, measured
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-effects-and-versioning-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Therapy effects and the sync contract's version
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-hub-sync-architecture-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hub-and-spoke sync for AID controllers: the original sketch
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="agent-trust-boundaries-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agents in the ecosystem: develop, interpret, act
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="algorithm-audition-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auditioning a dosing algorithm: same inputs, shadow only
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="PROPOSAL-controller-descriptions-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Controller descriptions: Nightscout describes the controllers it already recognises — proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="PROPOSAL-replay-fidelity-changes-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Replay fidelity: the concrete changes, per project — proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="upstream-asks-loop-identifier/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    upstream-asks-loop-identifier/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="upstream-asks-device-simulators/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    upstream-asks-device-simulators/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration questionnaire: default answers for Loop, Trio, AndroidAPS and OpenAPS, read from their source
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="integration-questionnaire-defaults-2026-10-18.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration questionnaire: default answers for Loop, Trio, AndroidAPS and OpenAPS, read from their source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-this" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to use this
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Sources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-profiles-and-overrides" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A) Profiles and overrides
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="A) Profiles and overrides">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a1-profile-identification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A1. Profile identification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a2-override-templates-vs-activations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A2. Override templates vs activations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a3-override-dimensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A3. Override dimensions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a4-multiple-override-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A4. Multiple override resolution
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#b-policy-composition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B) Policy composition
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="B) Policy composition">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#b5-effective-parameters-computation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B5. Effective parameters computation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b6-composition-emission" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B6. Composition emission
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c-delivery-fidelity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C) Delivery fidelity
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="C) Delivery fidelity">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#c7-delivery-state-distinction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C7. Delivery state distinction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c8-pump-response-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C8. Pump response codes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c9-failure-reason-distinction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C9. Failure reason distinction
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-timing-and-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D) Timing and ordering
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="D) Timing and ordering">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#d10-monotonic-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D10. Monotonic ordering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d11-offline-batching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D11. Offline batching
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e-minimal-commitment-for-phase-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E) Minimal commitment for phase 1
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="E) Minimal commitment for phase 1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e12-smallest-native-event-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E12. Smallest native event set
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#f-additional-capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F) Additional capabilities
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="F) Additional capabilities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#f13-remote-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F13. Remote commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f14-controller-registration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F14. Controller registration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#g-migration-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        G) Migration path
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="G) Migration path">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#g15-adoption-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        G15. Adoption timeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#g16-bridge-mode-feedback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        G16. Bridge mode feedback
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-a-iaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix A. iAPS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-b-path-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix B. Path index
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../remedial/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tenancy/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../60-research/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../guides/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    guides/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-this" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to use this
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Sources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-profiles-and-overrides" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A) Profiles and overrides
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="A) Profiles and overrides">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a1-profile-identification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A1. Profile identification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a2-override-templates-vs-activations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A2. Override templates vs activations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a3-override-dimensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A3. Override dimensions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a4-multiple-override-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A4. Multiple override resolution
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#b-policy-composition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B) Policy composition
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="B) Policy composition">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#b5-effective-parameters-computation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B5. Effective parameters computation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b6-composition-emission" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B6. Composition emission
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c-delivery-fidelity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C) Delivery fidelity
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="C) Delivery fidelity">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#c7-delivery-state-distinction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C7. Delivery state distinction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c8-pump-response-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C8. Pump response codes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c9-failure-reason-distinction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C9. Failure reason distinction
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-timing-and-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D) Timing and ordering
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="D) Timing and ordering">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#d10-monotonic-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D10. Monotonic ordering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d11-offline-batching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D11. Offline batching
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e-minimal-commitment-for-phase-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E) Minimal commitment for phase 1
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="E) Minimal commitment for phase 1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e12-smallest-native-event-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E12. Smallest native event set
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#f-additional-capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F) Additional capabilities
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="F) Additional capabilities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#f13-remote-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F13. Remote commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f14-controller-registration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F14. Controller registration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#g-migration-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        G) Migration path
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="G) Migration path">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#g15-adoption-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        G15. Adoption timeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#g16-bridge-mode-feedback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        G16. Bridge mode feedback
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-a-iaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix A. iAPS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-b-path-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix B. Path index
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="integration-questionnaire-default-answers-for-loop-trio-androidaps-and-openaps-read-from-their-source">Integration questionnaire: default answers for Loop, Trio, AndroidAPS and OpenAPS, read from their source<a class="headerlink" href="#integration-questionnaire-default-answers-for-loop-trio-androidaps-and-openaps-read-from-their-source" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-10-18. A point-in-time document; it is not kept up to date.</p>
+</div>
+<p><em>Contributor-facing.</em> <strong>Snapshot — describes 2026-10-18. Status: current; every answer is a default
+for the project named in its column to correct.</strong> Repository facts are read at this repository's
+<code>57a6db95</code>; controller facts at the commits in §1, each checked against the project's current
+branch head through the GitHub API on 2026-10-18. Every cell is marked <strong>R</strong> (read-derived: from
+source; a hypothesis about behaviour), <strong>M</strong> (measured: the 11-site
+corpus) or <strong>H</strong> (history: a release, tag or branch fact from the GitHub API). Current decisions:
+<a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>.</p>
+<p><strong>The question.</strong> <code>docs/proposals/integration-questionnaire.md</code> is part of the earlier draft in
+cgm-remote-monitor's <code>docs/proposals</code> (with <code>agent-control-plane-rfc.md</code>, <code>bridge-rules.md</code> and
+<code>conflict-resolution.md</code>), which this repository's <a href="spec/index.html">specifications</a> are proposed to
+supersede. It asks AID controller projects 16 questions (A1–G16) in 14 tables; each response
+section reads <em>Pending</em>. Read at cgm-remote-monitor <code>a8888f0d</code>; the file is unchanged on <code>dev</code>
+<code>fade2299</code> since <code>db32bdc6</code> (2026-01-19). The maintainer decided on 2026-10-18 that every answer
+is filled, for every controller, with a default read from that controller's source and history,
+and from the corpus where it applies. This page is that fill.</p>
+<hr />
+<h2 id="how-to-use-this">How to use this<a class="headerlink" href="#how-to-use-this" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Each cell is a default for the project to correct.</strong> It states what the cited source does at the
+  cited commit. A project corrects a cell by saying what is different; the corrected cell then cites
+  the project and the date.</li>
+<li><strong>To send a correction:</strong> open an issue or pull request on this repository naming the question
+  id and column (for example "C7, Trio"), or answer on cgm-remote-monitor with the label
+  <code>agentic-control-plane</code> as the questionnaire asks. A source link or a test is the fastest
+  correction; a sentence is enough.</li>
+<li><strong>Where source cannot settle a question</strong> (G15 timeline, G16 concerns), the cell gives the default
+  the evidence supports and names what only the project can correct.</li>
+<li><strong>Columns.</strong> The questionnaire's tables carry an OpenAPS column only in A1 and A3; its response
+  list names OpenAPS. Every table here has an OpenAPS column, read from oref0 (the rig).</li>
+<li><strong>Corpus coverage.</strong> The corpus is 11 Nightscout sites (snapshots 2026-04-01 and 2026-04-26),
+  9 of them Loop. One site carries <code>openaps.*</code> devicestatus, and its <code>openaps.recommendedBolus</code>,
+  <code>pump.bolusIncrement</code> and <code>Exercise</code> treatments are Trio's (M: census paths below; landscape
+  <a href="nightscout-intent-workflow-landscape-2026-10-09.html#32-trio-and-iaps">§3.2</a>). <strong>The AndroidAPS
+  column is read from source only</strong>: the corpus has no AndroidAPS closed-loop site (M: no
+  <code>pump.extended</code> or <code>openaps.enacted.requested</code> path in the devicestatus census). <strong>The OpenAPS
+  column is read from source only</strong>: the corpus has no oref0 rig (M: no <code>mmtune</code> or <code>preferences</code>
+  path). Census counts are reads across both snapshots, which overlap, so they bound distinct
+  documents from above.</li>
+</ul>
+<h2 id="1-sources">1. Sources<a class="headerlink" href="#1-sources" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Read at</th>
+<th>Current head, 2026-10-18</th>
+<th>Local clone</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Loop</strong></td>
+<td><code>L</code> Loop <code>e959503b</code> (dev); <code>LK</code> LoopKit <code>d9f14373</code>; <code>NSS</code> NightscoutService <code>2cef4896</code>; <code>NSK</code> NightscoutKit <code>4ec9fd1</code></td>
+<td>Loop dev <code>e959503b</code>; LoopKit dev <code>4c8e8577</code> (4 commits ahead, persistence only, none of the cited files); NightscoutService dev <code>2cef4896</code>; LoopWorkspace dev <code>c1f55970</code> pins NightscoutKit <code>4ec9fd1</code></td>
+<td>LoopWorkspace <code>548b3324</code> = release <code>v3.14.9</code>, pinning Loop <code>c30b5c89</code> (3 commits behind dev: issue reports and alerts); <strong>stale for Loop</strong>, so Loop was read from a dev tarball</td>
+</tr>
+<tr>
+<td><strong>Trio</strong></td>
+<td><code>T</code> Trio <code>e797b4ad</code> (dev)</td>
+<td>dev <code>e797b4ad</code></td>
+<td><code>0b29cd53</code> = <code>v1.0.2</code> (93 commits behind dev, including remote control and <code>NightscoutStatus.swift</code>); <strong>stale</strong>, read from a dev tarball</td>
+</tr>
+<tr>
+<td><strong>AndroidAPS</strong></td>
+<td><code>A</code> AndroidAPS <code>b9bb9ef3</code> (dev)</td>
+<td>dev <code>b9bb9ef3</code>; <code>4.0.0-rc1</code> <code>d5e7f5bd</code> is dev minus one commit</td>
+<td><code>7e1d537d</code> (506 commits behind); <strong>stale</strong>, read from a dev tarball</td>
+</tr>
+<tr>
+<td><strong>OpenAPS</strong></td>
+<td><code>O</code> oref0 <code>d219baf9</code> (dev)</td>
+<td>dev <code>d219baf9</code>; master <code>88cf032a</code> = <code>v0.7.1</code></td>
+<td>current</td>
+</tr>
+<tr>
+<td><strong>Corpus</strong></td>
+<td><code>C</code> <code>reports/schema-census/&lt;collection&gt;.census.json</code>, field <code>docs_present</code> for the named path</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>Heads: <code>gh api repos/&lt;owner&gt;/&lt;repo&gt;/commits/&lt;branch&gt; --jq .sha</code>; staleness:
+<code>gh api repos/&lt;owner&gt;/&lt;repo&gt;/compare/&lt;clone&gt;...&lt;head&gt;</code>. File paths in cells are basenames; the
+<a href="#appendix-b-path-index">path index</a> gives the full path of each. The registrations under
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/9dd0981e3efe4dca0fd12fd7076d23a41b126955/specs/sync/registrations"><code>specs/sync/registrations/</code></a> were read at older commits
+(Loop <code>c2fddb76</code>, Trio <code>e41c9db37</code>, AndroidAPS <code>7e1d537d49</code>); where a cell here and a registration
+differ, this page is at the newer commit.</p>
+<p><strong>One change since the earlier evidence.</strong> Items the <a href="nightscout-intent-workflow-landscape-2026-10-09.html">intent
+landscape</a> marks AndroidAPS <strong>dev-only</strong>
+(scenes, client control on the NS <code>settings</code> collection) are in the <code>4.0.0-beta1</code> (2026-10-08) and
+<code>4.0.0-rc1</code> (2026-10-16) prereleases (H: <code>gh api repos/nightscout/AndroidAPS/contents/plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/SettingsIdentifiers.kt?ref=4.0.0-beta1</code>).
+Client-control envelopes are authenticated with HMAC-SHA256 over a shared secret (R <code>A ClientControlCrypto.kt:10-24</code>).</p>
+<hr />
+<h2 id="a-profiles-and-overrides">A) Profiles and overrides<a class="headerlink" href="#a-profiles-and-overrides" title="Permanent link">&para;</a></h2>
+<h3 id="a1-profile-identification">A1. Profile identification<a class="headerlink" href="#a1-profile-identification" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Loop</th>
+<th>Trio</th>
+<th>AndroidAPS</th>
+<th>OpenAPS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Current state</strong></td>
+<td>One schedule set, named <code>Default</code>; the profile document is identified by name and <code>startDate</code> only — R <code>NSS StoredSettings.swift:92-106</code></td>
+<td>One schedule set, stored under the key <code>default</code>; no id — R <code>T NightscoutManager.swift:836,854</code></td>
+<td>Several named profiles held in preferences; the NS profile document has <code>defaultProfile</code> = first profile's name, <code>store</code> keyed by name, no id — R <code>A StringNonKey.kt:65</code>, <code>A ProfileRepositoryImpl.kt:683-709</code></td>
+<td>Profile built on the rig from pump settings; uploaded as the named profile <code>OpenAPS Autosync</code> — R <code>O oref0-upload-profile.js:243-271</code></td>
+</tr>
+<tr>
+<td><strong>Can emit content hash?</strong></td>
+<td>Not today; a <code>syncIdentifier</code> is generated per settings snapshot (<code>UUID()</code>), not per content, and is not written — R <code>LK SettingsStore.swift:342</code>, <code>NSK ProfileSet.swift:143-164</code></td>
+<td>Not today; nothing in the profile path hashes — R <code>T NightscoutManager.swift:824-862</code></td>
+<td>Not today; profiles compare by value, block by block (<code>ProfileSealed.isEqual</code>) — R <code>A ProfileSealed.kt:312-325</code></td>
+<td>Not today; uploads only when the content differs by deep comparison (<code>_.isEqual</code>) — R <code>O oref0-upload-profile.js:255</code></td>
+</tr>
+</tbody>
+</table>
+<p><em>Note.</em> Every controller already compares or snapshots its profile; none puts a stable id or a hash
+on the wire. Measured: 202 profile documents read, every one with <code>defaultProfile</code> and <code>startDate</code>
+(M <code>C profile</code> paths <code>defaultProfile</code>, <code>startDate</code>).</p>
+<h3 id="a2-override-templates-vs-activations">A2. Override templates vs activations<a class="headerlink" href="#a2-override-templates-vs-activations" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Loop</th>
+<th>Trio</th>
+<th>AndroidAPS</th>
+<th>OpenAPS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Has templates?</strong></td>
+<td>Yes: <code>TemporaryScheduleOverridePreset</code> {id UUID, symbol, name, settings, duration} — R <code>LK TemporaryScheduleOverridePreset.swift:12-17</code></td>
+<td>Yes: an <code>OverrideStored</code> row with <code>isPreset</code>; temp-target presets likewise — R <code>T OverrideStored+CoreDataProperties.swift:9-30</code>, <code>T TempTargetStored+CoreDataProperties.swift:9-20</code></td>
+<td>Yes, of other kinds: named profiles, TT presets, Scenes (with <code>id</code>), QuickWizard — R <code>A TTPreset.kt:8-25</code>, <code>A Scene.kt:8-27</code>. No override object</td>
+<td>No. Temp targets are read from Nightscout treatments and local files — R <code>O oref0-ns-loop.sh:104-118</code></td>
+</tr>
+<tr>
+<td><strong>Templates persisted?</strong></td>
+<td>Yes, in the settings store; uploaded in <code>profile.loopSettings.overridePresets</code> <strong>without the id</strong> — R <code>L SettingsManager.swift:126,172</code>, <code>NSK TemporaryScheduleOverride.swift:28-50</code>; M 200 profile documents carry <code>loopSettings.overridePresets</code> (<code>C profile</code>)</td>
+<td>Yes, Core Data; uploaded in <code>profile.overridePresets</code> {name, duration, percentage, target}, <strong>without the id</strong> — R <code>T OverrideStorage.swift:379-409</code>, <code>T NightscoutStatus.swift:70-75</code></td>
+<td>Yes, preferences; uploaded in the NS <code>settings</code> document <code>aaps</code> under <code>runningConfig.syncedPrefs</code> — R <code>A RunningConfigurationImpl.kt:65-87,130-140</code>, <code>A SettingsIdentifiers.kt:19-20</code></td>
+<td>— (no templates) R <code>O targets.js:11-68</code></td>
+</tr>
+<tr>
+<td><strong>Can separate?</strong></td>
+<td>Locally yes: activation copies the preset (<code>context: .preset</code>) and gives the instance its own <code>syncIdentifier</code>, uploaded as <code>_id</code>; remote enactment refers to the preset by name — R <code>LK TemporaryScheduleOverridePreset.swift:27-35</code>, <code>NSS OverrideTreament.swift:59</code>, <code>L Loop/Managers/LoopDataManager.swift:2502</code></td>
+<td>Partly: activation enables the preset row itself and writes a separate run record (<code>OverrideRunStored</code>); a copy is made only when a running preset is edited — R <code>T AdjustmentManager.swift:155-198</code>, <code>T OverrideStorage.swift:185-224</code></td>
+<td>Yes: a ProfileSwitch copies the profile blocks; scene activation writes ordinary TT/PS/RM rows and records them in <code>aaps-state</code> — R <code>A ProfileSwitch.kt:40-50</code>, <code>A SceneExecutor.kt:407-477</code>, <code>A RunningConfigurationImpl.kt:90-110</code></td>
+<td>Not applicable — R <code>O targets.js:11-68</code></td>
+</tr>
+</tbody>
+</table>
+<p><em>Note.</em> "Separate" on the wire needs the definition id published with the definition and cited by
+the activation. Loop and Trio both hold the id locally and send neither; AndroidAPS sends scene ids
+in <code>aaps-state</code> (4.0.0 prereleases). The state and intent specification's definition/instance rules
+(<a href="spec/state-intent.html">spec/state-intent.md</a>) are the destination for this answer.</p>
+<h3 id="a3-override-dimensions">A3. Override dimensions<a class="headerlink" href="#a3-override-dimensions" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Loop</th>
+<th>Trio</th>
+<th>AndroidAPS</th>
+<th>OpenAPS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Target range (min/max)</td>
+<td>Yes, <code>targetRange</code> — R <code>LK TemporaryScheduleOverrideSettings.swift:12-14</code></td>
+<td>No (one target) — R <code>T OverrideStored+CoreDataProperties.swift:9-30</code></td>
+<td>Yes, on a temp target (<code>lowTarget</code>/<code>highTarget</code>) — R <code>A TemporaryTarget.kt:36-49</code></td>
+<td>Yes, on a temp target (<code>targetBottom</code>/<code>targetTop</code>) — R <code>O targets.js:56-61</code></td>
+</tr>
+<tr>
+<td>Single target value</td>
+<td>As a range with equal ends — R <code>LK TemporaryScheduleOverrideSettings.swift:12-14</code></td>
+<td>Yes, <code>target</code>; used only when no temp target is set — R <code>T DetermineBasal+Helpers.swift:284-293</code></td>
+<td>As a TT with equal ends — R <code>A TemporaryTarget.kt:36-49</code></td>
+<td><code>target_bg</code> preference, or a TT — R <code>O targets.js:27-31</code></td>
+</tr>
+<tr>
+<td>Sensitivity multiplier</td>
+<td>Derived: ISF × 1/factor — R <code>LK TemporaryScheduleOverrideSettings.swift:24-26</code></td>
+<td>Yes when the ISF scope is on: <code>sens / factor</code> — R <code>T DetermineBasal+Helpers.swift:303-321</code></td>
+<td>Through profile <code>percentage</code> (ISF × 100/p); autosens/Dynamic ISF ratio is separate and algorithm-set — R <code>A ProfileSealed.kt:105-107</code>, <code>A OpenAPSSMBPlugin.kt:374-399</code></td>
+<td>Algorithm-set <code>sensitivityRatio</code> from autosens or a high/low TT — R <code>O determine-basal.js:262-286</code></td>
+</tr>
+<tr>
+<td>Basal multiplier/percentage</td>
+<td>Yes: basal × factor (one factor for all three) — R <code>LK TemporaryScheduleOverrideSettings.swift:20-22</code></td>
+<td>Yes: <code>percentage</code> always scales basal — R <code>T DetermineBasalGenerator.swift:155-171</code></td>
+<td>Yes: profile <code>percentage</code> — R <code>A ProfileSwitch.kt:46-48</code></td>
+<td>No — R <code>O lib/profile/index.js:85-179</code></td>
+</tr>
+<tr>
+<td>Max basal ceiling</td>
+<td>No — R <code>LK TemporaryScheduleOverrideSettings.swift:12-14</code></td>
+<td>No (pump setting) — R <code>T ProfileGenerator.swift:140</code></td>
+<td>No; preference constraint, moved only indirectly by scaled basal — R <code>A OpenAPSSMBPlugin.kt:535-556</code></td>
+<td>No (pump <code>max_basal</code> and safety multipliers) — R <code>O basal-set-temp.js:10-16</code></td>
+</tr>
+<tr>
+<td>Carb ratio multiplier</td>
+<td>Derived: CR × 1/factor — R <code>LK TemporaryScheduleOverrideSettings.swift:28-30</code></td>
+<td>Yes when the CR scope is on — R <code>T ForecastGenerator.swift:25-32</code></td>
+<td>Through <code>percentage</code> (IC × 100/p) — R <code>A ProfileSealed.kt:333-341</code></td>
+<td>No — R <code>O lib/profile/index.js:85-179</code></td>
+</tr>
+<tr>
+<td>Automation aggressiveness</td>
+<td>No field — R <code>LK TemporaryScheduleOverrideSettings.swift:12-14</code></td>
+<td>Yes: <code>smbIsOff</code>, scheduled SMB-off hours, <code>smbMinutes</code>/<code>uamMinutes</code> — R <code>T DosingEngine.swift:26-32,62-89,708-729</code></td>
+<td>Yes: a Scene action toggles SMB; RunningMode (open, closed, LGS) — R <code>A SceneAction.kt:35</code>, <code>A RunningMode.kt:49-60</code></td>
+<td>TT-dependent SMB enable/disable preferences — R <code>O determine-basal.js:63,103</code></td>
+</tr>
+<tr>
+<td>Duration (fixed/indefinite)</td>
+<td>Both: <code>.finite</code>/<code>.indefinite</code> — R <code>LK TemporaryScheduleOverride.swift:26-28</code></td>
+<td>Both; indefinite sent as 43200 min — R <code>T OverrideStorage.swift:271</code></td>
+<td>PS: fixed or permanent (0); TT: fixed — R <code>A ProfileSwitch.kt:46-48</code></td>
+<td>TT: fixed; duration 0 cancels — R <code>O targets.js:48-52</code></td>
+</tr>
+</tbody>
+</table>
+<p><em>Note.</em> Loop's override has one factor, applied as basal × f, ISF × 1/f, CR × 1/f
+(R <code>LK DailyQuantitySchedule+Override.swift:13-63</code>). Measured on the wire: 2,720 treatments carry
+<code>insulinNeedsScaleFactor</code> and 1,673 <code>correctionRange</code> across 9 and 7 sites (M <code>C treatments</code>).
+Trio sends neither percentage nor target on the wire (G16). AndroidAPS has no override object; the
+nearest equivalents are ProfileSwitch + TempTarget + RunningMode, or a Scene that writes them.</p>
+<h3 id="a4-multiple-override-resolution">A4. Multiple override resolution<a class="headerlink" href="#a4-multiple-override-resolution" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Loop</th>
+<th>Trio</th>
+<th>AndroidAPS</th>
+<th>OpenAPS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Only one override at a time</td>
+<td><strong>Yes</strong>, plus a separate pre-meal target — R <code>LK TemporaryScheduleOverrideHistory.swift:147-187</code></td>
+<td><strong>Yes</strong>, plus a separate temp target — R <code>T AdjustmentManager.swift:152-198</code></td>
+<td>One PS, one TT, one RunningMode, one Scene — R <code>A AppRepository.kt:472-479,515-522</code></td>
+<td>One temp target — R <code>O targets.js:35-63</code></td>
+</tr>
+<tr>
+<td>Stack/compose with precedence</td>
+<td><strong>Yes</strong>, override with pre-meal (below) — R <code>L LoopCore/LoopSettings.swift:118-141</code></td>
+<td><strong>Yes</strong>, override with temp target (below) — R <code>T DetermineBasal+Helpers.swift:284-293</code></td>
+<td><strong>Yes</strong>, PS with TT (below) — R <code>A OpenAPSSMBPlugin.kt:340-349</code></td>
+<td>No — R <code>O targets.js:35-63</code></td>
+</tr>
+<tr>
+<td>Most recent wins</td>
+<td><strong>Yes</strong>: a new override ends the active one (<code>.early</code>) and deletes later-starting ones — R <code>LK TemporaryScheduleOverrideHistory.swift:160-187</code></td>
+<td><strong>Yes</strong>: starting one ends and disables every active one in one transaction — R <code>T AdjustmentManager.swift:152-198</code></td>
+<td>TT: <strong>yes</strong>, a new one ends the running one — R <code>A InsertAndCancelCurrentTemporaryTargetTransaction.kt:10-21</code>; PS and RM: latest temporary over latest permanent — R <code>A AppRepository.kt:472-479</code></td>
+<td><strong>Yes</strong>: newest started TT wins — R <code>O targets.js:35-63</code></td>
+</tr>
+<tr>
+<td>User must end one first</td>
+<td>No — R as above</td>
+<td>No — R as above</td>
+<td>No — R as above</td>
+<td>No — R as above</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Precedence, by default:</strong></p>
+<ul>
+<li><strong>Loop:</strong> target = pre-meal if active, else override, else schedule (R <code>L LoopCore/LoopSettings.swift:118-141</code>); basal × f, ISF × 1/f, CR × 1/f come from the override only, also while pre-meal is on.</li>
+<li><strong>Trio:</strong> target = temp target if set, else override target (unless 0 or 6), else profile (R <code>T DetermineBasal+Helpers.swift:284-293</code>); override percentage and ISF/CR scope apply regardless; a high or low TT sets <code>sensitivityRatio</code> via <code>halfBasalTarget</code> (R <code>T DetermineBasal+Helpers.swift:121-165</code>).</li>
+<li><strong>AndroidAPS:</strong> TT replaces min/max/target (R <code>A OpenAPSSMBPlugin.kt:340-349</code>); the PS percentage is already in the EffectiveProfileSwitch blocks (R <code>A ProfileSealed.kt:105-107</code>).</li>
+<li><strong>OpenAPS:</strong> TT replaces the target range (R <code>O targets.js:56-61</code>); a high or low TT can set <code>sensitivityRatio</code> (R <code>O determine-basal.js:262-286</code>).</li>
+</ul>
+<p>The hub records the controller's composition and does not compute it (D18; intent landscape
+<a href="nightscout-intent-workflow-landscape-2026-10-09.html#7-composition-who-combines-overlapping-intents">§7</a>).
+The earlier draft's <code>conflict-resolution.md</code> composes inside the hub; the specifications replace that.</p>
+<hr />
+<h2 id="b-policy-composition">B) Policy composition<a class="headerlink" href="#b-policy-composition" title="Permanent link">&para;</a></h2>
+<h3 id="b5-effective-parameters-computation">B5. Effective parameters computation<a class="headerlink" href="#b5-effective-parameters-computation" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Loop</th>
+<th>Trio</th>
+<th>AndroidAPS</th>
+<th>OpenAPS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Has explicit object?</strong></td>
+<td>No single object: inputs are assembled per cycle; <code>StoredDosingDecision</code> is the kept snapshot — R <code>L Loop/Managers/LoopDataManager.swift:1726-1753</code>, <code>LK DosingDecisionStore.swift:239-263</code></td>
+<td>Yes: the <code>Profile</code> passed to determine-basal; overrides travel beside it, not in it — R <code>T Profile.swift:3-140</code>, <code>T OpenAPS.swift:378-444</code></td>
+<td>Yes: <code>OapsProfile</code>, built each run; and the EffectiveProfileSwitch for schedules — R <code>A OapsProfile.kt:6-51</code>, <code>A EffectiveProfileSwitch.kt:29-55</code></td>
+<td>Yes: <code>profile.json</code> — R <code>O lib/profile/index.js:85-179</code></td>
+</tr>
+<tr>
+<td><strong>Fields included</strong></td>
+<td>Decision snapshot: effective target schedule, override, IOB, COB, prediction, recommendations, errors; <strong>not</strong> effective ISF/CR/basal — R <code>LK DosingDecisionStore.swift:239-263</code></td>
+<td>current_basal, sens, carb_ratio, max_iob, max_basal, max_daily_basal, min/max/target_bg, autosens limits, SMB flags, temptargetSet — R <code>T Profile.swift:3-140</code></td>
+<td>max_iob, max_basal, max_daily_basal, current_basal, sens, variable_sens, carb_ratio, min/max/target_bg, autosens_max, TDD, SMB flags — R <code>A OapsProfile.kt:6-51</code></td>
+<td>max_iob, max_basal, max_daily_basal, current_basal, sens, carb_ratio, min/max_bg, temptargetSet, safety multipliers — R <code>O lib/profile/index.js:85-179</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="b6-composition-emission">B6. Composition emission<a class="headerlink" href="#b6-composition-emission" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Loop</th>
+<th>Trio</th>
+<th>AndroidAPS</th>
+<th>OpenAPS</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Profile hash/ID</td>
+<td>No — R <code>NSK ProfileSet.swift:143-164</code></td>
+<td>No — R <code>T NightscoutManager.swift:824-862</code></td>
+<td>Name only (<code>profile</code>, <code>originalProfileName</code> on PS) — R <code>A nsclientV3/extensions/ProfileSwitchExtension.kt:52-78</code></td>
+<td>No — R <code>O ns-status.js:154-169</code></td>
+<td>see A1</td>
+</tr>
+<tr>
+<td>Active override IDs</td>
+<td>Override name and multiplier in <code>devicestatus.override</code>; no id — R <code>NSS StoredDosingDecision.swift:118-137</code>; M <code>override.active</code> 597,335 reads, 10 sites</td>
+<td>No — R <code>T NightscoutStatus.swift:3-32</code></td>
+<td>PS/TT/RM record ids are not in devicestatus; <code>aaps-state</code> lists a scene's record ids — R <code>A RunningConfigurationImpl.kt:90-110</code></td>
+<td>No — R <code>O ns-status.js:154-169</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Effective target range</td>
+<td>Only while an override runs: <code>override.currentCorrectionRange</code> — R <code>NSS StoredDosingDecision.swift:118-137</code></td>
+<td><code>suggested.current_target</code> — R <code>T Determination.swift:49-76</code>; M 73,898 reads, 1 site</td>
+<td><code>targetBG</code> inside <code>suggested</code> — R <code>A RT.kt:19-48</code></td>
+<td><code>suggested.target_bg</code> — R <code>O determine-basal.js:821</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Effective ISF (current)</td>
+<td>No — R <code>NSS StoredDosingDecision.swift:148-164</code></td>
+<td><code>suggested.ISF</code> — R <code>T Determination.swift:49-76</code>; M 73,898 reads, 1 site</td>
+<td><code>suggested.variable_sens</code>; ISF also as text in <code>reason</code> — R <code>A RT.kt:19-48</code>, <code>A DetermineBasalSMB.kt:892-898</code></td>
+<td><code>suggested.ISF</code> — R <code>O determine-basal.js:819</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Effective CR (current)</td>
+<td>No — R as above</td>
+<td><code>suggested.CR</code> — R as above; M 73,898 reads</td>
+<td>Text in <code>reason</code> only — R <code>A DetermineBasalSMB.kt:892-898</code></td>
+<td><code>suggested.CR</code> — R <code>O determine-basal.js:820</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Effective basal (current)</td>
+<td>No; <code>enacted.rate</code> is the dose, not the scheduled basal — R as above</td>
+<td>No; <code>rate</code> is the dose — R <code>T Determination.swift:49-76</code></td>
+<td><code>pump.extended.BaseBasalRate</code> — R <code>A PumpStatusProviderImpl.kt:102-127</code></td>
+<td>No; <code>rate</code> is the dose — R <code>O determine-basal.js:439-448</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Safety limits in force</td>
+<td>In the profile, not per cycle: <code>loopSettings.maximumBasalRatePerHour</code>, <code>maximumBolus</code>, <code>minimumBGGuard</code> — R <code>NSK LoopSettings.swift:38-61</code>; M 200 profile documents, 10 sites</td>
+<td>Only inside <code>reason</code> text when a cap binds — R <code>T DosingEngine.swift:643-648,873-878</code></td>
+<td>Only inside <code>reason</code> text — R <code>A DetermineBasalSMB.kt:1123-1140,1240-1241</code></td>
+<td><strong><code>preferences</code> (incl. <code>max_iob</code>) is in devicestatus</strong> when the rig's loop uploads — R <code>O oref0-ns-loop.sh:221-227</code>, <code>O ns-status.js:40-49,175-177</code></td>
+<td>see note</td>
+</tr>
+<tr>
+<td>Controller version/build</td>
+<td><code>loop.version</code> = short version + build — R <code>NSS Bundle.swift:13-15</code>; M 597,335 reads, 10 sites</td>
+<td><code>openaps.version</code> = release version — R <code>T NightscoutManager.swift:661</code>; M 73,898 reads, 1 site</td>
+<td><code>pump.extended.Version</code>; also <code>runningConfig.version</code> in <code>settings</code> — R <code>A PumpStatusProviderImpl.kt:113</code>, <code>A RunningConfigurationImpl.kt:85</code></td>
+<td><code>openaps.version</code> = oref0 package version — R <code>O ns-status.js:160</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><em>Note on safety limits.</em> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9dd0981e3efe4dca0fd12fd7076d23a41b126955/specs/nsschema/dosing-input-sources.yaml"><code>dosing-input-sources.yaml</code></a>
+records <code>profile.maxIob</code> as absent for every oref0 derivative, which is what the corpus shows.
+oref0's own rig uploads its <code>preferences</code> file, which holds <code>max_iob</code>, with each devicestatus
+(R above); the corpus has no oref0 rig to measure it on. A digital twin that read Nightscout would
+find <code>max_iob</code> for an oref0 rig and for no other controller here.</p>
+<hr />
+<h2 id="c-delivery-fidelity">C) Delivery fidelity<a class="headerlink" href="#c-delivery-fidelity" title="Permanent link">&para;</a></h2>
+<h3 id="c7-delivery-state-distinction">C7. Delivery state distinction<a class="headerlink" href="#c7-delivery-state-distinction" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Loop</th>
+<th>Trio</th>
+<th>AndroidAPS</th>
+<th>OpenAPS</th>
+<th>Where reported</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Suggested</strong></td>
+<td><code>loop.automaticDoseRecommendation</code>, <code>loop.recommendedBolus</code> — R <code>NSS StoredDosingDecision.swift:37-61</code>; M 183,049 and 597,143 reads, 10 sites</td>
+<td><code>openaps.suggested</code> (a determination not enacted) — R <code>T Determination+helper.swift:72-89</code>; M 73,898 reads</td>
+<td><code>openaps.suggested</code> = the whole algorithm result — R <code>A LoopPlugin.kt:1057-1061</code>, <code>A DetermineBasalResult.kt:152-158</code></td>
+<td><code>openaps.suggested</code> — R <code>O ns-status.js:154-161</code></td>
+<td>devicestatus (R, as cited)</td>
+</tr>
+<tr>
+<td><strong>Requested</strong></td>
+<td>Held locally (<code>lastRequestedBolus</code>, pump <code>initiating…</code> states, <code>deliveryIsUncertain</code>); not uploaded — R <code>L Loop/Managers/LoopDataManager.swift:430,721-755</code>, <code>LK PumpManagerStatus.swift:39-71</code></td>
+<td>No requested state between send and confirmation — R <code>T APSManager.swift:773-874</code></td>
+<td>Local queued <code>PumpEnactResult</code> not uploaded; the request is uploaded inside <code>enacted.requested</code> once the pump enacted — R <code>A LoopPlugin.kt:701-705,1077-1087</code></td>
+<td><code>enact/smb-suggested.json</code> exists locally before enactment; not uploaded — R <code>O oref0-pump-loop.sh:321-366</code></td>
+<td>not reported (R, as cited)</td>
+</tr>
+<tr>
+<td><strong>Confirmed/enacted</strong></td>
+<td><code>loop.enacted</code> with <code>received: true</code>, <strong>inferred</strong> from "a recommendation and no errors", not from a pump acknowledgement — R <code>NSS StoredDosingDecision.swift:63-70</code>; M 405,228 reads, 10 sites</td>
+<td><code>openaps.enacted</code> with <code>received</code> = enacted, set after the pump call returns without error; a failed enact is uploaded as <code>suggested</code> with <code>received: false</code> — R <code>T APSManager.swift:436-438,841-874</code>, <code>T DeterminationStorage.swift:195</code></td>
+<td><code>openaps.enacted</code> only if the pump reported the temp basal enacted; <code>enacted.smb</code> is taken from the temp-basal result — R <code>A LoopPlugin.kt:1070-1087</code></td>
+<td><code>enacted.json</code> = suggested + <code>received: true</code>, written only after the pump command returns — R <code>O oref0-pump-loop.sh:365-366,459</code></td>
+<td>devicestatus (R, as cited)</td>
+</tr>
+</tbody>
+</table>
+<p><em>Note.</em> This corrects the <a href="../tenancy/nightscout-control-plane-reconciliation-2026-09-11.html#35-all-three-publish-a-suggestion-under-three-different-names">control-plane reconciliation
+§3.5</a>
+reading of <code>loop.enacted.received</code> as a pump acknowledgement: in Loop it is a constant. The question
+§3.5 proposed as the narrower one — <em>is there a point in your code where a command has been sent and
+not yet acknowledged, and can you emit it?</em> — has a default per column above: Loop and AndroidAPS
+hold one locally, Trio has none, OpenAPS holds a file.</p>
+<h3 id="c8-pump-response-codes">C8. Pump response codes<a class="headerlink" href="#c8-pump-response-codes" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Loop</th>
+<th>Trio</th>
+<th>AndroidAPS</th>
+<th>OpenAPS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Has error codes</strong></td>
+<td>Yes: <code>PumpManagerError</code> {configuration, connection, communication, deviceState, uncertainDelivery} — R <code>LK PumpManagerError.swift:10-24</code></td>
+<td>Yes: <code>APSError</code> {pumpError, invalidPumpState, glucoseError, apsError, manualBasalTemp} — R <code>T APSManager.swift:54-75</code></td>
+<td><code>PumpEnactResult</code> {success, enacted, comment (free text), queued, cancelled}; driver alarm enums — R <code>A PumpEnactResult.kt:7-29</code>, <code>A medtrum/comm/enums/AlarmState.kt:3-21</code></td>
+<td>No; loop failure is a shell exit path with log text — R <code>O oref0-pump-loop.sh:160-180</code></td>
+</tr>
+<tr>
+<td><strong>Examples</strong></td>
+<td><code>pumpManagerError</code> with detail <code>communication</code> — R <code>L LoopError.swift:117-165</code>, <code>L PumpManagerError.swift:12-39</code></td>
+<td><code>invalidPumpState("Pump is bolusing")</code> — R <code>T APSManager.swift:447-449</code></td>
+<td><code>executing_right_now</code>, <code>stop_pressed</code>, Medtrum <code>OCCLUSION</code> — R <code>A CommandQueueImplementation.kt:390-391,723-737</code></td>
+<td>"pump suspended", BG too old — R <code>O oref0-pump-loop.sh:162-170</code></td>
+</tr>
+<tr>
+<td><strong>Can expose?</strong></td>
+<td>Exposed as <code>loop.failureReason</code> = the first error's id and details as a string — R <code>NSS StoredDosingDecision.swift:72-74,168-176</code>; M 16,550 reads (2.4%), 10 sites</td>
+<td>Not exposed: local alert and loop stats only — R <code>T APSManager.swift:1319-1406</code></td>
+<td>Not exposed; pump alarms reach Nightscout as <code>Announcement</code> text — R <code>A PumpSyncImplementation.kt:359-369</code></td>
+<td><code>pump.status</code> (suspended, bolusing) only — R <code>O ns-status.js:162-167</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="c9-failure-reason-distinction">C9. Failure reason distinction<a class="headerlink" href="#c9-failure-reason-distinction" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Failure type</th>
+<th>Loop</th>
+<th>Trio</th>
+<th>AndroidAPS</th>
+<th>OpenAPS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Capped by max basal</td>
+<td>Silent clamp — R <code>LK DoseMath.swift:56</code></td>
+<td><code>reason</code> text "adj. req. rate … to maxSafeBasal" — R <code>T DosingEngine.swift:873-878</code></td>
+<td>Constraint reasons in the UI; <code>reason</code> text "maxSafeBasal" on the wire — R <code>A LoopViewModel.kt:91-92</code>, <code>A DetermineBasalSMB.kt:1240-1241</code></td>
+<td><code>reason</code> text — R <code>O determine-basal.js:1173-1177</code></td>
+</tr>
+<tr>
+<td>Capped by max IOB</td>
+<td>Silent clamp (<code>maxBolus × 2</code> IOB limit) — R <code>L Loop/Managers/LoopDataManager.swift:1815-1816,1840</code>, <code>LK DoseMath.swift:425-428</code></td>
+<td><code>reason</code> text "IOB … &gt; max_iob …" — R <code>T DosingEngine.swift:643-648,688-693</code></td>
+<td><code>reason</code> text — R <code>A DetermineBasalSMB.kt:1123-1124,1139-1140</code></td>
+<td><code>reason</code> text — R <code>O determine-basal.js:1056-1073</code></td>
+</tr>
+<tr>
+<td>Communication failure</td>
+<td><code>failureReason</code> string — R <code>NSS StoredDosingDecision.swift:72-74</code></td>
+<td>Local alert; determination uploaded with <code>received: false</code> — R <code>T TrioAlertCategory.swift:163-166</code></td>
+<td>Local notification; no <code>enacted</code> in devicestatus — R <code>A CommandExecutor.kt:191-193</code>, <code>A LocalAlertUtilsImpl.kt:74</code></td>
+<td>Log text; retry and radio tune — R <code>O oref0-pump-loop.sh:171-180</code></td>
+</tr>
+<tr>
+<td>Pump busy/unavailable</td>
+<td><code>connectionError</code> for uncertain delivery; <code>pumpSuspended</code> — R <code>L DeviceDataManager.swift:1452-1453</code>, <code>L Loop/Managers/LoopDataManager.swift:1905-1906</code></td>
+<td>Local <code>invalidPumpState</code> — R <code>T APSManager.swift:447-449,790-792</code></td>
+<td>Local <code>executing_right_now</code> / <code>command_replaced</code> — R <code>A CommandQueueImplementation.kt:390-391,432</code></td>
+<td><code>pump.status.bolusing</code>/<code>suspended</code> in devicestatus — R <code>O oref0-pump-loop.sh:428-440</code></td>
+</tr>
+<tr>
+<td>User canceled</td>
+<td>Nothing specific; the delivered amount is the dose record — R <code>L StatusTableViewController.swift:1284</code></td>
+<td>Delivered amount re-posted on the bolus record — R <code>T PumpHistoryStorage.swift:244-262</code></td>
+<td>Local <code>stop_pressed</code>, <code>cancelled = true</code> — R <code>A CommandQueueImplementation.kt:723-737</code></td>
+<td>No cancel step in the loop script — R <code>O oref0-pump-loop.sh:450-460</code></td>
+</tr>
+<tr>
+<td>Pump error (occlusion…)</td>
+<td><code>Note</code> treatment with the alarm title — R <code>NSS PersistedPumpEvent.swift:25-26</code></td>
+<td><code>Announcement</code> treatment "Alarm … PumpAlarm" — R <code>T PumpHistoryStorage.swift:541-559</code></td>
+<td><code>Announcement</code> treatment — R <code>A PumpSyncImplementation.kt:359-369</code></td>
+<td>Pump-history <code>Note</code> treatments with alarm text — R <code>O mm-format-ns-treatments.sh:36-39</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Current representation format, by default:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Loop:       loop.failureReason: free-text "&lt;errorId&gt;[detail: …, error: …]" (dictionary order not
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>            fixed); alarms as Note treatments; caps silent.
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>Trio:       openaps.suggested.reason free text for caps; received:false for a failed enact;
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>            alarms as Announcement treatments; other errors local only.
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>AndroidAPS: openaps.suggested.reason free text for caps; absence of openaps.enacted for a failed
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>            temp basal; alarms as Announcement treatments; queue and constraint reasons local.
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>OpenAPS:    openaps.suggested.reason free text; pump.status flags; Note treatments from pump history.
+</code></pre></div>
+<hr />
+<h2 id="d-timing-and-ordering">D) Timing and ordering<a class="headerlink" href="#d-timing-and-ordering" title="Permanent link">&para;</a></h2>
+<h3 id="d10-monotonic-ordering">D10. Monotonic ordering<a class="headerlink" href="#d10-monotonic-ordering" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Loop</th>
+<th>Trio</th>
+<th>AndroidAPS</th>
+<th>OpenAPS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Has sequence numbers</strong></td>
+<td>Locally: <code>modificationCounter</code> query anchors, kept in UserDefaults, not uploaded — R <code>LK DosingDecisionStore.swift:144-147,197-199</code></td>
+<td>No; an <code>isUploadedToNS</code> flag per row — R <code>T NightscoutManager.swift:112-264</code></td>
+<td>Locally: autoincrement <code>id</code> and <code>version</code> per entity, not uploaded — R <code>A ProfileSwitch.kt:31-39</code>, <code>A TraceableDao.kt:68-83</code></td>
+<td>No — R <code>O ns-status.js:154-169</code></td>
+</tr>
+<tr>
+<td><strong>Clock guarantees</strong></td>
+<td>Device clock; NTP check raises an alert at 120 s skew, does not correct — R <code>L TrustedTimeChecker.swift:29,43-80</code></td>
+<td>Device clock (<code>Date()</code>) — R <code>T NightscoutManager.swift:673</code></td>
+<td>Device clock; <code>utcOffset</code> on each treatment — R <code>A ProfileSwitch.kt:31-39</code></td>
+<td>Rig clock set from NTP; pump and CGM clocks set from it — R <code>O oref0-set-device-clocks.sh:31-41</code></td>
+</tr>
+<tr>
+<td><strong>Ordering method</strong></td>
+<td>Timestamp plus <code>syncIdentifier</code> on doses and carbs (a dedup key, not a sequence) — R <code>NSS Extensions/DoseEntry.swift:31,47,62</code>; M <code>syncIdentifier</code> 306,741 reads (83%), 10 sites</td>
+<td>Timestamp; treatments carry a UUID as <code>id</code>, which Nightscout does not read — R <code>T NightscoutTreatment.swift:24,62</code>; M <code>id</code> 55,939 reads, 1 site (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9dd0981e3efe4dca0fd12fd7076d23a41b126955/specs/quirks/treatments.yaml">QUIRK-TREATMENTS-007</a>)</td>
+<td>Upload in local <code>id</code> order; v3 <code>identifier</code> per record — R <code>A TemporaryTargetDao.kt:45-46</code>, <code>A DataSyncSelectorV3.kt:340-389</code></td>
+<td>Pump-history time; treatments newer than the latest uploaded <code>created_at</code> — R <code>O nightscout.sh:344-349</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="d11-offline-batching">D11. Offline batching<a class="headerlink" href="#d11-offline-batching" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Loop</th>
+<th>Trio</th>
+<th>AndroidAPS</th>
+<th>OpenAPS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Queue events when offline</td>
+<td>Yes: per-type anchors advance only on success — R <code>L RemoteDataServicesManager.swift:369,632-641</code></td>
+<td>Yes: rows with <code>isUploadedToNS == false</code>, <strong>for one day</strong> — R <code>T NightscoutManager.swift:112-264</code></td>
+<td>Yes: per-collection last-synced id — R <code>A NsclientLongKey.kt:23-37</code></td>
+<td>Yes: devicestatus files kept <strong>24 h</strong> — R <code>O oref0-ns-loop.sh:203-215</code></td>
+</tr>
+<tr>
+<td>Batch upload on reconnect</td>
+<td>Yes: dosing decisions 50, settings 400, others 1000 per batch — R <code>NSS NightscoutService.swift:189-359</code></td>
+<td>Yes: batches of 100 — R <code>T NightscoutManager.swift:1373-1375</code></td>
+<td>One record at a time, in a loop — R <code>A DataSyncSelectorV3.kt:340-389</code></td>
+<td>Devicestatus one file at a time; treatments as one batch — R <code>O oref0-ns-loop.sh:207-215,230-237</code></td>
+</tr>
+<tr>
+<td>Preserve ordering in batch</td>
+<td>Anchor order — R <code>L RemoteDataServicesManager.swift:370,381-383</code></td>
+<td>Not stated in the upload path — R <code>T NightscoutManager.swift:45-74</code></td>
+<td>Yes, ascending local <code>id</code> — R <code>A TemporaryTargetDao.kt:45-46</code></td>
+<td>Yes, file-name (time) order — R <code>O oref0-ns-loop.sh:206-207</code></td>
+</tr>
+<tr>
+<td>Mark events as "delayed"</td>
+<td>No — R as above</td>
+<td>No — R as above</td>
+<td>No — R as above</td>
+<td>No — R as above</td>
+</tr>
+<tr>
+<td>Dedup on retry</td>
+<td><code>_id</code> = <code>syncIdentifier</code> for overrides; ObjectId cache for doses; none for devicestatus or profile — R <code>NSS NightscoutService.swift:209-213,252-256</code></td>
+<td>Server upsert on <code>created_at</code> + <code>eventType</code>; overrides deleted and re-posted — R <code>T PumpEvent+helper.swift:130-131</code>, <code>T NightscoutAPI.swift:445-475</code></td>
+<td><code>identifier</code>/<code>nightscoutId</code>; update retried up to 5 times on 404 — R <code>A NSClientV3Plugin.kt:697-726</code></td>
+<td><code>created_at</code> watermark; a separate dedupe script by <code>created_at</code> — R <code>O ns-dedupe-treatments.sh:7-23</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="e-minimal-commitment-for-phase-1">E) Minimal commitment for phase 1<a class="headerlink" href="#e-minimal-commitment-for-phase-1" title="Permanent link">&para;</a></h2>
+<h3 id="e12-smallest-native-event-set">E12. Smallest native event set<a class="headerlink" href="#e12-smallest-native-event-set" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Priority</th>
+<th>Loop</th>
+<th>Trio</th>
+<th>AndroidAPS</th>
+<th>OpenAPS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>override.instance.activated</code></td>
+<td>High</td>
+<td>Default: <strong>already written</strong> as <code>Temporary Override</code> with <code>_id</code> = instance UUID — R <code>NSS OverrideTreament.swift:41-59</code></td>
+<td>Default: written as <code>Exercise</code> with name only; first native step is sending the override id, percentage and target — R <code>T NightscoutExercise.swift:9,23-29</code></td>
+<td>Default: ProfileSwitch / TempTarget / RunningMode records already carry <code>identifier</code> — R <code>A nsclientV3/extensions/ProfileSwitchExtension.kt:52-78</code></td>
+<td>Default: not applicable (no overrides); TTs are read (R <code>O nightscout.sh:295-297</code>), not written</td>
+</tr>
+<tr>
+<td><code>override.instance.ended</code></td>
+<td>High</td>
+<td>Default: written as an amended <code>duration</code> or a DELETE — R <code>NSS NightscoutService.swift:157-167</code></td>
+<td>Default: written as delete + re-post with actual duration — R <code>T NightscoutManager.swift:1206-1238</code></td>
+<td>Default: shortened <code>duration</code> on the same <code>identifier</code> — R <code>A TreatmentMapper.kt:517-541</code></td>
+<td>Not applicable — R <code>O targets.js:11-68</code></td>
+</tr>
+<tr>
+<td><code>policy.composition.computed</code></td>
+<td>High</td>
+<td>Default: partial (<code>override.currentCorrectionRange</code>, <code>multiplier</code>); effective ISF/CR/basal not written — R <code>NSS StoredDosingDecision.swift:118-137</code></td>
+<td>Default: <code>suggested</code> carries ISF, CR, current_target, sensitivityRatio — R <code>T Determination.swift:49-76</code></td>
+<td>Default: <code>suggested</code> carries variable_sens, targetBG, sensitivityRatio; the <code>OapsProfile</code> is the object to emit — R <code>A RT.kt:19-48</code>, <code>A OapsProfile.kt:6-51</code></td>
+<td>Default: <code>suggested</code> plus <code>preferences</code> — R <code>O ns-status.js:154-177</code></td>
+</tr>
+<tr>
+<td><code>delivery.observed</code> (summary)</td>
+<td>Medium</td>
+<td>Default: <code>loop.enacted</code>, after <code>received</code> reflects the pump result — R <code>NSS StoredDosingDecision.swift:63-70</code></td>
+<td>Default: <code>openaps.enacted</code> — R <code>T APSManager.swift:841-874</code></td>
+<td>Default: <code>openaps.enacted</code> with <code>requested</code> — R <code>A LoopPlugin.kt:1070-1087</code></td>
+<td>Default: <code>openaps.enacted</code> — R <code>O oref0-pump-loop.sh:365-366</code></td>
+</tr>
+<tr>
+<td><code>profile.selection.changed</code></td>
+<td>Medium</td>
+<td>Default: one profile; a settings change posts a new profile document — R <code>NSS NightscoutService.swift:361-368</code></td>
+<td>Default: one profile, posted on change — R <code>T NightscoutAPI.swift:407-441</code></td>
+<td>Default: ProfileSwitch + EffectiveProfileSwitch — R <code>A nsclientV3/extensions/EffectiveProfileSwitchExtension.kt:45-66</code></td>
+<td>Default: <code>OpenAPS Autosync</code> profile upload — R <code>O oref0-upload-profile.js:243-271</code></td>
+</tr>
+<tr>
+<td><code>capability.snapshot.updated</code></td>
+<td>Low</td>
+<td>Default: <code>profile.loopSettings</code> snapshot — R <code>NSK LoopSettings.swift:38-61</code></td>
+<td>Default: <code>profile.remoteCommands</code> list (dev) — R <code>T NightscoutManager.swift:846</code></td>
+<td>Default: <code>settings</code> document <code>aaps</code> — R <code>A RunningConfigurationImpl.kt:65-87</code></td>
+<td>Default: <code>preferences</code> in devicestatus — R <code>O ns-status.js:40-49</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Default minimal commitment</strong> (the smallest change from what each already writes):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Loop:       override.instance.activated/ended as today's Temporary Override records (bridge);
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>            native first: delivery.observed with received set from the pump result.
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Trio:       override.instance.activated/ended with the override id, percentage and target added;
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>            policy.composition.computed from today's suggested.
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>AndroidAPS: profile.selection.changed (PS → EPS) and policy.composition.computed from OapsProfile;
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>            override events map to PS/TT/RunningMode/Scene, already identified.
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>OpenAPS:    policy.composition.computed and delivery.observed from today's devicestatus (bridge).
+</code></pre></div>
+<hr />
+<h2 id="f-additional-capabilities">F) Additional capabilities<a class="headerlink" href="#f-additional-capabilities" title="Permanent link">&para;</a></h2>
+<h3 id="f13-remote-commands">F13. Remote commands<a class="headerlink" href="#f13-remote-commands" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Command type</th>
+<th>Loop</th>
+<th>Trio</th>
+<th>AndroidAPS</th>
+<th>OpenAPS</th>
+<th>Security model</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Activate override</td>
+<td>Yes, by preset name, no OTP — R <code>NSS OverrideRemoteNotification.swift:46-47</code>, <code>L Loop/Managers/LoopDataManager.swift:2502-2504</code></td>
+<td>Yes (<code>start_override</code>) — R <code>T CommandPayload.swift:125-143</code></td>
+<td>Scene activation via client control (4.0.0 prereleases) — R <code>A ClientControlMessage.kt:32-181</code></td>
+<td>No — R <code>O oref0-ns-loop.sh:104-137</code></td>
+<td>see note</td>
+</tr>
+<tr>
+<td>End override</td>
+<td>Yes, no OTP — R <code>NSS OverrideCancelRemoteNotification.swift:37-38</code></td>
+<td>Yes (<code>cancel_override</code>) — R as above</td>
+<td>Scene stop — R as above</td>
+<td>No — R <code>O oref0-ns-loop.sh:104-137</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Switch profile</td>
+<td>No — R <code>NSS RemoteNotification.swift:102-114</code></td>
+<td>No — R <code>T CommandPayload.swift:125-143</code></td>
+<td>Yes: SMS <code>PROFILE</code>; a Nightscout PS record if <code>NsClientAcceptProfileSwitch</code> (default off); client-control batch action — R <code>A SmsCommunicatorPlugin.kt:172-186</code>, <code>A BooleanKey.kt:222-230</code>, <code>A BatchActionMapping.kt:80-121</code></td>
+<td>No — R <code>O oref0-ns-loop.sh:104-137</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Set temp target</td>
+<td>No — R <code>NSS RemoteNotification.swift:102-114</code></td>
+<td>Yes (<code>temp_target</code>, <code>cancel_temp_target</code>); also enables the newest Nightscout TT — R <code>T CommandPayload.swift:125-143</code></td>
+<td>Yes: SMS <code>TARGET</code>; Nightscout TT if <code>NsClientAcceptTempTarget</code> (default off); client control — R as above</td>
+<td>Yes: reads <code>Temporary Target</code> treatments from Nightscout each loop — R <code>O oref0-ns-loop.sh:104-118</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Bolus (caregiving)</td>
+<td>Yes, OTP required, ≤ max bolus — R <code>NSS BolusRemoteNotification.swift:36-37</code>, <code>L ServicesManager.swift:332-345</code></td>
+<td>Yes, ≤ max bolus and max IOB, with a recent-bolus check — R <code>T BolusSafetyValidator.swift:43-81</code></td>
+<td>Yes: SMS <code>BOLUS</code>; client-control <code>bolus_prepare/commit</code> — R as above</td>
+<td>No — R <code>O oref0-ns-loop.sh:104-137</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><em>Security model, by default (mechanism only).</em>
+<strong>Loop:</strong> APNs push; a TOTP one-time password for bolus and carbs, none for override or cancel; an
+optional sender-set expiry, skipped when absent; failures uploaded as a <code>Note</code> treatment that
+includes the received command — R <code>NSS RemoteCommandValidator.swift:18-43</code>, <code>NSS NightscoutService.swift:487-520</code>.
+<strong>Trio:</strong> APNs push; payload encrypted with AES-GCM under a key derived from a shared secret; a
+±600 s timestamp window; no one-time password; reply to the sender over APNs, and a <code>Note</code> only on
+error — R <code>T TrioRemoteControl.swift:18,24-75</code>, <code>T SecureMessenger.swift:5-31</code>, <code>T TrioRemoteControl+Helpers.swift:4-40</code>.
+<strong>AndroidAPS:</strong> SMS from an allowlisted number with TOTP + PIN, off by default; inbound Nightscout
+records accepted per type behind preferences, all off by default; client control on the NS
+<code>settings</code> collection with HMAC-SHA256-authenticated envelopes, a counter, clock-skew and
+<code>validUntil</code> checks, and acknowledgements (Executing → Done {Ok, Failed, Expired}, Delivery Failed)
+— R <code>A AuthRequest.kt:43-56</code>, <code>A ClientControlReceiver.kt:317-389</code>, <code>A AckEnvelope.kt:52-65</code>.
+<strong>OpenAPS:</strong> whoever can write <code>Temporary Target</code> or carb treatments to the Nightscout site.
+The command rules this repository proposes are in <a href="spec/commands.html">spec/commands.md</a>.</p>
+<h3 id="f14-controller-registration">F14. Controller registration<a class="headerlink" href="#f14-controller-registration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Loop</th>
+<th>Trio</th>
+<th>AndroidAPS</th>
+<th>OpenAPS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unique instance ID</td>
+<td>None on the wire; the profile's APNs <code>deviceToken</code> is the nearest — R <code>NSS StoredDosingDecision.swift:148-164</code>, <code>NSK LoopSettings.swift:38-61</code></td>
+<td>None; the profile's APNs <code>deviceToken</code> is the nearest — R <code>T NightscoutManager.swift:840-861</code></td>
+<td>An install UUID for client control only — R <code>A AuthorizedClientsViewModel.kt:271-278</code></td>
+<td>None; host name in <code>device</code> — R <code>O ns-status.js:155</code></td>
+</tr>
+<tr>
+<td>Device info</td>
+<td><code>device</code> = <code>loop://</code> + iOS device name; <code>uploader.name</code> — R <code>NSS StoredDosingDecision.swift:149</code>; M <code>device</code> on every devicestatus read</td>
+<td><code>device</code> = <code>Trio</code> — R <code>T NightscoutManager.swift:688</code></td>
+<td><code>device</code> = <code>openaps://</code> + manufacturer + model — R <code>A ConfigImpl.kt:60</code></td>
+<td><code>device</code> = <code>openaps://</code> + host name — R <code>O ns-status.js:155</code></td>
+</tr>
+<tr>
+<td>Pump binding info</td>
+<td><code>pump.manufacturer</code>, <code>model</code>, <code>pumpID</code> — R <code>NSK PumpStatus.swift:52-63</code>; M 588,152 / 588,152 / 597,334 reads, 10 sites</td>
+<td>Clock, battery, reservoir, status, bolus increment; no model or id — R <code>T NightscoutStatus.swift:20-26</code></td>
+<td><code>pump.extended</code> (driver extras); <code>runningConfig.pump</code> model in <code>settings</code> — R <code>A PumpStatusProviderImpl.kt:102-127</code>, <code>A RunningConfigurationImpl.kt:78</code></td>
+<td>Pump model in treatment <code>enteredBy</code> (<code>openaps://medtronic/&lt;model&gt;</code>) — R <code>O mm-format-ns-treatments.sh:31</code></td>
+</tr>
+<tr>
+<td>CGM binding info</td>
+<td>Entry <code>device</code> = manufacturer + model, or provenance — R <code>NSS StoredGlucoseSample.swift:22-32</code></td>
+<td>No device string on entries — R <code>T BloodGlucose.swift:60-76</code></td>
+<td>Entry <code>device</code> = source sensor — R <code>A nsclientV3/extensions/GlucoseValueExtension.kt:38</code></td>
+<td>Entry <code>device</code> = <code>openaps://medtronic/pump/cgm</code> — R <code>O mm-format-ns-glucose.sh:32</code></td>
+</tr>
+<tr>
+<td>Version/build</td>
+<td><code>loop.version</code> — R, see B6</td>
+<td><code>openaps.version</code> — R, see B6</td>
+<td><code>pump.extended.Version</code> — R, see B6</td>
+<td><code>openaps.version</code> — R, see B6</td>
+</tr>
+</tbody>
+</table>
+<p><em>Note.</em> <code>device</code> is free text and is not an identity (reconciliation
+<a href="../tenancy/nightscout-control-plane-reconciliation-2026-09-11.html#33-instance-identity-should-not-come-from-the-device-string">§3.3</a>);
+a registered instance gets a hub-issued or controller-supplied id (<a href="spec/registration.html">spec/registration.md</a>).
+Loop's <code>device</code> and <code>uploader.name</code> carry the user's device name, which <code>specs/sync/sensitivity.yaml</code> treats as identifying.</p>
+<hr />
+<h2 id="g-migration-path">G) Migration path<a class="headerlink" href="#g-migration-path" title="Permanent link">&para;</a></h2>
+<h3 id="g15-adoption-timeline">G15. Adoption timeline<a class="headerlink" href="#g15-adoption-timeline" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Loop</th>
+<th>Trio</th>
+<th>AndroidAPS</th>
+<th>OpenAPS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Can test in dev builds</td>
+<td>Default: on LoopWorkspace <code>dev</code> (head <code>c1f55970</code>, 2026-10-17), which pins Loop <code>691afb31</code> ahead of the release — H <code>gh api repos/LoopKit/LoopWorkspace/contents/Loop?ref=c1f5597093</code></td>
+<td>Default: on <code>dev</code> (head <code>e797b4ad</code>, 2026-10-18; versioned by <code>auto_version_dev.yml</code>) — H <code>gh api repos/nightscout/Trio/commits/dev</code></td>
+<td>Default: on <code>dev</code> (head <code>b9bb9ef3</code>, 2026-10-16) — H <code>gh api repos/nightscout/AndroidAPS/commits/dev</code></td>
+<td>Default: on <code>dev</code> (head <code>d219baf9</code>, 2026-03-10; 8 commits in 12 months) — H <code>git -C externals/oref0 log --since=2025-10-18</code></td>
+</tr>
+<tr>
+<td>Can ship in beta</td>
+<td>Default: no prerelease channel; the 9 LoopWorkspace releases in 12 months are all marked stable — H <code>gh api repos/LoopKit/LoopWorkspace/releases</code></td>
+<td>Default: prereleases are used rarely (last <code>v0.6.0</code>, 2025-10-07); <code>dev</code> is the test channel — H <code>gh api repos/nightscout/Trio/releases</code></td>
+<td>Default: beta then rc before stable (<code>4.0.0-beta1</code> 2026-10-08, <code>4.0.0-rc1</code> 2026-10-16) — H <code>gh api repos/nightscout/AndroidAPS/releases</code></td>
+<td>Default: release candidates historically (<code>v0.7.0-rc1</code>, 2019) — H <code>gh api repos/openaps/oref0/releases</code></td>
+</tr>
+<tr>
+<td>Can ship in stable</td>
+<td>Default: the next LoopWorkspace release after merge; the 9 releases from 2025-11-01 to 2026-10-05 came 5 to 101 days apart — H as above</td>
+<td>Default: days to weeks — the dosing-mode devicestatus field was committed 2026-09-13 and shipped in <code>v1.0</code> 2026-09-15; the profile's remote-command list (committed 2026-09-21) is not in <code>v1.0.2</code>; 9 releases in 12 months — H <code>gh api 'repos/nightscout/Trio/commits?sha=dev&amp;path=Trio/Sources/Models/NightscoutStatus.swift'</code></td>
+<td>Default: months — client control reached <code>dev</code> 2026-08-29 and <code>4.0.0-beta1</code> 2026-10-08; last stable <code>3.4.2.6</code> 2026-08-02 — H <code>gh api 'repos/nightscout/AndroidAPS/commits?sha=dev&amp;path=plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/SettingsIdentifiers.kt'</code></td>
+<td>Default: no stable release since <code>v0.7.1</code> (2022-06-19) — H <code>gh api repos/openaps/oref0/releases</code></td>
+</tr>
+<tr>
+<td>Full native (no devicestatus)</td>
+<td>Default: devicestatus stays alongside native events; follower apps read it — R consumer impact §5 (note)</td>
+<td>Default: as Loop — R consumer impact §5 (note)</td>
+<td>Default: as Loop — R consumer impact §5 (note)</td>
+<td>Default: devicestatus stays; it is the rig's only status channel — R <code>O oref0-ns-loop.sh:196-215</code></td>
+</tr>
+</tbody>
+</table>
+<p><em>Note.</em> Each "Default" here is what the release history supports; only the project can give its
+plan. Loop's <code>next-dev</code> branch is 631 commits ahead of and 27 behind <code>dev</code> (H
+<code>gh api repos/LoopKit/Loop/compare/e959503b18...7d5026176c</code>); a change made on <code>dev</code> reaches
+<code>next-dev</code> separately. Follower clients that read devicestatus (xDrip+'s follower among them) are in the
+<a href="../../60-research/remedial/consumer-impact-15.0.9-2026-09-23.html#5-per-client-summary">consumer impact survey §5</a>.</p>
+<h3 id="g16-bridge-mode-feedback">G16. Bridge mode feedback<a class="headerlink" href="#g16-bridge-mode-feedback" title="Permanent link">&para;</a></h3>
+<p>What a hub synthesizing events from today's uploads would get wrong, by default, read from each
+controller's writers and from the hub lab.</p>
+<table>
+<thead>
+<tr>
+<th>Concern</th>
+<th>Loop</th>
+<th>Trio</th>
+<th>AndroidAPS</th>
+<th>OpenAPS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Accuracy of override state extraction</td>
+<td><strong>Yes</strong>: pre-meal is not uploaded; devicestatus <code>override.duration</code> is seconds while the treatment's is minutes; the two hubs disagree on it — R <code>NSS StoredDosingDecision.swift:119,129</code>, <code>NSK OverrideTreatment.swift:67</code>; M hub lab, landscape <a href="nightscout-intent-workflow-landscape-2026-10-09.html#5-how-the-hubs-decide-what-is-active">§5</a>; M 10,892 of 55,938 active overrides carry a name and no effect (<a href="../tenancy/nightscout-control-plane-reconciliation-2026-09-11.html#34-overrideinstanceeffectiveeffects-will-be-empty-20-of-the-time">reconciliation §3.4</a>)</td>
+<td><strong>Yes</strong>: every override is <code>Exercise</code> with name only; percentage and target are not sent — R <code>T NightscoutExercise.swift:23-29</code>, <code>T OverrideStored+helper.swift:33-36</code>; M 399 distinct <code>Exercise</code> documents, 1 site</td>
+<td><strong>Partly</strong>: no override object; the PS → EPS pair is clear, EPS arrives as a <code>Note</code>; <code>timeshift</code> is milliseconds — R <code>A nsclientV3/extensions/EffectiveProfileSwitchExtension.kt:45-66</code>, <code>A TreatmentMapper.kt:540</code>; M hub lab: hubs disagree on timeshift units (landscape §5)</td>
+<td><strong>No</strong> override state to extract — R <code>O targets.js:11-68</code></td>
+</tr>
+<tr>
+<td>Accuracy of delivery extraction</td>
+<td><strong>Yes</strong>: <code>enacted.received</code> is constant <code>true</code>; devicestatus is uploaded only for four decision reasons, each paired with the last loop decision — R <code>NSS StoredDosingDecision.swift:63-70</code>, <code>NSS NightscoutService.swift:282-297</code></td>
+<td>Low: enacted vs suggested follows the pump result — R <code>T Determination+helper.swift:72-89</code></td>
+<td><strong>Yes</strong>: <code>enacted.smb</code> is the temp-basal result's bolus — R <code>A LoopPlugin.kt:1087</code></td>
+<td>Low — R <code>O oref0-pump-loop.sh:365-366</code></td>
+</tr>
+<tr>
+<td>Missing fields in current devicestatus</td>
+<td>Effective ISF/CR/basal; failure codes (2.4% carry text) — R B6; M <code>loop.failureReason</code></td>
+<td>Override factors, <code>halfBasalTarget</code>, pump model — R <code>T NightscoutTreatment.swift:3-25</code></td>
+<td><code>OapsProfile</code> (max_iob, ISF, CR as fields), <code>utcOffset</code> — R <code>A nsclientV3/extensions/DeviceStatusExtension.kt:7-23</code></td>
+<td>Pump model and CGM in devicestatus — R <code>O ns-status.js:154-169</code></td>
+</tr>
+<tr>
+<td>Timing/ordering issues</td>
+<td>Devicestatus <code>created_at</code> is the decision time, posted later in batches — R <code>NSS StoredDosingDecision.swift:148-153</code></td>
+<td>Unuploaded rows older than a day are dropped — R <code>T Determination+helper.swift:72-89</code></td>
+<td>Inbound records by <code>srvModified</code> — R <code>A LoadTreatmentsRunner.kt:41-57</code></td>
+<td>Files older than 24 h deleted unsent — R <code>O oref0-ns-loop.sh:205</code></td>
+</tr>
+<tr>
+<td>Duplicate events</td>
+<td>Devicestatus and profile have no dedup key — R <code>NSK DeviceStatus.swift:23,61</code></td>
+<td>Temp targets and pump notes are uploaded without <code>id</code> and marked uploaded by <code>id</code>, so they may be re-posted (needs a run) — R <code>T TempTargetsStorage.swift:312-329</code>, <code>T NightscoutManager.swift:1287,1330</code></td>
+<td>Low: <code>identifier</code> per record — R <code>A DataSyncSelectorV3.kt:340-389</code></td>
+<td>Treatments dedup by a separate script on <code>created_at</code> — R <code>O ns-dedupe-treatments.sh:7-23</code></td>
+</tr>
+<tr>
+<td>Other</td>
+<td><code>device</code> and <code>uploader.name</code> carry the device's name (identifying) — R <code>NSS StoredDosingDecision.swift:149</code></td>
+<td>Remote-command <code>Note</code> on error only — R <code>T TrioRemoteControl+Helpers.swift:4-21</code></td>
+<td>Accepted remote records are opt-in per type, so a hub-written TT may never apply — R <code>A BooleanKey.kt:222-230</code></td>
+<td><code>preferences</code> carries setup choices (redacted host, serial and tokens) — R <code>O ns-status.js:40-49</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="appendix-a-iaps">Appendix A. iAPS<a class="headerlink" href="#appendix-a-iaps" title="Permanent link">&para;</a></h2>
+<p>The questionnaire does not list iAPS. The <a href="nightscout-intent-workflow-landscape-2026-10-09.html">intent landscape</a>
+(§1, iAPS <code>6cb69e7</code>, 2026-10-04) covers it; its defaults, from that page, are: separate override
+presets and an append-only override log, presets not sent to Nightscout (A2); override and temp
+target concurrent, temp target wins the target (A4); ends on expiry, carbs, glucose thresholds or a
+chained preset, reason in the debug log only (G16); remote intent arrives as Nightscout
+<code>Announcement</code> treatments, authorised by Nightscout write access, with no acknowledgement (F13).
+All read-derived; not re-read here.</p>
+<h2 id="appendix-b-path-index">Appendix B. Path index<a class="headerlink" href="#appendix-b-path-index" title="Permanent link">&para;</a></h2>
+<p>Each basename cited above, with its full path in the tree named by its prefix.</p>
+<table>
+<thead>
+<tr>
+<th>Prefix</th>
+<th>Cited as</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>L</code> (Loop e959503b)</td>
+<td><code>DeviceDataManager.swift</code></td>
+<td><code>Loop/Managers/DeviceDataManager.swift</code></td>
+</tr>
+<tr>
+<td><code>L</code> (Loop e959503b)</td>
+<td><code>Loop/Managers/LoopDataManager.swift</code></td>
+<td><code>Loop/Managers/LoopDataManager.swift</code></td>
+</tr>
+<tr>
+<td><code>L</code> (Loop e959503b)</td>
+<td><code>LoopCore/LoopSettings.swift</code></td>
+<td><code>LoopCore/LoopSettings.swift</code></td>
+</tr>
+<tr>
+<td><code>L</code> (Loop e959503b)</td>
+<td><code>LoopError.swift</code></td>
+<td><code>Loop/Models/LoopError.swift</code></td>
+</tr>
+<tr>
+<td><code>L</code> (Loop e959503b)</td>
+<td><code>PumpManagerError.swift</code></td>
+<td><code>Loop/Extensions/PumpManagerError.swift</code></td>
+</tr>
+<tr>
+<td><code>L</code> (Loop e959503b)</td>
+<td><code>RemoteDataServicesManager.swift</code></td>
+<td><code>Loop/Managers/RemoteDataServicesManager.swift</code></td>
+</tr>
+<tr>
+<td><code>L</code> (Loop e959503b)</td>
+<td><code>ServicesManager.swift</code></td>
+<td><code>Loop/Managers/ServicesManager.swift</code></td>
+</tr>
+<tr>
+<td><code>L</code> (Loop e959503b)</td>
+<td><code>SettingsManager.swift</code></td>
+<td><code>Loop/Managers/SettingsManager.swift</code></td>
+</tr>
+<tr>
+<td><code>L</code> (Loop e959503b)</td>
+<td><code>StatusTableViewController.swift</code></td>
+<td><code>Loop/View Controllers/StatusTableViewController.swift</code></td>
+</tr>
+<tr>
+<td><code>L</code> (Loop e959503b)</td>
+<td><code>TrustedTimeChecker.swift</code></td>
+<td><code>Loop/Managers/TrustedTimeChecker.swift</code></td>
+</tr>
+<tr>
+<td><code>LK</code> (LoopKit d9f14373)</td>
+<td><code>DailyQuantitySchedule+Override.swift</code></td>
+<td><code>LoopKit/DailyQuantitySchedule+Override.swift</code></td>
+</tr>
+<tr>
+<td><code>LK</code> (LoopKit d9f14373)</td>
+<td><code>DoseMath.swift</code></td>
+<td><code>LoopKit/LoopAlgorithm/DoseMath.swift</code></td>
+</tr>
+<tr>
+<td><code>LK</code> (LoopKit d9f14373)</td>
+<td><code>DosingDecisionStore.swift</code></td>
+<td><code>LoopKit/DosingDecisionStore.swift</code></td>
+</tr>
+<tr>
+<td><code>LK</code> (LoopKit d9f14373)</td>
+<td><code>PumpManagerError.swift</code></td>
+<td><code>LoopKit/DeviceManager/PumpManagerError.swift</code></td>
+</tr>
+<tr>
+<td><code>LK</code> (LoopKit d9f14373)</td>
+<td><code>PumpManagerStatus.swift</code></td>
+<td><code>LoopKit/DeviceManager/PumpManagerStatus.swift</code></td>
+</tr>
+<tr>
+<td><code>LK</code> (LoopKit d9f14373)</td>
+<td><code>SettingsStore.swift</code></td>
+<td><code>LoopKit/SettingsStore.swift</code></td>
+</tr>
+<tr>
+<td><code>LK</code> (LoopKit d9f14373)</td>
+<td><code>TemporaryScheduleOverride.swift</code></td>
+<td><code>LoopKit/TemporaryScheduleOverride.swift</code></td>
+</tr>
+<tr>
+<td><code>LK</code> (LoopKit d9f14373)</td>
+<td><code>TemporaryScheduleOverrideHistory.swift</code></td>
+<td><code>LoopKit/TemporaryScheduleOverrideHistory.swift</code></td>
+</tr>
+<tr>
+<td><code>LK</code> (LoopKit d9f14373)</td>
+<td><code>TemporaryScheduleOverridePreset.swift</code></td>
+<td><code>LoopKit/TemporaryScheduleOverridePreset.swift</code></td>
+</tr>
+<tr>
+<td><code>LK</code> (LoopKit d9f14373)</td>
+<td><code>TemporaryScheduleOverrideSettings.swift</code></td>
+<td><code>LoopKit/TemporaryScheduleOverrideSettings.swift</code></td>
+</tr>
+<tr>
+<td><code>NSS</code> (NightscoutService 2cef4896)</td>
+<td><code>BolusRemoteNotification.swift</code></td>
+<td><code>NightscoutServiceKit/RemoteCommands/V1/Notifications/BolusRemoteNotification.swift</code></td>
+</tr>
+<tr>
+<td><code>NSS</code> (NightscoutService 2cef4896)</td>
+<td><code>Bundle.swift</code></td>
+<td><code>Extensions/Bundle.swift</code></td>
+</tr>
+<tr>
+<td><code>NSS</code> (NightscoutService 2cef4896)</td>
+<td><code>Extensions/DoseEntry.swift</code></td>
+<td><code>NightscoutServiceKit/Extensions/DoseEntry.swift</code></td>
+</tr>
+<tr>
+<td><code>NSS</code> (NightscoutService 2cef4896)</td>
+<td><code>NightscoutService.swift</code></td>
+<td><code>NightscoutServiceKit/NightscoutService.swift</code></td>
+</tr>
+<tr>
+<td><code>NSS</code> (NightscoutService 2cef4896)</td>
+<td><code>OverrideCancelRemoteNotification.swift</code></td>
+<td><code>NightscoutServiceKit/RemoteCommands/V1/Notifications/OverrideCancelRemoteNotification.swift</code></td>
+</tr>
+<tr>
+<td><code>NSS</code> (NightscoutService 2cef4896)</td>
+<td><code>OverrideRemoteNotification.swift</code></td>
+<td><code>NightscoutServiceKit/RemoteCommands/V1/Notifications/OverrideRemoteNotification.swift</code></td>
+</tr>
+<tr>
+<td><code>NSS</code> (NightscoutService 2cef4896)</td>
+<td><code>OverrideTreament.swift</code></td>
+<td><code>NightscoutServiceKit/Extensions/OverrideTreament.swift</code></td>
+</tr>
+<tr>
+<td><code>NSS</code> (NightscoutService 2cef4896)</td>
+<td><code>PersistedPumpEvent.swift</code></td>
+<td><code>NightscoutServiceKit/Extensions/PersistedPumpEvent.swift</code></td>
+</tr>
+<tr>
+<td><code>NSS</code> (NightscoutService 2cef4896)</td>
+<td><code>RemoteCommandValidator.swift</code></td>
+<td><code>NightscoutServiceKit/RemoteCommands/Validators/RemoteCommandValidator.swift</code></td>
+</tr>
+<tr>
+<td><code>NSS</code> (NightscoutService 2cef4896)</td>
+<td><code>RemoteNotification.swift</code></td>
+<td><code>NightscoutServiceKit/RemoteCommands/V1/Notifications/RemoteNotification.swift</code></td>
+</tr>
+<tr>
+<td><code>NSS</code> (NightscoutService 2cef4896)</td>
+<td><code>StoredDosingDecision.swift</code></td>
+<td><code>NightscoutServiceKit/Extensions/StoredDosingDecision.swift</code></td>
+</tr>
+<tr>
+<td><code>NSS</code> (NightscoutService 2cef4896)</td>
+<td><code>StoredGlucoseSample.swift</code></td>
+<td><code>NightscoutServiceKit/Extensions/StoredGlucoseSample.swift</code></td>
+</tr>
+<tr>
+<td><code>NSS</code> (NightscoutService 2cef4896)</td>
+<td><code>StoredSettings.swift</code></td>
+<td><code>NightscoutServiceKit/Extensions/StoredSettings.swift</code></td>
+</tr>
+<tr>
+<td><code>NSK</code> (NightscoutKit 4ec9fd1)</td>
+<td><code>DeviceStatus.swift</code></td>
+<td><code>Sources/NightscoutKit/Models/DeviceStatus.swift</code></td>
+</tr>
+<tr>
+<td><code>NSK</code> (NightscoutKit 4ec9fd1)</td>
+<td><code>LoopSettings.swift</code></td>
+<td><code>Sources/NightscoutKit/Models/LoopSettings.swift</code></td>
+</tr>
+<tr>
+<td><code>NSK</code> (NightscoutKit 4ec9fd1)</td>
+<td><code>OverrideTreatment.swift</code></td>
+<td><code>Sources/NightscoutKit/Models/Treatments/OverrideTreatment.swift</code></td>
+</tr>
+<tr>
+<td><code>NSK</code> (NightscoutKit 4ec9fd1)</td>
+<td><code>ProfileSet.swift</code></td>
+<td><code>Sources/NightscoutKit/Models/ProfileSet.swift</code></td>
+</tr>
+<tr>
+<td><code>NSK</code> (NightscoutKit 4ec9fd1)</td>
+<td><code>PumpStatus.swift</code></td>
+<td><code>Sources/NightscoutKit/Models/PumpStatus.swift</code></td>
+</tr>
+<tr>
+<td><code>NSK</code> (NightscoutKit 4ec9fd1)</td>
+<td><code>TemporaryScheduleOverride.swift</code></td>
+<td><code>Sources/NightscoutKit/Models/TemporaryScheduleOverride.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>AdjustmentManager.swift</code></td>
+<td><code>Trio/Sources/Services/Adjustments/AdjustmentManager.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>APSManager.swift</code></td>
+<td><code>Trio/Sources/APS/APSManager.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>BloodGlucose.swift</code></td>
+<td><code>Trio/Sources/Models/BloodGlucose.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>BolusSafetyValidator.swift</code></td>
+<td><code>Trio/Sources/Services/BolusSafety/BolusSafetyValidator.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>CommandPayload.swift</code></td>
+<td><code>Trio/Sources/Models/CommandPayload.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>Determination+helper.swift</code></td>
+<td><code>Model/Helper/Determination+helper.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>Determination.swift</code></td>
+<td><code>Trio/Sources/Models/Determination.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>DeterminationStorage.swift</code></td>
+<td><code>Trio/Sources/APS/Storage/DeterminationStorage.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>DetermineBasal+Helpers.swift</code></td>
+<td><code>Trio/Sources/APS/OpenAPSSwift/DetermineBasal/DetermineBasal+Helpers.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>DetermineBasalGenerator.swift</code></td>
+<td><code>Trio/Sources/APS/OpenAPSSwift/DetermineBasal/DetermineBasalGenerator.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>DosingEngine.swift</code></td>
+<td><code>Trio/Sources/APS/OpenAPSSwift/DetermineBasal/DosingEngine.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>ForecastGenerator.swift</code></td>
+<td><code>Trio/Sources/APS/OpenAPSSwift/Forecasts/ForecastGenerator.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>NightscoutAPI.swift</code></td>
+<td><code>Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>NightscoutExercise.swift</code></td>
+<td><code>Trio/Sources/Models/NightscoutExercise.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>NightscoutManager.swift</code></td>
+<td><code>Trio/Sources/Services/Network/Nightscout/NightscoutManager.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>NightscoutStatus.swift</code></td>
+<td><code>Trio/Sources/Models/NightscoutStatus.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>NightscoutTreatment.swift</code></td>
+<td><code>Trio/Sources/Models/NightscoutTreatment.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>OpenAPS.swift</code></td>
+<td><code>Trio/Sources/APS/OpenAPS/OpenAPS.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>OverrideStorage.swift</code></td>
+<td><code>Trio/Sources/APS/Storage/OverrideStorage.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>OverrideStored+CoreDataProperties.swift</code></td>
+<td><code>Model/Classes+Properties/OverrideStored+CoreDataProperties.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>OverrideStored+helper.swift</code></td>
+<td><code>Model/Helper/OverrideStored+helper.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>Profile.swift</code></td>
+<td><code>Trio/Sources/APS/OpenAPSSwift/Models/Profile.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>ProfileGenerator.swift</code></td>
+<td><code>Trio/Sources/APS/OpenAPSSwift/Profile/ProfileGenerator.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>PumpEvent+helper.swift</code></td>
+<td><code>Model/Helper/PumpEvent+helper.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>PumpHistoryStorage.swift</code></td>
+<td><code>Trio/Sources/APS/Storage/PumpHistoryStorage.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>SecureMessenger.swift</code></td>
+<td><code>Trio/Sources/Services/RemoteControl/SecureMessenger.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>TempTargetsStorage.swift</code></td>
+<td><code>Trio/Sources/APS/Storage/TempTargetsStorage.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>TempTargetStored+CoreDataProperties.swift</code></td>
+<td><code>Model/Classes+Properties/TempTargetStored+CoreDataProperties.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>TrioAlertCategory.swift</code></td>
+<td><code>Trio/Sources/Services/Alerts/TrioAlertCategory.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>TrioRemoteControl+Helpers.swift</code></td>
+<td><code>Trio/Sources/Services/RemoteControl/TrioRemoteControl+Helpers.swift</code></td>
+</tr>
+<tr>
+<td><code>T</code> (Trio e797b4ad)</td>
+<td><code>TrioRemoteControl.swift</code></td>
+<td><code>Trio/Sources/Services/RemoteControl/TrioRemoteControl.swift</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>AckEnvelope.kt</code></td>
+<td><code>core/nssdk/src/commonMain/kotlin/app/aaps/core/nssdk/localmodel/clientcontrol/AckEnvelope.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>AppRepository.kt</code></td>
+<td><code>database/impl/src/commonMain/kotlin/app/aaps/database/AppRepository.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>AuthorizedClientsViewModel.kt</code></td>
+<td><code>plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/clientcontrol/compose/AuthorizedClientsViewModel.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>AuthRequest.kt</code></td>
+<td><code>plugins/sync/src/androidMain/kotlin/app/aaps/plugins/sync/smsCommunicator/AuthRequest.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>BatchActionMapping.kt</code></td>
+<td><code>plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/clientcontrol/BatchActionMapping.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>BooleanKey.kt</code></td>
+<td><code>core/keys/src/commonMain/kotlin/app/aaps/core/keys/BooleanKey.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>ClientControlCrypto.kt</code></td>
+<td><code>core/nssdk/src/commonMain/kotlin/app/aaps/core/nssdk/utils/ClientControlCrypto.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>ClientControlMessage.kt</code></td>
+<td><code>core/nssdk/src/commonMain/kotlin/app/aaps/core/nssdk/localmodel/clientcontrol/ClientControlMessage.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>ClientControlReceiver.kt</code></td>
+<td><code>plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/clientcontrol/ClientControlReceiver.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>CommandExecutor.kt</code></td>
+<td><code>implementation/src/commonMain/kotlin/app/aaps/implementation/queue/CommandExecutor.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>CommandQueueImplementation.kt</code></td>
+<td><code>implementation/src/commonMain/kotlin/app/aaps/implementation/queue/CommandQueueImplementation.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>ConfigImpl.kt</code></td>
+<td><code>app/src/main/kotlin/app/aaps/implementations/ConfigImpl.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>DataSyncSelectorV3.kt</code></td>
+<td><code>plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/DataSyncSelectorV3.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>DetermineBasalResult.kt</code></td>
+<td><code>implementation/src/commonMain/kotlin/app/aaps/implementation/aps/DetermineBasalResult.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>DetermineBasalSMB.kt</code></td>
+<td><code>plugins/aps/src/commonMain/kotlin/app/aaps/plugins/aps/openAPSSMB/DetermineBasalSMB.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>EffectiveProfileSwitch.kt</code></td>
+<td><code>database/impl/src/commonMain/kotlin/app/aaps/database/entities/EffectiveProfileSwitch.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>InsertAndCancelCurrentTemporaryTargetTransaction.kt</code></td>
+<td><code>database/impl/src/commonMain/kotlin/app/aaps/database/transactions/InsertAndCancelCurrentTemporaryTargetTransaction.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>LoadTreatmentsRunner.kt</code></td>
+<td><code>plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/workers/LoadTreatmentsRunner.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>LocalAlertUtilsImpl.kt</code></td>
+<td><code>implementation/src/commonMain/kotlin/app/aaps/implementation/alerts/LocalAlertUtilsImpl.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>LoopPlugin.kt</code></td>
+<td><code>plugins/aps/src/commonMain/kotlin/app/aaps/plugins/aps/loop/LoopPlugin.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>LoopViewModel.kt</code></td>
+<td><code>plugins/aps/src/commonMain/kotlin/app/aaps/plugins/aps/loop/compose/LoopViewModel.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>medtrum/comm/enums/AlarmState.kt</code></td>
+<td><code>pump/medtrum/src/main/kotlin/app/aaps/pump/medtrum/comm/enums/AlarmState.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>NsclientLongKey.kt</code></td>
+<td><code>plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/keys/NsclientLongKey.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>nsclientV3/extensions/DeviceStatusExtension.kt</code></td>
+<td><code>plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/extensions/DeviceStatusExtension.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>nsclientV3/extensions/EffectiveProfileSwitchExtension.kt</code></td>
+<td><code>plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/extensions/EffectiveProfileSwitchExtension.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>nsclientV3/extensions/GlucoseValueExtension.kt</code></td>
+<td><code>plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/extensions/GlucoseValueExtension.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>nsclientV3/extensions/ProfileSwitchExtension.kt</code></td>
+<td><code>plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/extensions/ProfileSwitchExtension.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>NSClientV3Plugin.kt</code></td>
+<td><code>plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/NSClientV3Plugin.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>OapsProfile.kt</code></td>
+<td><code>core/interfaces/src/commonMain/kotlin/app/aaps/core/interfaces/aps/OapsProfile.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>OpenAPSSMBPlugin.kt</code></td>
+<td><code>plugins/aps/src/commonMain/kotlin/app/aaps/plugins/aps/openAPSSMB/OpenAPSSMBPlugin.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>ProfileRepositoryImpl.kt</code></td>
+<td><code>implementation/src/commonMain/kotlin/app/aaps/implementation/profile/ProfileRepositoryImpl.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>ProfileSealed.kt</code></td>
+<td><code>core/objects/src/commonMain/kotlin/app/aaps/core/objects/profile/ProfileSealed.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>ProfileSwitch.kt</code></td>
+<td><code>database/impl/src/commonMain/kotlin/app/aaps/database/entities/ProfileSwitch.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>PumpEnactResult.kt</code></td>
+<td><code>core/interfaces/src/commonMain/kotlin/app/aaps/core/interfaces/pump/PumpEnactResult.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>PumpStatusProviderImpl.kt</code></td>
+<td><code>implementation/src/commonMain/kotlin/app/aaps/implementation/pump/PumpStatusProviderImpl.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>PumpSyncImplementation.kt</code></td>
+<td><code>implementation/src/commonMain/kotlin/app/aaps/implementation/pump/PumpSyncImplementation.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>RT.kt</code></td>
+<td><code>core/interfaces/src/commonMain/kotlin/app/aaps/core/interfaces/aps/RT.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>RunningConfigurationImpl.kt</code></td>
+<td><code>plugins/configuration/src/commonMain/kotlin/app/aaps/plugins/configuration/configBuilder/RunningConfigurationImpl.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>RunningMode.kt</code></td>
+<td><code>database/impl/src/commonMain/kotlin/app/aaps/database/entities/RunningMode.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>Scene.kt</code></td>
+<td><code>core/data/src/commonMain/kotlin/app/aaps/core/data/model/Scene.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>SceneAction.kt</code></td>
+<td><code>core/data/src/commonMain/kotlin/app/aaps/core/data/model/SceneAction.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>SceneExecutor.kt</code></td>
+<td><code>implementation/src/commonMain/kotlin/app/aaps/implementation/scenes/SceneExecutor.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>SettingsIdentifiers.kt</code></td>
+<td><code>plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/SettingsIdentifiers.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>SmsCommunicatorPlugin.kt</code></td>
+<td><code>plugins/sync/src/androidMain/kotlin/app/aaps/plugins/sync/smsCommunicator/SmsCommunicatorPlugin.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>StringNonKey.kt</code></td>
+<td><code>core/keys/src/commonMain/kotlin/app/aaps/core/keys/StringNonKey.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>TemporaryTarget.kt</code></td>
+<td><code>database/impl/src/commonMain/kotlin/app/aaps/database/entities/TemporaryTarget.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>TemporaryTargetDao.kt</code></td>
+<td><code>database/impl/src/commonMain/kotlin/app/aaps/database/daos/TemporaryTargetDao.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>TraceableDao.kt</code></td>
+<td><code>database/impl/src/commonMain/kotlin/app/aaps/database/daos/TraceableDao.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>TreatmentMapper.kt</code></td>
+<td><code>core/nssdk/src/commonMain/kotlin/app/aaps/core/nssdk/mapper/TreatmentMapper.kt</code></td>
+</tr>
+<tr>
+<td><code>A</code> (AndroidAPS b9bb9ef3)</td>
+<td><code>TTPreset.kt</code></td>
+<td><code>core/data/src/commonMain/kotlin/app/aaps/core/data/model/TTPreset.kt</code></td>
+</tr>
+<tr>
+<td><code>O</code> (oref0 d219baf9)</td>
+<td><code>basal-set-temp.js</code></td>
+<td><code>lib/basal-set-temp.js</code></td>
+</tr>
+<tr>
+<td><code>O</code> (oref0 d219baf9)</td>
+<td><code>determine-basal.js</code></td>
+<td><code>lib/determine-basal/determine-basal.js</code></td>
+</tr>
+<tr>
+<td><code>O</code> (oref0 d219baf9)</td>
+<td><code>lib/profile/index.js</code></td>
+<td><code>lib/profile/index.js</code></td>
+</tr>
+<tr>
+<td><code>O</code> (oref0 d219baf9)</td>
+<td><code>mm-format-ns-glucose.sh</code></td>
+<td><code>bin/mm-format-ns-glucose.sh</code></td>
+</tr>
+<tr>
+<td><code>O</code> (oref0 d219baf9)</td>
+<td><code>mm-format-ns-treatments.sh</code></td>
+<td><code>bin/mm-format-ns-treatments.sh</code></td>
+</tr>
+<tr>
+<td><code>O</code> (oref0 d219baf9)</td>
+<td><code>nightscout.sh</code></td>
+<td><code>bin/nightscout.sh</code></td>
+</tr>
+<tr>
+<td><code>O</code> (oref0 d219baf9)</td>
+<td><code>ns-dedupe-treatments.sh</code></td>
+<td><code>bin/ns-dedupe-treatments.sh</code></td>
+</tr>
+<tr>
+<td><code>O</code> (oref0 d219baf9)</td>
+<td><code>ns-status.js</code></td>
+<td><code>bin/ns-status.js</code></td>
+</tr>
+<tr>
+<td><code>O</code> (oref0 d219baf9)</td>
+<td><code>oref0-ns-loop.sh</code></td>
+<td><code>bin/oref0-ns-loop.sh</code></td>
+</tr>
+<tr>
+<td><code>O</code> (oref0 d219baf9)</td>
+<td><code>oref0-pump-loop.sh</code></td>
+<td><code>bin/oref0-pump-loop.sh</code></td>
+</tr>
+<tr>
+<td><code>O</code> (oref0 d219baf9)</td>
+<td><code>oref0-set-device-clocks.sh</code></td>
+<td><code>bin/oref0-set-device-clocks.sh</code></td>
+</tr>
+<tr>
+<td><code>O</code> (oref0 d219baf9)</td>
+<td><code>oref0-upload-profile.js</code></td>
+<td><code>bin/oref0-upload-profile.js</code></td>
+</tr>
+<tr>
+<td><code>O</code> (oref0 d219baf9)</td>
+<td><code>targets.js</code></td>
+<td><code>lib/profile/targets.js</code></td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
