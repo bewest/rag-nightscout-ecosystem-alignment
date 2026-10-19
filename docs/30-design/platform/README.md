@@ -94,6 +94,25 @@ moved from its §9 to *commands* §2.
    <layer>` checks a specification's cases, links and wording. A rule change lands with its schema
    and case changes in one commit.
 
+### Who owns each layer
+
+Each layer changes with a different group's work, so each has a natural owner. Status at `main`
+`0b0d150f`, 2026-10-18:
+
+| layer | changes with | natural owner | engaged today |
+|---|---|---|---|
+| L0 identity | rarely; every layer uses it | hub and controller maintainers together | the Loop developers shared an `identifier` proposal on 2026-10-17, close to D20 rule 5; the [reply](upstream-asks-loop-identifier/README.md) is drafted, not sent |
+| L1 records | the observation catalogue and the site corpus | hub maintainers, with research users | specified in this repository |
+| L2 definitions and instances | controller releases | each controller team, for its own data | proposals to the controllers not started ([queue](../../../queue/work-queue.yaml)) |
+| L3 state and intent, commands, plans | controller releases; carries the safety review | controller teams, with caregiver-app teams | specified in this repository; implemented in no hub or controller |
+| L4 change and sync | performance work | hub implementers (cgm-remote-monitor, Nocturne) | proposal to Nocturne not started |
+| L5 authority | tenancy and authentication decisions | hub operators, with the foundation's oversight role | decided in part (D7, D13–D19; D17 row 2 open) in the [execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) |
+
+L2 and L3 describe what controllers send and do, and today they are written here, not by the
+controller teams. They become the controllers' own when those teams review the parts that describe
+their data and hold a route to change them. Why the cut follows the teams is read on
+[how the teams shaped the contract §6](../../00-overview/perspective/CONWAY.md#6-inverse-conway-specifications-shaped-to-their-owners).
+
 ## L0 Identity
 
 | | |

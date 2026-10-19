@@ -1,7 +1,7 @@
 # Process models: what we believe, and how it works
 
-*What this is: a map (part 2 of the overview, perspective; [how the overview is organised](../README.md)), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after [control structures](STRUCTURES.md); leads to part 3, starting with the [ecosystem programme](../ECOSYSTEM-PROGRAMME.md). Living page,
-written 2026-10-17. Companion to [control structures](STRUCTURES.md), whose conventions,
+*What this is: a map (part 2 of the overview, perspective; [how the overview is organised](../README.md)), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after [control structures](STRUCTURES.md); leads to [how the teams shaped the contract](CONWAY.md). Living page,
+written 2026-10-17; 1·teams added 2026-10-18. Companion to [control structures](STRUCTURES.md), whose conventions,
 legend and icons apply here. Every node and edge comes from a source cited under the drawing;
 where a panel is inferred or proposed, it says so.*
 
@@ -35,6 +35,7 @@ choice (terms, enforcement, revocation). The other lines and the icons are as in
 | [1·data-rights](#1data-rights-getting-data-out-and-letting-others-in) | how data gets out, and how others are let in | believed, actual, emerging |
 | [1·access-paths](#1access-paths-who-holds-the-key-on-each-path) | who holds the key on each path between device, phone, cloud and site | believed, actual, emerging; and a ladder |
 | [1·hosting](#1hosting-who-answers-for-a-site-run-for-someone-else) | who answers for a site run for someone else | believed, actual, emerging |
+| [1·teams](#1teams-who-decides-the-shared-data-contract) | who decides the shared data contract | believed, actual |
 | [3·identity](#3identity-who-is-who-on-a-hub-and-who-may-do-what) | who is who on a hub, and who may do what | believed, actual, proposed |
 | [1·federation](#1federation-one-sign-in-across-regional-zones) | one sign-in across regional zones, with zero-trust access | believed, actual, proposed |
 | [3·registration](#3registration-who-writes-to-the-hub-and-where-a-command-goes) | who writes to the hub, and where a command goes | believed, actual, proposed |
@@ -408,6 +409,32 @@ multitenancy design takes bulk hosting as its target, with one operator running 
 check: whether the FTC rule and state health-data laws reach a hosting operator, and which state
 laws beyond Washington apply; whether listing providers creates endorsement or liability exposure
 (COLLABORATION-MODEL §8).
+
+### 1·teams: who decides the shared data contract
+
+![1·teams as believed: the foundation decides for one Nightscout project and convenes cross-project decisions; someone runs the shared operations; the project owns one schema, writers write it, the hub knows each writer and readers get one shape](diagrams/1-teams--believed.svg)
+
+**As believed** (*inferred*: the assumptions the next panel tests). One project decides, the hub
+knows each writer, and someone runs the shared operations.
+
+![1·teams as the repositories and code show: the foundation supports projects by resource request, events and awards; no cross-project body is named; 20 repositories each decide alone; shared operations have no named runner for intake or registry; each display plugin reads its family's key; writers send their own shapes and readers handle each writer](diagrams/1-teams--actual.svg)
+
+**As the repositories and code show.** Each of 20 repositories decides what it merges and
+releases; the foundation supports projects by resource request, runs events and gives awards; no
+shared body for decisions that cross projects is named
+([governance §1, §3, §6](../observations/GOVERNANCE-TODAY.md#1-who-decides-in-each-project),
+measured 2026-10-02). The hub has no registration code and tells controllers apart by the
+`loop` or `openaps` key ([3·registration](#3registration-who-writes-to-the-hub-and-where-a-command-goes)). Writers send their own shapes: the quirks
+registry holds 20 entries in four collections (`specs/quirks/*.yaml` at `0b0d150f`), and five apps
+use five record-id conventions
+([identifier format research §1](../../60-research/tenancy/identifier-format-2026-10-17.md#1-per-app-identity-for-cgm-readings-and-the-treatment-identity-each-app-sends-r)).
+Intake and registry have no named runner ([2·shared-infra](#2shared-infra-shared-operations-and-who-runs-them)).
+
+*Interpretation.* The organisation and the data contract have the same shape: where no team owns
+a join, the hub keeps every side of it. The set is read through Conway's Law on
+[how the teams shaped the contract](CONWAY.md).
+
+*Caveat.* Counts are as measured on the dates given; re-measure before quoting.
 
 ## The ecosystem's designs: believed, actual, proposed
 

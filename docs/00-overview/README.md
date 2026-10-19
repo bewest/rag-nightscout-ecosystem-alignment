@@ -29,6 +29,7 @@ and the volunteer-only view is stated beside the others.
 | [Accountability thresholds](perspective/ACCOUNTABILITY-THRESHOLDS.md) | the nine pillars of duty that holding health data, issuing credentials, commanding insulin delivery, signing with a manufacturer or taking money bring to any organisation; how Apple, Dexcom and the FDA's interoperable routes put them in place; why the requirements are the same for anyone; and a US nonprofit's own money and staffing thresholds |
 | [Control structures](perspective/STRUCTURES.md) | the ecosystem and the proposals as STPA control structures, from society down to software and devices, with stakeholder views and precedents |
 | [Process models: what we believe, and how it works](perspective/PROCESS-MODELS.md) | the authority DIY acts under, its regulatory status, data rights, hosting, identity, federation and registration, each drawn as believed, as it works today, and as emerging or proposed |
+| [How the teams shaped the contract](perspective/CONWAY.md) | a Conway's Law reading: how independent teams with no cross-project decision body produced the hub's data contract, believed and actual structures, the tensions they produce, and what the specifications and the proposals change |
 
 ## 3. Recommendations: the author's proposals
 

@@ -5,7 +5,12 @@ page, assembled 2026-10-02 against this repository at `9b219f31`. It records dat
 happened; it gives no causes and makes no recommendation. People are named by role. Every row cites
 a primary source read on 2026-10-02 or a `git` command run on the clone named in §6, and a row that
 could not be established that way is listed in §5 rather than given a date. The rows dated 2026-01-13
-and 2026-10-15 were added 2026-10-17, from sources read that day.*
+and 2026-10-15 were added 2026-10-17, from sources read that day. The drawing was added 2026-10-18.*
+
+![Projects and outside events by year, 2013–2026: 23 of the dated rows below (first commits, repositories created, hosting and regulatory events) in five lanes (hub servers, uploaders and bridges, controllers, followers, hosting and regulation), with this page's sections as bands](diagrams/history-timeline.svg)
+
+The drawing is generated from `tools/structure-diagrams/history/timeline.yaml`; each of its rows
+names the row of this page it draws, and `make diagrams-svg-check` fails when one no longer matches.
 
 ## 1. Origins, 2012–2014
 

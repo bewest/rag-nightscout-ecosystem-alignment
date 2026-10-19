@@ -3,7 +3,8 @@
 *What this is: a proposal (part 3 of the overview, recommendations; [how the overview is organised](README.md)), for the Nightscout Foundation board, the maintainers of the ecosystem projects, the operators and companies that host or build on Nightscout, and the community. Read after the [sponsored maintenance team](SPONSORED-TEAM-PROPOSAL.md); leads to the [quality system](QUALITY-SYSTEM.md). **DRAFT PROPOSAL for discussion.**
 Written 2026-09-29 against this repository at `2c19f61d`. Where it touches conflicts of interest,
 partner agreements, trademarks or regulatory status, it needs review by the foundation's counsel
-before any decision rests on it (§8). Nothing here is decided.*
+before any decision rests on it (§8). Nothing here is decided. Rule 10 and §5a were added
+2026-10-18 at `0b0d150f`.*
 
 *Author's interests: the author maintains cgm-remote-monitor, founded a company that hosts
 Nightscout commercially, and could be a candidate for paid work under the sponsored-team proposal.
@@ -137,6 +138,35 @@ What SQLite sells, and what stays constant across every tier, is in
 9. **Everyone discloses.** Anyone who decides, reviews or is paid under these rules discloses their
    commercial ties and any interest in the outcome, and steps back from decisions that affect their
    own organisation.
+10. **A second person can review and release.** Each repository that other projects or many people
+    depend on has at least two people able to review, merge and release it, and a written path by
+    which a contributor earns those rights, with review by a second person (the xz-utils lesson,
+    [PRECEDENTS](perspective/PRECEDENTS.md#histories)). In the 12 months to 2026-10-02, pull
+    requests in AndroidAPS (508), xDrip+ (132), nightscout-librelink-up (11), nightguard (6) and three
+    other repositories were each merged by one account ([governance today §1](observations/GOVERNANCE-TODAY.md#1-who-decides-in-each-project)).
+
+## 5a. Read the structure before the motive
+
+Teams that had no channel to agree build what each needs, and the shared data holds both
+([how the teams shaped the contract](perspective/CONWAY.md)). Most friction between projects comes
+from such a boundary, not from what a person intended. The rules below apply to maintainers,
+contributors, companies and community members alike.
+
+| when you see | read it first as | check before concluding anything else |
+|---|---|---|
+| two apps disagree on a field or show different numbers | each team wrote what its own app needed, and no one owned the join | the [quirks registry](../../specs/quirks/README.md) and each app's source; whether a shared rule existed at the time |
+| a long gap between releases | releases follow people's available time and outside clocks: toolchains, platforms, hosts | the project's own statement; dates do not show causes, and each project's maintainers are the people to say what held a release ([ecosystem evidence §3](observations/ECOSYSTEM-EVIDENCE.md#3-releases-and-contributors-across-the-main-projects)) |
+| a pull request or proposal open for a long time | review capacity on that boundary is a few people who carry everything else too | who can merge there, and what they were releasing at the time |
+| a fork | a group needed a different pace or direction than one shared channel allowed | whether the fork reads and writes the shared contract |
+| a company or a paid person involved | paid and unpaid roles are both part of the structure | their disclosed interests (rule 9), and whether the same requirements apply to them as to anyone |
+| a second server or a rewrite | a second team implementing the contract | whether both pass the same conformance cases (rule 5) |
+
+1. **Ask before attributing.** A maintainer can usually say in one message what held a release or
+   why a field has its shape.
+2. **Argue from the shared contract.** State what an app writes, what the contract says and the
+   test that shows the difference; a comparison between two apps or servers does not change either.
+3. **State differences as facts about the system.** Where your picture of who decides, or of what
+   the code does, differs from the code, say so as a fact about the system, not about people.
 
 ## 6. What would break consensus
 
@@ -185,7 +215,7 @@ read 2026-10-02).
 
 **For the maintainers of each project:**
 
-5. Whether rules 3 and 5–7 are acceptable to your project, and which of §3's dates your project wants
+5. Whether rules 3, 5–7 and 10, and the practice in §5a, are acceptable to your project, and which of §3's dates your project wants
    shared preparation for.
 
 **For the commercial hosting providers:**
