@@ -20,6 +20,7 @@ sys.path.insert(0, str(HERE))
 
 import active_state_rules  # noqa: E402
 import build  # noqa: E402
+import command_lifecycle  # noqa: E402
 import end_encoding  # noqa: E402
 import hub_active_state  # noqa: E402
 from svgkit import OUT  # noqa: E402
@@ -38,7 +39,7 @@ def test_committed_svgs_are_generated():
 def test_no_orphan_svgs():
     made = set(build.generate())
     ours = {p.name for p in OUT.glob("*.svg")
-            if p.name.startswith(("hub-active-state-", "end-encoding-", "active-state-"))}
+            if p.name.startswith(("hub-active-state-", "end-encoding-", "active-state-", "command-lifecycle"))}
     assert ours <= made, sorted(ours - made)
 
 
@@ -83,6 +84,27 @@ def test_control_tampered_conformance_case(tmp_path, monkeypatch):
     f.write_text(yaml.safe_dump(case, sort_keys=False))
     monkeypatch.setattr(active_state_rules, "CASES", cases)
     assert stale_against_committed() == ["active-state-a8.svg"]
+
+
+def test_control_tampered_command_case(tmp_path, monkeypatch):
+    cases = tmp_path / "commands"
+    shutil.copytree(command_lifecycle.CASES, cases)
+    f = cases / "approve-after-proposal-expiry.yaml"
+    f.write_text(f.read_text().replace("at: 150", "at: 160"))
+    monkeypatch.setattr(command_lifecycle, "CASES", cases)
+    assert stale_against_committed() == ["command-lifecycle.svg"]
+
+
+def test_control_command_rule_name(tmp_path, monkeypatch):
+    spec = tmp_path / "commands.md"
+    spec.write_text(command_lifecycle.SPEC.read_text().replace("**Cancel.**", "**Cancellation.**"))
+    monkeypatch.setattr(command_lifecycle, "SPEC", spec)
+    assert stale_against_committed() == ["command-lifecycle.svg"]
+
+
+def test_command_text_at_least_13px():
+    sizes = {float(x) for x in re.findall(r'font-size="([\d.]+)"', build.generate()["command-lifecycle.svg"])}
+    assert min(sizes) >= 13, sorted(sizes)
 
 
 @pytest.mark.parametrize("rule", sorted(active_state_rules.RULES))

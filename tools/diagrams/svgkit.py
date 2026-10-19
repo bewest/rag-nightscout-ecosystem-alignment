@@ -15,7 +15,7 @@ from render import FONT, tw  # noqa: E402
 
 OUT = REPO / "docs" / "30-design" / "platform" / "diagrams"
 
-W = 720                       # the content width the site renders at; drawn 1:1, so 12px stays 12px
+W = 720                       # drawing width; the site shows figures about 688 px wide on a 1440 px desktop, so 12 px text displays near 11.5 px
 INK, MUTED, RULE, CARD, FAINT = "#111111", "#555555", "#c8c8c8", "#ffffff", "#f4f4f4"
 FS, FS_SMALL, FS_TITLE = 12.5, 12, 14
 # two series (the hubs, or written vs derived) from the structure drawings' control/feedback pair;

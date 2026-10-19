@@ -1,0 +1,585 @@
+# Readers, analysis tools, a gateway and a second hub: what each does today with a Nightscout hub,
+# and what it sees from a hub that implements the platform specifications without changing.
+# Format: FORMAT.md. Every claim is read-derived from the per-client file named in `source`.
+- app: nightscout-reporter
+  kind: reader
+  ref: nightscout-reporter@518d61f (retired AngularDart app; last code change b664fba, 2022-12-22)
+  source: reports/consumer-impact-15.0.9/clients/readers/nightscout-reporter.md
+  layers:
+    L0:
+      verdict: gains
+      today: Writes nothing; reads treatment `_id` as an opaque string and drops adjacent identical treatments
+        and `enteredBy == 'sync'` before summing.
+      newer: A re-send is matched on `identifier`, then `_id`, then the natural key on every write path,
+        so a treatment re-sent by an uploader is stored once and summed once (I5, T1).
+      rules:
+      - I5
+      - T1
+      - I2
+      anchors:
+      - nightscout-reporter@518d61f lib/src/start_component.dart:1125,1268-1271,1278
+    L1:
+      verdict: unchanged
+      today: Downloads entries, treatments, devicestatus, activity and profiles per day and computes every
+        total, COB and IOB client-side.
+      newer: The hub keeps each composite document beside its primitives and answers v1 reads from the
+        composite, so the documents it parses are served as written (R1).
+      rules:
+      - R1
+      anchors:
+      - nightscout-reporter@518d61f lib/src/start_component.dart:1203-1322
+    L2:
+      verdict: unchanged
+      today: Declares nothing and reads no attribution.
+      newer: A record a newer controller writes as a typed record reaches it as a projected document in
+        the carrier's shape, with both ids and a `projectedFrom` member it does not read (registration
+        §13, I8).
+      rules:
+      - registration §13
+      - I8
+      - registration §17
+    L3:
+      verdict: opt-in
+      today: Builds synthetic profiles from `Profile Switch` treatments and reads `Temp Basal` treatments,
+        deciding what was in effect itself.
+      newer: Its own reading of those treatments is unchanged; the hub's derived answer of what was active
+        at a time is a new read it would have to call (state-intent §6, A1-A13).
+      rules:
+      - state-intent §6
+      - A1
+      - A10
+      anchors:
+      - nightscout-reporter@518d61f lib/src/start_component.dart:1051-1057,1120-1145,1245
+    L4:
+      verdict: unchanged
+      today: API v1 GETs only, `count` literals from 2 to 100000, `$gte $lte $gt $lt $eq $ne` filters,
+        `status.json` at start-up; no socket, no API v3.
+      newer: Per-collection API v1 reads stay; nothing is retired (sync-transport §7).
+      rules:
+      - sync-transport §7
+      anchors:
+      - nightscout-reporter@518d61f lib/src/globals.dart:1965-1989
+    L5:
+      verdict: unchanged
+      today: Sends an access token as `?token=` on every request; no `api-secret` header, no Bearer.
+      newer: On `single` nothing changes and its token still reads every collection (AU5). Under `multi`
+        subject tokens are re-rooted on the tenant's credential, so the token a person entered before
+        the move stops working and must be re-entered (AU3).
+      rules:
+      - AU3
+      - AU5
+      anchors:
+      - nightscout-reporter@518d61f lib/src/globals.dart:1978-1979
+  notes: The code read is the retired AngularDart app; the maintained Angular successor is not in the
+    corpus and is listed under 'Not read'.
+- app: GluPredKit
+  kind: reader
+  ref: GluPredKit@e5bd635
+  source: reports/consumer-impact-15.0.9/clients/readers/GluPredKit.md
+  layers:
+    L0:
+      verdict: gains
+      today: Writes nothing and reads no ids; sums insulin, carbs and temporary basals client-side from
+        what it downloads.
+      newer: A record re-sent by an uploader is stored once on every write path, so it is counted once
+        (I5, T1).
+      rules:
+      - I5
+      - T1
+      anchors:
+      - GluPredKit@e5bd635 glupredkit/parsers/nightscout.py:109-130
+    L1:
+      verdict: unchanged
+      today: Reads entries, treatments and profiles; its treatment model is patched to accept Loop and
+        Trio fields.
+      newer: v1 reads are answered from the stored composite documents (R1).
+      rules:
+      - R1
+      anchors:
+      - GluPredKit@e5bd635 glupredkit/parsers/nightscout.py:12-50
+    L2:
+      verdict: unchanged
+      today: Declares nothing and reads no attribution.
+      newer: Typed records reach it as projected documents in the carrier's shape (registration §13, I8).
+      rules:
+      - registration §13
+      - I8
+    L3:
+      verdict: opt-in
+      today: Derives basal rates from the profile and temporary basals from treatments client-side.
+      newer: The hub's derived answer of what was active is a new read it would have to call (state-intent
+        §6).
+      rules:
+      - state-intent §6
+      anchors:
+      - GluPredKit@e5bd635 glupredkit/parsers/nightscout.py:464-465
+    L4:
+      verdict: unchanged
+      today: API v1 GETs of profile, treatments and entries, each with `count=0` and a `$gte`/`$lte` date
+        window; 15.0.8 reads `count=0` as no limit, and `dev` keeps that for a window bounded on both
+        sides (#8761, a setting on by default, with a deprecation warning).
+      newer: Per-collection API v1 reads stay (sync-transport §7); its reads still depend on the `count=0`
+        tolerance setting being on.
+      rules:
+      - sync-transport §7
+      anchors:
+      - GluPredKit@e5bd635 glupredkit/parsers/nightscout.py:66-91
+    L5:
+      verdict: unchanged
+      today: Authenticates with the API secret through `python-nightscout` (header format not read); no
+        token, no JWT.
+      newer: On `single` nothing changes (AU5). Under `multi` there is no deployment-wide secret, so the
+        secret it was configured with must be replaced by the tenant's root credential (AU3).
+      rules:
+      - AU3
+      - AU5
+      anchors:
+      - GluPredKit@e5bd635 glupredkit/parsers/nightscout.py:62,74
+  notes: Entries and treatments go through `python-nightscout`, which is not in the corpus.
+- app: GlycemicGPT
+  kind: reader
+  ref: GlycemicGPT@d1a9adb7 (origin/main; Nightscout integration identical on develop ec902563)
+  source: reports/consumer-impact-15.0.9/clients/readers/GlycemicGPT.md
+  layers:
+    L0:
+      verdict: unchanged
+      today: Writes nothing; pages entries with `find[_id][$gt]=<24-hex>`, a cursor whose order is the
+        `_id`'s time.
+      newer: Every legacy `_id` is 24 hex, an assigned one carries the receipt time, and a projected document
+        gets an ObjectId at its typed write, so the cursor reaches every new record (I2, I3, I8).
+      rules:
+      - I2
+      - I3
+      - I8
+      anchors:
+      - GlycemicGPT@d1a9adb7 apps/api/src/services/integrations/nightscout/client.py:724-737
+    L1:
+      verdict: unchanged
+      today: Reads entries, treatments, devicestatus and profile into its own database.
+      newer: v1 reads are answered from the stored composite documents (R1).
+      rules:
+      - R1
+      anchors:
+      - GlycemicGPT@d1a9adb7 apps/api/src/services/integrations/nightscout/client.py:614-662
+    L2:
+      verdict: unchanged
+      today: Declares nothing and reads no attribution.
+      newer: Typed records reach it as projected documents in the carrier's shape (registration §13, I8).
+      rules:
+      - registration §13
+      - I8
+    L3:
+      verdict: opt-in
+      today: Reads treatments and devicestatus as records; reads no derived state and no commands.
+      newer: The hub's answer of what was active (state-intent §6) and the outstanding command list (CM24)
+        are new reads it would have to call.
+      rules:
+      - state-intent §6
+      - CM24
+    L4:
+      verdict: unchanged
+      today: API v1 GETs with `count=5000`, `$gte` date filters and the `_id` cursor; `status.json`, and
+        API v3 `version` and `status` to detect v3; no socket.
+      newer: Per-collection API v1 reads stay (sync-transport §7); the single read across collections
+        is available if it adopts it (T5).
+      rules:
+      - sync-transport §7
+      - T5
+      anchors:
+      - GlycemicGPT@d1a9adb7 apps/api/src/services/integrations/nightscout/client.py:462-545,681-694
+    L5:
+      verdict: unchanged
+      today: 'Sends `api-secret: sha1(secret)` on v1 or a Bearer token on v3, or nothing; 401 and 403
+        stop the sync without retry.'
+      newer: On `single` nothing changes (AU5). Under `multi` the deployment-wide secret is gone and subject
+        tokens are re-rooted, so its configured secret or token must be replaced with the tenant's (AU3).
+      rules:
+      - AU3
+      - AU5
+      anchors:
+      - GlycemicGPT@d1a9adb7 apps/api/src/services/integrations/nightscout/client.py:254-280,379-386
+- app: nightscout-cgm-skill
+  kind: reader
+  ref: nightscout-cgm-skill@91a53ea
+  source: reports/consumer-impact-15.0.9/clients/readers/nightscout-cgm-skill.md
+  layers:
+    L0:
+      verdict: gains
+      today: Writes nothing; keys its SQLite cache of entries on `_id` and sums insulin and carbs client-side.
+      newer: Every legacy `_id` is 24 hex (I2), and a record re-sent by an uploader is stored once, so
+        it is summed once (I5, T1).
+      rules:
+      - I2
+      - I5
+      - T1
+      anchors:
+      - nightscout-cgm-skill@91a53ea scripts/cgm.py:506-515,6339-6340
+    L1:
+      verdict: unchanged
+      today: Reads entries, treatments (including site, sensor and insulin changes by `eventType`) and
+        profile.
+      newer: v1 reads are answered from the stored composite documents (R1).
+      rules:
+      - R1
+      anchors:
+      - nightscout-cgm-skill@91a53ea scripts/cgm.py:6627
+    L2:
+      verdict: unchanged
+      today: Declares nothing and reads no attribution.
+      newer: Typed records reach it as projected documents in the carrier's shape (registration §13, I8).
+      rules:
+      - registration §13
+      - I8
+    L3:
+      verdict: opt-in
+      today: Reads no override, target or profile-switch state and no commands.
+      newer: The hub's answer of what was active is a new read it would have to call (state-intent §6).
+      rules:
+      - state-intent §6
+    L4:
+      verdict: unchanged
+      today: API v1 GETs only, `count` from 1 to 10000, entries paged by `find[date][$lte]`; no socket,
+        no API v3.
+      newer: Per-collection API v1 reads stay (sync-transport §7).
+      rules:
+      - sync-transport §7
+      anchors:
+      - nightscout-cgm-skill@91a53ea scripts/cgm.py:490-502
+    L5:
+      verdict: unchanged
+      today: Sends no credential, so it works only against a site readable anonymously.
+      newer: Reading stays one bit, and a site readable anonymously serves it as today (AU5).
+      rules:
+      - AU5
+      anchors:
+      - nightscout-cgm-skill@91a53ea scripts/cgm.py:38-55
+- app: oref-digital-twin
+  kind: reader
+  ref: oref-digital-twin@a2e8610
+  source: reports/consumer-impact-15.0.9/clients/readers/oref-digital-twin.md
+  layers:
+    L0:
+      verdict: gains
+      today: Writes nothing; drops records with a repeated `_id` across its windows.
+      newer: A record re-sent by an uploader is stored once on every write path, so the replay's inputs
+        carry no second copy under another `_id` (I5, T1).
+      rules:
+      - I5
+      - T1
+      - I2
+      anchors:
+      - oref-digital-twin@a2e8610 ingestion/client.py:128-132
+    L1:
+      verdict: unchanged
+      today: Reads entries, treatments, devicestatus and profile as replay inputs; totals are computed
+        client-side.
+      newer: v1 reads are answered from the stored composite documents (R1); the declared replay inputs
+        and their status are a registration's to publish, not a read it makes (R8).
+      rules:
+      - R1
+      - R8
+      anchors:
+      - oref-digital-twin@a2e8610 ingestion/client.py:107-153
+    L2:
+      verdict: unchanged
+      today: Declares nothing and reads no attribution.
+      newer: Typed records reach it as projected documents in the carrier's shape (registration §13, I8).
+      rules:
+      - registration §13
+      - I8
+    L3:
+      verdict: opt-in
+      today: Reads the profile and treatments and runs oref0 on them; reads no derived state.
+      newer: The hub's answer of what was active is a new read it would have to call (state-intent §6).
+      rules:
+      - state-intent §6
+    L4:
+      verdict: unchanged
+      today: API v1 GETs with `count=50000` per 7-day window and `$gte`/`$lte` bounds, in Python and in
+        the browser; no socket, no API v3.
+      newer: Per-collection API v1 reads stay (sync-transport §7).
+      rules:
+      - sync-transport §7
+      anchors:
+      - oref-digital-twin@a2e8610 ingestion/client.py:34,120
+      - oref-digital-twin@a2e8610 web/app.js:46-50
+    L5:
+      verdict: unchanged
+      today: Sends `token=` and/or a pre-hashed `api-secret` header from the environment (Python), `token=`
+        only (browser); 401 and 403 raise without retry.
+      newer: On `single` nothing changes (AU5). Under `multi` the deployment-wide secret is gone and subject
+        tokens are re-rooted, so its configured token or secret must be replaced with the tenant's (AU3).
+      rules:
+      - AU3
+      - AU5
+      anchors:
+      - oref-digital-twin@a2e8610 ingestion/config.py:34-49
+      - oref-digital-twin@a2e8610 web/app.js:35
+- app: babelbetes
+  kind: tool
+  ref: babelbetes@07a7f07 (origin/develop)
+  source: reports/consumer-impact-15.0.9/clients/readers/babelbetes.md
+  layers:
+    L0:
+      verdict: none
+      today: Makes no Nightscout requests.
+      newer: Makes no Nightscout requests.
+      rules: []
+    L1:
+      verdict: none
+      today: Makes no Nightscout requests; one notebook reads archived Nightscout export files.
+      newer: Makes no Nightscout requests.
+      rules: []
+    L2:
+      verdict: none
+      today: Makes no Nightscout requests.
+      newer: Makes no Nightscout requests.
+      rules: []
+    L3:
+      verdict: none
+      today: Makes no Nightscout requests.
+      newer: Makes no Nightscout requests.
+      rules: []
+    L4:
+      verdict: none
+      today: Makes no Nightscout requests.
+      newer: Makes no Nightscout requests.
+      rules: []
+    L5:
+      verdict: none
+      today: Makes no Nightscout requests.
+      newer: Makes no Nightscout requests.
+      rules: []
+  notes: It normalises clinical-study datasets from files; the archived export is read in notebooks/understand-dana-dataset/2024-05-15
+    - LoadingLoopDataFromNightScout.ipynb:55,401-429.
+- app: trio-telemetry
+  kind: tool
+  ref: trio-telemetry@681ea86
+  source: reports/consumer-impact-15.0.9/clients/readers/trio-telemetry.md
+  layers:
+    L0:
+      verdict: none
+      today: Makes no Nightscout requests.
+      newer: Makes no Nightscout requests.
+      rules: []
+    L1:
+      verdict: none
+      today: Makes no Nightscout requests.
+      newer: Makes no Nightscout requests.
+      rules: []
+    L2:
+      verdict: none
+      today: Makes no Nightscout requests.
+      newer: Makes no Nightscout requests.
+      rules: []
+    L3:
+      verdict: none
+      today: Makes no Nightscout requests.
+      newer: Makes no Nightscout requests.
+      rules: []
+    L4:
+      verdict: none
+      today: Makes no Nightscout requests.
+      newer: Makes no Nightscout requests.
+      rules: []
+    L5:
+      verdict: none
+      today: Makes no Nightscout requests.
+      newer: Makes no Nightscout requests.
+      rules: []
+  notes: It receives anonymous usage pings from Trio; `nightscoutPaired` is a boolean the Trio app reports
+    about itself (trio-telemetry-cronjob/ingest/etl.py:56,95,208).
+- app: nightscout-roles-gateway
+  kind: hub
+  ref: nightscout-roles-gateway@90840ac (replit branch; default branch master 4fdd490, Nightscout call
+    sites identical)
+  source: reports/consumer-impact-15.0.9/clients/readers/nightscout-roles-gateway.md
+  layers:
+    L0:
+      verdict: none
+      today: Reads and writes no records.
+      newer: Reads and writes no records.
+      rules: []
+    L1:
+      verdict: none
+      today: Issues no data read; the collection checks in its comments are not implemented.
+      newer: Issues no data read.
+      rules: []
+    L2:
+      verdict: none
+      today: Declares nothing.
+      newer: Declares nothing.
+      rules: []
+    L3:
+      verdict: none
+      today: Touches no intents or commands.
+      newer: Touches no intents or commands.
+      rules: []
+    L4:
+      verdict: unchanged
+      today: Calls `GET /api/v1/status.json` anonymously and with the hashed secret to inspect a site,
+        and a non-200 marks it not ok; the socket path is proxied by an NGINX configuration outside the
+        repository.
+      newer: '`status.json` and the v1 socket stay (sync-transport §7); a socket client receives events
+        only for what its own credential may read, not for a gateway header (T11).'
+      rules:
+      - sync-transport §7
+      - T11
+      anchors:
+      - nightscout-roles-gateway@4fdd490 lib/criteria/core.js:82-171
+    L5:
+      verdict: unchanged
+      today: 'Serves NGINX `auth_request` decisions (200/403, `X-NSJWT`); lists subjects with `API-SECRET:
+        sha1(secret)` and exchanges each policy''s stored subject token at `/api/v2/authorization/request/<token>`.'
+      newer: On `single` nothing changes. Under `multi` there is no deployment-wide secret and subject
+        tokens are re-rooted on the tenant's credential, so the secret it inspects with and every stored
+        policy token must be replaced (AU3); its time-bounded policies are prior art for the delegation
+        requirements DR1-DR7.
+      rules:
+      - AU3
+      - AU4
+      - DR1
+      - DR3
+      - DR6
+      anchors:
+      - nightscout-roles-gateway@4fdd490 lib/tokens/index.js:17-22,40
+      - nightscout-roles-gateway@4fdd490 lib/exchanged.js:12-54
+  notes: An authorization-decision service in front of Nightscout, not a proxy; it sets no X-Forwarded-For
+    on its own calls.
+- app: Nocturne
+  kind: hub
+  ref: nocturne@42275c812
+  source: reports/consumer-impact-15.0.9/clients/readers/nocturne.md
+  layers:
+    L0:
+      verdict: opt-in
+      today: v1 by-id routes accept 24-hex and 32-hex (UUID v7 without dashes) ids, and look up by GUID,
+        then by exact `LegacyId`, then by GUID prefix.
+      newer: It would serve a 24-hex `_id` on v1 and v3, keep a client 24-hex `_id` in lower case (I2),
+        answer each write with both ids and `matchedBy` (I4), and match a re-send on `identifier`, then
+        `_id`, then the natural key (I5).
+      rules:
+      - I2
+      - I4
+      - I5
+      - I8
+      anchors:
+      - nocturne@42275c812 src/API/Nocturne.API/Controllers/V1/EntriesController.cs:171-175
+      - nocturne@42275c812 src/API/Nocturne.API/Services/Entries/EntryReadService.cs:163-175
+    L1:
+      verdict: opt-in
+      today: Stores typed V4 records, the source of the records catalogue's sixteen primitives, and routes
+        treatments into them by `eventType`; `Suspend Pump` documents are unroutable because the decomposition
+        keys on `Pump Suspend` (records §4, measured).
+      newer: It already decomposes (R1); R2 has decomposition declared by each registration's `decomposesTo`
+        instead of fixed routing, and R4 and R9 add an evidence grade and a sensitivity label to every
+        field.
+      rules:
+      - R1
+      - R2
+      - R4
+      - R9
+    L2:
+      verdict: opt-in
+      today: Serves v1-v3 reads from V4 records through a legacy projection, with no projection marker
+        on the projected treatment (registration §13 prior art).
+      newer: A projected document carries `projectedFrom`, is read-only (409 `projected-read-only`) and
+        keeps one ObjectId stored with the typed record (registration §13, I8); registrations, instances
+        and read selection (§11, §12) are new.
+      rules:
+      - registration §13
+      - I8
+      - registration §11
+      - registration §12
+    L3:
+      verdict: opt-in
+      today: 'Keeps intents as StateSpans; measured: a temporary-target cancel becomes an open span of
+        its own, a backfilled earlier override leaves two open spans, Loop''s applied override duration
+        is read as minutes and AndroidAPS `timeshift` as hours (state-intent §6.2); its `POST /api/v4/state-spans`
+        reaches no controller (state-intent §7).'
+      newer: 'The rules answer each of those cases differently: a zero-duration record ends the instance
+        (A5), supersession is by start (A7), and units are read only as declared (A11); the outstanding
+        list (CM24) and the plan mirror (PN11) are new reads it would serve.'
+      rules:
+      - A5
+      - A7
+      - A8
+      - A11
+      - A2
+      - CM24
+      - PN11
+      anchors:
+      - state-intent §6.2 (LAB-HUB-ACTIVE-STATE, run 2026-10-12, Nocturne 42275c812)
+    L4:
+      verdict: opt-in
+      today: Serves API v1 and v3 and a socket.io bridge; v3 pages by offset `Link` headers and clamps
+        `limit=0` to 1; on the shared v1 contract it answers a negative `count` and an unsupported operator
+        with 200 `[]`, reads `$exists` with an empty or `null` value as absent, and ignores bracket `find`
+        on `/count`.
+      newer: The merged read across collections (T5), its `srvModified` cursor (T6) and low watermark
+        (T9) are new; per-collection reads stay (sync-transport §7), and a socket event never moves the
+        history cursor (T10).
+      rules:
+      - T5
+      - T6
+      - T9
+      - T10
+      - sync-transport §7
+      anchors:
+      - nocturne@42275c812 src/API/Nocturne.API/Controllers/V3/BaseV3Controller.cs:77-82,281-297
+      - nocturne@42275c812 src/Core/Nocturne.Core.Models/Queries/FindQuery.cs:551-579
+    L5:
+      verdict: opt-in
+      today: Socket clients authorize with a handshake ticket or a legacy secret or token and join their
+        tenant's room, and a credential-less `authorize` is disconnected; subjects are typed, notes are
+        not stored, and an edit with no roles leaves the grant unchanged.
+      newer: AU3 (per-tenant signing, tenant resolved before any credential) and AU4 (bindings to subjects)
+        apply to its subjects; AU5 keeps reading one bit, and DR1-DR7 are requirements no hub implements.
+      rules:
+      - AU3
+      - AU4
+      - AU5
+      - DR1
+      anchors:
+      - nocturne@42275c812 src/Web/packages/bridge/src/lib/socketio-server.ts:346-424
+      - nocturne@42275c812 src/API/Nocturne.API/Services/Identity/AuthorizationService.cs:435-548
+  notes: A fellow hub implementing the Nightscout API; its parity suite runs against Nightscout 15.0.3,
+    and its differences from the 15.0.9 candidate are in the consumer-impact survey §6.
+- app: Not read
+  kind: tool
+  ref: not read
+  source: docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.md
+  layers:
+    L0:
+      verdict: none
+      today: not read
+      newer: not read
+      rules: []
+    L1:
+      verdict: none
+      today: not read
+      newer: not read
+      rules: []
+    L2:
+      verdict: none
+      today: not read
+      newer: not read
+      rules: []
+    L3:
+      verdict: none
+      today: not read
+      newer: not read
+      rules: []
+    L4:
+      verdict: none
+      today: not read
+      newer: not read
+      rules: []
+    L5:
+      verdict: none
+      today: not read
+      newer: not read
+      rules: []
+  notes: 'Clients not in the corpus and not covered by this table: the maintained nightscout-reporter
+    (TypeScript Angular), python-nightscout, Sugarmate, Spike, and closed-source apps (consumer-impact
+    survey §8).'

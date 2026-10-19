@@ -1,0 +1,410 @@
+# Uploaders, bridges and the OpenAPS rig: what each does today with a Nightscout hub, layer by
+# layer, and what it sees from a hub that implements the platform specifications without changing.
+# Format: FORMAT.md. Sources: reports/consumer-impact-15.0.9/clients/uploaders/*.md (read-derived).
+
+- app: oref0
+  kind: controller
+  ref: "oref0@88cf032a (master; dev d219baf9 differs in none of the Nightscout files read)"
+  source: reports/consumer-impact-15.0.9/clients/uploaders/oref0.md
+  layers:
+    L0:
+      verdict: affected
+      today: "Sends no `_id` or `identifier`; re-sent pump-history treatments rely on the server's `created_at`+`eventType` upsert, which replaces the stored treatment, and `ns-dedupe-treatments.sh` reads `_id` back to delete duplicates."
+      newer: "A re-sent treatment matches on `created_at`+`eventType` among records without client identity and is merged, not replaced, so fields added in Nightscout that the rig does not send are kept (identity §3, T2). The dedupe tool's deletes by `_id` find every stored form of the id (I2)."
+      rules: ["identity §3", T2, I2]
+      anchors: ["oref0@88cf032a bin/ns-dedupe-treatments.sh:20-35", "oref0@88cf032a bin/oref0-upload-profile.js:243-271"]
+    L1:
+      verdict: opt-in
+      today: "Writes devicestatus with `openaps.iob`, `suggested`, `enacted`, `pump`, `uploader` and `preferences` every cycle, treatments from pump history, entries, and a whole profile document (`OpenAPS Autosync`) when it changes."
+      newer: "Stored and served as today, the composite kept beside its primitives (R1). Its preferences remain configuration repeated per cycle; publishing them as a `ControllerSettings` snapshot on change is open to it if it changes (R5)."
+      rules: [R1, R5, "records §5"]
+      anchors: ["oref0@88cf032a bin/ns-status.js:28-60", "oref0@88cf032a bin/oref0-upload-profile.js:247-360"]
+    L2:
+      verdict: unchanged
+      today: "Declares nothing; the hub ships no well-known registration for oref0 (specs/sync/registrations covers Loop, Trio and AndroidAPS)."
+      newer: "Its writes are carrier writes attributed to the product's unregistered instance and never refused for exclusivity (registration §11, §17)."
+      rules: ["registration §11", "registration §17"]
+    L3:
+      verdict: opt-in
+      today: "Downloads `Temporary Target` treatments and carbs from Nightscout every loop and applies them by its own rules; posts a `Profile Switch` treatment with its profile upload. It receives no commands through the hub."
+      newer: "Temporary targets stay data it downloads, as today (commands §3). The command record, its outcomes and delivery are for a controller that registers and accepts `command` (commands §4, commands §8, S10)."
+      rules: ["commands §3", "commands §4", "commands §8", S10]
+      anchors: ["oref0@88cf032a bin/oref0-ns-loop.sh:104-107", "oref0@88cf032a bin/nightscout.sh:240"]
+    L4:
+      verdict: unchanged
+      today: "API v1 only, by curl. Every loop it reads `treatments.json?…&count=1?<secret>`, which 15.0.8 reads as count 1 and 15.0.9 refuses with 400 Bad count; the empty result makes the rig re-POST its whole 24 h of pump-history treatments each loop."
+      newer: "API v1 stays (sync-transport §7) and the specifications set no rule for `count`, so the malformed read is answered as the hub release answers it; the re-POSTed treatments are merged as L0 says."
+      rules: ["sync-transport §7", T2]
+      anchors: ["oref0@88cf032a bin/nightscout.sh:164-165", "oref0@88cf032a bin/ns-get.sh:27-36", "oref0@88cf032a bin/oref0-ns-loop.sh:241-243"]
+    L5:
+      verdict: unchanged
+      today: "Sends the SHA-1 of `API_SECRET` as an `api-secret` header, or appends `token=<t>` to the query; the check script exchanges the token at `/api/v2/authorization/request` and reads `permissionGroups`."
+      newer: "Unchanged under `single`. Under `TENANCY_MODE=multi` it keeps a native credential (AU1), and the secret or token it sends is its tenant's, since there is no deployment-wide secret (AU3)."
+      rules: [AU1, AU3]
+      anchors: ["oref0@88cf032a bin/ns-get.sh:26-36", "oref0@88cf032a bin/oref0_nightscout_check.py:67-85"]
+  notes: "The count=1?<secret> read is an oref0 quoting fault in nightscout.sh:165; its effect on 15.0.9 is in the consumer-impact file."
+
+- app: openaps
+  kind: tool
+  ref: "openaps@bd9a831"
+  source: reports/consumer-impact-15.0.9/clients/uploaders/openaps.md
+  layers:
+    L0:
+      verdict: none
+      today: "Makes no Nightscout request; a rig reaches Nightscout through oref0's `ns` device."
+      newer: "Nothing; what a rig sees is under oref0."
+    L1:
+      verdict: none
+      today: "Formats Dexcom records with Nightscout dates but sends nothing."
+      newer: "Nothing; see oref0."
+    L2:
+      verdict: none
+      today: "Declares nothing and writes nothing."
+      newer: "Nothing; see oref0."
+    L3:
+      verdict: none
+      today: "No overrides, targets, profile switches or commands."
+      newer: "Nothing; see oref0."
+    L4:
+      verdict: none
+      today: "No HTTP client and no Nightscout URL in the repository."
+      newer: "Nothing; see oref0."
+    L5:
+      verdict: none
+      today: "Holds no Nightscout credential."
+      newer: "Nothing; see oref0."
+  notes: "Every Nightscout request an openaps rig makes is oref0's bin/nightscout.sh."
+
+- app: cgmsim-lib
+  kind: uploader
+  ref: "cgmsim-lib@c09f9c0 (0.10.3)"
+  source: reports/consumer-impact-15.0.9/clients/uploaders/cgmsim-lib.md
+  layers:
+    L0:
+      verdict: unchanged
+      today: "Sends no `_id` or `identifier` on any upload and makes no PUT or DELETE by id."
+      newer: "Its writes match on each collection's natural key as today and are answered with both ids (identity §3, I4)."
+      rules: ["identity §3", I4]
+    L1:
+      verdict: unchanged
+      today: "Writes simulated entries, treatments (temp basals with explicit `carbs: null` and `insulin: null`), devicestatus, notes and activity; deletes devicestatus by `find[created_at][$lte]`."
+      newer: "Stored as today (R1). A write that matches a stored record merges, and an explicit `null` it carries removes that field (T2)."
+      rules: [R1, T2]
+      anchors: ["cgmsim-lib@c09f9c0 src/upload.ts:231-270", "cgmsim-lib@c09f9c0 src/delete.ts:24-37"]
+    L2:
+      verdict: unchanged
+      today: "Declares nothing; no well-known registration describes it."
+      newer: "Its writes are attributed to the product's unregistered instance (registration §11, §17)."
+      rules: ["registration §11", "registration §17"]
+    L3:
+      verdict: none
+      today: "No overrides, targets, profile switches or commands; it reads profiles only."
+      newer: "Nothing it touches changes."
+    L4:
+      verdict: unchanged
+      today: "API v1 GET with `count=<maxCount>` when set, `find[created_at]` bounds on activity, and POST and DELETE that resolve on any HTTP status, so a refused write is logged as success."
+      newer: "API v1 stays (sync-transport §7)."
+      rules: ["sync-transport §7"]
+      anchors: ["cgmsim-lib@c09f9c0 src/downloads.ts:43-54", "cgmsim-lib@c09f9c0 src/utils.ts:156-178"]
+    L5:
+      verdict: unchanged
+      today: "Sends the SHA-1 of the secret as `api-secret` on every request, with TLS verification turned off."
+      newer: "Unchanged under `single`; under `TENANCY_MODE=multi` the secret is its tenant's own root credential (AU1, AU3)."
+      rules: [AU1, AU3]
+      anchors: ["cgmsim-lib@c09f9c0 src/setupParams.ts:4-32"]
+
+- app: nightscout-connect
+  kind: uploader
+  ref: "nightscout-connect@977da8a (v0.1.0-dev.3)"
+  source: reports/consumer-impact-15.0.9/clients/uploaders/nightscout-connect.md
+  layers:
+    L0:
+      verdict: gains
+      today: "Copies records from a source hub with the source's 24-hex `_id`. On the 15.0.9 candidate a devicestatus or profile re-send that collides with a stored string copy is refused as a duplicate key, and the persist fails until that record leaves the window."
+      newer: "Its in-process writes go through the one write step, which keeps a 24-hex `_id` as the ObjectId and matches every stored form of it, so such a re-send is answered with the stored ids, never an error (T1, I2, I4, identity §3)."
+      rules: [T1, I2, I4, "identity §3"]
+      anchors: ["nightscout-connect@977da8a lib/sources/nightscout.js:258-268", "nightscout-connect@977da8a lib/outputs/internal.js:133-157"]
+    L1:
+      verdict: unchanged
+      today: "Writes entries, treatments, devicestatus and profiles as each source produced them, plus Glooko pump-state `Note` treatments and checkpoint rows keyed by `identifier` and `glookoGuid`."
+      newer: "Stored and served as today; decomposition runs above storage and keeps the composite (R1, R3)."
+      rules: [R1, R3]
+      anchors: ["nightscout-connect@977da8a lib/outputs/glooko-pump-state.js:6-28"]
+    L2:
+      verdict: unchanged
+      today: "Declares nothing; the connector writes no product or instance id of its own."
+      newer: "Its writes go to an unregistered instance, and a copied document that matches a well-known registration's structural discriminator (Loop, Trio, AndroidAPS) is attributed to that product's unregistered instance (registration §11, §17, R2)."
+      rules: ["registration §11", "registration §17", R2]
+    L3:
+      verdict: unchanged
+      today: "Sends no commands; treatments copied from a source are stored as data whatever their `eventType`, and it creates no profile-switch treatments."
+      newer: "Copies stay data (commands §3); active state is derived per product from that product's records (A1)."
+      rules: ["commands §3", A1]
+    L4:
+      verdict: unchanged
+      today: "Writes in-process through `ctx.entries/treatments/devicestatus/profile`, with no HTTP and no `count` middleware; these writes reach no API v3 storage-socket event (BF-164). As a source it reads a remote hub over API v1 with `count` and `find[...][$gt]`."
+      newer: "Its in-process writes join the one write step with the other paths (T1); whether they reach the socket stays open (T12), and v1 reads of a source stay (sync-transport §7)."
+      rules: [T1, T12, "sync-transport §7"]
+      anchors: ["nightscout-connect@977da8a lib/outputs/internal.js:159-162", "nightscout-connect@977da8a lib/sources/nightscout.js:60"]
+    L5:
+      verdict: unchanged
+      today: "In-process writes carry no credential. As a source it uses `API-SECRET` to find or create a `nightscout-connect-reader` subject with `readable`, then exchanges its token for a JWT, or uses a `token=` from the source URL."
+      newer: "Unchanged under `single`. Under `TENANCY_MODE=multi` the source's subjects and tokens are its tenant's, re-rooted on that tenant's credential (AU3), and `readable` still reads every collection (AU5)."
+      rules: [AU3, AU5]
+      anchors: ["nightscout-connect@977da8a lib/sources/nightscout.js:146-179"]
+  notes: "Runs in-process in cgm-remote-monitor; the standalone forever command's HTTP sink is not the path the hub runs."
+
+- app: nightscout-librelink-up
+  kind: uploader
+  ref: "nightscout-librelink-up@bff2317 (3.3.0)"
+  source: reports/consumer-impact-15.0.9/clients/uploaders/nightscout-librelink-up.md
+  layers:
+    L0:
+      verdict: unchanged
+      today: "Sends entries without `_id`; on API v3 the hub computes a UUID v5 `identifier` from device and date. It sends only readings newer than the newest stored entry."
+      newer: "A re-sent reading matches on `identifier`, then `date`+`type` (I5, identity §3)."
+      rules: [I5, "identity §3"]
+      anchors: ["nightscout-librelink-up@bff2317 src/index.ts:296-322"]
+    L1:
+      verdict: unchanged
+      today: "Writes `sgv` entries only."
+      newer: "Stored and served as today (R1)."
+      rules: [R1]
+    L2:
+      verdict: unchanged
+      today: "Declares nothing."
+      newer: "Its writes are attributed to the product's unregistered instance (registration §11, §17)."
+      rules: ["registration §11", "registration §17"]
+    L3:
+      verdict: none
+      today: "No overrides, targets, profile switches or commands."
+      newer: "Nothing it touches changes."
+    L4:
+      verdict: unchanged
+      today: "API v1 (`count=1` watermark, POST entries) or API v3 (`limit=1&sort$desc=date`, one POST per reading that must answer 201)."
+      newer: "Both stay (sync-transport §7); an identical re-send keeps each path's answer today (T2)."
+      rules: ["sync-transport §7", T2]
+      anchors: ["nightscout-librelink-up@bff2317 src/nightscout/apiv3.ts:58-117"]
+    L5:
+      verdict: unchanged
+      today: "v1 sends `NIGHTSCOUT_API_TOKEN` verbatim as `api-secret`; v3 exchanges it at `/api/v2/authorization/request` before every request and sends `Authorization: Bearer`."
+      newer: "Unchanged under `single`. Under `TENANCY_MODE=multi` the secret and token are its tenant's, the JWT signed with the tenant's key, so it fails on another tenant (AU1, AU3)."
+      rules: [AU1, AU3]
+      anchors: ["nightscout-librelink-up@bff2317 src/nightscout/apiv3.ts:28-56"]
+
+- app: share2nightscout-bridge
+  kind: uploader
+  ref: "share2nightscout-bridge@518c85c (0.2.12)"
+  source: reports/consumer-impact-15.0.9/clients/uploaders/share2nightscout-bridge.md
+  layers:
+    L0:
+      verdict: unchanged
+      today: "Sends entries without `_id` (`device: 'share2'`) and relies on the server's entries upsert for re-sent readings."
+      newer: "A re-sent reading matches on `date`+`type` and merges (identity §3, T2)."
+      rules: ["identity §3", T2]
+      anchors: ["share2nightscout-bridge@518c85c index.js:232-255"]
+    L1:
+      verdict: unchanged
+      today: "Writes `sgv` entries; its devicestatus battery write never runs."
+      newer: "Stored and served as today (R1)."
+      rules: [R1]
+    L2:
+      verdict: unchanged
+      today: "Declares nothing."
+      newer: "Its writes are attributed to the product's unregistered instance (registration §11, §17)."
+      rules: ["registration §11", "registration §17"]
+    L3:
+      verdict: none
+      today: "No overrides, targets, profile switches or commands."
+      newer: "Nothing it touches changes."
+    L4:
+      verdict: unchanged
+      today: "Standalone: POST `/api/v1/entries.json`, error logged and the batch dropped. Embedded in cgm-remote-monitor (only with `DEXCOM_BRIDGE_USE_LEGACY=true`): in-process `entries.create`."
+      newer: "API v1 stays (sync-transport §7); the embedded path is an in-process caller of the one write step (T1)."
+      rules: ["sync-transport §7", T1]
+      anchors: ["share2nightscout-bridge@518c85c index.js:259-268"]
+    L5:
+      verdict: unchanged
+      today: "Sends the SHA-1 of `API_SECRET` as `api-secret`, with TLS verification turned off; embedded mode uses no credential."
+      newer: "Unchanged under `single`; under `TENANCY_MODE=multi` the secret is its tenant's own root credential (AU1, AU3)."
+      rules: [AU1, AU3]
+
+- app: minimed-connect-to-nightscout
+  kind: uploader
+  ref: "minimed-connect-to-nightscout@57bb042 (1.5.8)"
+  source: reports/consumer-impact-15.0.9/clients/uploaders/minimed-connect-to-nightscout.md
+  layers:
+    L0:
+      verdict: gains
+      today: "Sends no `_id`; de-duplication is an in-memory recency filter on `date` and `created_at`, and API v1 devicestatus has no key, so a devicestatus sent twice is stored twice."
+      newer: "An identical devicestatus re-sent with the same `created_at` and `device` is answered unchanged instead of stored again; entries match on `date`+`type` (identity §3, T2)."
+      rules: ["identity §3", T2]
+      anchors: ["minimed-connect-to-nightscout@57bb042 filter.js:5-22"]
+    L1:
+      verdict: unchanged
+      today: "Writes `sgv` entries and devicestatus with `device: 'connect-<family>'`, `uploader`, `pump` (with `pump.iob.bolusiob`) and a `connect` block."
+      newer: "Stored and served as today (R1)."
+      rules: [R1]
+      anchors: ["minimed-connect-to-nightscout@57bb042 transform.js:87-130"]
+    L2:
+      verdict: unchanged
+      today: "Declares nothing."
+      newer: "Its writes are attributed to the product's unregistered instance (registration §11, §17)."
+      rules: ["registration §11", "registration §17"]
+    L3:
+      verdict: none
+      today: "No overrides, targets, profile switches or commands."
+      newer: "Nothing it touches changes."
+    L4:
+      verdict: unchanged
+      today: "Standalone: POST `/api/v1/entries.json` and `/api/v1/devicestatus.json`; a refused batch is dropped. Embedded (`MMCONNECT_*`): cgm-remote-monitor writes in-process."
+      newer: "API v1 stays (sync-transport §7); the embedded path is an in-process caller of the one write step (T1)."
+      rules: ["sync-transport §7", T1]
+      anchors: ["minimed-connect-to-nightscout@57bb042 run.js:50-51"]
+    L5:
+      verdict: unchanged
+      today: "Sends the SHA-1 of the secret as `api-secret`."
+      newer: "Unchanged under `single`; under `TENANCY_MODE=multi` the secret is its tenant's own root credential (AU1, AU3)."
+      rules: [AU1, AU3]
+      anchors: ["minimed-connect-to-nightscout@57bb042 nightscout.js:15-18"]
+
+- app: glooko-nightscout-eu
+  kind: uploader
+  ref: "glooko-nightscout-eu@2b7fbc4"
+  source: reports/consumer-impact-15.0.9/clients/uploaders/glooko-nightscout-eu.md
+  layers:
+    L0:
+      verdict: unchanged
+      today: "Sends no `_id`; each treatment carries `glookoGuid`, and de-duplication is a client-side set of guids saved to disk."
+      newer: "`glookoGuid` is not a client id the hub reads, so a re-send matches on `created_at`+`eventType` among records without client identity, as today (identity §3)."
+      rules: ["identity §3"]
+      anchors: ["glooko-nightscout-eu@2b7fbc4 glooko_uploader.py:43-51"]
+    L1:
+      verdict: unchanged
+      today: "Writes `Meal Bolus`, `Correction Bolus` and `Carb Correction` treatments with `enteredBy: 'glooko-bridge'`."
+      newer: "Stored and served as today; a treatment with insulin and carbs also decomposes into a bolus and a carb intake beside the composite (R1)."
+      rules: [R1]
+      anchors: ["glooko-nightscout-eu@2b7fbc4 glooko_uploader.py:92-113"]
+    L2:
+      verdict: unchanged
+      today: "Declares nothing."
+      newer: "Its writes are attributed to the product's unregistered instance (registration §11, §17)."
+      rules: ["registration §11", "registration §17"]
+    L3:
+      verdict: none
+      today: "No overrides, targets, profile switches or commands."
+      newer: "Nothing it touches changes."
+    L4:
+      verdict: unchanged
+      today: "POST `/api/v1/treatments`, one treatment per request; any 4xx or 5xx abandons the run, which retries later."
+      newer: "API v1 stays (sync-transport §7)."
+      rules: ["sync-transport §7"]
+      anchors: ["glooko-nightscout-eu@2b7fbc4 glooko_uploader.py:74-77"]
+    L5:
+      verdict: unchanged
+      today: "Sends the SHA-1 of `NIGHTSCOUT_SECRET` as `api-secret`."
+      newer: "Unchanged under `single`; under `TENANCY_MODE=multi` the secret is its tenant's own root credential (AU1, AU3)."
+      rules: [AU1, AU3]
+
+- app: glooko2nightscout
+  kind: uploader
+  ref: "glooko2nightscout@9ab8c60"
+  source: reports/consumer-impact-15.0.9/clients/uploaders/glooko2nightscout.md
+  layers:
+    L0:
+      verdict: none
+      today: "Makes no Nightscout request: it writes Nightscout-shaped entries to a local JSON file."
+      newer: "Nothing."
+      anchors: ["glooko2nightscout@9ab8c60 glooko-cgm-reader.js:742"]
+    L1:
+      verdict: none
+      today: "Writes no records to a hub."
+      newer: "Nothing."
+    L2:
+      verdict: none
+      today: "Declares nothing and writes nothing to a hub."
+      newer: "Nothing."
+    L3:
+      verdict: none
+      today: "No overrides, targets, profile switches or commands."
+      newer: "Nothing."
+    L4:
+      verdict: none
+      today: "Its only `/api/v3/…` URLs are Glooko's."
+      newer: "Nothing."
+    L5:
+      verdict: none
+      today: "Holds no Nightscout credential."
+      newer: "Nothing."
+  notes: "Not a Nightscout API consumer at this ref."
+
+- app: tconnectsync
+  kind: uploader
+  ref: "tconnectsync@7c4b2f4"
+  source: reports/consumer-impact-15.0.9/clients/uploaders/tconnectsync.md
+  layers:
+    L0:
+      verdict: gains
+      today: "Sends no `_id` on POST and keeps `pump_event_id` as its own key. It reads `_id` back to DELETE a treatment, and in profile replace mode PUTs the profile with the `_id` from `profile/current`, which 15.0.8 stores as a second copy when that profile was stored with a string `_id`."
+      newer: "A PUT or DELETE by `_id` finds every stored form of the id, so replace mode updates the profile in place (I2, identity §3). `pump_event_id` is not a client id the hub reads, so its re-sends match on the natural key."
+      rules: [I2, "identity §3"]
+      anchors: ["tconnectsync@7c4b2f4 tconnectsync/sync/tandemsource/update_profiles.py:55-83", "tconnectsync@7c4b2f4 tconnectsync/sync/tandemsource/process_user_mode.py:223-245"]
+    L1:
+      verdict: unchanged
+      today: "Writes treatments (boluses, basal, IOB records, Sleep and Exercise), `sgv` entries, pump battery devicestatus, activity and profiles."
+      newer: "Stored and served as today (R1); activity gets server dates and soft delete like the other collections (T2)."
+      rules: [R1, T2]
+    L2:
+      verdict: unchanged
+      today: "Declares nothing."
+      newer: "Its writes are attributed to the product's unregistered instance (registration §11, §17)."
+      rules: ["registration §11", "registration §17"]
+    L3:
+      verdict: unchanged
+      today: "Writes Tandem Sleep and Exercise activity as treatments, ending an open one by DELETE and re-POST with the same `created_at`; sends no commands or profile switches."
+      newer: "Stored as data; active state is derived per product from that product's records (A1), and no registration describes these treatments."
+      rules: [A1]
+      anchors: ["tconnectsync@7c4b2f4 tconnectsync/sync/tandemsource/process_user_mode.py:223-260"]
+    L4:
+      verdict: unchanged
+      today: "API v1 only: `count=1` watermark reads with `find[...]` filters and date bounds, POST, PUT and DELETE; any non-200 ends the run, which retries on the next schedule."
+      newer: "API v1 stays (sync-transport §7)."
+      rules: ["sync-transport §7"]
+      anchors: ["tconnectsync@7c4b2f4 tconnectsync/nightscout.py:22-35"]
+    L5:
+      verdict: unchanged
+      today: "Sends the SHA-1 of the secret as `api-secret`, and also the plaintext secret as an `api_secret` query parameter that Nightscout ignores."
+      newer: "Unchanged under `single`; under `TENANCY_MODE=multi` the secret is its tenant's own root credential (AU1, AU3)."
+      rules: [AU1, AU3]
+      anchors: ["tconnectsync@7c4b2f4 tconnectsync/nightscout.py:48-52"]
+
+- app: xdrip-js
+  kind: tool
+  ref: "xdrip-js@0cd1c55 (dev e301273 also read)"
+  source: reports/consumer-impact-15.0.9/clients/uploaders/xdrip-js.md
+  layers:
+    L0:
+      verdict: none
+      today: "A Bluetooth library for Dexcom transmitters; it makes no Nightscout request on master or dev."
+      newer: "Nothing."
+    L1:
+      verdict: none
+      today: "Writes no records to a hub."
+      newer: "Nothing."
+    L2:
+      verdict: none
+      today: "Declares nothing and writes nothing to a hub."
+      newer: "Nothing."
+    L3:
+      verdict: none
+      today: "No overrides, targets, profile switches or commands."
+      newer: "Nothing."
+    L4:
+      verdict: none
+      today: "No HTTP or socket client."
+      newer: "Nothing."
+    L5:
+      verdict: none
+      today: "Holds no Nightscout credential."
+      newer: "Nothing."
+  notes: "The apps that use it (Lookout, Logger) do their own Nightscout I/O and are not in this survey."
