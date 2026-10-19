@@ -801,10 +801,6 @@ exclusions:
     decided_by: "maintainer 2026-09-30"
 
   # ---- noise ----
-  - pattern: "visualizations/manim/**"
-    axis: noise
-    reason: "manim's render cache committed 2026-04-07 (6778f1e4): 175 texts/*.svg (one rendered text label each), a Tex file, 125 partial_movie_files mp4s with their 4 list files, and 4 scene mp4s. Build output, not figures; the svgs were staged as a gallery."
-    decided_by: "maintainer 2026-10-18 (animations brief)"
   - pattern: ".copilot/**"
     axis: noise
     reason: "Coding-assistant session state committed by accident; not documentation."

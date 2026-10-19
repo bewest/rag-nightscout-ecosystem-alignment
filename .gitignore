@@ -79,3 +79,7 @@ node_modules/
 # nsschema's lockfile is deliberately not tracked; tools/seam's IS, because the
 # differential-test oracle's exact mingo version is part of the evidence.
 tools/nsschema/package-lock.json
+
+# manim render cache: render with --media_dir outside the repo (tools/animations/README.md)
+visualizations/manim/
+/media/
