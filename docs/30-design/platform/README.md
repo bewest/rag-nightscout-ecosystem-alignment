@@ -1,4 +1,4 @@
-# Platform contracts: the index to six layers and seven specifications
+# Platform contracts: the index to six layers and eight specifications
 
 *Contributor-facing. Living index, current at `main` `010e1661` (2026-10-18). Terms are defined in
 the [platform glossary](spec/glossary.md).*
@@ -39,7 +39,7 @@ contracts are specified and not implemented; the first hub implementation is `HU
 
 ## The specification set
 
-Seven specifications and a glossary, one file each under `spec/`. Each answers one question a
+Eight specifications and a glossary, one file each under `spec/`. Each answers one question a
 reader brings, and each has its own rules, conformance cases and gate.
 
 | file | question | layer | rules | status | queue |
@@ -50,6 +50,7 @@ reader brings, and each has its own rules, conformance cases and gate.
 | [registration](spec/registration.md) | how does a controller declare what its data means, and how does a hub accept it and attribute what is written? | L2 | G1–G5, Q1–Q4 | written | `SPEC-REGISTRATION` |
 | [state and intent](spec/state-intent.md) | what was requested, applied and active, who started it, and why did it end? | L3 | S1–S12 | written | `SPEC-STATE-INTENT` |
 | [commands](spec/commands.md) | how does a request or a proposal reach a controller, and how does its outcome come back? | L3, L5 | CM1–CM25 | written | `SPEC-REG-COMMANDS` |
+| [plans](spec/plans.md) | how is a plan proposed, approved in parts, held by the controller and mirrored by the hub? | L3, L5 | PN1–PN18 | written | `SPEC-PLANS` |
 | [sync-transport](spec/sync-transport.md) | how are writes matched, ordered and delivered over REST and the socket, and at what cost? | L4 | T1–T15 | written | `SPEC-SYNC-TRANSPORT` |
 | [authority](spec/authority.md) | who may register, write, own, route or act for someone else? | L5 | AU1–AU5, DR1–DR7 | written | `SPEC-AUTHORITY` |
 
@@ -183,7 +184,7 @@ acts on no therapy. It records, routes and refuses; the controller decides and e
 
 For someone new to the series: this page, then the [glossary](spec/glossary.md), then
 [intent and workflow landscape](nightscout-intent-workflow-landscape-2026-10-09.md) §2 and §9 for
-why the contract exists, then the seven specifications in layer order:
+why the contract exists, then the eight specifications in layer order:
 
 1. [identity](spec/identity.md) (L0): every other specification uses its ids;
 2. [records](spec/records.md) (L1): the typed observations a hub stores;
@@ -191,9 +192,10 @@ why the contract exists, then the seven specifications in layer order:
    the largest file;
 4. [state and intent](spec/state-intent.md) (L3): requested, applied and active state;
 5. [commands](spec/commands.md) (L3, L5): requests and proposals that reach a controller;
-6. [sync-transport](spec/sync-transport.md) (L4): how all of the above moves;
-7. [authority](spec/authority.md) (L5): who may do each of the above.
+6. [plans](spec/plans.md) (L3, L5): recurring intents approved once and held by the controller;
+7. [sync-transport](spec/sync-transport.md) (L4): how all of the above moves;
+8. [authority](spec/authority.md) (L5): who may do each of the above.
 
-Across the seven, [control loops](spec/control-loops.md) is an STPA analysis: it draws the loops
+Across the eight, [control loops](spec/control-loops.md) is an STPA analysis: it draws the loops
 the specifications set up, lists each unsafe control action with the rule that prevents it, and
 names the gaps the specifications now carry as open.

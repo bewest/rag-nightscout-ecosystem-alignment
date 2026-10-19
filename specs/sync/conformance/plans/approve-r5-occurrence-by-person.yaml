@@ -1,0 +1,186 @@
+# Synthetic. SPEC-PLANS; plans §6. Times are seconds; expectations authored by hand.
+id: approve-r5-occurrence-by-person
+title: The person approves a persistent settings occurrence
+rules:
+- PN13
+description: 's-person approves the R5 occurrence: 201. Written with the review fixes
+  of 2026-10-18.'
+control: approve-r5-occurrence-by-delegate
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      example/plans:
+      - 0
+      - null
+  i-agent:
+    tenant: A
+    subject: s-agent
+    product: AgentTool
+    definitionId: sha256:d-agent
+    sinks: {}
+    proposes:
+    - example/plans
+declares:
+  A:
+    example/plans:
+    - ControllerA
+subjects:
+  s-person:
+    tenant: A
+    person: true
+    permissions:
+    - api:commands:create
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+    delegate: true
+  s-ctl-a:
+    tenant: A
+    permissions: []
+  s-agent:
+    tenant: A
+    permissions:
+    - api:proposals:create
+  s-risk:
+    tenant: A
+    permissions:
+    - api:proposals:read
+  s-follower:
+    tenant: A
+    permissions:
+    - api:commands:read
+  s-nobody:
+    tenant: A
+    permissions: []
+riskClasses:
+  ControllerA:
+    eatingSoon: R1
+    schoolOverride: R2
+    exerciseTarget: R1
+    mealBolus: R4
+    basalProfile: R5
+    maxBolus: R6
+    mealCarbs: R3
+channelVersions:
+  A:
+    ControllerA:
+      override:
+      - - 0
+        - v1
+      example/bolus:
+      - - 0
+        - b1
+      example/profile:
+      - - 0
+        - r1
+calls:
+- at: 10
+  kind: proposePlan
+  tenant: A
+  subject: s-agent
+  instance: i-agent
+  channel: example/plans
+  product: ControllerA
+  expiresAt: 5000
+  basedOn:
+    override: v1
+    example/profile: r1
+  plan:
+    elements:
+    - id: soon
+      kind: eatingSoon
+      channel: override
+      path: standing
+      content:
+        target: eating-soon
+    - id: profile
+      kind: basalProfile
+      channel: example/profile
+      path: per-occurrence
+      content:
+        profile: weekday
+    trigger:
+      weekdays: lunch
+    startsAt: 100
+    endsAt: 100000
+    requiredReviews: []
+- at: 29
+  kind: evaluate
+  tenant: A
+  subject: s-risk
+  proposal: p1
+  review: independent-check
+  note: independent check
+- at: 30
+  kind: approvePlan
+  tenant: A
+  subject: s-person
+  proposal: p1
+  accepts:
+  - element: soon
+    hash: element:soon
+  - element: profile
+    hash: element:profile
+- at: 35
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+- at: 36
+  kind: report
+  tenant: A
+  subject: s-ctl-a
+  command: c1
+  state: succeeded
+- at: 40
+  kind: approveOccurrence
+  tenant: A
+  subject: s-person
+  plan: p1
+  occurrence: d1
+  occursAt: 3600
+  element: profile
+  hash: element:profile
+expected:
+  calls:
+  - status: 201
+    proposalId: p1
+  - status: 201
+  - status: 201
+    commandId: c1
+    state: pending
+  - status: 200
+    commands:
+    - c1
+  - status: 200
+  - status: 201
+    commandId: c2
+    state: pending
+  commands:
+    c1:
+      state: succeeded
+      destination: i-ctl-a
+      proposalId: p1
+    c2:
+      state: pending
+      destination: i-ctl-a
+  proposals:
+    p1:
+      state: approved
+  plans:
+    p1:
+      state: active
+      accepted:
+      - soon
+      - profile
+      declined: []
+      occurrences:
+        d1: approved

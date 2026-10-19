@@ -8,7 +8,7 @@ the [platform index](../README.md); terms are in the [glossary](glossary.md). De
 and the maintainer's decisions of 2026-10-14 to 2026-10-18 recorded with them. Queue:
 `SPEC-AUTHORITY`.*
 
-*Specification 7 of 7 in the [reading order](../README.md#reading-order); last, because it authorises what the others define. Expect rules AU1–AU5, binding and credential kinds, the owner's actions, namespaces, command destinations, delegation requirements DR1–DR7, what is recorded for audit, and the conformance cases.*
+*Specification 8 of 8 in the [reading order](../README.md#reading-order); last, because it authorises what the others define. Expect rules AU1–AU5, binding and credential kinds, the owner's actions, namespaces, command destinations, delegation requirements DR1–DR7, what is recorded for audit, and the conformance cases.*
 
 Who may register a controller's definitions, write under them, act as a site's owner, receive a
 command, and act for someone else. The hub routes and records; it never decides whether a change
@@ -34,6 +34,12 @@ specified; §7 states delegation's requirements, and its design is open.
 | AU3 | **The credential root is per tenant.** Under `TENANCY_MODE=multi` there is no deployment-wide secret: each tenant holds its own root credential, tokens are signed with the tenant's own key, and tenant resolution runs before any credential is checked, so a signed token for one tenant fails the signature on another. That alone does not close an opaque token sent in a request body, which carries no signature; the subject store is also scoped under RLS (BF-25). Subject tokens are re-rooted on the tenant's credential. Credentials are per tenant, identity is per cohort, and authorization is per tenant, so isolation rests on the authorization layer and RLS, not on authentication. Under `single`, `API_SECRET` remains the bootstrap credential. | D13 and its amendment, D14, D15; decided, not on `dev` |
 | AU4 | **Subjects, not tokens.** A registration or an instance is bound to the subject that created it, never to a token, so a token rotated on the same subject changes nothing that is bound to it. Whether a delegation grant names subjects the same way is part of §7. | decided 2026-10-14 (registration question 4; hub-sync §3.5 at `b3536bbf`) |
 | AU5 | **Permissions today.** Writes are per collection (`api:<collection>:<action>`); reading is one bit: `readable` is `*:*:read`, every collection, every field, all time. | shipping (cgm-remote-monitor `lib/authorization/storage.js:235` at `dev` `fade2299`, read) |
+
+Under `multi`, who reaches the hub through which listener, with which credential (dashed: adopted
+in principle and gated, D17 row 2). The drawing's source is
+`tools/structure-diagrams/inputs/3-listeners.yaml`.
+
+![3·listeners: controllers and uploaders reach ns-api and ns-realtime with a native per-tenant credential; caregivers, viewers and the tenant owner sign in through the cohort's Kratos pool, which is gated, and get a per-tenant token for the data listener or an owner's session for ns-tenant-admin; the operator reaches ns-admin, which tenants cannot reach; both tenant listeners act on one tenant's records under RLS](../../../00-overview/perspective/diagrams/3-listeners.svg)
 
 ## 3. Binding and credential kind
 

@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 253 |
-| runnable gates | 307 |
+| items | 254 |
+| runnable gates | 310 |
 | explicit `no-gate:` markers | 281 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 281 of the 588 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 281 of the 591 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -49,7 +49,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 87 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 12 | RT-0, T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164 |
-| `done` | 34 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
+| `done` | 35 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
 | `answered` | 2 | RT-D3, RT-PROPAGATION |
@@ -7743,7 +7743,7 @@ flag rule: versioning policy section 5.7.
 
 ## Controller registration and intent observability
 
-`parcel: platform` &mdash; 31 items
+`parcel: platform` &mdash; 32 items
 
 D18 (maintainer, 2026-10-09): two-tier controller registration - well-known
 declarations for backwards compatibility, controller-owned typed registrations
@@ -7769,6 +7769,7 @@ reproduced ones.
 | `HUB-REG-CRM-ADMIN` | cgm-remote-monitor: the registration owner's actions on ns-tenant-admin under TENANCY_MODE=multi | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `SPEC-REG-COMMANDS` | Hub command delivery to a command-sink instance, with the proposal record in front of it, specified for single and multi mode | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 3 run |
 | `SPEC-STPA-PLATFORM` | STPA of the platform specifications: the control loops they set up, each unsafe control action and the rule that prevents it | `done` | `docs/stpa-commands-2026-10-18` | n/a | 3 run |
+| `SPEC-PLANS` | Plans: a recurring intent proposed with elements, approved in parts, held by the controller and mirrored read-only by the hub | `done` | `docs/plans-2026-10-18` | n/a | 3 run |
 | `SPEC-COMPAT-APPS` | One table of every listed app against every layer: today's behaviour, and what changes with a newer hub | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `SPEC-DEV-GUIDES` | Two developer guides: adding a setting in a controller's next release, and adding a new controller | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `SPEC-REG-MIGRATE` | Registration state across a single-tenant site's move into a tenant, and back | `not-started` | `main` | n/a | 0 run + 1 no-gate |
@@ -8273,7 +8274,43 @@ reproduced ones.
 - `docs/STPA-USAGE-GUIDE.md`
 - `traceability/stpa/cross-project-patterns.md`
 
-**Notes.** The maintainer asked for this item on 2026-10-18, with the request to consider STPA-style controller and actuator loops for the proposed mechanics (control- loops §5). Severities follow the usage guide's S1-S4 scale and need review by a qualified clinician before they prioritise anything (control-loops §7). Adversarial review, 2026-10-18, applied: the treatment-download path, the owner's and operator's actions and command cancel were missing from the structure; the state version covers intents, not doses; identity §3 causes the resurrected-dose and natural-key merge entries; a process sharing the destination's credential under single; socket revocation; one case added. 72 entries (41 covered, 6 controller, 3 uncased, 22 gaps). Non-vacuity: 18 weakenings of the analysis, its page and the specifications, each red.
+**Notes.** The maintainer asked for this item on 2026-10-18, with the request to consider STPA-style controller and actuator loops for the proposed mechanics (control- loops §5). Severities follow the usage guide's S1-S4 scale and need review by a qualified clinician before they prioritise anything (control-loops §7). Plans added (maintainer, 2026-10-18): a seventh loop with six control actions and the mirror as feedback, 31 entries (24 covered by plans cases or invariants, 5 the controller's, 2 gaps listed in plans §9), 103 entries in all. Adversarial review, 2026-10-18, applied: the treatment-download path, the owner's and operator's actions and command cancel were missing from the structure; the state version covers intents, not doses; identity §3 causes the resurrected-dose and natural-key merge entries; a process sharing the destination's credential under single; socket revocation; one case added. 72 entries (41 covered, 6 controller, 3 uncased, 22 gaps). Non-vacuity: 18 weakenings of the analysis, its page and the specifications, each red.
+
+### `SPEC-PLANS` &mdash; Plans: a recurring intent proposed with elements, approved in parts, held by the controller and mirrored read-only by the hub
+
+| | |
+|---|---|
+| state (claimed) | `done` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `docs/plans-2026-10-18` |
+| base | `main@b081a15c` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** docs/30-design/platform/spec/plans.md (new, specification 6 of 8): rules PN1-PN18 for the plan object and its structural floors, the approval that accepts elements by id and hash with required reviews, definition and per- channel state checks, the command that carries the accepted plan, the controller's hold and the hub's read-only mirror, occurrence confirmation under the plan's grant, per-occurrence approval inside an advance window, skip, and ending. tools/nsschema/plans.py is the reference, built on commands.py; test_plans.py checks the cases and five invariants. The index, glossary, placement lines of every specification and the platform-spec gate gain plans. Ships nothing.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** specification in this repository; ships nothing
+
+**Gates.**
+
+- `[static]` `node tools/queue/gates/platform-spec.js plans`
+  - FAILS when the specification is missing, carries amendment narration, names a case that does not exist, states a count that differs from its table, or when commands, the command-queue note or the evidence-weighted approval framework does not link to it.
+- `[static]` `python3 -m tools.nsschema.spec_cases plans --check`
+  - FAILS when the case table differs from the case files.
+- `[unit]` `python3 -m pytest -q tools/nsschema/test_plans.py`
+  - FAILS when the reference disagrees with a hand-authored expectation, or when on any case a command carries a declined element, a command is made without a call, a standing R3 or R4 element lacks its conditions, an occurrence operation happens while the controller does not hold the plan, or an occurrence approval falls outside its window or comes from the proposing agent.
+
+**Evidence.**
+
+- `docs/30-design/platform/spec/plans.md`
+- `docs/30-design/platform/command-queue-and-planning-2026-10-18.md`
+- `docs/30-design/platform/evidence-weighted-approval-2026-10-18.md`
+- `docs/30-design/platform/command-journeys-2026-10-18.md`
+
+**Notes.** The maintainer asked for the plan object on 2026-10-18, after deciding that plans run on the controller and the hub mirrors them, that a plan may be accepted in parts, and that a bounded standing bolus is acceptable under recorded conditions. 73 cases were written from the specification text by an author who did not read the reference; they agreed on every reply, and the one disagreement (the plan command's proposalId) is settled in PN8; 11 ambiguities they reported are settled in the text. One case (end-plan-twice) was added when a weakening of PN16 stayed green; 20 weakenings of plans.py, each red. Values for clinical review (the advance window, risk classes, withdrawal signals, the reduced portion) are open in plans §9. Adversarial review, 2026-10-18, applied: an R3+ plan needs at least one independent review and a person or delegate approver (an agent's credential never approves, FL5); standing carbs only beside standing insulin and standing insulin only with its accepted eating-soon companion, checked over the accepted elements; the person can end a plan the controller may hold (approved, active or ending), ending again re-sends the end, and an end command cannot be cancelled; a report on an approved plan shows the hold; a skipped or finished occurrence cannot be confirmed or approved, and a skip or an end cancels queued occurrence commands; occurrence times inside the plan and the advance window for confirmations; the proposer's role re-checked on each confirmation and its skip allowed (an agent's withdrawal); R5 occurrences need the person; element channels route to the destination; occurrence commands are listed on element channels (PN17, PN18 added). 30 cases added for the findings and the eight weakenings the review found green (104 cases); the invariants now check command elements byte for byte, read risk classes from the case, check approvers and skips; 25 weakenings each red.
 
 ### `SPEC-COMPAT-APPS` &mdash; One table of every listed app against every layer: today's behaviour, and what changes with a newer hub
 

@@ -1,0 +1,166 @@
+# Synthetic. SPEC-PLANS; plans §4. Times are seconds; expectations authored by hand.
+id: plan-proposed-and-approved
+title: A plan is proposed, approved whole and mirrored as approved
+rules:
+- PN1
+- PN5
+- PN8
+- PN11
+description: s-agent proposes a two-element plan; s-person accepts both. One command
+  carries the plan, pending for i-ctl-a; the mirror is approved with nothing declined,
+  and a follower reads it.
+mode: single
+maxExpirySeconds: 3600
+riskClasses:
+  ControllerA:
+    eatingSoon: R1
+    schoolOverride: R2
+    exerciseTarget: R1
+    mealBolus: R4
+    basalProfile: R5
+    maxBolus: R6
+channelVersions:
+  A:
+    ControllerA:
+      override:
+      - - 0
+        - v1
+      example/bolus:
+      - - 0
+        - b1
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      example/plans:
+      - 0
+      - null
+  i-agent:
+    tenant: A
+    subject: s-agent
+    product: AgentTool
+    definitionId: sha256:d-agent
+    sinks: {}
+    proposes:
+    - example/plans
+declares:
+  A:
+    example/plans:
+    - ControllerA
+subjects:
+  s-person:
+    tenant: A
+    person: true
+    permissions:
+    - api:commands:create
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+    delegate: true
+  s-ctl-a:
+    tenant: A
+    permissions: []
+  s-agent:
+    tenant: A
+    permissions:
+    - api:proposals:create
+  s-risk:
+    tenant: A
+    permissions:
+    - api:proposals:read
+  s-follower:
+    tenant: A
+    permissions:
+    - api:commands:read
+  s-nobody:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: proposePlan
+  tenant: A
+  subject: s-agent
+  instance: i-agent
+  channel: example/plans
+  product: ControllerA
+  expiresAt: 5000
+  basedOn:
+    override: v1
+    example/bolus: b1
+  plan:
+    elements:
+    - id: soon
+      kind: eatingSoon
+      channel: override
+      path: standing
+      content:
+        target: eating-soon
+    - id: meal
+      kind: mealBolus
+      channel: example/bolus
+      path: per-occurrence
+      content:
+        bolus: usual-lunch
+    trigger:
+      weekdays: lunch
+    startsAt: 100
+    endsAt: 100000
+    requiredReviews: []
+- at: 29
+  kind: evaluate
+  tenant: A
+  subject: s-risk
+  proposal: p1
+  review: independent-check
+  note: independent check
+- at: 30
+  kind: approvePlan
+  tenant: A
+  subject: s-person
+  proposal: p1
+  accepts:
+  - element: soon
+    hash: element:soon
+  - element: meal
+    hash: element:meal
+- at: 35
+  kind: readPlan
+  tenant: A
+  subject: s-follower
+  plan: p1
+expected:
+  calls:
+  - status: 201
+    proposalId: p1
+  - status: 201
+  - status: 201
+    commandId: c1
+    state: pending
+  - status: 200
+    state: approved
+    accepted:
+    - soon
+    - meal
+    declined: []
+    occurrences: {}
+  commands:
+    c1:
+      state: pending
+      destination: i-ctl-a
+      proposalId: p1
+  proposals:
+    p1:
+      state: approved
+  plans:
+    p1:
+      state: approved
+      accepted:
+      - soon
+      - meal
+      declined: []
+      occurrences: {}

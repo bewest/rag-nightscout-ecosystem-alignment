@@ -1,0 +1,31 @@
+# L3 · Who reaches the hub through which listener, with which credential (authority AU1-AU4).
+# Source: docs/30-design/platform/spec/authority.md §2 (AU1 by audience, AU2 three listeners,
+# AU3 the credential root per tenant), D7 and D13-D17 in the multitenancy execution plan.
+# Under TENANCY_MODE=single there is one listener and API_SECRET acts as the owner (AU2).
+# Drawn 2026-10-18; read from the specification. The Kratos sign-in is adopted in principle
+# and gated (D17 row 2), so it is drawn proposed.
+title: "3·listeners · Who reaches the hub through which listener (multi)"
+bands:
+  - {label: "Audiences", levels: [0]}
+  - {label: "Identity", levels: [1]}
+  - {label: "Listeners", levels: [2]}
+  - {label: "Tenant data", levels: [3]}
+nodes:
+  - {id: device, label: "Controllers, uploaders\n(native per-tenant\ncredential)", kind: entity, level: 0, column: 0, icon: smartphone}
+  - {id: people, label: "Caregivers, viewers,\nfollower apps", kind: human, level: 0, column: 1, icon: users}
+  - {id: owner, label: "Tenant owner", kind: human, level: 0, column: 2, icon: key-round}
+  - {id: operator, label: "Platform operator", kind: org, level: 0, column: 3, icon: settings}
+  - {id: kratos, label: "Cohort sign-in\n(Ory Kratos)", kind: commons, level: 1, column: 1, icon: badge-check, status: proposed}
+  - {id: api, label: "ns-api, ns-realtime\n(data, socket)", kind: commons, level: 2, column: 0, icon: server}
+  - {id: tadmin, label: "ns-tenant-admin\n(second socket\nin ns-api)", kind: commons, level: 2, column: 2, icon: server}
+  - {id: nsadmin, label: "ns-admin\n(unreachable from\ntenants)", kind: commons, level: 2, column: 3, icon: server}
+  - {id: store, label: "Tenant's records,\nregistrations, subjects\n(per tenant, RLS)", kind: commons, level: 3, column: 1, icon: database}
+edges:
+  - {from: device, to: api, kind: control, label: "token signed\nwith the tenant's\nkey (AU3)"}
+  - {from: people, to: kratos, kind: control, label: "sign in", status: proposed}
+  - {from: kratos, to: api, kind: control, label: "per-tenant token\nfrom the session", status: proposed}
+  - {from: owner, to: kratos, kind: control, label: "sign in", status: proposed}
+  - {from: kratos, to: tadmin, kind: control, label: "owner's\nsession", status: proposed}
+  - {from: operator, to: nsadmin, kind: control, label: "operator plane\n(D7)"}
+  - {from: api, to: store, kind: data, label: "reads, writes\nfor one tenant"}
+  - {from: tadmin, to: store, kind: control, label: "owner actions:\ngrants, block,\ntransfer"}

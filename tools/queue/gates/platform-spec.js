@@ -60,6 +60,11 @@ const SOURCES = {
     'docs/30-design/platform/spec/authority.md',
     'docs/30-design/platform/agent-trust-boundaries-2026-10-18.md',
   ],
+  plans: [
+    'docs/30-design/platform/spec/commands.md',
+    'docs/30-design/platform/command-queue-and-planning-2026-10-18.md',
+    'docs/30-design/platform/evidence-weighted-approval-2026-10-18.md',
+  ],
   'control-loops': [
     'docs/30-design/platform/spec/commands.md',
     'docs/30-design/platform/spec/authority.md',

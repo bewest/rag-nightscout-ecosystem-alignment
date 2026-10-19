@@ -40,7 +40,7 @@ for loop in STPA["loops"].values():
         ACTIONS[fid] = FEEDBACK_TYPES
 
 ENTRIES = {u["id"]: u for u in STPA["ucas"]}
-FAMILIES = r"UCA-(?:CMD|PROP|ROUTE|SYNC-STORE|SYNC-SERVE|SYNC-DL|DEF|AUTH)|FB-(?:CMD|STATE)"
+FAMILIES = r"UCA-(?:CMD|PROP|ROUTE|SYNC-STORE|SYNC-SERVE|SYNC-DL|DEF|AUTH|PLAN)|FB-(?:CMD|STATE|PLAN)"
 
 
 def _heading(ref):

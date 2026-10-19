@@ -10,7 +10,7 @@ and its [addendum](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-
 and the maintainer's decisions of 2026-10-14, 2026-10-16 and 2026-10-17 recorded there. Queue:
 `SPEC-REGISTRATION`.*
 
-*Specification 3 of 7 in the [reading order](../README.md#reading-order), and the largest; after records, before state and intent, which uses its grammar. Expect rules G1–G5 and Q1–Q4, the grammar, the capability document, products, definitions, instances, channels and roles, labels, typed writes, projected views, quirks, and the conformance cases.*
+*Specification 3 of 8 in the [reading order](../README.md#reading-order), and the largest; after records, before state and intent, which uses its grammar. Expect rules G1–G5 and Q1–Q4, the grammar, the capability document, products, definitions, instances, channels and roles, labels, typed writes, projected views, quirks, and the conformance cases.*
 
 A controller declares what its data means; the hub accepts the declaration element by element,
 stores typed records for what it accepts, and tells the controller to write everything else in
@@ -139,6 +139,26 @@ is `<submit.href>/<vendor>/<product>`, each segment percent-encoded.
    the resource (`identity-mismatch`); a tier other than `controller-owned` (`wrong-tier`); over
    `maxRegistrationBytes` (413) or `maxExtensions` (`limit-exceeded`).
 4. **Each element** (§5.3).
+
+```mermaid
+flowchart LR
+  accTitle: Order of checks for a registration write
+  accDescr: A write is checked for authorisation first, then its preconditions, then the owner's block, then the registration as a whole, and only then element by element. The first check that fails answers, and nothing is stored for a failure before the elements; elements are accepted or refused one at a time.
+  w([PUT or DELETE of a registration]) --> auth{permission and binding}
+  auth -- no --> r403[403 not-authorised or not-registration-owner]
+  auth -- yes --> pre{precondition sent and current}
+  pre -- none --> r428[428]
+  pre -- stale --> r412[412 with the current etag and state]
+  pre -- yes --> block{blocked by the owner}
+  block -- yes --> rb[403 blocked-by-owner]
+  block -- no --> whole{registration as a whole valid}
+  whole -- no --> r422[422 or 413, nothing stored]
+  whole -- yes --> el[each element accepted or refused, §5.3]
+  classDef refuse fill:#fde2e2,stroke:#b42318,color:#1a1a1a
+  classDef ok fill:#e6f4ea,stroke:#3b7a4a,color:#1a1a1a
+  class r403,r428,r412,rb,r422 refuse
+  class el ok
+```
 
 ### 5.3 Elements and their results
 

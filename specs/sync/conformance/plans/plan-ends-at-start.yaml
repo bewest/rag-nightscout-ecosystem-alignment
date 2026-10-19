@@ -1,0 +1,116 @@
+# Synthetic. SPEC-PLANS; plans §3. Times are seconds; expectations authored by hand.
+id: plan-ends-at-start
+title: endsAt must be after startsAt
+rules:
+- PN4
+description: 'endsAt equals startsAt: 422 ends-required.'
+control: plan-at-max-length
+mode: single
+maxExpirySeconds: 3600
+riskClasses:
+  ControllerA:
+    eatingSoon: R1
+    schoolOverride: R2
+    exerciseTarget: R1
+    mealBolus: R4
+    basalProfile: R5
+    maxBolus: R6
+channelVersions:
+  A:
+    ControllerA:
+      override:
+      - - 0
+        - v1
+      example/bolus:
+      - - 0
+        - b1
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      example/plans:
+      - 0
+      - null
+  i-agent:
+    tenant: A
+    subject: s-agent
+    product: AgentTool
+    definitionId: sha256:d-agent
+    sinks: {}
+    proposes:
+    - example/plans
+declares:
+  A:
+    example/plans:
+    - ControllerA
+subjects:
+  s-person:
+    tenant: A
+    person: true
+    permissions:
+    - api:commands:create
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+    delegate: true
+  s-ctl-a:
+    tenant: A
+    permissions: []
+  s-agent:
+    tenant: A
+    permissions:
+    - api:proposals:create
+  s-risk:
+    tenant: A
+    permissions:
+    - api:proposals:read
+  s-follower:
+    tenant: A
+    permissions:
+    - api:commands:read
+  s-nobody:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: proposePlan
+  tenant: A
+  subject: s-agent
+  instance: i-agent
+  channel: example/plans
+  product: ControllerA
+  expiresAt: 5000
+  basedOn:
+    override: v1
+    example/bolus: b1
+  plan:
+    elements:
+    - id: soon
+      kind: eatingSoon
+      channel: override
+      path: standing
+      content:
+        target: eating-soon
+    - id: meal
+      kind: mealBolus
+      channel: example/bolus
+      path: per-occurrence
+      content:
+        bolus: usual-lunch
+    trigger:
+      weekdays: lunch
+    startsAt: 100
+    endsAt: 100
+    requiredReviews: []
+expected:
+  calls:
+  - status: 422
+    code: ends-required
+  commands: {}
+  proposals: {}
+  plans: {}
