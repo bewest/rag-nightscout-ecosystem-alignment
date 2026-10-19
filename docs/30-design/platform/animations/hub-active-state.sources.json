@@ -1,0 +1,16 @@
+{
+  "animation": "hub-active-state",
+  "scene": "tools/animations/hub_active_state_scene.py",
+  "class": "HubActiveState",
+  "sha256": {
+    "tools/animations/hub_active_state_scene.py": "98b65624e9d39430a749cc7d3cf6f84e560b0e3fce92920c5843336874fef4fa",
+    "tools/animations/common.py": "f3646b13881e70dc18c14bf3649c15b01847f2d1a5502d722c82b535e3b272f5",
+    "tools/animations/sources.py": "1844364e036f7b17e2bd76a951d5b47024d55f45d87089d13126f4aced200497",
+    "tools/diagrams/svgkit.py": "e93c2f23183b411b80bc723ff97b0ff5f44c035eb04509549d5c7e6b94808060",
+    "tools/diagrams/hub_active_state.py": "bd9ab487088a3744d723ca6d9ba00f2734ae8cfb71daea99ba0e63557f81f47e",
+    "tools/lab/hub-active-state/records/cases.json": "65673d201cc12bbf53a7b56b52ecad9c89fb6887b6e1560f14cbba9c6478df60",
+    "tools/lab/hub-active-state/results/crm.json": "e29d6e1a8907a1c71dc2c8e6c4f7f76a4d211fdd6755e5cd3768f1461d068657",
+    "tools/lab/hub-active-state/results/nocturne.json": "9110c20159e3578691768386bacd35403b9b0f73e373658e96d097c94a94bd5c",
+    "tools/lab/hub-active-state/results/RESULTS.md": "d93cd9b7379a642e7ab5f6cf47b86f2f12c3dedff048fabda2ca35d4ce113fd9"
+  }
+}

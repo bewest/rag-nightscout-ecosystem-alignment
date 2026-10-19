@@ -1,0 +1,18 @@
+{
+  "animation": "active-state-spans",
+  "scene": "tools/animations/active_state_spans.py",
+  "class": "ActiveStateSpans",
+  "sha256": {
+    "tools/animations/active_state_spans.py": "b87ba3b4bcb9b999172418987eff95f60335a5621828603390a78ea6d51f99dc",
+    "tools/animations/common.py": "f3646b13881e70dc18c14bf3649c15b01847f2d1a5502d722c82b535e3b272f5",
+    "tools/animations/sources.py": "1844364e036f7b17e2bd76a951d5b47024d55f45d87089d13126f4aced200497",
+    "tools/diagrams/svgkit.py": "e93c2f23183b411b80bc723ff97b0ff5f44c035eb04509549d5c7e6b94808060",
+    "tools/diagrams/active_state_rules.py": "9df13352e53cd6be811d4c84b184f3c9c44274d60ddf04d33e3f2b9906413e55",
+    "tools/nsschema/active_state.py": "62187a4dfc5fdeed1c9aced333d53f57b635734edb1656e2e8ec2d8536deb389",
+    "specs/sync/conformance/active-state/zero-duration-ends-instance.yaml": "d1cf96773a0408b3406590934d04128ce91bb620893f11bbdfac176908c8988d",
+    "specs/sync/conformance/active-state/deleted-before-start.yaml": "d512ce2e2990d7d7b2009f9803a1f5853021fea905a035ea395b1055b12f641a",
+    "specs/sync/conformance/active-state/backfill-supersedes-by-start.yaml": "81357ef73600b46111a5e07a2e38a20c59fb9e3e10878e3bccb32e0625bfe3ea",
+    "specs/sync/conformance/active-state/overlay-returns-to-open-ended.yaml": "7a0fd9ed37f2bab05682fd682f28603a8c363dea6e9840bc061d3778e2931e16",
+    "docs/30-design/platform/spec/state-intent.md rules A5,A6,A7,A8": "49fe5cbab72ea99db0b0f63246ef6932b48cc69a098e1573b7be9096c7ff44ae"
+  }
+}

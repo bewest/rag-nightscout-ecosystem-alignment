@@ -943,6 +943,22 @@ diagrams-svg:
 diagrams-svg-check:
 	@$(PY) -m pytest tools/diagrams/test_diagrams.py -q
 
+## animations: render the three animations (tools/animations/README.md) into
+## docs/30-design/platform/animations/: <name>.webm, poster <name>.png and <name>.sources.json.
+## Needs manim and PyAV (MANIM_PY: a python with both; MANIM: its manim). manim's cache goes to
+## ANIM_MEDIA, outside the repository.
+MANIM_PY ?= .venv/bin/python
+MANIM ?= .venv/bin/manim
+ANIM_MEDIA ?= $(or $(TMPDIR),/tmp)/nightscout-alignment-manim
+.PHONY: animations animations-check
+animations:
+	@MANIM=$(MANIM) $(MANIM_PY) tools/animations/render.py --media-dir $(ANIM_MEDIA)
+
+## animations-check: fail naming each committed animation whose scene or inputs changed since it
+## was rendered (sha256 sidecars; the tamper controls show the check sees each source)
+animations-check:
+	@$(PY) -m pytest tools/animations/test_animations.py -q
+
 ## docs-links: every path the groomed programme material and the live queue
 ## tooling cite must resolve. Three detection passes, because the 2026-09-16
 ## programme-subdirectory move was repaired by a rewrite that missed three

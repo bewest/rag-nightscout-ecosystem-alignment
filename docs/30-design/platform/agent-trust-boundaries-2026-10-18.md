@@ -3,7 +3,7 @@
 *What this is: a map (contributor-facing). Read after the [authority specification](spec/authority.md);
 leads to [auditioning a dosing algorithm](algorithm-audition-2026-10-18.md).* **Snapshot — describes
 2026-10-18. Status: current; a map of what exists and what is missing for each of develop, interpret
-and act. The proposal lifecycle in §4.3 is proposed, not specified.** **Also 2026-10-18:** §1 adds the drawing 1·agents (the three domains as paths from an agent to the ecosystem). Repository
+and act. The proposal lifecycle in §4.3 is proposed, not specified.** **Also 2026-10-18:** §1 adds the drawing 1·agents (the three domains as paths from an agent to the ecosystem); §4.3 adds an animation of the command lifecycle replayed from the commands specification's conformance cases (`tools/animations`). Repository
 facts are read at this repository's `5a9a49cc`; facts about other repositories and publications were
 checked 2026-10-18 through the GitHub API or the publisher's page, and each names its commit or
 date. Every claim is **read-derived** (from source or documents) unless marked **measured**. Current
@@ -240,6 +240,14 @@ the open question above: an approval is refused when the hub's state version dif
 proposal's, which still says nothing about the controller's own state. What controllers do with
 outstanding commands, enacting each once (CM21), and plans confirmed in advance are in the
 [command queue and planning](command-queue-and-planning-2026-10-18.md) design note.
+
+<figure>
+<video controls muted playsinline preload="none" poster="animations/command-lifecycle.png" width="720">
+<source src="animations/command-lifecycle.webm" type="video/webm">
+<img src="animations/command-lifecycle.png" alt="Five command conformance cases, each as its calls and replies, its final record states and its rules">
+</video>
+<figcaption>The lifecycle as the commands specification proposes it, replayed from five synthetic conformance cases call by call. An approval names the payload hash and creates one command with the proposal's payload (CM13, CM14, CM1); the controller fetches it and recomputes the hash before enacting (CM10). An approval after the proposal's expiry is refused 409 <code>proposal-expired</code> (CM13). A received payload whose hash differs is refused <code>hash-mismatch</code>, and the hub records the report as a mismatch (CM10, CM7, CM8). A command fetched before its expiry reads <code>unconfirmed</code> after it, and the controller's late report replaces that state (CM3, CM9). A cancel after hand-over is a request: 202 <code>cancelRequested</code>, carried by the next fetch, refused by the controller with reason <code>cancelled</code> (CM25, CM21). Proposed (commands specification §4–§7); replies from each case's expected block (<code>specs/sync/conformance/commands/</code>), record states from the reference <code>tools/nsschema/commands.py</code>. Rendered by <code>make animations</code>.</figcaption>
+</figure>
 
 ## 5. Evaluating an algorithm before it acts
 
