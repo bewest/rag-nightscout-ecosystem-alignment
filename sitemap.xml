@@ -1049,6 +1049,10 @@
          <lastmod>2026-10-19</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/spec/compatibility.html</loc>
+         <lastmod>2026-10-19</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/spec/control-loops.html</loc>
          <lastmod>2026-10-19</lastmod>
     </url>
@@ -5190,6 +5194,14 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/specs/sync/index.html</loc>
+         <lastmod>2026-10-19</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/specs/sync/compat/index.html</loc>
+         <lastmod>2026-10-19</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/specs/sync/compat/FORMAT.html</loc>
          <lastmod>2026-10-19</lastmod>
     </url>
     <url>

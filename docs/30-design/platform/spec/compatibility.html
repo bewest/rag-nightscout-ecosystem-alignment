@@ -1,0 +1,7742 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/spec/compatibility.html">
+      
+      
+        <link rel="prev" href="control-loops.html">
+      
+      
+        <link rel="next" href="../nightscout-typed-schema-evidence-2026-09-10.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>L0–L5 Compatibility: what each app does with a hub today, and what it sees from one that implements the specifications - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#l0l5-compatibility-what-each-app-does-with-a-hub-today-and-what-it-sees-from-one-that-implements-the-specifications" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              L0–L5 Compatibility: what each app does with a hub today, and what it sees from one that implements the specifications
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../site/pages/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24" id="__nav_5_24_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_24_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    30-design/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-telemetry-emitter-map-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor Telemetry Emitter Integration Map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-adoption-roadmap-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hub-and-spoke adoption across projects: who builds what, in what order
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-integration-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Integration Guide for App Developers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-telemetry-backend-service-design-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Backend Service Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-telemetry-deployment-lifecycle-examples-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Deployment Lifecycle Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-telemetry-implementation-breakdown-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Implementation Breakdown
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-telemetry-lifecycle-policy-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Lifecycle Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-telemetry-local-integration-plan-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Local Integration Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-telemetry-scheduling-dedupe-model-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Scheduling and Dedupe Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ns2parquet-keyed-pseudonyms.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ns2parquet keyed pseudonyms: design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_13" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    platform/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24_13" id="__nav_5_24_13_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_24_13_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    platform/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-intent-workflow-landscape-2026-10-09.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intent, workflow and entity management across the AID controller landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_13_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    spec/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24_13_3" id="__nav_5_24_13_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_24_13_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24_13_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    spec/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="glossary.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platform glossary: the terms the eight specifications share, and where each is defined
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="identity.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    L0 Identity: how records, definitions, instances and subjects are named
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="records.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    L1 Records: the typed observations a hub stores, and how today's documents decompose into them
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="registration.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    L2 Registration: how a controller declares what its data means, and how a hub accepts it
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="state-intent.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    L3 State and intent: what was requested, applied and active, who started it, and why it ended
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="commands.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    L3 and L5 Commands: how a request or a proposal reaches a controller, and how its outcome comes back
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plans.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    L3 and L5 Plans: how a plan is proposed, approved in parts, held by the controller and mirrored by the hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sync-transport.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    L4 Sync transport: how writes are matched, ordered and delivered over REST and the socket, and at what cost
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="authority.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    L5 Authority: who may register, write, own a site, receive a command, and act for someone else
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="control-loops.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    L2–L5 Control loops: what each mechanism controls, and the unsafe control actions its rules prevent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    L0–L5 Compatibility: what each app does with a hub today, and what it sees from one that implements the specifications
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="compatibility.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    L0–L5 Compatibility: what each app does with a hub today, and what it sees from one that implements the specifications
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-how-to-read-the-verdicts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. How to read the verdicts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-by-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. By layer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. By layer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-l0-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 L0 Identity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-l1-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 L1 Records
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-l2-definitions-and-instances" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 L2 Definitions and instances
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-l3-state-intent-and-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 L3 State, intent and commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-l4-change-and-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 L4 Change and sync
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-l5-authority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 L5 Authority
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-where-an-answer-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Where an answer changes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Open
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Checks
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-typed-schema-evidence-2026-09-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Typed schemas for Nightscout, measured against stored documents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-primitive-coverage-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evidence coverage of the primitive catalogue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-devicestatus-profile-fidelity-2026-09-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Replaying a dosing decision from devicestatus and profile: what is lost, and what was never written
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-extensibility-models-2026-09-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extending the Nightscout document model: four designs, measured
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-effects-and-versioning-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Therapy effects and the sync contract's version
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-hub-sync-architecture-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hub-and-spoke sync for AID controllers: the original sketch
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../agent-trust-boundaries-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agents in the ecosystem: develop, interpret, act
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../algorithm-audition-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auditioning a dosing algorithm: same inputs, shadow only
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROPOSAL-controller-descriptions-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Controller descriptions: Nightscout describes the controllers it already recognises — proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROPOSAL-replay-fidelity-changes-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Replay fidelity: the concrete changes, per project — proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../upstream-asks-loop-identifier/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    upstream-asks-loop-identifier/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../upstream-asks-device-simulators/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    upstream-asks-device-simulators/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../command-journeys-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command journeys: plans, confirmations and moment commands for one pump with many orchestrators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../command-queue-and-planning-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command queue and planning: outstanding commands, enacting once, and plans confirmed in advance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../evidence-weighted-approval-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evidence-weighted approval: what a plan or proposal needs before a controller acts on it
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integration-questionnaire-defaults-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration questionnaire: default answers for Loop, Trio, AndroidAPS and OpenAPS, read from their source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../partial-acceptance-prototype-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Partial acceptance: binding an approval that accepts part of a plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../remedial/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tenancy/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../60-research/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../guides/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    guides/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../site/pages/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-how-to-read-the-verdicts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. How to read the verdicts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-by-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. By layer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. By layer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-l0-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 L0 Identity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-l1-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 L1 Records
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-l2-definitions-and-instances" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 L2 Definitions and instances
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-l3-state-intent-and-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 L3 State, intent and commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-l4-change-and-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 L4 Change and sync
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-l5-authority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 L5 Authority
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-where-an-answer-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Where an answer changes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Open
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Checks
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="l0l5-compatibility-what-each-app-does-with-a-hub-today-and-what-it-sees-from-one-that-implements-the-specifications">L0–L5 Compatibility: what each app does with a hub today, and what it sees from one that implements the specifications<a class="headerlink" href="#l0l5-compatibility-what-each-app-does-with-a-hub-today-and-what-it-sees-from-one-that-implements-the-specifications" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-10-18 at <code>127f69e16</code>.</em></p>
+<p><em>Contributor-facing. Living specification table, current at <code>main</code> <code>8cb0b5ed</code> (2026-10-18). Covers
+layers L0–L5 of the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>.
+Queue: <code>SPEC-COMPAT-APPS</code>.</em></p>
+<p><em>A companion to the eight specifications in the <a href="../index.html#reading-order">reading order</a>, read
+after them or beside the one a reader's app touches. Expect, for every app the corpus holds, what
+it does at each layer today and what it sees from a hub that implements the specifications
+without the app changing, an overview by layer, the cells where an answer changes, and what the
+table does not cover.</em></p>
+<p>Each specification has a compatibility section that says, in general, what an older client sees
+from a newer hub (<a href="registration.html#17-compatibility">registration §17</a>,
+<a href="sync-transport.html#7-compatibility">sync-transport §7</a>, <a href="commands.html#8-compatibility">commands §8</a>,
+<a href="plans.html#8-compatibility">plans §8</a>). This page names the apps. Every <code>today</code> cell is read from
+the app's source at the ref named, through the per-client files of the
+<a href="../../../60-research/remedial/consumer-impact-15.0.9-2026-09-23.html">15.0.9 consumer-impact survey</a>
+and the controller notes behind <a href="commands.html#8-compatibility">commands §8</a>; nothing was run. Every
+<code>with a hub that implements the specifications</code> cell cites the rule that decides it.</p>
+<p>Status: evidenced for <code>today</code>, read from the specifications for the rest, which are proposed or
+specified and not implemented.</p>
+<h2 id="1-files">1. Files<a class="headerlink" href="#1-files" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>file</th>
+<th>holds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>specs/sync/compat/{ios,android,uploaders,readers}.yaml</code></td>
+<td>one entry per app, per layer: today, with a newer hub, the verdict, the rules and anchors; format in <code>specs/sync/compat/FORMAT.md</code></td>
+</tr>
+<tr>
+<td><code>tools/nsschema/compat_tables.py</code></td>
+<td>writes the tables in §3 and §4 from the files</td>
+</tr>
+<tr>
+<td><code>tools/nsschema/test_compat.py</code></td>
+<td>the checks in §7</td>
+</tr>
+<tr>
+<td><code>reports/consumer-impact-15.0.9/clients/</code></td>
+<td>the per-client files each entry cites</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-how-to-read-the-verdicts">2. How to read the verdicts<a class="headerlink" href="#2-how-to-read-the-verdicts" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>verdict</th>
+<th>means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>unchanged</code></td>
+<td>the app behaves as today; nothing it sends or reads changes</td>
+</tr>
+<tr>
+<td><code>gains</code></td>
+<td>the app benefits without changing, from the rule named</td>
+</tr>
+<tr>
+<td><code>opt-in</code></td>
+<td>a capability exists for it, which it uses only if it changes (typed writes, registration, the command record, plans)</td>
+</tr>
+<tr>
+<td><code>affected</code></td>
+<td>something it does today answers differently; §5 lists each one</td>
+</tr>
+<tr>
+<td><code>none</code></td>
+<td>the app does not touch this layer</td>
+</tr>
+</tbody>
+</table>
+<p>L0 identity, L1 records, L2 definitions and instances, L3 state, intent and commands, L4 change
+and sync, L5 authority, as the <a href="../index.html">platform index</a> defines them.</p>
+<h2 id="3-overview">3. Overview<a class="headerlink" href="#3-overview" title="Permanent link">&para;</a></h2>
+<!-- BEGIN GENERATED: compat-overview -->
+<table>
+<thead>
+<tr>
+<th>app</th>
+<th>kind</th>
+<th>read at</th>
+<th>L0</th>
+<th>L1</th>
+<th>L2</th>
+<th>L3</th>
+<th>L4</th>
+<th>L5</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AndroidAPS</td>
+<td>controller</td>
+<td>AndroidAPS@598e2eb39c (3.4.2.6); 4.0.0 prereleases read at dev 7e1d537d49</td>
+<td>gains</td>
+<td>unchanged</td>
+<td>gains</td>
+<td>opt-in</td>
+<td>opt-in</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>AndroidAPS client control</td>
+<td>controller</td>
+<td>AndroidAPS@d5e7f5bd (4.0.0-rc1); local reads at dev 7e1d537d49; absent from 3.4.2.6</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>opt-in</td>
+<td>unchanged</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>Loop</td>
+<td>controller</td>
+<td>LoopWorkspace@f841285 (NightscoutKit 4ec9fd1, NightscoutService fe075ef); commands read at v3.14.9 548b3324 (NightscoutService 2cef4896)</td>
+<td>gains</td>
+<td>unchanged</td>
+<td>gains</td>
+<td>opt-in</td>
+<td>opt-in</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>oref0</td>
+<td>controller</td>
+<td>oref0@88cf032a (master; dev d219baf9 differs in none of the Nightscout files read)</td>
+<td>affected</td>
+<td>opt-in</td>
+<td>unchanged</td>
+<td>opt-in</td>
+<td>unchanged</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>Trio</td>
+<td>controller</td>
+<td>Trio@e41c9db37 (dev; main c0160aeaf differs on no row); commands read at v1.0.2 0b29cd53</td>
+<td>gains</td>
+<td>unchanged</td>
+<td>gains</td>
+<td>opt-in</td>
+<td>opt-in</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>cgmsim-lib</td>
+<td>uploader</td>
+<td>cgmsim-lib@c09f9c0 (0.10.3)</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>none</td>
+<td>unchanged</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>DiaBLE</td>
+<td>uploader</td>
+<td>DiaBLE@e6a909c (main = dev)</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>none</td>
+<td>opt-in</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>glooko-nightscout-eu</td>
+<td>uploader</td>
+<td>glooko-nightscout-eu@2b7fbc4</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>none</td>
+<td>unchanged</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>glooko2nightscout</td>
+<td>uploader</td>
+<td>glooko2nightscout@9ab8c60</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+</tr>
+<tr>
+<td>minimed-connect-to-nightscout</td>
+<td>uploader</td>
+<td>minimed-connect-to-nightscout@57bb042 (1.5.8)</td>
+<td>gains</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>none</td>
+<td>unchanged</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>nightscout-connect</td>
+<td>uploader</td>
+<td>nightscout-connect@977da8a (v0.1.0-dev.3)</td>
+<td>gains</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>nightscout-librelink-up</td>
+<td>uploader</td>
+<td>nightscout-librelink-up@bff2317 (3.3.0)</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>none</td>
+<td>unchanged</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>share2nightscout-bridge</td>
+<td>uploader</td>
+<td>share2nightscout-bridge@518c85c (0.2.12)</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>none</td>
+<td>unchanged</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>tconnectsync</td>
+<td>uploader</td>
+<td>tconnectsync@7c4b2f4</td>
+<td>gains</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>xDrip+</td>
+<td>uploader</td>
+<td>xDrip@1ed760048 (2026.09.18)</td>
+<td>gains</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>none</td>
+<td>unchanged</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>xDrip4iOS</td>
+<td>uploader</td>
+<td>xdripswift@c268542e (master = develop)</td>
+<td>affected</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>none</td>
+<td>opt-in</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>LoopCaregiver</td>
+<td>follower</td>
+<td>LoopCaregiver@2305718 (dev; gestrich/NightscoutKit d63fb73)</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>none</td>
+<td>opt-in</td>
+<td>opt-in</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>LoopFollow</td>
+<td>follower</td>
+<td>LoopFollow@4a74b781 (v7.1.0)</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>none</td>
+<td>opt-in</td>
+<td>opt-in</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>nightguard</td>
+<td>follower</td>
+<td>nightguard@75404bd (master)</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>opt-in</td>
+<td>opt-in</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>GluPredKit</td>
+<td>reader</td>
+<td>GluPredKit@e5bd635</td>
+<td>gains</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>opt-in</td>
+<td>unchanged</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>GlycemicGPT</td>
+<td>reader</td>
+<td>GlycemicGPT@d1a9adb7 (origin/main; Nightscout integration identical on develop ec902563)</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>opt-in</td>
+<td>unchanged</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>nightscout-cgm-skill</td>
+<td>reader</td>
+<td>nightscout-cgm-skill@91a53ea</td>
+<td>gains</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>opt-in</td>
+<td>unchanged</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>nightscout-reporter</td>
+<td>reader</td>
+<td>nightscout-reporter@518d61f (retired AngularDart app; last code change b664fba, 2022-12-22)</td>
+<td>gains</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>opt-in</td>
+<td>unchanged</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>oref-digital-twin</td>
+<td>reader</td>
+<td>oref-digital-twin@a2e8610</td>
+<td>gains</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>opt-in</td>
+<td>unchanged</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>nightscout-roles-gateway</td>
+<td>hub</td>
+<td>nightscout-roles-gateway@90840ac (replit branch; default branch master 4fdd490, Nightscout call sites identical)</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+<td>unchanged</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>Nocturne</td>
+<td>hub</td>
+<td>nocturne@42275c812</td>
+<td>opt-in</td>
+<td>opt-in</td>
+<td>opt-in</td>
+<td>opt-in</td>
+<td>opt-in</td>
+<td>opt-in</td>
+</tr>
+<tr>
+<td>babelbetes</td>
+<td>tool</td>
+<td>babelbetes@07a7f07 (origin/develop)</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+</tr>
+<tr>
+<td>GlookoServiceKit</td>
+<td>tool</td>
+<td>GlookoServiceKit@8e2cad1 (main)</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Not read</td>
+<td>tool</td>
+<td>not read</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+</tr>
+<tr>
+<td>openaps</td>
+<td>tool</td>
+<td>openaps@bd9a831</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+</tr>
+<tr>
+<td>trio-telemetry</td>
+<td>tool</td>
+<td>trio-telemetry@681ea86</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+</tr>
+<tr>
+<td>xdrip-js</td>
+<td>tool</td>
+<td>xdrip-js@0cd1c55 (dev e301273 also read)</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
+<!-- END GENERATED: compat-overview -->
+
+<h2 id="4-by-layer">4. By layer<a class="headerlink" href="#4-by-layer" title="Permanent link">&para;</a></h2>
+<h3 id="41-l0-identity">4.1 L0 Identity<a class="headerlink" href="#41-l0-identity" title="Permanent link">&para;</a></h3>
+<!-- BEGIN GENERATED: compat-L0 -->
+<table>
+<thead>
+<tr>
+<th>app</th>
+<th>today</th>
+<th>with a hub that implements the specifications</th>
+<th>verdict</th>
+<th>rules</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AndroidAPS</td>
+<td>The v3 client never sends <code>_id</code>; it keeps the <code>identifier</code> from the POST reply and PATCHes and DELETEs by it. The 3.4.x v1 socket client reads <code>_id</code> from the <code>dbAdd</code> reply and sends it back on <code>dbUpdate</code>.</td>
+<td>v3 creates, edits and deletes by <code>identifier</code> answer as today, and the reply adds <code>_id</code> and <code>matchedBy</code> beside the <code>identifier</code> it reads (I4, I5). The v1 <code>dbAdd</code> reply still carries a 24-hex <code>_id</code> (I2), and a 3.4.x treatment <code>dbUpdate</code> whose <code>_id</code> is the UUID of a v3-created record is moved to <code>identifier</code> and matched to that record (I9, I5) instead of the exact-string <code>_id</code> match it gets today.</td>
+<td>gains</td>
+<td>I2, I4, I5, I9</td>
+</tr>
+<tr>
+<td>AndroidAPS client control</td>
+<td>Each message is a v3 <code>settings</code> document under a fixed identifier (<code>aaps_clientcontrol_hello_</code>, <code>cmd_&lt;type&gt;_</code>, <code>ack_</code>, <code>progress_</code>, <code>offer_</code> plus the client id), overwritten in place; the document <code>date</code> is a constant placeholder because API v3 refuses a changed <code>date</code> on a re-sent identifier.</td>
+<td>One identifier names one document and is compared exactly, so each slot is overwritten in place as today (I6, I5). The v3 refusal of a changed <code>date</code> is an open decision, and the constant <code>date</code> is unaffected either way (identity §5).</td>
+<td>unchanged</td>
+<td>I5, I6, identity §5</td>
+</tr>
+<tr>
+<td>Loop</td>
+<td>Posts override treatments with <code>_id</code> set to the override's upper-case UUID and deletes them by that UUID; posts doses with <code>syncIdentifier</code> and no <code>_id</code>, so a re-send is matched by <code>created_at</code> + <code>eventType</code>; caches the 24-hex <code>_id</code> of carb treatments from the POST reply for later PUT and DELETE.</td>
+<td>Treatments match on client identity (<code>syncIdentifier</code>) before <code>created_at</code> + <code>eventType</code>, so two doses of one type at one time stay two records; the override UUID is moved to <code>identifier</code> as today and recorded as <code>quirksApplied</code>, and the upper-case DELETE still matches exactly (I6, I9).</td>
+<td>gains</td>
+<td>identity §3, I5, I6, I9</td>
+</tr>
+<tr>
+<td>oref0</td>
+<td>Sends no <code>_id</code> or <code>identifier</code>; re-sent pump-history treatments rely on the server's <code>created_at</code>+<code>eventType</code> upsert, which replaces the stored treatment, and <code>ns-dedupe-treatments.sh</code> reads <code>_id</code> back to delete duplicates.</td>
+<td>A re-sent treatment matches on <code>created_at</code>+<code>eventType</code> among records without client identity and is merged, not replaced, so fields added in Nightscout that the rig does not send are kept (identity §3, T2). The dedupe tool's deletes by <code>_id</code> find every stored form of the id (I2).</td>
+<td>affected</td>
+<td>identity §3, T2, I2</td>
+</tr>
+<tr>
+<td>Trio</td>
+<td>Sends its own upper-case UUID in a plain <code>id</code> member, which the hub does not read, and deletes carbs and insulin by <code>find[id][$eq]</code>; on 15.0.8 a re-send without <code>identifier</code> is matched by <code>created_at</code> + <code>eventType</code> alone (QUIRK-TREATMENTS-007).</td>
+<td>Treatments match on client identity (<code>id</code>) before <code>created_at</code> + <code>eventType</code>, so two records of one type at one time stay two; <code>id</code> is still not <code>identifier</code> and gets no mapping (Q4a).</td>
+<td>gains</td>
+<td>identity §3, I5, Q4a</td>
+</tr>
+<tr>
+<td>cgmsim-lib</td>
+<td>Sends no <code>_id</code> or <code>identifier</code> on any upload and makes no PUT or DELETE by id.</td>
+<td>Its writes match on each collection's natural key as today and are answered with both ids (identity §3, I4).</td>
+<td>unchanged</td>
+<td>identity §3, I4</td>
+</tr>
+<tr>
+<td>DiaBLE</td>
+<td>Posts sgv entries without <code>_id</code> and reads no id back; it posts only readings newer than the newest it read.</td>
+<td>A re-send matches on <code>date</code> + <code>type</code> as today (identity §3).</td>
+<td>unchanged</td>
+<td>identity §3</td>
+</tr>
+<tr>
+<td>glooko-nightscout-eu</td>
+<td>Sends no <code>_id</code>; each treatment carries <code>glookoGuid</code>, and de-duplication is a client-side set of guids saved to disk.</td>
+<td><code>glookoGuid</code> is not a client id the hub reads, so a re-send matches on <code>created_at</code>+<code>eventType</code> among records without client identity, as today (identity §3).</td>
+<td>unchanged</td>
+<td>identity §3</td>
+</tr>
+<tr>
+<td>glooko2nightscout</td>
+<td>Makes no Nightscout request: it writes Nightscout-shaped entries to a local JSON file.</td>
+<td>Nothing.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>minimed-connect-to-nightscout</td>
+<td>Sends no <code>_id</code>; de-duplication is an in-memory recency filter on <code>date</code> and <code>created_at</code>, and API v1 devicestatus has no key, so a devicestatus sent twice is stored twice.</td>
+<td>An identical devicestatus re-sent with the same <code>created_at</code> and <code>device</code> is answered unchanged instead of stored again; entries match on <code>date</code>+<code>type</code> (identity §3, T2).</td>
+<td>gains</td>
+<td>identity §3, T2</td>
+</tr>
+<tr>
+<td>nightscout-connect</td>
+<td>Copies records from a source hub with the source's 24-hex <code>_id</code>. On the 15.0.9 candidate a devicestatus or profile re-send that collides with a stored string copy is refused as a duplicate key, and the persist fails until that record leaves the window.</td>
+<td>Its in-process writes go through the one write step, which keeps a 24-hex <code>_id</code> as the ObjectId and matches every stored form of it, so such a re-send is answered with the stored ids, never an error (T1, I2, I4, identity §3).</td>
+<td>gains</td>
+<td>T1, I2, I4, identity §3</td>
+</tr>
+<tr>
+<td>nightscout-librelink-up</td>
+<td>Sends entries without <code>_id</code>; on API v3 the hub computes a UUID v5 <code>identifier</code> from device and date. It sends only readings newer than the newest stored entry.</td>
+<td>A re-sent reading matches on <code>identifier</code>, then <code>date</code>+<code>type</code> (I5, identity §3).</td>
+<td>unchanged</td>
+<td>I5, identity §3</td>
+</tr>
+<tr>
+<td>share2nightscout-bridge</td>
+<td>Sends entries without <code>_id</code> (<code>device: 'share2'</code>) and relies on the server's entries upsert for re-sent readings.</td>
+<td>A re-sent reading matches on <code>date</code>+<code>type</code> and merges (identity §3, T2).</td>
+<td>unchanged</td>
+<td>identity §3, T2</td>
+</tr>
+<tr>
+<td>tconnectsync</td>
+<td>Sends no <code>_id</code> on POST and keeps <code>pump_event_id</code> as its own key. It reads <code>_id</code> back to DELETE a treatment, and in profile replace mode PUTs the profile with the <code>_id</code> from <code>profile/current</code>, which 15.0.8 stores as a second copy when that profile was stored with a string <code>_id</code>.</td>
+<td>A PUT or DELETE by <code>_id</code> finds every stored form of the id, so replace mode updates the profile in place (I2, identity §3). <code>pump_event_id</code> is not a client id the hub reads, so its re-sends match on the natural key.</td>
+<td>gains</td>
+<td>I2, identity §3</td>
+</tr>
+<tr>
+<td>xDrip+</td>
+<td>Sends its own 24-hex <code>_id</code> (derived from its treatment uuid) on <code>PUT /api/v1/treatments</code> and deletes by it; on 15.0.8 a treatment stored with a string <code>_id</code> by an earlier release gets an ObjectId copy on the next PUT, and the DELETE misses the string copy.</td>
+<td>The 24-hex <code>_id</code> is kept as that ObjectId, and an <code>_id</code> matches every stored form of it, so the PUT finds the existing record and the DELETE removes it, as #8758 does on <code>dev</code> (I2, identity §3).</td>
+<td>gains</td>
+<td>I2, identity §3</td>
+</tr>
+<tr>
+<td>xDrip4iOS</td>
+<td>Sends a random 24-character alphanumeric <code>_id</code> on entries and some treatments, which the hub moves to <code>identifier</code> or drops; reads treatment <code>_id</code> back for PUT and DELETE; counts a 500 whose body has code 66 as a successful duplicate.</td>
+<td>A duplicate is answered with the stored ids, never a 5xx, and xDrip4iOS counts that as success too (I4); the moved <code>_id</code> is recorded as <code>quirksApplied</code> and matched first on a re-send (I5, I9).</td>
+<td>affected</td>
+<td>I4, I5, I9</td>
+</tr>
+<tr>
+<td>LoopCaregiver</td>
+<td>Writes no v1 records, so sends no <code>_id</code>; its experimental Remote Commands 2 option keys on a record <code>_id</code> from a route the hub does not implement.</td>
+<td>Nothing it reads on implemented routes changes (I2).</td>
+<td>unchanged</td>
+<td>I2</td>
+</tr>
+<tr>
+<td>LoopFollow</td>
+<td>Writes no records; reads <code>_id</code> only from the subjects reply, to derive its token.</td>
+<td>Nothing it reads changes (I2).</td>
+<td>unchanged</td>
+<td>I2</td>
+</tr>
+<tr>
+<td>nightguard</td>
+<td>Posts treatments through API v3 without <code>_id</code> or <code>identifier</code>, and keys its local cache on <code>identifier</code>, falling back to <code>_id</code>.</td>
+<td>Every reply carries both ids, and a projected document keeps one <code>identifier</code> and <code>_id</code> across reads, so its keys stay stable (I4, I8).</td>
+<td>unchanged</td>
+<td>I1, I4, I8</td>
+</tr>
+<tr>
+<td>GluPredKit</td>
+<td>Writes nothing and reads no ids; sums insulin, carbs and temporary basals client-side from what it downloads.</td>
+<td>A record re-sent by an uploader is stored once on every write path, so it is counted once (I5, T1).</td>
+<td>gains</td>
+<td>I5, T1</td>
+</tr>
+<tr>
+<td>GlycemicGPT</td>
+<td>Writes nothing; pages entries with <code>find[_id][$gt]=&lt;24-hex&gt;</code>, a cursor whose order is the <code>_id</code>'s time.</td>
+<td>Every legacy <code>_id</code> is 24 hex, an assigned one carries the receipt time, and a projected document gets an ObjectId at its typed write, so the cursor reaches every new record (I2, I3, I8).</td>
+<td>unchanged</td>
+<td>I2, I3, I8</td>
+</tr>
+<tr>
+<td>nightscout-cgm-skill</td>
+<td>Writes nothing; keys its SQLite cache of entries on <code>_id</code> and sums insulin and carbs client-side.</td>
+<td>Every legacy <code>_id</code> is 24 hex (I2), and a record re-sent by an uploader is stored once, so it is summed once (I5, T1).</td>
+<td>gains</td>
+<td>I2, I5, T1</td>
+</tr>
+<tr>
+<td>nightscout-reporter</td>
+<td>Writes nothing; reads treatment <code>_id</code> as an opaque string and drops adjacent identical treatments and <code>enteredBy == 'sync'</code> before summing.</td>
+<td>A re-send is matched on <code>identifier</code>, then <code>_id</code>, then the natural key on every write path, so a treatment re-sent by an uploader is stored once and summed once (I5, T1).</td>
+<td>gains</td>
+<td>I5, T1, I2</td>
+</tr>
+<tr>
+<td>oref-digital-twin</td>
+<td>Writes nothing; drops records with a repeated <code>_id</code> across its windows.</td>
+<td>A record re-sent by an uploader is stored once on every write path, so the replay's inputs carry no second copy under another <code>_id</code> (I5, T1).</td>
+<td>gains</td>
+<td>I5, T1, I2</td>
+</tr>
+<tr>
+<td>nightscout-roles-gateway</td>
+<td>Reads and writes no records.</td>
+<td>Reads and writes no records.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Nocturne</td>
+<td>v1 by-id routes accept 24-hex and 32-hex (UUID v7 without dashes) ids, and look up by GUID, then by exact <code>LegacyId</code>, then by GUID prefix.</td>
+<td>It would serve a 24-hex <code>_id</code> on v1 and v3, keep a client 24-hex <code>_id</code> in lower case (I2), answer each write with both ids and <code>matchedBy</code> (I4), and match a re-send on <code>identifier</code>, then <code>_id</code>, then the natural key (I5).</td>
+<td>opt-in</td>
+<td>I2, I4, I5, I8</td>
+</tr>
+<tr>
+<td>babelbetes</td>
+<td>Makes no Nightscout requests.</td>
+<td>Makes no Nightscout requests.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>GlookoServiceKit</td>
+<td>No Nightscout traffic: it uploads Loop or Trio data to Glooko.</td>
+<td>Nothing at this layer.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Not read</td>
+<td>not read</td>
+<td>not read</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>openaps</td>
+<td>Makes no Nightscout request; a rig reaches Nightscout through oref0's <code>ns</code> device.</td>
+<td>Nothing; what a rig sees is under oref0.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>trio-telemetry</td>
+<td>Makes no Nightscout requests.</td>
+<td>Makes no Nightscout requests.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>xdrip-js</td>
+<td>A Bluetooth library for Dexcom transmitters; it makes no Nightscout request on master or dev.</td>
+<td>Nothing.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<!-- END GENERATED: compat-L0 -->
+
+<h3 id="42-l1-records">4.2 L1 Records<a class="headerlink" href="#42-l1-records" title="Permanent link">&para;</a></h3>
+<!-- BEGIN GENERATED: compat-L1 -->
+<table>
+<thead>
+<tr>
+<th>app</th>
+<th>today</th>
+<th>with a hub that implements the specifications</th>
+<th>verdict</th>
+<th>rules</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AndroidAPS</td>
+<td>Writes entries, treatments (boluses, carbs, temp basals, profile switches, temporary targets, running modes as <code>OpenAPS Offline</code>), profile, food and devicestatus with <code>openaps.{suggested,enacted,iob}</code>. The 4.0.0 prereleases also write scene definitions and active-scene state to the v3 <code>settings</code> collection (<code>aaps</code>, <code>aaps-state</code>).</td>
+<td>The hub decomposes its devicestatus, treatments and profile into primitives as its well-known registration declares and keeps each document beside them, so every read it makes is answered from the composite as today (R1, R2). Publishing a <code>ControllerSettings</code> snapshot is open to it and not used (R5).</td>
+<td>unchanged</td>
+<td>R1, R2, R5</td>
+</tr>
+<tr>
+<td>AndroidAPS client control</td>
+<td>Signed command, acknowledgement and progress envelopes are stored as ordinary documents in the v3 <code>settings</code> collection and never deleted.</td>
+<td>The hub stores and serves them as documents and reads none of them (commands §3, CM10).</td>
+<td>unchanged</td>
+<td>commands §3, CM10</td>
+</tr>
+<tr>
+<td>Loop</td>
+<td>Writes entries, treatments (overrides, carbs, doses), devicestatus with <code>loop.*</code> (IOB, COB, prediction, enacted) and profiles with <code>loopSettings</code>; reads only <code>/api/v1/profile/current</code>.</td>
+<td>The hub decomposes its devicestatus and profile into primitives and keeps each document as sent, so what Loop writes and reads back is unchanged (R1, R2).</td>
+<td>unchanged</td>
+<td>R1, R2</td>
+</tr>
+<tr>
+<td>oref0</td>
+<td>Writes devicestatus with <code>openaps.iob</code>, <code>suggested</code>, <code>enacted</code>, <code>pump</code>, <code>uploader</code> and <code>preferences</code> every cycle, treatments from pump history, entries, and a whole profile document (<code>OpenAPS Autosync</code>) when it changes.</td>
+<td>Stored and served as today, the composite kept beside its primitives (R1). Its preferences remain configuration repeated per cycle; publishing them as a <code>ControllerSettings</code> snapshot on change is open to it if it changes (R5).</td>
+<td>opt-in</td>
+<td>R1, R5, records §5</td>
+</tr>
+<tr>
+<td>Trio</td>
+<td>Writes entries, treatments, devicestatus under <code>openaps</code> (IOB, suggested, enacted) and a new profile document on each settings change, with its remote-control routing fields; reads sgv entries when Nightscout is its CGM, carbs and temporary targets, and the latest profile.</td>
+<td>The hub decomposes devicestatus and profiles into primitives and keeps each document as sent, so the profile fields followers read stay (R1, R2).</td>
+<td>unchanged</td>
+<td>R1, R2</td>
+</tr>
+<tr>
+<td>cgmsim-lib</td>
+<td>Writes simulated entries, treatments (temp basals with explicit <code>carbs: null</code> and <code>insulin: null</code>), devicestatus, notes and activity; deletes devicestatus by <code>find[created_at][$lte]</code>.</td>
+<td>Stored as today (R1). A write that matches a stored record merges, and an explicit <code>null</code> it carries removes that field (T2).</td>
+<td>unchanged</td>
+<td>R1, T2</td>
+</tr>
+<tr>
+<td>DiaBLE</td>
+<td>Writes sgv entries and reads the last 100.</td>
+<td>Entries are stored and served as sent (R1).</td>
+<td>unchanged</td>
+<td>R1</td>
+</tr>
+<tr>
+<td>glooko-nightscout-eu</td>
+<td>Writes <code>Meal Bolus</code>, <code>Correction Bolus</code> and <code>Carb Correction</code> treatments with <code>enteredBy: 'glooko-bridge'</code>.</td>
+<td>Stored and served as today; a treatment with insulin and carbs also decomposes into a bolus and a carb intake beside the composite (R1).</td>
+<td>unchanged</td>
+<td>R1</td>
+</tr>
+<tr>
+<td>glooko2nightscout</td>
+<td>Writes no records to a hub.</td>
+<td>Nothing.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>minimed-connect-to-nightscout</td>
+<td>Writes <code>sgv</code> entries and devicestatus with <code>device: 'connect-&lt;family&gt;'</code>, <code>uploader</code>, <code>pump</code> (with <code>pump.iob.bolusiob</code>) and a <code>connect</code> block.</td>
+<td>Stored and served as today (R1).</td>
+<td>unchanged</td>
+<td>R1</td>
+</tr>
+<tr>
+<td>nightscout-connect</td>
+<td>Writes entries, treatments, devicestatus and profiles as each source produced them, plus Glooko pump-state <code>Note</code> treatments and checkpoint rows keyed by <code>identifier</code> and <code>glookoGuid</code>.</td>
+<td>Stored and served as today; decomposition runs above storage and keeps the composite (R1, R3).</td>
+<td>unchanged</td>
+<td>R1, R3</td>
+</tr>
+<tr>
+<td>nightscout-librelink-up</td>
+<td>Writes <code>sgv</code> entries only.</td>
+<td>Stored and served as today (R1).</td>
+<td>unchanged</td>
+<td>R1</td>
+</tr>
+<tr>
+<td>share2nightscout-bridge</td>
+<td>Writes <code>sgv</code> entries; its devicestatus battery write never runs.</td>
+<td>Stored and served as today (R1).</td>
+<td>unchanged</td>
+<td>R1</td>
+</tr>
+<tr>
+<td>tconnectsync</td>
+<td>Writes treatments (boluses, basal, IOB records, Sleep and Exercise), <code>sgv</code> entries, pump battery devicestatus, activity and profiles.</td>
+<td>Stored and served as today (R1); activity gets server dates and soft delete like the other collections (T2).</td>
+<td>unchanged</td>
+<td>R1, T2</td>
+</tr>
+<tr>
+<td>xDrip+</td>
+<td>Uploads entries (one POST with BG, meter and calibration), treatments, devicestatus with <code>device</code> and uploader battery, and activity; the follower reads entries, <code>devicestatus.json?count=1</code> and treatments.</td>
+<td>Its documents are kept as written beside any decomposition, so what it reads back is answered as today (R1).</td>
+<td>unchanged</td>
+<td>R1</td>
+</tr>
+<tr>
+<td>xDrip4iOS</td>
+<td>Writes sgv, mbg and cal entries, treatments and an uploader-battery devicestatus; reads looping-app COB and IOB from devicestatus and the first profile.</td>
+<td>Documents are stored and served as sent (R1).</td>
+<td>unchanged</td>
+<td>R1</td>
+</tr>
+<tr>
+<td>LoopCaregiver</td>
+<td>Reads entries, treatments, Loop's <code>loop.iob</code> and <code>loop.cob</code> from devicestatus, and <code>/api/v1/profile/current</code> for override presets.</td>
+<td>Documents are served as stored (R1).</td>
+<td>unchanged</td>
+<td>R1</td>
+</tr>
+<tr>
+<td>LoopFollow</td>
+<td>Reads entries, treatments, devicestatus (Loop <code>loop.*</code>, Trio and AndroidAPS <code>openaps.*</code>) and profiles, including the device token and bundle id for remote control.</td>
+<td>Documents are served as stored (R1); a record a newer controller writes typed reaches it as a projected document in the carrier's shape (registration §13).</td>
+<td>unchanged</td>
+<td>R1, registration §13</td>
+</tr>
+<tr>
+<td>nightguard</td>
+<td>Writes <code>Temporary Target</code>, <code>Carb Correction</code> and site, sensor and battery change treatments; reads entries, treatments, devicestatus and the hub-computed COB and IOB from <code>/api/v2/properties</code>.</td>
+<td>Documents are served as stored (R1); typed records reach it as projected documents (registration §13).</td>
+<td>unchanged</td>
+<td>R1, registration §13</td>
+</tr>
+<tr>
+<td>GluPredKit</td>
+<td>Reads entries, treatments and profiles; its treatment model is patched to accept Loop and Trio fields.</td>
+<td>v1 reads are answered from the stored composite documents (R1).</td>
+<td>unchanged</td>
+<td>R1</td>
+</tr>
+<tr>
+<td>GlycemicGPT</td>
+<td>Reads entries, treatments, devicestatus and profile into its own database.</td>
+<td>v1 reads are answered from the stored composite documents (R1).</td>
+<td>unchanged</td>
+<td>R1</td>
+</tr>
+<tr>
+<td>nightscout-cgm-skill</td>
+<td>Reads entries, treatments (including site, sensor and insulin changes by <code>eventType</code>) and profile.</td>
+<td>v1 reads are answered from the stored composite documents (R1).</td>
+<td>unchanged</td>
+<td>R1</td>
+</tr>
+<tr>
+<td>nightscout-reporter</td>
+<td>Downloads entries, treatments, devicestatus, activity and profiles per day and computes every total, COB and IOB client-side.</td>
+<td>The hub keeps each composite document beside its primitives and answers v1 reads from the composite, so the documents it parses are served as written (R1).</td>
+<td>unchanged</td>
+<td>R1</td>
+</tr>
+<tr>
+<td>oref-digital-twin</td>
+<td>Reads entries, treatments, devicestatus and profile as replay inputs; totals are computed client-side.</td>
+<td>v1 reads are answered from the stored composite documents (R1); the declared replay inputs and their status are a registration's to publish, not a read it makes (R8).</td>
+<td>unchanged</td>
+<td>R1, R8</td>
+</tr>
+<tr>
+<td>nightscout-roles-gateway</td>
+<td>Issues no data read; the collection checks in its comments are not implemented.</td>
+<td>Issues no data read.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Nocturne</td>
+<td>Stores typed V4 records, the source of the records catalogue's sixteen primitives, and routes treatments into them by <code>eventType</code>; <code>Suspend Pump</code> documents are unroutable because the decomposition keys on <code>Pump Suspend</code> (records §4, measured).</td>
+<td>It already decomposes (R1); R2 has decomposition declared by each registration's <code>decomposesTo</code> instead of fixed routing, and R4 and R9 add an evidence grade and a sensitivity label to every field.</td>
+<td>opt-in</td>
+<td>R1, R2, R4, R9</td>
+</tr>
+<tr>
+<td>babelbetes</td>
+<td>Makes no Nightscout requests; one notebook reads archived Nightscout export files.</td>
+<td>Makes no Nightscout requests.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>GlookoServiceKit</td>
+<td>No Nightscout records.</td>
+<td>Nothing at this layer.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Not read</td>
+<td>not read</td>
+<td>not read</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>openaps</td>
+<td>Formats Dexcom records with Nightscout dates but sends nothing.</td>
+<td>Nothing; see oref0.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>trio-telemetry</td>
+<td>Makes no Nightscout requests.</td>
+<td>Makes no Nightscout requests.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>xdrip-js</td>
+<td>Writes no records to a hub.</td>
+<td>Nothing.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<!-- END GENERATED: compat-L1 -->
+
+<h3 id="43-l2-definitions-and-instances">4.3 L2 Definitions and instances<a class="headerlink" href="#43-l2-definitions-and-instances" title="Permanent link">&para;</a></h3>
+<!-- BEGIN GENERATED: compat-L2 -->
+<table>
+<thead>
+<tr>
+<th>app</th>
+<th>today</th>
+<th>with a hub that implements the specifications</th>
+<th>verdict</th>
+<th>rules</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AndroidAPS</td>
+<td>Declares nothing; the hub stores its documents with no record of which product or copy wrote them.</td>
+<td>Its writes carry no instance id, so the hub attributes them to AndroidAPS's unregistered instance by the structural discriminators and carriers in specs/sync/registrations/androidaps.yaml, and never refuses one for exclusivity (registration §11, registration §17). Typed registration with fallback to carriers is open to a newer build (registration §6).</td>
+<td>gains</td>
+<td>registration §11, registration §17, registration §6</td>
+</tr>
+<tr>
+<td>AndroidAPS client control</td>
+<td>Neither the AAPSClient build nor the master declares anything; the well-known registration lists the <code>nightscout-settings</code> command transport as dev-only.</td>
+<td>Its <code>settings</code> writes carry no instance id and are never refused for exclusivity (registration §11, registration §17).</td>
+<td>unchanged</td>
+<td>registration §11, registration §17</td>
+</tr>
+<tr>
+<td>Loop</td>
+<td>Declares nothing and sends no instance id.</td>
+<td>The well-known Loop registration describes its writes by structural discriminator (<code>loop</code> is an object) and carrier; they are attributed to Loop's unregistered instance and never refused for exclusivity.</td>
+<td>gains</td>
+<td>registration §17, registration §11</td>
+</tr>
+<tr>
+<td>oref0</td>
+<td>Declares nothing; the hub ships no well-known registration for oref0 (specs/sync/registrations covers Loop, Trio and AndroidAPS).</td>
+<td>Its writes are carrier writes attributed to the product's unregistered instance and never refused for exclusivity (registration §11, §17).</td>
+<td>unchanged</td>
+<td>registration §11, registration §17</td>
+</tr>
+<tr>
+<td>Trio</td>
+<td>Declares nothing and sends no instance id.</td>
+<td>The well-known Trio registration describes its writes by discriminator and carrier; they are attributed to Trio's unregistered instance and never refused for exclusivity.</td>
+<td>gains</td>
+<td>registration §17, registration §11</td>
+</tr>
+<tr>
+<td>cgmsim-lib</td>
+<td>Declares nothing; no well-known registration describes it.</td>
+<td>Its writes are attributed to the product's unregistered instance (registration §11, §17).</td>
+<td>unchanged</td>
+<td>registration §11, registration §17</td>
+</tr>
+<tr>
+<td>DiaBLE</td>
+<td>Declares nothing and sends no instance id.</td>
+<td>No well-known registration describes it; its carrier writes are stored as today.</td>
+<td>unchanged</td>
+<td>registration §11</td>
+</tr>
+<tr>
+<td>glooko-nightscout-eu</td>
+<td>Declares nothing.</td>
+<td>Its writes are attributed to the product's unregistered instance (registration §11, §17).</td>
+<td>unchanged</td>
+<td>registration §11, registration §17</td>
+</tr>
+<tr>
+<td>glooko2nightscout</td>
+<td>Declares nothing and writes nothing to a hub.</td>
+<td>Nothing.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>minimed-connect-to-nightscout</td>
+<td>Declares nothing.</td>
+<td>Its writes are attributed to the product's unregistered instance (registration §11, §17).</td>
+<td>unchanged</td>
+<td>registration §11, registration §17</td>
+</tr>
+<tr>
+<td>nightscout-connect</td>
+<td>Declares nothing; the connector writes no product or instance id of its own.</td>
+<td>Its writes go to an unregistered instance, and a copied document that matches a well-known registration's structural discriminator (Loop, Trio, AndroidAPS) is attributed to that product's unregistered instance (registration §11, §17, R2).</td>
+<td>unchanged</td>
+<td>registration §11, registration §17, R2</td>
+</tr>
+<tr>
+<td>nightscout-librelink-up</td>
+<td>Declares nothing.</td>
+<td>Its writes are attributed to the product's unregistered instance (registration §11, §17).</td>
+<td>unchanged</td>
+<td>registration §11, registration §17</td>
+</tr>
+<tr>
+<td>share2nightscout-bridge</td>
+<td>Declares nothing.</td>
+<td>Its writes are attributed to the product's unregistered instance (registration §11, §17).</td>
+<td>unchanged</td>
+<td>registration §11, registration §17</td>
+</tr>
+<tr>
+<td>tconnectsync</td>
+<td>Declares nothing.</td>
+<td>Its writes are attributed to the product's unregistered instance (registration §11, §17).</td>
+<td>unchanged</td>
+<td>registration §11, registration §17</td>
+</tr>
+<tr>
+<td>xDrip+</td>
+<td>Declares nothing, and no well-known registration describes it.</td>
+<td>Its writes carry no instance id and are stored as today; exclusivity never blocks a carrier write (registration §11, registration §17).</td>
+<td>unchanged</td>
+<td>registration §11, registration §17</td>
+</tr>
+<tr>
+<td>xDrip4iOS</td>
+<td>Declares nothing and sends no instance id.</td>
+<td>No well-known registration describes it; its carrier writes are stored as today and never blocked by exclusivity.</td>
+<td>unchanged</td>
+<td>registration §11</td>
+</tr>
+<tr>
+<td>LoopCaregiver</td>
+<td>Writes no records and declares nothing.</td>
+<td>Nothing to attribute.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>LoopFollow</td>
+<td>Writes no records and declares nothing.</td>
+<td>Nothing to attribute.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>nightguard</td>
+<td>Declares nothing; writes treatments with no instance id.</td>
+<td>No well-known registration describes it; its carrier writes, including temporary targets for a controller's slot, are never blocked by exclusivity.</td>
+<td>unchanged</td>
+<td>registration §11</td>
+</tr>
+<tr>
+<td>GluPredKit</td>
+<td>Declares nothing and reads no attribution.</td>
+<td>Typed records reach it as projected documents in the carrier's shape (registration §13, I8).</td>
+<td>unchanged</td>
+<td>registration §13, I8</td>
+</tr>
+<tr>
+<td>GlycemicGPT</td>
+<td>Declares nothing and reads no attribution.</td>
+<td>Typed records reach it as projected documents in the carrier's shape (registration §13, I8).</td>
+<td>unchanged</td>
+<td>registration §13, I8</td>
+</tr>
+<tr>
+<td>nightscout-cgm-skill</td>
+<td>Declares nothing and reads no attribution.</td>
+<td>Typed records reach it as projected documents in the carrier's shape (registration §13, I8).</td>
+<td>unchanged</td>
+<td>registration §13, I8</td>
+</tr>
+<tr>
+<td>nightscout-reporter</td>
+<td>Declares nothing and reads no attribution.</td>
+<td>A record a newer controller writes as a typed record reaches it as a projected document in the carrier's shape, with both ids and a <code>projectedFrom</code> member it does not read (registration §13, I8).</td>
+<td>unchanged</td>
+<td>registration §13, I8, registration §17</td>
+</tr>
+<tr>
+<td>oref-digital-twin</td>
+<td>Declares nothing and reads no attribution.</td>
+<td>Typed records reach it as projected documents in the carrier's shape (registration §13, I8).</td>
+<td>unchanged</td>
+<td>registration §13, I8</td>
+</tr>
+<tr>
+<td>nightscout-roles-gateway</td>
+<td>Declares nothing.</td>
+<td>Declares nothing.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Nocturne</td>
+<td>Serves v1-v3 reads from V4 records through a legacy projection, with no projection marker on the projected treatment (registration §13 prior art).</td>
+<td>A projected document carries <code>projectedFrom</code>, is read-only (409 <code>projected-read-only</code>) and keeps one ObjectId stored with the typed record (registration §13, I8); registrations, instances and read selection (§11, §12) are new.</td>
+<td>opt-in</td>
+<td>registration §13, I8, registration §11, registration §12</td>
+</tr>
+<tr>
+<td>babelbetes</td>
+<td>Makes no Nightscout requests.</td>
+<td>Makes no Nightscout requests.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>GlookoServiceKit</td>
+<td>No Nightscout writes.</td>
+<td>Nothing at this layer.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Not read</td>
+<td>not read</td>
+<td>not read</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>openaps</td>
+<td>Declares nothing and writes nothing.</td>
+<td>Nothing; see oref0.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>trio-telemetry</td>
+<td>Makes no Nightscout requests.</td>
+<td>Makes no Nightscout requests.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>xdrip-js</td>
+<td>Declares nothing and writes nothing to a hub.</td>
+<td>Nothing.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<!-- END GENERATED: compat-L2 -->
+
+<h3 id="44-l3-state-intent-and-commands">4.4 L3 State, intent and commands<a class="headerlink" href="#44-l3-state-intent-and-commands" title="Permanent link">&para;</a></h3>
+<!-- BEGIN GENERATED: compat-L3 -->
+<table>
+<thead>
+<tr>
+<th>app</th>
+<th>today</th>
+<th>with a hub that implements the specifications</th>
+<th>verdict</th>
+<th>rules</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AndroidAPS</td>
+<td>Profile switches, temporary targets and running modes are treatments that end by amending their duration; it applies such treatments written by other clients only when the matching <code>NsClientAccept*</code> preference is on (default off), or on the AAPSClient build or a full sync. Remote commands come by SMS with an allowed number, TOTP and PIN, outside the hub; automation rules run on the phone; the 4.0.0 prereleases add scenes and client control (its own entry).</td>
+<td>Downloaded treatments stay data the hub stores and broadcasts without an expiry, destination or outcome, and the hub's active-state answers for its kinds follow its declarations (S10, A5, A7, A8, commands §3). The command record, fetch and plans are open to it; it registers no command sink, so a hub command or plan for it is refused at routing (CM1, CM18, plans §8).</td>
+<td>opt-in</td>
+<td>S10, A5, A7, A8, commands §3, CM1, CM18, plans §8</td>
+</tr>
+<tr>
+<td>AndroidAPS client control</td>
+<td>The master accepts a command only with a valid per-client HMAC, a strictly increasing stored counter advanced before dispatch, a timestamp within ±5 min and before <code>validUntil</code>; doses are prepare and commit, computed and capped on the master. It acknowledges with signed <code>Executing</code>, <code>Done</code> (<code>Ok</code>, <code>Failed</code>, <code>Expired</code>) and a late <code>Delivery</code> <code>Failed</code>, correlated by the counter.</td>
+<td>The counter already decides each command once across restarts, as CM21 asks, and the hub carries its signed envelopes unread (CM21, CM10). The hub's outstanding list and cancel are there for a build that sends through the command record (CM24, CM25).</td>
+<td>opt-in</td>
+<td>CM21, CM10, CM24, CM25, state-intent §7, commands §8</td>
+</tr>
+<tr>
+<td>Loop</td>
+<td>Writes overrides as <code>Temporary Override</code> treatments; receives override, cancel, bolus and carbs commands only as APNs pushes, from the hub's <code>/api/v2/notifications/loop</code> relay or directly from a follower; reports a failure as a <code>Note</code> and a success only as the resulting record.</td>
+<td>The relay route is outside CM1–CM25 and a hub keeps it as it is or retires it; the command record, enact-once by <code>commandId</code>, the outstanding list and cancel apply only once Loop registers and fetches (CM18, CM21, CM24, CM25).</td>
+<td>opt-in</td>
+<td>commands §8, state-intent §3, CM18, CM21, CM24, CM25</td>
+</tr>
+<tr>
+<td>oref0</td>
+<td>Downloads <code>Temporary Target</code> treatments and carbs from Nightscout every loop and applies them by its own rules; posts a <code>Profile Switch</code> treatment with its profile upload. It receives no commands through the hub.</td>
+<td>Temporary targets stay data it downloads, as today (commands §3). The command record, its outcomes and delivery are for a controller that registers and accepts <code>command</code> (commands §4, commands §8, S10).</td>
+<td>opt-in</td>
+<td>commands §3, commands §4, commands §8, S10</td>
+</tr>
+<tr>
+<td>Trio</td>
+<td>Writes overrides as <code>Exercise</code> treatments (ended by delete and re-post) and temporary targets; downloads other clients' carbs and temporary targets; takes remote commands only as encrypted APNs pushes sent straight from a follower, and posts a <code>Note</code> on a refusal.</td>
+<td>Downloads stay data whose effect the hub does not track (state-intent §7); the command record, enact-once by <code>commandId</code>, the outstanding list and cancel apply only if Trio registers and fetches.</td>
+<td>opt-in</td>
+<td>state-intent §3, state-intent §7, commands §8, CM18, CM21, CM24, CM25</td>
+</tr>
+<tr>
+<td>cgmsim-lib</td>
+<td>No overrides, targets, profile switches or commands; it reads profiles only.</td>
+<td>Nothing it touches changes.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>DiaBLE</td>
+<td>Writes no overrides, targets or commands.</td>
+<td>Nothing at this layer.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>glooko-nightscout-eu</td>
+<td>No overrides, targets, profile switches or commands.</td>
+<td>Nothing it touches changes.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>glooko2nightscout</td>
+<td>No overrides, targets, profile switches or commands.</td>
+<td>Nothing.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>minimed-connect-to-nightscout</td>
+<td>No overrides, targets, profile switches or commands.</td>
+<td>Nothing it touches changes.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>nightscout-connect</td>
+<td>Sends no commands; treatments copied from a source are stored as data whatever their <code>eventType</code>, and it creates no profile-switch treatments.</td>
+<td>Copies stay data (commands §3); active state is derived per product from that product's records (A1).</td>
+<td>unchanged</td>
+<td>commands §3, A1</td>
+</tr>
+<tr>
+<td>nightscout-librelink-up</td>
+<td>No overrides, targets, profile switches or commands.</td>
+<td>Nothing it touches changes.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>share2nightscout-bridge</td>
+<td>No overrides, targets, profile switches or commands.</td>
+<td>Nothing it touches changes.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>tconnectsync</td>
+<td>Writes Tandem Sleep and Exercise activity as treatments, ending an open one by DELETE and re-POST with the same <code>created_at</code>; sends no commands or profile switches.</td>
+<td>Stored as data; active state is derived per product from that product's records (A1), and no registration describes these treatments.</td>
+<td>unchanged</td>
+<td>A1</td>
+</tr>
+<tr>
+<td>xDrip+</td>
+<td>No profile, profile switch, override or remote command call was found (S10, S14 in the per-client file).</td>
+<td>Nothing in state, intent or commands reaches it.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>xDrip4iOS</td>
+<td>Writes no overrides, targets or commands.</td>
+<td>Nothing at this layer.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>LoopCaregiver</td>
+<td>Sends override, cancel, bolus and carbs to <code>POST /api/v2/notifications/loop</code>, needs exactly 200, and learns failures by parsing Loop's <code>Note</code> treatments; Remote Commands 2 uses <code>/api/v2/remotecommands</code>, which the hub does not implement.</td>
+<td>The relay route is outside CM1–CM25 and a hub keeps it as it is or retires it (commands §8); a command record with an outcome from the destination is used only if it changes (CM1, CM7, CM25).</td>
+<td>opt-in</td>
+<td>commands §8, CM1, CM7, CM24, CM25</td>
+</tr>
+<tr>
+<td>LoopFollow</td>
+<td>Sends Loop and Trio commands as APNs pushes straight to Apple, using routing data it reads from the hub's profile; its <code>/api/v2/notifications/loop</code> sender has no caller.</td>
+<td>Its commands stay outside the hub, which sees only the resulting records (commands §8); a follower may read the outstanding list with <code>api:commands:read</code>, if it changes (CM24).</td>
+<td>opt-in</td>
+<td>commands §8, CM24</td>
+</tr>
+<tr>
+<td>nightguard</td>
+<td>Writes temporary targets as treatments, cancelling with a new one of duration 0; sends no commands.</td>
+<td>These stay data that a controller may act on without the hub knowing (state-intent §7); a request with an outcome is a command record it uses only if it changes (CM1).</td>
+<td>opt-in</td>
+<td>state-intent §7, CM1</td>
+</tr>
+<tr>
+<td>GluPredKit</td>
+<td>Derives basal rates from the profile and temporary basals from treatments client-side.</td>
+<td>The hub's derived answer of what was active is a new read it would have to call (state-intent §6).</td>
+<td>opt-in</td>
+<td>state-intent §6</td>
+</tr>
+<tr>
+<td>GlycemicGPT</td>
+<td>Reads treatments and devicestatus as records; reads no derived state and no commands.</td>
+<td>The hub's answer of what was active (state-intent §6) and the outstanding command list (CM24) are new reads it would have to call.</td>
+<td>opt-in</td>
+<td>state-intent §6, CM24</td>
+</tr>
+<tr>
+<td>nightscout-cgm-skill</td>
+<td>Reads no override, target or profile-switch state and no commands.</td>
+<td>The hub's answer of what was active is a new read it would have to call (state-intent §6).</td>
+<td>opt-in</td>
+<td>state-intent §6</td>
+</tr>
+<tr>
+<td>nightscout-reporter</td>
+<td>Builds synthetic profiles from <code>Profile Switch</code> treatments and reads <code>Temp Basal</code> treatments, deciding what was in effect itself.</td>
+<td>Its own reading of those treatments is unchanged; the hub's derived answer of what was active at a time is a new read it would have to call (state-intent §6, A1-A13).</td>
+<td>opt-in</td>
+<td>state-intent §6, A1, A10</td>
+</tr>
+<tr>
+<td>oref-digital-twin</td>
+<td>Reads the profile and treatments and runs oref0 on them; reads no derived state.</td>
+<td>The hub's answer of what was active is a new read it would have to call (state-intent §6).</td>
+<td>opt-in</td>
+<td>state-intent §6</td>
+</tr>
+<tr>
+<td>nightscout-roles-gateway</td>
+<td>Touches no intents or commands.</td>
+<td>Touches no intents or commands.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Nocturne</td>
+<td>Keeps intents as StateSpans; measured: a temporary-target cancel becomes an open span of its own, a backfilled earlier override leaves two open spans, Loop's applied override duration is read as minutes and AndroidAPS <code>timeshift</code> as hours (state-intent §6.2); its <code>POST /api/v4/state-spans</code> reaches no controller (state-intent §7).</td>
+<td>The rules answer each of those cases differently: a zero-duration record ends the instance (A5), supersession is by start (A7), and units are read only as declared (A11); the outstanding list (CM24) and the plan mirror (PN11) are new reads it would serve.</td>
+<td>opt-in</td>
+<td>A5, A7, A8, A11, A2, CM24, PN11</td>
+</tr>
+<tr>
+<td>babelbetes</td>
+<td>Makes no Nightscout requests.</td>
+<td>Makes no Nightscout requests.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>GlookoServiceKit</td>
+<td>No Nightscout commands.</td>
+<td>Nothing at this layer.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Not read</td>
+<td>not read</td>
+<td>not read</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>openaps</td>
+<td>No overrides, targets, profile switches or commands.</td>
+<td>Nothing; see oref0.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>trio-telemetry</td>
+<td>Makes no Nightscout requests.</td>
+<td>Makes no Nightscout requests.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>xdrip-js</td>
+<td>No overrides, targets, profile switches or commands.</td>
+<td>Nothing.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<!-- END GENERATED: compat-L3 -->
+
+<h3 id="45-l4-change-and-sync">4.5 L4 Change and sync<a class="headerlink" href="#45-l4-change-and-sync" title="Permanent link">&para;</a></h3>
+<!-- BEGIN GENERATED: compat-L4 -->
+<table>
+<thead>
+<tr>
+<th>app</th>
+<th>today</th>
+<th>with a hub that implements the specifications</th>
+<th>verdict</th>
+<th>rules</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AndroidAPS</td>
+<td>The v3 client reads each collection with <code>history/{srvModified}</code> or <code>date$gt</code>/<code>created_at$gt</code> at constant limits of at most 1000 and listens on the <code>/storage</code> and <code>/alarm</code> sockets; writes through API v1 or the v1 socket do not reach <code>/storage</code> (BF-164). The 3.4.x v1 client uses the main socket (<code>authorize</code>, <code>dbAdd</code>, <code>dbUpdate</code>, <code>dataUpdate</code>), which the 4.0.0 prereleases remove.</td>
+<td>API v3, its history read and both sockets stay, as do the v1 socket and its events (sync-transport §7); which writes reach <code>/storage</code> stays open, so v1 writes still arrive only through its history read (T12, T10). One read and one write across collections are there for a build that calls them (T5, T7).</td>
+<td>opt-in</td>
+<td>sync-transport §7, T5, T7, T10, T12</td>
+</tr>
+<tr>
+<td>AndroidAPS client control</td>
+<td>Writes with v3 <code>PUT</code>, <code>PATCH</code> and <code>DELETE</code> on <code>/api/v3/settings</code>, reads with a limit of 100, and reacts to <code>/storage</code> create and update events on <code>settings</code> while also polling.</td>
+<td>API v3 and the <code>/storage</code> socket stay, and v3 writes reach the socket today (sync-transport §7, T12).</td>
+<td>unchanged</td>
+<td>sync-transport §7, T12</td>
+</tr>
+<tr>
+<td>Loop</td>
+<td>API v1 only, no socket; posts batches and requires a reply array as long as the request, and any non-200 holds the batch, so one refused record stalls that data type.</td>
+<td>API v1 stays and re-sends keep today's outcomes; one read and one write per cycle are used only if it changes.</td>
+<td>opt-in</td>
+<td>sync-transport §7, T2, T5, T7</td>
+</tr>
+<tr>
+<td>oref0</td>
+<td>API v1 only, by curl. Every loop it reads <code>treatments.json?…&amp;count=1?&lt;secret&gt;</code>, which 15.0.8 reads as count 1 and 15.0.9 refuses with 400 Bad count; the empty result makes the rig re-POST its whole 24 h of pump-history treatments each loop.</td>
+<td>API v1 stays (sync-transport §7) and the specifications set no rule for <code>count</code>, so the malformed read is answered as the hub release answers it; the re-POSTed treatments are merged as L0 says.</td>
+<td>unchanged</td>
+<td>sync-transport §7, T2</td>
+</tr>
+<tr>
+<td>Trio</td>
+<td>API v1 only, no socket; posts in chunks and retries a refused chunk forever with no notice; the CGM-from-Nightscout read turns any error into no data.</td>
+<td>API v1 stays and re-sends keep today's outcomes; one read and one write per cycle are used only if it changes.</td>
+<td>opt-in</td>
+<td>sync-transport §7, T2, T5, T7</td>
+</tr>
+<tr>
+<td>cgmsim-lib</td>
+<td>API v1 GET with <code>count=&lt;maxCount&gt;</code> when set, <code>find[created_at]</code> bounds on activity, and POST and DELETE that resolve on any HTTP status, so a refused write is logged as success.</td>
+<td>API v1 stays (sync-transport §7).</td>
+<td>unchanged</td>
+<td>sync-transport §7</td>
+</tr>
+<tr>
+<td>DiaBLE</td>
+<td>API v1 only; also shows the Nightscout web page in a web view, whose own socket client runs there.</td>
+<td>API v1 and the v1 socket stay; one read and one write per cycle are used only if it changes.</td>
+<td>opt-in</td>
+<td>sync-transport §7, T5, T7</td>
+</tr>
+<tr>
+<td>glooko-nightscout-eu</td>
+<td>POST <code>/api/v1/treatments</code>, one treatment per request; any 4xx or 5xx abandons the run, which retries later.</td>
+<td>API v1 stays (sync-transport §7).</td>
+<td>unchanged</td>
+<td>sync-transport §7</td>
+</tr>
+<tr>
+<td>glooko2nightscout</td>
+<td>Its only <code>/api/v3/…</code> URLs are Glooko's.</td>
+<td>Nothing.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>minimed-connect-to-nightscout</td>
+<td>Standalone: POST <code>/api/v1/entries.json</code> and <code>/api/v1/devicestatus.json</code>; a refused batch is dropped. Embedded (<code>MMCONNECT_*</code>): cgm-remote-monitor writes in-process.</td>
+<td>API v1 stays (sync-transport §7); the embedded path is an in-process caller of the one write step (T1).</td>
+<td>unchanged</td>
+<td>sync-transport §7, T1</td>
+</tr>
+<tr>
+<td>nightscout-connect</td>
+<td>Writes in-process through <code>ctx.entries/treatments/devicestatus/profile</code>, with no HTTP and no <code>count</code> middleware; these writes reach no API v3 storage-socket event (BF-164). As a source it reads a remote hub over API v1 with <code>count</code> and <code>find[...][$gt]</code>.</td>
+<td>Its in-process writes join the one write step with the other paths (T1); whether they reach the socket stays open (T12), and v1 reads of a source stay (sync-transport §7).</td>
+<td>unchanged</td>
+<td>T1, T12, sync-transport §7</td>
+</tr>
+<tr>
+<td>nightscout-librelink-up</td>
+<td>API v1 (<code>count=1</code> watermark, POST entries) or API v3 (<code>limit=1&amp;sort$desc=date</code>, one POST per reading that must answer 201).</td>
+<td>Both stay (sync-transport §7); an identical re-send keeps each path's answer today (T2).</td>
+<td>unchanged</td>
+<td>sync-transport §7, T2</td>
+</tr>
+<tr>
+<td>share2nightscout-bridge</td>
+<td>Standalone: POST <code>/api/v1/entries.json</code>, error logged and the batch dropped. Embedded in cgm-remote-monitor (only with <code>DEXCOM_BRIDGE_USE_LEGACY=true</code>): in-process <code>entries.create</code>.</td>
+<td>API v1 stays (sync-transport §7); the embedded path is an in-process caller of the one write step (T1).</td>
+<td>unchanged</td>
+<td>sync-transport §7, T1</td>
+</tr>
+<tr>
+<td>tconnectsync</td>
+<td>API v1 only: <code>count=1</code> watermark reads with <code>find[...]</code> filters and date bounds, POST, PUT and DELETE; any non-200 ends the run, which retries on the next schedule.</td>
+<td>API v1 stays (sync-transport §7).</td>
+<td>unchanged</td>
+<td>sync-transport §7</td>
+</tr>
+<tr>
+<td>xDrip+</td>
+<td>API v1 REST only, with no socket: <code>count</code> is 10, 2880 or 1, <code>find[date][$gt]</code> and <code>find[uuid]</code> are its only filters, and a failed entries upload is retried every cycle.</td>
+<td>API v1 stays as it is (sync-transport §7).</td>
+<td>unchanged</td>
+<td>sync-transport §7</td>
+</tr>
+<tr>
+<td>xDrip4iOS</td>
+<td>API v1 only, no socket; re-sends a refused entries batch every cycle, and marks a treatment deleted when <code>find[_id]</code> answers 2xx with an empty array.</td>
+<td>API v1 stays; one read and one write per cycle are used only if it changes.</td>
+<td>opt-in</td>
+<td>sync-transport §7, T5, T7</td>
+</tr>
+<tr>
+<td>LoopCaregiver</td>
+<td>Polls API v1 on a timer; no socket.</td>
+<td>API v1 stays; one read per cycle is used only if it changes.</td>
+<td>opt-in</td>
+<td>sync-transport §7, T5</td>
+</tr>
+<tr>
+<td>LoopFollow</td>
+<td>Polls API v1 and joins the v1 socket, sending <code>authorize</code> with its access token; uses <code>dataUpdate</code> only as a trigger to re-poll and triples its poll interval while connected.</td>
+<td>API v1 and the v1 socket stay; subscribing by product and channel is used only if it changes.</td>
+<td>opt-in</td>
+<td>sync-transport §7, T10, T11</td>
+</tr>
+<tr>
+<td>nightguard</td>
+<td>API v3 first with an API v1 fallback; pages its statistics read with <code>skip</code> and <code>sort$desc</code>; no socket.</td>
+<td>API v3 and v1 stay; the history read across collections is used only if it changes.</td>
+<td>opt-in</td>
+<td>sync-transport §7, T5, T6</td>
+</tr>
+<tr>
+<td>GluPredKit</td>
+<td>API v1 GETs of profile, treatments and entries, each with <code>count=0</code> and a <code>$gte</code>/<code>$lte</code> date window; 15.0.8 reads <code>count=0</code> as no limit, and <code>dev</code> keeps that for a window bounded on both sides (#8761, a setting on by default, with a deprecation warning).</td>
+<td>Per-collection API v1 reads stay (sync-transport §7); its reads still depend on the <code>count=0</code> tolerance setting being on.</td>
+<td>unchanged</td>
+<td>sync-transport §7</td>
+</tr>
+<tr>
+<td>GlycemicGPT</td>
+<td>API v1 GETs with <code>count=5000</code>, <code>$gte</code> date filters and the <code>_id</code> cursor; <code>status.json</code>, and API v3 <code>version</code> and <code>status</code> to detect v3; no socket.</td>
+<td>Per-collection API v1 reads stay (sync-transport §7); the single read across collections is available if it adopts it (T5).</td>
+<td>unchanged</td>
+<td>sync-transport §7, T5</td>
+</tr>
+<tr>
+<td>nightscout-cgm-skill</td>
+<td>API v1 GETs only, <code>count</code> from 1 to 10000, entries paged by <code>find[date][$lte]</code>; no socket, no API v3.</td>
+<td>Per-collection API v1 reads stay (sync-transport §7).</td>
+<td>unchanged</td>
+<td>sync-transport §7</td>
+</tr>
+<tr>
+<td>nightscout-reporter</td>
+<td>API v1 GETs only, <code>count</code> literals from 2 to 100000, <code>$gte $lte $gt $lt $eq $ne</code> filters, <code>status.json</code> at start-up; no socket, no API v3.</td>
+<td>Per-collection API v1 reads stay; nothing is retired (sync-transport §7).</td>
+<td>unchanged</td>
+<td>sync-transport §7</td>
+</tr>
+<tr>
+<td>oref-digital-twin</td>
+<td>API v1 GETs with <code>count=50000</code> per 7-day window and <code>$gte</code>/<code>$lte</code> bounds, in Python and in the browser; no socket, no API v3.</td>
+<td>Per-collection API v1 reads stay (sync-transport §7).</td>
+<td>unchanged</td>
+<td>sync-transport §7</td>
+</tr>
+<tr>
+<td>nightscout-roles-gateway</td>
+<td>Calls <code>GET /api/v1/status.json</code> anonymously and with the hashed secret to inspect a site, and a non-200 marks it not ok; the socket path is proxied by an NGINX configuration outside the repository.</td>
+<td><code>status.json</code> and the v1 socket stay (sync-transport §7); a socket client receives events only for what its own credential may read, not for a gateway header (T11).</td>
+<td>unchanged</td>
+<td>sync-transport §7, T11</td>
+</tr>
+<tr>
+<td>Nocturne</td>
+<td>Serves API v1 and v3 and a socket.io bridge; v3 pages by offset <code>Link</code> headers and clamps <code>limit=0</code> to 1; on the shared v1 contract it answers a negative <code>count</code> and an unsupported operator with 200 <code>[]</code>, reads <code>$exists</code> with an empty or <code>null</code> value as absent, and ignores bracket <code>find</code> on <code>/count</code>.</td>
+<td>The merged read across collections (T5), its <code>srvModified</code> cursor (T6) and low watermark (T9) are new; per-collection reads stay (sync-transport §7), and a socket event never moves the history cursor (T10).</td>
+<td>opt-in</td>
+<td>T5, T6, T9, T10, sync-transport §7</td>
+</tr>
+<tr>
+<td>babelbetes</td>
+<td>Makes no Nightscout requests.</td>
+<td>Makes no Nightscout requests.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>GlookoServiceKit</td>
+<td>Its socket client connects to Glooko, not to Nightscout.</td>
+<td>Nothing at this layer.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Not read</td>
+<td>not read</td>
+<td>not read</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>openaps</td>
+<td>No HTTP client and no Nightscout URL in the repository.</td>
+<td>Nothing; see oref0.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>trio-telemetry</td>
+<td>Makes no Nightscout requests.</td>
+<td>Makes no Nightscout requests.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>xdrip-js</td>
+<td>No HTTP or socket client.</td>
+<td>Nothing.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<!-- END GENERATED: compat-L4 -->
+
+<h3 id="46-l5-authority">4.6 L5 Authority<a class="headerlink" href="#46-l5-authority" title="Permanent link">&para;</a></h3>
+<!-- BEGIN GENERATED: compat-L5 -->
+<table>
+<thead>
+<tr>
+<th>app</th>
+<th>today</th>
+<th>with a hub that implements the specifications</th>
+<th>verdict</th>
+<th>rules</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AndroidAPS</td>
+<td>The v3 client exchanges an access token at <code>/api/v2/authorization/request/&lt;token&gt;</code> for a JWT sent as <code>Authorization: Bearer</code>, refreshing once on 401 or 403; the 3.4.x v1 socket sends <code>sha1(API_SECRET)</code> in <code>authorize</code>. It needs per-collection write permissions, and on <code>/alarm</code> read and <code>notifications:*:ack</code>.</td>
+<td>Under <code>single</code> the credentials and per-collection permissions are as today (AU5). Under <code>TENANCY_MODE=multi</code> the token or secret it holds must be the tenant's own, because tokens are signed with the tenant's key and resolution runs first (AU3).</td>
+<td>unchanged</td>
+<td>AU5, AU3</td>
+</tr>
+<tr>
+<td>AndroidAPS client control</td>
+<td>Both apps authenticate to the hub with the v3 access-token exchange and need read and write on <code>settings</code>; the commands themselves are authenticated end to end by the per-client signature, not by the hub.</td>
+<td>Per-collection permissions and the single-tenant credentials are as today (AU5); under <code>multi</code> each app's token must be the tenant's own (AU3).</td>
+<td>unchanged</td>
+<td>AU5, AU3</td>
+</tr>
+<tr>
+<td>Loop</td>
+<td>Sends the SHA-1 of the API secret as the <code>api-secret</code> header on every request and checks it at setup with <code>/api/v1/experiments/test</code>; no tokens.</td>
+<td>Under single, API_SECRET behaves as today (AU3). Under multi there is no deployment secret; Loop presents the tenant's root credential, and whether that is accepted as today's header is not yet specified (authority §9).</td>
+<td>unchanged</td>
+<td>AU3, AU5, authority §9</td>
+</tr>
+<tr>
+<td>oref0</td>
+<td>Sends the SHA-1 of <code>API_SECRET</code> as an <code>api-secret</code> header, or appends <code>token=&lt;t&gt;</code> to the query; the check script exchanges the token at <code>/api/v2/authorization/request</code> and reads <code>permissionGroups</code>.</td>
+<td>Unchanged under <code>single</code>. Under <code>TENANCY_MODE=multi</code> it keeps a native credential (AU1), and the secret or token it sends is its tenant's, since there is no deployment-wide secret (AU3).</td>
+<td>unchanged</td>
+<td>AU1, AU3</td>
+</tr>
+<tr>
+<td>Trio</td>
+<td>Sends the SHA-1 of the API secret as the <code>api-secret</code> header and drops any <code>token=</code> from the configured URL, so a token-only site cannot be used.</td>
+<td>Under single, API_SECRET behaves as today (AU3). Under multi it presents the tenant's root credential, and whether that is accepted as today's header is not yet specified (authority §9).</td>
+<td>unchanged</td>
+<td>AU3, AU5, authority §9</td>
+</tr>
+<tr>
+<td>cgmsim-lib</td>
+<td>Sends the SHA-1 of the secret as <code>api-secret</code> on every request, with TLS verification turned off.</td>
+<td>Unchanged under <code>single</code>; under <code>TENANCY_MODE=multi</code> the secret is its tenant's own root credential (AU1, AU3).</td>
+<td>unchanged</td>
+<td>AU1, AU3</td>
+</tr>
+<tr>
+<td>DiaBLE</td>
+<td>One setting serves as <code>token=</code> on reads and, hashed, as the <code>api-secret</code> header on writes; the web view opens the site with <code>?token=</code>.</td>
+<td>Under single, unchanged. Under multi a token issued by the tenant resolves there and nowhere else (AU3).</td>
+<td>unchanged</td>
+<td>AU3</td>
+</tr>
+<tr>
+<td>glooko-nightscout-eu</td>
+<td>Sends the SHA-1 of <code>NIGHTSCOUT_SECRET</code> as <code>api-secret</code>.</td>
+<td>Unchanged under <code>single</code>; under <code>TENANCY_MODE=multi</code> the secret is its tenant's own root credential (AU1, AU3).</td>
+<td>unchanged</td>
+<td>AU1, AU3</td>
+</tr>
+<tr>
+<td>glooko2nightscout</td>
+<td>Holds no Nightscout credential.</td>
+<td>Nothing.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>minimed-connect-to-nightscout</td>
+<td>Sends the SHA-1 of the secret as <code>api-secret</code>.</td>
+<td>Unchanged under <code>single</code>; under <code>TENANCY_MODE=multi</code> the secret is its tenant's own root credential (AU1, AU3).</td>
+<td>unchanged</td>
+<td>AU1, AU3</td>
+</tr>
+<tr>
+<td>nightscout-connect</td>
+<td>In-process writes carry no credential. As a source it uses <code>API-SECRET</code> to find or create a <code>nightscout-connect-reader</code> subject with <code>readable</code>, then exchanges its token for a JWT, or uses a <code>token=</code> from the source URL.</td>
+<td>Unchanged under <code>single</code>. Under <code>TENANCY_MODE=multi</code> the source's subjects and tokens are its tenant's, re-rooted on that tenant's credential (AU3), and <code>readable</code> still reads every collection (AU5).</td>
+<td>unchanged</td>
+<td>AU3, AU5</td>
+</tr>
+<tr>
+<td>nightscout-librelink-up</td>
+<td>v1 sends <code>NIGHTSCOUT_API_TOKEN</code> verbatim as <code>api-secret</code>; v3 exchanges it at <code>/api/v2/authorization/request</code> before every request and sends <code>Authorization: Bearer</code>.</td>
+<td>Unchanged under <code>single</code>. Under <code>TENANCY_MODE=multi</code> the secret and token are its tenant's, the JWT signed with the tenant's key, so it fails on another tenant (AU1, AU3).</td>
+<td>unchanged</td>
+<td>AU1, AU3</td>
+</tr>
+<tr>
+<td>share2nightscout-bridge</td>
+<td>Sends the SHA-1 of <code>API_SECRET</code> as <code>api-secret</code>, with TLS verification turned off; embedded mode uses no credential.</td>
+<td>Unchanged under <code>single</code>; under <code>TENANCY_MODE=multi</code> the secret is its tenant's own root credential (AU1, AU3).</td>
+<td>unchanged</td>
+<td>AU1, AU3</td>
+</tr>
+<tr>
+<td>tconnectsync</td>
+<td>Sends the SHA-1 of the secret as <code>api-secret</code>, and also the plaintext secret as an <code>api_secret</code> query parameter that Nightscout ignores.</td>
+<td>Unchanged under <code>single</code>; under <code>TENANCY_MODE=multi</code> the secret is its tenant's own root credential (AU1, AU3).</td>
+<td>unchanged</td>
+<td>AU1, AU3</td>
+</tr>
+<tr>
+<td>xDrip+</td>
+<td>Sends <code>api-secret: sha1(secret)</code> taken from the URL on the uploader and the follower, with no token or JWT; a follower without a secret sends no header.</td>
+<td>Under <code>single</code> this is as today (AU5, AU3). Under <code>multi</code> the secret must be the tenant's own root credential (AU3); AU1–AU5 do not say whether a tenant root is accepted in the <code>api-secret</code> header form.</td>
+<td>unchanged</td>
+<td>AU5, AU3</td>
+</tr>
+<tr>
+<td>xDrip4iOS</td>
+<td>Sends the SHA-1 of the API secret as the <code>api-secret</code> header, adding any configured access token as <code>token=</code>.</td>
+<td>Under single, unchanged (AU3). Under multi a token issued by the tenant resolves there, and whether the tenant's root credential is accepted as today's header is not yet specified (authority §9).</td>
+<td>unchanged</td>
+<td>AU3, authority §9</td>
+</tr>
+<tr>
+<td>LoopCaregiver</td>
+<td>Sends only the SHA-1 of the API secret as <code>api-secret</code>; the relay needs <code>notifications:loop:push</code>, which of the default roles only admin holds.</td>
+<td>Under single, unchanged. Under multi the relay sends with the deployment's APNs key and a process-wide device lookup (commands §3), and CM20 allows only a tenant's own push credentials, so the route it depends on has no tenant-scoped form.</td>
+<td>unchanged</td>
+<td>AU3, CM20, commands §3</td>
+</tr>
+<tr>
+<td>LoopFollow</td>
+<td>Reads with an access token in <code>token=</code>; given the API secret it creates a <code>readable</code> subject through <code>/api/v2/authorization/subjects</code> and derives the token locally from the returned <code>_id</code>.</td>
+<td>Under single, unchanged. Under multi the load cycle's <code>dataUpdate</code> is withheld (commands §3), so a connected LoopFollow keeps its slowed polling with no trigger, and AU3 re-roots subject tokens on the tenant's credential, which its local derivation must match.</td>
+<td>unchanged</td>
+<td>AU3, commands §3</td>
+</tr>
+<tr>
+<td>nightguard</td>
+<td>Uses an access token: a JWT from <code>/api/v2/authorization/request</code>, the raw token in the <code>API-SECRET</code> header on the v1 fallback, or <code>token=</code>.</td>
+<td>Under single, unchanged. Under multi a token issued by the site's tenant resolves there and nowhere else (AU3); reading stays one permission (AU5).</td>
+<td>unchanged</td>
+<td>AU3, AU5</td>
+</tr>
+<tr>
+<td>GluPredKit</td>
+<td>Authenticates with the API secret through <code>python-nightscout</code> (header format not read); no token, no JWT.</td>
+<td>On <code>single</code> nothing changes (AU5). Under <code>multi</code> there is no deployment-wide secret, so the secret it was configured with must be replaced by the tenant's root credential (AU3).</td>
+<td>unchanged</td>
+<td>AU3, AU5</td>
+</tr>
+<tr>
+<td>GlycemicGPT</td>
+<td>Sends <code>api-secret: sha1(secret)</code> on v1 or a Bearer token on v3, or nothing; 401 and 403 stop the sync without retry.</td>
+<td>On <code>single</code> nothing changes (AU5). Under <code>multi</code> the deployment-wide secret is gone and subject tokens are re-rooted, so its configured secret or token must be replaced with the tenant's (AU3).</td>
+<td>unchanged</td>
+<td>AU3, AU5</td>
+</tr>
+<tr>
+<td>nightscout-cgm-skill</td>
+<td>Sends no credential, so it works only against a site readable anonymously.</td>
+<td>Reading stays one bit, and a site readable anonymously serves it as today (AU5).</td>
+<td>unchanged</td>
+<td>AU5</td>
+</tr>
+<tr>
+<td>nightscout-reporter</td>
+<td>Sends an access token as <code>?token=</code> on every request; no <code>api-secret</code> header, no Bearer.</td>
+<td>On <code>single</code> nothing changes and its token still reads every collection (AU5). Under <code>multi</code> subject tokens are re-rooted on the tenant's credential, so the token a person entered before the move stops working and must be re-entered (AU3).</td>
+<td>unchanged</td>
+<td>AU3, AU5</td>
+</tr>
+<tr>
+<td>oref-digital-twin</td>
+<td>Sends <code>token=</code> and/or a pre-hashed <code>api-secret</code> header from the environment (Python), <code>token=</code> only (browser); 401 and 403 raise without retry.</td>
+<td>On <code>single</code> nothing changes (AU5). Under <code>multi</code> the deployment-wide secret is gone and subject tokens are re-rooted, so its configured token or secret must be replaced with the tenant's (AU3).</td>
+<td>unchanged</td>
+<td>AU3, AU5</td>
+</tr>
+<tr>
+<td>nightscout-roles-gateway</td>
+<td>Serves NGINX <code>auth_request</code> decisions (200/403, <code>X-NSJWT</code>); lists subjects with <code>API-SECRET: sha1(secret)</code> and exchanges each policy's stored subject token at <code>/api/v2/authorization/request/&lt;token&gt;</code>.</td>
+<td>On <code>single</code> nothing changes. Under <code>multi</code> there is no deployment-wide secret and subject tokens are re-rooted on the tenant's credential, so the secret it inspects with and every stored policy token must be replaced (AU3); its time-bounded policies are prior art for the delegation requirements DR1-DR7.</td>
+<td>unchanged</td>
+<td>AU3, AU4, DR1, DR3, DR6</td>
+</tr>
+<tr>
+<td>Nocturne</td>
+<td>Socket clients authorize with a handshake ticket or a legacy secret or token and join their tenant's room, and a credential-less <code>authorize</code> is disconnected; subjects are typed, notes are not stored, and an edit with no roles leaves the grant unchanged.</td>
+<td>AU3 (per-tenant signing, tenant resolved before any credential) and AU4 (bindings to subjects) apply to its subjects; AU5 keeps reading one bit, and DR1-DR7 are requirements no hub implements.</td>
+<td>opt-in</td>
+<td>AU3, AU4, AU5, DR1</td>
+</tr>
+<tr>
+<td>babelbetes</td>
+<td>Makes no Nightscout requests.</td>
+<td>Makes no Nightscout requests.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>GlookoServiceKit</td>
+<td>Authenticates to Glooko only.</td>
+<td>Nothing at this layer.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Not read</td>
+<td>not read</td>
+<td>not read</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>openaps</td>
+<td>Holds no Nightscout credential.</td>
+<td>Nothing; see oref0.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>trio-telemetry</td>
+<td>Makes no Nightscout requests.</td>
+<td>Makes no Nightscout requests.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>xdrip-js</td>
+<td>Holds no Nightscout credential.</td>
+<td>Nothing.</td>
+<td>none</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<!-- END GENERATED: compat-L5 -->
+
+<h2 id="5-where-an-answer-changes">5. Where an answer changes<a class="headerlink" href="#5-where-an-answer-changes" title="Permanent link">&para;</a></h2>
+<p>The verdicts describe a hub under <code>TENANCY_MODE=single</code>, the one every app reaches today. Two
+cells answer differently there:</p>
+<ul>
+<li><strong>oref0, L0.</strong> A re-sent pump-history treatment without client identity matches on <code>created_at</code>
+  and <code>eventType</code> and is merged into the stored one instead of replacing it, so fields added in
+  Nightscout that the rig does not send are kept (identity §3, T2). On 15.0.9 the rig's malformed
+  <code>count</code> read is refused, and it then re-posts a day of treatments every loop, which makes this
+  merge the common path (<a href="../../../60-research/remedial/consumer-impact-15.0.9-2026-09-23.html#21-oref0-sends-a-malformed-count">consumer impact §2.1</a>).</li>
+<li><strong>xDrip4iOS, L0.</strong> A duplicate is answered with the stored ids instead of a server error (I4);
+  the app counts both as success.</li>
+</ul>
+<p>Under <code>TENANCY_MODE=multi</code> every app reaches its tenant with its tenant's credential: there is no
+deployment-wide secret, tokens are signed with the tenant's key, and subject tokens are re-rooted
+on the tenant's credential (AU3). Each L5 cell says what that means for the app. Three apps meet
+more than a new credential:</p>
+<ul>
+<li><strong>LoopFollow, L4 and L5.</strong> The load cycle's <code>dataUpdate</code> is withheld under <code>multi</code> on the seam
+  branch (commands §3); LoopFollow slows its polling while its socket is connected, so it would
+  refresh less often with nothing to trigger a re-poll (<a href="sync-transport.html#8-open">sync-transport §8</a>).</li>
+<li><strong>LoopCaregiver, L3 and L5.</strong> The <code>/api/v2/notifications/loop</code> relay sends with the
+  deployment's push key and looks devices up across the process (commands §3); CM20 allows only a
+  tenant's own push credentials, so the route it depends on has no tenant-scoped form until a hub
+  gives one.</li>
+<li><strong>nightscout-roles-gateway, L5.</strong> The secret it inspects with and every stored policy token must
+  be its tenant's.</li>
+</ul>
+<p>For a hub, the right-hand column is what it would serve to implement each layer: Nocturne's cells
+name the rules and the differences state and intent §6.2 measured on shared cases.</p>
+<h2 id="6-open">6. Open<a class="headerlink" href="#6-open" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Today's credential forms under <code>multi</code>:</strong> whether a tenant's root credential is accepted as
+   the hashed <code>api-secret</code> header and the v1 socket's <code>secret</code> that apps send today
+   (<a href="authority.html#9-open">authority §9</a> item 7).</li>
+<li><strong>The v1 socket's events under <code>multi</code></strong> (<a href="sync-transport.html#8-open">sync-transport §8</a> item 7).</li>
+<li><strong>Not read:</strong> the maintained nightscout-reporter (Angular), <code>python-nightscout</code> (GluPredKit's
+   entries and treatments calls go through it), Sugarmate, Spike, closed-source apps, and xDrip+'s
+   direct MongoDB uploader.</li>
+<li><strong>Refs.</strong> Each row names the ref it was read at; the 15.0.9 survey read the apps on 2026-09-23,
+   and the controllers' command paths were read at their releases on 2026-10-18. A row is re-read
+   when its app releases a version that changes a cell.</li>
+<li><strong>Well-known registrations</strong> exist for Loop, Trio and AndroidAPS only
+   (<code>specs/sync/registrations/</code>); every other writer's L2 attribution rests on
+   <a href="registration.html#17-compatibility">registration §11 and §17</a>.</li>
+</ol>
+<h2 id="7-checks">7. Checks<a class="headerlink" href="#7-checks" title="Permanent link">&para;</a></h2>
+<p>6 checks, in <code>tools/nsschema/test_compat.py</code>, run with <code>python3 -m pytest -q
+tools/nsschema/test_compat.py</code>.</p>
+<table>
+<thead>
+<tr>
+<th>check</th>
+<th>holds that</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tools/nsschema/test_compat.py::test_apps_are_unique</code></td>
+<td>no app has two entries</td>
+</tr>
+<tr>
+<td><code>tools/nsschema/test_compat.py::test_every_surveyed_client_has_an_entry</code></td>
+<td>every per-client file of the 15.0.9 survey is the source of an entry</td>
+</tr>
+<tr>
+<td><code>tools/nsschema/test_compat.py::test_what_is_not_read_is_listed</code></td>
+<td>an entry lists the apps not read</td>
+</tr>
+<tr>
+<td><code>tools/nsschema/test_compat.py::test_entry</code></td>
+<td>every entry has a kind, a ref and a source that exists, and every layer a verdict, both cells and rules that exist; a gains, opt-in or affected cell names its rule</td>
+</tr>
+<tr>
+<td><code>tools/nsschema/test_compat.py::test_page_tables_are_generated</code></td>
+<td>the tables in §3 and §4 are the files', as <code>python3 -m tools.nsschema.compat_tables</code> writes them</td>
+</tr>
+<tr>
+<td><code>tools/nsschema/test_compat.py::test_page_lists_every_affected_cell</code></td>
+<td>§5 names every app and layer whose verdict is <code>affected</code></td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+  
+      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+
+  </body>
+</html>

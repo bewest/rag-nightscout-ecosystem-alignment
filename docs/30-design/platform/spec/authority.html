@@ -2458,6 +2458,8 @@
       
         
       
+        
+      
     
     
     
@@ -2936,6 +2938,34 @@
     
   
     L2–L5 Control loops: what each mechanism controls, and the unsafe control actions its rules prevent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="compatibility.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    L0–L5 Compatibility: what each app does with a hub today, and what it sees from one that implements the specifications
   
 
     
@@ -5585,7 +5615,7 @@
 
 
 <h1 id="l5-authority-who-may-register-write-own-a-site-receive-a-command-and-act-for-someone-else">L5 Authority: who may register, write, own a site, receive a command, and act for someone else<a class="headerlink" href="#l5-authority-who-may-register-write-own-a-site-receive-a-command-and-act-for-someone-else" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>ee49b07f5</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>127f69e16</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>1b69c295</code> (2026-10-18). Layer L5 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. Decisions:
 <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">D7 and D13–D17</a>
@@ -5892,6 +5922,11 @@ time-bounded policies are prior art for grants.</p>
    holding <code>api:commands:create</code> sends commands with no proposal (UCA-AUTH-002); grants carry no
    expiry (UCA-AUTH-003); reads are neither scoped nor recorded (UCA-AUTH-004); and revoking a
    credential does not say what happens to its open socket subscriptions (UCA-SYNC-SERVE-005).</li>
+<li><strong>Today's credential forms under <code>multi</code></strong> (<a href="compatibility.html#6-open">compatibility §6</a>):
+   whether a tenant's root credential is accepted in the forms apps send today, the hashed
+   <code>api-secret</code> header (Loop, Trio, xDrip+, xDrip4iOS, the uploaders) and the v1 socket's
+   <code>secret</code> (AndroidAPS 3.4.x), and how subject tokens a follower derives locally are re-rooted
+   (AU3).</li>
 </ol>
 <h2 id="10-conformance-cases">10. Conformance cases<a class="headerlink" href="#10-conformance-cases" title="Permanent link">&para;</a></h2>
 <p>The cases that check binding, credentials, the owner's actions, namespaces and who may receive a
