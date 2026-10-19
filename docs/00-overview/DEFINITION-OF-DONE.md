@@ -1,4 +1,4 @@
-# Definition of done — downstream ready
+# Definition of done: when a change is ready for the apps that depend on it
 
 *What this is: a reference (contributor-facing). Read after [work waiting on a person](NEEDS-A-HUMAN.md);
 leads to [document control](DOCUMENT-CONTROL.md). Applies to every document under `docs/00-overview`,

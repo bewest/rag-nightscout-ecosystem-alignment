@@ -1,4 +1,4 @@
-# Control structures of the ecosystem and the proposals
+# Who controls what: the ecosystem's control structures, today and proposed
 
 *What this is: a map (part 2 of the overview, perspective; [how the overview is organised](../README.md)), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after [accountability thresholds](ACCOUNTABILITY-THRESHOLDS.md); leads to [process models](PROCESS-MODELS.md). Living page,
 written 2026-10-16, relabelled 2026-10-17; 1·agents listed 2026-10-18. Drawings to follow and discuss the overview's proposals with: who controls

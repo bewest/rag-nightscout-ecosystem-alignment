@@ -1,6 +1,6 @@
 # Accountability thresholds: the duties each activity brings
 
-*What this is: an analysis (part 2 of the overview, perspective; [how the overview is organised](../README.md)), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after [precedents: how other organisations are funded, staffed and governed](PRECEDENTS.md); leads to [control structures](STRUCTURES.md). Living page,
+*What this is: an analysis (part 2 of the overview, perspective; [how the overview is organised](../README.md)), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after [precedents: how other organisations are funded, staffed and governed](PRECEDENTS.md); leads to [who controls what](STRUCTURES.md). Living page,
 written 2026-10-16 against this repository at `faafc57c` as "Accountability as an organisation
 grows"; widened and retitled 2026-10-17 to cover every entity in the
 [control structures](STRUCTURES.md), not only the foundation. It sets out which duties arrive with

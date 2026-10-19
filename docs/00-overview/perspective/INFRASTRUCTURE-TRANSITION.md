@@ -1,4 +1,4 @@
-# When a DIY ecosystem becomes infrastructure
+# When a DIY ecosystem becomes infrastructure: what other communities did
 
 *What this is: an analysis (part 2 of the overview, perspective; [how the overview is organised](../README.md)), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after the [perspective index](README.md); leads to [precedents: how other organisations are funded, staffed and governed](PRECEDENTS.md). Living page,
 written 2026-10-02 against this repository at `e3d7b65c`. It offers a frame for reading the
