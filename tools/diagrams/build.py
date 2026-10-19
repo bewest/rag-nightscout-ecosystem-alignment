@@ -14,11 +14,12 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 import active_state_rules  # noqa: E402
+import command_lifecycle  # noqa: E402
 import end_encoding  # noqa: E402
 import hub_active_state  # noqa: E402
 from svgkit import OUT  # noqa: E402
 
-MODULES = [hub_active_state, end_encoding, active_state_rules]
+MODULES = [hub_active_state, end_encoding, active_state_rules, command_lifecycle]
 
 
 def generate():

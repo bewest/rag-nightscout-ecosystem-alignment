@@ -943,7 +943,7 @@ diagrams-svg:
 diagrams-svg-check:
 	@$(PY) -m pytest tools/diagrams/test_diagrams.py -q
 
-## animations: render the three animations (tools/animations/README.md) into
+## animations: render the animation (tools/animations/README.md) into
 ## docs/30-design/platform/animations/: <name>.webm, poster <name>.png and <name>.sources.json.
 ## Needs manim and PyAV (MANIM_PY: a python with both; MANIM: its manim). manim's cache goes to
 ## ANIM_MEDIA, outside the repository.

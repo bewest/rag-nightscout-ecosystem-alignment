@@ -19,18 +19,11 @@ REPO = HERE.parents[1]
 OUT = REPO / "docs" / "30-design" / "platform" / "animations"
 
 AS_CASES = "specs/sync/conformance/active-state"
-CM_CASES = "specs/sync/conformance/commands"
-LAB = "tools/lab/hub-active-state"
 COMMON = ["tools/animations/common.py", "tools/animations/sources.py", "tools/diagrams/svgkit.py"]
 
 # rule -> case, in the order the animation shows them
 SPAN_CASES = [("A5", "zero-duration-ends-instance"), ("A6", "deleted-before-start"),
               ("A7", "backfill-supersedes-by-start"), ("A8", "overlay-returns-to-open-ended")]
-HUB_CASES = ["c1-tt-cancel", "c3-loop-ds-override", "c7-ov-backfill"]
-COMMAND_CASES = ["approve-creates-command-with-proposal-payload", "approve-after-proposal-expiry",
-                 "enact-hash-mismatch-refused", "report-on-unconfirmed-after-expiry-accepted",
-                 "cancel-after-fetch-is-a-request"]
-COMMAND_RULES = ["CM1", "CM3", "CM7", "CM8", "CM9", "CM10", "CM13", "CM14", "CM21", "CM25"]
 
 ANIMATIONS = {
     "active-state-spans": {
@@ -41,25 +34,6 @@ ANIMATIONS = {
             "tools/nsschema/active_state.py",
             *[f"{AS_CASES}/{c}.yaml" for _, c in SPAN_CASES],
             ("docs/30-design/platform/spec/state-intent.md", [r for r, _ in SPAN_CASES]),
-        ],
-    },
-    "hub-active-state": {
-        "scene": "tools/animations/hub_active_state_scene.py",
-        "class": "HubActiveState",
-        "inputs": COMMON + [
-            "tools/diagrams/hub_active_state.py",
-            f"{LAB}/records/cases.json", f"{LAB}/results/crm.json", f"{LAB}/results/nocturne.json",
-            f"{LAB}/results/RESULTS.md",
-        ],
-    },
-    "command-lifecycle": {
-        "scene": "tools/animations/command_lifecycle.py",
-        "class": "CommandLifecycle",
-        "inputs": COMMON + [
-            "tools/nsschema/commands.py",
-            "tools/nsschema/negotiate.py",
-            *[f"{CM_CASES}/{c}.yaml" for c in COMMAND_CASES],
-            ("docs/30-design/platform/spec/commands.md", COMMAND_RULES),
         ],
     },
 }

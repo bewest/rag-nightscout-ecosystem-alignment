@@ -2,8 +2,9 @@
 
 Scenes are laid out in pixels of the 1280x720 frame (origin top left, y down), as the SVG figures
 are, and converted to manim units here. Text is Liberation Sans (Helvetica metrics, as the SVG
-figures' font stack) and never smaller than MIN_SIZE: manim's font_size 14 draws a capital 12 px
-tall at 720p, the cap height of a 17 px CSS font.
+figures' font stack) and never smaller than MIN_SIZE. manim's font_size 18 draws a capital 15.5 px
+tall at 720p, the cap height of a 22.5 px CSS font; the site shows a 1280 px video 688 px wide on a
+1440 px desktop window (measured 2026-10-18), where that font is 12.1 px.
 """
 import sys
 from pathlib import Path
@@ -20,7 +21,7 @@ from svgkit import (BAD, BAD_T, BLUE, BLUE_T, CARD, FAINT, GOOD, GOOD_T, INK, MU
                     ORANGE_T, RULE)
 
 FONT = "Liberation Sans"
-MIN_SIZE = 14
+MIN_SIZE = 18
 PX = config.frame_height / 720          # manim units per pixel of the 720p frame
 W, H = 1280, 720
 config.background_color = CARD
@@ -31,7 +32,7 @@ def P(x, y):
     return np.array([(x - W / 2) * PX, (H / 2 - y) * PX, 0.0])
 
 
-def T(s, size=16, color=INK, bold=False, italic=False):
+def T(s, size=18, color=INK, bold=False, italic=False):
     """Text drawn at 4x and scaled down, which keeps manim's glyph spacing even at small sizes."""
     if size < MIN_SIZE:
         raise ValueError(f"text below {MIN_SIZE}: {s!r}")
@@ -128,7 +129,7 @@ def dot(x, y, color=INK, r=5, filled=True):
     return c.move_to(P(x, y))
 
 
-def cell(s, x, y, ink=INK, edge=RULE, fill=CARD, size=14, bold=False, max_left=0, max_right=W):
+def cell(s, x, y, ink=INK, edge=RULE, fill=CARD, size=18, bold=False, max_left=0, max_right=W):
     """A reading in a small box centred at x (kept inside [max_left, max_right])."""
     t = T(s, size, color=ink, bold=bold)
     w = width_px(t) + 16

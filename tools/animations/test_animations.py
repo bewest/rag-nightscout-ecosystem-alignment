@@ -61,32 +61,27 @@ def test_control_tampered_conformance_case(tmp_path):
     assert stale(swap) == ["active-state-spans"]
 
 
-def test_control_tampered_lab_result(tmp_path):
+def test_control_input_of_no_animation(tmp_path):
+    # the hub-active-state lab results are drawn only as static figures (tools/diagrams)
     rel = "tools/lab/hub-active-state/results/nocturne.json"
-
-    def edit(s):
-        d = json.loads(s)
-        c = next(c for c in d["cases"] if c["id"] == "c7-ov-backfill")
-        c["queries"][1]["answers"]["override_tx"]["key"] = "c7-ov-earlier+c7-ov-later"
-        return json.dumps(d)
-    assert stale(tampered(tmp_path, rel, edit)) == ["hub-active-state"]
-
-
-def test_control_tampered_command_case(tmp_path):
-    rel = "specs/sync/conformance/commands/approve-after-proposal-expiry.yaml"
-    swap = tampered(tmp_path, rel, lambda s: s.replace("expiresAt: 100", "expiresAt: 200"))
-    assert stale(swap) == ["command-lifecycle"]
+    assert stale(tampered(tmp_path, rel, lambda s: s + "\n")) == []
 
 
 def test_control_rule_name_but_not_other_spec_text(tmp_path):
-    rel = "docs/30-design/platform/spec/commands.md"
-    renamed = tampered(tmp_path, rel, lambda s: s.replace("**An approval binds to one payload.**",
-                                                          "**An approval binds to a payload.**"))
-    assert stale(renamed) == ["command-lifecycle"]
+    rel = "docs/30-design/platform/spec/state-intent.md"
+    renamed = tampered(tmp_path, rel, lambda s: s.replace("**Supersession by start.**",
+                                                          "**Supersession by start time.**"))
+    assert stale(renamed) == ["active-state-spans"]
     prose = tampered(tmp_path, rel, lambda s: s + "\nA sentence added at the end.\n")
     assert stale(prose) == []
 
 
 def test_control_tampered_scene(tmp_path):
-    rel = ANIMATIONS["hub-active-state"]["scene"]
-    assert stale(tampered(tmp_path, rel, lambda s: s + "\n# changed\n")) == ["hub-active-state"]
+    rel = ANIMATIONS["active-state-spans"]["scene"]
+    assert stale(tampered(tmp_path, rel, lambda s: s + "\n# changed\n")) == ["active-state-spans"]
+
+
+def test_control_tampered_shared_drawing_code(tmp_path):
+    rel = "tools/animations/common.py"
+    assert stale(tampered(tmp_path, rel, lambda s: s.replace("MIN_SIZE = 18", "MIN_SIZE = 14"))) == \
+        ["active-state-spans"]
