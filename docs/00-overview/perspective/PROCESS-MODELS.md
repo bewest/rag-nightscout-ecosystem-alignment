@@ -245,6 +245,8 @@ responsible for investigating and reporting complaints", which is a route for an
 contract with a manufacturer; no manufacturer was found to publish a route for a third party
 ([vendor note §2](../../60-research/structures-2026-10-17/vendor-programs-and-data-rights.md#2-regulatory-interoperability-fda)).
 The regulated form of running it for others is drawn in 2·controller-operator.
+A proposal that responds to the FDA's stated concerns is in
+[why organise §7a](../WHY-ORGANISE.md#7a-what-the-fda-has-asked-for-and-an-entity-that-takes-it-on-in-stages).
 
 *Interpretation.* Properties the three panels show:
 

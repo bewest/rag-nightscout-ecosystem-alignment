@@ -173,11 +173,73 @@ The steps that cost little and produce the evidence the rest depends on can star
 
 An accountable counterparty, its insurance, and any agreement follow from what those steps show.
 
+## 7a. What the FDA has asked for, and an entity that takes it on in stages
+
+**What the record shows.** The FDA's statements to and about the community, gathered in
+[process models, 0·diy-status](perspective/PROCESS-MODELS.md#0diy-status-under-what-status-a-diy-build-runs), name the same things from 2014 to now. The 2014
+pre-submission meeting with Nightscout contributors recorded that device regulations apply, that
+"some entity be responsible for assuring the safety and effectiveness of the device and that
+postmarket safety is adequately monitored", and that the FDA believed the requirements could be met
+"even with non-traditional methods of development"; it asked for a gap analysis and a follow-up
+meeting. It asked whether update tracking would scale to 10,000 or 50,000 users, and three
+questions: who checks that changes are tested against the design, who collects details when things
+go wrong, and who is ultimately responsible. In 2016 an FDA official said such systems fall under
+FDA jurisdiction, that enforcement is based on risk, with one person low and thousands higher, and
+that responsibility for adverse events and failures is the agency's biggest concern. Payment was
+not named as a factor; scale and responsibility were. The communities now number, by the
+Foundation's estimate, 10,000 or more people, perhaps up to 60,000: the scale the 2014 question
+named.
+
+**Discretion is not the only limit.** Even if the FDA's use of discretion never changes, devices
+are moving to checks that the app reaching them holds a credential the manufacturer issued or
+authorised (step D, §2), and the credentials that meet those checks go to partners (§4). On those
+devices open software works today only by presenting credentials the manufacturer did not issue
+to it, a route no one is accountable for and no one can renew (§2). The routes that can last are
+those of §5, and each of them asks for what the FDA and manufacturers have already asked for: a
+responsible party, complaint and adverse-event handling, change control and security response. The community has
+treated meeting these requirements as a cost to avoid. For devices that check the app, meeting
+them is the route that can last.
+
+**The proposal.** Enforcement discretion is not a permission, and it can change. It does leave time
+in which the factors the FDA named, an accountable party, complaint and adverse-event handling,
+change control, and the reach of updates, can be put in place by an entity before any route of §5
+requires them, and before more devices close the routes of §2. The proposal is that a legal
+entity takes these on in stages, each with a recorded start, a scope and a condition for moving on or stopping. It is the 2014 gap analysis, carried out:
+
+| stage | what the entity does | what it does not do | moves on when |
+|---|---|---|---|
+| 0. shared functions, no entity yet | a shared complaint intake with severity triage ([partner readiness §6](PARTNER-READINESS.md#6-complaint-incident-and-support-handling)); a MedWatch link on each project's pages, as the FDA welcomed in 2014; a measure of how many people run each version | hold anyone's responsibility; distribute builds | the intake has run long enough to show volume and kinds of report |
+| 1. incubation | becomes the named party for the shared functions, for the projects that opt in; writes and publishes the gap analysis against the quality-system, complaint and reporting requirements; answers platform declarations such as Apple's early-2027 regulated-device question where it holds the developer record | take over any project's code or roadmap ([collaboration rules](COLLABORATION-MODEL.md) rule 2); claim that discretion covers what it does | the gap analysis is reviewed by a regulatory professional, and each participating project has chosen a route |
+| 2. a route per project | for each project that chooses one: a manufacturer agreement ([partner readiness](PARTNER-READINESS.md)), a submission on the interoperable routes, as Tidepool did from 2020 to 2023 ([precedents](perspective/PRECEDENTS.md#tidepool-loop-20202023)), or staying DIY with the shared functions | choose for a project | the route is open, or the project declines it |
+
+The entity can be a company or a non-profit; the requirements are the same for either
+([what each activity brings §5](perspective/ACCOUNTABILITY-THRESHOLDS.md#5-the-same-requirements-for-anyone)).
+The foundation's part follows [programme §2b](ECOSYSTEM-PROGRAMME.md#2b-sponsoring-and-operating):
+it can sponsor stage 0 and oversee the entity, and it operates only by a recorded decision.
+
+**Options.**
+
+- **No change.** Each project and person carries the position as today. The 2014 and 2016 questions
+  stay unanswered as the communities grow, and each device that checks the app is reachable only
+  through a credential no one issued to the open software (§2).
+- **Stage 0 only.** The foundation sponsors the shared functions. No entity takes responsibility,
+  so the FDA's central question, who is responsible, is not answered.
+- **Stages 0 and 1.** An incubating entity, with stage 2 decided project by project later.
+- **All three stages for one project first,** chosen with its maintainers, before any others join.
+
+**What it would not change.** It does not make a personal build exempt, it does not lower any
+requirement of §5, and it does not by itself obtain a credential: a manufacturer still decides
+whether to issue or authorise one ([partner readiness §7](PARTNER-READINESS.md#7-credentials-for-devices-that-require-them)). Whether taking on these functions changes how the FDA weighs its discretion,
+and in which direction, is for a regulatory professional (§9); so is whether the entity takes on a
+manufacturer's duties by doing so.
+
 ## 8. What this page does not show
 
 - **When today's open devices leave supply.** End-of-sale and coverage dates for the step A
   devices have not been collected. They set how long the routes in §2 last.
 - **How many people each loss reached.** No outage has been counted (§7, step 1).
+- **How the FDA would view an incubating entity.** No meeting since 2014 is on record here, and
+  the 2014 follow-up meeting and gap analysis are not known to have taken place.
 - **Whether manufacturers would agree.** No request by the foundation or the projects is on record;
   whether one was ever made should be confirmed with the maintainers.
 
@@ -187,5 +249,11 @@ An accountable counterparty, its insurance, and any agreement follow from what t
   §7) apply here, in particular the device-data exemption's scope (points 6, 7 and 16) and the Data
   Act's reach to CGM data (points 1–4).
 - The step placements in §2 were read in code, not run against devices.
+- §7a: whether an entity that takes on complaint intake, triage and update tracking for DIY
+  projects (a) changes how the FDA weighs enforcement discretion, and in which direction, (b) takes
+  on a manufacturer's duties under 21 CFR 803, 806 or 820 by doing so, and (c) can answer Apple's
+  regulated-device declaration for apps built under its developer record; and whether a new
+  pre-submission is the way to raise the gap analysis with the FDA. The FDA record §7a relies on
+  is listed with its own review points in [process models, 0·diy-status](perspective/PROCESS-MODELS.md#0diy-status-under-what-status-a-diy-build-runs).
 - The dates in §6 come from the evidence page and the vendor note; re-read them before the page is
   quoted outside the ecosystem.

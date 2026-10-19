@@ -44,7 +44,7 @@ those interests and offers options, including no change. Nothing in them is deci
 | [Working together](COLLABORATION-MODEL.md) | rules for volunteers, app projects, servers, hosts and researchers working together |
 | [Quality system](QUALITY-SYSTEM.md) | a shared quality kit for every layer of the stack, and how its requirements would be agreed |
 | [Partner readiness](PARTNER-READINESS.md) | access tiers, the terms an agreement with a device manufacturer needs from both sides, and shared complaint, incident and security handling |
-| [Why organise, and why now](WHY-ORGANISE.md) | how open software reaches devices and vendor clouds today, the access already lost or delayed, why every replacement route needs an accountable party, and the dates that make it urgent |
+| [Why organise, and why now](WHY-ORGANISE.md) | how open software reaches devices and vendor clouds today, the access already lost or delayed, why every replacement route needs an accountable party, the dates that make it urgent, and an entity that takes on what the FDA has asked for in stages |
 
 ## The work itself
 
