@@ -32,10 +32,11 @@
 <text class="band" x="16.0" y="485.0" font-size="10" fill="#555" text-anchor="middle" font-weight="bold" transform="rotate(-90 16.0 485.0)">Technical</text>
 <g class="edge"><path class="edge" d="M363.8,99.8 L363.8,146.5 L769.2,146.5 L769.2,202.5" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
 <g class="edge"><path class="edge" d="M785.2,106.5 L785.2,202.5" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
-<g class="edge"><path class="edge" d="M204.2,229.8 L325.4,229.8 L325.4,353.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M204.2,237.8 L325.4,237.8 L325.4,353.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
 <g class="edge"><path class="edge" d="M333.4,407.5 L333.4,492.0 L462.6,492.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
 <g class="edge"><path class="edge" d="M769.2,106.5 L769.2,162.5 L663.4,162.5 L663.4,380.2 L615.8,380.2" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
 <g class="edge"><path class="edge" d="M338.2,99.8 L338.2,353.0" fill="none" stroke="#7b3294" stroke-width="1.6" stroke-dasharray="9,3,2,3" stroke-linecap="butt" marker-end="url(#ah7b3294)"/></g>
+<g class="edge"><path class="edge" d="M309.4,99.8 L309.4,221.8 L204.2,221.8" fill="none" stroke="#7b3294" stroke-width="1.6" stroke-dasharray="9,3,2,3" stroke-linecap="butt" marker-end="url(#ah7b3294)"/></g>
 <g class="edge"><path class="edge" d="M351.0,99.8 L351.0,313.0 L529.0,313.0 L529.0,359.8" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
 <g class="edge"><path class="edge" d="M126.1,250.2 L126.1,297.0 L545.0,297.0 L545.0,359.8" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
 <g class="edge"><path class="edge" d="M545.0,400.8 L545.0,471.5" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
@@ -90,8 +91,8 @@
 <text x="792.2" y="157.5" font-size="10" text-anchor="start" fill="#1f5fa8">CE marking</text>
 </g>
 <g class="elabel" data-k="2">
-<text x="318.4" y="275.9" font-size="10" text-anchor="end" fill="#1f5fa8">source, guides,</text>
-<text x="318.4" y="287.9" font-size="10" text-anchor="end" fill="#1f5fa8">workshops, browser build</text>
+<text x="318.4" y="281.1" font-size="10" text-anchor="end" fill="#1f5fa8">source, guides,</text>
+<text x="318.4" y="293.1" font-size="10" text-anchor="end" fill="#1f5fa8">workshops, browser build</text>
 </g>
 <g class="elabel" data-k="3">
 <text x="398.0" y="472.0" font-size="10" text-anchor="middle" fill="#1f5fa8">build and run</text>
@@ -102,22 +103,26 @@
 <text x="670.4" y="319.0" font-size="10" text-anchor="start" fill="#1f5fa8">supply: to verify</text>
 </g>
 <g class="elabel" data-k="5">
-<text x="331.2" y="179.4" font-size="10" text-anchor="end" fill="#7b3294">2019 warning: use only</text>
-<text x="331.2" y="191.4" font-size="10" text-anchor="end" fill="#7b3294">reviewed devices; officials:</text>
-<text x="331.2" y="203.4" font-size="10" text-anchor="end" fill="#7b3294">DIY not exempt (informal)</text>
+<text x="345.2" y="223.4" font-size="10" text-anchor="start" fill="#7b3294">2016: in jurisdiction,</text>
+<text x="345.2" y="235.4" font-size="10" text-anchor="start" fill="#7b3294">risk-based; 2019 warning</text>
 </g>
 <g class="elabel" data-k="6">
-<text x="358.0" y="197.4" font-size="10" text-anchor="start" fill="#1f5fa8">commerce, no sale</text>
-<text x="358.0" y="209.4" font-size="10" text-anchor="start" fill="#1f5fa8">condition (331(a)); officials:</text>
-<text x="358.0" y="221.4" font-size="10" text-anchor="start" fill="#1f5fa8">free sharing is distribution</text>
+<text x="302.4" y="151.8" font-size="10" text-anchor="end" fill="#7b3294">2014 pre-submission:</text>
+<text x="302.4" y="163.8" font-size="10" text-anchor="end" fill="#7b3294">regulations apply;</text>
+<text x="302.4" y="175.8" font-size="10" text-anchor="end" fill="#7b3294">one responsible party</text>
 </g>
 <g class="elabel" data-k="7">
-<text x="272.7" y="311.0" font-size="10" text-anchor="middle" fill="#1f5fa8">source</text>
+<text x="358.0" y="165.4" font-size="10" text-anchor="start" fill="#1f5fa8">commerce, no sale</text>
+<text x="358.0" y="177.4" font-size="10" text-anchor="start" fill="#1f5fa8">condition (331(a)); officials:</text>
+<text x="358.0" y="189.4" font-size="10" text-anchor="start" fill="#1f5fa8">free sharing is distribution</text>
 </g>
 <g class="elabel" data-k="8">
-<text x="538.0" y="439.1" font-size="10" text-anchor="end" fill="#1f5fa8">built app</text>
+<text x="272.7" y="311.0" font-size="10" text-anchor="middle" fill="#1f5fa8">source</text>
 </g>
 <g class="elabel" data-k="9">
+<text x="538.0" y="439.1" font-size="10" text-anchor="end" fill="#1f5fa8">built app</text>
+</g>
+<g class="elabel" data-k="10">
 <text x="702.3" y="472.0" font-size="10" text-anchor="middle" fill="#1f5fa8">runs it for</text>
 <text x="702.3" y="484.0" font-size="10" text-anchor="middle" fill="#1f5fa8">someone else</text>
 </g>
