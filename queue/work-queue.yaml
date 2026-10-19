@@ -14648,6 +14648,47 @@ items:
 
       Done 2026-10-17, both statements verified wrong in source and corrected: Trio generates and stores the shared secret (RemoteControlConfigStateModel.swift:7-37), reads it only to verify commands (TrioRemoteControl.swift:29), and uploads only its device token, bundle and team identifiers to Nightscout (NightscoutManager.swift:838-853), Trio 0b29cd534; LoopFollow 4a74b781 sends remote carbs via APNs for Loop (LoopAPNSCarbsView.swift:563-564) and Trio (TRC/MealView.swift:346), its only Nightscout call on the remote settings screen being a profile read (RemoteSettingsViewModel.swift:256).
 
+  - id: DOCS-INTEROP-MATRIX
+    title: "Correct the cross-client interoperability matrix: Loop's syncIdentifier format, Trio's identity field, and the entries match key"
+    parcel: docs-truth
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main
+    state: done
+    pr: []
+    blast_radius: >
+      mapping/cross-project/interoperability-matrix.md (deduplication
+      strategies Trio row, treatments identity rows for Loop and Trio, the
+      entries table, the Loop-Trio risk row, REQ-COMPAT-003).
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: programme documentation
+    register: []
+    gates:
+      - run: sh -c '! grep -qE "^\| Trio \| .syncIdentifier. \| UUID" mapping/cross-project/interoperability-matrix.md'
+        kind: static
+        describe: >
+          FAILS while the matrix lists Trio's treatment identity as
+          syncIdentifier. RED on 2026-10-18 against the uncorrected file.
+      - run: sh -c '! grep -qF "| All | `dateString` + `device` | Composite key |" mapping/cross-project/interoperability-matrix.md'
+        kind: static
+        describe: >
+          FAILS while the matrix says entries are keyed on dateString +
+          device. RED on 2026-10-18 against the uncorrected file.
+    blocks_on: []
+    evidence:
+      - docs/60-research/tenancy/identifier-format-2026-10-17.md
+      - docs/10-domain/record-identity-reference.md
+      - docs/30-design/platform/identifier-conventions.md
+    notes: >
+      Found by the identifier-conventions survey (§6) on 2026-10-18. Done
+      2026-10-18: Loop syncIdentifier is a UUID for carbs and pump-event hex
+      of 14-72 characters for most doses (measured in the corpus); Loop
+      overrides send an upper-case UUID _id; Trio sends id (as _id on carbs
+      and temporary targets); API v1 matches entries on sysTime + type, API
+      v3 on identifier else date + type.
+
   - id: DOCS-G7-SLOTS
     title: "Correct the Dexcom BLE deep dive: the G7 holds one connection slot per display type, not one exclusive connection"
     parcel: docs-truth

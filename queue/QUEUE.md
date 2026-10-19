@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 255 |
-| runnable gates | 314 |
+| items | 256 |
+| runnable gates | 316 |
 | explicit `no-gate:` markers | 280 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 280 of the 594 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 280 of the 596 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -49,7 +49,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 87 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 12 | RT-0, T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164 |
-| `done` | 36 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
+| `done` | 37 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
 | `answered` | 2 | RT-D3, RT-PROPAGATION |
@@ -7092,7 +7092,7 @@ alarm-readiness items, and the seam branch refresh.
 
 ## Document-truth sweeps
 
-`parcel: docs-truth` &mdash; 18 items
+`parcel: docs-truth` &mdash; 19 items
 
 Rule 6 work. Agents read SECTIONS, not documents, so a fact stated twice and
 differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
@@ -7114,6 +7114,7 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 | `DOCS-DATA-RIGHTS-LAW` | Bring the data-rights pages up to date: EU Data Act, the current DMCA medical-device data exemption and the 2027 rulemaking, the Washington health-data act | `done` | `main` | n/a | 3 run |
 | `DOCS-VENDOR-FACTS` | Update vendor facts across the repo: Abbott's partner list, MiniMed's separation from Medtronic, Diabeloop in twiist (verify each first) | `done` | `main` | n/a | 2 run |
 | `DOCS-REMOTE-FOLLOWUP` | Re-check two remote-command statements found while correcting DOCS-REMOTE-PATHS: where Trio's shared secret is configured, and LoopFollow's remote carbs path | `done` | `main` | n/a | 2 run |
+| `DOCS-INTEROP-MATRIX` | Correct the cross-client interoperability matrix: Loop's syncIdentifier format, Trio's identity field, and the entries match key | `done` | `main` | n/a | 2 run |
 | `DOCS-G7-SLOTS` | Correct the Dexcom BLE deep dive: the G7 holds one connection slot per display type, not one exclusive connection | `done` | `main` | n/a | 1 run |
 | `DOCS-RECORD-IDENTITY` | Reference: how each Nightscout path identifies a record today (_id, identifier, time keys), 15.0.8 and dev | `done` | `records/loop-identifier-2026-10-17` | n/a | 1 run |
 | `LOOP-ID-RECORDS` | Correct BF-116's claim that Loop sends identifier on devicestatus, and the docs that call the v3 identifier server-assigned | `done` | `records/loop-identifier-2026-10-17` | n/a | 3 run |
@@ -7587,6 +7588,39 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 - `docs/60-research/structures-2026-10-17/technical-loops.md`
 
 **Notes.** Found by the DOCS-REMOTE-PATHS correction on 2026-10-17 and left out of that item's scope; both are read-derived suspicions, not yet verified. (1) remote- bolus-comparison.md:172 says Trio's shared secret is "Configured in Nightscout + Trio"; in source the sender (e.g. LoopFollow) holds the secret and Trio uploads only its device token to Nightscout (Trio 0b29cd534 NightscoutManager.swift:838-853, SecureMessenger.swift:30; LoopFollow 4a74b781 SecureMessenger.swift). (2) loopfollow-deep-dive.md:343 lists LoopFollow's remote carbs as "Via NS", while LoopFollow's RemoteType has no Nightscout path (Remote/RemoteType.swift). Re-read both at the pinned revisions in workspace.lock.json before editing; if either statement turns out to be right, record that and retire the gate rather than editing the page. Describe paths only; nothing about how any command's protection could be bypassed. Done 2026-10-17, both statements verified wrong in source and corrected: Trio generates and stores the shared secret (RemoteControlConfigStateModel.swift:7-37), reads it only to verify commands (TrioRemoteControl.swift:29), and uploads only its device token, bundle and team identifiers to Nightscout (NightscoutManager.swift:838-853), Trio 0b29cd534; LoopFollow 4a74b781 sends remote carbs via APNs for Loop (LoopAPNSCarbsView.swift:563-564) and Trio (TRC/MealView.swift:346), its only Nightscout call on the remote settings screen being a profile read (RemoteSettingsViewModel.swift:256).
+
+### `DOCS-INTEROP-MATRIX` &mdash; Correct the cross-client interoperability matrix: Loop's syncIdentifier format, Trio's identity field, and the entries match key
+
+| | |
+|---|---|
+| state (claimed) | `done` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** mapping/cross-project/interoperability-matrix.md (deduplication strategies Trio row, treatments identity rows for Loop and Trio, the entries table, the Loop-Trio risk row, REQ-COMPAT-003).
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** programme documentation
+
+**Gates.**
+
+- `[static]` `sh -c '! grep -qE "^\| Trio \| .syncIdentifier. \| UUID" mapping/cross-project/interoperability-matrix.md'`
+  - FAILS while the matrix lists Trio's treatment identity as syncIdentifier. RED on 2026-10-18 against the uncorrected file.
+- `[static]` `sh -c '! grep -qF "| All | `dateString` + `device` | Composite key |" mapping/cross-project/interoperability-matrix.md'`
+  - FAILS while the matrix says entries are keyed on dateString + device. RED on 2026-10-18 against the uncorrected file.
+
+**Evidence.**
+
+- `docs/60-research/tenancy/identifier-format-2026-10-17.md`
+- `docs/10-domain/record-identity-reference.md`
+- `docs/30-design/platform/identifier-conventions.md`
+
+**Notes.** Found by the identifier-conventions survey (§6) on 2026-10-18. Done 2026-10-18: Loop syncIdentifier is a UUID for carbs and pump-event hex of 14-72 characters for most doses (measured in the corpus); Loop overrides send an upper-case UUID _id; Trio sends id (as _id on carbs and temporary targets); API v1 matches entries on sysTime + type, API v3 on identifier else date + type.
 
 ### `DOCS-G7-SLOTS` &mdash; Correct the Dexcom BLE deep dive: the G7 holds one connection slot per display type, not one exclusive connection
 

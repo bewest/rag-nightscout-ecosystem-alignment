@@ -3,6 +3,8 @@
 **Generated**: 2026-01-20  
 **Purpose**: Document Nightscout API compatibility patterns across ecosystem clients
 
+*Corrected 2026-10-18 (queue `DOCS-INTEROP-MATRIX`): Loop's `syncIdentifier` format, Trio's identity field and the entries match key, against the [identifier format research](../../docs/60-research/tenancy/identifier-format-2026-10-17.md) §1-§2 and the [record identity reference](../../docs/10-domain/record-identity-reference.md). Rows not named here are unchanged from 2026-01-20. Identifier templates now live in the [identifier conventions](../../docs/30-design/platform/identifier-conventions.md).*
+
 ## API Version Usage
 
 | Client | v1 Data | v1 Auth | v2 Auth | v3 | Notes |
@@ -33,7 +35,7 @@
 |--------|------------------|--------------|---------------|-----------------|
 | **AndroidAPS** | `identifier` + pump composite | ✅ | POST/PUT | `nightscoutId` match |
 | **Loop** | `syncIdentifier` | ❌ | POST only | Not documented |
-| **Trio** | `enteredBy: "Trio"` + `syncIdentifier` | ❌ | POST only | `$ne` on enteredBy |
+| **Trio** | `enteredBy: "Trio"` + `id` (a UUID; `_id` on carbs and temporary targets) | ❌ | POST only | `$ne` on enteredBy |
 | **xDrip+** | `uuid` | ✅ | PUT upsert | `$ne` on enteredBy |
 | **xDrip4iOS** | `uuid` | ✅ | POST/PUT selective | Implicit via uuid |
 | **nightscout-connect** | None (bookmark only) | ❌ | POST only | Timestamp cursor |
@@ -46,8 +48,9 @@
 |--------|-------|--------|---------|
 | AndroidAPS | `identifier` | UUID | `a1b2c3d4-...` |
 | AndroidAPS | `pumpId`+`pumpType`+`pumpSerial` | Composite | `123/Omnipod/ABC` |
-| Loop | `syncIdentifier` | UUID | `a1b2c3d4-...` |
-| Trio | `syncIdentifier` | UUID | `a1b2c3d4-...` |
+| Loop | `syncIdentifier` | UUID for carbs; pump-event hex of 14-72 characters for most doses (measured in the corpus) | `a1b2c3d4-...` / hex |
+| Loop | `_id` (overrides only) | upper-case UUID, moved to `identifier` by `UUID_HANDLING` | `A1B2C3D4-...` |
+| Trio | `id` (`_id` on carbs and temporary targets) | UUID | `a1b2c3d4-...` |
 | xDrip+ | `uuid` | UUID | `a1b2c3d4-...` |
 | xDrip4iOS | `uuid` | UUID | `a1b2c3d4-...` |
 
@@ -55,8 +58,9 @@
 
 | Client | Field | Format |
 |--------|-------|--------|
-| All | `dateString` + `device` | Composite key |
-| Some | `sysTime` | Timestamp |
+| Server (API v1) | `sysTime` + `type` | match key on write; `sysTime` is derived from `dateString` or `date`. `device` is not part of it |
+| Server (API v3) | `identifier`, else `date` + `type` | `identifier` computed from `device` + `date` when absent |
+| Clients | mostly none | Trio sends a UUID `_id` on CGM entries, which `UUID_HANDLING` moves to `identifier`; none of the 719,559 entries in the 12-site corpus carries a client id field |
 
 ### DeviceStatus
 
@@ -101,7 +105,7 @@ When multiple AID controllers write to same Nightscout:
 
 | Controller A | Controller B | Conflict Risk |
 |--------------|--------------|---------------|
-| Loop | Trio | LOW (different syncIdentifier) |
+| Loop | Trio | LOW (different id fields: Loop `syncIdentifier`, Trio `id`) |
 | AAPS | Loop | LOW (different identifier schemes) |
 | xDrip+ | AAPS | LOW (different uuid vs identifier) |
 
@@ -113,7 +117,7 @@ When multiple AID controllers write to same Nightscout:
 |----|-------------|------------------|
 | REQ-COMPAT-001 | API v1 must remain stable | All |
 | REQ-COMPAT-002 | API-SECRET SHA1 hash must be supported | All |
-| REQ-COMPAT-003 | `syncIdentifier` must be recognized for dedup | Loop, Trio |
+| REQ-COMPAT-003 | `syncIdentifier` must be recognized for dedup | Loop (Trio sends `id`) |
 | REQ-COMPAT-004 | `identifier` must be recognized for dedup | AAPS |
 | REQ-COMPAT-005 | `uuid` must be recognized for dedup | xDrip+, xDrip4iOS |
 | REQ-COMPAT-006 | `enteredBy` filter must work for download | Trio, xDrip+ |
