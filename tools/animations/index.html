@@ -2857,11 +2857,11 @@
 
 
 <h1 id="animations--figures-that-change-over-time-drawn-from-data">animations — figures that change over time, drawn from data<a class="headerlink" href="#animations--figures-that-change-over-time-drawn-from-data" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>6c3bec214</code>.</em></p>
-<p><em>Contributor-facing.</em> Three manim scenes, each drawn from the same files as a static figure, rendered
-into <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/127f69e16847ec1d8a072eed859159b3d8e94481/docs/30-design/platform/animations"><code>docs/30-design/platform/animations/</code></a> as a VP9
-<code>.webm</code> (1280×720, 30 fps), a poster <code>.png</code> (the last frame) and a <code>.sources.json</code> sidecar.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>make<span class="w"> </span>animations<span class="w">          </span><span class="c1"># render all three (needs manim 0.20 and PyAV; MANIM_PY, MANIM, ANIM_MEDIA)</span>
+<p><em>Living document, last changed 2026-10-18 at <code>8904a2a95</code>.</em></p>
+<p><em>Contributor-facing.</em> One manim scene, drawn from the same files as the static rule figures,
+rendered into <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/36d0c33edaa92cbb80cd5bd6c1a59731b24e7dd7/docs/30-design/platform/animations"><code>docs/30-design/platform/animations/</code></a> as
+a VP9 <code>.webm</code> (1280×720, 30 fps), a poster <code>.png</code> (the last frame) and a <code>.sources.json</code> sidecar.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>make<span class="w"> </span>animations<span class="w">          </span><span class="c1"># render (needs manim 0.20 and PyAV; MANIM_PY, MANIM, ANIM_MEDIA)</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>make<span class="w"> </span>animations-check<span class="w">    </span><span class="c1"># fail naming each animation whose scene or inputs changed since its render</span>
 </code></pre></div>
 <p><code>make animations</code> runs <code>render.py --media-dir $(ANIM_MEDIA)</code>. manim writes its cache and a lossless
@@ -2880,41 +2880,36 @@ the poster with <code>manim -s</code>, writes the sidecar, and refuses a video o
 <tbody>
 <tr>
 <td><code>active-state-spans</code> · <code>active_state_spans.py</code> <code>ActiveStateSpans</code></td>
-<td>rules A5–A8 of state and intent §6.1, one case each: records land in the order the hub received them, the derived instances start, end, are superseded or vanish as each lands, then a cursor visits each "active at" query</td>
+<td>rules A5–A8 of state and intent §6.1, one case each: records land in the order the hub received them, the derived instances start, end, are superseded or vanish as each lands, then a cursor visits each "active at" query; the last frame lists each case's instances and active sets</td>
 <td><code>specs/sync/conformance/active-state/</code> (loaded with <code>tools/diagrams/active_state_rules.py</code>); instances after each record from <code>tools/nsschema/active_state.py</code>; rule names from <code>spec/state-intent.md</code></td>
 <td>synthetic cases; after the last record the instances equal each case's <code>expected</code> block, or the scene refuses to render</td>
 <td><code>diagrams/active-state-a5.svg</code> … <code>a8.svg</code></td>
 </tr>
-<tr>
-<td><code>hub-active-state</code> · <code>hub_active_state_scene.py</code> <code>HubActiveState</code></td>
-<td>cases c1 (cancel), c3 (devicestatus seconds read as minutes), c7 (backfill): records as written, each hub's derived windows or spans, then each hub's reading at each query time, Nocturne's that differ marked ≠</td>
-<td><code>tools/lab/hub-active-state/records/cases.json</code>, <code>results/crm.json</code>, <code>results/nocturne.json</code>, <code>results/RESULTS.md</code> (loaded with <code>tools/diagrams/hub_active_state.py</code>)</td>
-<td>measured, run date and commits on screen</td>
-<td><code>diagrams/hub-active-state-*.svg</code></td>
-</tr>
-<tr>
-<td><code>command-lifecycle</code> · <code>command_lifecycle.py</code> <code>CommandLifecycle</code></td>
-<td>five command cases call by call: propose, approve naming the payload hash, fetch, the controller's hash and expiry check, outcome; an approval after expiry, a received payload whose hash differs, an <code>unconfirmed</code> command replaced by a late report, a cancel after hand-over</td>
-<td><code>specs/sync/conformance/commands/</code> (replies from each case's <code>expected</code>); record states from <code>tools/nsschema/commands.py</code>; rule names from <code>spec/commands.md</code></td>
-<td>proposed (commands specification), synthetic cases</td>
-<td>the poster (<code>command-lifecycle.png</code>)</td>
-</tr>
 </tbody>
 </table>
+<p><strong>Text size.</strong> The site shows the 1280 px video 688 px wide on a 1440 px desktop window and 358 px
+wide on a 390 px phone (measured in headless Chrome, 2026-10-18), a scale of 0.54 and 0.28. Text is
+manim font size 18 or more (<code>common.MIN_SIZE</code>; a 22.5 px CSS font on the canvas), which shows at
+12.1 px on the desktop and 6.3 px on the phone; the per-case frames use 20 (13.4 px on the
+desktop). On a phone the poster and the static figures <code>diagrams/active-state-a5.svg</code> … <code>a8.svg</code>
+carry the content. Two earlier scenes were replaced by static figures on 2026-10-18 because their
+text showed at 9.4 px on the desktop: the two hubs' readings (<code>hub-active-state</code>; the static
+<code>diagrams/hub-active-state-*.svg</code> show every case) and the command lifecycle, whose call lines
+with payload, hash and expiry do not fit four lanes at font size 18
+(<code>tools/diagrams/command_lifecycle.py</code> draws it).</p>
 <p><code>sources.py</code> lists each animation's scene, class and inputs; the scenes import their case lists from
 it. An input is a file, hashed whole, or a specification with the rule ids whose bold names the
 animation shows: only those names are hashed, so other edits to the specification do not make the
 animation stale.</p>
 <p><code>test_animations.py</code>: video bytes are not deterministic, so the drift test compares the sidecar's
 hashes with the files as they stand; it also checks the poster, sidecar and sizes. Its controls
-each change one input in a temporary copy (an active-state case, a Nocturne lab answer, a command
-case, a rule name in <code>commands.md</code>, a scene file) and require that exactly the animation drawn from
-it is reported stale; an edit to <code>commands.md</code> outside the rule names must report none.</p>
-<p>Rules the scenes keep, as <code>tools/diagrams</code> does: data only (every reply, instance and reading comes
-from a case, a lab result or a reference function the cases are tested against); text at manim
-font size 14 or more (a 12 px capital at 720p); the tools/diagrams palette; roles and products
-only, no people or companies; calm motion, about 1.5 s on each state change; a final frame that
-summarises and serves as the poster.</p>
+each change one input in a temporary copy (an active-state case, a rule name in <code>state-intent.md</code>,
+the scene file, <code>common.py</code>) and require that the animation is reported stale; an edit to
+<code>state-intent.md</code> outside the rule names, or to a lab result no animation draws, must report none.</p>
+<p>Rules the scenes keep, as <code>tools/diagrams</code> does: data only (every instance and active set comes
+from a case or a reference function the cases are tested against); text at manim font size 18 or
+more; the tools/diagrams palette; roles and products only, no people or companies; calm motion,
+about 1.5 s on each state change; a final frame that summarises and serves as the poster.</p>
 
 
 

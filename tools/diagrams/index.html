@@ -2857,9 +2857,9 @@
 
 
 <h1 id="diagrams--figures-drawn-from-data">diagrams — figures drawn from data<a class="headerlink" href="#diagrams--figures-drawn-from-data" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>a8577a075</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>8904a2a95</code>.</em></p>
 <p><em>Contributor-facing.</em> Generates the SVG figures under
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/127f69e16847ec1d8a072eed859159b3d8e94481/docs/30-design/platform/diagrams"><code>docs/30-design/platform/diagrams/</code></a> from the files that
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/36d0c33edaa92cbb80cd5bd6c1a59731b24e7dd7/docs/30-design/platform/diagrams"><code>docs/30-design/platform/diagrams/</code></a> from the files that
 hold the facts they show, so a figure changes only when its source does. Pure Python (PyYAML);
 same card, font and text measure as <a href="../structure-diagrams/index.html"><code>tools/structure-diagrams</code></a>.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>make<span class="w"> </span>diagrams-svg<span class="w">          </span><span class="c1"># regenerate every figure</span>
@@ -2893,6 +2893,12 @@ same card, font and text measure as <a href="../structure-diagrams/index.html"><
 <td><code>specs/sync/conformance/active-state/*.yaml</code> (the cases' records and <code>expected</code> blocks); the rule's name and sentence from <code>docs/30-design/platform/spec/state-intent.md</code> §6.1</td>
 <td>synthetic cases</td>
 </tr>
+<tr>
+<td><code>command_lifecycle.py</code> · <code>figure()</code></td>
+<td><code>command-lifecycle.svg</code></td>
+<td><code>specs/sync/conformance/commands/</code> (five cases: calls and <code>expected</code> blocks, replayed by <code>tools/nsschema/commands.py</code>); rule names from <code>docs/30-design/platform/spec/commands.md</code></td>
+<td>proposed, synthetic cases</td>
+</tr>
 </tbody>
 </table>
 <p><code>build.py</code> collects every module's <code>build()</code> (<code>{file name: SVG text}</code>) and writes them; <code>--check</code>
@@ -2904,7 +2910,9 @@ compares instead. Each module's docstring says what each mark means.</p>
   per rule, and <code>build()</code> refuses a case that neither cites the rule nor is the control of a drawn
   case that does.</li>
 <li><strong>Deterministic.</strong> No timestamps or random ids; every coordinate goes through <code>svgkit.num()</code>.</li>
-<li><strong>Legible at the site's width.</strong> Drawn 720 px wide, shown 1:1, text at 12 px or more.
+<li><strong>Legible at the site's width.</strong> Drawn 720 px wide, text at 12 px or more. The site shows a
+  figure 688 px wide on a 1440 px desktop window (measured in headless Chrome, 2026-10-18), so
+  12 px text shows at 11.5 px; <code>command-lifecycle.svg</code> uses 13 px or more (12.4 px shown).
   <code>svgkit.svg()</code> refuses a figure with text measured past the card edge.</li>
 <li><strong>Accessible.</strong> Each SVG carries <code>&lt;title&gt;</code> and <code>&lt;desc&gt;</code>; the desc states the figure's finding
   from the data. A state is never colour alone: a disagreement cell is red and marked <code>≠</code>, a
@@ -2912,9 +2920,9 @@ compares instead. Each module's docstring says what each mark means.</p>
 <li><strong>Roles and products only.</strong> Controller and hub product names; no people or companies.</li>
 </ul>
 <p><code>test_diagrams.py</code>: the staleness test regenerates every figure and compares it with the committed
-file; three controls each change one input in a temporary copy (a lab answer, a registration's
-<code>endedEncoding</code>, a case's expected end) and require that exactly the figure drawn from it is
-reported stale. A change to a rule's wording in <code>state-intent.md</code> §6.1 makes that rule's figure
+file; five controls each change one input in a temporary copy (a lab answer, a registration's
+<code>endedEncoding</code>, a case's expected end, a command case's call time, a rule name in <code>commands.md</code>)
+and require that exactly the figure drawn from it is reported stale. A change to a rule's wording in <code>state-intent.md</code> §6.1 makes that rule's figure
 stale too: run <code>make diagrams-svg</code> after editing it.</p>
 
 

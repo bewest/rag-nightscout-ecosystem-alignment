@@ -1,0 +1,160 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="1427" viewBox="0 0 720 1427" font-family="Helvetica, Arial, sans-serif" role="img">
+<title>Command lifecycle: five conformance cases, call by call</title>
+<desc>Five synthetic command conformance cases, call by call, as the commands specification proposes. An approval creates one command carrying the proposal's payload: final: proposal p1 approved; command c1 fetched. An approval after the proposal's expiry is refused: final: proposal p1 expired. The controller refuses a received payload whose hash differs: final: command c1 refused, report hash mismatch. A report on a command unconfirmed at expiry is accepted and replaces it: final: command c1 succeeded. A cancel after hand-over is a request the controller decides: final: command c1 refused.</desc>
+<rect x="0" y="0" width="720" height="1427" fill="#ffffff"/>
+<text x="12" y="24" font-size="16" fill="#111111" font-weight="bold">Command lifecycle: five conformance cases, call by call</text>
+<rect x="474" y="10" width="234" height="20" rx="3" fill="#f6e0d2" stroke="#b5541b" stroke-width="1"/>
+<text x="591" y="24" font-size="13" fill="#b5541b" text-anchor="middle" font-weight="bold">proposed · commands specification</text>
+<text x="12" y="48" font-size="13" fill="#555555">Each panel is one case: t is hub time in seconds; the role making each call; the call; the reply the case expects (green:</text>
+<text x="12" y="65" font-size="13" fill="#555555">accepted or succeeded; red: refused, rejected or failed). A red dashed line is an expiry passing between two calls.</text>
+<text x="18" y="90" font-size="13" fill="#555555" font-weight="bold">t</text>
+<text x="62" y="90" font-size="13" fill="#555555" font-weight="bold">role</text>
+<text x="148" y="90" font-size="13" fill="#555555" font-weight="bold">call</text>
+<text x="474" y="90" font-size="13" fill="#555555" font-weight="bold">reply</text>
+<line x1="12" y1="96" x2="708" y2="96" stroke="#c8c8c8" stroke-width="1"/>
+<rect x="12" y="104" width="696" height="243" rx="4" fill="#f4f4f4"/>
+<text x="18" y="124" font-size="14" fill="#111111" font-weight="bold">An approval creates one command carrying the proposal's payload</text>
+<text x="18" y="142" font-size="13" fill="#555555">rules CM13 An approval binds to one payload · CM14 Who may approve · CM1 The hub records a command before it</text>
+<text x="18" y="160" font-size="13" fill="#555555">sends it</text>
+<rect x="468" y="178" width="234" height="40" rx="3" fill="#e2f3e2" stroke="#0ca30c" stroke-width="1"/>
+<text x="18" y="191" font-size="13" fill="#555555">t=20</text>
+<text x="62" y="191" font-size="13" fill="#111111">proposer</text>
+<text x="148" y="191" font-size="13" fill="#111111">propose {action: start, preset: example},</text>
+<text x="148" y="208" font-size="13" fill="#111111">sha256:111a86ab…, expiresAt 100</text>
+<text x="474" y="191" font-size="13" fill="#111111">→ 201 · p1</text>
+<rect x="468" y="222" width="234" height="23" rx="3" fill="#e2f3e2" stroke="#0ca30c" stroke-width="1"/>
+<text x="18" y="235" font-size="13" fill="#555555">t=50</text>
+<text x="62" y="235" font-size="13" fill="#111111">sender</text>
+<text x="148" y="235" font-size="13" fill="#111111">approve p1, names sha256:111a86ab…</text>
+<text x="474" y="235" font-size="13" fill="#111111">→ 201 · c1 · pending</text>
+<rect x="468" y="249" width="234" height="23" rx="3" fill="#e2f3e2" stroke="#0ca30c" stroke-width="1"/>
+<text x="18" y="262" font-size="13" fill="#555555">t=55</text>
+<text x="62" y="262" font-size="13" fill="#111111">controller</text>
+<text x="148" y="262" font-size="13" fill="#111111">fetch</text>
+<text x="474" y="262" font-size="13" fill="#111111">→ 200 · commands [c1]</text>
+<rect x="468" y="276" width="234" height="40" rx="3" fill="#e2f3e2" stroke="#0ca30c" stroke-width="1"/>
+<text x="18" y="289" font-size="13" fill="#555555">t=60</text>
+<text x="62" y="289" font-size="13" fill="#111111">controller</text>
+<text x="148" y="289" font-size="13" fill="#111111">enact c1: received payload sha256:111a86ab… =</text>
+<text x="148" y="306" font-size="13" fill="#111111">command's sha256:111a86ab…; expiresAt 100</text>
+<text x="474" y="289" font-size="13" fill="#111111">→ succeeded</text>
+<text x="18" y="332" font-size="13" fill="#555555">final: proposal p1 approved; command c1 fetched</text>
+<rect x="12" y="355" width="696" height="179" rx="4" fill="#f4f4f4"/>
+<text x="18" y="375" font-size="14" fill="#111111" font-weight="bold">An approval after the proposal's expiry is refused</text>
+<text x="18" y="393" font-size="13" fill="#555555">rules CM13 An approval binds to one payload</text>
+<rect x="468" y="411" width="234" height="40" rx="3" fill="#e2f3e2" stroke="#0ca30c" stroke-width="1"/>
+<text x="18" y="424" font-size="13" fill="#555555">t=20</text>
+<text x="62" y="424" font-size="13" fill="#111111">proposer</text>
+<text x="148" y="424" font-size="13" fill="#111111">propose {action: start, preset: example},</text>
+<text x="148" y="441" font-size="13" fill="#111111">sha256:111a86ab…, expiresAt 100</text>
+<text x="474" y="424" font-size="13" fill="#111111">→ 201 · p1</text>
+<line x1="18" y1="453" x2="702" y2="453" stroke="#d03b3b" stroke-width="1.5" stroke-dasharray="5 3"/>
+<text x="18" y="467" font-size="13" fill="#d03b3b">t=100</text>
+<text x="148" y="467" font-size="13" fill="#d03b3b">expiresAt 100 passes; no call</text>
+<rect x="468" y="480" width="234" height="23" rx="3" fill="#f7dede" stroke="#d03b3b" stroke-width="1"/>
+<text x="18" y="493" font-size="13" fill="#555555">t=150</text>
+<text x="62" y="493" font-size="13" fill="#111111">sender</text>
+<text x="148" y="493" font-size="13" fill="#111111">approve p1, names sha256:111a86ab…</text>
+<text x="474" y="493" font-size="13" fill="#111111">→ 409 · proposal-expired</text>
+<text x="18" y="519" font-size="13" fill="#555555">final: proposal p1 expired</text>
+<rect x="12" y="542" width="696" height="242" rx="4" fill="#f4f4f4"/>
+<text x="18" y="562" font-size="14" fill="#111111" font-weight="bold">The controller refuses a received payload whose hash differs</text>
+<text x="18" y="580" font-size="13" fill="#555555">rules CM10 The controller checks the hash · CM7 Only the destination reports · CM8 Reasons</text>
+<rect x="468" y="598" width="234" height="40" rx="3" fill="#e2f3e2" stroke="#0ca30c" stroke-width="1"/>
+<text x="18" y="611" font-size="13" fill="#555555">t=10</text>
+<text x="62" y="611" font-size="13" fill="#111111">sender</text>
+<text x="148" y="611" font-size="13" fill="#111111">command {action: start, preset: example},</text>
+<text x="148" y="628" font-size="13" fill="#111111">sha256:111a86ab…, expiresAt 100</text>
+<text x="474" y="611" font-size="13" fill="#111111">→ 201 · c1 · pending</text>
+<rect x="468" y="642" width="234" height="23" rx="3" fill="#e2f3e2" stroke="#0ca30c" stroke-width="1"/>
+<text x="18" y="655" font-size="13" fill="#555555">t=20</text>
+<text x="62" y="655" font-size="13" fill="#111111">controller</text>
+<text x="148" y="655" font-size="13" fill="#111111">fetch</text>
+<text x="474" y="655" font-size="13" fill="#111111">→ 200 · commands [c1]</text>
+<rect x="468" y="669" width="234" height="40" rx="3" fill="#f7dede" stroke="#d03b3b" stroke-width="1"/>
+<text x="18" y="682" font-size="13" fill="#555555">t=50</text>
+<text x="62" y="682" font-size="13" fill="#111111">controller</text>
+<text x="148" y="682" font-size="13" fill="#111111">enact c1: received payload sha256:5d170557… ≠</text>
+<text x="148" y="699" font-size="13" fill="#111111">command's sha256:111a86ab…; expiresAt 100</text>
+<text x="474" y="682" font-size="13" fill="#111111">→ refused, reason hash-mismatch</text>
+<rect x="468" y="713" width="234" height="40" rx="3" fill="#e2f3e2" stroke="#0ca30c" stroke-width="1"/>
+<text x="18" y="726" font-size="13" fill="#555555">t=55</text>
+<text x="62" y="726" font-size="13" fill="#111111">controller</text>
+<text x="148" y="726" font-size="13" fill="#111111">report c1 refused, reason hash-mismatch, hash</text>
+<text x="148" y="743" font-size="13" fill="#111111">sha256:5d170557…</text>
+<text x="474" y="726" font-size="13" fill="#111111">→ 200</text>
+<text x="18" y="769" font-size="13" fill="#555555">final: command c1 refused, report hash mismatch</text>
+<rect x="12" y="792" width="696" height="260" rx="4" fill="#f4f4f4"/>
+<text x="18" y="812" font-size="14" fill="#111111" font-weight="bold">A report on a command unconfirmed at expiry is accepted and replaces it</text>
+<text x="18" y="830" font-size="13" fill="#555555">rules CM3 An expiry is required · CM9 One outcome</text>
+<rect x="468" y="848" width="234" height="40" rx="3" fill="#e2f3e2" stroke="#0ca30c" stroke-width="1"/>
+<text x="18" y="861" font-size="13" fill="#555555">t=10</text>
+<text x="62" y="861" font-size="13" fill="#111111">sender</text>
+<text x="148" y="861" font-size="13" fill="#111111">command {action: start, preset: example},</text>
+<text x="148" y="878" font-size="13" fill="#111111">sha256:111a86ab…, expiresAt 100</text>
+<text x="474" y="861" font-size="13" fill="#111111">→ 201 · c1 · pending</text>
+<rect x="468" y="892" width="234" height="23" rx="3" fill="#e2f3e2" stroke="#0ca30c" stroke-width="1"/>
+<text x="18" y="905" font-size="13" fill="#555555">t=20</text>
+<text x="62" y="905" font-size="13" fill="#111111">controller</text>
+<text x="148" y="905" font-size="13" fill="#111111">fetch</text>
+<text x="474" y="905" font-size="13" fill="#111111">→ 200 · commands [c1]</text>
+<line x1="18" y1="917" x2="702" y2="917" stroke="#d03b3b" stroke-width="1.5" stroke-dasharray="5 3"/>
+<text x="18" y="931" font-size="13" fill="#d03b3b">t=100</text>
+<text x="148" y="931" font-size="13" fill="#d03b3b">expiresAt 100 passes; no call</text>
+<rect x="468" y="944" width="234" height="23" rx="3" fill="#e2f3e2" stroke="#0ca30c" stroke-width="1"/>
+<text x="18" y="957" font-size="13" fill="#555555">t=150</text>
+<text x="62" y="957" font-size="13" fill="#111111">sender</text>
+<text x="148" y="957" font-size="13" fill="#111111">read c1</text>
+<text x="474" y="957" font-size="13" fill="#111111">→ 200 · unconfirmed</text>
+<rect x="468" y="971" width="234" height="23" rx="3" fill="#e2f3e2" stroke="#0ca30c" stroke-width="1"/>
+<text x="18" y="984" font-size="13" fill="#555555">t=160</text>
+<text x="62" y="984" font-size="13" fill="#111111">controller</text>
+<text x="148" y="984" font-size="13" fill="#111111">report c1 succeeded, hash sha256:111a86ab…</text>
+<text x="474" y="984" font-size="13" fill="#111111">→ 200</text>
+<rect x="468" y="998" width="234" height="23" rx="3" fill="#e2f3e2" stroke="#0ca30c" stroke-width="1"/>
+<text x="18" y="1011" font-size="13" fill="#555555">t=170</text>
+<text x="62" y="1011" font-size="13" fill="#111111">sender</text>
+<text x="148" y="1011" font-size="13" fill="#111111">read c1</text>
+<text x="474" y="1011" font-size="13" fill="#111111">→ 200 · succeeded</text>
+<text x="18" y="1037" font-size="13" fill="#555555">final: command c1 succeeded</text>
+<rect x="12" y="1060" width="696" height="296" rx="4" fill="#f4f4f4"/>
+<text x="18" y="1080" font-size="14" fill="#111111" font-weight="bold">A cancel after hand-over is a request the controller decides</text>
+<text x="18" y="1098" font-size="13" fill="#555555">rules CM25 Cancel · CM21 Enacted once</text>
+<rect x="468" y="1116" width="234" height="40" rx="3" fill="#e2f3e2" stroke="#0ca30c" stroke-width="1"/>
+<text x="18" y="1129" font-size="13" fill="#555555">t=10</text>
+<text x="62" y="1129" font-size="13" fill="#111111">sender</text>
+<text x="148" y="1129" font-size="13" fill="#111111">command {action: start, preset: example},</text>
+<text x="148" y="1146" font-size="13" fill="#111111">sha256:111a86ab…, expiresAt 100</text>
+<text x="474" y="1129" font-size="13" fill="#111111">→ 201 · c1 · pending</text>
+<rect x="468" y="1160" width="234" height="23" rx="3" fill="#e2f3e2" stroke="#0ca30c" stroke-width="1"/>
+<text x="18" y="1173" font-size="13" fill="#555555">t=15</text>
+<text x="62" y="1173" font-size="13" fill="#111111">controller</text>
+<text x="148" y="1173" font-size="13" fill="#111111">fetch</text>
+<text x="474" y="1173" font-size="13" fill="#111111">→ 200 · commands [c1]</text>
+<rect x="468" y="1187" width="234" height="23" rx="3" fill="#e2f3e2" stroke="#0ca30c" stroke-width="1"/>
+<text x="18" y="1200" font-size="13" fill="#555555">t=20</text>
+<text x="62" y="1200" font-size="13" fill="#111111">sender</text>
+<text x="148" y="1200" font-size="13" fill="#111111">cancel c1</text>
+<text x="474" y="1200" font-size="13" fill="#111111">→ 202 · fetched · cancelRequested</text>
+<rect x="468" y="1214" width="234" height="23" rx="3" fill="#e2f3e2" stroke="#0ca30c" stroke-width="1"/>
+<text x="18" y="1227" font-size="13" fill="#555555">t=25</text>
+<text x="62" y="1227" font-size="13" fill="#111111">controller</text>
+<text x="148" y="1227" font-size="13" fill="#111111">fetch</text>
+<text x="474" y="1227" font-size="13" fill="#111111">→ 200 · commands [] · cancels [c1]</text>
+<rect x="468" y="1241" width="234" height="40" rx="3" fill="#f7dede" stroke="#d03b3b" stroke-width="1"/>
+<text x="18" y="1254" font-size="13" fill="#555555">t=26</text>
+<text x="62" y="1254" font-size="13" fill="#111111">controller</text>
+<text x="148" y="1254" font-size="13" fill="#111111">enact c1: received payload sha256:111a86ab… =</text>
+<text x="148" y="1271" font-size="13" fill="#111111">command's sha256:111a86ab…; expiresAt 100</text>
+<text x="474" y="1254" font-size="13" fill="#111111">→ refused, reason cancelled</text>
+<rect x="468" y="1285" width="234" height="40" rx="3" fill="#e2f3e2" stroke="#0ca30c" stroke-width="1"/>
+<text x="18" y="1298" font-size="13" fill="#555555">t=27</text>
+<text x="62" y="1298" font-size="13" fill="#111111">controller</text>
+<text x="148" y="1298" font-size="13" fill="#111111">report c1 refused, reason cancelled, hash</text>
+<text x="148" y="1315" font-size="13" fill="#111111">sha256:111a86ab…</text>
+<text x="474" y="1298" font-size="13" fill="#111111">→ 200</text>
+<text x="18" y="1341" font-size="13" fill="#555555">final: command c1 refused</text>
+<text x="12" y="1370" font-size="13" fill="#555555" font-style="italic">Proposed, docs/30-design/platform/spec/commands.md §4–§7. Synthetic cases under</text>
+<text x="12" y="1387" font-size="13" fill="#555555" font-style="italic">specs/sync/conformance/commands/; replies from each case's expected block, replayed by the reference</text>
+<text x="12" y="1404" font-size="13" fill="#555555" font-style="italic">tools/nsschema/commands.py.</text>
+</svg>
