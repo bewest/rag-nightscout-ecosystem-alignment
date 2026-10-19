@@ -2345,6 +2345,8 @@
       
         
       
+        
+      
     
     
     
@@ -3566,6 +3568,34 @@
     
   
     Command queue and planning: outstanding commands, enacting once, and plans confirmed in advance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../effect-link-prototype-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Effect link: how a command's outcome names the record that shows its effect
   
 
     
@@ -5853,7 +5883,7 @@
 
 
 <h1 id="l2l5-control-loops-what-each-mechanism-controls-and-the-unsafe-control-actions-its-rules-prevent">L2–L5 Control loops: what each mechanism controls, and the unsafe control actions its rules prevent<a class="headerlink" href="#l2l5-control-loops-what-each-mechanism-controls-and-the-unsafe-control-actions-its-rules-prevent" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>8cb0b5ed9</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>baa67a88f</code>.</em></p>
 <p><em>Contributor-facing. Living specification analysis, current at <code>main</code> <code>85c645c8</code> (2026-10-18).
 Covers layers L2–L5 of the <a href="../index.html">platform index</a>; terms are in the
 <a href="glossary.html">glossary</a>. Decisions: <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">D18 and D19</a>.
@@ -5993,7 +6023,7 @@ and sections; <em>status</em> is <code>covered</code> (a rule and a case), <code
 <code>controller</code> (the controller's own validation, D18) or <code>gap</code> (no rule; the open item named).</p>
 <h3 id="41-a-remote-command">4.1 A remote command<a class="headerlink" href="#41-a-remote-command" title="Permanent link">&para;</a></h3>
 <p><a href="commands.html#2-where-a-command-goes">Commands §2, §4, §5 and §7</a>. The sender sends a command
-(CA-CMD-SEND), or would cancel one (CA-CMD-CANCEL, not specified); the hub records it and delivers it by push or fetch (CA-CMD-DELIVER); the
+(CA-CMD-SEND), or would cancel one (CA-CMD-CANCEL, not specified); the hub records it and delivers it in a fetch, which a fetch-now signal may prompt (CA-CMD-DELIVER); the
 controller validates and enacts it (CA-CMD-ENACT) and reports an outcome, which the hub shows the
 sender as the command's state (FB-CMD-STATE). The sender's process model is the command's state;
 the hub's is its record; only the controller knows what the pump did.</p>
@@ -6021,7 +6051,7 @@ the hub's is its record; only the controller knows what the pump did.</p>
 <tr>
 <td>UCA-CMD-001</td>
 <td>provided</td>
-<td>A sender sends a second command for the same intent while the first is pending, sent, fetched or unconfirmed, and both are enacted.</td>
+<td>A sender sends a second command for the same intent while the first is pending, fetched or unconfirmed, and both are enacted.</td>
 <td>HAZ-1</td>
 <td>S4</td>
 <td>CM3, CM4, CM24</td>
@@ -6057,7 +6087,7 @@ the hub's is its record; only the controller knows what the pump did.</p>
 <tr>
 <td>UCA-CMD-005</td>
 <td>provided</td>
-<td>A command reaches an instance on another tenant, or a push for one tenant is sent with another tenant's or the deployment's credentials.</td>
+<td>A command reaches an instance on another tenant, or a signal for one tenant is sent outside a request bound to it or with another tenant's or the deployment's push credentials.</td>
 <td>HAZ-4, HAZ-1</td>
 <td>S4</td>
 <td>CM6, CM19, CM20</td>
@@ -6066,10 +6096,10 @@ the hub's is its record; only the controller knows what the pump did.</p>
 <tr>
 <td>UCA-CMD-006</td>
 <td>provided</td>
-<td>One command is delivered more than once, by a push and again by a fetch that returns sent commands, and the controller enacts it each time.</td>
+<td>One command is delivered more than once, by fetches that return it until the controller reports (CM26), and the controller enacts it each time.</td>
 <td>HAZ-1</td>
 <td>S4</td>
-<td>CM18, CM21</td>
+<td>CM18, CM21, CM26</td>
 <td>covered</td>
 </tr>
 <tr>
@@ -6084,16 +6114,16 @@ the hub's is its record; only the controller knows what the pump did.</p>
 <tr>
 <td>UCA-CMD-008</td>
 <td>not-provided</td>
-<td>A push is lost and the destination never receives the command, while the sender reads sent as delivered.</td>
+<td>A fetch-now signal or a fetch reply is lost and the destination never receives the command, or the sender reads the signal as delivery.</td>
 <td>HAZ-2, HAZ-3</td>
 <td>S2</td>
-<td>CM17, CM18</td>
+<td>CM17, CM26, CM27</td>
 <td>covered</td>
 </tr>
 <tr>
 <td>UCA-CMD-009</td>
 <td>timing</td>
-<td>A command is sent or fetched at or after its expiry.</td>
+<td>A command is signalled or fetched at or after its expiry.</td>
 <td>HAZ-1</td>
 <td>S3</td>
 <td>CM3</td>
@@ -6156,7 +6186,7 @@ the hub's is its record; only the controller knows what the pump did.</p>
 <tr>
 <td>FB-CMD-003</td>
 <td>incorrect</td>
-<td>A command reads as done because it was sent or fetched.</td>
+<td>A command reads as done because it was signalled or fetched.</td>
 <td>HAZ-3</td>
 <td>S3</td>
 <td>CM7, CM17</td>
@@ -7166,10 +7196,10 @@ vocabulary says what each one has to get right.</p>
 <td><a href="commands.html#4-the-command-record-proposed">commands §4</a>, FB-CMD-001</td>
 </tr>
 <tr>
-<td>Delivery by push and fetch</td>
-<td>two actuators for one action</td>
-<td>at least once means duplicates; the receiving controller decides each command once (CM21)</td>
-<td>CM18, CM21, UCA-CMD-006</td>
+<td>Delivery by fetch, prompted by a signal or by the cadence</td>
+<td>one actuator, two triggers</td>
+<td>a fetch returns a command until it is reported, so delivery is at least once and duplicates are expected; the receiving controller decides each command once (CM21)</td>
+<td>CM18, CM21, CM26, CM27, UCA-CMD-006</td>
 </tr>
 <tr>
 <td>Prepare and commit</td>

@@ -2345,6 +2345,8 @@
       
         
       
+        
+      
     
     
     
@@ -3270,6 +3272,34 @@
     
   
     Command queue and planning: outstanding commands, enacting once, and plans confirmed in advance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../effect-link-prototype-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Effect link: how a command's outcome names the record that shows its effect
   
 
     
@@ -5513,7 +5543,7 @@
 
 
 <h1 id="bringing-a-controller-onto-a-hub-register-it-hold-a-lease-receive-commands-and-report-outcomes">Bringing a controller onto a hub: register it, hold a lease, receive commands and report outcomes<a class="headerlink" href="#bringing-a-controller-onto-a-hub-register-it-hold-a-lease-receive-commands-and-report-outcomes" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>5a47b91eb</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>baa67a88f</code>.</em></p>
 <p><em>Contributor-facing. Living guide, current at <code>main</code> <code>127f69e1</code> (2026-10-18). Uses the <a href="../index.html">platform specifications</a>; terms are in the <a href="../spec/glossary.html">glossary</a>. Status: the specifications are proposed and not implemented; until <code>HUB-REG-CRM</code> is, each step is checked against its conformance case, not run against a hub.</em></p>
 <p>This guide is for a developer bringing an automated insulin delivery controller, or a controller
 app, onto a Nightscout hub that implements the platform specifications. It follows one fictional
@@ -5630,11 +5660,12 @@ holder of <code>API_SECRET</code> is one subject, so another app holding it can 
 their outcomes; commands §9 lists this as open (UCA-CMD-014). Give the controller a credential of
 its own.</p>
 <p><strong>Under <code>TENANCY_MODE=multi</code></strong> each tenant has its own credential root and signing key (AU3). A
-registration is per tenant, so a controller that serves two tenants registers twice. A push is sent
-only inside a request bound to the command's tenant (CM19), so fetch is the path that always works.</p>
+registration is per tenant, so a controller that serves two tenants registers twice. A fetch-now
+signal is sent only inside a request bound to the command's tenant (CM19), and carries nothing
+(CM27); fetch is the path that always works.</p>
 <h2 id="3-walk-through">3. Walk-through<a class="headerlink" href="#3-walk-through" title="Permanent link">&para;</a></h2>
 <p>The parts of a hub your app calls (C4 containers; under <code>TENANCY_MODE=single</code> one listener serves all three, and <code>API_SECRET</code> acts as the owner):</p>
-<p><img alt="3·guide-containers: your app reads the unauthenticated capability document at launch; it calls the data listener to put its product, definition and instance, write typed records, fetch commands and report outcomes, which the hub stores per element bound to your credential and attributed to your instance; the socket brings live commands inside bound requests; the site owner acts through the owner's listener on products, definitions and instances" src="../../../00-overview/perspective/diagrams/3-guide-containers.svg" /></p>
+<p><img alt="3·guide-containers: your app reads the unauthenticated capability document at launch; it calls the data listener to put its product, definition and instance, write typed records, fetch commands and report outcomes, which the hub stores per element bound to your credential and attributed to your instance; the socket brings a fetch-now signal inside bound requests; the site owner acts through the owner's listener on products, definitions and instances" src="../../../00-overview/perspective/diagrams/3-guide-containers.svg" /></p>
 <h3 id="31-read-the-capability-document">3.1 Read the capability document<a class="headerlink" href="#31-read-the-capability-document" title="Permanent link">&para;</a></h3>
 <p><code>GET /.well-known/nightscout/sync</code> is unauthenticated, cacheable and about the hub software, not a
 person (<a href="../spec/registration.html#4-the-capability-document">registration §4</a>). It tells you where
@@ -5884,15 +5915,24 @@ a result per element:</p>
 </code></pre></div>
 <!-- END GENERATED: guide-example -->
 
-<p>The fixture's override kind declares no <code>acceptsFromHub</code>, so as written TestController can hold
-<code>source</code> but a <code>command-sink</code> claim is refused <code>not-a-command-channel</code>. Its <code>commands[]</code> declares
-how commands reach it today (S11), with an <code>other</code> transport and the hub optional in the path:</p>
+<p>The fixture's override kind declares the same, so TestController may hold <code>command-sink</code> on the
+<code>override</code> slot. Its <code>commands[]</code> declares how commands reach it (S11): a path of its own, with an
+<code>other</code> transport and the hub optional, and the hub's command record (<code>nightscout-commands</code>), with
+a fetch bound of 60 s and the live transports it listens on for fetch-now signals (CM28, CM29):</p>
 <!-- BEGIN GENERATED: guide-example specs/sync/registrations/fixtures/example-testcontroller.yaml spec.commands -->
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">transport</span><span class="p">:</span>
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">other</span>
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="nt">controllerTerm</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example-relay</span>
 <a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">  </span><span class="nt">hubInPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
 <a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">  </span><span class="nt">availability</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">experimental</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">transport</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nightscout-commands</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">  </span><span class="nt">hubInPath</span><span class="p">:</span><span class="w"> </span><span class="s">'yes'</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">  </span><span class="nt">availability</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">experimental</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="w">  </span><span class="nt">fetchIntervalSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">  </span><span class="nt">liveTransports</span><span class="p">:</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">socket</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">other</span>
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="w">    </span><span class="nt">controllerTerm</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example-broker</span>
 </code></pre></div>
 <!-- END GENERATED: guide-example -->
 
@@ -5909,10 +5949,10 @@ how commands reach it today (S11), with an <code>other</code> transport and the 
 <tbody>
 <tr>
 <td>11</td>
-<td>Declare <code>acceptsFromHub</code> with <code>command</code> on each kind you accept commands for, and <code>commands[]</code> for each path commands reach you by</td>
+<td>Declare <code>acceptsFromHub</code> with <code>command</code> on each kind you accept commands for, and <code>commands[]</code> for each path commands reach you by; for the hub's command record, a <code>nightscout-commands</code> entry with <code>fetchIntervalSeconds</code> if you fetch more often than once a cycle and the <code>liveTransports</code> you listen on</td>
 <td>a <code>command-sink</code> claim on any other channel is refused <code>not-a-command-channel</code></td>
-<td>S10, S11, registration §9</td>
-<td><code>instances/instance-not-a-command-channel.yaml</code>, <code>instances/instance-create.yaml</code></td>
+<td>S10, S11, CM28, CM29, registration §9</td>
+<td><code>instances/instance-not-a-command-channel.yaml</code>, <code>instances/instance-create.yaml</code>, <code>commands/fetch-bound-declared.yaml</code></td>
 </tr>
 </tbody>
 </table>
@@ -6042,7 +6082,7 @@ carrier and the extension stays typed:</p>
 <!-- END GENERATED: guide-example -->
 
 <p>A lease is minutes long (<a href="../spec/registration.html#8-instances">registration §8</a>), longer than moving
-a pump to another phone takes, so a command can reach the old phone in that window. §3.5 step 14
+a pump to another phone takes, so a command can reach the old phone in that window. §3.5 step 15
 says what holds then.</p>
 <h3 id="34-write-typed-records-with-attribution">3.4 Write typed records with attribution<a class="headerlink" href="#34-write-typed-records-with-attribution" title="Permanent link">&para;</a></h3>
 <p>On a hub that advertises <code>instances</code>, every typed write names the writing instance (proposed as a
@@ -6166,8 +6206,11 @@ writes it, carries a payload and an expiry:</p>
 </code></pre></div>
 <!-- END GENERATED: guide-example -->
 
-<p>The commands specification states the operations (fetch, push, report, cancel) and their answers;
-it does not name request paths. The steps below name the operation.</p>
+<p>The capability document's <code>commands</code> member says whether the hub offers the command record, and
+where (CM31). The paths are proposed in <a href="../spec/commands.html#71-discovery-and-paths-proposed">commands §7.1</a>
+(CM32): you fetch at <code>GET /api/v4/instances/{instanceId}/commands</code> and report at
+<code>POST /api/v4/commands/{commandId}/reports</code>. The steps name the operation; the cases model calls,
+not requests.</p>
 <table>
 <thead>
 <tr>
@@ -6188,152 +6231,163 @@ it does not name request paths. The steps below name the operation.</p>
 </tr>
 <tr>
 <td>2</td>
-<td>Fetch your <code>pending</code> and <code>sent</code> commands with your own credential, naming your own instance; implement fetch whether or not you also take pushes</td>
-<td>200 with your commands only; an empty list once you no longer hold the role; 403 <code>not-registration-owner</code> for another instance</td>
-<td>CM18</td>
-<td><code>commands/fetch-returns-own-commands.yaml</code>, <code>commands/fetch-after-role-lost-is-empty.yaml</code></td>
+<td>Read the capability document's <code>commands</code> member at launch and after a release; without it the hub offers no command path, so keep your own transports</td>
+<td>with no member, every command path is 404</td>
+<td>CM31</td>
+<td><code>commands/discover-without-commands-capability.yaml</code>, <code>commands/discover-with-commands-capability.yaml</code></td>
 </tr>
 <tr>
 <td>3</td>
-<td>Treat a push (a socket event or a platform push) as a faster copy of what fetch returns</td>
-<td>under <code>multi</code> a push from a context with no tenant bound is withheld and the command waits for your fetch</td>
-<td>CM19, CM20</td>
-<td><code>commands/push-unbound-withheld-under-multi.yaml</code>, <code>commands/push-unbound-sent-under-single.yaml</code></td>
+<td>Fetch with your own credential, naming your own instance, at least once per cycle or within the <code>fetchIntervalSeconds</code> you declare; a fetch returns each command, and each cancel carried to you, until you report, so a lost reply costs one fetch</td>
+<td>200 with your commands only, again until you report; an empty list once you no longer hold the role; 403 <code>not-registration-owner</code> for another instance; the sender sees your bound as <code>fetchWithinSeconds</code></td>
+<td>CM18, CM26, CM29, CM30</td>
+<td><code>commands/fetch-returns-own-commands.yaml</code>, <code>commands/fetch-reply-lost-refetch-delivers.yaml</code>, <code>commands/refetch-after-acknowledged-empty.yaml</code>, <code>commands/fetch-after-role-lost-is-empty.yaml</code>, <code>commands/fetch-bound-default-cycle.yaml</code></td>
 </tr>
 <tr>
 <td>4</td>
-<td>Do not read <code>sent</code> or <code>fetched</code> as success; only your report sets an outcome</td>
-<td>the command stays <code>fetched</code> until you report</td>
-<td>CM17, CM7</td>
-<td><code>commands/sent-and-fetched-are-not-success.yaml</code></td>
+<td>To fetch sooner than your bound, listen for fetch-now signals on a transport the hub lists in <code>commands.liveTransports</code> and you list in your <code>liveTransports</code>; answer a signal by fetching. A signal carries nothing, and a lost one delays a command until your next fetch</td>
+<td>a signal goes to your instance only, inside a request bound to your tenant; a platform push only with your tenant's own credential; none when you share no transport with the hub</td>
+<td>CM27, CM28, CM19, CM20</td>
+<td><code>commands/signal-to-destination-only.yaml</code>, <code>commands/signal-lost-fetch-delivers.yaml</code>, <code>commands/signal-unbound-withheld-under-multi.yaml</code>, <code>commands/signal-platform-push-no-tenant-credential.yaml</code>, <code>commands/signal-without-live-transport.yaml</code></td>
 </tr>
 <tr>
 <td>5</td>
+<td>Do not read a signal or <code>fetched</code> as success; only your report sets an outcome</td>
+<td>the command stays <code>pending</code> after a signal and <code>fetched</code> until you report</td>
+<td>CM17, CM7</td>
+<td><code>commands/signal-and-fetch-are-not-success.yaml</code></td>
+</tr>
+<tr>
+<td>6</td>
 <td>Refuse a command at or past <code>expiresAt</code> by your own clock, with reason <code>expired</code></td>
 <td>without your report, a fetched command reads <code>unconfirmed</code> after its expiry</td>
 <td>CM10, CM3, CM8</td>
 <td><code>commands/enact-after-expiry-refused.yaml</code></td>
 </tr>
 <tr>
-<td>6</td>
+<td>7</td>
 <td>Recompute <code>payloadHash</code> (<code>sha256:</code> over the RFC 8785 canonical JSON of the payload you received) and refuse <code>hash-mismatch</code> when it differs from the command's</td>
 <td>your report is recorded as reported, with the record marked a mismatch</td>
 <td>CM10, CM7</td>
 <td><code>commands/enact-hash-mismatch-refused.yaml</code>, <code>commands/request-id-reordered-keys-same-hash.yaml</code></td>
 </tr>
 <tr>
-<td>7</td>
+<td>8</td>
 <td>Authenticate the sender by your own means where you require it; the hash detects a payload changed in transit or storage, and does not authenticate the sender or show what an approver approved</td>
 <td>the hub carries authentication material unread</td>
 <td>CM10, D18</td>
 <td><code>commands/hub-does-not-judge-payload.yaml</code></td>
 </tr>
 <tr>
-<td>8</td>
+<td>9</td>
 <td>Apply your own limits and your acceptance preference; refuse with <code>limit</code> or <code>not-accepted</code></td>
 <td>the hub never checks a dose, a limit or the therapy state, and never changes the payload</td>
 <td>CM5, CM8, S10</td>
 <td><code>commands/hub-does-not-judge-payload.yaml</code>, <code>commands/report-after-final-refused.yaml</code></td>
 </tr>
 <tr>
-<td>9</td>
+<td>10</td>
 <td>Before enacting a dose or carbs, compare the doses and carbs you hold since the command was made, and refuse <code>doses-since</code> when your own rule says the command is no longer wanted</td>
 <td>the rule and its threshold are yours</td>
 <td>CM23, D18</td>
 <td><code>commands/enact-dose-refused-doses-since.yaml</code>, <code>commands/enact-dose-no-doses-since.yaml</code></td>
 </tr>
 <tr>
-<td>10</td>
+<td>11</td>
 <td>Decide each <code>commandId</code> once: record it when you first enact or refuse it, keep the record across restarts until <code>expiresAt</code> by your clock, and answer any later delivery without enacting it and without a second report</td>
-<td>— (delivery is at least once)</td>
-<td>CM21</td>
-<td><code>commands/enact-push-then-fetch-once.yaml</code>, <code>commands/enact-after-restart-once.yaml</code>, <code>commands/enact-refused-then-redelivered-ignored.yaml</code></td>
+<td>— (a fetch returns a command until you report, so delivery is at least once)</td>
+<td>CM21, CM26</td>
+<td><code>commands/enact-refetched-once.yaml</code>, <code>commands/enact-after-restart-once.yaml</code>, <code>commands/enact-refused-then-redelivered-ignored.yaml</code></td>
 </tr>
 <tr>
-<td>11</td>
+<td>12</td>
 <td>Treat two <code>commandId</code>s with the same payload as two commands; enact-once does not catch a second send, your doses-since check does</td>
 <td>each is enacted unless your checks refuse it</td>
 <td>CM21, CM4, CM23</td>
 <td><code>commands/enact-two-commands-same-payload.yaml</code></td>
 </tr>
 <tr>
-<td>12</td>
+<td>13</td>
 <td>Report <code>acknowledged</code> if you want the sender to see it (optional), then one final state: <code>succeeded</code>, <code>failed</code> or <code>refused</code>, with the <code>payloadHash</code> you computed, a reason when refused or failed, and when enacted the identity of the record that shows the effect</td>
 <td>200; a report from any other subject is 403 <code>not-registration-owner</code>; a state other than the four is 422 <code>invalid-state</code></td>
 <td>CM7, CM9</td>
 <td><code>commands/acknowledged-then-succeeded.yaml</code>, <code>commands/report-from-destination-accepted.yaml</code>, <code>commands/report-state-fetched-invalid.yaml</code></td>
 </tr>
 <tr>
-<td>13</td>
+<td>14</td>
 <td>Give a reason from the shared list (<code>hash-mismatch</code>, <code>expired</code>, <code>not-accepted</code>, <code>limit</code>, <code>doses-since</code>, <code>cancelled</code>) or as <code>{value: other, controllerTerm}</code>; send one final state only</td>
 <td>a bare unknown string is 422 <code>invalid-reason</code>; a second final report is 409 <code>already-final</code></td>
 <td>CM8, CM9</td>
 <td><code>commands/report-reason-other-accepted.yaml</code>, <code>commands/report-reason-bare-string-invalid.yaml</code>, <code>commands/report-after-final-refused.yaml</code></td>
 </tr>
 <tr>
-<td>14</td>
-<td>When you hand the pump to another phone with a command outstanding: a command the old phone fetched stays with it, which decides it and reports; one it never received becomes <code>undeliverable</code>, and nothing is re-routed</td>
-<td>your report is accepted from the destination's bound subject even after the role moved, and replaces <code>unconfirmed</code></td>
+<td>15</td>
+<td>When you hand the pump to another phone with a command outstanding: a command the old phone fetched stays with it, which decides it and reports; one it never fetched becomes <code>undeliverable</code>, whatever signals were sent, and nothing is re-routed</td>
+<td>your report is accepted from the destination's bound subject even after the role moved</td>
 <td>CM2, CM7, CM9</td>
-<td><code>commands/fetched-before-holder-changes.yaml</code>, <code>commands/undeliverable-not-rerouted.yaml</code>, <code>commands/pushed-then-lapse-unconfirmed.yaml</code></td>
+<td><code>commands/fetched-before-holder-changes.yaml</code>, <code>commands/undeliverable-not-rerouted.yaml</code>, <code>commands/fetched-then-lapse-report-accepted.yaml</code>, <code>commands/signalled-then-lapse-undeliverable.yaml</code></td>
 </tr>
 <tr>
-<td>15</td>
+<td>16</td>
 <td>Expect no cancel for a command cancelled before hand-over: it is final and never delivered</td>
 <td>the sender gets 200 <code>cancelled</code>; your fetch returns nothing</td>
 <td>CM25</td>
 <td><code>commands/cancel-pending-is-final.yaml</code></td>
 </tr>
 <tr>
-<td>16</td>
-<td>When a fetch carries a cancel for a command you have not decided, refuse it with reason <code>cancelled</code> and report; when you have already decided it, your outcome stands</td>
+<td>17</td>
+<td>When a fetch carries a cancel for a command you have not decided, refuse it with reason <code>cancelled</code> and report; when you have already decided it, your outcome stands. Each fetch carries the cancel until you report</td>
 <td>the sender got 202 with <code>cancelRequested</code>; after your final report a cancel is 409 <code>already-final</code></td>
-<td>CM25, CM21</td>
-<td><code>commands/cancel-after-fetch-is-a-request.yaml</code>, <code>commands/cancel-after-outcome-refused.yaml</code></td>
+<td>CM25, CM21, CM26</td>
+<td><code>commands/cancel-after-fetch-is-a-request.yaml</code>, <code>commands/cancel-carried-until-report.yaml</code>, <code>commands/cancel-after-outcome-refused.yaml</code></td>
 </tr>
 </tbody>
 </table>
-<p>A command pushed and then fetched, decided once (step 10). The answers below follow the case's
-calls in order: the sender's command, the push, the first enactment, the fetch that returns the
-command again, and the second enactment, answered <code>ignored</code> with nothing enacted:</p>
-<!-- BEGIN GENERATED: guide-example commands/enact-push-then-fetch-once.yaml expected.calls -->
+<p>A command fetched twice before a report, decided once (step 11). The answers below follow the
+case's calls in order: the sender's command, the first fetch, the first enactment, the next fetch
+that returns the command again, and the second enactment, answered <code>ignored</code> with nothing enacted:</p>
+<!-- BEGIN GENERATED: guide-example commands/enact-refetched-once.yaml expected.calls -->
 <div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">201</span>
 <a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">  </span><span class="nt">commandId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">c1</span>
 <a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">  </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pending</span>
-<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">sent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">succeeded</span>
-<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span>
-<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">  </span><span class="nt">commands</span><span class="p">:</span>
-<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">c1</span>
-<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ignored</span>
-<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="w">  </span><span class="nt">reason</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">duplicate</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">  </span><span class="nt">fetchWithinSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">  </span><span class="nt">commands</span><span class="p">:</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">c1</span>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">succeeded</span>
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span>
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="w">  </span><span class="nt">commands</span><span class="p">:</span>
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">c1</span>
+<a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ignored</span>
+<a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a><span class="w">  </span><span class="nt">reason</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">duplicate</span>
 </code></pre></div>
 <!-- END GENERATED: guide-example -->
 
-<p>A cancel after hand-over (step 16). The answers follow the case's calls in order: the sender's
+<p>A cancel after hand-over (step 17). The answers follow the case's calls in order: the sender's
 command, your fetch, the sender's cancel (202), your next fetch carrying the cancel, your refusal
 and your report:</p>
 <!-- BEGIN GENERATED: guide-example commands/cancel-after-fetch-is-a-request.yaml expected.calls -->
 <div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">201</span>
 <a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">  </span><span class="nt">commandId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">c1</span>
 <a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">  </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pending</span>
-<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span>
-<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">  </span><span class="nt">commands</span><span class="p">:</span>
-<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">c1</span>
-<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">202</span>
-<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">  </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fetched</span>
-<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="w">  </span><span class="nt">cancelRequested</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span>
-<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="w">  </span><span class="nt">commands</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
-<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="w">  </span><span class="nt">cancels</span><span class="p">:</span>
-<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">c1</span>
-<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">refused</span>
-<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="w">  </span><span class="nt">reason</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cancelled</span>
-<a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">  </span><span class="nt">fetchWithinSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">  </span><span class="nt">commands</span><span class="p">:</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">c1</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">202</span>
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="w">  </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fetched</span>
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="w">  </span><span class="nt">cancelRequested</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span>
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="w">  </span><span class="nt">commands</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="w">  </span><span class="nt">cancels</span><span class="p">:</span>
+<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">c1</span>
+<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">refused</span>
+<a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="w">  </span><span class="nt">reason</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cancelled</span>
+<a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span>
 </code></pre></div>
 <!-- END GENERATED: guide-example -->
 
-<p>A refusal reported in the controller's own term (step 13):</p>
+<p>A refusal reported in the controller's own term (step 14):</p>
 <!-- BEGIN GENERATED: guide-example commands/report-reason-other-accepted.yaml calls.2 -->
 <div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="nt">at</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
 <a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">report</span>
@@ -6381,6 +6435,12 @@ controller author reads first. For TestController:</p>
 <td><code>instances/typed-write-hub-without-instances.yaml</code></td>
 </tr>
 <tr>
+<td>a hub with no <code>commands</code> member in its capability document</td>
+<td>no hub command path; commands reach you only by the transports you have</td>
+<td>CM31</td>
+<td><code>commands/discover-without-commands-capability.yaml</code></td>
+</tr>
+<tr>
 <td>an older reader or follower on API v1 or v3, where the element's view is served</td>
 <td>a projected document in the carrier's shape, labelled <code>projectedFrom</code>, read-only</td>
 <td>registration §13, I8</td>
@@ -6421,7 +6481,8 @@ the table marks the command record and the list <code>opt-in</code> for them.</p
 <li>A refused role or element sends that channel's or element's records as carriers; a load refusal
   is retried, never written as a carrier.</li>
 <li>Every record has an <code>identifier</code> unique to it and stable across retries.</li>
-<li>Fetch is implemented; a push is treated as a faster copy of a fetch.</li>
+<li>Fetch is implemented, at least once per cycle or within the declared <code>fetchIntervalSeconds</code>; a
+  fetch-now signal is answered with a fetch and carries nothing.</li>
 <li>Before enacting: the hash, the expiry by the controller's own clock, its limits and acceptance
   preference, and the doses and carbs since the command was made.</li>
 <li>Each <code>commandId</code> is decided once, recorded across restarts until its expiry, and reported once
@@ -6442,19 +6503,6 @@ the table marks the command record and the list <code>opt-in</code> for them.</p
 <h2 id="gaps">Gaps<a class="headerlink" href="#gaps" title="Permanent link">&para;</a></h2>
 <p>Steps this guide needs that no rule or no case covers:</p>
 <ol>
-<li><strong>How a controller learns that a hub offers the command record.</strong> The capability document
-   (<a href="../spec/registration.html#4-the-capability-document">registration §4</a>) has no member for
-   commands: none says the hub serves fetch and outcome reports, and <code>commands.maxExpirySeconds</code>
-   (CM3) and <code>commands.maxPayloadBytes</code> (CM5) are not published there. A controller cannot tell
-   from it whether to fetch.</li>
-<li><strong>Request paths and shapes for fetch, report and cancel.</strong> The commands specification states
-   the operations and their answers and names no paths; the cases model calls, not requests.</li>
-<li><strong>How often to fetch.</strong> CM18 makes fetch the path a hub must offer, and nothing says how often a
-   destination fetches, which bounds how soon it sees a command under <code>multi</code> (CM19) and a cancel
-   after hand-over (CM25).</li>
-<li><strong>The push to the destination.</strong> CM19 names a socket event to the destination; no event, and no
-   subscription by which a controller receives its commands on the socket, is specified (T11
-   covers typed records only). CM20, a platform push with the tenant's credentials, has no case.</li>
 <li><strong>The effect record in a report.</strong> CM7 asks a report of an enacted command to carry the identity
    of the record that shows the effect; no case shows a report with it.</li>
 </ol>

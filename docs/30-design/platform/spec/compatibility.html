@@ -2345,6 +2345,8 @@
       
         
       
+        
+      
     
     
     
@@ -3533,6 +3535,34 @@
     
   
     Command queue and planning: outstanding commands, enacting once, and plans confirmed in advance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../effect-link-prototype-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Effect link: how a command's outcome names the record that shows its effect
   
 
     
@@ -5787,7 +5817,7 @@
 
 
 <h1 id="l0l5-compatibility-what-each-app-does-with-a-hub-today-and-what-it-sees-from-one-that-implements-the-specifications">L0–L5 Compatibility: what each app does with a hub today, and what it sees from one that implements the specifications<a class="headerlink" href="#l0l5-compatibility-what-each-app-does-with-a-hub-today-and-what-it-sees-from-one-that-implements-the-specifications" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>127f69e16</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>baa67a88f</code>.</em></p>
 <p><em>Contributor-facing. Living specification table, current at <code>main</code> <code>8cb0b5ed</code> (2026-10-18). Covers
 layers L0–L5 of the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>.
 Queue: <code>SPEC-COMPAT-APPS</code>.</em></p>
@@ -6993,7 +7023,7 @@ and sync, L5 authority, as the <a href="../index.html">platform index</a> define
 <tr>
 <td>Loop</td>
 <td>Writes overrides as <code>Temporary Override</code> treatments; receives override, cancel, bolus and carbs commands only as APNs pushes, from the hub's <code>/api/v2/notifications/loop</code> relay or directly from a follower; reports a failure as a <code>Note</code> and a success only as the resulting record.</td>
-<td>The relay route is outside CM1–CM25 and a hub keeps it as it is or retires it; the command record, enact-once by <code>commandId</code>, the outstanding list and cancel apply only once Loop registers and fetches (CM18, CM21, CM24, CM25).</td>
+<td>The relay route and Loop's APNs pushes are outside CM1–CM32 and unchanged; a hub keeps the route as it is or retires it. The command record, enact-once by <code>commandId</code>, the outstanding list and cancel apply only once Loop registers and fetches (CM18, CM21, CM24, CM25).</td>
 <td>opt-in</td>
 <td>commands §8, state-intent §3, CM18, CM21, CM24, CM25</td>
 </tr>
@@ -7091,7 +7121,7 @@ and sync, L5 authority, as the <a href="../index.html">platform index</a> define
 <tr>
 <td>LoopCaregiver</td>
 <td>Sends override, cancel, bolus and carbs to <code>POST /api/v2/notifications/loop</code>, needs exactly 200, and learns failures by parsing Loop's <code>Note</code> treatments; Remote Commands 2 uses <code>/api/v2/remotecommands</code>, which the hub does not implement.</td>
-<td>The relay route is outside CM1–CM25 and a hub keeps it as it is or retires it (commands §8); a command record with an outcome from the destination is used only if it changes (CM1, CM7, CM25).</td>
+<td>The relay route is outside CM1–CM32 and a hub keeps it as it is or retires it (commands §8); a command record with an outcome from the destination is used only if it changes (CM1, CM7, CM25).</td>
 <td>opt-in</td>
 <td>commands §8, CM1, CM7, CM24, CM25</td>
 </tr>

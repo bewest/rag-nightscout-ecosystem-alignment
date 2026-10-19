@@ -2875,7 +2875,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-18 at <code>12266c9c1</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>baa67a88f</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -2914,11 +2914,11 @@
 <tbody>
 <tr>
 <td>items</td>
-<td>256</td>
+<td>257</td>
 </tr>
 <tr>
 <td>runnable gates</td>
-<td>318</td>
+<td>321</td>
 </tr>
 <tr>
 <td>explicit <code>no-gate:</code> markers</td>
@@ -2926,7 +2926,7 @@
 </tr>
 </tbody>
 </table>
-<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 279 of the 597 gate slots in this queue are in that state.</p>
+<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 279 of the 600 gate slots in this queue are in that state.</p>
 <h3 id="claimed-state-not-a-measurement----run-make-queue-status">Claimed state (NOT a measurement -- run <code>make queue-status</code>)<a class="headerlink" href="#claimed-state-not-a-measurement----run-make-queue-status" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -2979,8 +2979,8 @@
 </tr>
 <tr>
 <td><code>done</code></td>
-<td>38</td>
-<td>P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS</td>
+<td>39</td>
+<td>P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS</td>
 </tr>
 <tr>
 <td><code>unsettled</code></td>
@@ -18571,7 +18571,7 @@ flag rule: versioning policy section 5.7.</p>
 <p><strong>Notes.</strong> Merged into dev by #8753 (3a38c6f2, 2026-09-23); not released. CI and CodeQL green. It reaches operators with 15.0.9 (RT-0). Four commits: 03fba725 BF-10 (BFQ-10), e72ba30d follow-up 3 and af8eee45 follow-up 7 (FU-RESIDUALS), e6a50e9a BF-63 renderer guard (RT-BOOTERROR). Follow-up 4 stays on bf/auth (in #8754) and is not repeated here. Destination 15.0.9 (backfix-2 plan section 1a, 2026-09-23). Evidence: suite Node 20.20.0, mongo 7.0.43 - dev 2386/0/3, branch 2392/0/3, +6 exactly the new tests; the rc-c integration record, rc/15.0.9-additions-c b9c9828b, 2508/0/3 on every Node and MongoDB pair, this unit's three break-its red on the final tree.</p>
 <hr />
 <h2 id="controller-registration-and-intent-observability">Controller registration and intent observability<a class="headerlink" href="#controller-registration-and-intent-observability" title="Permanent link">&para;</a></h2>
-<p><code>parcel: platform</code> &mdash; 32 items</p>
+<p><code>parcel: platform</code> &mdash; 33 items</p>
 <p>D18 (maintainer, 2026-10-09): two-tier controller registration - well-known
 declarations for backwards compatibility, controller-owned typed registrations
 for extensibility; the hub observes, the controller sends accurately and
@@ -18733,6 +18733,14 @@ reproduced ones.</p>
 <td><code>docs/dev-guides-2026-10-18</code></td>
 <td>n/a</td>
 <td>2 run</td>
+</tr>
+<tr>
+<td><code>SPEC-CMD-DELIVERY</code></td>
+<td>How a command reaches its controller: paths, the capability member, a fetch-now signal and the fetch bound</td>
+<td><code>done</code></td>
+<td><code>spec/command-delivery-2026-10-18</code></td>
+<td>n/a</td>
+<td>3 run</td>
 </tr>
 <tr>
 <td><code>SPEC-REG-MIGRATE</code></td>
@@ -19886,6 +19894,67 @@ reproduced ones.</p>
 <li><code>specs/sync/registrations/fixtures/example-testcontroller.yaml</code></li>
 </ul>
 <p><strong>Notes.</strong> The maintainer asked for this item on 2026-10-18, after the compatibility table, so each guide can say what an older app sees. Written 2026-10-18 as docs/30-design/platform/guides/add-a-setting.md (21 steps) and new- controller.md (52 steps), every example generated from a case by tools/nsschema/guide_examples.py, with C4 context and container drawings (tools/structure-diagrams/inputs/3-guide-*.yaml). Each guide ends with the steps no case shows: typed settings fields, the typed write route and body, reading a typed record back, projecting an extension; and for commands, a capability member, request paths for fetch, report and cancel, a fetch cadence, a socket event for a command, and the effect record in an outcome report. The example fixture's override kind declares no acceptsFromHub, so its command-sink claim would be refused; the guide shows the declaration from a case.</p>
+<h3 id="spec-cmd-delivery--how-a-command-reaches-its-controller-paths-the-capability-member-a-fetch-now-signal-and-the-fetch-bound"><code>SPEC-CMD-DELIVERY</code> &mdash; How a command reaches its controller: paths, the capability member, a fetch-now signal and the fetch bound<a class="headerlink" href="#spec-cmd-delivery--how-a-command-reaches-its-controller-paths-the-capability-member-a-fetch-now-signal-and-the-fetch-bound" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>done</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>rag-nightscout-ecosystem-alignment</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>spec/command-delivery-2026-10-18</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>main@0b0d150f</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>n/a</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer</td>
+</tr>
+<tr>
+<td>blocks on</td>
+<td><code>SPEC-DEV-GUIDES</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> Contributor-facing specification and its reference model: commands CM17-CM21 reworded and CM26-CM32 added, registration §4 gains the commands member, sync- transport gains T16, the sent state is removed, 152 command cases. Ships nothing.</p>
+<p><strong>What an operator sees.</strong> <em>Nothing. No operator-visible change.</em></p>
+<p><strong>Why <code>n/a</code>.</strong> documentation in this repository; ships nothing</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><code>[unit]</code> <code>python3 -m pytest -q tools/nsschema/test_commands.py tools/nsschema/prototypes/test_effect_link.py</code></li>
+<li>FAILS when the reference model disagrees with a case's expected block: a signal that carries a payload, hash or id, a signal sent outside a bound request under multi, an outstanding list without fetch bounds, a refetch that skips a fetched unreported command; or when the effect-link prototype's measured table differs.</li>
+<li><code>[static]</code> <code>python3 -m tools.nsschema.spec_cases commands --check</code></li>
+<li>FAILS when the commands case table differs from the cases.</li>
+<li><code>[static]</code> <code>node tools/queue/gates/platform-spec.js commands</code></li>
+<li>FAILS on narration, an undefined check or a stale count in commands.md.</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>docs/30-design/platform/spec/commands.md</code></li>
+<li><code>docs/30-design/platform/effect-link-prototype-2026-10-18.md</code></li>
+</ul>
+<p><strong>Notes.</strong> The maintainer decided on 2026-10-18, from the developer guides' gaps: /api/v4 paths and a commands capability member; live delivery is a fetch-now signal only; the fetch bound is one cycle unless the controller declares a tighter one, with live transports in an open vocabulary. Consequences decided with it: the sent state is removed and a fetch returns a command until it is reported or expires (CM26). The effect link (CM7) is prototyped, not decided (commands §9 item 9).</p>
 <h3 id="spec-reg-migrate--registration-state-across-a-single-tenant-sites-move-into-a-tenant-and-back"><code>SPEC-REG-MIGRATE</code> &mdash; Registration state across a single-tenant site's move into a tenant, and back<a class="headerlink" href="#spec-reg-migrate--registration-state-across-a-single-tenant-sites-move-into-a-tenant-and-back" title="Permanent link">&para;</a></h3>
 <table>
 <thead>

@@ -2345,6 +2345,8 @@
       
         
       
+        
+      
     
     
     
@@ -3483,6 +3485,34 @@
     
   
     Command queue and planning: outstanding commands, enacting once, and plans confirmed in advance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../effect-link-prototype-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Effect link: how a command's outcome names the record that shows its effect
   
 
     
@@ -5687,14 +5717,14 @@
 
 
 <h1 id="l4-sync-transport-how-writes-are-matched-ordered-and-delivered-over-rest-and-the-socket-and-at-what-cost">L4 Sync transport: how writes are matched, ordered and delivered over REST and the socket, and at what cost<a class="headerlink" href="#l4-sync-transport-how-writes-are-matched-ordered-and-delivered-over-rest-and-the-socket-and-at-what-cost" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>127f69e16</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>baa67a88f</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>df621fa7</code> (2026-10-18). Layer L4 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>; how a re-send is
 matched is in the <a href="identity.html">identity specification</a> §3. Decisions: the
 <a href="../../tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-10-12">write contract's §6.1</a>
 (2026-10-12) and <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">D6</a>
 (the change feed under multi). Queue: <code>SPEC-SYNC-TRANSPORT</code>.</em></p>
-<p><em>Specification 7 of 8 in the <a href="../index.html#reading-order">reading order</a>; after the layers whose records it moves, before authority. Expect the decided write path (T1–T4), each client's declared sync endpoints, the proposed read, cursor and socket rules (T5–T15), and the conformance cases.</em></p>
+<p><em>Specification 7 of 8 in the <a href="../index.html#reading-order">reading order</a>; after the layers whose records it moves, before authority. Expect the decided write path (T1–T4), each client's declared sync endpoints, the proposed read, cursor and socket rules (T5–T16), and the conformance cases.</em></p>
 <p>How writes are applied, ordered and delivered, over REST and the socket, and what a client pays to
 stay in sync. Status: the write path is decided, except re-sends of <code>devicestatus</code> (T2), and T3 is on <code>dev</code>;
 §3 is evidenced; §4–§6 are
@@ -5876,6 +5906,10 @@ number of collections. Request counts and payload sizes on the wire are not meas
 <td>T12</td>
 <td><strong>Which writes reach the socket is open.</strong> Today only API v3 writes reach the API v3 storage socket; writes through v1, the v1 socket and in-process callers do not (BF-164, reproduced on <code>dev</code> <code>43289dde</code> and 15.0.8). Whether broadcasting them would help or harm AndroidAPS, which uses the socket by default and stops polling after its first load (read), is a question to its authors before a rule is set. T10 holds either way: a client that misses an event reads it from history.</td>
 </tr>
+<tr>
+<td>T16</td>
+<td><strong>The socket carries the fetch-now signal.</strong> A controller instance subscribes to its own signals on the existing listener with its own credential, naming its <code>instanceId</code>; a subscription naming an instance that is not the credential's own is refused, as a fetch is (<a href="commands.html#7-delivery-in-each-mode-proposed">commands CM18</a>). The hub sends the signal (<a href="commands.html#7-delivery-in-each-mode-proposed">commands CM27</a>) to that subscription only, as an event that carries nothing, and only inside a request bound to the command's tenant (CM19). It is not a record: it carries no record, ids or cursor, and the controller answers it with a fetch. T10's rule holds for it: the fetch, not the signal, is what delivers.</td>
+</tr>
 </tbody>
 </table>
 <h2 id="6-definitions-and-versions-proposed">6. Definitions and versions (proposed)<a class="headerlink" href="#6-definitions-and-versions-proposed" title="Permanent link">&para;</a></h2>
@@ -5952,8 +5986,8 @@ number of collections. Request counts and payload sizes on the wire are not meas
 <li><strong>The v1 socket's events under <code>multi</code>.</strong> On the seam branch the load cycle's <code>dataUpdate</code>
    and the <code>/alarm</code> events reach no tenant (commands §3); LoopFollow slows its polling while
    connected, and AndroidAPS 3.4.x listens for them (<a href="compatibility.html#5-where-an-answer-changes">compatibility §5</a>).
-   Whether a hub under <code>multi</code> sends them inside a bound request, as CM19 does for pushes, is not
-   specified.</li>
+   Whether a hub under <code>multi</code> sends them inside a bound request, as CM19 does for fetch-now
+   signals, is not specified.</li>
 </ol>
 <h2 id="9-conformance-cases">9. Conformance cases<a class="headerlink" href="#9-conformance-cases" title="Permanent link">&para;</a></h2>
 <p>13 cases under <code>specs/sync/conformance/sync-transport/</code>, checked by

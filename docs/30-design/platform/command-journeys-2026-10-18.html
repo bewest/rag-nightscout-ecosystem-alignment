@@ -2345,6 +2345,8 @@
       
         
       
+        
+      
     
     
     
@@ -3079,6 +3081,34 @@
     
   
     Command queue and planning: outstanding commands, enacting once, and plans confirmed in advance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="effect-link-prototype-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Effect link: how a command's outcome names the record that shows its effect
   
 
     
@@ -5409,9 +5439,9 @@ proposal's approval when a dose or carb record reached it after the proposal was
   report and shows the accepted and declined elements; a redelivered copy of the command is not
   stored twice.
 - <strong>Watch for:</strong> the mirror showing the proposal's content rather than what the controller holds;
-  the plan stored again after a push and a fetch.
+  the plan stored again after two fetches before its report.
 - <strong>Contributor:</strong> CM1, CM7–CM10, CM18, CM21 (<code>enact-identical-payload-succeeds</code>,
-  <code>enact-hash-mismatch-refused</code>, <code>enact-push-then-fetch-once</code>); <a href="spec/plans.html#5-the-controller-holds-the-plan-the-hub-mirrors-it-proposed">plans PN8, PN9,
+  <code>enact-hash-mismatch-refused</code>, <code>enact-refetched-once</code>); <a href="spec/plans.html#5-the-controller-holds-the-plan-the-hub-mirrors-it-proposed">plans PN8, PN9,
   PN11</a> (<code>plan-held-active</code>,
   <code>plan-refused-by-controller</code>, <code>plan-command-expires-at-ends</code>): the hub keeps the mirror and moves
   the controller's states only on the controller's reports; UCA-CMD-006, UCA-PROP-008. Not
@@ -5671,15 +5701,16 @@ span intent, and no controller declares accepting one as a command.</p>
 - <strong>Contributor:</strong> <a href="spec/commands.html#4-the-command-record-proposed">CM24</a> (<code>outstanding-lists-open-items</code>,
   <code>outstanding-excludes-final</code>); UCA-SYNC-SERVE-004, UCA-CMD-001.</p>
 <p><strong>C1.2 · moment · Sends a correction bolus</strong> with a <code>requestId</code> and a short expiry. <strong>Working:</strong>
-one command, <code>pending</code> then <code>sent</code> or <code>fetched</code>; a retried send returns the first.
+one command, <code>pending</code> then <code>fetched</code>; a retried send returns the first.
 <strong>Contributor:</strong> CM1–CM5 (<code>request-id-same-payload-returns-first</code>, <code>expiry-required</code>).</p>
 <p><strong>C1.3 · algorithm · Enacted once, after the controller's checks.</strong>
-- <strong>Do:</strong> the controller receives the command by push and again by fetch, checks hash, expiry and
+- <strong>Do:</strong> the controller receives the command by fetch, after a fetch-now signal or on its cycle,
+  and again by its next fetch before it reports; it checks hash, expiry and
   its own limits and recent doses, and enacts it once. Today Trio refuses a remote bolus when
   boluses since the command's timestamp reach a fifth of the request; Loop's remote bolus checks the
   amount and the one-time password and no doses since.
 - <strong>Working:</strong> one bolus; the second delivery is recognised by <code>commandId</code>.
-- <strong>Contributor:</strong> CM10, CM18, CM21 (<code>enact-push-then-fetch-once</code>, <code>enact-after-restart-once</code>),
+- <strong>Contributor:</strong> CM10, CM18, CM21, CM26 (<code>enact-refetched-once</code>, <code>enact-after-restart-once</code>),
   CM23 (<code>enact-dose-refused-doses-since</code>); UCA-CMD-006, UCA-CMD-010.</p>
 <p><strong>C1.4 · moment · The outcome.</strong> The controller reports <code>succeeded</code>; later the pump fails the
 delivery. <strong>Working:</strong> the parent sees the failure. <strong>Watch for:</strong> <code>succeeded</code> standing after it.
@@ -5729,7 +5760,7 @@ after <code>succeeded</code> (<a href="spec/commands.html#9-open">commands §9 i
 <p><strong>C2.2 · moment · The meal is refused at the table.</strong>
 - <strong>Do:</strong> the caregiver cancels before the phone has fetched it.
 - <strong>Working:</strong> the command reads <code>cancelled</code>, final, never handed over.
-- <strong>Watch for:</strong> a cancel reported as done after the command was <code>sent</code>; there it is only a request.
+- <strong>Watch for:</strong> a cancel reported as done after the command was <code>fetched</code>; there it is only a request.
 - <strong>Contributor:</strong> CM2, CM3, <a href="spec/commands.html#4-the-command-record-proposed">CM25</a> (<code>cancel-pending-is-final</code>,
   <code>cancel-after-fetch-is-a-request</code>); UCA-CMD-015.</p>
 <p><strong>C2.3 · algorithm · Already handed over.</strong>

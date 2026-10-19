@@ -2345,6 +2345,8 @@
       
         
       
+        
+      
     
     
     
@@ -3654,6 +3656,34 @@
     
   
     Command queue and planning: outstanding commands, enacting once, and plans confirmed in advance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../effect-link-prototype-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Effect link: how a command's outcome names the record that shows its effect
   
 
     
@@ -6029,7 +6059,7 @@
 
 
 <h1 id="l2-registration-how-a-controller-declares-what-its-data-means-and-how-a-hub-accepts-it">L2 Registration: how a controller declares what its data means, and how a hub accepts it<a class="headerlink" href="#l2-registration-how-a-controller-declares-what-its-data-means-and-how-a-hub-accepts-it" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>127f69e16</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>baa67a88f</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>8d2b93ed</code> (2026-10-18). Layer L2 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>; ids are defined in
 the <a href="identity.html">identity specification</a>. Status: specified, not implemented; the first hub implementation is <code>HUB-REG-CRM</code>.
@@ -6230,6 +6260,10 @@ tenant's registrations.</p>
 <tr>
 <td><code>instances</code></td>
 <td>present when the hub serves definitions and instances (§7–§8): <code>leaseSeconds</code> (at least 60), the instance id form (<code>uuid-v4</code>), the roles and channels it grants, and label bounds</td>
+</tr>
+<tr>
+<td><code>commands</code></td>
+<td>present when the hub offers the command record (<a href="commands.html#71-discovery-and-paths-proposed">commands CM31</a>): <code>href</code>, <code>fetch</code> (a URI template naming <code>{instanceId}</code>) and <code>proposals</code> when it takes proposals; <code>maxExpirySeconds</code> (CM3) and <code>maxPayloadBytes</code> (CM5); <code>liveTransports</code>, the transports it sends fetch-now signals on (CM28); and <code>minFetchIntervalSeconds</code> (CM29). Absent: a controller has no hub command path and keeps its own transports</td>
 </tr>
 </tbody>
 </table>

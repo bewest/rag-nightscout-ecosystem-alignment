@@ -2345,6 +2345,8 @@
       
         
       
+        
+      
     
     
     
@@ -3461,6 +3463,34 @@
     
   
     Command queue and planning: outstanding commands, enacting once, and plans confirmed in advance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../effect-link-prototype-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Effect link: how a command's outcome names the record that shows its effect
   
 
     
@@ -5643,7 +5673,7 @@
 
 
 <h1 id="platform-glossary-the-terms-the-eight-specifications-share-and-where-each-is-defined">Platform glossary: the terms the eight specifications share, and where each is defined<a class="headerlink" href="#platform-glossary-the-terms-the-eight-specifications-share-and-where-each-is-defined" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>7a1a09b5a</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>baa67a88f</code>.</em></p>
 <p><em>Contributor-facing. Living, current at <code>main</code> <code>5a9a49cc</code> (2026-10-18). Each term links to where
 it is specified; the definition here is a summary, and the linked section is the authority. Therapy
 terms (profile, override, temporary target) are in the <a href="../../../10-domain/glossary.html">domain glossary</a>.
@@ -5834,8 +5864,12 @@ default views and exports, and a <code>simulated</code> command sink never recei
 holder the command is refused <code>no-command-destination</code>; the hub never guesses
 (<a href="commands.html#2-where-a-command-goes">commands §2</a>).</p>
 <p><strong>Command record, outcome.</strong> Proposed. The hub stores a command before it sends it, with the hash
-of its payload; only the destination reports the outcome, and <code>sent</code> or <code>fetched</code> is never success
+of its payload; only the destination reports the outcome, and <code>fetched</code> is never success
 (<a href="commands.html#4-the-command-record-proposed">commands §4–§5</a>).</p>
+<p><strong>Fetch-now signal, fetch bound.</strong> Proposed. A <em>fetch-now signal</em> tells one controller instance,
+on the socket or by a platform push, that something waits for its fetch; it carries nothing of the
+command. The <em>fetch bound</em> is the longest the instance goes between fetches: one cycle, or the
+shorter interval it declares (<a href="commands.html#7-delivery-in-each-mode-proposed">commands §7</a>).</p>
 <p><strong>Plan, occurrence, mirror.</strong> Proposed. A <em>plan</em> is a recurring intent with elements, a trigger,
 bounds and an end date, proposed and approved in parts, then held and run by the controller; an
 <em>occurrence</em> is one time it runs, confirmed, approved, skipped or reported by the controller; the
