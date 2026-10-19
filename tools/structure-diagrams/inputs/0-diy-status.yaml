@@ -21,6 +21,11 @@
 #               a distribution trigger; cybersecurity work closes unintended-use paths, with discretion;
 #               browser builds (GitHub Actions to TestFlight), 10-domain/testflight-distribution-infrastructure
 #               §1.2; workshops and coordinated documentation, the Foundation's account 2026-10-19;
+#               Q141084 pre-submission meeting 2014-10-08, minutes https://nightscout.github.io/fda-presubmission/07-minutes.html
+#               ("Medical Device regulations are applicable to the Nightscout project"; one responsible party);
+#               raw notes https://gist.github.com/bewest/cac2346071a7ce1e057d;
+#               diaTribe 2016-06-27 (archived 2025-07-23): Courtney Lias, OpenAPS-like systems "fall under the
+#               FDA's jurisdiction", enforcement "based on risk", may not spend resources on own personal use;
 #               HISTORY 2023-01-23 (Tidepool Loop K203689, cleared as an iAGC); MDCG 2023-1 (MDR Art. 5(5)
 #               applies to health institutions; use outside the institution's legal entity is not in-house)
 #   emerging  - FDA cybersecurity page (FD&C Act §524B in effect 2023-03-29; guidance 2025-06-27); LII 21 U.S.C.
@@ -60,7 +65,9 @@ edges:
      labels: {believed: "\"any distribution (even\ngiving away for free)\"\nneeds a CE mark",
               actual: "placing on the market\nneeds a CE mark; free\nsupply: to verify",
               emerging: "placing on the market\nneeds a CE mark"}}
-  - {from: us, to: person, kind: discretion, label: "2019 warning: use only\nreviewed devices; officials:\nDIY not exempt (informal)",
+  - {from: us, to: person, kind: discretion, label: "2016: in jurisdiction,\nrisk-based; 2019 warning",
+     in: [actual, emerging]}
+  - {from: us, to: projects, kind: discretion, label: "2014 pre-submission:\nregulations apply;\none responsible party",
      in: [actual, emerging]}
   - {from: us, to: binary, kind: control, label: "commerce, no sale\ncondition (331(a)); officials:\nfree sharing is distribution",
      in: [actual, emerging]}

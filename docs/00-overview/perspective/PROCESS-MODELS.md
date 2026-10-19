@@ -146,7 +146,7 @@ within these regulations" ([AAPS FAQ](https://wiki.aaps.app/en/latest/UsefulLink
 reaches manufacturers and people who hand out built apps, and stops short of the person and of
 published source.
 
-![0·diy-status as regulators have spoken: the FDA's route to manufacturers carries registration, 510(k) or De Novo and the iCGM, ACE and iAGC special controls, and a cleared controller sits among the manufacturers; the FDA's 2019 warning reaches the person, and FDA officials have said informally that a DIY build is not exempt; US law prohibits introducing an unauthorised device into interstate commerce with no sale condition, and FDA officials have said free sharing is not outside distribution; projects give the person source, guides, workshops and a browser build that runs on GitHub Actions and uploads to TestFlight; the EU requires a CE mark to place a device on the market, with free supply marked to verify; projects publish source to the person and to anyone who builds apps for others; anyone running it for others has no regulator line](diagrams/0-diy-status--actual.svg)
+![0·diy-status as regulators have spoken: the FDA's route to manufacturers carries registration, 510(k) or De Novo and the iCGM, ACE and iAGC special controls, and a cleared controller sits among the manufacturers; the FDA's 2014 pre-submission meeting reaches the projects (regulations apply, one responsible party); the FDA's 2019 warning reaches the person, and an FDA official said in 2016 that such systems fall under FDA jurisdiction with enforcement based on risk; US law prohibits introducing an unauthorised device into interstate commerce with no sale condition, and FDA officials have said free sharing is not outside distribution; projects give the person source, guides, workshops and a browser build that runs on GitHub Actions and uploads to TestFlight; the EU requires a CE mark to place a device on the market, with free supply marked to verify; projects publish source to the person and to anyone who builds apps for others; anyone running it for others has no regulator line](diagrams/0-diy-status--actual.svg)
 
 **As regulators have spoken.** On 2019-05-17 the FDA warned patients and clinicians against
 "unapproved or unauthorized devices", noting that "patients may choose to create these systems",
@@ -158,9 +158,33 @@ FDA officials have addressed it in conference presentations and in discussions w
 Foundation (reported by the Foundation; no recording, slides or minutes were located): Courtney
 Lias of the FDA said at DDATA 2016 that "it looks like distribution is happening"; the FDA does not
 treat DIY or personal distribution as exempt or permitted; and "the absence of money exchanged" is
-not one of the triggers the FDA uses to decide whether distribution is happening. US device duties
-attach to establishments and distribution: registration (21 CFR 807), premarket notification "before ... the introduction or
-delivery for introduction into interstate commerce for commercial distribution" (807.81(a)), where
+not one of the triggers the FDA uses to decide whether distribution is happening.
+
+The earliest record is a pre-submission meeting between Nightscout contributors and the FDA on
+2014-10-08 (Q141084). Its minutes, published by Nightscout contributors with the pre-submission
+supplement, record that "Medical Device regulations are applicable to the Nightscout project"; that
+the FDA "doesn't have a bias against the open source route"; that "a key tenet of device regulation
+is that some entity be responsible for assuring the safety and effectiveness of the device and that
+postmarket safety is adequately monitored"; that the FDA believed Nightscout could meet applicable
+requirements "even with non-traditional methods of development"; and that the FDA asked for a gap
+analysis and a follow-up meeting ([minutes](https://nightscout.github.io/fda-presubmission/07-minutes.html), read 2026-10-19). The raw notes taken at the
+meeting add an FDA attendee asking, of how Nightscout tracks and pushes updates, "Will this scale
+to 10,000 or 50,000 users?", and the FDA's three questions: who is responsible for testing changes against the
+design, who collects details "when things go wrong", and who is "ultimately responsible if things go
+really wrong"; asked whether there were "red lines" to avoid, the FDA said it would consult
+internally ([raw notes](https://gist.github.com/bewest/cac2346071a7ce1e057d), read 2026-10-19).
+
+A second account was published in 2016: diaTribe's report of 2016-06-27, written around the ADA Scientific Sessions,
+says that "according to the FDA's Dr. Courtney Lias, systems like OpenAPS do fall under the FDA's
+jurisdiction, though the Agency enforces its authority based on risk – a single individual using
+OpenAPS presents a low risk, while thousands using the system presents a higher risk"; that "the
+FDA may not choose to spend resources on someone building a system for their own personal use";
+and that the agency's "biggest concern" is responsibility: "who will catalog and report any adverse
+events, and who is responsible if something goes wrong"
+([diaTribe](https://web.archive.org/web/20250723080620/https://diatribe.org/diabetes-technology/openaps-diy-automated-insulin-delivery-users-report-81-time-range-better-sleep), archived copy of 2025-07-23, read 2026-10-19).
+
+US device duties attach to establishments and distribution: registration (21 CFR 807), premarket
+notification "before ... the introduction or delivery for introduction into interstate commerce for commercial distribution" (807.81(a)), where
 commercial distribution is defined as a device "held or offered for sale" (807.3(b)); the registration
 exemptions in 807.65 list no class for a person making a device for their own use
 ([eCFR 807](https://www.ecfr.gov/current/title-21/part-807), read 2026-10-17). Separately, 21
@@ -186,7 +210,10 @@ account (2026-10-19), the community now:
   as sponsoring or being the centre of the activity, and offers it free with a few steps left to
   the person.
 
-These are the activities FDA officials have described as looking like distribution.
+These are the activities FDA officials have described as looking like distribution. The number of
+people using DIY AID has also grown: by the Foundation's estimate (2026-10-19, not measured here),
+the AndroidAPS, Loop and Trio communities number 10,000 or more people, perhaps up to 60,000,
+against the 18 of OpenAPS's first 40 users whose data diaTribe reported in 2016.
 
 The regulated route exists: the iCGM, ACE pump and iAGC special controls
 ([cloud layer §2.2](../../60-research/programme/stack-census-2026-09-30/cloud-layer.md#22-data-rights-law-and-regulation)),
@@ -224,21 +251,28 @@ The regulated form of running it for others is drawn in 2·controller-operator.
    prohibition (331(a)) has no sale condition, and FDA officials have said the absence of money is
    not a trigger they use and that the community's practice looks like distribution. No published
    source settles whether publishing source code alone is distribution.
-2. **No source found exempts or permits the person's own build.** The FDA's published line to it is
-   a warning, and FDA officials have said informally that DIY is not exempt; the EU's only
-   exemption found is for health institutions. Building for oneself is a position regulators have
-   not written a rule for, not a protected one.
-3. **The person's own step has shrunk; the shared activity around it has grown.** In 2014 the
+2. **Device regulation has been said to apply since 2014; enforcement is by discretion.** The
+   2014 pre-submission minutes record that device regulations apply to Nightscout. In 2016 an FDA
+   official said systems like OpenAPS fall under FDA jurisdiction and that the agency may not
+   spend resources on someone building for their own use. Its published line since is the 2019
+   warning. The EU's only exemption found is for health institutions. Low enforcement priority is
+   not an exemption or a permission.
+3. **Scale and responsibility are the factors named, not payment.** In 2014 the FDA asked for one
+   responsible party and whether updates would reach 10,000 or 50,000 users. In 2016 it weighed
+   risk by how many people use a system (one person low, thousands higher) and named
+   responsibility for adverse-event reporting and failures as its biggest concern. Community use
+   has grown from tens of people in 2016 to an estimated tens of thousands.
+4. **The person's own step has shrunk; the shared activity around it has grown.** In 2014 the
    person compiled the code. Today the person forks a repository and runs an automated build,
    often in a workshop, following coordinated documentation, with the software promoted and
    offered free. Those shared activities, not the final build step, are what FDA officials have
    said look like distribution.
-4. **The community's beliefs differ by project.** One project reads EU rules as reaching free
+5. **The community's beliefs differ by project.** One project reads EU rules as reaching free
    distribution of built apps; others say only "not approved". The beliefs agree that the person
    carries the risk.
-5. **Running it for others has a regulated form and no published DIY form.** The regulated form is
+6. **Running it for others has a regulated form and no published DIY form.** The regulated form is
    a submission and, for interoperable devices, a contract that assigns complaint duties.
-6. **New requirements reach the distributor first.** §524B and app-store declarations bind whoever
+7. **New requirements reach the distributor first.** §524B and app-store declarations bind whoever
    submits or publishes. No new published requirement names the self-builder; FDA officials
    describe the cybersecurity work as closing unintended-use paths, with discretion in how the FDA
    acts.
@@ -270,13 +304,21 @@ for regulatory counsel, not advice; no enforcement intent is inferred beyond wha
    statements reported here, starting with Courtney Lias's DDATA 2016 talk: that DIY or personal
    distribution is not exempt, that the community's practice looks like distribution, that the
    absence of money is not a trigger, and that the cybersecurity work aims to close unintended-use
-   paths.
-9. Whether a person or entity running AID software for others (including paid builders or hosted
-   controllers) is a manufacturer, and whether 807.65(i) (service through "a previously
-   manufactured device") could ever apply.
-10. Whether §524B's "cyber device" definition could reach an unsubmitted DIY build (the statute
-   attaches it to a submitter).
-11. Whether answering "No" to Apple's regulated-device declaration is accurate for a DIY AID app,
+   paths. The 2014 meeting has published minutes and raw notes; the 2016 jurisdiction, risk and
+   responsibility statements are in diaTribe's report. Also whether the FDA holds its own record
+   of the 2014 meeting, whether the follow-up meeting or gap analysis took place, and whether the
+   FDA answered the "red lines" question.
+9. Whether the 2016 risk-based position (one person low risk, thousands higher) is still the
+   FDA's approach, and how it applies at the community's current scale.
+10. Whether a person or entity running AID software for others (including paid builders or hosted
+    controllers) is a manufacturer, and whether 807.65(i) (service through "a previously
+    manufactured device") could ever apply.
+11. Whether a legal entity that supports DIY users (for example by incubating projects, running
+    shared build infrastructure, or taking on adverse-event intake) changes how that risk-based
+    discretion applies, and in which direction.
+12. Whether §524B's "cyber device" definition could reach an unsubmitted DIY build (the statute
+    attaches it to a submitter).
+13. Whether answering "No" to Apple's regulated-device declaration is accurate for a DIY AID app,
     and what that answer implies in each market.
 
 ### 1·data-rights: getting data out, and letting others in

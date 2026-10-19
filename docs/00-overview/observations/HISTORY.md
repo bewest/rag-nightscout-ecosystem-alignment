@@ -25,6 +25,7 @@ names the row of this page it draws, and `make diagrams-svg-check` fails when on
 | 2014-05-22 | the `nightscout/cgm-remote-monitor` GitHub repository is created, carrying the earlier history | `gh api repos/nightscout/cgm-remote-monitor` |
 | 2014-07-29 | cgm-remote-monitor's first tag, 0.3.0 | `git for-each-ref --sort=creatordate refs/tags` |
 | 2014-10 | the Nightscout Foundation is "incorporated in October of 2014"; "formed in 2014 as a direct and natural off-shoot of the CGM in the Cloud movement" | [FAQ](https://www.nightscoutfoundation.org/faqs), [about](https://www.nightscoutfoundation.org/about) |
+| 2014-10-08 | Nightscout contributors meet the FDA in a pre-submission meeting (Q141084); the minutes record that "Medical Device regulations are applicable to the Nightscout project" and the FDA's wish for "one party to take responsibility" | [minutes](https://nightscout.github.io/fda-presubmission/07-minutes.html), [raw notes](https://gist.github.com/bewest/cac2346071a7ce1e057d) |
 | 2014-11-15 | xDrip's first commit | `git log --reverse`, `NightscoutFoundation/xDrip` (`ee3ece5a9`) |
 
 ## 2. The ecosystem grows, 2015–2019
