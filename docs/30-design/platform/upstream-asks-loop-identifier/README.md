@@ -23,12 +23,20 @@ otherwise:
    it. Other values are not valid; `UUID_HANDLING` (default on) moves any non-24-hex string `_id` to
    `identifier` on treatments and entries, as a compatibility rule.
 2. If `_id` is absent, the client sends `identifier`, an opaque string compared exactly,
-   not necessarily a UUID: 1-256 characters from `A-Za-z0-9._~:-`, not exactly 24 hex, no
-   placeholders (`invalid`, `undefined`, `null`, `NaN`); a UUID is needed only for today's v1
-   by-`_id` routes ([identifier format](../../../60-research/tenancy/identifier-format-2026-10-17.md),
-   queue `ID-FORMAT-DECISION`). The server assigns `_id`. One identifier names one record.
+   not necessarily a UUID: the record's semantic identity (this reading, this pump event, this
+   carb entry), so two uploads of one real thing carry one value. URL syntax, from the
+   [identifier conventions](../identifier-conventions.md) table: a source scheme for readings and
+   pump events (manufacturer as scheme, model first: `dexcom://g7/<serial>/<offset>`), an app
+   scheme for records made in the app (`loop://carbs/<uuid>`) (maintainer, 2026-10-18).
+   1-256 characters from `A-Za-z0-9._~:/-`, percent-encoded as one segment in API v3 paths (a raw
+   `/` is 404; measured 2026-10-18, [identifier format §3.4](../../../60-research/tenancy/identifier-format-2026-10-17.md#34-url-form-identifiers-end-to-end-2026-10-18-m)),
+   not exactly 24 hex, no placeholders (`invalid`, `undefined`, `null`, `NaN`); a UUID is needed
+   only for today's v1 by-`_id` routes (queue `ID-FORMAT-DECISION`, `ID-CONVENTIONS`). The server
+   assigns `_id`. One identifier names one record.
 3. If neither is sent, the collection's time key applies (entries `sysTime` + `type`, treatments
-   `created_at` + `eventType`); this fallback may be deprecated later.
+   `created_at` + `eventType`). `identifier` becomes mandatory at a future version boundary and
+   for registered controller instances; until then legacy paths keep this fallback (maintainer,
+   2026-10-18; queue `ID-ABSENT-DECISION`).
 
 Tie-break (maintainer, 2026-10-18; queue `ID-CLIENT-OID-DECISION`): when a write carries both and
 they point at different records, `identifier` decides, as in D20 rule 5 and v1 treatments today
@@ -123,6 +131,7 @@ send `identifier`) is the direction the reply takes.
 | — | to send | not chosen | [reply.body.md](reply.body.md); adds (2026-10-17) a question back: is the watch-and-phone case a re-send to acknowledge or an edit to apply? Our decision of record (write contract Q1, merge on match) answers "update" | `ID-V3-IMMUTABLE-DECISION` (queue), beside write contract §6.1 Q1 |
 | 2026-10-17 | rewritten | — | reply rewritten around the simple contract (three rules, tie-break `_id` decides, one server change after 15.0.9); previous version at `dd6febcc` in git history | `ID-SIMPLE-MATCH`, `ID-CLIENT-OID-DECISION` (queue) |
 | 2026-10-18 | revised | — | open questions become six concrete cases with today's behaviour, our default and an answer column; tie-break reversed to `identifier` decides (maintainer) | `ID-CLIENT-OID-DECISION`; write contract §6.1 |
+| 2026-10-18 | revised | — | case 5's default: time key on legacy paths now, `identifier` mandatory at a future version boundary and for registered controller instances; the format paragraph states the conventions table, URL syntax, source schemes (`dexcom://g7/…`) and app schemes (`loop://carbs/…`) and asks whether that works for Loop; the character set allows `/` and `:` with percent-encoding in v3 paths (measured) (maintainer) | `ID-ABSENT-DECISION`, `ID-FORMAT-DECISION`, `ID-CONVENTIONS`; [identifier conventions](../identifier-conventions.md) |
 
 When the reply is sent, add its date, channel and link. When they answer, add a row and the
 decision row it produces.
