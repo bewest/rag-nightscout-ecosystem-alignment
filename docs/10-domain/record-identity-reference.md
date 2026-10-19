@@ -276,19 +276,20 @@ Each rule says the version it holds from; "dev" means not yet released.
 
 ## 6. Open decisions
 
-None of these is decided; each is a row in [the queue](../../queue/QUEUE.md).
+Each is a row in [the queue](../../queue/QUEUE.md); only `ID-ABSENT-DECISION` is decided in part.
 
 | item | question |
 |---|---|
 | `ID-FORMAT-DECISION` | what an `identifier` may contain (opaque string, limits; UUID not required) |
 | `ID-CLIENT-OID-DECISION` | may a client set `_id`, and which wins when `_id` and `identifier` name different records |
 | `ID-V3-IMMUTABLE-DECISION` | on an `identifier` match, may `date`, `device` or `eventType` change |
-| `ID-ABSENT-DECISION` | a write with no `identifier`: keep the time-key fallback, deprecate it, or require `identifier` |
+| `ID-ABSENT-DECISION` | a write with no `identifier`: decided 2026-10-18 (maintainer): `identifier` becomes mandatory at a future version boundary and for registered controller instances, and legacy paths keep the time-key fallback until then; the version and the detection of registered instances are open |
 | `ID-DELETE-REUSE-DECISION` | after a delete, a re-send of the same `identifier`: resurrect, refuse, or create new |
 | `ID-SCOPE-DECISION` | is `identifier` unique per collection, across collections, per tenant |
 | `ID-SIMPLE-MATCH` | the one server change proposed: v1 entries and devicestatus match on `identifier` |
 
 Related: [identity specification](../30-design/platform/spec/identity.md) (the L0 rules this page measures today's behaviour against),
+[identifier conventions](../30-design/platform/identifier-conventions.md) (what each record's `identifier` should be, per record kind and source),
 [Loop `identifier` proposal and reply](../30-design/platform/upstream-asks-loop-identifier/README.md),
 [identifier format research](../60-research/tenancy/identifier-format-2026-10-17.md),
 [identifier duplicates](../60-research/tenancy/identifier-duplicates-2026-10-17.md),

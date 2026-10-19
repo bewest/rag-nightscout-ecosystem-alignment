@@ -27,6 +27,10 @@ ids; none of them redefines one.
 | I8 | **Projected documents have both ids.** When a hub serves a typed record to older readers as a projected document, it assigns an ObjectId at the typed write and stores it with the record, so every read of that projection carries the same `_id`. The projection's `identifier` is the typed record's id. A write aimed at either id of a projected document is refused `projected-read-only`. |
 | I9 | **Today's `_id` handling is a recorded quirk.** A non-ObjectId string `_id` on a treatment or entry is moved to `identifier` when `UUID_HANDLING` is on (the default) and the client sent no `identifier`, and dropped otherwise (QUIRK-TREATMENTS-006, QUIRK-ENTRIES-004). The hub records the move on the reply and the stored record as `quirksApplied` (`moved-to-identifier` or `dropped`). |
 
+`identifier` is the record's semantic identity in the data model (this CGM reading, this pump
+event, this carb entry), so two uploads of the same real thing carry the same value whichever app
+sends it; `_id` identifies the stored record (maintainer, 2026-10-18).
+
 Rules I1–I9 are D20 rules 5–8 with the walk-through rows 1–3, specified in the
 [hub-sync design §3.7](../nightscout-hub-sync-architecture-2026-09-11.md#37-version-scoped-quirks-and-the-two-ids),
 and the write contract's U1 and U6.
@@ -73,9 +77,12 @@ first that resolves wins.
 
 ## 4. The `identifier` format
 
-`identifier` is an opaque string. A UUID is recommended and not required: v4 for a record made
-once on one device, v5 of a source-derived name when several devices must produce the same value.
-What makes two devices agree is that they derive the id from the same inputs, not its format.
+`identifier` is an opaque string, with one rule for every collection. Values follow the
+[identifier conventions](../identifier-conventions.md) table, one row per record kind, in URL
+syntax: a source scheme for things that exist outside the app, the manufacturer as the scheme and
+the model as the first segment (`dexcom://g7/<serial>/<offset>`), and an app scheme for records
+made in an app (`loop://carbs/<uuid>`) (maintainer, 2026-10-18). What makes two devices agree is
+that they derive the id from the same inputs, not its format. A UUID is not required.
 
 The constraints proposed for `ID-FORMAT-DECISION`, each grounded in the
 [identifier format research §0](../../../60-research/tenancy/identifier-format-2026-10-17.md#0-answer):
@@ -84,7 +91,7 @@ The constraints proposed for `ID-FORMAT-DECISION`, each grounded in the
 |---|---|
 | C1 | a JSON string with at least one non-whitespace character |
 | C2 | at most 256 characters |
-| C3 | characters from `A-Z a-z 0-9 - . _ ~ :` |
+| C3 | characters from `A-Z a-z 0-9 - . _ ~ : /`; in an API v3 path the identifier is percent-encoded as one segment (an encoded `/` works on every v3 by-identifier route at 15.0.8 and `fade2299`, a raw `/` is 404: [format research §3.4](../../../60-research/tenancy/identifier-format-2026-10-17.md#34-url-form-identifiers-end-to-end-2026-10-18-m)) |
 | C4 | not exactly 24 hex characters, unless it equals the record's own `_id` |
 | C5 | not `history`, `.` or `..`, and not a client placeholder such as `invalid`, `undefined`, `null` or `NaN` |
 | C6 | one identifier, one record (I6) |
@@ -97,10 +104,10 @@ uses today's v1 by-`_id` routes needs a UUID (§6).
 
 | item | question | where the rules above stand |
 |---|---|---|
-| `ID-FORMAT-DECISION` | adopt C1–C7? | §4 is proposed; I6 holds either way |
+| `ID-FORMAT-DECISION` | adopt C1–C7? | opaque values, URL syntax and the source and app schemes are decided (maintainer, 2026-10-18); C1–C7 are proposed; I6 holds either way |
 | `ID-CLIENT-OID-DECISION` | may a client create its own ObjectId as `_id`; when `identifier` and `_id` match different records, which wins? | I2 keeps a client 24-hex `_id`. The [Loop reply's simple contract](../upstream-asks-loop-identifier/README.md#the-simple-contract) proposes that `_id` wins, which differs from I5's identifier-first order and from v1 treatments today |
 | `ID-V3-IMMUTABLE-DECISION` | on an `identifier` match, may `date`, `device` or `eventType` change? | API v3 refuses it (400, reproduced by `LOOP-ID-V3-IMMUTABLE`); v1 does not |
-| `ID-ABSENT-DECISION` | a write with no `identifier`: keep the time-key fallback, deprecate it, or require `identifier`? | today v1 entries and treatments fall back to a time key, API v3 to its fallback fields; v1 device status has no key; two distinct doses with one `created_at` and `eventType` and no identifier are merged by §3 (UCA-SYNC-STORE-007) |
+| `ID-ABSENT-DECISION` | a write with no `identifier`: keep the time-key fallback, deprecate it, or require `identifier`? | decided (maintainer, 2026-10-18): `identifier` becomes mandatory at a future version boundary and for registered controller instances; until then legacy paths keep the time-key fallback. Open: which version, and how a hub recognises a registered instance's write. Today v1 entries and treatments fall back to a time key, API v3 to its fallback fields; v1 device status has no key; two distinct doses with one `created_at` and `eventType` and no identifier are merged by §3 (UCA-SYNC-STORE-007) |
 | `ID-DELETE-REUSE-DECISION` | after a delete, does a re-send of the same `identifier` resurrect, get refused, or create new? §3 stores it again today; a resurrected dose is UCA-SYNC-STORE-003 in the [control-loop analysis](control-loops.md) | API v3 resurrects a soft-deleted record on POST (measured 2026-10-18, [record identity reference](../../../10-domain/record-identity-reference.md)) |
 | `ID-SCOPE-DECISION` | is `identifier` unique per collection, across collections, and per tenant? | per collection today (each collection is its own MongoDB collection and index); the rules above do not say |
 | D20 choice 6 ([text](../nightscout-hub-sync-architecture-2026-09-11.md#37-version-scoped-quirks-and-the-two-ids)) | is `identifier` null in the reply when the client sent none and the path assigns none? | I4 states null, pending confirmation |
