@@ -1,0 +1,27 @@
+# L3 · C4 containers for the developer guides: which part of a hub a controller app calls, and why.
+# Source: registration §4 (capability document, unauthenticated), §5 (product resource), §7-§8
+# (definitions, instances, leases), §11 (typed writes); commands CM18 (fetch), CM19 (push only
+# inside a bound request), CM7 (outcomes); authority AU2 (three listeners under multi; one under
+# single, where API_SECRET acts as the owner). Drawn 2026-10-18; proposed. Roles only.
+title: "3·guide-containers · The parts of a hub your app calls (C4 containers)"
+bands:
+  - {label: "Your app", levels: [0]}
+  - {label: "Hub listeners", levels: [1]}
+  - {label: "Hub storage", levels: [2]}
+nodes:
+  - {id: app, label: "Your controller app\n(one instance)", kind: org, level: 0, column: 1, icon: smartphone}
+  - {id: owner, label: "Site owner", kind: human, level: 0, column: 3, icon: key-round}
+  - {id: wk, label: "Capability document\n/.well-known/\nnightscout/sync", kind: commons, level: 1, column: 0, icon: file-text}
+  - {id: api, label: "Data listener\n(ns-api; single)", kind: commons, level: 1, column: 1, icon: server}
+  - {id: rt, label: "Socket\n(ns-realtime)", kind: commons, level: 1, column: 2, icon: network}
+  - {id: tadmin, label: "Owner's listener\n(ns-tenant-admin)", kind: commons, level: 1, column: 3, icon: settings}
+  - {id: reg, label: "Products, definitions,\ninstances and leases", kind: commons, level: 2, column: 3, icon: clipboard-list}
+  - {id: rec, label: "Typed records,\ncommands, outcomes", kind: commons, level: 2, column: 1, icon: database}
+edges:
+  - {from: wk, to: app, kind: feedback, label: "what this hub\nreads (at launch)"}
+  - {from: app, to: api, kind: control, label: "PUT product, definition,\ninstance; typed writes;\nfetch; outcomes"}
+  - {from: rt, to: app, kind: control, label: "live commands\n(bound requests)"}
+  - {from: owner, to: tadmin, kind: control, label: "grants roles,\nblock, retire"}
+  - {from: api, to: reg, kind: data, label: "per element, bound\nto your credential", label_side: above}
+  - {from: api, to: rec, kind: data, label: "attributed\nto your instance"}
+  - {from: tadmin, to: reg, kind: control, label: "owner actions"}

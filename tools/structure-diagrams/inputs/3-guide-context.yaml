@@ -1,0 +1,31 @@
+# L3 · C4 context for the developer guides: a controller app and everything it deals with.
+# Source: docs/30-design/platform/spec/control-loops.md §3 (D18: the hub routes and records; the
+# controller validates and enacts), registration §4-§9, commands CM17-CM25, authority AU1-AU3.
+# Drawn 2026-10-18 for docs/30-design/platform/guides/; read from the specifications, which are
+# proposed. Roles only.
+title: "3·guide-context · Your controller app and what it deals with (C4 context)"
+bands:
+  - {label: "People and agents", levels: [0]}
+  - {label: "Hub", levels: [1]}
+  - {label: "Your app", levels: [2]}
+  - {label: "Devices", levels: [3]}
+nodes:
+  - {id: owner, label: "Site owner\n(grants roles)", kind: human, level: 0, column: 0, icon: key-round}
+  - {id: sender, label: "Caregiver, follower\napps, the person", kind: human, level: 0, column: 1, icon: users}
+  - {id: agent, label: "Agent instance\n(proposes)", kind: entity, level: 0, column: 2, icon: bot}
+  - {id: hub, label: "Nightscout hub:\nrecords, routes,\nmirrors", kind: commons, level: 1, column: 1, icon: server}
+  - {id: app, label: "Your controller app\n(validates, enacts)", kind: org, level: 2, column: 1, icon: smartphone}
+  - {id: person, label: "The person, on\nthe phone", kind: human, level: 2, column: 0, icon: user}
+  - {id: pump, label: "Insulin pump", kind: process, level: 3, column: 1, icon: syringe}
+  - {id: cgm, label: "CGM", kind: process, level: 3, column: 2, icon: activity}
+edges:
+  - {from: owner, to: hub, kind: control, label: "grants, block,\nretire"}
+  - {from: sender, to: hub, kind: control, label: "commands,\napprovals, cancels"}
+  - {from: hub, to: sender, kind: feedback, label: "records, states,\noutstanding list"}
+  - {from: agent, to: hub, kind: control, label: "proposals"}
+  - {from: hub, to: app, kind: control, label: "commands,\nrouted once"}
+  - {from: app, to: hub, kind: feedback, label: "registration,\ntyped records,\noutcomes"}
+  - {from: person, to: app, kind: control, label: "settings,\nlocal actions"}
+  - {from: app, to: pump, kind: control, label: "dose, suspend,\ntemporary basal"}
+  - {from: pump, to: app, kind: feedback, label: "delivery status"}
+  - {from: cgm, to: app, kind: feedback, label: "glucose"}

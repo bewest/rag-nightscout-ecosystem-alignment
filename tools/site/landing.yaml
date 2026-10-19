@@ -61,6 +61,7 @@ orders:
   docs/30-design/platform:
     - nightscout-intent-workflow-landscape-2026-10-09.md
     - spec/
+    - guides/
     - nightscout-typed-schema-evidence-2026-09-10.md
     - nightscout-primitive-coverage-2026-09-11.md
     - nightscout-devicestatus-profile-fidelity-2026-09-10.md
@@ -74,6 +75,9 @@ orders:
     - upstream-asks-loop-identifier/
     - upstream-asks-device-simulators/
   # The README's layer order, L0 to L5, after the glossary.
+  docs/30-design/platform/guides:
+    - new-controller.md
+    - add-a-setting.md
   docs/30-design/platform/spec:
     - glossary.md
     - identity.md
