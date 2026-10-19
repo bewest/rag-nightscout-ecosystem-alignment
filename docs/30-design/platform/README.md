@@ -198,4 +198,6 @@ why the contract exists, then the eight specifications in layer order:
 
 Across the eight, [control loops](spec/control-loops.md) is an STPA analysis: it draws the loops
 the specifications set up, lists each unsafe control action with the rule that prevents it, and
-names the gaps the specifications now carry as open.
+names the gaps the specifications now carry as open. [Compatibility](spec/compatibility.md) says,
+for every app the corpus holds and every layer, what the app does today and what it sees from a
+hub that implements the specifications without the app changing.

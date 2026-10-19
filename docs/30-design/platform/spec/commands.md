@@ -233,6 +233,8 @@ record names, is the registration contract per mode (`SPEC-REG-MODES`, not writt
 
 ## 8. Compatibility
 
+The same, for every app the corpus holds and every layer: [compatibility](compatibility.md).
+
 Read from Loop (`c30b5c89`, NightscoutService `2cef489`), Trio (`0b29cd534`), AndroidAPS
 (`7e1d537d49`, `dev`), LoopCaregiver (`2305718`) and LoopFollow (`4a74b781`), 2026-10-18; nothing
 was run.

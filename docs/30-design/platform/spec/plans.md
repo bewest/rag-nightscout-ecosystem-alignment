@@ -172,6 +172,8 @@ stateDiagram-v2
 
 ## 8. Compatibility
 
+Per app: [compatibility](compatibility.md) L3.
+
 No released controller holds a plan from a hub. The nearest precedent runs on the controller:
 AndroidAPS's automation plugin (`dev` `7e1d537d49`) triggers on recurring time, location, Wi-Fi
 network, steps and heart rate, and acts with a temporary target, a profile percentage, scenes, a
