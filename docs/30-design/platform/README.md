@@ -111,7 +111,7 @@ Each layer changes with a different group's work, so each has a natural owner. S
 L2 and L3 describe what controllers send and do, and today they are written here, not by the
 controller teams. They become the controllers' own when those teams review the parts that describe
 their data and hold a route to change them. Why the cut follows the teams is read on
-[how the teams shaped the contract §6](../../00-overview/perspective/CONWAY.md#6-inverse-conway-specifications-shaped-to-their-owners).
+[Conway's Law applied to the ecosystem §6](../../00-overview/perspective/CONWAY.md#6-inverse-conway-specifications-shaped-to-their-owners).
 
 ## L0 Identity
 

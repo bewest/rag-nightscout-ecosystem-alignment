@@ -1,4 +1,4 @@
-# How the teams shaped the contract: a Conway's Law reading
+# Conway's Law applied to the Nightscout ecosystem
 
 *What this is: a frame (part 2 of the overview, perspective; [how the overview is organised](../README.md)), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after [process models](PROCESS-MODELS.md); leads to part 3, starting with the [ecosystem programme](../ECOSYSTEM-PROGRAMME.md). Living page,
 written 2026-10-18 against this repository at `0b0d150f`. Every fact is taken from a page linked
