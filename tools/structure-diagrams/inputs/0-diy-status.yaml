@@ -14,6 +14,10 @@
 #               (registration exemptions: none for a person making a device for their own use), 807.81(a)
 #               (premarket notification before "introduction ... for commercial distribution"), eCFR;
 #               21 U.S.C. 331(a) (LII); cloud-layer §2.2 (iCGM 862.1355, ACE 880.5730, iAGC 862.1356);
+#               FDA officials, conference presentations and discussions with the Nightscout Foundation
+#               (reported by the Foundation; no published record found): DIY or personal distribution not
+#               exempt; community practice "looks like distribution"; "the absence of money exchanged" is not
+#               a distribution trigger; cybersecurity work closes unintended-use paths, with discretion;
 #               HISTORY 2023-01-23 (Tidepool Loop K203689, cleared as an iAGC); MDCG 2023-1 (MDR Art. 5(5)
 #               applies to health institutions; use outside the institution's legal entity is not in-house)
 #   emerging  - FDA cybersecurity page (FD&C Act §524B in effect 2023-03-29; guidance 2025-06-27); LII 21 U.S.C.
@@ -51,9 +55,9 @@ edges:
      labels: {believed: "\"any distribution (even\ngiving away for free)\"\nneeds a CE mark",
               actual: "placing on the market\nneeds a CE mark; free\nsupply: to verify",
               emerging: "placing on the market\nneeds a CE mark"}}
-  - {from: us, to: person, kind: discretion, label: "2019 warning: use only\nreviewed devices; no rule\nfound on self-build",
+  - {from: us, to: person, kind: discretion, label: "2019 warning: use only\nreviewed devices; officials:\nDIY not exempt (informal)",
      in: [actual, emerging]}
-  - {from: us, to: binary, kind: control, label: "if held or offered for\nsale: register, notify\n(807.3, 807.81)",
+  - {from: us, to: binary, kind: control, label: "commerce, no sale\ncondition (331(a)); officials:\nfree sharing is distribution",
      in: [actual, emerging]}
   - {from: projects, to: binary, kind: control, label: "source", in: [actual, emerging]}
   - {from: binary, to: app, kind: control, label: "built app", in: [actual, emerging]}
