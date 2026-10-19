@@ -16,7 +16,7 @@
         <link rel="prev" href="STRUCTURES.html">
       
       
-        <link rel="next" href="../ECOSYSTEM-PROGRAMME.html">
+        <link rel="next" href="CONWAY.html">
       
       
         
@@ -757,6 +757,8 @@
       
         
       
+        
+      
     
     
     
@@ -1084,6 +1086,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#1teams-who-decides-the-shared-data-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1·teams: who decides the shared data contract
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1165,6 +1178,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="CONWAY.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How the teams shaped the contract: a Conway's Law reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -2638,6 +2679,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#1teams-who-decides-the-shared-data-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1·teams: who decides the shared data contract
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2733,9 +2785,9 @@
 
 
 <h1 id="process-models-what-we-believe-and-how-it-works">Process models: what we believe, and how it works<a class="headerlink" href="#process-models-what-we-believe-and-how-it-works" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>31b818574</code>.</em></p>
-<p><em>What this is: a map (part 2 of the overview, perspective; <a href="../index.html">how the overview is organised</a>), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after <a href="STRUCTURES.html">control structures</a>; leads to part 3, starting with the <a href="../ECOSYSTEM-PROGRAMME.html">ecosystem programme</a>. Living page,
-written 2026-10-17. Companion to <a href="STRUCTURES.html">control structures</a>, whose conventions,
+<p><em>Living document, last changed 2026-10-18 at <code>ad2243c5b</code>.</em></p>
+<p><em>What this is: a map (part 2 of the overview, perspective; <a href="../index.html">how the overview is organised</a>), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after <a href="STRUCTURES.html">control structures</a>; leads to <a href="CONWAY.html">how the teams shaped the contract</a>. Living page,
+written 2026-10-17; 1·teams added 2026-10-18. Companion to <a href="STRUCTURES.html">control structures</a>, whose conventions,
 legend and icons apply here. Every node and edge comes from a source cited under the drawing;
 where a panel is inferred or proposed, it says so.</em></p>
 <p><em>Author's interests: the author maintains cgm-remote-monitor, founded a company that hosts
@@ -2791,6 +2843,11 @@ choice (terms, enforcement, revocation). The other lines and the icons are as in
 <td><a href="#1hosting-who-answers-for-a-site-run-for-someone-else">1·hosting</a></td>
 <td>who answers for a site run for someone else</td>
 <td>believed, actual, emerging</td>
+</tr>
+<tr>
+<td><a href="#1teams-who-decides-the-shared-data-contract">1·teams</a></td>
+<td>who decides the shared data contract</td>
+<td>believed, actual</td>
 </tr>
 <tr>
 <td><a href="#3identity-who-is-who-on-a-hub-and-who-may-do-what">3·identity</a></td>
@@ -3142,6 +3199,25 @@ multitenancy design takes bulk hosting as its target, with one operator running 
 check: whether the FTC rule and state health-data laws reach a hosting operator, and which state
 laws beyond Washington apply; whether listing providers creates endorsement or liability exposure
 (COLLABORATION-MODEL §8).</p>
+<h3 id="1teams-who-decides-the-shared-data-contract">1·teams: who decides the shared data contract<a class="headerlink" href="#1teams-who-decides-the-shared-data-contract" title="Permanent link">&para;</a></h3>
+<p><img alt="1·teams as believed: the foundation decides for one Nightscout project and convenes cross-project decisions; someone runs the shared operations; the project owns one schema, writers write it, the hub knows each writer and readers get one shape" src="diagrams/1-teams--believed.svg" /></p>
+<p><strong>As believed</strong> (<em>inferred</em>: the assumptions the next panel tests). One project decides, the hub
+knows each writer, and someone runs the shared operations.</p>
+<p><img alt="1·teams as the repositories and code show: the foundation supports projects by resource request, events and awards; no cross-project body is named; 20 repositories each decide alone; shared operations have no named runner for intake or registry; each display plugin reads its family's key; writers send their own shapes and readers handle each writer" src="diagrams/1-teams--actual.svg" /></p>
+<p><strong>As the repositories and code show.</strong> Each of 20 repositories decides what it merges and
+releases; the foundation supports projects by resource request, runs events and gives awards; no
+shared body for decisions that cross projects is named
+(<a href="../observations/GOVERNANCE-TODAY.html#1-who-decides-in-each-project">governance §1, §3, §6</a>,
+measured 2026-10-02). The hub has no registration code and tells controllers apart by the
+<code>loop</code> or <code>openaps</code> key (<a href="#3registration-who-writes-to-the-hub-and-where-a-command-goes">3·registration</a>). Writers send their own shapes: the quirks
+registry holds 20 entries in four collections (<code>specs/quirks/*.yaml</code> at <code>0b0d150f</code>), and five apps
+use five record-id conventions
+(<a href="../../60-research/tenancy/identifier-format-2026-10-17.html#1-per-app-identity-for-cgm-readings-and-the-treatment-identity-each-app-sends-r">identifier format research §1</a>).
+Intake and registry have no named runner (<a href="#2shared-infra-shared-operations-and-who-runs-them">2·shared-infra</a>).</p>
+<p><em>Interpretation.</em> The organisation and the data contract have the same shape: where no team owns
+a join, the hub keeps every side of it. The set is read through Conway's Law on
+<a href="CONWAY.html">how the teams shaped the contract</a>.</p>
+<p><em>Caveat.</em> Counts are as measured on the dates given; re-measure before quoting.</p>
 <h2 id="the-ecosystems-designs-believed-actual-proposed">The ecosystem's designs: believed, actual, proposed<a class="headerlink" href="#the-ecosystems-designs-believed-actual-proposed" title="Permanent link">&para;</a></h2>
 <h3 id="3identity-who-is-who-on-a-hub-and-who-may-do-what">3·identity: who is who on a hub, and who may do what<a class="headerlink" href="#3identity-who-is-who-on-a-hub-and-who-may-do-what" title="Permanent link">&para;</a></h3>
 <p><img alt="3·identity as believed: the site owner sets API_SECRET, a passphrase, gives it to apps so they can upload and shares the address and the secret with helpers; people open the site and see glucose and treatments" src="diagrams/3-identity--believed.svg" /></p>
@@ -3293,7 +3369,7 @@ An agent would register its own instance; role types are open "so roles such as 
 acting can be added for agents" (D19 rule 5). <strong>Open:</strong> the command API, proposed in the
 <a href="../../30-design/platform/spec/commands.html">commands specification</a> and not decided, the
 contract per tenancy mode (<code>SPEC-REG-MODES</code>), the first hub (<code>HUB-REG-CRM</code>), the proposals to
-Nocturne and the controllers, all not started (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0b0d150fe93009d31295d935c43a724c256178f0/queue/work-queue.yaml">queue</a>); and how an
+Nocturne and the controllers, all not started (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ad2243c5ba6ed6aa1b0ea4414c3886d1fb0dd44a/queue/work-queue.yaml">queue</a>); and how an
 agent is scoped, limited and revoked, which no decision covers.</p>
 <p><em>Interpretation.</em> Properties the three panels show:</p>
 <ol>
@@ -3370,7 +3446,7 @@ security contact, complaint workflow, SBOM or build-provenance record was found
 (<a href="../PARTNER-READINESS.html#3-what-a-manufacturer-will-need-to-see">partner readiness §3</a>). The
 conformance suite lives in this repository: 85 vector files, an oref0 runner, and AndroidAPS and
 Loop runners not implemented (<a href="../../../conformance/index.html"><code>conformance/</code></a>;
-<code>tools/conformance_suite.py:43-55</code>). This repository's <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0b0d150fe93009d31295d935c43a724c256178f0/.github/workflows/ci.yml">CI</a> runs
+<code>tools/conformance_suite.py:43-55</code>). This repository's <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ad2243c5ba6ed6aa1b0ea4414c3886d1fb0dd44a/.github/workflows/ci.yml">CI</a> runs
 Python syntax and spec validation; the suite and the <a href="../../../queue/index.html">queue gates</a> run by
 <code>make</code>, outside CI. The 15.0.9 run records are the nearest thing to release evidence
 (<a href="../QUALITY-SYSTEM.html#41-the-record-every-run-leaves">quality system §4.1</a>).</p>

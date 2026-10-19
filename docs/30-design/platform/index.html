@@ -5106,6 +5106,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="The specification set">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#who-owns-each-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Who owns each layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -5214,7 +5231,7 @@
 
 
 <h1 id="platform-contracts-the-index-to-six-layers-and-eight-specifications">Platform contracts: the index to six layers and eight specifications<a class="headerlink" href="#platform-contracts-the-index-to-six-layers-and-eight-specifications" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>5a47b91eb</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>ad2243c5b</code>.</em></p>
 <p><em>Contributor-facing. Living index, current at <code>main</code> <code>010e1661</code> (2026-10-18). Terms are defined in
 the <a href="spec/glossary.html">platform glossary</a>.</em></p>
 <p>This page maps the work on how controllers (Loop, Trio, AndroidAPS and others) and hubs
@@ -5406,6 +5423,61 @@ moved from its §9 to <em>commands</em> §2.</p>
    &lt;layer&gt;</code> checks a specification's cases, links and wording. A rule change lands with its schema
    and case changes in one commit.</li>
 </ol>
+<h3 id="who-owns-each-layer">Who owns each layer<a class="headerlink" href="#who-owns-each-layer" title="Permanent link">&para;</a></h3>
+<p>Each layer changes with a different group's work, so each has a natural owner. Status at <code>main</code>
+<code>0b0d150f</code>, 2026-10-18:</p>
+<table>
+<thead>
+<tr>
+<th>layer</th>
+<th>changes with</th>
+<th>natural owner</th>
+<th>engaged today</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L0 identity</td>
+<td>rarely; every layer uses it</td>
+<td>hub and controller maintainers together</td>
+<td>the Loop developers shared an <code>identifier</code> proposal on 2026-10-17, close to D20 rule 5; the <a href="upstream-asks-loop-identifier/index.html">reply</a> is drafted, not sent</td>
+</tr>
+<tr>
+<td>L1 records</td>
+<td>the observation catalogue and the site corpus</td>
+<td>hub maintainers, with research users</td>
+<td>specified in this repository</td>
+</tr>
+<tr>
+<td>L2 definitions and instances</td>
+<td>controller releases</td>
+<td>each controller team, for its own data</td>
+<td>proposals to the controllers not started (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ad2243c5ba6ed6aa1b0ea4414c3886d1fb0dd44a/queue/work-queue.yaml">queue</a>)</td>
+</tr>
+<tr>
+<td>L3 state and intent, commands, plans</td>
+<td>controller releases; carries the safety review</td>
+<td>controller teams, with caregiver-app teams</td>
+<td>specified in this repository; implemented in no hub or controller</td>
+</tr>
+<tr>
+<td>L4 change and sync</td>
+<td>performance work</td>
+<td>hub implementers (cgm-remote-monitor, Nocturne)</td>
+<td>proposal to Nocturne not started</td>
+</tr>
+<tr>
+<td>L5 authority</td>
+<td>tenancy and authentication decisions</td>
+<td>hub operators, with the foundation's oversight role</td>
+<td>decided in part (D7, D13–D19; D17 row 2 open) in the <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a></td>
+</tr>
+</tbody>
+</table>
+<p>L2 and L3 describe what controllers send and do, and today they are written here, not by the
+controller teams. They become the controllers' own when those teams review the parts that describe
+their data and hold a route to change them. Why the cut follows the teams is read on
+<a href="../../00-overview/perspective/CONWAY.html#6-inverse-conway-specifications-shaped-to-their-owners">how the teams shaped the contract §6</a>.</p>
 <h2 id="l0-identity">L0 Identity<a class="headerlink" href="#l0-identity" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

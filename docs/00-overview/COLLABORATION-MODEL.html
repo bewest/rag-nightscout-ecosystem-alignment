@@ -755,6 +755,8 @@
       
         
       
+        
+      
     
     
     
@@ -988,6 +990,17 @@
     <span class="md-ellipsis">
       
         5. Proposed rules for working together
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5a-read-the-structure-before-the-motive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5a. Read the structure before the motive
       
     </span>
   </a>
@@ -2401,6 +2414,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#5a-read-the-structure-before-the-motive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5a. Read the structure before the motive
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#6-what-would-break-consensus" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2462,11 +2486,12 @@
 
 
 <h1 id="working-together-across-the-nightscout-ecosystem--proposal">Working together across the Nightscout ecosystem — proposal<a class="headerlink" href="#working-together-across-the-nightscout-ecosystem--proposal" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>174c8e8e5</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>ad2243c5b</code>.</em></p>
 <p><em>What this is: a proposal (part 3 of the overview, recommendations; <a href="index.html">how the overview is organised</a>), for the Nightscout Foundation board, the maintainers of the ecosystem projects, the operators and companies that host or build on Nightscout, and the community. Read after the <a href="SPONSORED-TEAM-PROPOSAL.html">sponsored maintenance team</a>; leads to the <a href="QUALITY-SYSTEM.html">quality system</a>. </em><em>DRAFT PROPOSAL for discussion.</em><em>
 Written 2026-09-29 against this repository at <code>2c19f61d</code>. Where it touches conflicts of interest,
 partner agreements, trademarks or regulatory status, it needs review by the foundation's counsel
-before any decision rests on it (§8). Nothing here is decided.</em></p>
+before any decision rests on it (§8). Nothing here is decided. Rule 10 and §5a were added
+2026-10-18 at <code>0b0d150f</code>.</em></p>
 <p><em>Author's interests: the author maintains cgm-remote-monitor, founded a company that hosts
 Nightscout commercially, and could be a candidate for paid work under the sponsored-team proposal.
 The rules in §5 would apply to that company and to the author like anyone else.</em></p>
@@ -2624,7 +2649,67 @@ the sizes, funding and commercial roles of the same organisations are in its mai
 <li><strong>Everyone discloses.</strong> Anyone who decides, reviews or is paid under these rules discloses their
    commercial ties and any interest in the outcome, and steps back from decisions that affect their
    own organisation.</li>
+<li><strong>A second person can review and release.</strong> Each repository that other projects or many people
+    depend on has at least two people able to review, merge and release it, and a written path by
+    which a contributor earns those rights, with review by a second person (the xz-utils lesson,
+    <a href="perspective/PRECEDENTS.html#histories">PRECEDENTS</a>). In the 12 months to 2026-10-02, pull
+    requests in AndroidAPS (508), xDrip+ (132), nightscout-librelink-up (11), nightguard (6) and three
+    other repositories were each merged by one account (<a href="observations/GOVERNANCE-TODAY.html#1-who-decides-in-each-project">governance today §1</a>).</li>
 </ul>
+<h2 id="5a-read-the-structure-before-the-motive">5a. Read the structure before the motive<a class="headerlink" href="#5a-read-the-structure-before-the-motive" title="Permanent link">&para;</a></h2>
+<p>Teams that had no channel to agree build what each needs, and the shared data holds both
+(<a href="perspective/CONWAY.html">how the teams shaped the contract</a>). Most friction between projects comes
+from such a boundary, not from what a person intended. The rules below apply to maintainers,
+contributors, companies and community members alike.</p>
+<table>
+<thead>
+<tr>
+<th>when you see</th>
+<th>read it first as</th>
+<th>check before concluding anything else</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>two apps disagree on a field or show different numbers</td>
+<td>each team wrote what its own app needed, and no one owned the join</td>
+<td>the <a href="../../specs/quirks/index.html">quirks registry</a> and each app's source; whether a shared rule existed at the time</td>
+</tr>
+<tr>
+<td>a long gap between releases</td>
+<td>releases follow people's available time and outside clocks: toolchains, platforms, hosts</td>
+<td>the project's own statement; dates do not show causes, and each project's maintainers are the people to say what held a release (<a href="observations/ECOSYSTEM-EVIDENCE.html#3-releases-and-contributors-across-the-main-projects">ecosystem evidence §3</a>)</td>
+</tr>
+<tr>
+<td>a pull request or proposal open for a long time</td>
+<td>review capacity on that boundary is a few people who carry everything else too</td>
+<td>who can merge there, and what they were releasing at the time</td>
+</tr>
+<tr>
+<td>a fork</td>
+<td>a group needed a different pace or direction than one shared channel allowed</td>
+<td>whether the fork reads and writes the shared contract</td>
+</tr>
+<tr>
+<td>a company or a paid person involved</td>
+<td>paid and unpaid roles are both part of the structure</td>
+<td>their disclosed interests (rule 9), and whether the same requirements apply to them as to anyone</td>
+</tr>
+<tr>
+<td>a second server or a rewrite</td>
+<td>a second team implementing the contract</td>
+<td>whether both pass the same conformance cases (rule 5)</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li><strong>Ask before attributing.</strong> A maintainer can usually say in one message what held a release or
+   why a field has its shape.</li>
+<li><strong>Argue from the shared contract.</strong> State what an app writes, what the contract says and the
+   test that shows the difference; a comparison between two apps or servers does not change either.</li>
+<li><strong>State differences as facts about the system.</strong> Where your picture of who decides, or of what
+   the code does, differs from the code, say so as a fact about the system, not about people.</li>
+</ol>
 <h2 id="6-what-would-break-consensus">6. What would break consensus<a class="headerlink" href="#6-what-would-break-consensus" title="Permanent link">&para;</a></h2>
 <ul>
 <li>The foundation choosing a winning server or app.</li>
@@ -2702,7 +2787,7 @@ read 2026-10-02).</p>
 </ol>
 <p><strong>For the maintainers of each project:</strong></p>
 <ol>
-<li>Whether rules 3 and 5–7 are acceptable to your project, and which of §3's dates your project wants
+<li>Whether rules 3, 5–7 and 10, and the practice in §5a, are acceptable to your project, and which of §3's dates your project wants
    shared preparation for.</li>
 </ol>
 <p><strong>For the commercial hosting providers:</strong></p>
