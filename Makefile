@@ -1083,14 +1083,14 @@ $(SITE_STAMP): tools/site/requirements.txt
 site-venv: $(SITE_STAMP)
 
 site: $(SITE_STAMP)
-	$(SITE_PY) tools/site/build.py
+	tools/site/with-lock.sh $(SITE_PY) tools/site/build.py
 
 serve: site
 	@echo "Serving build/site/ at http://127.0.0.1:$(SITE_PORT)/ (Ctrl-C to stop)"
 	$(SITE_PY) -m http.server --bind 127.0.0.1 --directory build/site $(SITE_PORT)
 
 site-check: site
-	$(SITE_PY) tools/site/check.py
+	tools/site/with-lock.sh $(SITE_PY) tools/site/check.py
 
 site-clean:
 	rm -rf build/site-src build/site build/site-nav.yaml build/site-report.json build/site-mkdocs.log

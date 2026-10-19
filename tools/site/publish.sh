@@ -26,6 +26,16 @@ cd "$REPO"
 
 fail() { echo "site-publish: REFUSED: $*" >&2; exit 1; }
 
+# Serialise: this checkout's build/ (build/.site.lock, shared with make site and site-check,
+# whose recipes see SITE_LOCK_HELD and do not take it again) and the gh-pages worktree every
+# checkout publishes into (a lock in git's common directory, shared by all worktrees).
+mkdir -p build
+exec 8>build/.site.lock
+flock -w "${SITE_LOCK_WAIT:-900}" 8 || fail "another site build or publish in this checkout holds build/.site.lock"
+exec 7>"$(git rev-parse --git-common-dir)/site-publish.lock"
+flock -w "${SITE_LOCK_WAIT:-900}" 7 || fail "another checkout is publishing (site-publish.lock in the git common directory)"
+export SITE_LOCK_HELD=1
+
 [ -z "$(git status --porcelain)" ] || fail "the working tree is not clean (git status --porcelain is not empty)"
 if [ -z "$DRY" ]; then
   [ -n "$(git branch -r --contains HEAD)" ] || fail "HEAD $(git rev-parse --short HEAD) is not on any remote branch; push it first (or use DRY_RUN=1)"
