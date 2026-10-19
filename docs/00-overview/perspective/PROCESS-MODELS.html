@@ -2785,7 +2785,7 @@
 
 
 <h1 id="process-models-what-we-believe-and-how-it-works">Process models: what we believe, and how it works<a class="headerlink" href="#process-models-what-we-believe-and-how-it-works" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>ad2243c5b</code>.</em></p>
+<p><em>Living document, last changed 2026-10-19 at <code>8baaa5499</code>.</em></p>
 <p><em>What this is: a map (part 2 of the overview, perspective; <a href="../index.html">how the overview is organised</a>), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after <a href="STRUCTURES.html">control structures</a>; leads to <a href="CONWAY.html">how the teams shaped the contract</a>. Living page,
 written 2026-10-17; 1·teams added 2026-10-18. Companion to <a href="STRUCTURES.html">control structures</a>, whose conventions,
 legend and icons apply here. Every node and edge comes from a source cited under the drawing;
@@ -2965,22 +2965,27 @@ within these regulations" (<a href="https://wiki.aaps.app/en/latest/UsefulLinks/
 (<a href="../../DIGITAL-RIGHTS.html#disclaimers">DIGITAL-RIGHTS, disclaimers</a>). In this picture regulation
 reaches manufacturers and people who hand out built apps, and stops short of the person and of
 published source.</p>
-<p><img alt="0·diy-status as regulators have spoken: the FDA's route to manufacturers carries registration, 510(k) or De Novo and the iCGM, ACE and iAGC special controls, and a cleared controller sits among the manufacturers; the FDA's 2019 warning reaches the person, with no rule found on self-build; US registration and premarket notice attach to devices held or offered for sale; the EU requires a CE mark to place a device on the market, with free supply marked to verify; projects publish source to the person and to anyone who builds apps for others; anyone running it for others has no regulator line" src="diagrams/0-diy-status--actual.svg" /></p>
+<p><img alt="0·diy-status as regulators have spoken: the FDA's route to manufacturers carries registration, 510(k) or De Novo and the iCGM, ACE and iAGC special controls, and a cleared controller sits among the manufacturers; the FDA's 2019 warning reaches the person, and FDA officials have said informally that a DIY build is not exempt; US law prohibits introducing an unauthorised device into interstate commerce with no sale condition, and FDA officials have said free sharing is not outside distribution; the EU requires a CE mark to place a device on the market, with free supply marked to verify; projects publish source to the person and to anyone who builds apps for others; anyone running it for others has no regulator line" src="diagrams/0-diy-status--actual.svg" /></p>
 <p><strong>As regulators have spoken.</strong> On 2019-05-17 the FDA warned patients and clinicians against
 "unapproved or unauthorized devices", noting that "patients may choose to create these systems",
 and said it is "aware of manufacturers illegally marketing unauthorized devices"
 (<a href="https://www.fda.gov/news-events/press-announcements/fda-warns-against-use-unauthorized-devices-diabetes-management">FDA</a>,
-read 2026-10-17; <a href="../observations/HISTORY.html">history</a>). <strong>No FDA statement was found on an
-individual building such software for their own use.</strong> US device duties attach to establishments
+read 2026-10-17; <a href="../observations/HISTORY.html">history</a>). <strong>No published FDA document was found
+that addresses an individual building such software for their own use, and none that exempts it.</strong>
+FDA officials have addressed it in conference presentations and in discussions with the Nightscout
+Foundation (reported by the Foundation; no published record of these statements was found): the
+FDA does not treat DIY or personal distribution as exempt or permitted; what the community does
+"looks like distribution"; and "the absence of money exchanged" is not one of the triggers the FDA
+uses to decide whether distribution is happening. US device duties attach to establishments
 and distribution: registration (21 CFR 807), premarket notification "before ... the introduction or
 delivery for introduction into interstate commerce for commercial distribution" (807.81(a)), where
-commercial distribution means a device "held or offered for sale" (807.3(b)); the registration
+commercial distribution is defined as a device "held or offered for sale" (807.3(b)); the registration
 exemptions in 807.65 list no class for a person making a device for their own use
 (<a href="https://www.ecfr.gov/current/title-21/part-807">eCFR 807</a>, read 2026-10-17). Separately, 21
 U.S.C. 331(a) prohibits introducing an adulterated or misbranded device into interstate commerce
-without a sale condition (<a href="https://www.law.cornell.edu/uscode/text/21/331">LII</a>, read 2026-10-17).
-Whether publishing source code, or handing out a built app free, is either of these was not
-answered by any source read. The regulated route exists: the iCGM, ACE pump and iAGC special
+with no sale condition (<a href="https://www.law.cornell.edu/uscode/text/21/331">LII</a>, read 2026-10-17).
+No published source read says whether publishing source code, or handing out a built app free, is
+either of these; the FDA officials' statements above treat free sharing as distribution. The regulated route exists: the iCGM, ACE pump and iAGC special
 controls (<a href="../../60-research/programme/stack-census-2026-09-30/cloud-layer.html#22-data-rights-law-and-regulation">cloud layer §2.2</a>),
 and Tidepool Loop, cleared by 510(k) K203689 on 2023-01-23 as an iAGC, beside the continuing DIY
 project (<a href="PRECEDENTS.html#tidepool-loop-20202023">precedents</a>). In the EU, the MDR's in-house
@@ -2995,7 +3000,9 @@ was found. <strong>No MHRA statement on DIY AID was found</strong> (search, 2026
 submits an application or submission" for a cyber device
 (<a href="https://www.fda.gov/medical-devices/digital-health-center-excellence/cybersecurity">FDA, cybersecurity</a>;
 <a href="https://www.law.cornell.edu/uscode/text/21/360n-2">LII 21 U.S.C. 360n-2</a>, both read 2026-10-17), so
-it reaches the regulated route, not the person. Apple, from 2026-03-26, requires health and medical
+it reaches the regulated route directly. FDA officials have described the cybersecurity work as
+closing unintended-use paths while the FDA exercises discretion (reported by the Foundation, as
+above). Apple, from 2026-03-26, requires health and medical
 apps in the US, EEA and UK to declare whether they are a regulated medical device; a "Yes" needs an
 EU SRN or FDA owner/operator number, and existing apps must declare "by early 2027"
 (<a href="../../60-research/structures-2026-10-17/apple-accountability.html#17-app-review-guidelines-on-health">Apple note §1.7</a>).
@@ -3006,29 +3013,35 @@ contract with a manufacturer; no manufacturer was found to publish a route for a
 The regulated form of running it for others is drawn in 2·controller-operator.</p>
 <p><em>Interpretation.</em> Properties the three panels show:</p>
 <ol>
-<li><strong>The status turns on distribution, not on the code.</strong> Every published duty found attaches to
-   placing on the market, commercial distribution or a premarket submission. None found attaches
-   to a person building for their own use; none found settles whether publishing source does.</li>
-<li><strong>The person's own build is the least-addressed position.</strong> The FDA's only line to it is a
-   warning; the EU's only exemption found is for health institutions. Neither is a permission.</li>
+<li><strong>The status turns on distribution, and payment does not decide it.</strong> Every published duty
+   found attaches to placing on the market, distribution or a premarket submission. The US
+   prohibition (331(a)) has no sale condition, and FDA officials have said the absence of money is
+   not a trigger they use and that the community's practice looks like distribution. No published
+   source settles whether publishing source code alone is distribution.</li>
+<li><strong>No source found exempts or permits the person's own build.</strong> The FDA's published line to it is
+   a warning, and FDA officials have said informally that DIY is not exempt; the EU's only
+   exemption found is for health institutions. Building for oneself is a position regulators have
+   not written a rule for, not a protected one.</li>
 <li><strong>The community's beliefs differ by project.</strong> One project reads EU rules as reaching free
    distribution of built apps; others say only "not approved". The beliefs agree that the person
    carries the risk.</li>
 <li><strong>Running it for others has a regulated form and no published DIY form.</strong> The regulated form is
    a submission and, for interoperable devices, a contract that assigns complaint duties.</li>
 <li><strong>New requirements reach the distributor first.</strong> §524B and app-store declarations bind whoever
-   submits or publishes; the self-builder's position is the same in the
-   actual and emerging panels.</li>
+   submits or publishes. No new published requirement names the self-builder; FDA officials
+   describe the cybersecurity work as closing unintended-use paths, with discretion in how the FDA
+   acts.</li>
 </ol>
 <p>Not drawn: the EU AI Act, because whether it reaches a rule-based controller was not determined;
 the UK's own device regulations, which were not read. The characterisations of law here are drafts
-for regulatory counsel, not advice; no enforcement intent is inferred from any source.</p>
+for regulatory counsel, not advice; no enforcement intent is inferred beyond what the sources say.</p>
 <h4 id="points-for-a-regulatory-professional-to-verify">Points for a regulatory professional to verify<a class="headerlink" href="#points-for-a-regulatory-professional-to-verify" title="Permanent link">&para;</a></h4>
 <ol>
 <li>Whether publishing AID source code (no binaries, no sale) is "introduction or delivery for
-   introduction into interstate commerce" of a device under 21 U.S.C. 331(a) or 21 CFR 807.</li>
-<li>Whether free distribution of a built app is "commercial distribution" (807.3(b): "held or
-   offered for sale") or otherwise triggers registration, listing and premarket notification.</li>
+   introduction into interstate commerce" of a device under 21 U.S.C. 331(a) or 21 CFR 807, given
+   FDA officials' informal view that the community's practice looks like distribution.</li>
+<li>How free distribution of a built app is treated under 807.3(b) ("held or offered for sale") and
+   331(a), given FDA officials' statement that the absence of money is not a trigger they use.</li>
 <li>Whether an individual building for personal use is a "manufacturer" under 21 CFR 807.3(d) or
    820.1, given that 807.65 lists no exemption for that case.</li>
 <li>MDR Article 2 definitions of "manufacturer", "placing on the market" and "making available on
@@ -3039,6 +3052,10 @@ for regulatory counsel, not advice; no enforcement intent is inferred from any s
 <li>The MHRA's position, if any, and the UK Medical Devices Regulations 2002 on own-use builds.</li>
 <li>Whether the FDA's 2019-05-17 notice remains current, and whether any later FDA statement on
    DIY or open-source AID exists.</li>
+<li>A citable record (slides, minutes, recordings or correspondence) of the FDA officials'
+   statements reported here: that DIY or personal distribution is not exempt, that the community's
+   practice looks like distribution, that the absence of money is not a trigger, and that the
+   cybersecurity work aims to close unintended-use paths.</li>
 <li>Whether a person or entity running AID software for others (including paid builders or hosted
    controllers) is a manufacturer, and whether 807.65(i) (service through "a previously
    manufactured device") could ever apply.</li>
@@ -3369,7 +3386,7 @@ An agent would register its own instance; role types are open "so roles such as 
 acting can be added for agents" (D19 rule 5). <strong>Open:</strong> the command API, proposed in the
 <a href="../../30-design/platform/spec/commands.html">commands specification</a> and not decided, the
 contract per tenancy mode (<code>SPEC-REG-MODES</code>), the first hub (<code>HUB-REG-CRM</code>), the proposals to
-Nocturne and the controllers, all not started (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/baa67a88f3c9dffb225c4f878f3e2ad7dee65112/queue/work-queue.yaml">queue</a>); and how an
+Nocturne and the controllers, all not started (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/8baaa549915d0a6b7a3b2bc060385111c5d2e707/queue/work-queue.yaml">queue</a>); and how an
 agent is scoped, limited and revoked, which no decision covers.</p>
 <p><em>Interpretation.</em> Properties the three panels show:</p>
 <ol>
@@ -3446,7 +3463,7 @@ security contact, complaint workflow, SBOM or build-provenance record was found
 (<a href="../PARTNER-READINESS.html#3-what-a-manufacturer-will-need-to-see">partner readiness §3</a>). The
 conformance suite lives in this repository: 85 vector files, an oref0 runner, and AndroidAPS and
 Loop runners not implemented (<a href="../../../conformance/index.html"><code>conformance/</code></a>;
-<code>tools/conformance_suite.py:43-55</code>). This repository's <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/baa67a88f3c9dffb225c4f878f3e2ad7dee65112/.github/workflows/ci.yml">CI</a> runs
+<code>tools/conformance_suite.py:43-55</code>). This repository's <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/8baaa549915d0a6b7a3b2bc060385111c5d2e707/.github/workflows/ci.yml">CI</a> runs
 Python syntax and spec validation; the suite and the <a href="../../../queue/index.html">queue gates</a> run by
 <code>make</code>, outside CI. The 15.0.9 run records are the nearest thing to release evidence
 (<a href="../QUALITY-SYSTEM.html#41-the-record-every-run-leaves">quality system §4.1</a>).</p>
