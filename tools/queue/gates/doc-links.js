@@ -152,6 +152,11 @@ const ROOT_DIRS = 'docs|reports|releases|queue';
 const ROOT_PATH = new RegExp(
   `(?<![A-Za-z0-9._/-])(?:${ROOT_DIRS})/[A-Za-z0-9._/-]+\\.(?:${CITED_EXT})\\b`, 'g');
 const MD_LINK = /\]\(\s*<?([^)\s>]+?)>?\s*\)/g;
+// Raw HTML media in markdown: an animation embedded as <video poster=…><source src=…><img src=…>
+// (tools/animations) is a link the markdown pattern cannot see. Each src and poster is checked like
+// an image link. Every attribute of every tag in the match, so a tag split over lines is read whole.
+const HTML_MEDIA = /<(?:video|source|img)\b[^>]*>/gi;
+const MEDIA_ATTR = /\s(?:src|poster)\s*=\s*["']([^"']+)["']/gi;
 
 // A path that is never spelled as a string. This is failure class 1 from the
 // header, and neither of the passes above can see it: `path.join(REPO_ROOT,
@@ -275,6 +280,16 @@ for (const f of files) {
   let m;
   MD_LINK.lastIndex = 0;
   while ((m = MD_LINK.exec(src)) !== null) check(m[1], 'md-link');
+
+  // (A2) <video>, <source> and <img> src and poster in markdown.
+  if (path.extname(f) === '.md') {
+    HTML_MEDIA.lastIndex = 0;
+    while ((m = HTML_MEDIA.exec(src)) !== null) {
+      let a;
+      MEDIA_ATTR.lastIndex = 0;
+      while ((a = MEDIA_ATTR.exec(m[0])) !== null) check(a[1], 'html-media');
+    }
+  }
 
   // (B) repo-root-absolute paths anywhere in the text, which catches the
   // backticked citation, the YAML evidence list and the Makefile alike.

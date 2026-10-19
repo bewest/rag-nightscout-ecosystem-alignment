@@ -47,6 +47,9 @@ SITE_TOOLS = REPO / "tools" / "site"
 GITHUB_REPO = "https://github.com/bewest/rag-nightscout-ecosystem-alignment"
 PAGE_EXT = {".md"}
 IMAGE_EXT = {".png", ".svg", ".jpg", ".jpeg", ".gif"}
+# Video, staged and copied like an image but never listed in a gallery. Each is embedded in a page
+# with a poster image and a static fallback (tools/animations).
+MEDIA_EXT = {".webm"}
 GALLERY_ROOTS = ("visualizations", "docs/visualizations")
 PASSTHROUGH_DIR = "site/pages"
 GALLERY_NAME = "gallery.md"
@@ -271,7 +274,7 @@ class Site:
         # hand-written landing pages are published at <dir>/index.md, not
         # at their own path under tools/site/landing/
         landing_sources = {s["index"] for s in self.landing if s.get("index")} | ({self.home} if self.home else set())
-        self.pages, self.images, self.passthrough = [], [], []
+        self.pages, self.images, self.passthrough, self.media = [], [], [], []
         for p in self.tracked:
             if p in self.excluded or p in landing_sources:
                 continue
@@ -280,9 +283,11 @@ class Site:
                 self.pages.append(p)
             elif ext in IMAGE_EXT:
                 self.images.append(p)
+            elif ext in MEDIA_EXT:
+                self.media.append(p)
             elif p.startswith(PASSTHROUGH_DIR + "/") and ext in {".html", ".htm"}:
                 self.passthrough.append(p)
-        self.staged = set(self.pages) | set(self.images) | set(self.passthrough)
+        self.staged = set(self.pages) | set(self.images) | set(self.passthrough) | set(self.media)
 
         # directories fully excluded (every tracked file below is excluded)
         below = collections.defaultdict(lambda: [0, 0])  # dir -> [tracked, excluded]
@@ -537,7 +542,7 @@ class Site:
             dst.parent.mkdir(parents=True, exist_ok=True)
             dst.write_text(P.text(text, where=rel), encoding="utf-8")
 
-        for p in self.images:
+        for p in self.images + self.media:
             if p.lower().endswith(".svg"):
                 write(p, raw[p])
             else:
@@ -863,6 +868,7 @@ def main():
         "generated_index_pages": len(site.generated_index),
         "gallery_pages": len(site.gallery_dirs),
         "images_staged": len(site.images),
+        "media_staged": len(site.media),
         "passthrough_html": len(site.passthrough),
         "excluded_files": len(site.excluded),
         "excluded_per_axis": dict(collections.Counter(e["axis"] for e in site.excluded.values())),
@@ -909,7 +915,7 @@ def main():
 
     print(f"site: HEAD {site.head[:8]}, {report['tracked_files']} tracked files")
     print(f"  staged: {report['pages_staged']} pages (+{report['generated_index_pages']} generated index, "
-          f"{report['gallery_pages']} galleries), {report['images_staged']} images, "
+          f"{report['gallery_pages']} galleries), {report['images_staged']} images, {report['media_staged']} videos, "
           f"{report['passthrough_html']} site/pages HTML")
     print(f"  excluded: {report['excluded_files']} files {report['excluded_per_axis']}")
     print(f"  links: {report['links_per_kind']}")
