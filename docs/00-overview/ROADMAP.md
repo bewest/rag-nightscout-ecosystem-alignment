@@ -1,7 +1,7 @@
 # Roadmap for cgm-remote-monitor: what comes next, and in what order
 
 *What this is: a map of the work ahead (contributor-facing). Read after [programme
-status](PROGRAMME-STATUS.md); leads to [needs a human](NEEDS-A-HUMAN.md). Prepared for the
+status](PROGRAMME-STATUS.md); leads to [work waiting on a person](NEEDS-A-HUMAN.md). Prepared for the
 Nightscout project; proposed for Nightscout Foundation stewardship. Living document: prose dated
 2026-10-08 against cgm-remote-monitor `official/dev` `fade2299` and `official/master` `92d08342`
 (tag `15.0.8`). The two order tables are generated from `queue/work-queue.yaml`, and

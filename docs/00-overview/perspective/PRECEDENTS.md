@@ -1,4 +1,4 @@
-# Precedents the overview proposals cite
+# Precedents: how other organisations are funded, staffed and governed
 
 *What this is: a reference (part 2 of the overview, perspective; [how the overview is organised](../README.md)), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after [when a DIY ecosystem becomes infrastructure](INFRASTRUCTURE-TRANSITION.md); leads to [accountability thresholds](ACCOUNTABILITY-THRESHOLDS.md). Living page,
 written 2026-10-01 against this repository at `1644125b`, moved here 2026-10-02. The frame these

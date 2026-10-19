@@ -25,7 +25,7 @@ and the volunteer-only view is stated beside the others.
 | page | what it covers |
 |---|---|
 | [When a DIY ecosystem becomes infrastructure](perspective/INFRASTRUCTURE-TRANSITION.md) | the conditions under which other open-source communities changed how their work was organised, which of those conditions can be measured here, and what the frame does not show |
-| [Precedents](perspective/PRECEDENTS.md) | one table of every organisation the proposals cite: how each is funded, who is paid, the commercial role, and size |
+| [Precedents: how other organisations are funded, staffed and governed](perspective/PRECEDENTS.md) | one table of every organisation the proposals cite: how each is funded, who is paid, the commercial role, and size |
 | [Accountability thresholds](perspective/ACCOUNTABILITY-THRESHOLDS.md) | the nine pillars of duty that holding health data, issuing credentials, commanding insulin delivery, signing with a manufacturer or taking money bring to any organisation; how Apple, Dexcom and the FDA's interoperable routes put them in place; why the requirements are the same for anyone; and a US nonprofit's own money and staffing thresholds |
 | [Control structures](perspective/STRUCTURES.md) | the ecosystem and the proposals as STPA control structures, from society down to software and devices, with stakeholder views and precedents |
 | [Process models: what we believe, and how it works](perspective/PROCESS-MODELS.md) | the authority DIY acts under, its regulatory status, data rights, hosting, identity, federation and registration, each drawn as believed, as it works today, and as emerging or proposed |
@@ -53,10 +53,10 @@ Operational pages for the cgm-remote-monitor programme, kept current from the wo
 | page | what it covers |
 |---|---|
 | [Reviewer onboarding](REVIEWER-ONBOARDING.md) | how to read this repository as a reviewer |
-| [Mission](mission.md) | what alignment is and is not |
+| [Mission: aligning data across the Nightscout ecosystem](mission.md) | what alignment is and is not |
 | [Programme status](PROGRAMME-STATUS.md) | current state of the cgm-remote-monitor work |
 | [Roadmap](ROADMAP.md) | what comes next, and in what order |
-| [Needs a human](NEEDS-A-HUMAN.md) | decisions waiting on a person |
+| [Work waiting on a person: what to push, decide or review](NEEDS-A-HUMAN.md) | the items whose next move belongs to a person, grouped by who |
 | [Definition of done](DEFINITION-OF-DONE.md), [Document control](DOCUMENT-CONTROL.md) | how documents here are written and controlled |
 
 Release drafts live under [Releases](../../releases/README.md); the single work queue lives under

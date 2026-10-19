@@ -1,4 +1,4 @@
-# Needs a human
+# Work waiting on a person: what to push, decide or review
 
 *What this is: a record (contributor-facing). Read after the [roadmap](ROADMAP.md); leads to the
 [definition of done](DEFINITION-OF-DONE.md). The subset of the work queue where no further engineering

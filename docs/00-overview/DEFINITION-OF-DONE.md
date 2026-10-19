@@ -1,6 +1,6 @@
 # Definition of done — downstream ready
 
-*What this is: a reference (contributor-facing). Read after [needs a human](NEEDS-A-HUMAN.md);
+*What this is: a reference (contributor-facing). Read after [work waiting on a person](NEEDS-A-HUMAN.md);
 leads to [document control](DOCUMENT-CONTROL.md). Applies to every document under `docs/00-overview`,
 `docs/30-design/{remedial,modernization,tenancy,platform}`,
 `docs/60-research/{remedial,modernization,tenancy,programme}`, `queue/` and

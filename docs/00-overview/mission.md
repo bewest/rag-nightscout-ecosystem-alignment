@@ -1,4 +1,4 @@
-# Mission
+# Mission: aligning data across the Nightscout ecosystem
 
 *What this is: a reference (contributor-facing). Read after [reviewer
 onboarding](REVIEWER-ONBOARDING.md); leads to [programme status](PROGRAMME-STATUS.md).*
