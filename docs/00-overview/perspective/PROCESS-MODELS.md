@@ -156,9 +156,10 @@ read 2026-10-17; [history](../observations/HISTORY.md)). **No published FDA docu
 that addresses an individual building such software for their own use, and none that exempts it.**
 FDA officials have addressed it in conference presentations and in discussions with the Nightscout
 Foundation (reported by the Foundation; no recording, slides or minutes were located): Courtney
-Lias of the FDA said at DDATA 2016 that "it looks like distribution is happening"; the FDA does not
-treat DIY or personal distribution as exempt or permitted; and "the absence of money exchanged" is
-not one of the triggers the FDA uses to decide whether distribution is happening.
+Lias of the FDA said at the June 2016 D-Data ExChange (DDATA), held back to back with the ADA
+Scientific Sessions, that "it looks like distribution is happening"; the FDA does not treat DIY
+or personal distribution as exempt or permitted; and "the absence of money exchanged" is not one
+of the triggers the FDA uses to decide whether distribution is happening.
 
 The earliest record is a pre-submission meeting between Nightscout contributors and the FDA on
 2014-10-08 (Q141084). Its minutes, published by Nightscout contributors with the pre-submission
@@ -174,8 +175,9 @@ design, who collects details "when things go wrong", and who is "ultimately resp
 really wrong"; asked whether there were "red lines" to avoid, the FDA said it would consult
 internally ([raw notes](https://gist.github.com/bewest/cac2346071a7ce1e057d), read 2026-10-19).
 
-A second account was published in 2016: diaTribe's report of 2016-06-27, written around the ADA Scientific Sessions,
-says that "according to the FDA's Dr. Courtney Lias, systems like OpenAPS do fall under the FDA's
+A second account was published from the same week of meetings: diaTribe's report of 2016-06-27,
+written around the ADA Scientific Sessions, does not say at which meeting she spoke, and says
+that "according to the FDA's Dr. Courtney Lias, systems like OpenAPS do fall under the FDA's
 jurisdiction, though the Agency enforces its authority based on risk – a single individual using
 OpenAPS presents a low risk, while thousands using the system presents a higher risk"; that "the
 FDA may not choose to spend resources on someone building a system for their own personal use";
@@ -301,7 +303,9 @@ for regulatory counsel, not advice; no enforcement intent is inferred beyond wha
 7. Whether the FDA's 2019-05-17 notice remains current, and whether any later FDA statement on
    DIY or open-source AID exists.
 8. A citable record (slides, minutes, recordings or correspondence) of the FDA officials'
-   statements reported here, starting with Courtney Lias's DDATA 2016 talk: that DIY or personal
+   statements reported here, starting with Courtney Lias's DDATA 2016 talk (no transcript or video
+   was found as of 2026-10-19; diaTribe's report of the same week is the nearest published
+   account): that DIY or personal
    distribution is not exempt, that the community's practice looks like distribution, that the
    absence of money is not a trigger, and that the cybersecurity work aims to close unintended-use
    paths. The 2014 meeting has published minutes and raw notes; the 2016 jurisdiction, risk and
