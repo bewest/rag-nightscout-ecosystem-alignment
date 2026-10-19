@@ -2785,7 +2785,7 @@
 
 
 <h1 id="process-models-what-we-believe-and-how-it-works">Process models: what we believe, and how it works<a class="headerlink" href="#process-models-what-we-believe-and-how-it-works" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-19 at <code>1efa2b753</code>.</em></p>
+<p><em>Living document, last changed 2026-10-19 at <code>f8584d326</code>.</em></p>
 <p><em>What this is: a map (part 2 of the overview, perspective; <a href="../index.html">how the overview is organised</a>), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after <a href="STRUCTURES.html">who controls what</a>; leads to <a href="CONWAY.html">Conway's Law applied to the ecosystem</a>. Living page,
 written 2026-10-17; 1·teams added 2026-10-18. Companion to <a href="STRUCTURES.html">control structures</a>, whose conventions,
 legend and icons apply here. Every node and edge comes from a source cited under the drawing;
@@ -2974,9 +2974,10 @@ read 2026-10-17; <a href="../observations/HISTORY.html">history</a>). <strong>No
 that addresses an individual building such software for their own use, and none that exempts it.</strong>
 FDA officials have addressed it in conference presentations and in discussions with the Nightscout
 Foundation (reported by the Foundation; no recording, slides or minutes were located): Courtney
-Lias of the FDA said at DDATA 2016 that "it looks like distribution is happening"; the FDA does not
-treat DIY or personal distribution as exempt or permitted; and "the absence of money exchanged" is
-not one of the triggers the FDA uses to decide whether distribution is happening.</p>
+Lias of the FDA said at the June 2016 D-Data ExChange (DDATA), held back to back with the ADA
+Scientific Sessions, that "it looks like distribution is happening"; the FDA does not treat DIY
+or personal distribution as exempt or permitted; and "the absence of money exchanged" is not one
+of the triggers the FDA uses to decide whether distribution is happening.</p>
 <p>The earliest record is a pre-submission meeting between Nightscout contributors and the FDA on
 2014-10-08 (Q141084). Its minutes, published by Nightscout contributors with the pre-submission
 supplement, record that "Medical Device regulations are applicable to the Nightscout project"; that
@@ -2990,8 +2991,9 @@ to 10,000 or 50,000 users?", and the FDA's three questions: who is responsible f
 design, who collects details "when things go wrong", and who is "ultimately responsible if things go
 really wrong"; asked whether there were "red lines" to avoid, the FDA said it would consult
 internally (<a href="https://gist.github.com/bewest/cac2346071a7ce1e057d">raw notes</a>, read 2026-10-19).</p>
-<p>A second account was published in 2016: diaTribe's report of 2016-06-27, written around the ADA Scientific Sessions,
-says that "according to the FDA's Dr. Courtney Lias, systems like OpenAPS do fall under the FDA's
+<p>A second account was published from the same week of meetings: diaTribe's report of 2016-06-27,
+written around the ADA Scientific Sessions, does not say at which meeting she spoke, and says
+that "according to the FDA's Dr. Courtney Lias, systems like OpenAPS do fall under the FDA's
 jurisdiction, though the Agency enforces its authority based on risk – a single individual using
 OpenAPS presents a low risk, while thousands using the system presents a higher risk"; that "the
 FDA may not choose to spend resources on someone building a system for their own personal use";
@@ -3110,7 +3112,9 @@ for regulatory counsel, not advice; no enforcement intent is inferred beyond wha
 <li>Whether the FDA's 2019-05-17 notice remains current, and whether any later FDA statement on
    DIY or open-source AID exists.</li>
 <li>A citable record (slides, minutes, recordings or correspondence) of the FDA officials'
-   statements reported here, starting with Courtney Lias's DDATA 2016 talk: that DIY or personal
+   statements reported here, starting with Courtney Lias's DDATA 2016 talk (no transcript or video
+   was found as of 2026-10-19; diaTribe's report of the same week is the nearest published
+   account): that DIY or personal
    distribution is not exempt, that the community's practice looks like distribution, that the
    absence of money is not a trigger, and that the cybersecurity work aims to close unintended-use
    paths. The 2014 meeting has published minutes and raw notes; the 2016 jurisdiction, risk and
@@ -3452,7 +3456,7 @@ An agent would register its own instance; role types are open "so roles such as 
 acting can be added for agents" (D19 rule 5). <strong>Open:</strong> the command API, proposed in the
 <a href="../../30-design/platform/spec/commands.html">commands specification</a> and not decided, the
 contract per tenancy mode (<code>SPEC-REG-MODES</code>), the first hub (<code>HUB-REG-CRM</code>), the proposals to
-Nocturne and the controllers, all not started (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1efa2b753ff41f181fd9197aed12c7d986079e7a/queue/work-queue.yaml">queue</a>); and how an
+Nocturne and the controllers, all not started (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f8584d3264e651f99a35d001ee3dafb97e13e047/queue/work-queue.yaml">queue</a>); and how an
 agent is scoped, limited and revoked, which no decision covers.</p>
 <p><em>Interpretation.</em> Properties the three panels show:</p>
 <ol>
@@ -3529,7 +3533,7 @@ security contact, complaint workflow, SBOM or build-provenance record was found
 (<a href="../PARTNER-READINESS.html#3-what-a-manufacturer-will-need-to-see">partner readiness §3</a>). The
 conformance suite lives in this repository: 85 vector files, an oref0 runner, and AndroidAPS and
 Loop runners not implemented (<a href="../../../conformance/index.html"><code>conformance/</code></a>;
-<code>tools/conformance_suite.py:43-55</code>). This repository's <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1efa2b753ff41f181fd9197aed12c7d986079e7a/.github/workflows/ci.yml">CI</a> runs
+<code>tools/conformance_suite.py:43-55</code>). This repository's <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f8584d3264e651f99a35d001ee3dafb97e13e047/.github/workflows/ci.yml">CI</a> runs
 Python syntax and spec validation; the suite and the <a href="../../../queue/index.html">queue gates</a> run by
 <code>make</code>, outside CI. The 15.0.9 run records are the nearest thing to release evidence
 (<a href="../QUALITY-SYSTEM.html#41-the-record-every-run-leaves">quality system §4.1</a>).</p>
