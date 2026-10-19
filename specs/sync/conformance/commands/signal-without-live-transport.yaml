@@ -1,0 +1,68 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §7. Times are seconds; expectations authored by hand.
+id: signal-without-live-transport
+title: A destination that uses no live transport gets no signal and still fetches
+rules:
+- CM28
+- CM18
+description: i-ctl-a declares no live transport; no signal is sent, and its fetch returns c1.
+control: signal-unbound-sent-under-single
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 600
+- at: 11
+  kind: signal
+  bound: A
+  command: c1
+- at: 20
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+    fetchWithinSeconds: 30
+  - signalled: false
+    reason: no-live-transport
+  - status: 200
+    commands:
+    - c1
+  commands:
+    c1:
+      state: fetched
+      destination: i-ctl-a

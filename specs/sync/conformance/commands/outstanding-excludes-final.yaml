@@ -3,8 +3,8 @@ id: outstanding-excludes-final
 title: A command with a final outcome is not outstanding
 rules:
 - CM24
-description: c1 is fetched, enacted and reported succeeded; the follower's list is
-  then empty, and so are the doses since.
+description: c1 is fetched, enacted and reported succeeded; the follower's list is then empty, and so
+  are the doses since.
 control: outstanding-lists-open-items
 mode: single
 maxExpirySeconds: 3600
@@ -95,6 +95,7 @@ expected:
   - status: 201
     commandId: c1
     state: pending
+    fetchWithinSeconds: 30
   - status: 200
     commands:
     - c1
@@ -104,6 +105,9 @@ expected:
     proposals: []
     commands: []
     dosesSince: []
+    destinations:
+      i-ctl-a:
+        fetchWithinSeconds: 30
   commands:
     c1:
       state: succeeded

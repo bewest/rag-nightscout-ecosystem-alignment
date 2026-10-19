@@ -55,9 +55,9 @@
       today: Writes overrides as `Temporary Override` treatments; receives override, cancel, bolus and
         carbs commands only as APNs pushes, from the hub's `/api/v2/notifications/loop` relay or directly
         from a follower; reports a failure as a `Note` and a success only as the resulting record.
-      newer: The relay route is outside CM1–CM25 and a hub keeps it as it is or retires it; the command
-        record, enact-once by `commandId`, the outstanding list and cancel apply only once Loop registers
-        and fetches (CM18, CM21, CM24, CM25).
+      newer: The relay route and Loop's APNs pushes are outside CM1–CM32 and unchanged; a hub keeps the
+        route as it is or retires it. The command record, enact-once by `commandId`, the outstanding list
+        and cancel apply only once Loop registers and fetches (CM18, CM21, CM24, CM25).
       rules:
       - commands §8
       - state-intent §3
@@ -275,7 +275,7 @@
       today: Sends override, cancel, bolus and carbs to `POST /api/v2/notifications/loop`, needs exactly
         200, and learns failures by parsing Loop's `Note` treatments; Remote Commands 2 uses `/api/v2/remotecommands`,
         which the hub does not implement.
-      newer: The relay route is outside CM1–CM25 and a hub keeps it as it is or retires it (commands §8);
+      newer: The relay route is outside CM1–CM32 and a hub keeps it as it is or retires it (commands §8);
         a command record with an outcome from the destination is used only if it changes (CM1, CM7, CM25).
       rules:
       - commands §8

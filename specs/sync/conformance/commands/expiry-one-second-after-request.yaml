@@ -45,7 +45,10 @@ expected:
   - status: 201
     commandId: c1
     state: pending
+    fetchWithinSeconds: 30
+    mayExpireUnfetched: true
   commands:
     c1:
       state: pending
       destination: i-ctl-a
+      mayExpireUnfetched: true

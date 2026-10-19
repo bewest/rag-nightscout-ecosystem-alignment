@@ -1,9 +1,9 @@
 """What a hub does with a command and a proposal (queue item SPEC-REG-COMMANDS).
 
-Commands §2 and rules CM1-CM25. Each case under
+Commands §2 and rules CM1-CM32. Each case under
 specs/sync/conformance/commands/ carries hand-authored expectations; the
 reference in commands.py must reproduce every call's result and the final
-state of every command and proposal. Four invariants hold on every case,
+state of every command and proposal. The invariants below hold on every case,
 whatever its expectations say.
 """
 import pytest
@@ -50,13 +50,11 @@ def test_control_exists_and_differs(cid):
 
 
 def _deliveries(case):
-    """Every push that was sent and every command a fetch returned, with the
-    call that did it."""
+    """Every command a fetch returned, with the call that did it. A signal
+    delivers nothing (CM27)."""
     result = commands.run(case)
     hub = result["hub"]
     for call, got in zip(case["calls"], result["calls"]):
-        if call["kind"] == "push" and got.get("sent"):
-            yield call, hub.commands[call["command"]]
         if call["kind"] == "fetch" and got.get("status") == 200:
             for cid in got["commands"]:
                 yield call, hub.commands[cid]
@@ -79,12 +77,67 @@ def test_never_after_expiry(cid):
         assert call["at"] < command["expiresAt"]
 
 
+def _signals(case):
+    result = commands.run(case)
+    for call, got in zip(case["calls"], result["calls"]):
+        if call["kind"] == "signal" and got.get("signalled"):
+            yield call, got, result["hub"].commands[call["command"]]
+
+
 @pytest.mark.parametrize("cid", sorted(c for c in CASES if CASES[c]["mode"] == "multi"))
-def test_never_pushed_unbound(cid):
-    # CM19: under multi, nothing is sent from a context with no tenant bound.
-    for call, command in _deliveries(CASES[cid]):
-        if call["kind"] == "push":
-            assert call.get("bound") == command["tenant"]
+def test_never_signalled_unbound(cid):
+    # CM19: under multi, no signal is sent from a context with no tenant bound.
+    for call, _, command in _signals(CASES[cid]):
+        assert call.get("bound") == command["tenant"]
+
+
+@pytest.mark.parametrize("cid", sorted(CASES))
+def test_signal_carries_nothing_and_reaches_the_destination_only(cid):
+    # CM27: a signal goes to the command's destination and carries nothing of it.
+    for call, got, command in _signals(CASES[cid]):
+        assert got["to"] == command["destination"]
+        assert got["carries"] == {}
+        assert call["at"] < command["expiresAt"]
+
+
+@pytest.mark.parametrize("cid", sorted(CASES))
+def test_fetch_bound_in_every_reply(cid):
+    # CM30: every accepted command or approval names its destination's fetch bound,
+    # and every outstanding list names each holder's.
+    case = CASES[cid]
+    result = commands.run(case)
+    for call, got in zip(case["calls"], result["calls"]):
+        if call["kind"] in ("command", "approve") and got.get("status") == 201:
+            made = result["hub"].commands[got["commandId"]]
+            bound = commands.fetch_bound(case, case["instances"][made["destination"]])
+            assert got["fetchWithinSeconds"] == bound
+            assert got.get("mayExpireUnfetched", False) == (made["expiresAt"] - call["at"] <= bound)
+        if call["kind"] == "outstanding" and got.get("status") == 200:
+            assert "destinations" in got
+
+
+@pytest.mark.parametrize("cid", sorted(CASES))
+def test_fetched_until_reported(cid):
+    # CM26: while a fetched command has no report, is not past its expiry and its
+    # destination holds the sink, every fetch by the destination returns it.
+    case = CASES[cid]
+    result = commands.run(case)
+    fetched_at, reported = {}, set()
+    for call, got in zip(case["calls"], result["calls"]):
+        if call["kind"] == "report" and got.get("status") == 200:
+            reported.add(call["command"])
+        if call["kind"] == "cancel" and got.get("status") in (200, 202):
+            reported.add(call["command"])  # a carried cancel stands in for the command
+        if call["kind"] == "fetch" and got.get("status") == 200:
+            for cid_, c in result["hub"].commands.items():
+                if (cid_ in fetched_at and cid_ not in reported
+                        and c["destination"] == call["instance"]
+                        and call["at"] < c["expiresAt"]
+                        and commands._holds(case["instances"][c["destination"]],
+                                            c["channel"], call["at"])):
+                    assert cid_ in got["commands"], (cid_, call["at"])
+            for c in got["commands"]:
+                fetched_at.setdefault(c, call["at"])
 
 
 @pytest.mark.parametrize("cid", sorted(CASES))
@@ -112,15 +165,13 @@ def test_never_enacted_twice(cid):
 
 @pytest.mark.parametrize("cid", sorted(CASES))
 def test_never_delivered_after_cancel(cid):
-    # CM25: a command cancelled before hand-over is never sent or fetched afterwards.
+    # CM25: a command cancelled before hand-over is never fetched afterwards.
     case = CASES[cid]
     cancelled_at = {}
     for call, got in zip(case["calls"], commands.run(case)["calls"]):
         if call["kind"] == "cancel" and got.get("state") == "cancelled":
             cancelled_at[call["command"]] = call["at"]
         delivered = []
-        if call["kind"] == "push" and got.get("sent"):
-            delivered = [call["command"]]
         if call["kind"] == "fetch" and got.get("status") == 200:
             delivered = got["commands"]
         for c in delivered:

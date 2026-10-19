@@ -3,7 +3,7 @@ id: report-state-sent-invalid
 title: A report with state sent is refused
 rules:
 - CM7
-description: '`sent` is set by the hub, not reported: 422 invalid-state, and the state is unchanged.'
+description: '`sent` is not a state a controller reports: 422 invalid-state, and the state is unchanged.'
 control: report-from-destination-accepted
 mode: single
 maxExpirySeconds: 3600
@@ -57,6 +57,7 @@ expected:
   - status: 201
     commandId: c1
     state: pending
+    fetchWithinSeconds: 30
   - status: 200
     commands:
     - c1

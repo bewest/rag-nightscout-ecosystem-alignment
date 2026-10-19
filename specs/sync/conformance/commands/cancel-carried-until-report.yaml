@@ -1,0 +1,117 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §7. Times are seconds; expectations authored by hand.
+id: cancel-carried-until-report
+title: A carried cancel is carried by every fetch until the controller reports
+rules:
+- CM26
+- CM25
+- CM21
+description: c1 is fetched, then cancelled (202). The reply to the fetch at 25 is lost; the fetch at 30
+  carries the cancel again. The controller refuses c1 with reason cancelled and reports, and the fetch
+  after that carries nothing.
+control: cancel-after-fetch-is-a-request
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+    liveTransports:
+    - socket
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 100
+- at: 15
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+- at: 20
+  kind: cancel
+  tenant: A
+  subject: s-care
+  command: c1
+- at: 25
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+- at: 30
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+- at: 31
+  kind: enact
+  instance: i-ctl-a
+  command: c1
+  received:
+    action: start
+    preset: example
+- at: 32
+  kind: report
+  tenant: A
+  subject: s-ctl-a
+  command: c1
+  state: refused
+  reason: cancelled
+- at: 40
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+    fetchWithinSeconds: 30
+  - status: 200
+    commands:
+    - c1
+  - status: 202
+    state: fetched
+    cancelRequested: true
+  - status: 200
+    commands: []
+    cancels:
+    - c1
+  - status: 200
+    commands: []
+    cancels:
+    - c1
+  - state: refused
+    reason: cancelled
+  - status: 200
+  - status: 200
+    commands: []
+  commands:
+    c1:
+      state: refused
+      destination: i-ctl-a

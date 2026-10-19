@@ -59,14 +59,15 @@ their outcomes; commands §9 lists this as open (UCA-CMD-014). Give the controll
 its own.
 
 **Under `TENANCY_MODE=multi`** each tenant has its own credential root and signing key (AU3). A
-registration is per tenant, so a controller that serves two tenants registers twice. A push is sent
-only inside a request bound to the command's tenant (CM19), so fetch is the path that always works.
+registration is per tenant, so a controller that serves two tenants registers twice. A fetch-now
+signal is sent only inside a request bound to the command's tenant (CM19), and carries nothing
+(CM27); fetch is the path that always works.
 
 ## 3. Walk-through
 
 The parts of a hub your app calls (C4 containers; under `TENANCY_MODE=single` one listener serves all three, and `API_SECRET` acts as the owner):
 
-![3·guide-containers: your app reads the unauthenticated capability document at launch; it calls the data listener to put its product, definition and instance, write typed records, fetch commands and report outcomes, which the hub stores per element bound to your credential and attributed to your instance; the socket brings live commands inside bound requests; the site owner acts through the owner's listener on products, definitions and instances](../../../00-overview/perspective/diagrams/3-guide-containers.svg)
+![3·guide-containers: your app reads the unauthenticated capability document at launch; it calls the data listener to put its product, definition and instance, write typed records, fetch commands and report outcomes, which the hub stores per element bound to your credential and attributed to your instance; the socket brings a fetch-now signal inside bound requests; the site owner acts through the owner's listener on products, definitions and instances](../../../00-overview/perspective/diagrams/3-guide-containers.svg)
 
 ### 3.1 Read the capability document
 
@@ -217,9 +218,10 @@ default: false
 ```
 <!-- END GENERATED: guide-example -->
 
-The fixture's override kind declares no `acceptsFromHub`, so as written TestController can hold
-`source` but a `command-sink` claim is refused `not-a-command-channel`. Its `commands[]` declares
-how commands reach it today (S11), with an `other` transport and the hub optional in the path:
+The fixture's override kind declares the same, so TestController may hold `command-sink` on the
+`override` slot. Its `commands[]` declares how commands reach it (S11): a path of its own, with an
+`other` transport and the hub optional, and the hub's command record (`nightscout-commands`), with
+a fetch bound of 60 s and the live transports it listens on for fetch-now signals (CM28, CM29):
 
 <!-- BEGIN GENERATED: guide-example specs/sync/registrations/fixtures/example-testcontroller.yaml spec.commands -->
 ```yaml
@@ -228,12 +230,20 @@ how commands reach it today (S11), with an `other` transport and the hub optiona
     controllerTerm: example-relay
   hubInPath: optional
   availability: experimental
+- transport: nightscout-commands
+  hubInPath: 'yes'
+  availability: experimental
+  fetchIntervalSeconds: 60
+  liveTransports:
+  - socket
+  - value: other
+    controllerTerm: example-broker
 ```
 <!-- END GENERATED: guide-example -->
 
 | step | you do | the hub answers | rule | case |
 |---|---|---|---|---|
-| 11 | Declare `acceptsFromHub` with `command` on each kind you accept commands for, and `commands[]` for each path commands reach you by | a `command-sink` claim on any other channel is refused `not-a-command-channel` | S10, S11, registration §9 | `instances/instance-not-a-command-channel.yaml`, `instances/instance-create.yaml` |
+| 11 | Declare `acceptsFromHub` with `command` on each kind you accept commands for, and `commands[]` for each path commands reach you by; for the hub's command record, a `nightscout-commands` entry with `fetchIntervalSeconds` if you fetch more often than once a cycle and the `liveTransports` you listen on | a `command-sink` claim on any other channel is refused `not-a-command-channel` | S10, S11, CM28, CM29, registration §9 | `instances/instance-not-a-command-channel.yaml`, `instances/instance-create.yaml`, `commands/fetch-bound-declared.yaml` |
 
 ### 3.3 Create an instance, hold and hand off its lease
 
@@ -296,7 +306,7 @@ extensions/com.example.controllera.targets:
 <!-- END GENERATED: guide-example -->
 
 A lease is minutes long ([registration §8](../spec/registration.md#8-instances)), longer than moving
-a pump to another phone takes, so a command can reach the old phone in that window. §3.5 step 14
+a pump to another phone takes, so a command can reach the old phone in that window. §3.5 step 15
 says what holds then.
 
 ### 3.4 Write typed records with attribution
@@ -366,38 +376,45 @@ expiresAt: 600
 ```
 <!-- END GENERATED: guide-example -->
 
-The commands specification states the operations (fetch, push, report, cancel) and their answers;
-it does not name request paths. The steps below name the operation.
+The capability document's `commands` member says whether the hub offers the command record, and
+where (CM31). The paths are proposed in [commands §7.1](../spec/commands.md#71-discovery-and-paths-proposed)
+(CM32): you fetch at `GET /api/v4/instances/{instanceId}/commands` and report at
+`POST /api/v4/commands/{commandId}/reports`. The steps name the operation; the cases model calls,
+not requests.
 
 | step | you do | the hub answers | rule | case |
 |---|---|---|---|---|
 | 1 | Hold `command-sink` with `device` provenance on each channel you accept commands for (§3.3) | the command is routed to you; never to a lapsed holder, a simulator or the newest instance | commands §2, CM1, CM2 | `commands/route-to-holder.yaml`, `commands/route-lapsed-holder-not-destination.yaml` |
-| 2 | Fetch your `pending` and `sent` commands with your own credential, naming your own instance; implement fetch whether or not you also take pushes | 200 with your commands only; an empty list once you no longer hold the role; 403 `not-registration-owner` for another instance | CM18 | `commands/fetch-returns-own-commands.yaml`, `commands/fetch-after-role-lost-is-empty.yaml` |
-| 3 | Treat a push (a socket event or a platform push) as a faster copy of what fetch returns | under `multi` a push from a context with no tenant bound is withheld and the command waits for your fetch | CM19, CM20 | `commands/push-unbound-withheld-under-multi.yaml`, `commands/push-unbound-sent-under-single.yaml` |
-| 4 | Do not read `sent` or `fetched` as success; only your report sets an outcome | the command stays `fetched` until you report | CM17, CM7 | `commands/sent-and-fetched-are-not-success.yaml` |
-| 5 | Refuse a command at or past `expiresAt` by your own clock, with reason `expired` | without your report, a fetched command reads `unconfirmed` after its expiry | CM10, CM3, CM8 | `commands/enact-after-expiry-refused.yaml` |
-| 6 | Recompute `payloadHash` (`sha256:` over the RFC 8785 canonical JSON of the payload you received) and refuse `hash-mismatch` when it differs from the command's | your report is recorded as reported, with the record marked a mismatch | CM10, CM7 | `commands/enact-hash-mismatch-refused.yaml`, `commands/request-id-reordered-keys-same-hash.yaml` |
-| 7 | Authenticate the sender by your own means where you require it; the hash detects a payload changed in transit or storage, and does not authenticate the sender or show what an approver approved | the hub carries authentication material unread | CM10, D18 | `commands/hub-does-not-judge-payload.yaml` |
-| 8 | Apply your own limits and your acceptance preference; refuse with `limit` or `not-accepted` | the hub never checks a dose, a limit or the therapy state, and never changes the payload | CM5, CM8, S10 | `commands/hub-does-not-judge-payload.yaml`, `commands/report-after-final-refused.yaml` |
-| 9 | Before enacting a dose or carbs, compare the doses and carbs you hold since the command was made, and refuse `doses-since` when your own rule says the command is no longer wanted | the rule and its threshold are yours | CM23, D18 | `commands/enact-dose-refused-doses-since.yaml`, `commands/enact-dose-no-doses-since.yaml` |
-| 10 | Decide each `commandId` once: record it when you first enact or refuse it, keep the record across restarts until `expiresAt` by your clock, and answer any later delivery without enacting it and without a second report | — (delivery is at least once) | CM21 | `commands/enact-push-then-fetch-once.yaml`, `commands/enact-after-restart-once.yaml`, `commands/enact-refused-then-redelivered-ignored.yaml` |
-| 11 | Treat two `commandId`s with the same payload as two commands; enact-once does not catch a second send, your doses-since check does | each is enacted unless your checks refuse it | CM21, CM4, CM23 | `commands/enact-two-commands-same-payload.yaml` |
-| 12 | Report `acknowledged` if you want the sender to see it (optional), then one final state: `succeeded`, `failed` or `refused`, with the `payloadHash` you computed, a reason when refused or failed, and when enacted the identity of the record that shows the effect | 200; a report from any other subject is 403 `not-registration-owner`; a state other than the four is 422 `invalid-state` | CM7, CM9 | `commands/acknowledged-then-succeeded.yaml`, `commands/report-from-destination-accepted.yaml`, `commands/report-state-fetched-invalid.yaml` |
-| 13 | Give a reason from the shared list (`hash-mismatch`, `expired`, `not-accepted`, `limit`, `doses-since`, `cancelled`) or as `{value: other, controllerTerm}`; send one final state only | a bare unknown string is 422 `invalid-reason`; a second final report is 409 `already-final` | CM8, CM9 | `commands/report-reason-other-accepted.yaml`, `commands/report-reason-bare-string-invalid.yaml`, `commands/report-after-final-refused.yaml` |
-| 14 | When you hand the pump to another phone with a command outstanding: a command the old phone fetched stays with it, which decides it and reports; one it never received becomes `undeliverable`, and nothing is re-routed | your report is accepted from the destination's bound subject even after the role moved, and replaces `unconfirmed` | CM2, CM7, CM9 | `commands/fetched-before-holder-changes.yaml`, `commands/undeliverable-not-rerouted.yaml`, `commands/pushed-then-lapse-unconfirmed.yaml` |
-| 15 | Expect no cancel for a command cancelled before hand-over: it is final and never delivered | the sender gets 200 `cancelled`; your fetch returns nothing | CM25 | `commands/cancel-pending-is-final.yaml` |
-| 16 | When a fetch carries a cancel for a command you have not decided, refuse it with reason `cancelled` and report; when you have already decided it, your outcome stands | the sender got 202 with `cancelRequested`; after your final report a cancel is 409 `already-final` | CM25, CM21 | `commands/cancel-after-fetch-is-a-request.yaml`, `commands/cancel-after-outcome-refused.yaml` |
+| 2 | Read the capability document's `commands` member at launch and after a release; without it the hub offers no command path, so keep your own transports | with no member, every command path is 404 | CM31 | `commands/discover-without-commands-capability.yaml`, `commands/discover-with-commands-capability.yaml` |
+| 3 | Fetch with your own credential, naming your own instance, at least once per cycle or within the `fetchIntervalSeconds` you declare; a fetch returns each command, and each cancel carried to you, until you report, so a lost reply costs one fetch | 200 with your commands only, again until you report; an empty list once you no longer hold the role; 403 `not-registration-owner` for another instance; the sender sees your bound as `fetchWithinSeconds` | CM18, CM26, CM29, CM30 | `commands/fetch-returns-own-commands.yaml`, `commands/fetch-reply-lost-refetch-delivers.yaml`, `commands/refetch-after-acknowledged-empty.yaml`, `commands/fetch-after-role-lost-is-empty.yaml`, `commands/fetch-bound-default-cycle.yaml` |
+| 4 | To fetch sooner than your bound, listen for fetch-now signals on a transport the hub lists in `commands.liveTransports` and you list in your `liveTransports`; answer a signal by fetching. A signal carries nothing, and a lost one delays a command until your next fetch | a signal goes to your instance only, inside a request bound to your tenant; a platform push only with your tenant's own credential; none when you share no transport with the hub | CM27, CM28, CM19, CM20 | `commands/signal-to-destination-only.yaml`, `commands/signal-lost-fetch-delivers.yaml`, `commands/signal-unbound-withheld-under-multi.yaml`, `commands/signal-platform-push-no-tenant-credential.yaml`, `commands/signal-without-live-transport.yaml` |
+| 5 | Do not read a signal or `fetched` as success; only your report sets an outcome | the command stays `pending` after a signal and `fetched` until you report | CM17, CM7 | `commands/signal-and-fetch-are-not-success.yaml` |
+| 6 | Refuse a command at or past `expiresAt` by your own clock, with reason `expired` | without your report, a fetched command reads `unconfirmed` after its expiry | CM10, CM3, CM8 | `commands/enact-after-expiry-refused.yaml` |
+| 7 | Recompute `payloadHash` (`sha256:` over the RFC 8785 canonical JSON of the payload you received) and refuse `hash-mismatch` when it differs from the command's | your report is recorded as reported, with the record marked a mismatch | CM10, CM7 | `commands/enact-hash-mismatch-refused.yaml`, `commands/request-id-reordered-keys-same-hash.yaml` |
+| 8 | Authenticate the sender by your own means where you require it; the hash detects a payload changed in transit or storage, and does not authenticate the sender or show what an approver approved | the hub carries authentication material unread | CM10, D18 | `commands/hub-does-not-judge-payload.yaml` |
+| 9 | Apply your own limits and your acceptance preference; refuse with `limit` or `not-accepted` | the hub never checks a dose, a limit or the therapy state, and never changes the payload | CM5, CM8, S10 | `commands/hub-does-not-judge-payload.yaml`, `commands/report-after-final-refused.yaml` |
+| 10 | Before enacting a dose or carbs, compare the doses and carbs you hold since the command was made, and refuse `doses-since` when your own rule says the command is no longer wanted | the rule and its threshold are yours | CM23, D18 | `commands/enact-dose-refused-doses-since.yaml`, `commands/enact-dose-no-doses-since.yaml` |
+| 11 | Decide each `commandId` once: record it when you first enact or refuse it, keep the record across restarts until `expiresAt` by your clock, and answer any later delivery without enacting it and without a second report | — (a fetch returns a command until you report, so delivery is at least once) | CM21, CM26 | `commands/enact-refetched-once.yaml`, `commands/enact-after-restart-once.yaml`, `commands/enact-refused-then-redelivered-ignored.yaml` |
+| 12 | Treat two `commandId`s with the same payload as two commands; enact-once does not catch a second send, your doses-since check does | each is enacted unless your checks refuse it | CM21, CM4, CM23 | `commands/enact-two-commands-same-payload.yaml` |
+| 13 | Report `acknowledged` if you want the sender to see it (optional), then one final state: `succeeded`, `failed` or `refused`, with the `payloadHash` you computed, a reason when refused or failed, and when enacted the identity of the record that shows the effect | 200; a report from any other subject is 403 `not-registration-owner`; a state other than the four is 422 `invalid-state` | CM7, CM9 | `commands/acknowledged-then-succeeded.yaml`, `commands/report-from-destination-accepted.yaml`, `commands/report-state-fetched-invalid.yaml` |
+| 14 | Give a reason from the shared list (`hash-mismatch`, `expired`, `not-accepted`, `limit`, `doses-since`, `cancelled`) or as `{value: other, controllerTerm}`; send one final state only | a bare unknown string is 422 `invalid-reason`; a second final report is 409 `already-final` | CM8, CM9 | `commands/report-reason-other-accepted.yaml`, `commands/report-reason-bare-string-invalid.yaml`, `commands/report-after-final-refused.yaml` |
+| 15 | When you hand the pump to another phone with a command outstanding: a command the old phone fetched stays with it, which decides it and reports; one it never fetched becomes `undeliverable`, whatever signals were sent, and nothing is re-routed | your report is accepted from the destination's bound subject even after the role moved | CM2, CM7, CM9 | `commands/fetched-before-holder-changes.yaml`, `commands/undeliverable-not-rerouted.yaml`, `commands/fetched-then-lapse-report-accepted.yaml`, `commands/signalled-then-lapse-undeliverable.yaml` |
+| 16 | Expect no cancel for a command cancelled before hand-over: it is final and never delivered | the sender gets 200 `cancelled`; your fetch returns nothing | CM25 | `commands/cancel-pending-is-final.yaml` |
+| 17 | When a fetch carries a cancel for a command you have not decided, refuse it with reason `cancelled` and report; when you have already decided it, your outcome stands. Each fetch carries the cancel until you report | the sender got 202 with `cancelRequested`; after your final report a cancel is 409 `already-final` | CM25, CM21, CM26 | `commands/cancel-after-fetch-is-a-request.yaml`, `commands/cancel-carried-until-report.yaml`, `commands/cancel-after-outcome-refused.yaml` |
 
-A command pushed and then fetched, decided once (step 10). The answers below follow the case's
-calls in order: the sender's command, the push, the first enactment, the fetch that returns the
-command again, and the second enactment, answered `ignored` with nothing enacted:
+A command fetched twice before a report, decided once (step 11). The answers below follow the
+case's calls in order: the sender's command, the first fetch, the first enactment, the next fetch
+that returns the command again, and the second enactment, answered `ignored` with nothing enacted:
 
-<!-- BEGIN GENERATED: guide-example commands/enact-push-then-fetch-once.yaml expected.calls -->
+<!-- BEGIN GENERATED: guide-example commands/enact-refetched-once.yaml expected.calls -->
 ```yaml
 - status: 201
   commandId: c1
   state: pending
-- sent: true
+  fetchWithinSeconds: 30
+- status: 200
+  commands:
+  - c1
 - state: succeeded
 - status: 200
   commands:
@@ -407,7 +424,7 @@ command again, and the second enactment, answered `ignored` with nothing enacted
 ```
 <!-- END GENERATED: guide-example -->
 
-A cancel after hand-over (step 16). The answers follow the case's calls in order: the sender's
+A cancel after hand-over (step 17). The answers follow the case's calls in order: the sender's
 command, your fetch, the sender's cancel (202), your next fetch carrying the cancel, your refusal
 and your report:
 
@@ -416,6 +433,7 @@ and your report:
 - status: 201
   commandId: c1
   state: pending
+  fetchWithinSeconds: 30
 - status: 200
   commands:
   - c1
@@ -432,7 +450,7 @@ and your report:
 ```
 <!-- END GENERATED: guide-example -->
 
-A refusal reported in the controller's own term (step 13):
+A refusal reported in the controller's own term (step 14):
 
 <!-- BEGIN GENERATED: guide-example commands/report-reason-other-accepted.yaml calls.2 -->
 ```yaml
@@ -466,6 +484,7 @@ controller author reads first. For TestController:
 |---|---|---|---|
 | a hub with no capability document | today's documents, written as carriers; nothing is negotiated | registration §17 | `older-hub-no-capabilities.yaml`, `instances/carrier-write-older-hub.yaml` |
 | a hub with capabilities and no `instances` | typed writes with no instance id; no roles and no command destination | registration §17 | `instances/typed-write-hub-without-instances.yaml` |
+| a hub with no `commands` member in its capability document | no hub command path; commands reach you only by the transports you have | CM31 | `commands/discover-without-commands-capability.yaml` |
 | an older reader or follower on API v1 or v3, where the element's view is served | a projected document in the carrier's shape, labelled `projectedFrom`, read-only | registration §13, I8 | `instances/project-served.yaml`, `instances/write-projected-read-only.yaml` |
 | the same reader where no view is served | the carrier you dual-write, linked to the typed record | registration §6, registration §13 | `accepted-dual-write-view-not-served.yaml`, `instances/project-no-mapping.yaml` |
 | an older controller of another product on the shared `override` slot | its writes go to its product's unregistered instance and are never refused for exclusivity | registration §11, Q2 | `instances/carrier-write-older-controller.yaml`, `newer-hub-older-controller.yaml` |
@@ -487,7 +506,8 @@ the table marks the command record and the list `opt-in` for them.
 - A refused role or element sends that channel's or element's records as carriers; a load refusal
   is retried, never written as a carrier.
 - Every record has an `identifier` unique to it and stable across retries.
-- Fetch is implemented; a push is treated as a faster copy of a fetch.
+- Fetch is implemented, at least once per cycle or within the declared `fetchIntervalSeconds`; a
+  fetch-now signal is answered with a fetch and carries nothing.
 - Before enacting: the hash, the expiry by the controller's own clock, its limits and acceptance
   preference, and the doses and carbs since the command was made.
 - Each `commandId` is decided once, recorded across restarts until its expiry, and reported once
@@ -509,18 +529,5 @@ the table marks the command record and the list `opt-in` for them.
 
 Steps this guide needs that no rule or no case covers:
 
-1. **How a controller learns that a hub offers the command record.** The capability document
-   ([registration §4](../spec/registration.md#4-the-capability-document)) has no member for
-   commands: none says the hub serves fetch and outcome reports, and `commands.maxExpirySeconds`
-   (CM3) and `commands.maxPayloadBytes` (CM5) are not published there. A controller cannot tell
-   from it whether to fetch.
-2. **Request paths and shapes for fetch, report and cancel.** The commands specification states
-   the operations and their answers and names no paths; the cases model calls, not requests.
-3. **How often to fetch.** CM18 makes fetch the path a hub must offer, and nothing says how often a
-   destination fetches, which bounds how soon it sees a command under `multi` (CM19) and a cancel
-   after hand-over (CM25).
-4. **The push to the destination.** CM19 names a socket event to the destination; no event, and no
-   subscription by which a controller receives its commands on the socket, is specified (T11
-   covers typed records only). CM20, a platform push with the tenant's credentials, has no case.
-5. **The effect record in a report.** CM7 asks a report of an enacted command to carry the identity
+1. **The effect record in a report.** CM7 asks a report of an enacted command to carry the identity
    of the record that shows the effect; no case shows a report with it.

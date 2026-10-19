@@ -91,6 +91,7 @@ class Hub(commands.Hub):
                 c["state"] = "cancelled"
             elif state not in FINAL:
                 c["cancelRequested"] = True
+                c.setdefault("cancelRequestedAt", at)
 
     def _outstanding(self, tenant, channel, at, exclude=None):
         """CM24, with PN8: an occurrence command is listed under each channel its

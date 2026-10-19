@@ -50,6 +50,7 @@ expected:
   - status: 201
     commandId: c1
     state: pending
+    fetchWithinSeconds: 30
   - status: 200
     state: pending
   commands:

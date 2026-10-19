@@ -1,0 +1,73 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §7. Times are seconds; expectations authored by hand.
+id: fetch-bound-declared
+title: A declared fetch interval tighter than the cycle is the fetch bound
+rules:
+- CM29
+- CM30
+description: i-ctl-a has the same cadence and declares fetchIntervalSeconds 20; the reply and the outstanding
+  list show 20 s.
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+    liveTransports:
+    - socket
+    cadence:
+      nominalSeconds: 300
+      maxDeferralSeconds: 60
+    fetchIntervalSeconds: 20
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 600
+- at: 11
+  kind: outstanding
+  tenant: A
+  subject: s-care
+  channel: override
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+    fetchWithinSeconds: 20
+  - status: 200
+    proposals: []
+    commands:
+    - c1
+    dosesSince: []
+    destinations:
+      i-ctl-a:
+        fetchWithinSeconds: 20
+  commands:
+    c1:
+      state: pending
+      destination: i-ctl-a

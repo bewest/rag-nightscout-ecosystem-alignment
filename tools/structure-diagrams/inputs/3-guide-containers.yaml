@@ -1,7 +1,7 @@
 # L3 · C4 containers for the developer guides: which part of a hub a controller app calls, and why.
 # Source: registration §4 (capability document, unauthenticated), §5 (product resource), §7-§8
-# (definitions, instances, leases), §11 (typed writes); commands CM18 (fetch), CM19 (push only
-# inside a bound request), CM7 (outcomes); authority AU2 (three listeners under multi; one under
+# (definitions, instances, leases), §11 (typed writes); commands CM18 (fetch), CM19 and CM27 (a
+# fetch-now signal only inside a bound request, carrying nothing), CM7 (outcomes); authority AU2 (three listeners under multi; one under
 # single, where API_SECRET acts as the owner). Drawn 2026-10-18; proposed. Roles only.
 title: "3·guide-containers · The parts of a hub your app calls (C4 containers)"
 bands:
@@ -20,7 +20,7 @@ nodes:
 edges:
   - {from: wk, to: app, kind: feedback, label: "what this hub\nreads (at launch)"}
   - {from: app, to: api, kind: control, label: "PUT product, definition,\ninstance; typed writes;\nfetch; outcomes"}
-  - {from: rt, to: app, kind: control, label: "live commands\n(bound requests)"}
+  - {from: rt, to: app, kind: control, label: "fetch-now signal\n(bound requests)"}
   - {from: owner, to: tadmin, kind: control, label: "grants roles,\nblock, retire"}
   - {from: api, to: reg, kind: data, label: "per element, bound\nto your credential", label_side: above}
   - {from: api, to: rec, kind: data, label: "attributed\nto your instance"}

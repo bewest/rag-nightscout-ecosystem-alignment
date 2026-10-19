@@ -1,13 +1,12 @@
 # Synthetic. SPEC-REG-COMMANDS; commands §7. Times are seconds; expectations authored by hand.
-id: push-bound-other-tenant-withheld
-title: Under multi, a push bound to another tenant is withheld
+id: signal-transport-not-offered
+title: A live transport the hub does not list carries no signal
 rules:
-- CM19
-- CM6
-description: c1 is on tenant A; a push from a request bound to tenant B is not sent and c1 stays pending
-  until fetched.
-control: push-bound-own-tenant-under-multi
-mode: multi
+- CM28
+description: i-ctl-a listens only on an other transport the hub does not list; no signal is sent, and
+  its fetch returns c1.
+control: signal-other-transport-offered
+mode: single
 maxExpirySeconds: 3600
 instances:
   i-ctl-a:
@@ -20,21 +19,11 @@ instances:
       override:
       - 0
       - null
-  i-ctl-b:
-    tenant: B
-    subject: s-ctl-b
-    product: ControllerA
-    definitionId: sha256:d-b
-    simulated: false
-    sinks:
-      override:
-      - 0
-      - null
+    liveTransports:
+    - value: other
+      controllerTerm: example-mqtt
 declares:
   A:
-    override:
-    - ControllerA
-  B:
     override:
     - ControllerA
 subjects:
@@ -44,9 +33,6 @@ subjects:
     - api:commands:create
   s-ctl-a:
     tenant: A
-    permissions: []
-  s-ctl-b:
-    tenant: B
     permissions: []
 calls:
 - at: 10
@@ -60,13 +46,8 @@ calls:
     preset: example
   expiresAt: 600
 - at: 11
-  kind: push
-  bound: B
-  command: c1
-  via: socket
-- at: 12
-  kind: read
-  tenant: A
+  kind: signal
+  bound: A
   command: c1
 - at: 20
   kind: fetch
@@ -78,10 +59,9 @@ expected:
   - status: 201
     commandId: c1
     state: pending
-  - sent: false
-    reason: withheld
-  - status: 200
-    state: pending
+    fetchWithinSeconds: 30
+  - signalled: false
+    reason: no-live-transport
   - status: 200
     commands:
     - c1

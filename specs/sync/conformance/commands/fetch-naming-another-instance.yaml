@@ -81,9 +81,11 @@ expected:
   - status: 201
     commandId: c1
     state: pending
+    fetchWithinSeconds: 30
   - status: 201
     commandId: c2
     state: pending
+    fetchWithinSeconds: 30
   - status: 403
     code: not-registration-owner
   - status: 200

@@ -7,7 +7,7 @@ matched is in the [identity specification](identity.md) §3. Decisions: the
 (2026-10-12) and [D6](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions)
 (the change feed under multi). Queue: `SPEC-SYNC-TRANSPORT`.*
 
-*Specification 7 of 8 in the [reading order](../README.md#reading-order); after the layers whose records it moves, before authority. Expect the decided write path (T1–T4), each client's declared sync endpoints, the proposed read, cursor and socket rules (T5–T15), and the conformance cases.*
+*Specification 7 of 8 in the [reading order](../README.md#reading-order); after the layers whose records it moves, before authority. Expect the decided write path (T1–T4), each client's declared sync endpoints, the proposed read, cursor and socket rules (T5–T16), and the conformance cases.*
 
 How writes are applied, ordered and delivered, over REST and the socket, and what a client pays to
 stay in sync. Status: the write path is decided, except re-sends of `devicestatus` (T2), and T3 is on `dev`;
@@ -94,6 +94,7 @@ number of collections. Request counts and payload sizes on the wire are not meas
 |---|---|
 | T11 | **Subscribe by what the credential may read.** A client subscribes by product and channel ([registration §9](registration.md#9-channels-roles-and-provenance)); the hub delivers events for typed records the credential may read. Each event carries the typed record, both ids (identity I4), its definition id, its instance and the role's provenance, and the T10 cursor. Where an element's `carrierView` is `served` ([registration §13](registration.md#13-projected-views-for-older-readers)), subscribers to the carrier's collection receive the projected document. |
 | T12 | **Which writes reach the socket is open.** Today only API v3 writes reach the API v3 storage socket; writes through v1, the v1 socket and in-process callers do not (BF-164, reproduced on `dev` `43289dde` and 15.0.8). Whether broadcasting them would help or harm AndroidAPS, which uses the socket by default and stops polling after its first load (read), is a question to its authors before a rule is set. T10 holds either way: a client that misses an event reads it from history. |
+| T16 | **The socket carries the fetch-now signal.** A controller instance subscribes to its own signals on the existing listener with its own credential, naming its `instanceId`; a subscription naming an instance that is not the credential's own is refused, as a fetch is ([commands CM18](commands.md#7-delivery-in-each-mode-proposed)). The hub sends the signal ([commands CM27](commands.md#7-delivery-in-each-mode-proposed)) to that subscription only, as an event that carries nothing, and only inside a request bound to the command's tenant (CM19). It is not a record: it carries no record, ids or cursor, and the controller answers it with a fetch. T10's rule holds for it: the fetch, not the signal, is what delivers. |
 
 ## 6. Definitions and versions (proposed)
 
@@ -140,8 +141,8 @@ Nothing is retired. The capability document member that would say a hub serves T
 7. **The v1 socket's events under `multi`.** On the seam branch the load cycle's `dataUpdate`
    and the `/alarm` events reach no tenant (commands §3); LoopFollow slows its polling while
    connected, and AndroidAPS 3.4.x listens for them ([compatibility §5](compatibility.md#5-where-an-answer-changes)).
-   Whether a hub under `multi` sends them inside a bound request, as CM19 does for pushes, is not
-   specified.
+   Whether a hub under `multi` sends them inside a bound request, as CM19 does for fetch-now
+   signals, is not specified.
 
 ## 9. Conformance cases
 

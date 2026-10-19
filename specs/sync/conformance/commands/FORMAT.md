@@ -27,10 +27,19 @@ instances:
     sinks: {override: [0, null]}       # channel: [from, until), null = still holding
     proposes: [override]               # optional: channels it holds a granted propose role on
     agent: true                        # optional, default true: its propose role is an agent's (CM14)
+    cadence: {nominalSeconds: 300, maxDeferralSeconds: 60}   # optional, default {nominalSeconds: 30}: CM29
+    fetchIntervalSeconds: 20           # optional: a declared fetch bound (CM29)
+    liveTransports: [socket]           # optional, default none: transports it listens on for signals (CM28)
+    ownTransports: [apns]              # optional: its own command paths outside the hub (CM31)
 declares:                              # products declaring each channel, per tenant; none = no-command-destination
   A: {override: [ControllerA], example/slot: [ControllerA, ControllerB]}
 shared: [override]                     # optional: shared channels, where §2's product inference does not apply
 maxPayloadBytes: 4096                  # optional, default 4096: CM5
+commandsOffered: true                  # optional, default true: false = the capability has no commands member (CM31)
+liveTransports: [socket]               # optional, default [socket]: the hub's commands.liveTransports (CM28)
+minFetchIntervalSeconds: 15            # optional, default 0: CM29
+pushCredentials: {A: [apns]}           # optional: platform push credentials each tenant holds (CM20)
+deploymentPushCredentials: [apns]      # optional: the deployment's own, which a signal never uses (CM20)
 subjects:
   s-care: {tenant: A, permissions: [api:commands:create]}
   s-ctl-a: {tenant: A, permissions: []}
@@ -46,7 +55,8 @@ calls:
      product: ControllerA,             # optional
      payload: {...}, expiresAt: 600,   # expiresAt optional (absolute seconds)
      requestId: r1}                    # optional
-  - {at: 11, kind: push, bound: A, command: c1, via: socket}   # bound: null = no tenant bound
+  - {at: 11, kind: signal, bound: A, command: c1}   # a fetch-now signal; bound: null = no tenant bound
+  - {at: 5, kind: discover, instance: i-ctl-a}     # the controller reads the capability document (CM31)
   - {at: 12, kind: fetch, tenant: A, subject: s-ctl-a, instance: i-ctl-a}
   - {at: 13, kind: enact, instance: i-ctl-a, command: c1,
      received: {...}}                  # optional: the payload as the controller received it
@@ -69,16 +79,20 @@ calls:
 end: 100                               # optional: the time final states are read at; default the last call's
 expected:
   calls:                               # one entry per call, in order
-    - {status: 201, commandId: c1, state: pending}                  # command accepted
-    - {status: 201, commandId: c2, state: pending,                  # ... with other items outstanding (CM24)
+    - {status: 201, commandId: c1, state: pending, fetchWithinSeconds: 30}   # command accepted (CM30)
+    - {status: 201, commandId: c2, state: pending, fetchWithinSeconds: 30,   # ... with other items outstanding (CM24)
        outstanding: {proposals: [], commands: [c1], dosesSince: []}}
-    - {status: 200, proposals: [p1], commands: [c1], dosesSince: [25]}  # outstanding
+    - {status: 201, commandId: c1, state: pending, fetchWithinSeconds: 360,
+       mayExpireUnfetched: true}                                    # expires within the fetch bound (CM30)
+    - {status: 200, proposals: [p1], commands: [c1], dosesSince: [25],      # outstanding
+       destinations: {i-ctl-a: {fetchWithinSeconds: 30}}}
     - {status: 200, state: cancelled} | {status: 202, state: fetched, cancelRequested: true}  # cancel
     - {status: 409, code: no-command-destination, commandId: c2}    # refused at routing, recorded as not-routed
     - {status: 422, code: expiry-required}                          # refused, not recorded
-    - {status: 200, commandId: c1, state: sent}                     # requestId re-send: the first command
-    - {sent: true}                                                  # push
-    - {sent: false, reason: withheld | expired | not-pending}
+    - {status: 200, commandId: c1, state: fetched}                  # requestId re-send: the first command
+    - {signalled: true, to: i-ctl-a, via: socket, carries: {}}      # signal (CM27)
+    - {signalled: false, reason: withheld | expired | nothing-waiting | no-live-transport | no-tenant-credential}
+    - {hubPath: true, fetchWithinSeconds: 30, live: socket, keeps: [apns]} | {hubPath: false, keeps: [apns]}  # discover
     - {status: 200, commands: [c1]}                                 # fetch
     - {status: 200, commands: [], cancels: [c1]}                    # fetch carrying a cancel (CM25)
     - {state: succeeded} | {state: refused, reason: hash-mismatch}  # enact: the controller's check
@@ -87,11 +101,12 @@ expected:
     - {status: 200} | {status: 403, code: not-registration-owner}   # report
     - {status: 200, state: fetched} | {status: 404}                 # read
     - {status: 201, proposalId: p1}                                 # propose
-    - {status: 201, commandId: c1, state: pending}                  # approve
+    - {status: 201, commandId: c1, state: pending, fetchWithinSeconds: 30}   # approve
     - {status: 200}                                                 # reject, withdraw
     - {status: 201}                                                 # evaluate
   commands: {c1: {state: succeeded, destination: i-ctl-a, proposalId: p1}}  # at `end`
                                        # plus hashMismatch: true when a report named another hash (CM7)
+                                       # and mayExpireUnfetched: true when flagged (CM30)
   proposals: {p1: {state: approved}}
 ```
 
@@ -99,5 +114,7 @@ Ids are assigned in order: commands `c1, c2, …` (accepted commands and command
 which CM1 records), proposals `p1, p2, …` (accepted proposals only). `destination` is `null` for a
 command refused at routing. A permission or validation refusal is not recorded and gets no id.
 
-Expiry: a command past `expiresAt` is never sent or fetched, and reads report it `expired` unless an
-outcome came first. Push and fetch apply to `pending` or `sent` commands only.
+Expiry: a command past `expiresAt` is never signalled or fetched, and reads report it `expired`
+unless it was fetched (`unconfirmed`) or an outcome came first. A fetch returns `pending` and
+`fetched` commands until the controller reports (CM26); a signal changes no state. With
+`commandsOffered: false`, `command`, `propose` and `fetch` answer 404.

@@ -6,7 +6,7 @@ and L5 of the [platform index](../README.md); terms are in the [glossary](glossa
 and the maintainer's decisions of 2026-10-14 to 2026-10-18 recorded with them; the proposal
 record was folded into this item on 2026-10-18. Queue: `SPEC-REG-COMMANDS`.*
 
-*Specification 5 of 8 in the [reading order](../README.md#reading-order); after state and intent, whose acceptance policy (S10, S11) it builds on, and before plans, which builds on its proposals. Expect where a command goes, the command path today, rules CM1–CM25 for the command record, outcomes, proposals and delivery in each mode, compatibility with each controller, and the conformance cases.*
+*Specification 5 of 8 in the [reading order](../README.md#reading-order); after state and intent, whose acceptance policy (S10, S11) it builds on, and before plans, which builds on its proposals. Expect where a command goes, the command path today, rules CM1–CM32 for the command record, outcomes, proposals, delivery in each mode and the request paths, compatibility with each controller, and the conformance cases.*
 
 How a request to change therapy reaches a controller through a hub, what the hub records about it,
 how the controller's outcome comes back, and the proposal and approval that can stand in front of
@@ -26,6 +26,8 @@ none is implemented.
 | [state and intent A12](state-intent.md#61-rules) | the state version a proposal can be based on |
 | [agents in the ecosystem §4.3](../agent-trust-boundaries-2026-10-18.md#43-what-a-proposal-lifecycle-would-add--proposed-not-specified) | the proposal lifecycle this specification takes up |
 | [intent landscape §6](../nightscout-intent-workflow-landscape-2026-10-09.md#6-the-remote-command-lifecycle) | command lifecycles per controller, read from source |
+| [registration §4](registration.md#4-the-capability-document) | the capability document's `commands` member (CM31) |
+| [sync-transport T16](sync-transport.md#5-typed-records-on-the-socket-proposed) | the fetch-now signal on the socket (CM27) |
 | `tools/nsschema/commands.py` | the reference decision function for §4–§7 |
 | `specs/sync/conformance/commands/` | the cases it is checked against, with `tools/nsschema/test_commands.py` |
 
@@ -89,7 +91,7 @@ intent §7](state-intent.md#7-commands-as-controllers-handle-them-today).
   process-wide load cycle and are withheld; storage events from an API v3 request reach their
   tenant.
 
-CM19 and CM20 are written against these two facts: a push from the load cycle reaches no one under
+CM19 and CM20 are written against these two facts: a signal from the load cycle reaches no one under
 `multi`, and the only push credential today is the deployment's.
 
 ## 4. The command record (proposed)
@@ -97,28 +99,27 @@ CM19 and CM20 are written against these two facts: a push from the load cycle re
 | # | rule |
 |---|---|
 | CM1 | **The hub records a command before it sends it.** A command the hub accepts is stored as a record: `commandId` (assigned by the hub), its tenant, `channel`, the product named or inferred, the destination's `instanceId` and `definitionId` as routed, the `payload` exactly as received, `payloadHash` (`sha256:` over the payload's RFC 8785 canonical JSON, the rule [D19](registration.md#54-etag-and-idempotency) uses for definition ids), the `initiator` in the form [state and intent S8](state-intent.md#2-rules) gives it, the subject that sent it, `proposalId` and the proposal's `basedOn` when it came from an approval (§6), `createdAt`, `expiresAt` and `state`. A command refused at routing (§2) is recorded as `not-routed`, with its reason, and never sent. |
-| CM2 | **Routed once.** The destination is fixed when the command is accepted; it is never re-routed to a later holder, which would enact a request its sender addressed to another device. If the destination lapses or loses its role while the command is `pending`, nothing was handed over and the command becomes `undeliverable`. If that happens after it was `sent`, the controller may have it, and the command becomes `unconfirmed`. |
-| CM3 | **An expiry is required.** A command without `expiresAt`, or with one not after the request's time, is refused 422 `expiry-required`; one more than the hub's `commands.maxExpirySeconds` after the request is refused 422 `expiry-too-long`. Times are the hub's. A command at or past its expiry is never sent or fetched. At its expiry a `pending` command becomes `expired`, because nothing was handed over; a `sent` or `fetched` command becomes `unconfirmed`, because the controller may have enacted it; an acknowledged command keeps the controller's state. A hub never reports a command that may have been enacted as `expired` or `undeliverable`, which a sender would read as safe to send again. |
+| CM2 | **Routed once.** The destination is fixed when the command is accepted; it is never re-routed to a later holder, which would enact a request its sender addressed to another device. If the destination lapses or loses its role while the command is `pending`, nothing was handed over, whatever signals were sent (CM27), and the command becomes `undeliverable`. If that happens after it was `fetched`, the controller has it: the command keeps its state, and the destination's report is accepted (CM7). |
+| CM3 | **An expiry is required.** A command without `expiresAt`, or with one not after the request's time, is refused 422 `expiry-required`; one more than the hub's `commands.maxExpirySeconds` after the request is refused 422 `expiry-too-long`. Times are the hub's. A command at or past its expiry is never signalled or fetched. At its expiry a `pending` command becomes `expired`, because nothing was handed over; a `fetched` command becomes `unconfirmed`, because the controller may have enacted it; an acknowledged command keeps the controller's state. A hub never reports a command that may have been enacted as `expired` or `undeliverable`, which a sender would read as safe to send again. |
 | CM4 | **Re-sending a request.** A sender may give a `requestId`. Within a tenant and subject, a second command with the same `requestId`, `channel`, product as the request names it (naming none differs from naming the one that would be inferred) and `payloadHash` returns the first command and its current state; with any of them different it is refused 409 `request-id-reused`. Without a `requestId`, every request is a new command. |
 | CM5 | **The hub does not judge.** The hub checks only that the channel accepts commands, the routing, the expiry, the size (a payload over the hub's `commands.maxPayloadBytes` of canonical JSON is refused 413 `payload-too-large`) and the sender's permission (403 `not-authorised` without `api:commands:create`). It never checks a dose, a limit or the therapy state, and it never changes the payload. |
 | CM6 | **Tenant isolation.** A command's tenant is the tenant its request resolved to. Routing, sending, fetching, proposals, reports and reads see only that tenant: a command, proposal or instance from another tenant is 404, as one that does not exist is, so a request never reveals that it exists. |
-| CM24 | **The outstanding list.** For a channel, the hub lists every proposal that is `open` and every command that is not final, with its sender or proposer, initiator, `createdAt`, `expiresAt` and state, and the times of the dose and carb records for the channel's products that reached the hub since the earliest of them. A reply that accepts a command or an approval carries the list of the other items when there are any. Anyone holding `api:commands:read`, `api:commands:create` or `api:proposals:read` on the tenant may read it, so a follower can see the queue without acting on it; anyone else is 403 `not-authorised`. |
-| CM25 | **Cancel.** The sender of a command, or the subject acting for the person (CM14), may cancel it; anyone else is 403 `not-authorised`. A `pending` command becomes `cancelled`, which is final, and is never sent or fetched. A command already handed over or acknowledged stays in its state with `cancelRequested` (202): the destination's next fetch carries the cancel, and the controller, deciding the command once (CM21), refuses it with reason `cancelled` if it has not decided it yet. A command with a final state is 409 `already-final`. |
+| CM24 | **The outstanding list.** For a channel, the hub lists every proposal that is `open` and every command that is not final, with its sender or proposer, initiator, `createdAt`, `expiresAt` and state, and the times of the dose and carb records for the channel's products that reached the hub since the earliest of them, and, under `destinations`, each live holder of the channel's sink with its fetch bound (CM30). A reply that accepts a command or an approval carries the list of the other items when there are any. Anyone holding `api:commands:read`, `api:commands:create` or `api:proposals:read` on the tenant may read it, so a follower can see the queue without acting on it; anyone else is 403 `not-authorised`. |
+| CM25 | **Cancel.** The sender of a command, or the subject acting for the person (CM14), may cancel it; anyone else is 403 `not-authorised`. A `pending` command becomes `cancelled`, which is final, and is never sent or fetched. A command already fetched or acknowledged stays in its state with `cancelRequested` (202): the destination's fetches carry the cancel until it reports (CM26), and the controller, deciding the command once (CM21), refuses it with reason `cancelled` if it has not decided it yet. A command with a final state is 409 `already-final`. |
 
-**Order of checks.** Where more than one refusal applies, the first wins: another tenant (404), then the sender's permission and ownership (403), then the request's own content (413, 422), then state (409). Among an approval's 409s the order is: the proposal's state (`proposal-expired`, `proposal-closed`), `hash-mismatch`, routing, `destination-changed`, `state-changed`, `doses-since`. A push checks the binding (`withheld`) before the command's state, and applies only to a `pending` or `sent` command (`not-pending` otherwise).
+**Order of checks.** Where more than one refusal applies, the first wins: another tenant (404), then the sender's permission and ownership (403), then the request's own content (413, 422), then state (409). Among an approval's 409s the order is: the proposal's state (`proposal-expired`, `proposal-closed`), `hash-mismatch`, routing, `destination-changed`, `state-changed`, `doses-since`. A signal checks the binding (`withheld`), then the command (`expired`, then `nothing-waiting` when no fetch would return it or its cancel, CM26), then the transport (`no-live-transport`, then `no-tenant-credential`). Without the capability's `commands` member every path in CM32 is 404 (CM31).
 
-**States.** The hub sets `pending`, `not-routed`, `sent`, `fetched`, `unconfirmed`, `undeliverable`, `expired` and `cancelled`; only the
+**States.** The hub sets `pending`, `not-routed`, `fetched`, `unconfirmed`, `undeliverable`, `expired` and `cancelled`; only the
 destination sets `acknowledged`, `succeeded`, `failed` and `refused` (§5).
 
 | state | set by | means |
 |---|---|---|
-| `pending` | hub | accepted and routed; nothing sent yet |
+| `pending` | hub | accepted and routed; not yet fetched, whatever signals were sent (CM27) |
 | `not-routed` | hub | refused at routing (§2); its reason is recorded |
-| `sent` | hub | handed to a push transport (§7); not a receipt |
-| `fetched` | hub | the destination instance read it with its own credential (§7); a receipt, not an outcome |
-| `unconfirmed` | hub | handed over, with no outcome: `sent`, then its expiry passed or its destination lost the role; or `fetched`, then its expiry passed. It may have been enacted (CM2, CM3) |
-| `undeliverable` | hub | the destination lapsed or lost its role before anything was handed over (CM2) |
-| `expired` | hub | its expiry passed before anything was handed over (CM3) |
+| `fetched` | hub | the destination instance read it with its own credential (CM18); a receipt, not an outcome; returned again by each fetch until the controller reports (CM26) |
+| `unconfirmed` | hub | fetched, with no outcome, and its expiry passed. It may have been enacted (CM3) |
+| `undeliverable` | hub | the destination lapsed or lost its role before it fetched the command (CM2) |
+| `expired` | hub | its expiry passed before the destination fetched it (CM3) |
 | `cancelled` | hub | its sender or the person cancelled it before anything was handed over (CM25) |
 | `acknowledged` | controller | received; validating or enacting |
 | `succeeded` | controller | enacted |
@@ -126,7 +127,7 @@ destination sets `acknowledged`, `succeeded`, `failed` and `refused` (§5).
 | `refused` | controller | declined by the controller's own checks |
 
 `succeeded`, `failed`, `refused`, `not-routed`, `undeliverable`, `expired` and `cancelled` are final; the hub
-sets the last four only for a command that was never handed over. `sent`, `fetched` and `unconfirmed` are never
+sets the last four only for a command that was never fetched. A signal, `fetched` and `unconfirmed` are never
 reported as success or as failure.
 
 The same states as a diagram. Blue states are set by the hub, green by the destination's reports;
@@ -135,11 +136,10 @@ the bold ones are final. A report may skip `acknowledged` (CM9).
 ```mermaid
 stateDiagram-v2
   accTitle: Command states
-  accDescr: A command is recorded pending, or not-routed when routing refuses it. Before hand-over the hub moves a pending command to sent, fetched, cancelled, undeliverable or expired. A command handed over becomes unconfirmed when its expiry passes or its destination loses the role, never expired. Only the destination's reports set acknowledged, succeeded, failed or refused, and a report replaces unconfirmed.
+  accDescr: A command is recorded pending, or not-routed when routing refuses it. A signal leaves it pending. The hub moves a pending command to fetched, cancelled, undeliverable or expired. A fetched command is fetched again until a report, and becomes unconfirmed when its expiry passes, never expired. Only the destination's reports set acknowledged, succeeded, failed or refused, and a report replaces fetched or unconfirmed.
   state "not-routed" as not_routed
   state "handed over" as handed {
-    sent --> fetched: fetched (CM18)
-    sent --> unconfirmed: expiry passed or role lost
+    fetched --> fetched: fetched again until a report (CM26)
     fetched --> unconfirmed: expiry passed
   }
   state "reported by the destination (CM7)" as reported {
@@ -152,12 +152,13 @@ stateDiagram-v2
   pending --> cancelled: cancelled (CM25)
   pending --> undeliverable: destination lapsed (CM2)
   pending --> expired: expiry passed (CM3)
-  pending --> handed: pushed (CM19) or fetched (CM18)
-  handed --> reported: a report replaces unconfirmed (CM9)
+  pending --> pending: signalled (CM27)
+  pending --> handed: fetched (CM18)
+  handed --> reported: a report replaces fetched or unconfirmed (CM9)
   classDef hub fill:#e8f0fe,stroke:#4a6fa5,color:#1a1a1a
   classDef controller fill:#e6f4ea,stroke:#3b7a4a,color:#1a1a1a
   classDef final font-weight:bold,stroke-width:2px
-  class pending,sent,fetched,unconfirmed hub
+  class pending,fetched,unconfirmed hub
   class not_routed,cancelled,undeliverable,expired hub
   class acknowledged,succeeded,failed,refused controller
   class not_routed,cancelled,undeliverable,expired,succeeded,failed,refused final
@@ -167,7 +168,7 @@ stateDiagram-v2
 
 | # | rule |
 |---|---|
-| CM7 | **Only the destination reports.** An outcome report names the `commandId` and is accepted only from the bound subject of the destination the command was routed to, whether or not that instance still holds the role; any other subject is refused 403 `not-registration-owner`. The report carries `state` (`acknowledged`, `succeeded`, `failed` or `refused`; any other is 422 `invalid-state`), the `payloadHash` the controller computed over the payload it received, a `reason` when refused or failed, and, when enacted, the identity of the record that shows the effect ([identity](identity.md)). A reported hash that differs from the command's is recorded as reported, with the record marked as a mismatch; the hub does not refuse it, because the report is evidence of what the controller did. |
+| CM7 | **Only the destination reports.** An outcome report names the `commandId` and is accepted only from the bound subject of the destination the command was routed to, whether or not that instance still holds the role; any other subject is refused 403 `not-registration-owner`. The report carries `state` (`acknowledged`, `succeeded`, `failed` or `refused`; any other is 422 `invalid-state`), the `payloadHash` the controller computed over the payload it received, a `reason` when refused or failed, and, when enacted, the identity of the record that shows the effect (how the link works is open, §9 item 9; [effect-link prototype](../effect-link-prototype-2026-10-18.md)) ([identity](identity.md)). A reported hash that differs from the command's is recorded as reported, with the record marked as a mismatch; the hub does not refuse it, because the report is evidence of what the controller did. |
 | CM8 | **Reasons.** A refusal or failure reason is one of `hash-mismatch`, `expired`, `not-accepted` (the controller's acceptance preference is off, [S10](state-intent.md#2-rules)), `limit` (a limit the controller enforces), `doses-since` (CM23), `cancelled` (CM25) or `{value: other, controllerTerm}`; a bare unknown string is refused 422 `invalid-reason`. The hub records the reason and does not interpret it. |
 | CM9 | **One outcome.** After a final state, a further report is refused 409 `already-final`. A report on an `unconfirmed` command is accepted and replaces it: that state is the hub's inference, and the controller's report of what it did is better evidence. `acknowledged` may precede a final state and may be skipped. |
 | CM10 | **The controller checks the hash.** Before enacting, the controller recomputes `payloadHash` over the payload it received and refuses `hash-mismatch` when it differs from the hash the command carries. It also refuses a command past `expiresAt` by its own clock. These checks are the controller's, as all validation is (D18). The controller receives the payload and the hash from the same hub, so the check detects a payload changed in transit or storage; it does not show that a hub, or anything acting as one, delivered what an approver approved, and it does not authenticate the sender. Binding an approval to a payload end to end needs a signature by the sender or approver. Authentication between sender and controller, such as Loop's one-time password, Trio's shared secret or AndroidAPS's per-client signature (§8), stays the controller's, and the hub carries it unread. |
@@ -193,18 +194,23 @@ propose → (evaluate) → approve | reject | withdraw | expire → command (§4
 
 | # | rule |
 |---|---|
-| CM17 | **The record is the command.** A push transport may carry the payload and its hash, but the hub's record (CM1) is what states, outcomes and audit refer to. |
-| CM18 | **Fetch.** The destination reads its `pending` and `sent` commands with its own credential. This works the same in both modes, because the request is bound to the tenant; it is the path a hub must offer. A fetch returns only commands whose destination is that instance; a fetch naming an instance that is not the credential's own is 403 `not-registration-owner`, and an instance that no longer holds the role gets an empty list. |
-| CM19 | **Push only inside a bound request.** A push (a socket event to the destination, or a platform push such as APNs) is sent only inside a request already bound to the command's tenant, such as the request that accepted the command or approval, or a later request from the destination. Under `TENANCY_MODE=multi`, nothing is sent from a context with no tenant bound, such as the load cycle; an emission there, or one bound to another tenant, is withheld and the command stays `pending` until it is fetched. Under `single` the one tenant is always bound. |
-| CM20 | **Credentials for a platform push are the tenant's.** A platform push uses credentials held by the command's tenant, never the deployment's. |
-| CM21 | **Enacted once.** Delivery is at least once: a push may carry a command that a fetch returns again (CM18), and a platform may deliver a push twice. Every push and fetch carries the `commandId`. The controller decides each `commandId` once: it records the id when it first enacts or refuses the command, keeps that record across restarts until `expiresAt` by its own clock, and answers any later delivery of the id without enacting it and without a second outcome report. A sender who sends again without the same `requestId` makes a new command (CM4), which this rule does not catch. |
+| CM17 | **The record is the command.** The hub's record (CM1) is what states, outcomes and audit refer to, and only a fetch (CM18) hands a command over. A fetch-now signal (CM27) carries none of the record. |
+| CM18 | **Fetch.** The destination reads the commands waiting for it (CM26) with its own credential. This works the same in both modes, because the request is bound to the tenant; it is the path a hub must offer, and the only one by which a payload and its hash reach a controller. A fetch returns only commands whose destination is that instance; a fetch naming an instance that is not the credential's own is 403 `not-registration-owner`, and an instance that no longer holds the role gets an empty list. |
+| CM19 | **Signals only inside a bound request.** A fetch-now signal (CM27), on the socket or by a platform push, is sent only inside a request already bound to the command's tenant, such as the request that accepted the command, the approval or the cancel, or a later request from the destination. Under `TENANCY_MODE=multi`, nothing is sent from a context with no tenant bound, such as the load cycle; a signal there, or one bound to another tenant, is withheld (`withheld`), and the command waits for the destination's fetch (CM29). Under `single` the one tenant is always bound. |
+| CM20 | **A platform push is a signal sent with the tenant's credential.** A platform push carries only a fetch-now signal (CM27) and is sent with a credential the command's tenant holds, never the deployment's. Without one, no platform push is sent (`no-tenant-credential`), and the destination fetches on its cadence (CM29). |
+| CM21 | **Enacted once.** Delivery is at least once: a fetch returns a command again until the controller reports (CM26), a reply can be lost after the hub recorded the fetch, and a signal can arrive twice or after the fetch it asked for. Every fetch carries each command's `commandId`. The controller decides each `commandId` once: it records the id when it first enacts or refuses the command, keeps that record across restarts until `expiresAt` by its own clock, and answers any later delivery of the id without enacting it and without a second outcome report. A sender who sends again without the same `requestId` makes a new command (CM4), which this rule does not catch. |
+| CM26 | **Fetched until reported.** A fetch returns every command routed to the fetching instance that is `pending` or `fetched`, while the instance holds the role and before the command's expiry. The first fetch moves it to `fetched`; later fetches return it again until the controller reports (`acknowledged` or a final state) or it expires, when it becomes `unconfirmed` (CM3). A cancel requested after hand-over (CM25) is carried under `cancels`, in place of the command, by every fetch until the controller reports after it. A fetch reply that never reaches the controller delays a command and never loses it; CM21 makes the repeats harmless. |
+| CM27 | **A signal says only "fetch now".** While a command or a carried cancel waits for a destination (CM26), the hub may send that instance a fetch-now signal. The signal goes to the destination instance only, over a live transport it listens on (CM28), and carries nothing beyond its event: no payload, no `payloadHash`, no `commandId`, no channel. It names no command because the fetch that follows returns every waiting command anyway, so an id would give the controller nothing, while each signal passes through the transport's operator (a platform push service or a broker), which an id would let count and time one person's commands. A forged signal causes at most one extra fetch with the controller's own credential. A signal changes no state: a signalled command stays `pending` until fetched, and becomes `expired` or `undeliverable` if it never is. A signal is a hint: lost, late or repeated, it delays a command and never loses or duplicates one, because the fetch bound (CM29) still holds. None is sent for a command at or past its expiry (`expired`) or when nothing waits (`nothing-waiting`). |
+| CM28 | **Live transports.** The capability's `commands.liveTransports` lists the transports the hub sends signals on, an open vocabulary: `socket` (Socket.IO on the hub's existing listener, [sync-transport T16](sync-transport.md#5-typed-records-on-the-socket-proposed)), `apns`, `fcm`, or `{value: other, controllerTerm}`, such as a message broker. A controller declares the transports it listens on in its registration: the `liveTransports` of its `commands[]` entry whose transport is `nightscout-commands`. The hub signals by the first transport the destination lists that the hub also lists; with none in common no signal is sent (`no-live-transport`), and the controller fetches on its cadence. A controller moves from polling to a live transport by adding the transport to its registration; it keeps fetching. |
+| CM29 | **The fetch bound.** A destination fetches at least once per controller cycle: within `cadence.nominalSeconds` of its last fetch, deferred by at most `cadence.maxDeferralSeconds`, so its fetch bound is the sum of the two. It may declare a tighter bound, `fetchIntervalSeconds` on its `nightscout-commands` entry; the bound is then the shorter of that and the cycle. A bound under the hub's `commands.minFetchIntervalSeconds` is raised to it. A signal (CM27) can bring a fetch sooner and never lengthens the bound. |
+| CM30 | **The fetch bound is shown.** The reply that accepts a command or an approval carries `fetchWithinSeconds`, the destination's fetch bound (CM29), so a sender sees how soon the command can be fetched without a signal. The outstanding list (CM24) carries, under `destinations`, each live holder of the channel's sink with its `fetchWithinSeconds`. A command whose `expiresAt` is no more than the fetch bound after the request is accepted unchanged and flagged `mayExpireUnfetched`, in the reply and on the record: the hub does not judge an expiry within CM3's limits (CM5), and a command never fetched expires harmlessly (CM3). A live transport does not clear the flag, because a signal is a hint. |
 
 From proposal to outcome, with the checks each step makes:
 
 ```mermaid
 sequenceDiagram
   accTitle: From proposal to outcome
-  accDescr: An agent instance proposes a payload with the state version it read. The hub routes and records the proposal; evaluations attach as evidence. A person or delegate approves the payload's hash; the hub refuses when the hash, the destination, the state version or doses since differ, leaving the proposal open, and otherwise records one command and returns what else is outstanding. The command reaches the controller by push or fetch with its id and hash. The controller checks the hash and expiry, decides the command once and checks doses since, then reports. A cancel before hand-over is final; after it, a request the controller decides.
+  accDescr: An agent instance proposes a payload with the state version it read. The hub routes and records the proposal; evaluations attach as evidence. A person or delegate approves the payload's hash; the hub refuses when the hash, the destination, the state version or doses since differ, leaving the proposal open, and otherwise records one command and returns the destination's fetch bound and what else is outstanding. The hub may send the controller a fetch-now signal that carries nothing; the command reaches the controller only by its fetch, with its id and hash. The controller checks the hash and expiry, decides the command once and checks doses since, then reports. A cancel before hand-over is final; after it, a request the controller decides.
   participant P as Proposer (agent instance)
   participant H as Hub
   participant A as Approver (person or delegate)
@@ -216,17 +222,87 @@ sequenceDiagram
   alt hash, destination, state version (CM15) or doses since (CM22) differ
     H-->>A: 409, the proposal stays open
   else accepted
-    H-->>A: 201 commandId and the outstanding list (CM24)
-    H->>C: push or fetch, carrying commandId and payloadHash (CM18, CM19)
+    H-->>A: 201 commandId, fetchWithinSeconds (CM30) and the outstanding list (CM24)
+    H-)C: fetch-now signal, carrying nothing (CM19, CM27)
+    C->>H: fetch, on the signal or within the fetch bound (CM18, CM29)
+    H-->>C: commandId, payload and payloadHash, again on each fetch until a report (CM26)
     Note over C: hash and expiry (CM10)<br/>decided once (CM21)<br/>doses since (CM23)
     opt cancel (CM25)
       A->>H: cancel commandId
-      H-->>A: 200 cancelled before hand-over, or 202 a request on the next fetch
+      H-->>A: 200 cancelled before hand-over, or 202 a request carried by each fetch until a report
     end
     C->>H: report acknowledged, then succeeded, failed or refused (CM7)
     H-->>A: the state, on read or in the outstanding list
   end
 ```
+
+### 7.1 Discovery and paths (proposed)
+
+| # | rule |
+|---|---|
+| CM31 | **The capability member.** The capability document's `commands` member ([registration §4](registration.md#4-the-capability-document)) is present only when the hub offers the command record. It carries the paths (`href`, `fetch`, and `proposals` when the hub takes proposals), `maxExpirySeconds` (CM3), `maxPayloadBytes` (CM5), `liveTransports` (CM28) and `minFetchIntervalSeconds` (CM29). Without it the hub serves none of CM32's paths (404), and a controller offers no hub command path and keeps the transports it has (§8). A controller reads it when it reads the capability document: at launch and after a controller release. |
+| CM32 | **Paths.** The operations of §4–§7 are served at the paths below, each bound to the request's tenant (CM6) and answered as the rules state. Request and reply members are in the tables that follow; a member not listed is ignored, as in the grammar (G1). |
+
+| operation | method and path | rules |
+|---|---|---|
+| send a command | `POST /api/v4/commands` | CM1–CM6, CM30 |
+| the outstanding list | `GET /api/v4/commands?channel=<channel>` | CM24, CM30 |
+| read a command | `GET /api/v4/commands/{commandId}` | CM6 |
+| cancel | `POST /api/v4/commands/{commandId}/cancel` | CM25 |
+| report an outcome | `POST /api/v4/commands/{commandId}/reports` | CM7–CM9 |
+| fetch (the destination) | `GET /api/v4/instances/{instanceId}/commands` | CM18, CM26 |
+| propose | `POST /api/v4/proposals` | CM11, CM12 |
+| read a proposal | `GET /api/v4/proposals/{proposalId}` | CM11 |
+| approve | `POST /api/v4/proposals/{proposalId}/approve` | CM13–CM15, CM22, CM30 |
+| reject | `POST /api/v4/proposals/{proposalId}/reject` | CM14 |
+| withdraw | `POST /api/v4/proposals/{proposalId}/withdraw` | CM14 |
+| attach an evaluation | `POST /api/v4/proposals/{proposalId}/evaluations` | CM16 |
+
+The capability's `commands.href` is `/api/v4/commands`, `commands.fetch` the URI template
+`/api/v4/instances/{instanceId}/commands`, and `commands.proposals` `/api/v4/proposals`; a hub may
+serve them elsewhere and says so there.
+
+**Send** (`POST /api/v4/commands`) and **approve** (`POST …/approve`):
+
+| member | in | states |
+|---|---|---|
+| `channel` | send | the channel (§2) |
+| `product` | send | optional; the product, `{vendor, product}` (§2, CM4) |
+| `payload` | send | the payload, stored exactly as received (CM1, CM5) |
+| `expiresAt` | send | required (CM3) |
+| `requestId` | send | optional (CM4) |
+| `initiator` | send, approve | as [state and intent S8](state-intent.md#2-rules) gives it |
+| `payloadHash` | approve | the hash approved (CM13) |
+| `commandId`, `state` | reply 201 | the command recorded (CM1); `pending` |
+| `fetchWithinSeconds` | reply 201 | the destination's fetch bound (CM30) |
+| `mayExpireUnfetched` | reply 201 | `true` when the command expires within that bound (CM30); absent otherwise |
+| `outstanding` | reply 201 | the other open proposals and commands on the channel and the doses since, when there are any (CM24) |
+
+A re-send with the same `requestId` answers 200 with the first `commandId` and its current `state`
+(CM4); a refusal answers its status and `code`, with `commandId` for a command refused at routing (CM1).
+
+**The outstanding list** (`GET /api/v4/commands?channel=`): `proposals[]` and `commands[]`, each
+with its id, sender or proposer, `initiator`, `createdAt`, `expiresAt` and `state`; `dosesSince[]`;
+and `destinations`, a map from each holder's `instanceId` to `{fetchWithinSeconds}` (CM24, CM30).
+
+**Fetch** (`GET /api/v4/instances/{instanceId}/commands`):
+
+| member | states |
+|---|---|
+| `commands[]` | each waiting command (CM26): `commandId`, `channel`, `payload`, `payloadHash`, `expiresAt`, `initiator`, and `proposalId` and `basedOn` when it came from an approval |
+| `cancels[]` | each carried cancel (CM25, CM26): `commandId` |
+
+**Report** (`POST /api/v4/commands/{commandId}/reports`): `state`, `payloadHash`, `reason` when
+refused or failed, and when enacted the identity of the record that shows the effect (CM7); the
+reply is 200, or the refusals CM7–CM9 name.
+
+**Cancel** (`POST /api/v4/commands/{commandId}/cancel`): no members; 200 with `state: cancelled`,
+or 202 with the command's `state` and `cancelRequested: true` (CM25).
+
+**Propose** (`POST /api/v4/proposals`): `proposer` (the proposing instance's `instanceId`),
+`channel`, `product` and `instanceId` when known, `payload`, `basedOn` and `expiresAt` (CM11); 201
+with `proposalId`. **Reject** and **withdraw** take no members and answer 200; **evaluations**
+take the evaluation and answer 201 (CM16).
 
 What a mode changes beyond these, such as the storage key and the credential kinds a command
 record names, is the registration contract per mode (`SPEC-REG-MODES`, not written).
@@ -268,6 +344,10 @@ What in this table bears on the rules:
 - **Expiry is not uniform.** Loop checks an `expiration` only when one is sent; Trio checks a
   fixed window around the sender's time; AndroidAPS's `validUntil` is unbounded unless the sender
   sets it; Remote Commands 2 records carry none. CM3 requires one of every command.
+- **Today's push paths stay as they are.** Loop's and Trio's APNs paths, through
+  `/api/v2/notifications/loop` or straight from a follower, and AndroidAPS's `settings` documents
+  carry their payloads outside the hub command record. CM17–CM20 and CM26–CM31 do not change them;
+  a controller keeps them beside the hub path, or alone when a hub has no `commands` member (CM31).
 - **Sender authentication is end to end.** Every controller that accepts a remote dose
   authenticates the sender itself; a hub forwards that material and is not trusted with it.
 
@@ -284,6 +364,10 @@ What in this table bears on the rules:
    - **Recording refusals at routing** (CM1) as `not-routed` commands, or answering them only.
    - **Who may approve** (CM14): today anyone who may send the command; a grant could narrow it
      ([authority §7](authority.md#7-delegation-not-decided)).
+   - **A command that expires within its destination's fetch bound** (CM30) is accepted and
+     flagged `mayExpireUnfetched`. Refusing it instead would stop a sender relying on a signal that
+     may not arrive; flagging keeps the hub out of judging an expiry (CM5), and such a command, if
+     never fetched, expires with nothing enacted (CM3).
 2. **A controller check before approval.** The proposal lifecycle drew `propose → validate →
    (evaluate) → approve`; CM11–CM16 send nothing to the controller before approval, because no
    controller offers a dry run of a remote command except AndroidAPS `dev`'s two-step prepare and
@@ -327,16 +411,30 @@ What in this table bears on the rules:
    - **The operator's limits** (UCA-AUTH-006). `commands.maxExpirySeconds` bounds every expiry
      (CM3) and has no bound of its own.
 
+8. **The address for a platform push.** A platform push signal (CM20) needs the destination's
+   device address for that platform; where an instance gives it is not specified. Instance labels
+   cannot carry it ([registration §10](registration.md#10-labels)), and the tenant's credential for
+   the platform has no place in the capability document, which describes the deployment.
+9. **The effect link (CM7).** Where the identity of the record that shows an enacted command's
+   effect lives: an `effect[]` list on the report, the `commandId` on the record, both with
+   disagreements flagged, or a separate reconciliation record (item 4 overlaps it). The
+   [effect-link prototype](../effect-link-prototype-2026-10-18.md) measures each against the same
+   scenarios, with its cost and failure modes.
+
 ## 10. Conformance cases
 
 The routing cases are part of the registration suite (`tools/nsschema/test_registration_instances.py`);
 the rest are checked by `tools/nsschema/test_commands.py` against `tools/nsschema/commands.py`,
 which also checks on every case that nothing reaches another tenant, nothing is sent or fetched
-at or after its expiry, nothing is pushed unbound under `multi`, an approved command carries
-the payload hash its approval named (the case's `received` payload stands for what was delivered),
-and no instance enacts a command twice (CM21). CM20 has no case; CM17 has one, `sent-and-fetched-are-not-success`.
+at or after its expiry, nothing is signalled unbound under `multi`, every signal goes to the
+command's destination and carries nothing (CM27), every accepted command and approval names its
+destination's fetch bound and every outstanding list its holders' (CM30), a fetched command with no
+report is returned by every fetch while it waits (CM26), an approved command carries the payload hash
+its approval named (the case's `received` payload stands for what was delivered), and no instance
+enacts a command twice (CM21). CM17 has one case, `signal-and-fetch-are-not-success`. CM32's paths
+have no case: the cases model calls, not requests.
 
-133 cases.
+152 cases.
 
 <!-- BEGIN GENERATED: commands-cases (tools/nsschema/spec_cases.py) -->
 | case | shows | expected | control |
@@ -375,35 +473,45 @@ and no instance enacts a command twice (CM21). CM20 has no case; CM17 has one, `
 | `commands/cancel-after-outcome-refused` | A command already enacted cannot be cancelled | rules CM25, CM9 | `cancel-pending-is-final` |
 | `commands/cancel-by-other-subject-refused` | Another subject cannot cancel a command | rules CM25 | `cancel-by-person` |
 | `commands/cancel-by-person` | The person cancels a caregiver's pending command | rules CM25 | `cancel-by-other-subject-refused` |
+| `commands/cancel-carried-until-report` | A carried cancel is carried by every fetch until the controller reports | rules CM26, CM25, CM21 | `cancel-after-fetch-is-a-request` |
 | `commands/cancel-pending-is-final` | A sender cancels a command before it is handed over | rules CM25 | `cancel-after-fetch-is-a-request` |
 | `commands/command-without-permission` | A sender without api:commands:create is refused and not recorded | rules CM5 | `route-to-holder` |
+| `commands/discover-with-commands-capability` | A hub with a commands member: the controller fetches within its bound and listens live | rules CM31, CM28, CM29 |  |
+| `commands/discover-without-commands-capability` | A hub with no commands member offers no command path; the controller keeps its own | rules CM31 | `discover-with-commands-capability` |
 | `commands/enact-after-expiry-refused` | The controller refuses a command past expiresAt by its own clock | rules CM10 | `enact-identical-payload-succeeds` |
 | `commands/enact-after-restart-once` | A command delivered again after the controller restarts is not enacted again | rules CM21 | `enact-identical-payload-succeeds` |
 | `commands/enact-dose-no-doses-since` | The controller enacts a dose when it has not dosed since the command was made | rules CM23 | `enact-dose-refused-doses-since` |
 | `commands/enact-dose-refused-doses-since` | The controller refuses a dose when it has dosed since the command was made | rules CM23 | `enact-dose-no-doses-since` |
 | `commands/enact-hash-mismatch-refused` | The controller refuses a received payload whose hash differs | rules CM10, CM7, CM8 | `enact-identical-payload-succeeds` |
 | `commands/enact-identical-payload-succeeds` | The controller enacts a payload whose hash matches | rules CM10 |  |
-| `commands/enact-push-then-fetch-once` | A command pushed and then fetched is enacted once | rules CM21, CM18 | `enact-identical-payload-succeeds` |
+| `commands/enact-refetched-once` | A command fetched twice before a report is enacted once | rules CM21, CM26 | `enact-identical-payload-succeeds` |
 | `commands/enact-refused-then-redelivered-ignored` | A command refused on its first delivery is not enacted on a later one | rules CM21 | `enact-identical-payload-succeeds` |
-| `commands/enact-two-commands-same-payload` | Two commands with the same payload are two commands | rules CM21, CM4, CM24 | `enact-push-then-fetch-once` |
+| `commands/enact-two-commands-same-payload` | Two commands with the same payload are two commands | rules CM21, CM4, CM24 | `enact-refetched-once` |
 | `commands/evaluate-by-command-sender` | A subject holding api:commands:create may read and so evaluate | rules CM16, CM11 |  |
 | `commands/evaluate-without-read` | A subject that may not read the proposal cannot evaluate it | rules CM16, CM11 | `evaluation-does-not-change-proposal` |
 | `commands/evaluation-does-not-change-proposal` | An evaluation is evidence and never changes the proposal | rules CM16 |  |
 | `commands/expiry-at-maximum` | An expiry exactly at the maximum is accepted | rules CM3 |  |
 | `commands/expiry-at-request-time` | An expiry equal to the request's time is refused | rules CM3 | `expiry-one-second-after-request` |
+| `commands/expiry-beyond-fetch-bound-not-flagged` | A command that expires after its destination's fetch bound is not flagged | rules CM30 |  |
 | `commands/expiry-one-second-after-request` | An expiry one second after the request is accepted | rules CM3 |  |
 | `commands/expiry-required` | A command without expiresAt is refused and not recorded | rules CM3 | `route-to-holder` |
 | `commands/expiry-too-long` | An expiry beyond commands.maxExpirySeconds is refused | rules CM3 | `expiry-at-maximum` |
-| `commands/fetch-after-expiry-is-empty` | A command past its expiry is neither fetched nor pushed, and reads report expired | rules CM3 | `fetch-before-expiry` |
+| `commands/expiry-within-fetch-bound-flagged` | A command that expires within its destination's fetch bound is accepted and flagged | rules CM30, CM3, CM5 | `expiry-beyond-fetch-bound-not-flagged` |
+| `commands/fetch-after-expiry-is-empty` | A command past its expiry is neither fetched nor signalled, and reads report expired | rules CM3 | `fetch-before-expiry` |
 | `commands/fetch-after-role-lost-is-empty` | An instance that no longer holds the role fetches an empty list | rules CM18, CM2 | `fetch-before-role-lost` |
 | `commands/fetch-before-expiry` | A command fetched before its expiry is delivered | rules CM3 |  |
 | `commands/fetch-before-role-lost` | The same instance fetches while it holds the role | rules CM18, CM2 |  |
+| `commands/fetch-bound-declared` | A declared fetch interval tighter than the cycle is the fetch bound | rules CM29, CM30 |  |
+| `commands/fetch-bound-default-cycle` | With no declared fetch interval, the fetch bound is one cycle | rules CM29, CM30 | `fetch-bound-declared` |
+| `commands/fetch-bound-hub-minimum` | A declared fetch interval under the hub's minimum is raised to it | rules CM29, CM30 | `fetch-bound-declared` |
 | `commands/fetch-instance-other-tenant-404` | A fetch naming an instance on another tenant is 404 | rules CM6, CM18 | `fetch-instance-own-tenant` |
 | `commands/fetch-instance-own-tenant` | The destination fetches on its own tenant | rules CM6, CM18 |  |
 | `commands/fetch-naming-another-instance` | A fetch naming an instance that is not the credential's own is refused | rules CM18 | `fetch-returns-own-commands` |
+| `commands/fetch-reply-lost-refetch-delivers` | A fetch whose reply was lost is answered again by the next fetch | rules CM26, CM21 | `refetch-after-acknowledged-empty` |
 | `commands/fetch-returns-own-commands` | A fetch returns only the fetching instance's own commands | rules CM18 |  |
 | `commands/fetched-before-holder-changes` | A command fetched before the holder changes stays fetched | rules CM2 |  |
 | `commands/fetched-then-expiry-unconfirmed` | A fetched command with no outcome becomes unconfirmed at its expiry | rules CM3 |  |
+| `commands/fetched-then-lapse-report-accepted` | A command fetched before its destination lapses keeps its state, and the report is accepted | rules CM2, CM7, CM9 |  |
 | `commands/hub-does-not-judge-payload` | The hub neither checks nor alters the payload | rules CM5, CM10 |  |
 | `commands/no-request-id-two-commands` | Without a requestId, identical requests are two commands | rules CM4, CM24 |  |
 | `commands/outcome-before-expiry-stays` | An outcome reported before expiry is still the state after it | rules CM3, CM9 |  |
@@ -429,18 +537,14 @@ and no instance enacts a command twice (CM21). CM20 has no case; CM17 has one, `
 | `commands/propose-without-based-on` | A proposal without basedOn is refused | rules CM11 | `propose-with-permission-and-role` |
 | `commands/propose-without-permission` | A credential that can only read cannot propose | rules CM12 | `propose-with-permission-and-role` |
 | `commands/propose-without-role` | The permission without a propose role on the channel is refused | rules CM12 | `propose-with-permission-and-role` |
-| `commands/push-bound-other-tenant-withheld` | Under multi, a push bound to another tenant is withheld | rules CM19, CM6 | `push-bound-own-tenant-under-multi` |
-| `commands/push-bound-own-tenant-under-multi` | Under multi, a push bound to the command's own tenant is sent | rules CM19 |  |
-| `commands/push-bound-sent-under-multi` | Under multi, a push inside a request bound to the command's tenant is sent | rules CM19 | `push-unbound-withheld-under-multi` |
-| `commands/push-unbound-sent-under-single` | Under single, the one tenant is always bound and the push is sent | rules CM19, CM18 |  |
-| `commands/push-unbound-withheld-under-multi` | Under multi, a push with no tenant bound is withheld and fetch delivers | rules CM19, CM18 | `push-unbound-sent-under-single` |
-| `commands/pushed-then-lapse-unconfirmed` | A command handed to a push and then losing its destination is unconfirmed, and a report replaces it | rules CM2, CM9 |  |
 | `commands/read-other-tenant-404` | A command id read from another tenant is 404 | rules CM6 | `read-own-tenant` |
 | `commands/read-own-tenant` | A command id read on its own tenant is found | rules CM6 |  |
+| `commands/refetch-after-acknowledged-empty` | After the controller reports, a fetch no longer returns the command | rules CM26 | `fetch-reply-lost-refetch-delivers` |
+| `commands/refetch-after-expiry-empty` | A fetched command with no report is not returned at or after its expiry | rules CM26, CM3 | `fetch-reply-lost-refetch-delivers` |
 | `commands/reject-proposal` | A subject that may send the command rejects a proposal | rules CM14 |  |
 | `commands/reject-without-command-permission` | Rejecting needs api:commands:create | rules CM14 | `reject-proposal` |
 | `commands/report-after-final-refused` | A second outcome after a final state is refused | rules CM9 | `acknowledged-then-succeeded` |
-| `commands/report-after-undeliverable-refused` | A report after undeliverable is refused: the state is final | rules CM2, CM9 | `pushed-then-lapse-unconfirmed` |
+| `commands/report-after-undeliverable-refused` | A report after undeliverable is refused: the state is final | rules CM2, CM9 | `fetched-then-lapse-report-accepted` |
 | `commands/report-from-destination-accepted` | The destination's bound subject reports an outcome | rules CM7 |  |
 | `commands/report-from-other-subject-refused` | Another subject cannot report, even one that may send commands | rules CM7 | `report-from-destination-accepted` |
 | `commands/report-on-unconfirmed-after-expiry-accepted` | A report on a command unconfirmed at expiry is accepted and replaces it | rules CM3, CM9 |  |
@@ -469,7 +573,20 @@ and no instance enacts a command twice (CM21). CM20 has no case; CM17 has one, `
 | `commands/route-to-holder` | A command naming the product goes to the instance holding command-sink | rules CM1 |  |
 | `commands/route-undeclared-channel` | A channel no product declares has no destination | rules CM1 | `route-inferred-from-declaring-product` |
 | `commands/self-approval-refused` | The proposer cannot approve its own proposal | rules CM14 | `approve-by-other-subject` |
-| `commands/sent-and-fetched-are-not-success` | A push and a fetch are receipts, not outcomes | rules CM9, CM17 |  |
+| `commands/signal-and-fetch-are-not-success` | A signal and a fetch are not outcomes | rules CM9, CM17, CM27 |  |
+| `commands/signal-bound-other-tenant-withheld` | Under multi, a signal bound to another tenant is withheld | rules CM19, CM6 | `signal-bound-own-tenant-under-multi` |
+| `commands/signal-bound-own-tenant-under-multi` | Under multi, a signal bound to the command's own tenant is sent | rules CM19 |  |
+| `commands/signal-bound-sent-under-multi` | Under multi, a signal inside a request bound to the command's tenant is sent | rules CM19, CM27 | `signal-unbound-withheld-under-multi` |
+| `commands/signal-lost-fetch-delivers` | A lost signal delays a command and never loses it | rules CM27, CM29 |  |
+| `commands/signal-other-transport-offered` | A live transport in the other form is used when both sides name it | rules CM28, CM27 |  |
+| `commands/signal-platform-push-no-tenant-credential` | Without the tenant's own credential no platform push is sent, whatever the deployment holds | rules CM20, CM18 | `signal-platform-push-tenant-credential` |
+| `commands/signal-platform-push-tenant-credential` | A platform push is a signal sent with the tenant's own credential | rules CM20, CM27 |  |
+| `commands/signal-to-destination-only` | A signal goes to the command's destination only, and carries nothing | rules CM27 |  |
+| `commands/signal-transport-not-offered` | A live transport the hub does not list carries no signal | rules CM28 | `signal-other-transport-offered` |
+| `commands/signal-unbound-sent-under-single` | Under single, the one tenant is always bound and the signal is sent | rules CM19, CM27 |  |
+| `commands/signal-unbound-withheld-under-multi` | Under multi, a signal with no tenant bound is withheld and fetch delivers | rules CM19, CM18 | `signal-unbound-sent-under-single` |
+| `commands/signal-without-live-transport` | A destination that uses no live transport gets no signal and still fetches | rules CM28, CM18 | `signal-unbound-sent-under-single` |
+| `commands/signalled-then-lapse-undeliverable` | A signalled command whose destination lapses before fetching is undeliverable | rules CM2, CM27, CM9 | `fetched-then-lapse-report-accepted` |
 | `commands/undeliverable-not-rerouted` | A destination that stops holding before fetching makes the command undeliverable | rules CM2 | `fetched-before-holder-changes` |
 | `commands/withdraw-by-other-subject` | Only the proposer may withdraw | rules CM14 | `withdraw-by-proposer` |
 | `commands/withdraw-by-person` | The person withdraws an agent's proposal | rules CM14 | `withdraw-by-other-subject` |

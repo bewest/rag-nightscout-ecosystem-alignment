@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 256 |
-| runnable gates | 318 |
+| items | 257 |
+| runnable gates | 321 |
 | explicit `no-gate:` markers | 279 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 279 of the 597 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 279 of the 600 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -49,7 +49,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 87 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 12 | RT-0, T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164 |
-| `done` | 38 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
+| `done` | 39 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
 | `answered` | 2 | RT-D3, RT-PROPAGATION |
@@ -7810,7 +7810,7 @@ flag rule: versioning policy section 5.7.
 
 ## Controller registration and intent observability
 
-`parcel: platform` &mdash; 32 items
+`parcel: platform` &mdash; 33 items
 
 D18 (maintainer, 2026-10-09): two-tier controller registration - well-known
 declarations for backwards compatibility, controller-owned typed registrations
@@ -7839,6 +7839,7 @@ reproduced ones.
 | `SPEC-PLANS` | Plans: a recurring intent proposed with elements, approved in parts, held by the controller and mirrored read-only by the hub | `done` | `docs/plans-2026-10-18` | n/a | 3 run |
 | `SPEC-COMPAT-APPS` | One table of every listed app against every layer: today's behaviour, and what changes with a newer hub | `done` | `docs/compat-apps-2026-10-18` | n/a | 3 run |
 | `SPEC-DEV-GUIDES` | Two developer guides: adding a setting in a controller's next release, and adding a new controller | `done` | `docs/dev-guides-2026-10-18` | n/a | 2 run |
+| `SPEC-CMD-DELIVERY` | How a command reaches its controller: paths, the capability member, a fetch-now signal and the fetch bound | `done` | `spec/command-delivery-2026-10-18` | n/a | 3 run |
 | `SPEC-REG-MIGRATE` | Registration state across a single-tenant site's move into a tenant, and back | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `HUB-REG-NOCTURNE` | Nocturne: propose the registration grammar and negotiation as a shared contract, with the hub active-state evidence | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `PROPOSAL-REG-CONTROLLERS` | Open-source AID controllers: propose registration, instances and negotiation, with pre-filled declarations | `not-started` | `main` | n/a | 0 run + 1 no-gate |
@@ -8444,6 +8445,41 @@ reproduced ones.
 - `specs/sync/registrations/fixtures/example-testcontroller.yaml`
 
 **Notes.** The maintainer asked for this item on 2026-10-18, after the compatibility table, so each guide can say what an older app sees. Written 2026-10-18 as docs/30-design/platform/guides/add-a-setting.md (21 steps) and new- controller.md (52 steps), every example generated from a case by tools/nsschema/guide_examples.py, with C4 context and container drawings (tools/structure-diagrams/inputs/3-guide-*.yaml). Each guide ends with the steps no case shows: typed settings fields, the typed write route and body, reading a typed record back, projecting an extension; and for commands, a capability member, request paths for fetch, report and cancel, a fetch cadence, a socket event for a command, and the effect record in an outcome report. The example fixture's override kind declares no acceptsFromHub, so its command-sink claim would be refused; the guide shows the declaration from a case.
+
+### `SPEC-CMD-DELIVERY` &mdash; How a command reaches its controller: paths, the capability member, a fetch-now signal and the fetch bound
+
+| | |
+|---|---|
+| state (claimed) | `done` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `spec/command-delivery-2026-10-18` |
+| base | `main@0b0d150f` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `SPEC-DEV-GUIDES` |
+
+**Blast radius.** Contributor-facing specification and its reference model: commands CM17-CM21 reworded and CM26-CM32 added, registration §4 gains the commands member, sync- transport gains T16, the sent state is removed, 152 command cases. Ships nothing.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** documentation in this repository; ships nothing
+
+**Gates.**
+
+- `[unit]` `python3 -m pytest -q tools/nsschema/test_commands.py tools/nsschema/prototypes/test_effect_link.py`
+  - FAILS when the reference model disagrees with a case's expected block: a signal that carries a payload, hash or id, a signal sent outside a bound request under multi, an outstanding list without fetch bounds, a refetch that skips a fetched unreported command; or when the effect-link prototype's measured table differs.
+- `[static]` `python3 -m tools.nsschema.spec_cases commands --check`
+  - FAILS when the commands case table differs from the cases.
+- `[static]` `node tools/queue/gates/platform-spec.js commands`
+  - FAILS on narration, an undefined check or a stale count in commands.md.
+
+**Evidence.**
+
+- `docs/30-design/platform/spec/commands.md`
+- `docs/30-design/platform/effect-link-prototype-2026-10-18.md`
+
+**Notes.** The maintainer decided on 2026-10-18, from the developer guides' gaps: /api/v4 paths and a commands capability member; live delivery is a fetch-now signal only; the fetch bound is one cycle unless the controller declares a tighter one, with live transports in an open vocabulary. Consequences decided with it: the sent state is removed and a fetch returns a command until it is reported or expires (CM26). The effect link (CM7) is prototyped, not decided (commands §9 item 9).
 
 ### `SPEC-REG-MIGRATE` &mdash; Registration state across a single-tenant site's move into a tenant, and back
 

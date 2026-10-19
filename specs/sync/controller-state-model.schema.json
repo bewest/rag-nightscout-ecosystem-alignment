@@ -538,14 +538,15 @@
            "apns",
            "sms",
            "nightscout-settings",
-           "nightscout-treatment"
+           "nightscout-treatment",
+           "nightscout-commands"
           ]
          },
          {
           "$ref": "#/$defs/otherTerm"
          }
         ],
-        "description": "Open vocabulary (D18 addendum rule 3): a transport outside the shared list is written as `{value: other, controllerTerm: <term>}`; a bare unknown string is rejected."
+        "description": "`nightscout-commands`: the hub's command record, fetched by the controller (commands CM18, CM26). Open vocabulary (D18 addendum rule 3): a transport outside the shared list is written as `{value: other, controllerTerm: <term>}`; a bare unknown string is rejected."
        },
        "availability": {
         "$ref": "#/$defs/availability"
@@ -596,6 +597,30 @@
            }
           ]
          }
+        }
+       },
+       "fetchIntervalSeconds": {
+        "type": "integer",
+        "minimum": 1,
+        "description": "On a `nightscout-commands` entry: a fetch bound tighter than one cycle (commands CM29). Absent: once per cycle, `cadence.nominalSeconds` deferred by at most `cadence.maxDeferralSeconds`."
+       },
+       "liveTransports": {
+        "type": "array",
+        "uniqueItems": true,
+        "description": "On a `nightscout-commands` entry: the transports the controller listens on for fetch-now signals, in its order of preference (commands CM27, CM28). Open vocabulary: `socket`, `apns`, `fcm`, or `{value: other, controllerTerm}`. Absent or empty: the controller fetches on its cadence only.",
+        "items": {
+         "anyOf": [
+          {
+           "enum": [
+            "socket",
+            "apns",
+            "fcm"
+           ]
+          },
+          {
+           "$ref": "#/$defs/otherTerm"
+          }
+         ]
         }
        },
        "evidence": {

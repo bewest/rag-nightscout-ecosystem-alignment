@@ -170,6 +170,7 @@ expected:
     commands:
     - c2
     dosesSince: []
+    destinations: {}
   commands:
     c1:
       state: succeeded

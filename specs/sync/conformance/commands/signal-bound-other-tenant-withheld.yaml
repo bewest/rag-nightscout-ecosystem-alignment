@@ -1,12 +1,13 @@
 # Synthetic. SPEC-REG-COMMANDS; commands §7. Times are seconds; expectations authored by hand.
-id: push-unbound-sent-under-single
-title: Under single, the one tenant is always bound and the push is sent
+id: signal-bound-other-tenant-withheld
+title: Under multi, a signal bound to another tenant is withheld
 rules:
 - CM19
-- CM18
-description: 'Control for push-unbound-withheld-under-multi: the same calls under single, where the push
-  is bound to the one tenant.'
-mode: single
+- CM6
+description: c1 is on tenant A; a signal from a request bound to tenant B is not sent and c1 stays pending
+  until fetched.
+control: signal-bound-own-tenant-under-multi
+mode: multi
 maxExpirySeconds: 3600
 instances:
   i-ctl-a:
@@ -19,6 +20,8 @@ instances:
       override:
       - 0
       - null
+    liveTransports:
+    - socket
 declares:
   A:
     override:
@@ -43,10 +46,9 @@ calls:
     preset: example
   expiresAt: 600
 - at: 11
-  kind: push
-  bound: null
+  kind: signal
+  bound: B
   command: c1
-  via: socket
 - at: 12
   kind: read
   tenant: A
@@ -56,23 +58,19 @@ calls:
   tenant: A
   subject: s-ctl-a
   instance: i-ctl-a
-- at: 25
-  kind: read
-  tenant: A
-  command: c1
 expected:
   calls:
   - status: 201
     commandId: c1
     state: pending
-  - sent: true
+    fetchWithinSeconds: 30
+  - signalled: false
+    reason: withheld
   - status: 200
-    state: sent
+    state: pending
   - status: 200
     commands:
     - c1
-  - status: 200
-    state: fetched
   commands:
     c1:
       state: fetched

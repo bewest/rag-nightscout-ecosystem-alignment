@@ -5,10 +5,9 @@ rules:
 - CM21
 - CM4
 - CM24
-description: A sender sends the same payload twice without a requestId (CM4); the
-  controller enacts each commandId once, so both are enacted. The outstanding list,
-  not CM21, is what shows the sender the first.
-control: enact-push-then-fetch-once
+description: A sender sends the same payload twice without a requestId (CM4); the controller enacts each
+  commandId once, so both are enacted. The outstanding list, not CM21, is what shows the sender the first.
+control: enact-refetched-once
 mode: single
 maxExpirySeconds: 3600
 instances:
@@ -79,6 +78,7 @@ expected:
   - status: 201
     commandId: c1
     state: pending
+    fetchWithinSeconds: 30
   - status: 201
     commandId: c2
     state: pending
@@ -87,6 +87,7 @@ expected:
       commands:
       - c1
       dosesSince: []
+    fetchWithinSeconds: 30
   - status: 200
     commands:
     - c1

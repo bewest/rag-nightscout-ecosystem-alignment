@@ -1,0 +1,84 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §7. Times are seconds; expectations authored by hand.
+id: signal-lost-fetch-delivers
+title: A lost signal delays a command and never loses it
+rules:
+- CM27
+- CM29
+description: The signal at 10 never reaches the controller. Its next cycle's fetch, within its fetch bound
+  of 30 s, returns c1.
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+    liveTransports:
+    - socket
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 600
+- at: 10
+  kind: signal
+  bound: A
+  command: c1
+- at: 30
+  kind: read
+  tenant: A
+  command: c1
+- at: 38
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+- at: 39
+  kind: read
+  tenant: A
+  command: c1
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+    fetchWithinSeconds: 30
+  - signalled: true
+    to: i-ctl-a
+    via: socket
+    carries: {}
+  - status: 200
+    state: pending
+  - status: 200
+    commands:
+    - c1
+  - status: 200
+    state: fetched
+  commands:
+    c1:
+      state: fetched
+      destination: i-ctl-a

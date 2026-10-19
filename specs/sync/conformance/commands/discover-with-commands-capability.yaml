@@ -1,0 +1,75 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §7. Times are seconds; expectations authored by hand.
+id: discover-with-commands-capability
+title: 'A hub with a commands member: the controller fetches within its bound and listens live'
+rules:
+- CM31
+- CM28
+- CM29
+description: The capability document has a commands member listing the socket. The controller fetches
+  within its 30 s bound, listens on the socket, and keeps its own platform push path.
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+    liveTransports:
+    - socket
+    ownTransports:
+    - apns
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 5
+  kind: discover
+  instance: i-ctl-a
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 600
+- at: 20
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+expected:
+  calls:
+  - hubPath: true
+    fetchWithinSeconds: 30
+    live: socket
+    keeps:
+    - apns
+  - status: 201
+    commandId: c1
+    state: pending
+    fetchWithinSeconds: 30
+  - status: 200
+    commands:
+    - c1
+  commands:
+    c1:
+      state: fetched
+      destination: i-ctl-a

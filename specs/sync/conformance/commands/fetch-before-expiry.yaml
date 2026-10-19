@@ -13,6 +13,8 @@ instances:
     product: ControllerA
     definitionId: sha256:d-a
     simulated: false
+    liveTransports:
+    - socket
     sinks:
       override:
       - 0
@@ -41,10 +43,9 @@ calls:
     preset: example
   expiresAt: 100
 - at: 40
-  kind: push
+  kind: signal
   bound: A
   command: c1
-  via: socket
 - at: 50
   kind: fetch
   tenant: A
@@ -59,7 +60,11 @@ expected:
   - status: 201
     commandId: c1
     state: pending
-  - sent: true
+    fetchWithinSeconds: 30
+  - signalled: true
+    to: i-ctl-a
+    via: socket
+    carries: {}
   - status: 200
     commands:
     - c1

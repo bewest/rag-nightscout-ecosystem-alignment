@@ -86,7 +86,7 @@ and sections; *status* is `covered` (a rule and a case), `uncased` (a rule, no c
 ### 4.1 A remote command
 
 [Commands §2, §4, §5 and §7](commands.md#2-where-a-command-goes). The sender sends a command
-(CA-CMD-SEND), or would cancel one (CA-CMD-CANCEL, not specified); the hub records it and delivers it by push or fetch (CA-CMD-DELIVER); the
+(CA-CMD-SEND), or would cancel one (CA-CMD-CANCEL, not specified); the hub records it and delivers it in a fetch, which a fetch-now signal may prompt (CA-CMD-DELIVER); the
 controller validates and enacts it (CA-CMD-ENACT) and reports an outcome, which the hub shows the
 sender as the command's state (FB-CMD-STATE). The sender's process model is the command's state;
 the hub's is its record; only the controller knows what the pump did.
@@ -104,22 +104,22 @@ flowchart LR
 <!-- BEGIN GENERATED: stpa-command -->
 | id | type | unsafe control action or feedback | hazards | severity | prevented by | status |
 |---|---|---|---|---|---|---|
-| UCA-CMD-001 | provided | A sender sends a second command for the same intent while the first is pending, sent, fetched or unconfirmed, and both are enacted. | HAZ-1 | S4 | CM3, CM4, CM24 | gap: commands §9 |
+| UCA-CMD-001 | provided | A sender sends a second command for the same intent while the first is pending, fetched or unconfirmed, and both are enacted. | HAZ-1 | S4 | CM3, CM4, CM24 | gap: commands §9 |
 | UCA-CMD-002 | provided | A retry of one request is treated as a new command. | HAZ-1 | S4 | CM4 | covered |
 | UCA-CMD-003 | timing | A command is enacted long after it was sent, when the sender's reason for it no longer holds. | HAZ-1 | S3 | CM3, CM10 | covered |
 | UCA-CMD-004 | provided | A command reaches an instance other than the live device holder of the channel's command sink, such as a lapsed former holder, the newest instance, or a simulator. | HAZ-1 | S4 | commands §2, CM1, CM2 | covered |
-| UCA-CMD-005 | provided | A command reaches an instance on another tenant, or a push for one tenant is sent with another tenant's or the deployment's credentials. | HAZ-4, HAZ-1 | S4 | CM6, CM19, CM20 | covered |
-| UCA-CMD-006 | provided | One command is delivered more than once, by a push and again by a fetch that returns sent commands, and the controller enacts it each time. | HAZ-1 | S4 | CM18, CM21 | covered |
+| UCA-CMD-005 | provided | A command reaches an instance on another tenant, or a signal for one tenant is sent outside a request bound to it or with another tenant's or the deployment's push credentials. | HAZ-4, HAZ-1 | S4 | CM6, CM19, CM20 | covered |
+| UCA-CMD-006 | provided | One command is delivered more than once, by fetches that return it until the controller reports (CM26), and the controller enacts it each time. | HAZ-1 | S4 | CM18, CM21, CM26 | covered |
 | UCA-CMD-007 | provided | The payload a controller receives differs from the one the sender sent. | HAZ-1 | S4 | CM5, CM10 | covered |
-| UCA-CMD-008 | not-provided | A push is lost and the destination never receives the command, while the sender reads sent as delivered. | HAZ-2, HAZ-3 | S2 | CM17, CM18 | covered |
-| UCA-CMD-009 | timing | A command is sent or fetched at or after its expiry. | HAZ-1 | S3 | CM3 | covered |
+| UCA-CMD-008 | not-provided | A fetch-now signal or a fetch reply is lost and the destination never receives the command, or the sender reads the signal as delivery. | HAZ-2, HAZ-3 | S2 | CM17, CM26, CM27 | covered |
+| UCA-CMD-009 | timing | A command is signalled or fetched at or after its expiry. | HAZ-1 | S3 | CM3 | covered |
 | UCA-CMD-010 | provided | A controller enacts a remote command that its own limits, or a recent local action, should have refused. | HAZ-1 | S4 | CM5, CM10 | controller |
 | UCA-CMD-011 | provided | A controller enacts part of a command, such as storing a meal's carbs and refusing its bolus, and reports one final state. | HAZ-3 | S3 | CM9 | gap: commands §9 |
 | UCA-CMD-012 | timing | A controller enacts a command past its expiry because the hub's clock and its own differ. | HAZ-1 | S3 | CM10 | covered |
 | UCA-CMD-013 | not-provided | A controller does not enact a command it reported as succeeded, such as a bolus the pump later fails. | HAZ-2, HAZ-3 | S3 | CM9 | gap: commands §9 |
 | FB-CMD-001 | incorrect | A command that was handed over reads expired or undeliverable, and the sender sends it again. | HAZ-3, HAZ-1 | S4 | CM2, CM3 | covered |
 | FB-CMD-002 | incorrect | A command reads succeeded because a subject other than the destination's bound subject reported it. | HAZ-3 | S3 | CM7 | covered |
-| FB-CMD-003 | incorrect | A command reads as done because it was sent or fetched. | HAZ-3 | S3 | CM7, CM17 | covered |
+| FB-CMD-003 | incorrect | A command reads as done because it was signalled or fetched. | HAZ-3 | S3 | CM7, CM17 | covered |
 | FB-CMD-004 | absent | The sender learns nothing after the hub accepts a command, with no record of it and no outcome. | HAZ-3, HAZ-5 | S3 | CM1, CM7 | covered |
 | UCA-CMD-014 | provided | A process other than the destination that holds its credential, such as another app sharing API_SECRET under single, fetches the command, which moves it to fetched and out of the controller's next fetch, or reports its outcome. | HAZ-2, HAZ-3 | S3 | CM7, CM18 | gap: commands §9 |
 | UCA-CMD-015 | not-provided | A sender cannot cancel a pending command after the reason for it went away, such as a meal not eaten. | HAZ-1 | S3 | CM3, CM25 | covered |
@@ -333,7 +333,7 @@ vocabulary says what each one has to get right.
 | Instance leases | a heartbeat: each renewal is feedback that the instance is alive; a lapse removes its roles | a lease is minutes long, longer than moving a pump to another phone takes, so a command sent in that window reaches the old phone; what holds then is routing once, the old phone's controller reporting failed, and the owner's transfer-role; a lapsed holder is never a destination | [registration §8](registration.md#8-instances), UCA-ROUTE-005, UCA-ROUTE-008 |
 | The state version | optimistic concurrency, like an etag, on the hub's record of what a controller reported | it is a sensor reading with a lag of one upload cycle; it covers intents, not doses or carbs; commands approved and not yet enacted are outside it | [A12](state-intent.md#61-rules), CM15, UCA-PROP-007, UCA-PROP-012, FB-STATE-006 |
 | The command states | the hub's model of an actuator it cannot see | a state must never say less than the hub knows: a command that was handed over is `unconfirmed`, never `expired`, because a sender acts on the state | [commands §4](commands.md#4-the-command-record-proposed), FB-CMD-001 |
-| Delivery by push and fetch | two actuators for one action | at least once means duplicates; the receiving controller decides each command once (CM21) | CM18, CM21, UCA-CMD-006 |
+| Delivery by fetch, prompted by a signal or by the cadence | one actuator, two triggers | a fetch returns a command until it is reported, so delivery is at least once and duplicates are expected; the receiving controller decides each command once (CM21) | CM18, CM21, CM26, CM27, UCA-CMD-006 |
 | Prepare and commit | feedback before action: the controller computes and caps a dose, then a second message commits it, as AndroidAPS `dev` does | a controller check before approval would give the approver the controller's own model, not the hub's | [commands §9](commands.md#9-open) item 2 |
 | Several controllers of one pump | the person, the algorithm, caregivers and agents all act on one controlled process | conflicting actions are resolved by one arbiter, the controller; the hub reports overlaps and never resolves them | [S1](state-intent.md#2-rules), [A9](state-intent.md#61-rules), FB-STATE-003 |
 | Reconciliation (from Kubernetes) | a controller drives its registration and instances toward what it declares; the hub records what it granted | reconciliation stops at the hub's records: the hub never reconciles therapy toward a desired state | [platform index](../README.md#ideas-borrowed-from-kubernetes), D18 |

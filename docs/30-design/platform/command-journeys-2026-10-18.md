@@ -131,9 +131,9 @@ sequenceDiagram
   report and shows the accepted and declined elements; a redelivered copy of the command is not
   stored twice.
 - **Watch for:** the mirror showing the proposal's content rather than what the controller holds;
-  the plan stored again after a push and a fetch.
+  the plan stored again after two fetches before its report.
 - **Contributor:** CM1, CM7–CM10, CM18, CM21 (`enact-identical-payload-succeeds`,
-  `enact-hash-mismatch-refused`, `enact-push-then-fetch-once`); [plans PN8, PN9,
+  `enact-hash-mismatch-refused`, `enact-refetched-once`); [plans PN8, PN9,
   PN11](spec/plans.md#5-the-controller-holds-the-plan-the-hub-mirrors-it-proposed) (`plan-held-active`,
   `plan-refused-by-controller`, `plan-command-expires-at-ends`): the hub keeps the mirror and moves
   the controller's states only on the controller's reports; UCA-CMD-006, UCA-PROP-008. Not
@@ -341,16 +341,17 @@ span intent, and no controller declares accepting one as a command.
   `outstanding-excludes-final`); UCA-SYNC-SERVE-004, UCA-CMD-001.
 
 **C1.2 · moment · Sends a correction bolus** with a `requestId` and a short expiry. **Working:**
-one command, `pending` then `sent` or `fetched`; a retried send returns the first.
+one command, `pending` then `fetched`; a retried send returns the first.
 **Contributor:** CM1–CM5 (`request-id-same-payload-returns-first`, `expiry-required`).
 
 **C1.3 · algorithm · Enacted once, after the controller's checks.**
-- **Do:** the controller receives the command by push and again by fetch, checks hash, expiry and
+- **Do:** the controller receives the command by fetch, after a fetch-now signal or on its cycle,
+  and again by its next fetch before it reports; it checks hash, expiry and
   its own limits and recent doses, and enacts it once. Today Trio refuses a remote bolus when
   boluses since the command's timestamp reach a fifth of the request; Loop's remote bolus checks the
   amount and the one-time password and no doses since.
 - **Working:** one bolus; the second delivery is recognised by `commandId`.
-- **Contributor:** CM10, CM18, CM21 (`enact-push-then-fetch-once`, `enact-after-restart-once`),
+- **Contributor:** CM10, CM18, CM21, CM26 (`enact-refetched-once`, `enact-after-restart-once`),
   CM23 (`enact-dose-refused-doses-since`); UCA-CMD-006, UCA-CMD-010.
 
 **C1.4 · moment · The outcome.** The controller reports `succeeded`; later the pump fails the
@@ -391,7 +392,7 @@ sequenceDiagram
 **C2.2 · moment · The meal is refused at the table.**
 - **Do:** the caregiver cancels before the phone has fetched it.
 - **Working:** the command reads `cancelled`, final, never handed over.
-- **Watch for:** a cancel reported as done after the command was `sent`; there it is only a request.
+- **Watch for:** a cancel reported as done after the command was `fetched`; there it is only a request.
 - **Contributor:** CM2, CM3, [CM25](spec/commands.md#4-the-command-record-proposed) (`cancel-pending-is-final`,
   `cancel-after-fetch-is-a-request`); UCA-CMD-015.
 

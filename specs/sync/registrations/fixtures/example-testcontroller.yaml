@@ -24,6 +24,13 @@
 #                     and durationUnit
 #   initiators        stateSpans[0].initiators.values mixes the controller's
 #                     strings with {value: other, controllerTerm}
+#   acceptance        stateSpans[0].acceptsFromHub takes commands (S10), so an
+#                     instance may hold command-sink on the override slot
+#
+# Commands (docs/30-design/platform/spec/commands.md CM28, CM29):
+#   hub path          commands[1] is the hub's command record
+#                     (nightscout-commands), with a declared fetch bound and
+#                     the live transports it listens on, one in the other form
 apiVersion: nightscout.dev/sync/v1
 kind: ControllerStateModel
 metadata:
@@ -62,6 +69,10 @@ spec:
     futureSpanMember: true
     slot: override
     exclusiveWithinSlot: true
+    acceptsFromHub:
+      channels:
+      - command
+      default: false
     states:
     - scheduled
     - active
@@ -137,6 +148,14 @@ spec:
       controllerTerm: example-relay
     hubInPath: optional
     availability: experimental
+  - transport: nightscout-commands
+    hubInPath: "yes"
+    availability: experimental
+    fetchIntervalSeconds: 60
+    liveTransports:
+    - socket
+    - value: other
+      controllerTerm: example-broker
   replayInputs:
   - input: exampleSensitivityScale
     path: example.sensitivityScale

@@ -1,12 +1,14 @@
 # Synthetic. SPEC-REG-COMMANDS; commands §7. Times are seconds; expectations authored by hand.
-id: push-bound-sent-under-multi
-title: Under multi, a push inside a request bound to the command's tenant is sent
+id: expiry-within-fetch-bound-flagged
+title: A command that expires within its destination's fetch bound is accepted and flagged
 rules:
-- CM19
-description: The push is made inside the request that accepted the command, bound to A; it is sent. A
-  later push after the fetch is not-pending.
-control: push-unbound-withheld-under-multi
-mode: multi
+- CM30
+- CM3
+- CM5
+description: c1 expires 120 s after it is sent, and i-ctl-a may go 360 s between fetches. The hub accepts
+  it unchanged, with mayExpireUnfetched in the reply and on the record; never fetched, it ends expired.
+control: expiry-beyond-fetch-bound-not-flagged
+mode: single
 maxExpirySeconds: 3600
 instances:
   i-ctl-a:
@@ -19,6 +21,11 @@ instances:
       override:
       - 0
       - null
+    liveTransports:
+    - socket
+    cadence:
+      nominalSeconds: 300
+      maxDeferralSeconds: 60
 declares:
   A:
     override:
@@ -41,34 +48,22 @@ calls:
   payload:
     action: start
     preset: example
-  expiresAt: 600
-- at: 10
-  kind: push
-  bound: A
-  command: c1
-  via: socket
-- at: 20
-  kind: fetch
+  expiresAt: 130
+- at: 200
+  kind: read
   tenant: A
-  subject: s-ctl-a
-  instance: i-ctl-a
-- at: 25
-  kind: push
-  bound: A
   command: c1
-  via: socket
 expected:
   calls:
   - status: 201
     commandId: c1
     state: pending
-  - sent: true
+    fetchWithinSeconds: 360
+    mayExpireUnfetched: true
   - status: 200
-    commands:
-    - c1
-  - sent: false
-    reason: not-pending
+    state: expired
   commands:
     c1:
-      state: fetched
+      state: expired
       destination: i-ctl-a
+      mayExpireUnfetched: true

@@ -1,13 +1,15 @@
-# Synthetic. SPEC-REG-COMMANDS; commands §4. Times are seconds; expectations authored by hand.
-id: sent-and-fetched-are-not-success
-title: A push and a fetch are receipts, not outcomes
+# Synthetic. SPEC-REG-COMMANDS; commands §7. Times are seconds; expectations authored by hand.
+id: fetch-bound-hub-minimum
+title: A declared fetch interval under the hub's minimum is raised to it
 rules:
-- CM9
-- CM17
-description: c1 is pushed and fetched and no outcome is reported; its state at the end is fetched, never
-  succeeded.
+- CM29
+- CM30
+description: i-ctl-a declares fetchIntervalSeconds 5 and the hub's minFetchIntervalSeconds is 15; the
+  fetch bound shown is 15 s.
+control: fetch-bound-declared
 mode: single
 maxExpirySeconds: 3600
+minFetchIntervalSeconds: 15
 instances:
   i-ctl-a:
     tenant: A
@@ -19,6 +21,12 @@ instances:
       override:
       - 0
       - null
+    liveTransports:
+    - socket
+    cadence:
+      nominalSeconds: 300
+      maxDeferralSeconds: 60
+    fetchIntervalSeconds: 5
 declares:
   A:
     override:
@@ -43,38 +51,25 @@ calls:
     preset: example
   expiresAt: 600
 - at: 11
-  kind: push
-  bound: A
-  command: c1
-  via: socket
-- at: 12
-  kind: read
+  kind: outstanding
   tenant: A
-  command: c1
-- at: 15
-  kind: fetch
-  tenant: A
-  subject: s-ctl-a
-  instance: i-ctl-a
-- at: 20
-  kind: read
-  tenant: A
-  command: c1
-end: 500
+  subject: s-care
+  channel: override
 expected:
   calls:
   - status: 201
     commandId: c1
     state: pending
-  - sent: true
+    fetchWithinSeconds: 15
   - status: 200
-    state: sent
-  - status: 200
+    proposals: []
     commands:
     - c1
-  - status: 200
-    state: fetched
+    dosesSince: []
+    destinations:
+      i-ctl-a:
+        fetchWithinSeconds: 15
   commands:
     c1:
-      state: fetched
+      state: pending
       destination: i-ctl-a

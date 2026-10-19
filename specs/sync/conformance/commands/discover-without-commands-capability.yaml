@@ -1,0 +1,65 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §7. Times are seconds; expectations authored by hand.
+id: discover-without-commands-capability
+title: A hub with no commands member offers no command path; the controller keeps its own
+rules:
+- CM31
+description: The capability document has no commands member. The controller plans no hub path and keeps
+  its platform push from senders it pairs with; the hub answers a command and a fetch 404.
+control: discover-with-commands-capability
+mode: single
+maxExpirySeconds: 3600
+commandsOffered: false
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+    liveTransports:
+    - socket
+    ownTransports:
+    - apns
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 5
+  kind: discover
+  instance: i-ctl-a
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 600
+- at: 20
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+expected:
+  calls:
+  - hubPath: false
+    keeps:
+    - apns
+  - status: 404
+  - status: 404
+  commands: {}

@@ -41,7 +41,7 @@ loops:
     actions:
       CA-CMD-SEND: {by: sender, to: hub, text: send a command for a channel}
       CA-CMD-CANCEL: {by: sender, to: hub, text: cancel a command that is no longer wanted}
-      CA-CMD-DELIVER: {by: hub, to: controller, text: deliver a command by push or in a fetch}
+      CA-CMD-DELIVER: {by: hub, to: controller, text: deliver a command in a fetch, after a fetch-now signal or on the controller's own cadence}
       CA-CMD-ENACT: {by: controller, to: pump, text: enact a delivered command}
     feedback:
       FB-CMD-STATE: {from: hub, to: sender, text: the command's state and outcome}
@@ -178,7 +178,7 @@ ucas:
   - id: UCA-CMD-001
     action: CA-CMD-SEND
     type: provided
-    text: A sender sends a second command for the same intent while the first is pending, sent, fetched or unconfirmed, and both are enacted.
+    text: A sender sends a second command for the same intent while the first is pending, fetched or unconfirmed, and both are enacted.
     hazards: [HAZ-1]
     severity: S4
     constraints: [CM3, CM4, CM24]
@@ -215,22 +215,22 @@ ucas:
   - id: UCA-CMD-005
     action: CA-CMD-DELIVER
     type: provided
-    text: A command reaches an instance on another tenant, or a push for one tenant is sent with another tenant's or the deployment's credentials.
+    text: A command reaches an instance on another tenant, or a signal for one tenant is sent outside a request bound to it or with another tenant's or the deployment's push credentials.
     hazards: [HAZ-4, HAZ-1]
     severity: S4
     constraints: [CM6, CM19, CM20]
     status: covered
-    verification: [commands/route-other-tenant-holder-not-used, commands/fetch-instance-other-tenant-404, commands/push-unbound-withheld-under-multi, commands/push-bound-other-tenant-withheld, tools/nsschema/test_commands.py::test_never_another_tenant, tools/nsschema/test_commands.py::test_never_pushed_unbound]
+    verification: [commands/route-other-tenant-holder-not-used, commands/fetch-instance-other-tenant-404, commands/signal-unbound-withheld-under-multi, commands/signal-bound-other-tenant-withheld, commands/signal-platform-push-no-tenant-credential, tools/nsschema/test_commands.py::test_never_another_tenant, tools/nsschema/test_commands.py::test_never_signalled_unbound]
   - id: UCA-CMD-006
     action: CA-CMD-DELIVER
     type: provided
-    text: One command is delivered more than once, by a push and again by a fetch that returns sent commands, and the controller enacts it each time.
+    text: One command is delivered more than once, by fetches that return it until the controller reports (CM26), and the controller enacts it each time.
     hazards: [HAZ-1]
     severity: S4
-    constraints: [CM18, CM21]
+    constraints: [CM18, CM21, CM26]
     status: covered
-    verification: [commands/enact-push-then-fetch-once, commands/enact-after-restart-once, commands/enact-refused-then-redelivered-ignored, tools/nsschema/test_commands.py::test_never_enacted_twice]
-    note: Delivery is at least once by design (CM18); CM21 makes the controller decide each commandId once, across restarts. Today's controllers meet it in different ways (commands §8).
+    verification: [commands/enact-refetched-once, commands/enact-after-restart-once, commands/enact-refused-then-redelivered-ignored, tools/nsschema/test_commands.py::test_never_enacted_twice]
+    note: Delivery is at least once by design (CM26); CM21 makes the controller decide each commandId once, across restarts. Today's controllers meet it in different ways (commands §8).
   - id: UCA-CMD-007
     action: CA-CMD-DELIVER
     type: provided
@@ -244,16 +244,16 @@ ucas:
   - id: UCA-CMD-008
     action: CA-CMD-DELIVER
     type: not-provided
-    text: A push is lost and the destination never receives the command, while the sender reads sent as delivered.
+    text: A fetch-now signal or a fetch reply is lost and the destination never receives the command, or the sender reads the signal as delivery.
     hazards: [HAZ-2, HAZ-3]
     severity: S2
-    constraints: [CM17, CM18]
+    constraints: [CM17, CM26, CM27]
     status: covered
-    verification: [commands/fetch-returns-own-commands, commands/sent-and-fetched-are-not-success]
+    verification: [commands/signal-lost-fetch-delivers, commands/fetch-reply-lost-refetch-delivers, commands/signal-and-fetch-are-not-success]
   - id: UCA-CMD-009
     action: CA-CMD-DELIVER
     type: timing
-    text: A command is sent or fetched at or after its expiry.
+    text: A command is signalled or fetched at or after its expiry.
     hazards: [HAZ-1]
     severity: S3
     constraints: [CM3]
@@ -304,7 +304,7 @@ ucas:
     severity: S4
     constraints: [CM2, CM3]
     status: covered
-    verification: [commands/fetched-then-expiry-unconfirmed, commands/pushed-then-lapse-unconfirmed, commands/report-on-unconfirmed-after-expiry-accepted]
+    verification: [commands/fetched-then-expiry-unconfirmed, commands/fetched-then-lapse-report-accepted, commands/report-on-unconfirmed-after-expiry-accepted]
   - id: FB-CMD-002
     action: FB-CMD-STATE
     type: incorrect
@@ -317,12 +317,12 @@ ucas:
   - id: FB-CMD-003
     action: FB-CMD-STATE
     type: incorrect
-    text: A command reads as done because it was sent or fetched.
+    text: A command reads as done because it was signalled or fetched.
     hazards: [HAZ-3]
     severity: S3
     constraints: [CM7, CM17]
     status: covered
-    verification: [commands/sent-and-fetched-are-not-success, commands/report-state-sent-invalid, commands/report-state-fetched-invalid]
+    verification: [commands/signal-and-fetch-are-not-success, commands/report-state-sent-invalid, commands/report-state-fetched-invalid]
   - id: FB-CMD-004
     action: FB-CMD-STATE
     type: absent

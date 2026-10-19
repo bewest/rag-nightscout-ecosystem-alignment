@@ -1,9 +1,12 @@
 # Synthetic. SPEC-REG-COMMANDS; commands §7. Times are seconds; expectations authored by hand.
-id: push-bound-own-tenant-under-multi
-title: Under multi, a push bound to the command's own tenant is sent
+id: signal-unbound-withheld-under-multi
+title: Under multi, a signal with no tenant bound is withheld and fetch delivers
 rules:
 - CM19
-description: 'Control for push-bound-other-tenant-withheld: the same calls with the push bound to A.'
+- CM18
+description: A signal from a context with no tenant bound (such as the load cycle) is not sent; c1 stays
+  pending until the destination fetches it.
+control: signal-unbound-sent-under-single
 mode: multi
 maxExpirySeconds: 3600
 instances:
@@ -17,21 +20,10 @@ instances:
       override:
       - 0
       - null
-  i-ctl-b:
-    tenant: B
-    subject: s-ctl-b
-    product: ControllerA
-    definitionId: sha256:d-b
-    simulated: false
-    sinks:
-      override:
-      - 0
-      - null
+    liveTransports:
+    - socket
 declares:
   A:
-    override:
-    - ControllerA
-  B:
     override:
     - ControllerA
 subjects:
@@ -41,9 +33,6 @@ subjects:
     - api:commands:create
   s-ctl-a:
     tenant: A
-    permissions: []
-  s-ctl-b:
-    tenant: B
     permissions: []
 calls:
 - at: 10
@@ -57,10 +46,9 @@ calls:
     preset: example
   expiresAt: 600
 - at: 11
-  kind: push
-  bound: A
+  kind: signal
+  bound: null
   command: c1
-  via: socket
 - at: 12
   kind: read
   tenant: A
@@ -70,17 +58,25 @@ calls:
   tenant: A
   subject: s-ctl-a
   instance: i-ctl-a
+- at: 25
+  kind: read
+  tenant: A
+  command: c1
 expected:
   calls:
   - status: 201
     commandId: c1
     state: pending
-  - sent: true
+    fetchWithinSeconds: 30
+  - signalled: false
+    reason: withheld
   - status: 200
-    state: sent
+    state: pending
   - status: 200
     commands:
     - c1
+  - status: 200
+    state: fetched
   commands:
     c1:
       state: fetched

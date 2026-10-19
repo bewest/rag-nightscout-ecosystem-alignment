@@ -99,6 +99,7 @@ tenant's registrations.
 | `wellKnown.slots`, `wellKnown.mappings[]` | the shared slot list (§9) and the catalogue mappings for older versions (§16) |
 | `submit.href`, `submit.tiers`, `submit.permissions` | where a controller-owned registration is submitted, and the permissions it needs; absent when the hub takes no submissions |
 | `instances` | present when the hub serves definitions and instances (§7–§8): `leaseSeconds` (at least 60), the instance id form (`uuid-v4`), the roles and channels it grants, and label bounds |
+| `commands` | present when the hub offers the command record ([commands CM31](commands.md#71-discovery-and-paths-proposed)): `href`, `fetch` (a URI template naming `{instanceId}`) and `proposals` when it takes proposals; `maxExpirySeconds` (CM3) and `maxPayloadBytes` (CM5); `liveTransports`, the transports it sends fetch-now signals on (CM28); and `minFetchIntervalSeconds` (CM29). Absent: a controller has no hub command path and keeps its own transports |
 
 The document is must-ignore like the grammar. Its vocabularies (horizon classes, availability,
 keywords, formats) are closed lists that match the grammar's.

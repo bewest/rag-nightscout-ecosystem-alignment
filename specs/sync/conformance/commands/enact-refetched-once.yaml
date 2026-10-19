@@ -1,0 +1,90 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §7. Times are seconds; expectations authored by hand.
+id: enact-refetched-once
+title: A command fetched twice before a report is enacted once
+rules:
+- CM21
+- CM26
+description: c1 is fetched and enacted; before the controller reports, its next fetch returns c1 again
+  (CM26). The controller answers the second delivery without enacting it.
+control: enact-identical-payload-succeeds
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - null
+    liveTransports:
+    - socket
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 100
+- at: 11
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+- at: 12
+  kind: enact
+  instance: i-ctl-a
+  command: c1
+  received:
+    action: start
+    preset: example
+- at: 20
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+- at: 21
+  kind: enact
+  instance: i-ctl-a
+  command: c1
+  received:
+    action: start
+    preset: example
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+    fetchWithinSeconds: 30
+  - status: 200
+    commands:
+    - c1
+  - state: succeeded
+  - status: 200
+    commands:
+    - c1
+  - state: ignored
+    reason: duplicate
+  commands:
+    c1:
+      state: fetched
+      destination: i-ctl-a

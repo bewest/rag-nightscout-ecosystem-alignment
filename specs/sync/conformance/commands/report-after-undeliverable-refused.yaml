@@ -4,9 +4,9 @@ title: 'A report after undeliverable is refused: the state is final'
 rules:
 - CM2
 - CM9
-description: Nothing is pushed or fetched before i-ctl-a loses command-sink at 20, so c1 is undeliverable,
+description: Nothing is fetched before i-ctl-a loses command-sink at 20, so c1 is undeliverable,
   a final state; a later report from i-ctl-a's subject is 409 already-final.
-control: pushed-then-lapse-unconfirmed
+control: fetched-then-lapse-report-accepted
 mode: single
 maxExpirySeconds: 3600
 instances:
@@ -62,6 +62,7 @@ expected:
   - status: 201
     commandId: c1
     state: pending
+    fetchWithinSeconds: 30
   - status: 200
     state: undeliverable
   - status: 409

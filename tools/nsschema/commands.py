@@ -1,12 +1,14 @@
 """commands.py — what a hub does with a command and a proposal (SPEC-REG-COMMANDS).
 
-A reference decision function for §2 and rules CM1-CM25 of
+A reference decision function for §2 and rules CM1-CM32 of
 docs/30-design/platform/spec/commands.md: routing to the holder of a device
 command sink on the command's own tenant, the command record and its states,
 outcomes reported by the destination only, proposals and approvals bound to
-one payload hash, and pushes sent only inside a request bound to the
-command's tenant. It checks the cases under specs/sync/conformance/commands/
-(format in FORMAT.md there); it is not a hub.
+one payload hash, fetch until reported, the destination's fetch bound, and
+fetch-now signals that carry nothing and are sent only to the destination,
+only inside a request bound to the command's tenant. It checks the cases
+under specs/sync/conformance/commands/ (format in FORMAT.md there); it is not
+a hub.
 
 Routing is given, not computed: each instance states the channels on which
 it holds a device command sink and over which interval.
@@ -16,7 +18,13 @@ import hashlib
 from nsschema.negotiate import canonical_json
 
 FINAL = ("succeeded", "failed", "refused", "not-routed", "undeliverable", "expired", "cancelled")
-HANDED_OVER = ("sent", "fetched")
+# CM26: a command a fetch returns; it is returned again until reported or expired.
+WAITING = ("pending", "fetched")
+# CM28: the live transports a hub may list; others are {value: other, controllerTerm}.
+PLATFORM_PUSH = ("apns", "fcm")
+# The cadence a case instance has when it states none: a case-format default for short
+# synthetic timelines, not a rule. The rule (CM29) is the registration's declared cycle.
+DEFAULT_CADENCE = {"nominalSeconds": 30, "maxDeferralSeconds": 0}
 CONTROLLER_STATES = ("acknowledged", "succeeded", "failed", "refused")
 REASONS = ("hash-mismatch", "expired", "not-accepted", "limit", "doses-since", "cancelled")
 
@@ -55,6 +63,21 @@ def _route(case, tenant, channel, product, at):
     return None, "no-command-destination"
 
 
+def _term(value):
+    return value["controllerTerm"] if isinstance(value, dict) else value
+
+
+def fetch_bound(case, inst):
+    """CM29: the longest the instance goes between fetches. Once per cycle
+    (nominalSeconds, deferred at most maxDeferralSeconds) unless it declares a
+    tighter fetchIntervalSeconds; never under the hub's minFetchIntervalSeconds."""
+    cadence = inst.get("cadence", DEFAULT_CADENCE)
+    cycle = cadence["nominalSeconds"] + cadence.get("maxDeferralSeconds", 0)
+    declared = inst.get("fetchIntervalSeconds")
+    bound = min(declared, cycle) if declared is not None else cycle
+    return max(bound, case.get("minFetchIntervalSeconds", 0))
+
+
 def _state_version(case, tenant, product, at):
     current = None
     for start, version in case.get("stateVersions", {}).get(tenant, {}).get(product, []):
@@ -84,8 +107,9 @@ class Hub:
 
     def _effective(self, cid, at):
         """CM2, CM3: hub-set states are evaluated lazily at a time. A command
-        never handed over ends undeliverable or expired; one that was handed
-        over becomes unconfirmed, because the controller may have enacted it."""
+        never fetched ends undeliverable or expired, whatever signals were sent
+        (CM27); one that was fetched becomes unconfirmed, because the
+        controller may have enacted it."""
         c = self.commands[cid]
         state = c["state"]
         if state in FINAL or state in CONTROLLER_STATES or state == "unconfirmed":
@@ -96,9 +120,7 @@ class Hub:
                 return "undeliverable"
             if at >= c["expiresAt"]:
                 return "expired"
-        if state == "sent" and not _holds(inst, c["channel"], at):
-            return "unconfirmed"
-        if state in HANDED_OVER and at >= c["expiresAt"]:
+        if state == "fetched" and at >= c["expiresAt"]:
             return "unconfirmed"
         return state
 
@@ -147,7 +169,27 @@ class Hub:
         if not any(self._permitted(call, p) for p in
                    ("api:commands:read", "api:commands:create", "api:proposals:read")):
             return {"status": 403, "code": "not-authorised"}
-        return dict(status=200, **self._outstanding(call["tenant"], call["channel"], call["at"]))
+        listed = self._outstanding(call["tenant"], call["channel"], call["at"])
+        # CM30: each live holder of the channel's sink, with its fetch bound.
+        listed["destinations"] = {
+            name: {"fetchWithinSeconds": fetch_bound(self.case, inst)}
+            for name, inst in sorted(self.case["instances"].items())
+            if inst["tenant"] == call["tenant"] and not inst.get("simulated")
+            and _holds(inst, call["channel"], call["at"])}
+        return dict(status=200, **listed)
+
+    def _fetch_bound_reply(self, result, at):
+        """CM30: an accepted command's reply carries its destination's fetch bound,
+        and a flag, recorded on the command, when it expires within that bound."""
+        if result.get("status") != 201:
+            return result
+        c = self.commands[result["commandId"]]
+        bound = fetch_bound(self.case, self.case["instances"][c["destination"]])
+        result["fetchWithinSeconds"] = bound
+        if c["expiresAt"] - at <= bound:
+            c["mayExpireUnfetched"] = True
+            result["mayExpireUnfetched"] = True
+        return result
 
     def cancel(self, call):
         """CM25: before hand-over a cancel is final; after it, a request to the controller."""
@@ -164,6 +206,7 @@ class Hub:
             c["state"] = "cancelled"
             return {"status": 200, "state": "cancelled"}
         c["cancelRequested"] = True
+        c.setdefault("cancelRequestedAt", call["at"])
         return {"status": 202, "state": state, "cancelRequested": True}
 
     def _expiry(self, call):
@@ -173,7 +216,14 @@ class Hub:
             return "expiry-too-long"
         return None
 
+    def _offered(self):
+        """CM31: a hub whose capability document has no `commands` member serves
+        no command path."""
+        return self.case.get("commandsOffered", True)
+
     def command(self, call):
+        if not self._offered():
+            return {"status": 404}
         if not self._permitted(call, "api:commands:create"):
             return {"status": 403, "code": "not-authorised"}
         bad = self._expiry(call)
@@ -187,8 +237,9 @@ class Hub:
             if request != (call["channel"], call.get("product"), payload_hash(call["payload"])):
                 return {"status": 409, "code": "request-id-reused"}
             return {"status": 200, "commandId": cid, "state": self._public(cid, call["at"])}
-        result = self._new_command(call, call["payload"], call["expiresAt"],
-                                   product=call.get("product"))
+        result = self._fetch_bound_reply(
+            self._new_command(call, call["payload"], call["expiresAt"],
+                              product=call.get("product")), call["at"])
         if call.get("requestId") is not None:
             self.request_ids[key] = (result["commandId"], (
                 call["channel"], call.get("product"), payload_hash(call["payload"])))
@@ -197,19 +248,47 @@ class Hub:
     def _public(self, cid, at):
         return self._settle(cid, at)
 
-    def push(self, call):
+    def _waiting(self, cid, at):
+        """CM26: what the destination's next fetch returns for this command:
+        `cancel` for a carried cancel not yet answered by a report, `command`
+        for a pending or fetched command, None for nothing."""
+        c = self.commands[cid]
+        state = self._settle(cid, at)
+        if at >= c["expiresAt"] or not _holds(self.case["instances"][c["destination"]],
+                                              c["channel"], at):
+            return None
+        reported = c.get("reportedAt")
+        if c.get("cancelRequested") and state not in FINAL \
+                and (reported is None or reported < c["cancelRequestedAt"]):
+            return "cancel"
+        if state in WAITING:
+            return "command"
+        return None
+
+    def signal(self, call):
+        """CM19, CM20, CM27, CM28: a fetch-now signal. It carries nothing of the
+        command and goes only to the destination, only inside a request bound to
+        the command's tenant, and changes no state."""
         c = self.commands[call["command"]]
         if self.case["mode"] == "multi" and call.get("bound") != c["tenant"]:
-            return {"sent": False, "reason": "withheld"}
-        state = self._settle(call["command"], call["at"])
-        if state == "expired":
-            return {"sent": False, "reason": "expired"}
-        if state not in ("pending", "sent"):
-            return {"sent": False, "reason": "not-pending"}
-        c["state"] = "sent"
-        return {"sent": True}
+            return {"signalled": False, "reason": "withheld"}
+        if self._settle(call["command"], call["at"]) == "expired":
+            return {"signalled": False, "reason": "expired"}
+        if self._waiting(call["command"], call["at"]) is None:
+            return {"signalled": False, "reason": "nothing-waiting"}
+        offered = [_term(t) for t in self.case.get("liveTransports", ["socket"])]
+        inst = self.case["instances"][c["destination"]]
+        via = next((t for t in inst.get("liveTransports", []) if _term(t) in offered), None)
+        if via is None:
+            return {"signalled": False, "reason": "no-live-transport"}
+        if _term(via) in PLATFORM_PUSH and _term(via) not in \
+                self.case.get("pushCredentials", {}).get(c["tenant"], []):
+            return {"signalled": False, "reason": "no-tenant-credential"}
+        return {"signalled": True, "to": c["destination"], "via": via, "carries": {}}
 
     def fetch(self, call):
+        if not self._offered():
+            return {"status": 404}
         inst = self.case["instances"].get(call["instance"])
         if inst is None or inst["tenant"] != call["tenant"]:
             return {"status": 404}
@@ -219,13 +298,13 @@ class Hub:
         for cid, c in self.commands.items():
             if c["destination"] != call["instance"] or c["tenant"] != call["tenant"]:
                 continue
-            if self._settle(cid, call["at"]) in ("pending", "sent"):
-                c["state"] = "fetched"
-                got.append(cid)
-            elif c.get("cancelRequested") and not c.get("cancelDelivered") \
-                    and self._settle(cid, call["at"]) not in FINAL:
+            waiting = self._waiting(cid, call["at"])
+            if waiting == "cancel":
                 c["cancelDelivered"] = True
                 cancels.append(cid)
+            elif waiting == "command":
+                c["state"] = "fetched"
+                got.append(cid)
         result = {"status": 200, "commands": got}
         if cancels:
             result["cancels"] = cancels
@@ -275,6 +354,7 @@ class Hub:
         if state in FINAL:
             return {"status": 409, "code": "already-final"}
         c["state"] = call["state"]
+        c["reportedAt"] = call["at"]
         c["reportedHash"] = payload_hash(call.get("checked", c["payload"]))
         c["hashMismatch"] = c["reportedHash"] != c["payloadHash"]
         return {"status": 200}
@@ -286,6 +366,8 @@ class Hub:
         return {"status": 200, "state": self._public(call["command"], call["at"])}
 
     def propose(self, call):
+        if not self._offered():
+            return {"status": 404}
         if not self._permitted(call, "api:proposals:create"):
             return {"status": 403, "code": "not-authorised"}
         inst = self.case["instances"].get(call["instance"])
@@ -352,8 +434,23 @@ class Hub:
             return {"status": 409, "code": "doses-since"}
         p["state"] = "approved"
         made = dict(call, channel=p["channel"])
-        return self._new_command(made, p["payload"], p["expiresAt"], proposal_id=call["proposal"],
-                                 routed=(destination, None))
+        return self._fetch_bound_reply(
+            self._new_command(made, p["payload"], p["expiresAt"], proposal_id=call["proposal"],
+                              routed=(destination, None)), call["at"])
+
+    def discover(self, call):
+        """CM31: what a controller does with the capability document. Without a
+        `commands` member it has no hub command path and keeps its own
+        transports; with one it fetches within its bound and listens on a live
+        transport both sides name, if any."""
+        inst = self.case["instances"][call["instance"]]
+        keeps = list(inst.get("ownTransports", []))
+        if not self._offered():
+            return {"hubPath": False, "keeps": keeps}
+        offered = [_term(t) for t in self.case.get("liveTransports", ["socket"])]
+        live = next((t for t in inst.get("liveTransports", []) if _term(t) in offered), None)
+        return {"hubPath": True, "fetchWithinSeconds": fetch_bound(self.case, inst),
+                "live": live, "keeps": keeps}
 
     def reject(self, call):
         p = self._proposal(call)
@@ -404,6 +501,8 @@ def run(case):
             row["proposalId"] = c["proposalId"]
         if c.get("hashMismatch"):
             row["hashMismatch"] = True
+        if c.get("mayExpireUnfetched"):
+            row["mayExpireUnfetched"] = True
         commands[cid] = row
     proposals = {}
     for pid in hub.proposals:

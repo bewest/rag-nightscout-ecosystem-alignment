@@ -1,0 +1,85 @@
+# Synthetic. SPEC-REG-COMMANDS; commands §4. Times are seconds; expectations authored by hand.
+id: fetched-then-lapse-report-accepted
+title: A command fetched before its destination lapses keeps its state, and the report is accepted
+rules:
+- CM2
+- CM7
+- CM9
+description: 'Control for signalled-then-lapse-undeliverable: i-ctl-a fetches c1 at 15, before losing
+  command-sink at 20. It has the command, so c1 stays fetched, and its report after the role moved is
+  accepted.'
+mode: single
+maxExpirySeconds: 3600
+instances:
+  i-ctl-a:
+    tenant: A
+    subject: s-ctl-a
+    product: ControllerA
+    definitionId: sha256:d-a
+    simulated: false
+    sinks:
+      override:
+      - 0
+      - 20
+    liveTransports:
+    - socket
+declares:
+  A:
+    override:
+    - ControllerA
+subjects:
+  s-care:
+    tenant: A
+    permissions:
+    - api:commands:create
+  s-ctl-a:
+    tenant: A
+    permissions: []
+calls:
+- at: 10
+  kind: command
+  tenant: A
+  subject: s-care
+  channel: override
+  product: ControllerA
+  payload:
+    action: start
+    preset: example
+  expiresAt: 600
+- at: 15
+  kind: fetch
+  tenant: A
+  subject: s-ctl-a
+  instance: i-ctl-a
+- at: 25
+  kind: read
+  tenant: A
+  command: c1
+- at: 30
+  kind: report
+  tenant: A
+  subject: s-ctl-a
+  command: c1
+  state: succeeded
+- at: 35
+  kind: read
+  tenant: A
+  command: c1
+expected:
+  calls:
+  - status: 201
+    commandId: c1
+    state: pending
+    fetchWithinSeconds: 30
+  - status: 200
+    commands:
+    - c1
+  - status: 200
+    state: fetched
+  - status: 200
+  - status: 200
+    state: succeeded
+  commands:
+    c1:
+      state: succeeded
+      destination: i-ctl-a

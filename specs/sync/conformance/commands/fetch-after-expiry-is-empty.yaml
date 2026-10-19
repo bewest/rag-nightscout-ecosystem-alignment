@@ -1,9 +1,9 @@
 # Synthetic. SPEC-REG-COMMANDS; commands §4. Times are seconds; expectations authored by hand.
 id: fetch-after-expiry-is-empty
-title: A command past its expiry is neither fetched nor pushed, and reads report expired
+title: A command past its expiry is neither fetched nor signalled, and reads report expired
 rules:
 - CM3
-description: c1 expires at 100. A push at 140 is not sent, a fetch at 150 returns nothing, and a read
+description: c1 expires at 100. A signal at 140 is not sent, a fetch at 150 returns nothing, and a read
   reports expired.
 control: fetch-before-expiry
 mode: single
@@ -43,10 +43,9 @@ calls:
     preset: example
   expiresAt: 100
 - at: 140
-  kind: push
+  kind: signal
   bound: A
   command: c1
-  via: socket
 - at: 150
   kind: fetch
   tenant: A
@@ -61,7 +60,8 @@ expected:
   - status: 201
     commandId: c1
     state: pending
-  - sent: false
+    fetchWithinSeconds: 30
+  - signalled: false
     reason: expired
   - status: 200
     commands: []

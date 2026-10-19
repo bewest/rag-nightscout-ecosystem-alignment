@@ -56,6 +56,7 @@ expected:
   - status: 201
     commandId: c1
     state: pending
+    fetchWithinSeconds: 30
   - status: 201
     commandId: c2
     state: pending
@@ -64,6 +65,7 @@ expected:
       commands:
       - c1
       dosesSince: []
+    fetchWithinSeconds: 30
   commands:
     c1:
       state: pending

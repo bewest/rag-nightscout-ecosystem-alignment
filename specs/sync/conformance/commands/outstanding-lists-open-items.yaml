@@ -3,8 +3,8 @@ id: outstanding-lists-open-items
 title: A follower reads a channel's open proposal, pending command and doses since
 rules:
 - CM24
-description: p1 is open and c1 pending on override; a dose record reached the hub
-  at 25, after the earliest of them; a follower with api:commands:read lists them.
+description: p1 is open and c1 pending on override; a dose record reached the hub at 25, after the earliest
+  of them; a follower with api:commands:read lists them.
 control: outstanding-excludes-final
 mode: single
 maxExpirySeconds: 3600
@@ -91,6 +91,7 @@ expected:
   - status: 201
     commandId: c1
     state: pending
+    fetchWithinSeconds: 30
     outstanding:
       proposals:
       - p1
@@ -103,6 +104,9 @@ expected:
     - c1
     dosesSince:
     - 25
+    destinations:
+      i-ctl-a:
+        fetchWithinSeconds: 30
   proposals:
     p1:
       state: open

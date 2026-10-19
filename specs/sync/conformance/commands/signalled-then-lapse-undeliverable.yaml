@@ -1,13 +1,13 @@
 # Synthetic. SPEC-REG-COMMANDS; commands §4. Times are seconds; expectations authored by hand.
-id: pushed-then-lapse-unconfirmed
-title: A command handed to a push and then losing its destination is unconfirmed, and a report replaces
-  it
+id: signalled-then-lapse-undeliverable
+title: A signalled command whose destination lapses before fetching is undeliverable
 rules:
 - CM2
+- CM27
 - CM9
-description: c1 is pushed to i-ctl-a, which loses command-sink at 20 without fetching. The controller
-  may have it, so c1 reads unconfirmed, not undeliverable; i-ctl-a's subject then reports succeeded, which
-  is accepted and replaces unconfirmed.
+description: c1 is signalled to i-ctl-a, which loses command-sink at 20 without fetching. A signal hands
+  nothing over, so c1 is undeliverable, a final state, and a later report is 409 already-final.
+control: fetched-then-lapse-report-accepted
 mode: single
 maxExpirySeconds: 3600
 instances:
@@ -21,6 +21,8 @@ instances:
       override:
       - 0
       - 20
+    liveTransports:
+    - socket
 declares:
   A:
     override:
@@ -45,10 +47,9 @@ calls:
     preset: example
   expiresAt: 600
 - at: 10
-  kind: push
+  kind: signal
   bound: A
   command: c1
-  via: socket
 - at: 25
   kind: read
   tenant: A
@@ -68,13 +69,18 @@ expected:
   - status: 201
     commandId: c1
     state: pending
-  - sent: true
+    fetchWithinSeconds: 30
+  - signalled: true
+    to: i-ctl-a
+    via: socket
+    carries: {}
   - status: 200
-    state: unconfirmed
+    state: undeliverable
+  - status: 409
+    code: already-final
   - status: 200
-  - status: 200
-    state: succeeded
+    state: undeliverable
   commands:
     c1:
-      state: succeeded
+      state: undeliverable
       destination: i-ctl-a

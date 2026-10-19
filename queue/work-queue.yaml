@@ -16486,6 +16486,52 @@ items:
       command-sink claim would be refused; the guide shows the declaration
       from a case.
 
+  - id: SPEC-CMD-DELIVERY
+    title: "How a command reaches its controller: paths, the capability member, a fetch-now signal and the fetch bound"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: spec/command-delivery-2026-10-18
+    base: main@0b0d150f
+    state: done
+    pr: []
+    blast_radius: >
+      Contributor-facing specification and its reference model: commands
+      CM17-CM21 reworded and CM26-CM32 added, registration §4 gains the
+      commands member, sync-transport gains T16, the sent state is removed,
+      152 command cases. Ships nothing.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: documentation in this repository; ships nothing
+    register: []
+    gates:
+      - run: python3 -m pytest -q tools/nsschema/test_commands.py tools/nsschema/prototypes/test_effect_link.py
+        kind: unit
+        describe: >
+          FAILS when the reference model disagrees with a case's expected
+          block: a signal that carries a payload, hash or id, a signal sent
+          outside a bound request under multi, an outstanding list without
+          fetch bounds, a refetch that skips a fetched unreported command;
+          or when the effect-link prototype's measured table differs.
+      - run: python3 -m tools.nsschema.spec_cases commands --check
+        kind: static
+        describe: FAILS when the commands case table differs from the cases.
+      - run: node tools/queue/gates/platform-spec.js commands
+        kind: static
+        describe: FAILS on narration, an undefined check or a stale count in commands.md.
+    blocks_on: [SPEC-DEV-GUIDES]
+    evidence:
+      - docs/30-design/platform/spec/commands.md
+      - docs/30-design/platform/effect-link-prototype-2026-10-18.md
+    notes: >
+      The maintainer decided on 2026-10-18, from the developer guides' gaps:
+      /api/v4 paths and a commands capability member; live delivery is a
+      fetch-now signal only; the fetch bound is one cycle unless the
+      controller declares a tighter one, with live transports in an open
+      vocabulary. Consequences decided with it: the sent state is removed
+      and a fetch returns a command until it is reported or expires (CM26).
+      The effect link (CM7) is prototyped, not decided (commands §9 item 9).
+
   - id: SPEC-REG-MIGRATE
     title: "Registration state across a single-tenant site's move into a tenant, and back"
     parcel: platform

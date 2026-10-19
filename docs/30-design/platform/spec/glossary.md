@@ -235,8 +235,13 @@ holder the command is refused `no-command-destination`; the hub never guesses
 ([commands §2](commands.md#2-where-a-command-goes)).
 
 **Command record, outcome.** Proposed. The hub stores a command before it sends it, with the hash
-of its payload; only the destination reports the outcome, and `sent` or `fetched` is never success
+of its payload; only the destination reports the outcome, and `fetched` is never success
 ([commands §4–§5](commands.md#4-the-command-record-proposed)).
+
+**Fetch-now signal, fetch bound.** Proposed. A *fetch-now signal* tells one controller instance,
+on the socket or by a platform push, that something waits for its fetch; it carries nothing of the
+command. The *fetch bound* is the longest the instance goes between fetches: one cycle, or the
+shorter interval it declares ([commands §7](commands.md#7-delivery-in-each-mode-proposed)).
 
 **Plan, occurrence, mirror.** Proposed. A *plan* is a recurring intent with elements, a trigger,
 bounds and an end date, proposed and approved in parts, then held and run by the controller; an

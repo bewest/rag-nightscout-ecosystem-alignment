@@ -384,6 +384,77 @@
      }
     }
    }
+  },
+  "commands": {
+   "type": "object",
+   "description": "Commands CM31 (SPEC-REG-COMMANDS, proposed). Present: the hub offers the command record — sending, the outstanding list, cancel, outcome reports and the destination's fetch (commands CM32) — and, with `proposals`, proposals and approvals. Absent: the hub serves none of those paths, and a controller has no hub command path and keeps the transports it has. A controller reads this at launch and after a controller release.",
+   "required": [
+    "href",
+    "fetch",
+    "maxExpirySeconds",
+    "maxPayloadBytes"
+   ],
+   "properties": {
+    "href": {
+     "type": "string",
+     "description": "Where commands are sent and listed (`POST`, `GET ?channel=`), and the base of `/{commandId}`, `/{commandId}/cancel` and `/{commandId}/reports`; proposed `/api/v4/commands`."
+    },
+    "fetch": {
+     "type": "string",
+     "description": "The destination's fetch, a URI template naming `{instanceId}`; proposed `/api/v4/instances/{instanceId}/commands` (CM18, CM26)."
+    },
+    "proposals": {
+     "type": "string",
+     "description": "Where proposals are made and acted on; proposed `/api/v4/proposals`. Absent: the hub takes no proposals."
+    },
+    "maxExpirySeconds": {
+     "type": "integer",
+     "minimum": 1,
+     "description": "CM3: the longest a command or proposal may run from the request."
+    },
+    "maxPayloadBytes": {
+     "type": "integer",
+     "minimum": 1,
+     "description": "CM5: the largest payload, as RFC 8785 canonical JSON."
+    },
+    "liveTransports": {
+     "type": "array",
+     "uniqueItems": true,
+     "description": "CM28: the transports the hub sends fetch-now signals on (CM27), which carry nothing of a command. Open vocabulary: `socket` (the existing listener, sync-transport T16), `apns`, `fcm`, or `{value: other, controllerTerm}`. Absent or empty: no signals; controllers fetch on their cadence.",
+     "items": {
+      "anyOf": [
+       {
+        "enum": [
+         "socket",
+         "apns",
+         "fcm"
+        ]
+       },
+       {
+        "type": "object",
+        "required": [
+         "value",
+         "controllerTerm"
+        ],
+        "properties": {
+         "value": {
+          "const": "other"
+         },
+         "controllerTerm": {
+          "type": "string",
+          "minLength": 1
+         }
+        }
+       }
+      ]
+     }
+    },
+    "minFetchIntervalSeconds": {
+     "type": "integer",
+     "minimum": 0,
+     "description": "CM29: the shortest interval between one instance's fetches the hub serves; a declared fetch interval under it is raised to it. Absent: 0."
+    }
+   }
   }
  }
 }
