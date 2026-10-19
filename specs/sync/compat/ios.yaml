@@ -1,0 +1,523 @@
+# iOS apps: what each does with a Nightscout hub today, and what it sees from a hub that
+# implements the platform specifications without the app changing. Format: FORMAT.md.
+# Today cells are read-derived from the per-client files named in `source` (15.0.9
+# consumer-impact survey) and, for remote commands, from the controller notes behind
+# commands §8 (Loop v3.14.9, NightscoutService 2cef4896; Trio v1.0.2 0b29cd53).
+- app: Loop
+  kind: controller
+  ref: LoopWorkspace@f841285 (NightscoutKit 4ec9fd1, NightscoutService fe075ef); commands read at v3.14.9
+    548b3324 (NightscoutService 2cef4896)
+  source: reports/consumer-impact-15.0.9/clients/ios/NightscoutKit.md
+  layers:
+    L0:
+      verdict: gains
+      today: Posts override treatments with `_id` set to the override's upper-case UUID and deletes them
+        by that UUID; posts doses with `syncIdentifier` and no `_id`, so a re-send is matched by `created_at`
+        + `eventType`; caches the 24-hex `_id` of carb treatments from the POST reply for later PUT and
+        DELETE.
+      newer: Treatments match on client identity (`syncIdentifier`) before `created_at` + `eventType`,
+        so two doses of one type at one time stay two records; the override UUID is moved to `identifier`
+        as today and recorded as `quirksApplied`, and the upper-case DELETE still matches exactly (I6,
+        I9).
+      rules:
+      - identity §3
+      - I5
+      - I6
+      - I9
+      anchors:
+      - NightscoutKit@4ec9fd1 Sources/NightscoutKit/Models/Treatments/OverrideTreatment.swift:25-31
+      - NightscoutService@fe075ef NightscoutServiceKit/Extensions/DoseEntry.swift:30,61
+      - NightscoutService@fe075ef NightscoutServiceKit/NightscoutService.swift:27
+      - cgm-remote-monitor-official@fade2299 lib/server/treatment-fallback-key.js:25
+    L1:
+      verdict: unchanged
+      today: Writes entries, treatments (overrides, carbs, doses), devicestatus with `loop.*` (IOB, COB,
+        prediction, enacted) and profiles with `loopSettings`; reads only `/api/v1/profile/current`.
+      newer: The hub decomposes its devicestatus and profile into primitives and keeps each document as
+        sent, so what Loop writes and reads back is unchanged (R1, R2).
+      rules:
+      - R1
+      - R2
+      anchors:
+      - NightscoutKit@4ec9fd1 Sources/NightscoutKit/Models/LoopStatus.swift:51-96
+      - NightscoutKit@4ec9fd1 Sources/NightscoutKit/Models/ProfileSet.swift:143-165
+    L2:
+      verdict: gains
+      today: Declares nothing and sends no instance id.
+      newer: The well-known Loop registration describes its writes by structural discriminator (`loop`
+        is an object) and carrier; they are attributed to Loop's unregistered instance and never refused
+        for exclusivity.
+      rules:
+      - registration §17
+      - registration §11
+    L3:
+      verdict: opt-in
+      today: Writes overrides as `Temporary Override` treatments; receives override, cancel, bolus and
+        carbs commands only as APNs pushes, from the hub's `/api/v2/notifications/loop` relay or directly
+        from a follower; reports a failure as a `Note` and a success only as the resulting record.
+      newer: The relay route is outside CM1–CM25 and a hub keeps it as it is or retires it; the command
+        record, enact-once by `commandId`, the outstanding list and cancel apply only once Loop registers
+        and fetches (CM18, CM21, CM24, CM25).
+      rules:
+      - commands §8
+      - state-intent §3
+      - CM18
+      - CM21
+      - CM24
+      - CM25
+      anchors:
+      - NightscoutService@2cef4896 NightscoutServiceKit/RemoteCommands/V1/RemoteCommandSourceV1.swift:46-56
+      - NightscoutService@2cef4896 NightscoutServiceKit/NightscoutService.swift:406-408
+    L4:
+      verdict: opt-in
+      today: API v1 only, no socket; posts batches and requires a reply array as long as the request,
+        and any non-200 holds the batch, so one refused record stalls that data type.
+      newer: API v1 stays and re-sends keep today's outcomes; one read and one write per cycle are used
+        only if it changes.
+      rules:
+      - sync-transport §7
+      - T2
+      - T5
+      - T7
+      anchors:
+      - Loop@c2fddb7 Loop/Managers/RemoteDataServicesManager.swift:404-431
+    L5:
+      verdict: unchanged
+      today: Sends the SHA-1 of the API secret as the `api-secret` header on every request and checks
+        it at setup with `/api/v1/experiments/test`; no tokens.
+      newer: Under single, API_SECRET behaves as today (AU3). Under multi there is no deployment secret;
+        Loop presents the tenant's root credential, and whether that is accepted as today's header is
+        not yet specified (authority §9).
+      rules:
+      - AU3
+      - AU5
+      - authority §9
+      anchors:
+      - NightscoutKit@4ec9fd1 Sources/NightscoutKit/NightscoutClient.swift:524-526
+  notes: NightscoutService and NightscoutKit are read as one entry. GlookoServiceKit, a plugin Loop can
+    load, has its own entry and no Nightscout traffic.
+- app: Trio
+  kind: controller
+  ref: Trio@e41c9db37 (dev; main c0160aeaf differs on no row); commands read at v1.0.2 0b29cd53
+  source: reports/consumer-impact-15.0.9/clients/ios/Trio.md
+  layers:
+    L0:
+      verdict: gains
+      today: Sends its own upper-case UUID in a plain `id` member, which the hub does not read, and deletes
+        carbs and insulin by `find[id][$eq]`; on 15.0.8 a re-send without `identifier` is matched by `created_at`
+        + `eventType` alone (QUIRK-TREATMENTS-007).
+      newer: Treatments match on client identity (`id`) before `created_at` + `eventType`, so two records
+        of one type at one time stay two; `id` is still not `identifier` and gets no mapping (Q4a).
+      rules:
+      - identity §3
+      - I5
+      - Q4a
+      anchors:
+      - Trio@e41c9db37 Trio/Sources/Models/NightscoutTreatment.swift:24,62
+      - Trio@e41c9db37 Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift:160-251
+      - cgm-remote-monitor-official@fade2299 lib/server/treatment-fallback-key.js:25
+    L1:
+      verdict: unchanged
+      today: Writes entries, treatments, devicestatus under `openaps` (IOB, suggested, enacted) and a
+        new profile document on each settings change, with its remote-control routing fields; reads sgv
+        entries when Nightscout is its CGM, carbs and temporary targets, and the latest profile.
+      newer: The hub decomposes devicestatus and profiles into primitives and keeps each document as sent,
+        so the profile fields followers read stay (R1, R2).
+      rules:
+      - R1
+      - R2
+      anchors:
+      - Trio@e41c9db37 Trio/Sources/Models/NightscoutStatus.swift:3-18,53-66
+    L2:
+      verdict: gains
+      today: Declares nothing and sends no instance id.
+      newer: The well-known Trio registration describes its writes by discriminator and carrier; they
+        are attributed to Trio's unregistered instance and never refused for exclusivity.
+      rules:
+      - registration §17
+      - registration §11
+    L3:
+      verdict: opt-in
+      today: Writes overrides as `Exercise` treatments (ended by delete and re-post) and temporary targets;
+        downloads other clients' carbs and temporary targets; takes remote commands only as encrypted
+        APNs pushes sent straight from a follower, and posts a `Note` on a refusal.
+      newer: Downloads stay data whose effect the hub does not track (state-intent §7); the command record,
+        enact-once by `commandId`, the outstanding list and cancel apply only if Trio registers and fetches.
+      rules:
+      - state-intent §3
+      - state-intent §7
+      - commands §8
+      - CM18
+      - CM21
+      - CM24
+      - CM25
+      anchors:
+      - Trio@0b29cd53 Trio/Sources/Services/RemoteControl/TrioRemoteControl.swift:16,50-65
+      - Trio@0b29cd53 Trio/Sources/Models/CommandPayload.swift:14-22
+      - Trio@e41c9db37 Trio/Sources/Services/Network/Nightscout/NightscoutManager.swift:1197-1229
+    L4:
+      verdict: opt-in
+      today: API v1 only, no socket; posts in chunks and retries a refused chunk forever with no notice;
+        the CGM-from-Nightscout read turns any error into no data.
+      newer: API v1 stays and re-sends keep today's outcomes; one read and one write per cycle are used
+        only if it changes.
+      rules:
+      - sync-transport §7
+      - T2
+      - T5
+      - T7
+      anchors:
+      - Trio@e41c9db37 Trio/Sources/Services/Network/Nightscout/NightscoutManager.swift:966-984
+    L5:
+      verdict: unchanged
+      today: Sends the SHA-1 of the API secret as the `api-secret` header and drops any `token=` from
+        the configured URL, so a token-only site cannot be used.
+      newer: Under single, API_SECRET behaves as today (AU3). Under multi it presents the tenant's root
+        credential, and whether that is accepted as today's header is not yet specified (authority §9).
+      rules:
+      - AU3
+      - AU5
+      - authority §9
+      anchors:
+      - Trio@e41c9db37 Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift:560-567
+- app: LoopFollow
+  kind: follower
+  ref: LoopFollow@4a74b781 (v7.1.0)
+  source: reports/consumer-impact-15.0.9/clients/ios/LoopFollow.md
+  layers:
+    L0:
+      verdict: unchanged
+      today: Writes no records; reads `_id` only from the subjects reply, to derive its token.
+      newer: Nothing it reads changes (I2).
+      rules:
+      - I2
+      anchors:
+      - LoopFollow@4a74b781 LoopFollow/Helpers/NightscoutUtils.swift:418-428,504-533
+    L1:
+      verdict: unchanged
+      today: Reads entries, treatments, devicestatus (Loop `loop.*`, Trio and AndroidAPS `openaps.*`)
+        and profiles, including the device token and bundle id for remote control.
+      newer: Documents are served as stored (R1); a record a newer controller writes typed reaches it
+        as a projected document in the carrier's shape (registration §13).
+      rules:
+      - R1
+      - registration §13
+      anchors:
+      - LoopFollow@4a74b781 LoopFollow/Controllers/Nightscout/DeviceStatusLoop.swift:55,62
+    L2:
+      verdict: none
+      today: Writes no records and declares nothing.
+      newer: Nothing to attribute.
+    L3:
+      verdict: opt-in
+      today: Sends Loop and Trio commands as APNs pushes straight to Apple, using routing data it reads
+        from the hub's profile; its `/api/v2/notifications/loop` sender has no caller.
+      newer: Its commands stay outside the hub, which sees only the resulting records (commands §8); a
+        follower may read the outstanding list with `api:commands:read`, if it changes (CM24).
+      rules:
+      - commands §8
+      - CM24
+      anchors:
+      - LoopFollow@4a74b781 LoopFollow/Remote/RemoteType.swift:6-9
+      - LoopFollow@4a74b781 LoopFollow/Remote/LoopAPNS/LoopAPNSService.swift:350-366
+    L4:
+      verdict: opt-in
+      today: Polls API v1 and joins the v1 socket, sending `authorize` with its access token; uses `dataUpdate`
+        only as a trigger to re-poll and triples its poll interval while connected.
+      newer: API v1 and the v1 socket stay; subscribing by product and channel is used only if it changes.
+      rules:
+      - sync-transport §7
+      - T10
+      - T11
+      anchors:
+      - LoopFollow@4a74b781 LoopFollow/Controllers/Nightscout/NightscoutSocketManager.swift:108-195
+      - LoopFollow@4a74b781 LoopFollow/Controllers/Nightscout/BGData.swift:202-204
+    L5:
+      verdict: unchanged
+      today: Reads with an access token in `token=`; given the API secret it creates a `readable` subject
+        through `/api/v2/authorization/subjects` and derives the token locally from the returned `_id`.
+      newer: Under single, unchanged. Under multi the load cycle's `dataUpdate` is withheld (commands
+        §3), so a connected LoopFollow keeps its slowed polling with no trigger, and AU3 re-roots subject
+        tokens on the tenant's credential, which its local derivation must match.
+      rules:
+      - AU3
+      - commands §3
+      anchors:
+      - LoopFollow@4a74b781 LoopFollow/Helpers/NightscoutUtils.swift:152-200,416-567
+      - LoopFollow@4a74b781 LoopFollow/Controllers/Nightscout/NightscoutSocketDataHandler.swift:14-53
+- app: LoopCaregiver
+  kind: follower
+  ref: LoopCaregiver@2305718 (dev; gestrich/NightscoutKit d63fb73)
+  source: reports/consumer-impact-15.0.9/clients/ios/LoopCaregiver.md
+  layers:
+    L0:
+      verdict: unchanged
+      today: Writes no v1 records, so sends no `_id`; its experimental Remote Commands 2 option keys on
+        a record `_id` from a route the hub does not implement.
+      newer: Nothing it reads on implemented routes changes (I2).
+      rules:
+      - I2
+    L1:
+      verdict: unchanged
+      today: Reads entries, treatments, Loop's `loop.iob` and `loop.cob` from devicestatus, and `/api/v1/profile/current`
+        for override presets.
+      newer: Documents are served as stored (R1).
+      rules:
+      - R1
+      anchors:
+      - LoopCaregiver@2305718 LoopCaregiverKit/Sources/LoopCaregiverKit/Models/RemoteDataServiceManager.swift:149-157
+    L2:
+      verdict: none
+      today: Writes no records and declares nothing.
+      newer: Nothing to attribute.
+    L3:
+      verdict: opt-in
+      today: Sends override, cancel, bolus and carbs to `POST /api/v2/notifications/loop`, needs exactly
+        200, and learns failures by parsing Loop's `Note` treatments; Remote Commands 2 uses `/api/v2/remotecommands`,
+        which the hub does not implement.
+      newer: The relay route is outside CM1–CM25 and a hub keeps it as it is or retires it (commands §8);
+        a command record with an outcome from the destination is used only if it changes (CM1, CM7, CM25).
+      rules:
+      - commands §8
+      - CM1
+      - CM7
+      - CM24
+      - CM25
+      anchors:
+      - gestrich/NightscoutKit@d63fb73 Sources/NightscoutKit/NightscoutClient.swift:338-398,836-860
+      - LoopCaregiver@2305718 LoopCaregiverKit/Sources/LoopCaregiverKit/Nightscout/NightscoutDataSource.swift:136-190
+    L4:
+      verdict: opt-in
+      today: Polls API v1 on a timer; no socket.
+      newer: API v1 stays; one read per cycle is used only if it changes.
+      rules:
+      - sync-transport §7
+      - T5
+    L5:
+      verdict: unchanged
+      today: Sends only the SHA-1 of the API secret as `api-secret`; the relay needs `notifications:loop:push`,
+        which of the default roles only admin holds.
+      newer: Under single, unchanged. Under multi the relay sends with the deployment's APNs key and a
+        process-wide device lookup (commands §3), and CM20 allows only a tenant's own push credentials,
+        so the route it depends on has no tenant-scoped form.
+      rules:
+      - AU3
+      - CM20
+      - commands §3
+      anchors:
+      - gestrich/NightscoutKit@d63fb73 Sources/NightscoutKit/NightscoutClient.swift:526-528
+- app: nightguard
+  kind: follower
+  ref: nightguard@75404bd (master)
+  source: reports/consumer-impact-15.0.9/clients/ios/nightguard.md
+  layers:
+    L0:
+      verdict: unchanged
+      today: Posts treatments through API v3 without `_id` or `identifier`, and keys its local cache on
+        `identifier`, falling back to `_id`.
+      newer: Every reply carries both ids, and a projected document keeps one `identifier` and `_id` across
+        reads, so its keys stay stable (I4, I8).
+      rules:
+      - I1
+      - I4
+      - I8
+      anchors:
+      - nightguard@75404bd nightguard/domain/treatment/TreatmentsStream.swift:106-108
+    L1:
+      verdict: unchanged
+      today: Writes `Temporary Target`, `Carb Correction` and site, sensor and battery change treatments;
+        reads entries, treatments, devicestatus and the hub-computed COB and IOB from `/api/v2/properties`.
+      newer: Documents are served as stored (R1); typed records reach it as projected documents (registration
+        §13).
+      rules:
+      - R1
+      - registration §13
+      anchors:
+      - nightguard@75404bd nightguard/external/NightscoutService.swift:1622-1627
+    L2:
+      verdict: unchanged
+      today: Declares nothing; writes treatments with no instance id.
+      newer: No well-known registration describes it; its carrier writes, including temporary targets
+        for a controller's slot, are never blocked by exclusivity.
+      rules:
+      - registration §11
+    L3:
+      verdict: opt-in
+      today: Writes temporary targets as treatments, cancelling with a new one of duration 0; sends no
+        commands.
+      newer: These stay data that a controller may act on without the hub knowing (state-intent §7); a
+        request with an outcome is a command record it uses only if it changes (CM1).
+      rules:
+      - state-intent §7
+      - CM1
+      anchors:
+      - nightguard@75404bd nightguard/external/NightscoutService.swift:1868-1885
+    L4:
+      verdict: opt-in
+      today: API v3 first with an API v1 fallback; pages its statistics read with `skip` and `sort$desc`;
+        no socket.
+      newer: API v3 and v1 stay; the history read across collections is used only if it changes.
+      rules:
+      - sync-transport §7
+      - T5
+      - T6
+      anchors:
+      - nightguard@75404bd nightguard/external/NightscoutService.swift:1136-1153
+    L5:
+      verdict: unchanged
+      today: 'Uses an access token: a JWT from `/api/v2/authorization/request`, the raw token in the `API-SECRET`
+        header on the v1 fallback, or `token=`.'
+      newer: Under single, unchanged. Under multi a token issued by the site's tenant resolves there and
+        nowhere else (AU3); reading stays one permission (AU5).
+      rules:
+      - AU3
+      - AU5
+      anchors:
+      - nightguard@75404bd nightguard/external/NightscoutService.swift:440-477
+- app: xDrip4iOS
+  kind: uploader
+  ref: xdripswift@c268542e (master = develop)
+  source: reports/consumer-impact-15.0.9/clients/ios/xdripswift.md
+  layers:
+    L0:
+      verdict: affected
+      today: Sends a random 24-character alphanumeric `_id` on entries and some treatments, which the
+        hub moves to `identifier` or drops; reads treatment `_id` back for PUT and DELETE; counts a 500
+        whose body has code 66 as a successful duplicate.
+      newer: A duplicate is answered with the stored ids, never a 5xx, and xDrip4iOS counts that as success
+        too (I4); the moved `_id` is recorded as `quirksApplied` and matched first on a re-send (I5, I9).
+      rules:
+      - I4
+      - I5
+      - I9
+      anchors:
+      - xdripswift@c268542e xDrip/Utilities/UniqueId.swift:18-25
+      - xdripswift@c268542e xDrip/Managers/Nightscout/NightscoutSyncManager.swift:1541-1558
+    L1:
+      verdict: unchanged
+      today: Writes sgv, mbg and cal entries, treatments and an uploader-battery devicestatus; reads looping-app
+        COB and IOB from devicestatus and the first profile.
+      newer: Documents are stored and served as sent (R1).
+      rules:
+      - R1
+      anchors:
+      - xdripswift@c268542e xDrip/Managers/Nightscout/NightscoutSyncManager.swift:1381-1420
+    L2:
+      verdict: unchanged
+      today: Declares nothing and sends no instance id.
+      newer: No well-known registration describes it; its carrier writes are stored as today and never
+        blocked by exclusivity.
+      rules:
+      - registration §11
+    L3:
+      verdict: none
+      today: Writes no overrides, targets or commands.
+      newer: Nothing at this layer.
+    L4:
+      verdict: opt-in
+      today: API v1 only, no socket; re-sends a refused entries batch every cycle, and marks a treatment
+        deleted when `find[_id]` answers 2xx with an empty array.
+      newer: API v1 stays; one read and one write per cycle are used only if it changes.
+      rules:
+      - sync-transport §7
+      - T5
+      - T7
+      anchors:
+      - xdripswift@c268542e xDrip/Managers/Nightscout/NightscoutSyncManager.swift:1210-1225,1345-1353
+    L5:
+      verdict: unchanged
+      today: Sends the SHA-1 of the API secret as the `api-secret` header, adding any configured access
+        token as `token=`.
+      newer: Under single, unchanged (AU3). Under multi a token issued by the tenant resolves there, and
+        whether the tenant's root credential is accepted as today's header is not yet specified (authority
+        §9).
+      rules:
+      - AU3
+      - authority §9
+      anchors:
+      - xdripswift@c268542e xDrip/Managers/Nightscout/NightscoutSyncManager.swift:1277-1283
+- app: DiaBLE
+  kind: uploader
+  ref: DiaBLE@e6a909c (main = dev)
+  source: reports/consumer-impact-15.0.9/clients/ios/DiaBLE.md
+  layers:
+    L0:
+      verdict: unchanged
+      today: Posts sgv entries without `_id` and reads no id back; it posts only readings newer than the
+        newest it read.
+      newer: A re-send matches on `date` + `type` as today (identity §3).
+      rules:
+      - identity §3
+      anchors:
+      - DiaBLE@e6a909c DiaBLE/Nightscout.swift:155-167
+    L1:
+      verdict: unchanged
+      today: Writes sgv entries and reads the last 100.
+      newer: Entries are stored and served as sent (R1).
+      rules:
+      - R1
+    L2:
+      verdict: unchanged
+      today: Declares nothing and sends no instance id.
+      newer: No well-known registration describes it; its carrier writes are stored as today.
+      rules:
+      - registration §11
+    L3:
+      verdict: none
+      today: Writes no overrides, targets or commands.
+      newer: Nothing at this layer.
+    L4:
+      verdict: opt-in
+      today: API v1 only; also shows the Nightscout web page in a web view, whose own socket client runs
+        there.
+      newer: API v1 and the v1 socket stay; one read and one write per cycle are used only if it changes.
+      rules:
+      - sync-transport §7
+      - T5
+      - T7
+      anchors:
+      - DiaBLE@e6a909c DiaBLE/Views/OnlineView.swift:188-198
+    L5:
+      verdict: unchanged
+      today: One setting serves as `token=` on reads and, hashed, as the `api-secret` header on writes;
+        the web view opens the site with `?token=`.
+      newer: Under single, unchanged. Under multi a token issued by the tenant resolves there and nowhere
+        else (AU3).
+      rules:
+      - AU3
+      anchors:
+      - DiaBLE@e6a909c DiaBLE/Nightscout.swift:45,118-124
+  notes: 'The embedded web page is the web client''s: under multi the load cycle''s `dataUpdate` is withheld
+    (commands §3), as for any socket client.'
+- app: GlookoServiceKit
+  kind: tool
+  ref: GlookoServiceKit@8e2cad1 (main)
+  source: reports/consumer-impact-15.0.9/clients/ios/GlookoServiceKit.md
+  layers:
+    L0:
+      verdict: none
+      today: 'No Nightscout traffic: it uploads Loop or Trio data to Glooko.'
+      newer: Nothing at this layer.
+    L1:
+      verdict: none
+      today: No Nightscout records.
+      newer: Nothing at this layer.
+    L2:
+      verdict: none
+      today: No Nightscout writes.
+      newer: Nothing at this layer.
+    L3:
+      verdict: none
+      today: No Nightscout commands.
+      newer: Nothing at this layer.
+    L4:
+      verdict: none
+      today: Its socket client connects to Glooko, not to Nightscout.
+      newer: Nothing at this layer.
+      anchors:
+      - GlookoServiceKit@8e2cad1 GlookoServiceKit/Data/Transport/GlookoSocketIO.swift:24-37
+    L5:
+      verdict: none
+      today: Authenticates to Glooko only.
+      newer: Nothing at this layer.
+  notes: A plugin inside Loop or Trio; its users meet Nightscout only through that app's own uploader.

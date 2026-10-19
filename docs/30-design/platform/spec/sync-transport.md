@@ -137,6 +137,11 @@ Nothing is retired. The capability document member that would say a hub serves T
    storage seam refresh.
 6. **Not measured:** payload size; real request counts; `srvModified` order under several writers
    on one site; the replication-slot path (T4.1 in the execution plan).
+7. **The v1 socket's events under `multi`.** On the seam branch the load cycle's `dataUpdate`
+   and the `/alarm` events reach no tenant (commands §3); LoopFollow slows its polling while
+   connected, and AndroidAPS 3.4.x listens for them ([compatibility §5](compatibility.md#5-where-an-answer-changes)).
+   Whether a hub under `multi` sends them inside a bound request, as CM19 does for pushes, is not
+   specified.
 
 ## 9. Conformance cases
 

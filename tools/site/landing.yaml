@@ -85,3 +85,4 @@ orders:
     - sync-transport.md
     - authority.md
     - control-loops.md
+    - compatibility.md

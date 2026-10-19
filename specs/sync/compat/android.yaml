@@ -1,0 +1,152 @@
+# Android apps: AndroidAPS (released 3.4.x line, with where the 4.0.0 prereleases differ),
+# AndroidAPS client control (AAPSClient to AndroidAPS, 4.0.0 prereleases only) and xDrip+.
+# Format: FORMAT.md in this directory. Read-derived from source at the refs named; nothing was run.
+
+- app: AndroidAPS
+  kind: controller
+  ref: "AndroidAPS@598e2eb39c (3.4.2.6); 4.0.0 prereleases read at dev 7e1d537d49"
+  source: reports/consumer-impact-15.0.9/clients/android/androidaps.md
+  layers:
+    L0:
+      verdict: gains
+      today: "The v3 client never sends `_id`; it keeps the `identifier` from the POST reply and PATCHes and DELETEs by it. The 3.4.x v1 socket client reads `_id` from the `dbAdd` reply and sends it back on `dbUpdate`."
+      newer: "v3 creates, edits and deletes by `identifier` answer as today, and the reply adds `_id` and `matchedBy` beside the `identifier` it reads (I4, I5). The v1 `dbAdd` reply still carries a 24-hex `_id` (I2), and a 3.4.x treatment `dbUpdate` whose `_id` is the UUID of a v3-created record is moved to `identifier` and matched to that record (I9, I5) instead of the exact-string `_id` match it gets today."
+      rules: [I2, I4, I5, I9]
+      anchors:
+        - "AndroidAPS@598e2eb39c plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclient/acks/NSAddAck.kt:31-36"
+        - "AndroidAPS@598e2eb39c plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclient/DataSyncSelectorV1.kt:185-203"
+        - "AndroidAPS@598e2eb39c plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclientV3/NSClientV3Plugin.kt:659-714"
+    L1:
+      verdict: unchanged
+      today: "Writes entries, treatments (boluses, carbs, temp basals, profile switches, temporary targets, running modes as `OpenAPS Offline`), profile, food and devicestatus with `openaps.{suggested,enacted,iob}`. The 4.0.0 prereleases also write scene definitions and active-scene state to the v3 `settings` collection (`aaps`, `aaps-state`)."
+      newer: "The hub decomposes its devicestatus, treatments and profile into primitives as its well-known registration declares and keeps each document beside them, so every read it makes is answered from the composite as today (R1, R2). Publishing a `ControllerSettings` snapshot is open to it and not used (R5)."
+      rules: [R1, R2, R5]
+      anchors:
+        - "AndroidAPS@598e2eb39c core/nssdk/src/main/kotlin/app/aaps/core/nssdk/networking/NightscoutRemoteService.kt:41-103"
+        - "AndroidAPS@7e1d537d49 plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/SettingsIdentifiers.kt:19-20"
+    L2:
+      verdict: gains
+      today: "Declares nothing; the hub stores its documents with no record of which product or copy wrote them."
+      newer: "Its writes carry no instance id, so the hub attributes them to AndroidAPS's unregistered instance by the structural discriminators and carriers in specs/sync/registrations/androidaps.yaml, and never refuses one for exclusivity (registration §11, registration §17). Typed registration with fallback to carriers is open to a newer build (registration §6)."
+      rules: [registration §11, registration §17, registration §6]
+    L3:
+      verdict: opt-in
+      today: "Profile switches, temporary targets and running modes are treatments that end by amending their duration; it applies such treatments written by other clients only when the matching `NsClientAccept*` preference is on (default off), or on the AAPSClient build or a full sync. Remote commands come by SMS with an allowed number, TOTP and PIN, outside the hub; automation rules run on the phone; the 4.0.0 prereleases add scenes and client control (its own entry)."
+      newer: "Downloaded treatments stay data the hub stores and broadcasts without an expiry, destination or outcome, and the hub's active-state answers for its kinds follow its declarations (S10, A5, A7, A8, commands §3). The command record, fetch and plans are open to it; it registers no command sink, so a hub command or plan for it is refused at routing (CM1, CM18, plans §8)."
+      rules: [S10, A5, A7, A8, commands §3, CM1, CM18, plans §8]
+      anchors:
+        - "AndroidAPS@598e2eb39c plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsShared/NsIncomingDataProcessor.kt:143-230"
+        - "AndroidAPS@598e2eb39c core/keys/src/main/kotlin/app/aaps/core/keys/BooleanKey.kt:81-89"
+        - "AndroidAPS@7e1d537d49 plugins/sync/src/androidMain/kotlin/app/aaps/plugins/sync/smsCommunicator/SmsCommunicatorPlugin.kt:295-306"
+        - "AndroidAPS@598e2eb39c plugins/automation/src/main/kotlin/app/aaps/plugins/automation/AutomationPlugin.kt:98"
+    L4:
+      verdict: opt-in
+      today: "The v3 client reads each collection with `history/{srvModified}` or `date$gt`/`created_at$gt` at constant limits of at most 1000 and listens on the `/storage` and `/alarm` sockets; writes through API v1 or the v1 socket do not reach `/storage` (BF-164). The 3.4.x v1 client uses the main socket (`authorize`, `dbAdd`, `dbUpdate`, `dataUpdate`), which the 4.0.0 prereleases remove."
+      newer: "API v3, its history read and both sockets stay, as do the v1 socket and its events (sync-transport §7); which writes reach `/storage` stays open, so v1 writes still arrive only through its history read (T12, T10). One read and one write across collections are there for a build that calls them (T5, T7)."
+      rules: [sync-transport §7, T5, T7, T10, T12]
+      anchors:
+        - "AndroidAPS@598e2eb39c plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclientV3/services/NSClientV3Service.kt:163-199"
+        - "AndroidAPS@598e2eb39c plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclient/services/NSClientService.kt:361-375"
+        - "AndroidAPS@7e1d537d49 plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/ws/NsConnectHandler.kt:53-89,126"
+    L5:
+      verdict: unchanged
+      today: "The v3 client exchanges an access token at `/api/v2/authorization/request/<token>` for a JWT sent as `Authorization: Bearer`, refreshing once on 401 or 403; the 3.4.x v1 socket sends `sha1(API_SECRET)` in `authorize`. It needs per-collection write permissions, and on `/alarm` read and `notifications:*:ack`."
+      newer: "Under `single` the credentials and per-collection permissions are as today (AU5). Under `TENANCY_MODE=multi` the token or secret it holds must be the tenant's own, because tokens are signed with the tenant's key and resolution runs first (AU3)."
+      rules: [AU5, AU3]
+      anchors:
+        - "AndroidAPS@598e2eb39c plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclient/services/NSClientService.kt:361-375"
+        - "AndroidAPS@7e1d537d49 core/nssdk/src/commonMain/kotlin/app/aaps/core/nssdk/networking/NsAuth.kt:38-63,111-127"
+  notes: "On the multitenancy seam branch the v1 `dataUpdate` and `/alarm` events come from the process-wide load cycle and are withheld under `multi` (commands §3); no rule yet says whether they reach a tenant."
+
+- app: AndroidAPS client control
+  kind: controller
+  ref: "AndroidAPS@d5e7f5bd (4.0.0-rc1); local reads at dev 7e1d537d49; absent from 3.4.2.6"
+  source: reports/consumer-impact-15.0.9/clients/android/androidaps.md
+  layers:
+    L0:
+      verdict: unchanged
+      today: "Each message is a v3 `settings` document under a fixed identifier (`aaps_clientcontrol_hello_`, `cmd_<type>_`, `ack_`, `progress_`, `offer_` plus the client id), overwritten in place; the document `date` is a constant placeholder because API v3 refuses a changed `date` on a re-sent identifier."
+      newer: "One identifier names one document and is compared exactly, so each slot is overwritten in place as today (I6, I5). The v3 refusal of a changed `date` is an open decision, and the constant `date` is unaffected either way (identity §5)."
+      rules: [I5, I6, identity §5]
+      anchors:
+        - "AndroidAPS@7e1d537d49 plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/clientcontrol/ClientControlPublisher.kt:49-78,88-99"
+    L1:
+      verdict: unchanged
+      today: "Signed command, acknowledgement and progress envelopes are stored as ordinary documents in the v3 `settings` collection and never deleted."
+      newer: "The hub stores and serves them as documents and reads none of them (commands §3, CM10)."
+      rules: [commands §3, CM10]
+      anchors:
+        - "AndroidAPS@d5e7f5bd plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/clientcontrol/ClientControlReceiver.kt:86-99,394-395"
+    L2:
+      verdict: unchanged
+      today: "Neither the AAPSClient build nor the master declares anything; the well-known registration lists the `nightscout-settings` command transport as dev-only."
+      newer: "Its `settings` writes carry no instance id and are never refused for exclusivity (registration §11, registration §17)."
+      rules: [registration §11, registration §17]
+    L3:
+      verdict: opt-in
+      today: "The master accepts a command only with a valid per-client HMAC, a strictly increasing stored counter advanced before dispatch, a timestamp within ±5 min and before `validUntil`; doses are prepare and commit, computed and capped on the master. It acknowledges with signed `Executing`, `Done` (`Ok`, `Failed`, `Expired`) and a late `Delivery` `Failed`, correlated by the counter."
+      newer: "The counter already decides each command once across restarts, as CM21 asks, and the hub carries its signed envelopes unread (CM21, CM10). The hub's outstanding list and cancel are there for a build that sends through the command record (CM24, CM25)."
+      rules: [CM21, CM10, CM24, CM25, state-intent §7, commands §8]
+      anchors:
+        - "AndroidAPS@d5e7f5bd plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/clientcontrol/ClientControlReceiver.kt:80,321-341,370-374"
+        - "AndroidAPS@d5e7f5bd plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/clientcontrol/AuthorizedClientsRepository.kt:22-24,127-130,182-183"
+    L4:
+      verdict: unchanged
+      today: "Writes with v3 `PUT`, `PATCH` and `DELETE` on `/api/v3/settings`, reads with a limit of 100, and reacts to `/storage` create and update events on `settings` while also polling."
+      newer: "API v3 and the `/storage` socket stay, and v3 writes reach the socket today (sync-transport §7, T12)."
+      rules: [sync-transport §7, T12]
+      anchors:
+        - "AndroidAPS@7e1d537d49 core/nssdk/src/commonMain/kotlin/app/aaps/core/nssdk/networking/NightscoutApi.kt:264-284"
+        - "AndroidAPS@7e1d537d49 plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/clientcontrol/ClientControlReceiver.kt:67-75,240-279"
+    L5:
+      verdict: unchanged
+      today: "Both apps authenticate to the hub with the v3 access-token exchange and need read and write on `settings`; the commands themselves are authenticated end to end by the per-client signature, not by the hub."
+      newer: "Per-collection permissions and the single-tenant credentials are as today (AU5); under `multi` each app's token must be the tenant's own (AU3)."
+      rules: [AU5, AU3]
+
+- app: xDrip+
+  kind: uploader
+  ref: "xDrip@1ed760048 (2026.09.18)"
+  source: reports/consumer-impact-15.0.9/clients/android/xdrip.md
+  layers:
+    L0:
+      verdict: gains
+      today: "Sends its own 24-hex `_id` (derived from its treatment uuid) on `PUT /api/v1/treatments` and deletes by it; on 15.0.8 a treatment stored with a string `_id` by an earlier release gets an ObjectId copy on the next PUT, and the DELETE misses the string copy."
+      newer: "The 24-hex `_id` is kept as that ObjectId, and an `_id` matches every stored form of it, so the PUT finds the existing record and the DELETE removes it, as #8758 does on `dev` (I2, identity §3)."
+      rules: [I2, identity §3]
+      anchors:
+        - "xDrip@1ed760048 app/src/main/java/com/eveningoutpost/dexdrip/utilitymodels/NightscoutUploader.java:245-256,810-847,880-903"
+    L1:
+      verdict: unchanged
+      today: "Uploads entries (one POST with BG, meter and calibration), treatments, devicestatus with `device` and uploader battery, and activity; the follower reads entries, `devicestatus.json?count=1` and treatments."
+      newer: "Its documents are kept as written beside any decomposition, so what it reads back is answered as today (R1)."
+      rules: [R1]
+      anchors:
+        - "xDrip@1ed760048 app/src/main/java/com/eveningoutpost/dexdrip/utilitymodels/NightscoutUploader.java:1119-1178"
+        - "xDrip@1ed760048 app/src/main/java/com/eveningoutpost/dexdrip/cgm/nsfollow/NightscoutFollow.java:52-62,165-187"
+    L2:
+      verdict: unchanged
+      today: "Declares nothing, and no well-known registration describes it."
+      newer: "Its writes carry no instance id and are stored as today; exclusivity never blocks a carrier write (registration §11, registration §17)."
+      rules: [registration §11, registration §17]
+    L3:
+      verdict: none
+      today: "No profile, profile switch, override or remote command call was found (S10, S14 in the per-client file)."
+      newer: "Nothing in state, intent or commands reaches it."
+    L4:
+      verdict: unchanged
+      today: "API v1 REST only, with no socket: `count` is 10, 2880 or 1, `find[date][$gt]` and `find[uuid]` are its only filters, and a failed entries upload is retried every cycle."
+      newer: "API v1 stays as it is (sync-transport §7)."
+      rules: [sync-transport §7]
+      anchors:
+        - "xDrip@1ed760048 app/src/main/java/com/eveningoutpost/dexdrip/cgm/nsfollow/NightscoutFollow.java:52-62,108-117"
+        - "xDrip@1ed760048 app/src/main/java/com/eveningoutpost/dexdrip/utilitymodels/UploaderTask.java:160-200"
+    L5:
+      verdict: unchanged
+      today: "Sends `api-secret: sha1(secret)` taken from the URL on the uploader and the follower, with no token or JWT; a follower without a secret sends no header."
+      newer: "Under `single` this is as today (AU5, AU3). Under `multi` the secret must be the tenant's own root credential (AU3); AU1–AU5 do not say whether a tenant root is accepted in the `api-secret` header form."
+      rules: [AU5, AU3]
+      anchors:
+        - "xDrip@1ed760048 app/src/main/java/com/eveningoutpost/dexdrip/utilitymodels/NightscoutUploader.java:406-410"
+        - "xDrip@1ed760048 app/src/main/java/com/eveningoutpost/dexdrip/cgm/nsfollow/utils/NightscoutUrl.java:70-86"
+  notes: "The optional direct MongoDB uploader bypasses the Nightscout API and was not read."

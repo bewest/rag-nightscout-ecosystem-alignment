@@ -534,6 +534,8 @@ How the `_id` entries are applied on a write is in [identity I9](identity.md#1-r
 
 ## 17. Compatibility
 
+Per app, read from source: [compatibility](compatibility.md).
+
 | | older hub | newer hub |
 |---|---|---|
 | **older controller** | today's documents | no registration and no instance id: the well-known registration describes the writes by structural discriminator and carrier; they are attributed to the product's unregistered instance and never refused for exclusivity; catalogue mappings apply where the writer's version is known |

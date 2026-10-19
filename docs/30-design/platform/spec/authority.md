@@ -208,6 +208,11 @@ time-bounded policies are prior art for grants.
    holding `api:commands:create` sends commands with no proposal (UCA-AUTH-002); grants carry no
    expiry (UCA-AUTH-003); reads are neither scoped nor recorded (UCA-AUTH-004); and revoking a
    credential does not say what happens to its open socket subscriptions (UCA-SYNC-SERVE-005).
+7. **Today's credential forms under `multi`** ([compatibility §6](compatibility.md#6-open)):
+   whether a tenant's root credential is accepted in the forms apps send today, the hashed
+   `api-secret` header (Loop, Trio, xDrip+, xDrip4iOS, the uploaders) and the v1 socket's
+   `secret` (AndroidAPS 3.4.x), and how subject tokens a follower derives locally are re-rooted
+   (AU3).
 
 ## 10. Conformance cases
 

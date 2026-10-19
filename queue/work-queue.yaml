@@ -16234,9 +16234,9 @@ items:
     title: "One table of every listed app against every layer: today's behaviour, and what changes with a newer hub"
     parcel: platform
     repo: rag-nightscout-ecosystem-alignment
-    branch: ""
-    base: main
-    state: not-started
+    branch: docs/compat-apps-2026-10-18
+    base: main@8cb0b5ed
+    state: done
     pr: []
     blast_radius: >
       Expected: a living compatibility table under
@@ -16256,9 +16256,23 @@ items:
     semver_reason: specification in this repository; ships nothing
     register: []
     gates:
-      - no-gate: >
-          Not started. The gate is written with the table: a platform-spec
-          layer for it, and a check that every app in the census has a row.
+      - run: node tools/queue/gates/platform-spec.js compatibility
+        kind: static
+        describe: >
+          FAILS when the page is missing, carries amendment narration, names a
+          check that is not defined, states a count that differs from its
+          table, or when registration, commands, sync-transport, plans or
+          authority does not link to it.
+      - run: python3 -m tools.nsschema.compat_tables --check
+        kind: static
+        describe: FAILS when a table differs from specs/sync/compat/*.yaml.
+      - run: python3 -m pytest -q tools/nsschema/test_compat.py
+        kind: unit
+        describe: >
+          FAILS when a surveyed client has no entry, a source is missing, a
+          layer lacks a verdict or a cell, a rule cited does not exist, a
+          gains, opt-in or affected cell names no rule, or §5 omits an
+          affected cell.
     blocks_on: []
     evidence:
       - docs/60-research/programme/stack-census-2026-09-30.md
@@ -16266,6 +16280,14 @@ items:
       The maintainer asked for this item on 2026-10-18. Re-run the stack
       census before quoting its count; the consumer-impact survey for
       15.0.9 is the model for reading clients against a change.
+      Written 2026-10-18 as docs/30-design/platform/spec/compatibility.md
+      from specs/sync/compat/*.yaml: 32 entries (31 apps from the 15.0.9
+      consumer-impact survey's per-client files, read by four agents, and
+      one listing what is not read), six layers each. Under single, two
+      answers change (oref0's re-sent treatments merge, xDrip4iOS's
+      duplicate reply); under multi every app takes its tenant's credential,
+      and LoopFollow, LoopCaregiver and the roles gateway meet more (§5).
+      Two open items were added to authority §9 and sync-transport §8.
 
   - id: SPEC-DEV-GUIDES
     title: "Two developer guides: adding a setting in a controller's next release, and adding a new controller"
