@@ -42,7 +42,7 @@ The constraints a format rule does need (each grounded below):
 |---|---|---|
 | C1 | a JSON string, at least one non-whitespace character | already enforced on API v3 create (`create/validate.js:19`) [R]; v1 treatments reject a non-string (`treatments.js:18-25`) [R] |
 | C2 | **at most 256 characters** (proposal) | an indexed `identifier` near 1 KB fails the insert on MongoDB before 4.2 (measured on 3.6.8: 1,000 characters fails, the compound `{date, identifier, created_at}` key is 1,026 bytes) [M]; the URL path of an API v3 read is capped by Node's 16 KB header limit (20,000 characters gave 431) [M] |
-| C3 | **printable ASCII, no `/`, `%`, `?`, `#`, space or control characters** (proposal; or "URL-unreserved characters `A-Z a-z 0-9 - . _ ~` plus `:`") | API v3 addresses a record as `/api/v3/{collection}/{identifier}`. A raw `/` gives 404, a malformed `%` gives 400, and `?`/`#`/space must be percent-encoded by every client [M]; `%2F` works in Express but is commonly rewritten or refused by reverse proxies [R, not run] |
+| C3 | **printable ASCII, no `/`, `%`, `?`, `#`, space or control characters** (proposal; or "URL-unreserved characters `A-Z a-z 0-9 - . _ ~` plus `:`") | API v3 addresses a record as `/api/v3/{collection}/{identifier}`. A raw `/` gives 404, a malformed `%` gives 400, and `?`/`#`/space must be percent-encoded by every client [M]; `%2F` works in Express but is commonly rewritten or refused by reverse proxies [R, not run]. End to end on both servers, an encoded `/` works on every v3 by-identifier route: §3.4 (2026-10-18) [M] |
 | C4 | **not exactly 24 hex characters** unless it equals the record's own `_id` | both API v3 (`filterForOne`, `identifyingFilter`) and v1 (`normalizeIdValue`) treat a 24-hex value as an ObjectId `_id` as well, so it can address a different record [R] |
 | C5 | **not a reserved word**: `history` (shadowed by `GET /api/v3/{col}/history`), `.` and `..` (normalized away by URL libraries), and client sentinels such as `invalid`, `undefined`, `null`, `NaN` | `GET /api/v3/entries/history` reaches the history route, not the record [M]; G7SensorKit returns the literal `invalid` when its inputs are missing (§1) [R] |
 | C6 | **one identifier, one record**, per collection, forever (no reuse after a long interval) | already in the reply; the companion note found 13 Loop `syncIdentifier` values on 2 to 4 treatments [M] |
@@ -184,6 +184,50 @@ HTTP ([`v3-path-routing.js`](identifier-format-2026-10-17/v3-path-routing.js); E
 large to index" (the compound key is 1,026 bytes at 1,000 characters). MongoDB 4.2 removed this limit
 at FCV 4.2 (not fetched from MongoDB's documentation; MongoDB's tracker
 [DOCS-11942](https://jira.mongodb.org/browse/DOCS-11942) was listed by a search, not opened).
+
+### 3.4 URL-form identifiers, end to end (2026-10-18) [M]
+
+The maintainer prefers URL syntax for identifiers (`dexcom://g7/<serial>/<offset>`, see the
+[identifier conventions](../../30-design/platform/identifier-conventions.md)), which puts `:` and
+`/` in every value. §3.3 ran Express routing alone; this run asks the two servers.
+[`url-identifier-probes.js`](identifier-format-2026-10-17/url-identifier-probes.js) wrote
+synthetic `scheme://g7/<digits>/<seconds>` identifiers to 15.0.8 (`92d08342`) and dev (`fade2299`),
+started by the record-identity lab on a dedicated `mongo:7` container (7.0.43), with no proxy in
+front. Output: [`url-identifier-results-2026-10-18.md`](identifier-format-2026-10-17/url-identifier-results-2026-10-18.md).
+Both refs gave the same cell in every row, and two runs gave the same table.
+
+| path | encoded (`%3A`, `%2F`) | `%2F` only, `:` raw | raw |
+|---|---|---|---|
+| v3 POST (identifier in the body), entries and treatments | 201, stored exactly | — | — |
+| v3 GET `/{collection}/{identifier}` | 200, the record | 200, the record | **404** |
+| v3 PATCH, PUT, DELETE by identifier | 200 each; PATCH and PUT change the stored value, DELETE sets `isValid: false` | not run | PATCH **404** |
+| v3 PUT for a new identifier (create) | 201, stored exactly | — | — |
+| v3 search `?identifier$eq=` and `?identifier=` | 1 found each | — | — |
+| v1 `find[identifier]=` | 1 found | — | 1 found (raw `:` and `/` are legal in a query string) |
+| v1 treatments POST, then a re-send with another amount | one record, updated | — | — |
+| v1 entries POST, then v3 GET | stored with the identifier; v3 GET 200 | — | — |
+| v1 `DELETE /api/v1/treatments/{identifier}` | 200 with `deletedCount: 0`, the record stays | — | — |
+
+Controls: the same identifier plus `/1` finds nothing on v3 GET (404), v3 search (0) and v1
+`find[identifier]=` (0), on both refs; the raw rows are the routing control.
+
+Consequences for the character set:
+
+- **`/` and `:` can be allowed.** A URL-form identifier works on every API v3 by-identifier route
+  and on v1 `find[identifier]=` at the shipping release and at dev, **provided the client
+  percent-encodes the identifier as one path segment** in a v3 path (every reserved character,
+  `/` included: `encodeURIComponent` in JavaScript). A path-escaping helper that leaves `/` alone
+  builds a different route and gets 404; Foundation's `urlPathAllowed` character set is such a
+  helper (it allows `/`) [R, Apple documentation, not run].
+- **v1 by-id routes do not take them**, as for every non-UUID value (§3.1): v1 DELETE by such an
+  identifier answers 200 and deletes nothing. A client that deletes over v1 uses the `_id` from the
+  write reply.
+- **Reverse proxies are not measured.** Some decode `%2F` before forwarding or refuse it (§3.3).
+  A client behind one can read with v3 search (`?identifier$eq=`, measured above) and with v1
+  `find[identifier]=`; update and delete by identifier over v3 still need the path. A site
+  operator check of a proxied deployment is the open item.
+- `%`, `?`, `#`, space and control characters stay excluded: they need escaping everywhere and
+  appear in no convention.
 
 ## 4. UUIDv5 as the bridge
 
@@ -549,6 +593,17 @@ The §3.3 harnesses take the cgm-remote-monitor checkout (for its `node_modules`
 ```sh
 node docs/60-research/tenancy/identifier-format-2026-10-17/v3-path-routing.js <cgm-remote-monitor checkout>
 node docs/60-research/tenancy/identifier-format-2026-10-17/index-key-size.js <cgm-remote-monitor checkout>  # needs mongod on 127.0.0.1:27017; creates and drops idfmt_scratch_20261017
+```
+
+§3.4 runs against the record-identity lab's servers (same secret, same mongo):
+
+```sh
+tools/lab/record-identity/lab.sh up
+S=${RID_STATE:-${TMPDIR:-/tmp}/record-identity}
+node docs/60-research/tenancy/identifier-format-2026-10-17/url-identifier-probes.js 1508 "$S/b1508" 3983 > a.json
+node docs/60-research/tenancy/identifier-format-2026-10-17/url-identifier-probes.js dev "$S/bdev" 3984 > b.json
+node docs/60-research/tenancy/identifier-format-2026-10-17/url-identifier-probes.js --compare a.json b.json
+tools/lab/record-identity/lab.sh down
 ```
 
 `idshape.py` needs `externals/ns-data` at the main checkout's path (as the companion script's `BASE` names) and the
