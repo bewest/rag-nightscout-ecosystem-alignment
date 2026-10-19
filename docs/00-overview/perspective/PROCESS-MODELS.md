@@ -146,7 +146,7 @@ within these regulations" ([AAPS FAQ](https://wiki.aaps.app/en/latest/UsefulLink
 reaches manufacturers and people who hand out built apps, and stops short of the person and of
 published source.
 
-![0·diy-status as regulators have spoken: the FDA's route to manufacturers carries registration, 510(k) or De Novo and the iCGM, ACE and iAGC special controls, and a cleared controller sits among the manufacturers; the FDA's 2019 warning reaches the person, and FDA officials have said informally that a DIY build is not exempt; US law prohibits introducing an unauthorised device into interstate commerce with no sale condition, and FDA officials have said free sharing is not outside distribution; the EU requires a CE mark to place a device on the market, with free supply marked to verify; projects publish source to the person and to anyone who builds apps for others; anyone running it for others has no regulator line](diagrams/0-diy-status--actual.svg)
+![0·diy-status as regulators have spoken: the FDA's route to manufacturers carries registration, 510(k) or De Novo and the iCGM, ACE and iAGC special controls, and a cleared controller sits among the manufacturers; the FDA's 2019 warning reaches the person, and FDA officials have said informally that a DIY build is not exempt; US law prohibits introducing an unauthorised device into interstate commerce with no sale condition, and FDA officials have said free sharing is not outside distribution; projects give the person source, guides, workshops and a browser build that runs on GitHub Actions and uploads to TestFlight; the EU requires a CE mark to place a device on the market, with free supply marked to verify; projects publish source to the person and to anyone who builds apps for others; anyone running it for others has no regulator line](diagrams/0-diy-status--actual.svg)
 
 **As regulators have spoken.** On 2019-05-17 the FDA warned patients and clinicians against
 "unapproved or unauthorized devices", noting that "patients may choose to create these systems",
@@ -155,11 +155,11 @@ and said it is "aware of manufacturers illegally marketing unauthorized devices"
 read 2026-10-17; [history](../observations/HISTORY.md)). **No published FDA document was found
 that addresses an individual building such software for their own use, and none that exempts it.**
 FDA officials have addressed it in conference presentations and in discussions with the Nightscout
-Foundation (reported by the Foundation; no published record of these statements was found): the
-FDA does not treat DIY or personal distribution as exempt or permitted; what the community does
-"looks like distribution"; and "the absence of money exchanged" is not one of the triggers the FDA
-uses to decide whether distribution is happening. US device duties attach to establishments
-and distribution: registration (21 CFR 807), premarket notification "before ... the introduction or
+Foundation (reported by the Foundation; no recording, slides or minutes were located): Courtney
+Lias of the FDA said at DDATA 2016 that "it looks like distribution is happening"; the FDA does not
+treat DIY or personal distribution as exempt or permitted; and "the absence of money exchanged" is
+not one of the triggers the FDA uses to decide whether distribution is happening. US device duties
+attach to establishments and distribution: registration (21 CFR 807), premarket notification "before ... the introduction or
 delivery for introduction into interstate commerce for commercial distribution" (807.81(a)), where
 commercial distribution is defined as a device "held or offered for sale" (807.3(b)); the registration
 exemptions in 807.65 list no class for a person making a device for their own use
@@ -167,8 +167,29 @@ exemptions in 807.65 list no class for a person making a device for their own us
 U.S.C. 331(a) prohibits introducing an adulterated or misbranded device into interstate commerce
 with no sale condition ([LII](https://www.law.cornell.edu/uscode/text/21/331), read 2026-10-17).
 No published source read says whether publishing source code, or handing out a built app free, is
-either of these; the FDA officials' statements above treat free sharing as distribution. The regulated route exists: the iCGM, ACE pump and iAGC special
-controls ([cloud layer §2.2](../../60-research/programme/stack-census-2026-09-30/cloud-layer.md#22-data-rights-law-and-regulation)),
+either of these; the FDA officials' statements above treat free sharing as distribution.
+
+**What the community does around a personal build.** Each person still builds and runs their own
+copy, which spreads operator responsibility across individuals. The activity around that step has
+changed since 2014, when a person compiled the code on their own computer. By the Foundation's
+account (2026-10-19), the community now:
+
+- publishes browser builds: the person forks a repository, adds their account secrets, and a
+  GitHub Actions workflow builds the app and uploads it to TestFlight, with no local Xcode
+  (Loop, Trio, xDrip4iOS, LoopFollow, LoopCaregiver;
+  [TestFlight distribution §1.2](../../10-domain/testflight-distribution-infrastructure.md#12-testflight-via-browser-build));
+- runs regular Zoom and other online workshops, in several formats, where people build the
+  software together, and holds live events;
+- coordinates documentation sites that direct people to free tiers, trials and other resources
+  from many companies;
+- promotes the software publicly, on social media and through foundations that describe themselves
+  as sponsoring or being the centre of the activity, and offers it free with a few steps left to
+  the person.
+
+These are the activities FDA officials have described as looking like distribution.
+
+The regulated route exists: the iCGM, ACE pump and iAGC special controls
+([cloud layer §2.2](../../60-research/programme/stack-census-2026-09-30/cloud-layer.md#22-data-rights-law-and-regulation)),
 and Tidepool Loop, cleared by 510(k) K203689 on 2023-01-23 as an iAGC, beside the continuing DIY
 project ([precedents](PRECEDENTS.md#tidepool-loop-20202023)). In the EU, the MDR's in-house
 exemption (Article 5(5)) is for health institutions: "an organisation the primary purpose of which
@@ -207,12 +228,17 @@ The regulated form of running it for others is drawn in 2·controller-operator.
    a warning, and FDA officials have said informally that DIY is not exempt; the EU's only
    exemption found is for health institutions. Building for oneself is a position regulators have
    not written a rule for, not a protected one.
-3. **The community's beliefs differ by project.** One project reads EU rules as reaching free
+3. **The person's own step has shrunk; the shared activity around it has grown.** In 2014 the
+   person compiled the code. Today the person forks a repository and runs an automated build,
+   often in a workshop, following coordinated documentation, with the software promoted and
+   offered free. Those shared activities, not the final build step, are what FDA officials have
+   said look like distribution.
+4. **The community's beliefs differ by project.** One project reads EU rules as reaching free
    distribution of built apps; others say only "not approved". The beliefs agree that the person
    carries the risk.
-4. **Running it for others has a regulated form and no published DIY form.** The regulated form is
+5. **Running it for others has a regulated form and no published DIY form.** The regulated form is
    a submission and, for interoperable devices, a contract that assigns complaint duties.
-5. **New requirements reach the distributor first.** §524B and app-store declarations bind whoever
+6. **New requirements reach the distributor first.** §524B and app-store declarations bind whoever
    submits or publishes. No new published requirement names the self-builder; FDA officials
    describe the cybersecurity work as closing unintended-use paths, with discretion in how the FDA
    acts.
@@ -225,7 +251,9 @@ for regulatory counsel, not advice; no enforcement intent is inferred beyond wha
 
 1. Whether publishing AID source code (no binaries, no sale) is "introduction or delivery for
    introduction into interstate commerce" of a device under 21 U.S.C. 331(a) or 21 CFR 807, given
-   FDA officials' informal view that the community's practice looks like distribution.
+   FDA officials' informal view that the community's practice looks like distribution; and
+   whether workshops, coordinated build documentation, automated build workflows and public
+   promotion by projects or foundations are distribution, promotion or labelling of a device.
 2. How free distribution of a built app is treated under 807.3(b) ("held or offered for sale") and
    331(a), given FDA officials' statement that the absence of money is not a trigger they use.
 3. Whether an individual building for personal use is a "manufacturer" under 21 CFR 807.3(d) or
@@ -239,9 +267,10 @@ for regulatory counsel, not advice; no enforcement intent is inferred beyond wha
 7. Whether the FDA's 2019-05-17 notice remains current, and whether any later FDA statement on
    DIY or open-source AID exists.
 8. A citable record (slides, minutes, recordings or correspondence) of the FDA officials'
-   statements reported here: that DIY or personal distribution is not exempt, that the community's
-   practice looks like distribution, that the absence of money is not a trigger, and that the
-   cybersecurity work aims to close unintended-use paths.
+   statements reported here, starting with Courtney Lias's DDATA 2016 talk: that DIY or personal
+   distribution is not exempt, that the community's practice looks like distribution, that the
+   absence of money is not a trigger, and that the cybersecurity work aims to close unintended-use
+   paths.
 9. Whether a person or entity running AID software for others (including paid builders or hosted
    controllers) is a manufacturer, and whether 807.65(i) (service through "a previously
    manufactured device") could ever apply.

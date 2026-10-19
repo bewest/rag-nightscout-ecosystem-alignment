@@ -15,9 +15,12 @@
 #               (premarket notification before "introduction ... for commercial distribution"), eCFR;
 #               21 U.S.C. 331(a) (LII); cloud-layer §2.2 (iCGM 862.1355, ACE 880.5730, iAGC 862.1356);
 #               FDA officials, conference presentations and discussions with the Nightscout Foundation
-#               (reported by the Foundation; no published record found): DIY or personal distribution not
+#               (reported by the Foundation; no recording located): Courtney Lias, DDATA 2016, "it looks like
+#               distribution is happening"; DIY or personal distribution not
 #               exempt; community practice "looks like distribution"; "the absence of money exchanged" is not
 #               a distribution trigger; cybersecurity work closes unintended-use paths, with discretion;
+#               browser builds (GitHub Actions to TestFlight), 10-domain/testflight-distribution-infrastructure
+#               §1.2; workshops and coordinated documentation, the Foundation's account 2026-10-19;
 #               HISTORY 2023-01-23 (Tidepool Loop K203689, cleared as an iAGC); MDCG 2023-1 (MDR Art. 5(5)
 #               applies to health institutions; use outside the institution's legal entity is not in-house)
 #   emerging  - FDA cybersecurity page (FD&C Act §524B in effect 2023-03-29; guidance 2025-06-27); LII 21 U.S.C.
@@ -48,7 +51,9 @@ edges:
               emerging: "the same, plus premarket cybersecurity (§524B, 2023)"}}
   - {from: eu, to: mfr, kind: control, label: "CE marking"}
   - {from: projects, to: person, kind: control, label: "source and instructions",
-     labels: {believed: "source; \"not approved for therapy\""}}
+     labels: {believed: "source; \"not approved for therapy\"",
+              actual: "source, guides,\nworkshops, browser build",
+              emerging: "source, guides,\nworkshops, browser build"}}
   - {from: person, to: app, kind: control, label: "build and run",
      labels: {believed: "build and run: \"you take\nfull responsibility\""}}
   - {from: eu, to: binary, kind: control, label: "CE mark to supply",
