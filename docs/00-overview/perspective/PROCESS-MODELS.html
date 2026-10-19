@@ -1197,7 +1197,7 @@
   <span class="md-ellipsis">
     
   
-    Conway's Law applied to the Nightscout ecosystem
+    The Nightscout ecosystem: a case study in Conway's Law
   
 
     
@@ -2785,8 +2785,8 @@
 
 
 <h1 id="process-models-what-we-believe-and-how-it-works">Process models: what we believe, and how it works<a class="headerlink" href="#process-models-what-we-believe-and-how-it-works" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-19 at <code>060287245</code>.</em></p>
-<p><em>What this is: a map (part 2 of the overview, perspective; <a href="../index.html">how the overview is organised</a>), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after <a href="STRUCTURES.html">who controls what</a>; leads to <a href="CONWAY.html">Conway's Law applied to the ecosystem</a>. Living page,
+<p><em>Living document, last changed 2026-10-19 at <code>35ec9da5a</code>.</em></p>
+<p><em>What this is: a map (part 2 of the overview, perspective; <a href="../index.html">how the overview is organised</a>), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after <a href="STRUCTURES.html">who controls what</a>; leads to <a href="CONWAY.html">the Conway's Law case study</a>. Living page,
 written 2026-10-17; 1·teams added 2026-10-18. Companion to <a href="STRUCTURES.html">control structures</a>, whose conventions,
 legend and icons apply here. Every node and edge comes from a source cited under the drawing;
 where a panel is inferred or proposed, it says so.</em></p>
@@ -3304,8 +3304,8 @@ use five record-id conventions
 (<a href="../../60-research/tenancy/identifier-format-2026-10-17.html#1-per-app-identity-for-cgm-readings-and-the-treatment-identity-each-app-sends-r">identifier format research §1</a>).
 Intake and registry have no named runner (<a href="#2shared-infra-shared-operations-and-who-runs-them">2·shared-infra</a>).</p>
 <p><em>Interpretation.</em> The organisation and the data contract have the same shape: where no team owns
-a join, the hub keeps every side of it. The set is read through Conway's Law on
-<a href="CONWAY.html">Conway's Law applied to the ecosystem</a>.</p>
+a join, the hub keeps every side of it. The set is read through Conway's Law in
+<a href="CONWAY.html">the case study</a>.</p>
 <p><em>Caveat.</em> Counts are as measured on the dates given; re-measure before quoting.</p>
 <h2 id="the-ecosystems-designs-believed-actual-proposed">The ecosystem's designs: believed, actual, proposed<a class="headerlink" href="#the-ecosystems-designs-believed-actual-proposed" title="Permanent link">&para;</a></h2>
 <h3 id="3identity-who-is-who-on-a-hub-and-who-may-do-what">3·identity: who is who on a hub, and who may do what<a class="headerlink" href="#3identity-who-is-who-on-a-hub-and-who-may-do-what" title="Permanent link">&para;</a></h3>
@@ -3458,7 +3458,7 @@ An agent would register its own instance; role types are open "so roles such as 
 acting can be added for agents" (D19 rule 5). <strong>Open:</strong> the command API, proposed in the
 <a href="../../30-design/platform/spec/commands.html">commands specification</a> and not decided, the
 contract per tenancy mode (<code>SPEC-REG-MODES</code>), the first hub (<code>HUB-REG-CRM</code>), the proposals to
-Nocturne and the controllers, all not started (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/060287245f17f3539158d14eb999b9e3a7a3e910/queue/work-queue.yaml">queue</a>); and how an
+Nocturne and the controllers, all not started (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/35ec9da5ad432c45421a54bffdf3d18f18ad4123/queue/work-queue.yaml">queue</a>); and how an
 agent is scoped, limited and revoked, which no decision covers.</p>
 <p><em>Interpretation.</em> Properties the three panels show:</p>
 <ol>
@@ -3535,7 +3535,7 @@ security contact, complaint workflow, SBOM or build-provenance record was found
 (<a href="../PARTNER-READINESS.html#3-what-a-manufacturer-will-need-to-see">partner readiness §3</a>). The
 conformance suite lives in this repository: 85 vector files, an oref0 runner, and AndroidAPS and
 Loop runners not implemented (<a href="../../../conformance/index.html"><code>conformance/</code></a>;
-<code>tools/conformance_suite.py:43-55</code>). This repository's <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/060287245f17f3539158d14eb999b9e3a7a3e910/.github/workflows/ci.yml">CI</a> runs
+<code>tools/conformance_suite.py:43-55</code>). This repository's <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/35ec9da5ad432c45421a54bffdf3d18f18ad4123/.github/workflows/ci.yml">CI</a> runs
 Python syntax and spec validation; the suite and the <a href="../../../queue/index.html">queue gates</a> run by
 <code>make</code>, outside CI. The 15.0.9 run records are the nearest thing to release evidence
 (<a href="../QUALITY-SYSTEM.html#41-the-record-every-run-leaves">quality system §4.1</a>).</p>
