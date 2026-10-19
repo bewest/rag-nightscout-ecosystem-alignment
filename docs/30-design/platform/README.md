@@ -201,3 +201,7 @@ the specifications set up, lists each unsafe control action with the rule that p
 names the gaps the specifications now carry as open. [Compatibility](spec/compatibility.md) says,
 for every app the corpus holds and every layer, what the app does today and what it sees from a
 hub that implements the specifications without the app changing.
+
+Two guides walk a controller developer through the specifications step by step, each step naming
+its rule and the conformance case that shows it: [add a setting in your next
+release](guides/add-a-setting.md) and [bring a new controller onto a hub](guides/new-controller.md).

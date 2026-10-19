@@ -16389,9 +16389,9 @@ items:
     title: "Two developer guides: adding a setting in a controller's next release, and adding a new controller"
     parcel: platform
     repo: rag-nightscout-ecosystem-alignment
-    branch: ""
-    base: main
-    state: not-started
+    branch: docs/dev-guides-2026-10-18
+    base: main@127f69e1
+    state: done
     pr: []
     blast_radius: >
       Expected: two contributor-facing guides beside the specifications.
@@ -16413,9 +16413,18 @@ items:
     semver_reason: documentation in this repository; ships nothing
     register: []
     gates:
-      - no-gate: >
-          Not started. The gate is written with the guides: every rule and
-          case a step names exists.
+      - run: python3 -m pytest -q tools/nsschema/test_dev_guides.py
+        kind: unit
+        describe: >
+          FAILS when a step names no rule or no case, a rule cited is not in a
+          specification's table (or a decision, or an existing section), a
+          case cited does not exist, an example differs from the case it was
+          copied from, a guide does not link the compatibility page, carries
+          amendment narration or lacks its header, or the index does not link
+          it.
+      - run: python3 -m tools.nsschema.guide_examples --check
+        kind: static
+        describe: FAILS when a generated example differs from its case.
     blocks_on: [SPEC-COMPAT-APPS]
     evidence:
       - docs/30-design/platform/README.md
@@ -16423,6 +16432,18 @@ items:
     notes: >
       The maintainer asked for this item on 2026-10-18, after the
       compatibility table, so each guide can say what an older app sees.
+      Written 2026-10-18 as docs/30-design/platform/guides/add-a-setting.md
+      (21 steps) and new-controller.md (52 steps), every example generated
+      from a case by tools/nsschema/guide_examples.py, with C4 context and
+      container drawings (tools/structure-diagrams/inputs/3-guide-*.yaml).
+      Each guide ends with the steps no case shows: typed settings fields,
+      the typed write route and body, reading a typed record back,
+      projecting an extension; and for commands, a capability member,
+      request paths for fetch, report and cancel, a fetch cadence, a socket
+      event for a command, and the effect record in an outcome report. The
+      example fixture's override kind declares no acceptsFromHub, so its
+      command-sink claim would be refused; the guide shows the declaration
+      from a case.
 
   - id: SPEC-REG-MIGRATE
     title: "Registration state across a single-tenant site's move into a tenant, and back"
