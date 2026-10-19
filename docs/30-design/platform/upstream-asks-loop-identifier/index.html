@@ -2341,6 +2341,8 @@
       
         
       
+        
+      
     
     
     
@@ -3019,6 +3021,34 @@
     
   
     Evidence-weighted approval: what a plan or proposal needs before a controller acts on it
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../identifier-conventions.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Identifier conventions: one identifier per real thing
   
 
     
@@ -5156,7 +5186,7 @@
 
 
 <h1 id="reply-to-the-loop-developers-identifier-proposal">Reply to the Loop developers' <code>identifier</code> proposal<a class="headerlink" href="#reply-to-the-loop-developers-identifier-proposal" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>771157675</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>7e5cf75de</code>.</em></p>
 <p><em>What this is: an outreach draft (contributor-facing). Read after the <a href="../spec/identity.html">identity
 specification</a>; leads to the <a href="../upstream-asks-device-simulators/index.html">device-simulator
 requests</a>. Status: </em><em>draft, not yet sent; for maintainer review.</em><em> Queue item <code>LOOP-ID-REPLY</code>.
@@ -5176,12 +5206,20 @@ otherwise:</p>
    it. Other values are not valid; <code>UUID_HANDLING</code> (default on) moves any non-24-hex string <code>_id</code> to
    <code>identifier</code> on treatments and entries, as a compatibility rule.</li>
 <li>If <code>_id</code> is absent, the client sends <code>identifier</code>, an opaque string compared exactly,
-   not necessarily a UUID: 1-256 characters from <code>A-Za-z0-9._~:-</code>, not exactly 24 hex, no
-   placeholders (<code>invalid</code>, <code>undefined</code>, <code>null</code>, <code>NaN</code>); a UUID is needed only for today's v1
-   by-<code>_id</code> routes (<a href="../../../60-research/tenancy/identifier-format-2026-10-17.html">identifier format</a>,
-   queue <code>ID-FORMAT-DECISION</code>). The server assigns <code>_id</code>. One identifier names one record.</li>
+   not necessarily a UUID: the record's semantic identity (this reading, this pump event, this
+   carb entry), so two uploads of one real thing carry one value. URL syntax, from the
+   <a href="../identifier-conventions.html">identifier conventions</a> table: a source scheme for readings and
+   pump events (manufacturer as scheme, model first: <code>dexcom://g7/&lt;serial&gt;/&lt;offset&gt;</code>), an app
+   scheme for records made in the app (<code>loop://carbs/&lt;uuid&gt;</code>) (maintainer, 2026-10-18).
+   1-256 characters from <code>A-Za-z0-9._~:/-</code>, percent-encoded as one segment in API v3 paths (a raw
+   <code>/</code> is 404; measured 2026-10-18, <a href="../../../60-research/tenancy/identifier-format-2026-10-17.html#34-url-form-identifiers-end-to-end-2026-10-18-m">identifier format §3.4</a>),
+   not exactly 24 hex, no placeholders (<code>invalid</code>, <code>undefined</code>, <code>null</code>, <code>NaN</code>); a UUID is needed
+   only for today's v1 by-<code>_id</code> routes (queue <code>ID-FORMAT-DECISION</code>, <code>ID-CONVENTIONS</code>). The server
+   assigns <code>_id</code>. One identifier names one record.</li>
 <li>If neither is sent, the collection's time key applies (entries <code>sysTime</code> + <code>type</code>, treatments
-   <code>created_at</code> + <code>eventType</code>); this fallback may be deprecated later.</li>
+   <code>created_at</code> + <code>eventType</code>). <code>identifier</code> becomes mandatory at a future version boundary and
+   for registered controller instances; until then legacy paths keep this fallback (maintainer,
+   2026-10-18; queue <code>ID-ABSENT-DECISION</code>).</li>
 </ol>
 <p>Tie-break (maintainer, 2026-10-18; queue <code>ID-CLIENT-OID-DECISION</code>): when a write carries both and
 they point at different records, <code>identifier</code> decides, as in D20 rule 5 and v1 treatments today
@@ -5344,7 +5382,7 @@ model is generally workable; the previous, longer version is in git history at <
 <p>Decisions cited: <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">D20 rule 5 and rule 7</a>
 (<code>18397441</code>, 2026-10-16); <a href="../../tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-10-12">write contract §3 (U4, U6) and §6.1</a>
 (2026-10-12); <a href="../nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">hub-sync design §3.7</a>
-(<code>write.ids</code>, <code>matchedBy</code>); cases in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/36d0c33edaa92cbb80cd5bd6c1a59731b24e7dd7/specs/sync/conformance/quirks"><code>specs/sync/conformance/quirks/</code></a>;
+(<code>write.ids</code>, <code>matchedBy</code>); cases in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/5d9fce255f88dd5ec72648b538b807703289f00e/specs/sync/conformance/quirks"><code>specs/sync/conformance/quirks/</code></a>;
 <a href="../../../../traceability/sync-identity-gaps.html">GAP-SYNC-032</a> ("send <code>syncIdentifier</code> as
 <code>identifier</code>") and REQ-BATCH-003 (per-item results) in
 <a href="../../../../traceability/sync-identity-requirements.html">sync-identity-requirements</a>.</p>
@@ -5391,6 +5429,13 @@ send <code>identifier</code>) is the direction the reply takes.</p>
 <td>—</td>
 <td>open questions become six concrete cases with today's behaviour, our default and an answer column; tie-break reversed to <code>identifier</code> decides (maintainer)</td>
 <td><code>ID-CLIENT-OID-DECISION</code>; write contract §6.1</td>
+</tr>
+<tr>
+<td>2026-10-18</td>
+<td>revised</td>
+<td>—</td>
+<td>case 5's default: time key on legacy paths now, <code>identifier</code> mandatory at a future version boundary and for registered controller instances; the format paragraph states the conventions table, URL syntax, source schemes (<code>dexcom://g7/…</code>) and app schemes (<code>loop://carbs/…</code>) and asks whether that works for Loop; the character set allows <code>/</code> and <code>:</code> with percent-encoding in v3 paths (measured) (maintainer)</td>
+<td><code>ID-ABSENT-DECISION</code>, <code>ID-FORMAT-DECISION</code>, <code>ID-CONVENTIONS</code>; <a href="../identifier-conventions.html">identifier conventions</a></td>
 </tr>
 </tbody>
 </table>

@@ -4729,6 +4729,8 @@
       
         
       
+        
+      
     
     
     
@@ -5033,6 +5035,17 @@
     <span class="md-ellipsis">
       
         3.3 What breaks: two small harnesses [M]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-url-form-identifiers-end-to-end-2026-10-18-m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 URL-form identifiers, end to end (2026-10-18) [M]
       
     </span>
   </a>
@@ -5779,6 +5792,66 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="identifier-format-2026-10-17/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    identifier-format-2026-10-17/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
     </li>
   
 
@@ -7438,6 +7511,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#34-url-form-identifiers-end-to-end-2026-10-18-m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 URL-form identifiers, end to end (2026-10-18) [M]
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -7670,9 +7754,9 @@ Companion to <a href="identifier-duplicates-2026-10-17.html">identifier duplicat
 and client classes this note reuses. The proposed constraints are carried in the
 <a href="../../30-design/platform/spec/identity.html#4-the-identifier-format">identity specification §4</a>.</p>
 <p>Marks: <strong>[R]</strong> read from code at the commit given; <strong>[M]</strong> measured, by
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36d0c33edaa92cbb80cd5bd6c1a59731b24e7dd7/docs/60-research/tenancy/identifier-format-2026-10-17/idshape.py"><code>identifier-format-2026-10-17/idshape.py</code></a> (corpus shapes,
-output <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36d0c33edaa92cbb80cd5bd6c1a59731b24e7dd7/docs/60-research/tenancy/identifier-format-2026-10-17/results-2026-10-17.txt"><code>results-2026-10-17.txt</code></a>, control
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36d0c33edaa92cbb80cd5bd6c1a59731b24e7dd7/docs/60-research/tenancy/identifier-format-2026-10-17/control-results-2026-10-17.txt"><code>control-results-2026-10-17.txt</code></a>) or by
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5d9fce255f88dd5ec72648b538b807703289f00e/docs/60-research/tenancy/identifier-format-2026-10-17/idshape.py"><code>identifier-format-2026-10-17/idshape.py</code></a> (corpus shapes,
+output <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5d9fce255f88dd5ec72648b538b807703289f00e/docs/60-research/tenancy/identifier-format-2026-10-17/results-2026-10-17.txt"><code>results-2026-10-17.txt</code></a>, control
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5d9fce255f88dd5ec72648b538b807703289f00e/docs/60-research/tenancy/identifier-format-2026-10-17/control-results-2026-10-17.txt"><code>control-results-2026-10-17.txt</code></a>) or by
 the two small harnesses in §3.3. Corpus output is aggregate counts and value <strong>shapes</strong>
 (regex classes, lengths, token signatures); no identifier value, serial or record content is printed
 or committed.</p>
@@ -7718,7 +7802,7 @@ source-derived key when several devices must agree.</strong></p>
 <tr>
 <td>C3</td>
 <td><strong>printable ASCII, no <code>/</code>, <code>%</code>, <code>?</code>, <code>#</code>, space or control characters</strong> (proposal; or "URL-unreserved characters <code>A-Z a-z 0-9 - . _ ~</code> plus <code>:</code>")</td>
-<td>API v3 addresses a record as <code>/api/v3/{collection}/{identifier}</code>. A raw <code>/</code> gives 404, a malformed <code>%</code> gives 400, and <code>?</code>/<code>#</code>/space must be percent-encoded by every client [M]; <code>%2F</code> works in Express but is commonly rewritten or refused by reverse proxies [R, not run]</td>
+<td>API v3 addresses a record as <code>/api/v3/{collection}/{identifier}</code>. A raw <code>/</code> gives 404, a malformed <code>%</code> gives 400, and <code>?</code>/<code>#</code>/space must be percent-encoded by every client [M]; <code>%2F</code> works in Express but is commonly rewritten or refused by reverse proxies [R, not run]. End to end on both servers, an encoded <code>/</code> works on every v3 by-identifier route: §3.4 (2026-10-18) [M]</td>
 </tr>
 <tr>
 <td>C4</td>
@@ -8098,7 +8182,7 @@ the companion note says. Shapes, not values, were read.</p>
 <h3 id="33-what-breaks-two-small-harnesses-m">3.3 What breaks: two small harnesses [M]<a class="headerlink" href="#33-what-breaks-two-small-harnesses-m" title="Permanent link">&para;</a></h3>
 <p><strong>URL path.</strong> Express 4.22.2 (the version in the checkout's <code>node_modules</code>; dev pins 4.22.2, 15.0.8
 4.22.1) with the four v3 routes and the history route registered in the server's order, driven over
-HTTP (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36d0c33edaa92cbb80cd5bd6c1a59731b24e7dd7/docs/60-research/tenancy/identifier-format-2026-10-17/v3-path-routing.js"><code>v3-path-routing.js</code></a>; Express routing only, no proxy, no auth, no storage):</p>
+HTTP (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5d9fce255f88dd5ec72648b538b807703289f00e/docs/60-research/tenancy/identifier-format-2026-10-17/v3-path-routing.js"><code>v3-path-routing.js</code></a>; Express routing only, no proxy, no auth, no storage):</p>
 <table>
 <thead>
 <tr>
@@ -8137,12 +8221,107 @@ HTTP (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob
 </tr>
 </tbody>
 </table>
-<p><strong>Index key size.</strong> (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36d0c33edaa92cbb80cd5bd6c1a59731b24e7dd7/docs/60-research/tenancy/identifier-format-2026-10-17/index-key-size.js"><code>index-key-size.js</code></a>.) Local MongoDB 3.6.8 (FCV 3.6), a scratch database with the v1 entries indexes
+<p><strong>Index key size.</strong> (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5d9fce255f88dd5ec72648b538b807703289f00e/docs/60-research/tenancy/identifier-format-2026-10-17/index-key-size.js"><code>index-key-size.js</code></a>.) Local MongoDB 3.6.8 (FCV 3.6), a scratch database with the v1 entries indexes
 <code>{identifier: 1}</code> and <code>{date: -1, identifier: -1, created_at: -1}</code>, dropped afterwards: a 256-character
 <code>identifier</code> inserts; 1,000, 1,010, 1,020, 1,100 and 2,000 characters fail with code 17280 "key too
 large to index" (the compound key is 1,026 bytes at 1,000 characters). MongoDB 4.2 removed this limit
 at FCV 4.2 (not fetched from MongoDB's documentation; MongoDB's tracker
 <a href="https://jira.mongodb.org/browse/DOCS-11942">DOCS-11942</a> was listed by a search, not opened).</p>
+<h3 id="34-url-form-identifiers-end-to-end-2026-10-18-m">3.4 URL-form identifiers, end to end (2026-10-18) [M]<a class="headerlink" href="#34-url-form-identifiers-end-to-end-2026-10-18-m" title="Permanent link">&para;</a></h3>
+<p>The maintainer prefers URL syntax for identifiers (<code>dexcom://g7/&lt;serial&gt;/&lt;offset&gt;</code>, see the
+<a href="../../30-design/platform/identifier-conventions.html">identifier conventions</a>), which puts <code>:</code> and
+<code>/</code> in every value. §3.3 ran Express routing alone; this run asks the two servers.
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5d9fce255f88dd5ec72648b538b807703289f00e/docs/60-research/tenancy/identifier-format-2026-10-17/url-identifier-probes.js"><code>url-identifier-probes.js</code></a> wrote
+synthetic <code>scheme://g7/&lt;digits&gt;/&lt;seconds&gt;</code> identifiers to 15.0.8 (<code>92d08342</code>) and dev (<code>fade2299</code>),
+started by the record-identity lab on a dedicated <code>mongo:7</code> container (7.0.43), with no proxy in
+front. Output: <a href="identifier-format-2026-10-17/url-identifier-results-2026-10-18.html"><code>url-identifier-results-2026-10-18.md</code></a>.
+Both refs gave the same cell in every row, and two runs gave the same table.</p>
+<table>
+<thead>
+<tr>
+<th>path</th>
+<th>encoded (<code>%3A</code>, <code>%2F</code>)</th>
+<th><code>%2F</code> only, <code>:</code> raw</th>
+<th>raw</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v3 POST (identifier in the body), entries and treatments</td>
+<td>201, stored exactly</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>v3 GET <code>/{collection}/{identifier}</code></td>
+<td>200, the record</td>
+<td>200, the record</td>
+<td><strong>404</strong></td>
+</tr>
+<tr>
+<td>v3 PATCH, PUT, DELETE by identifier</td>
+<td>200 each; PATCH and PUT change the stored value, DELETE sets <code>isValid: false</code></td>
+<td>not run</td>
+<td>PATCH <strong>404</strong></td>
+</tr>
+<tr>
+<td>v3 PUT for a new identifier (create)</td>
+<td>201, stored exactly</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>v3 search <code>?identifier$eq=</code> and <code>?identifier=</code></td>
+<td>1 found each</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>v1 <code>find[identifier]=</code></td>
+<td>1 found</td>
+<td>—</td>
+<td>1 found (raw <code>:</code> and <code>/</code> are legal in a query string)</td>
+</tr>
+<tr>
+<td>v1 treatments POST, then a re-send with another amount</td>
+<td>one record, updated</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>v1 entries POST, then v3 GET</td>
+<td>stored with the identifier; v3 GET 200</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>v1 <code>DELETE /api/v1/treatments/{identifier}</code></td>
+<td>200 with <code>deletedCount: 0</code>, the record stays</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>Controls: the same identifier plus <code>/1</code> finds nothing on v3 GET (404), v3 search (0) and v1
+<code>find[identifier]=</code> (0), on both refs; the raw rows are the routing control.</p>
+<p>Consequences for the character set:</p>
+<ul>
+<li><strong><code>/</code> and <code>:</code> can be allowed.</strong> A URL-form identifier works on every API v3 by-identifier route
+  and on v1 <code>find[identifier]=</code> at the shipping release and at dev, <strong>provided the client
+  percent-encodes the identifier as one path segment</strong> in a v3 path (every reserved character,
+  <code>/</code> included: <code>encodeURIComponent</code> in JavaScript). A path-escaping helper that leaves <code>/</code> alone
+  builds a different route and gets 404; Foundation's <code>urlPathAllowed</code> character set is such a
+  helper (it allows <code>/</code>) [R, Apple documentation, not run].</li>
+<li><strong>v1 by-id routes do not take them</strong>, as for every non-UUID value (§3.1): v1 DELETE by such an
+  identifier answers 200 and deletes nothing. A client that deletes over v1 uses the <code>_id</code> from the
+  write reply.</li>
+<li><strong>Reverse proxies are not measured.</strong> Some decode <code>%2F</code> before forwarding or refuse it (§3.3).
+  A client behind one can read with v3 search (<code>?identifier$eq=</code>, measured above) and with v1
+  <code>find[identifier]=</code>; update and delete by identifier over v3 still need the path. A site
+  operator check of a proxied deployment is the open item.</li>
+<li><code>%</code>, <code>?</code>, <code>#</code>, space and control characters stay excluded: they need escaping everywhere and
+  appear in no convention.</li>
+</ul>
 <h2 id="4-uuidv5-as-the-bridge">4. UUIDv5 as the bridge<a class="headerlink" href="#4-uuidv5-as-the-bridge" title="Permanent link">&para;</a></h2>
 <p>If a client hashes its derived key into a UUIDv5 and sends that as <code>identifier</code>:</p>
 <table>
@@ -8661,6 +8840,14 @@ device's clock must not be part of it.</p>
 <p>The §3.3 harnesses take the cgm-remote-monitor checkout (for its <code>node_modules</code>) as their argument:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>node<span class="w"> </span>docs/60-research/tenancy/identifier-format-2026-10-17/v3-path-routing.js<span class="w"> </span>&lt;cgm-remote-monitor<span class="w"> </span>checkout&gt;
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>node<span class="w"> </span>docs/60-research/tenancy/identifier-format-2026-10-17/index-key-size.js<span class="w"> </span>&lt;cgm-remote-monitor<span class="w"> </span>checkout&gt;<span class="w">  </span><span class="c1"># needs mongod on 127.0.0.1:27017; creates and drops idfmt_scratch_20261017</span>
+</code></pre></div>
+<p>§3.4 runs against the record-identity lab's servers (same secret, same mongo):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>tools/lab/record-identity/lab.sh<span class="w"> </span>up
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nv">S</span><span class="o">=</span><span class="si">${</span><span class="nv">RID_STATE</span><span class="k">:-</span><span class="si">${</span><span class="nv">TMPDIR</span><span class="k">:-</span><span class="p">/tmp</span><span class="si">}</span><span class="p">/record-identity</span><span class="si">}</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>node<span class="w"> </span>docs/60-research/tenancy/identifier-format-2026-10-17/url-identifier-probes.js<span class="w"> </span><span class="m">1508</span><span class="w"> </span><span class="s2">"</span><span class="nv">$S</span><span class="s2">/b1508"</span><span class="w"> </span><span class="m">3983</span><span class="w"> </span>&gt;<span class="w"> </span>a.json
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>node<span class="w"> </span>docs/60-research/tenancy/identifier-format-2026-10-17/url-identifier-probes.js<span class="w"> </span>dev<span class="w"> </span><span class="s2">"</span><span class="nv">$S</span><span class="s2">/bdev"</span><span class="w"> </span><span class="m">3984</span><span class="w"> </span>&gt;<span class="w"> </span>b.json
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>node<span class="w"> </span>docs/60-research/tenancy/identifier-format-2026-10-17/url-identifier-probes.js<span class="w"> </span>--compare<span class="w"> </span>a.json<span class="w"> </span>b.json
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>tools/lab/record-identity/lab.sh<span class="w"> </span>down
 </code></pre></div>
 <p><code>idshape.py</code> needs <code>externals/ns-data</code> at the main checkout's path (as the companion script's <code>BASE</code> names) and the
 companion script beside this folder (its classifiers are imported). Runs in about 5 s. The control

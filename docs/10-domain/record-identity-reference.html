@@ -8121,7 +8121,7 @@
 
 
 <h1 id="record-identity-in-cgm-remote-monitor-_id-identifier-and-time-keys">Record identity in cgm-remote-monitor: <code>_id</code>, <code>identifier</code> and time keys<a class="headerlink" href="#record-identity-in-cgm-remote-monitor-_id-identifier-and-time-keys" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>2b91fb2ae</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>b9be1bed7</code>.</em></p>
 <p><em>Contributor-facing. Living reference, </em><em>as of 2026-10-18</em><em>. Pinned to cgm-remote-monitor
 </em><em>15.0.8</em><em> (<code>92d08342</code>, the shipping release) and </em><em>dev</em><em> (<code>fade2299</code>, the 15.0.9 candidate).
 Queue item <code>DOCS-RECORD-IDENTITY</code>. It describes what the code does today; it proposes nothing.</em></p>
@@ -8488,10 +8488,10 @@ reached <code>dev</code> in #8456) [R].</p>
   finds it [M]. <code>$in</code> lists are not rewritten [R]. Devicestatus lookups do not pass the flag [R].</li>
 <li><strong>Version-scoped quirks it serves</strong> (D20 rule 7: today's handling becomes a registry entry
   scoped to the versions that send it, its behaviour unchanged).
-  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36d0c33edaa92cbb80cd5bd6c1a59731b24e7dd7/specs/quirks/treatments.yaml">QUIRK-TREATMENTS-006</a>: Loop sends a Temporary Override's
+  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5d9fce255f88dd5ec72648b538b807703289f00e/specs/quirks/treatments.yaml">QUIRK-TREATMENTS-006</a>: Loop sends a Temporary Override's
   <code>syncIdentifier</code> UUID as <code>_id</code> (read at LoopWorkspace <code>f8412858</code>, Loop 3.14.8; measured in the
   corpus: every stored document it fires on is an override with an upper-case UUID).
-  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36d0c33edaa92cbb80cd5bd6c1a59731b24e7dd7/specs/quirks/entries.yaml">QUIRK-ENTRIES-004</a>: upper-case UUIDs and 24-character
+  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5d9fce255f88dd5ec72648b538b807703289f00e/specs/quirks/entries.yaml">QUIRK-ENTRIES-004</a>: upper-case UUIDs and 24-character
   non-hex strings stored as entries <code>_id</code> on two corpus sites, attributed to older Trio versions
   by a backlog, unmeasured. Trio 1.0.1 (<code>e41c9db3</code>) sends <code>_id</code> on carbs and temporary targets
   (<code>CarbsEntry.swift:29</code>, <code>TempTarget.swift:50</code>) and its other treatments' UUID as <code>id</code>, which
@@ -8603,7 +8603,7 @@ crash path is read, not run]</p>
    it, even with another time and device (15.0.x) [M].</li>
 </ol>
 <h2 id="6-open-decisions">6. Open decisions<a class="headerlink" href="#6-open-decisions" title="Permanent link">&para;</a></h2>
-<p>None of these is decided; each is a row in <a href="../../queue/QUEUE.html">the queue</a>.</p>
+<p>Each is a row in <a href="../../queue/QUEUE.html">the queue</a>; only <code>ID-ABSENT-DECISION</code> is decided in part.</p>
 <table>
 <thead>
 <tr>
@@ -8626,7 +8626,7 @@ crash path is read, not run]</p>
 </tr>
 <tr>
 <td><code>ID-ABSENT-DECISION</code></td>
-<td>a write with no <code>identifier</code>: keep the time-key fallback, deprecate it, or require <code>identifier</code></td>
+<td>a write with no <code>identifier</code>: decided 2026-10-18 (maintainer): <code>identifier</code> becomes mandatory at a future version boundary and for registered controller instances, and legacy paths keep the time-key fallback until then; the version and the detection of registered instances are open</td>
 </tr>
 <tr>
 <td><code>ID-DELETE-REUSE-DECISION</code></td>
@@ -8643,6 +8643,7 @@ crash path is read, not run]</p>
 </tbody>
 </table>
 <p>Related: <a href="../30-design/platform/spec/identity.html">identity specification</a> (the L0 rules this page measures today's behaviour against),
+<a href="../30-design/platform/identifier-conventions.html">identifier conventions</a> (what each record's <code>identifier</code> should be, per record kind and source),
 <a href="../30-design/platform/upstream-asks-loop-identifier/index.html">Loop <code>identifier</code> proposal and reply</a>,
 <a href="../60-research/tenancy/identifier-format-2026-10-17.html">identifier format research</a>,
 <a href="../60-research/tenancy/identifier-duplicates-2026-10-17.html">identifier duplicates</a>,

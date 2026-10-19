@@ -2341,6 +2341,8 @@
       
         
       
+        
+      
     
     
     
@@ -3423,6 +3425,34 @@
     
   
     Evidence-weighted approval: what a plan or proposal needs before a controller acts on it
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../identifier-conventions.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Identifier conventions: one identifier per real thing
   
 
     
@@ -5549,7 +5579,7 @@
 
 
 <h1 id="l0-identity-how-records-definitions-instances-and-subjects-are-named">L0 Identity: how records, definitions, instances and subjects are named<a class="headerlink" href="#l0-identity-how-records-definitions-instances-and-subjects-are-named" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>13259e01d</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>b9be1bed7</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>5a9a49cc</code> (2026-10-18). Layer L0 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. Status:
 specified, not implemented; §6, today's behaviour, is evidenced. Decisions:
@@ -5607,6 +5637,9 @@ ids; none of them redefines one.</p>
 </tr>
 </tbody>
 </table>
+<p><code>identifier</code> is the record's semantic identity in the data model (this CGM reading, this pump
+event, this carb entry), so two uploads of the same real thing carry the same value whichever app
+sends it; <code>_id</code> identifies the stored record (maintainer, 2026-10-18).</p>
 <p>Rules I1–I9 are D20 rules 5–8 with the walk-through rows 1–3, specified in the
 <a href="../nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">hub-sync design §3.7</a>,
 and the write contract's U1 and U6.</p>
@@ -5719,9 +5752,12 @@ first that resolves wins.</p>
   create, so a re-send of a deleted record is stored again.</li>
 </ul>
 <h2 id="4-the-identifier-format">4. The <code>identifier</code> format<a class="headerlink" href="#4-the-identifier-format" title="Permanent link">&para;</a></h2>
-<p><code>identifier</code> is an opaque string. A UUID is recommended and not required: v4 for a record made
-once on one device, v5 of a source-derived name when several devices must produce the same value.
-What makes two devices agree is that they derive the id from the same inputs, not its format.</p>
+<p><code>identifier</code> is an opaque string, with one rule for every collection. Values follow the
+<a href="../identifier-conventions.html">identifier conventions</a> table, one row per record kind, in URL
+syntax: a source scheme for things that exist outside the app, the manufacturer as the scheme and
+the model as the first segment (<code>dexcom://g7/&lt;serial&gt;/&lt;offset&gt;</code>), and an app scheme for records
+made in an app (<code>loop://carbs/&lt;uuid&gt;</code>) (maintainer, 2026-10-18). What makes two devices agree is
+that they derive the id from the same inputs, not its format. A UUID is not required.</p>
 <p>The constraints proposed for <code>ID-FORMAT-DECISION</code>, each grounded in the
 <a href="../../../60-research/tenancy/identifier-format-2026-10-17.html#0-answer">identifier format research §0</a>:</p>
 <table>
@@ -5742,7 +5778,7 @@ What makes two devices agree is that they derive the id from the same inputs, no
 </tr>
 <tr>
 <td>C3</td>
-<td>characters from <code>A-Z a-z 0-9 - . _ ~ :</code></td>
+<td>characters from <code>A-Z a-z 0-9 - . _ ~ : /</code>; in an API v3 path the identifier is percent-encoded as one segment (an encoded <code>/</code> works on every v3 by-identifier route at 15.0.8 and <code>fade2299</code>, a raw <code>/</code> is 404: <a href="../../../60-research/tenancy/identifier-format-2026-10-17.html#34-url-form-identifiers-end-to-end-2026-10-18-m">format research §3.4</a>)</td>
 </tr>
 <tr>
 <td>C4</td>
@@ -5777,7 +5813,7 @@ uses today's v1 by-<code>_id</code> routes needs a UUID (§6).</p>
 <tr>
 <td><code>ID-FORMAT-DECISION</code></td>
 <td>adopt C1–C7?</td>
-<td>§4 is proposed; I6 holds either way</td>
+<td>opaque values, URL syntax and the source and app schemes are decided (maintainer, 2026-10-18); C1–C7 are proposed; I6 holds either way</td>
 </tr>
 <tr>
 <td><code>ID-CLIENT-OID-DECISION</code></td>
@@ -5792,7 +5828,7 @@ uses today's v1 by-<code>_id</code> routes needs a UUID (§6).</p>
 <tr>
 <td><code>ID-ABSENT-DECISION</code></td>
 <td>a write with no <code>identifier</code>: keep the time-key fallback, deprecate it, or require <code>identifier</code>?</td>
-<td>today v1 entries and treatments fall back to a time key, API v3 to its fallback fields; v1 device status has no key; two distinct doses with one <code>created_at</code> and <code>eventType</code> and no identifier are merged by §3 (UCA-SYNC-STORE-007)</td>
+<td>decided (maintainer, 2026-10-18): <code>identifier</code> becomes mandatory at a future version boundary and for registered controller instances; until then legacy paths keep the time-key fallback. Open: which version, and how a hub recognises a registered instance's write. Today v1 entries and treatments fall back to a time key, API v3 to its fallback fields; v1 device status has no key; two distinct doses with one <code>created_at</code> and <code>eventType</code> and no identifier are merged by §3 (UCA-SYNC-STORE-007)</td>
 </tr>
 <tr>
 <td><code>ID-DELETE-REUSE-DECISION</code></td>

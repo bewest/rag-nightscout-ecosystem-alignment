@@ -2341,6 +2341,8 @@
       
         
       
+        
+      
     
     
     
@@ -3128,6 +3130,34 @@
     
   
     Evidence-weighted approval: what a plan or proposal needs before a controller acts on it
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../identifier-conventions.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Identifier conventions: one identifier per real thing
   
 
     
@@ -5242,7 +5272,7 @@
 
   <h1>Reply.body</h1>
 
-<p><em>Living document, last changed 2026-10-18 at <code>0cc93a684</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>7e5cf75de</code>.</em></p>
 <p><strong>Re: client-supplied identifiers for Nightscout</strong></p>
 <p>Thank you for writing this up. We agree with the core of the ask, and most of what Loop needs
 already works. Much of the confusion comes from our API documentation, not the design: API v3's
@@ -5273,9 +5303,22 @@ key clients own. Rule 5 also says what every write reply should carry:</p>
 (<a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">D20 rule 5</a>)</p>
 </blockquote>
 <p>Returning both means a client never needs a cache of server ids to edit or delete what it sent.</p>
-<p><strong>What an <code>identifier</code> may contain (proposed).</strong> 1 to 256 characters from <code>A-Z a-z 0-9 . _ ~ : -</code>.
-That keeps it usable in API v3 paths (<code>/api/v3/{collection}/{identifier}</code>), where a <code>/</code>, <code>%</code>, <code>?</code>,
-<code>#</code> or space breaks or needs escaping, and under MongoDB's index key limit. Not exactly 24 hex
+<p><strong>What an <code>identifier</code> is.</strong> It names the real thing a record describes: this CGM reading, this
+pump event, this carb entry. Two uploads of the same thing should carry the same value, whichever
+app sends it. The server treats it as opaque and enforces one record per identifier in each
+collection; clients compute the values from a published
+<a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/identifier-conventions.html">conventions table</a>,
+one row per record kind. Values are written in URL syntax. Readings and pump events take the
+manufacturer as the scheme and the model as the first segment, so every app that reads one sensor
+produces the same value: for a G7 reading, <code>dexcom://g7/&lt;serial&gt;/&lt;sensor offset&gt;</code>. Records made in
+the app take the app's scheme, with the kind as the first segment: <code>loop://carbs/&lt;uuid&gt;</code>,
+<code>loop://tempbasal/&lt;syncIdentifier&gt;</code>, <code>loop://override/&lt;uuid&gt;</code>. Would that work for Loop?</p>
+<p><strong>What an <code>identifier</code> may contain (proposed).</strong> 1 to 256 characters from <code>A-Z a-z 0-9 . _ ~ : / -</code>,
+and under MongoDB's index key limit. In API v3 paths (<code>/api/v3/{collection}/{identifier}</code>), send
+it percent-encoded as one path segment (<code>/</code> as <code>%2F</code>, <code>:</code> as <code>%3A</code>): that works for GET, PATCH,
+PUT and DELETE on 15.0.8 and <code>dev</code>, while a raw <code>/</code> is 404 (measured 2026-10-18,
+<a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/tenancy/identifier-format-2026-10-17.html#34-url-form-identifiers-end-to-end-2026-10-18-m">identifier format §3.4</a>).
+No <code>%</code>, <code>?</code>, <code>#</code> or space. Not exactly 24 hex
 characters, which both APIs read as an <code>_id</code>. Never a placeholder such as <code>invalid</code>, <code>undefined</code>,
 <code>null</code> or <code>NaN</code>: once identifiers are matched, every reading sharing one would overwrite the last.
 A UUID (v4 for a record made on one device, or v5 of a source-derived key) is needed only for
@@ -5328,7 +5371,7 @@ UUID-shaped values only. API v3 and <code>find[identifier]=</code> take any stri
 <td>none: v1 entries already merge on <code>sysTime</code> + <code>type</code>. The match is exact, so the times must be identical to the millisecond. <code>device</code> need not match: it is not part of the v1 key (over API v3 it would, because the server computes <code>identifier</code> from <code>device</code> + <code>date</code>). The later upload's fields overwrite the stored ones (<code>$set</code>), so <code>device</code> becomes the phone's (<a href="https://github.com/nightscout/cgm-remote-monitor/blob/92d0834219aa771b5837dbcbf1baeb839a200cf6/lib/server/entries.js#L127-L136">entries.js:127-136</a>)</td>
 </tr>
 <tr>
-<td>3. a source-derived identifier, <code>g7:&lt;serial&gt;:&lt;seconds&gt;</code> or its UUIDv5</td>
+<td>3. a source-derived identifier, <code>dexcom://g7/&lt;serial&gt;/&lt;seconds&gt;</code></td>
 <td>entries match on <code>identifier</code> (the one change below). The inputs must come from the sensor: the real serial and the sensor's own seconds counter</td>
 </tr>
 <tr>
@@ -5342,7 +5385,7 @@ would not serve (3) as it stands. It embeds each device's own activation estimat
 hours, and the BLE name <code>DXCMxx</code> rather than the serial, and it falls back to <code>"invalid"</code>
 (G7SensorKit <code>dd91f46</code>, <code>G7CGMManager.swift:511-517</code>). Hashing it into a UUIDv5 would not help,
 because the input already differs between devices.</p>
-<p>For a G7, an identifier both devices can compute is <code>g7:&lt;serial&gt;:&lt;seconds&gt;</code>. <code>&lt;serial&gt;</code> is the
+<p>For a G7, an identifier both devices can compute is <code>dexcom://g7/&lt;serial&gt;/&lt;seconds&gt;</code>. <code>&lt;serial&gt;</code> is the
 sensor serial from the transmitter-version (<code>0x4A</code>) reply, which G7SensorKit <code>next-dev</code> reads.
 <code>&lt;seconds&gt;</code> is the sensor's seconds-since-activation counter for the reading: <code>messageTimestamp −
 age</code> for a live reading, the record's <code>timestamp</code> for backfill. Every G7 implementation we read
@@ -5350,7 +5393,8 @@ age</code> for a live reading, the record's <code>timestamp</code> for backfill.
 session clock, and backfill uses the same clock. We have not yet seen a capture with two
 displays on one sensor, so we would confirm with one before relying on it
 (<a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/tenancy/identifier-format-2026-10-17.html#7-is-the-g7-seconds-counter-shared-across-devices">identifier format §7</a>).
-G6 (<code>&lt;transmitterID&gt; &lt;timestamp&gt;</code>) and Libre 3 (<code>&lt;serial&gt;-&lt;lifeCount&gt;</code>) already key on a sensor-side
+G6 (<code>&lt;transmitterID&gt; &lt;timestamp&gt;</code>, as <code>dexcom://g6/&lt;transmitterID&gt;/&lt;timestamp&gt;</code>) and Libre 3
+(<code>&lt;serial&gt;-&lt;lifeCount&gt;</code>, as <code>abbott://libre3/&lt;serial&gt;/&lt;lifeCount&gt;</code>) already key on a sensor-side
 counter; Loop's Libre 2 key uses the phone's clock.</p>
 <p>Precedents: FHIR keeps
 the server id apart from the business <code>identifier</code>, and its conditional create answers 200 with
@@ -5364,7 +5408,8 @@ the comparison slightly differently).</p>
 <li><strong>Each identifier must name exactly one record.</strong> In our corpus, 13 of 255,811 Loop
   <code>syncIdentifier</code> values are on 2 to 4 treatments, for example a Suspend Pump and a Temp Basal
   pair (<a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/tenancy/identifier-duplicates-2026-10-17.html#22-syncidentifier-on-treatments-as-a-proxy-m">identifier duplicates §2.2</a>).
-  Sent as <code>identifier</code> to 15.0.7 or later, the second would replace the first.</li>
+  Sent as <code>identifier</code> to 15.0.7 or later, the second would replace the first. A kind segment
+  (<code>loop://suspend/…</code>, <code>loop://tempbasal/…</code>) keeps such a pair apart.</li>
 <li><strong>Entries do not match on <code>identifier</code> until the server change lands.</strong> A re-send with the same
   identifier and a different time is stored twice
   (<a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.html">lab</a>).</li>
@@ -5417,7 +5462,7 @@ working. Where it says <em>open</em>, we have no default yet.</p>
 <td>5</td>
 <td>An older app sends no <code>identifier</code></td>
 <td>each collection's time key</td>
-<td>keep the time key; requiring <code>identifier</code> would be announced as a later version boundary</td>
+<td>keep the time key on legacy paths now; <code>identifier</code> becomes mandatory at a future version boundary and for registered controller instances</td>
 <td></td>
 </tr>
 <tr>

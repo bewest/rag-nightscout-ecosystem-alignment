@@ -2875,7 +2875,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-18 at <code>127f69e16</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>c18249db2</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -2914,11 +2914,11 @@
 <tbody>
 <tr>
 <td>items</td>
-<td>254</td>
+<td>255</td>
 </tr>
 <tr>
 <td>runnable gates</td>
-<td>313</td>
+<td>314</td>
 </tr>
 <tr>
 <td>explicit <code>no-gate:</code> markers</td>
@@ -2926,7 +2926,7 @@
 </tr>
 </tbody>
 </table>
-<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 280 of the 593 gate slots in this queue are in that state.</p>
+<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 280 of the 594 gate slots in this queue are in that state.</p>
 <h3 id="claimed-state-not-a-measurement----run-make-queue-status">Claimed state (NOT a measurement -- run <code>make queue-status</code>)<a class="headerlink" href="#claimed-state-not-a-measurement----run-make-queue-status" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -2944,8 +2944,8 @@
 </tr>
 <tr>
 <td><code>in-progress</code></td>
-<td>4</td>
-<td>BFQ-46, BFQ-ENV, OID-LAB, LOOP-ID-REPLY</td>
+<td>5</td>
+<td>ID-CONVENTIONS, BFQ-46, BFQ-ENV, OID-LAB, LOOP-ID-REPLY</td>
 </tr>
 <tr>
 <td><code>gate-not-met</code></td>
@@ -14965,7 +14965,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Notes.</strong> Found by RC run 019 (04a873ce, trace T1) as the cause of BF-133; the IOB/COB omission was found while tracing it. Maintainer decision 2026-09-26: "fix as appropriate". 2026-09-26 - FIXED on bf/api3-cache-derived-fields db99bba4 (local, not pushed), one commit on official/dev 699eb5fa. Break-it: deriving and then dropping mills gives the same 7 red; deriving only on create gives the PATCH/PUT test red. same-time-carbs, same-time-resend-shapes, retry-keeps- srvcreated and v1-writes-v3-history give the same output on 699eb5fa and db99bba4 (v1-writes-v3-history exit 1 on its v1 DELETE arm on both). PR body draft: reports/phase0-pr-bodies/api3-cache-derived-fields.md. 2026-09-26 (maintainer): extend the fix to device status for consistency. Second commit d235bdf6 on the same branch (not pushed): device status goes through the same helper. The only change to the in-memory v1 read is placement: the same records for the whole held set, the late v3 status first instead of last, so for a smaller count it is now inside the window. Dataloader, pills and page data unchanged (they already derived mills). Entries measured and left as they are. 6 new tests (3 red on 699eb5fa, 92d08342 and db99bba4); break-its red; suite 3473/0/3; the four probes unchanged against db99bba4. 2026-09-26 - MERGED into dev as ce30a94d (#8784, head d235bdf6; GitHub merge time 2026-09-27 05:32Z). Not released; goes into 15.0.9. RC run 020 is the run on ce30a94d.</p>
 <hr />
 <h2 id="multitenancy-programme">Multitenancy programme<a class="headerlink" href="#multitenancy-programme" title="Permanent link">&para;</a></h2>
-<p><code>parcel: tenancy</code> &mdash; 33 items</p>
+<p><code>parcel: tenancy</code> &mdash; 34 items</p>
 <p>T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.</p>
 <table>
@@ -15195,6 +15195,14 @@ alarm-readiness items, and the seam branch refresh.</p>
 <td><code>-</code></td>
 <td>n/a</td>
 <td>0 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>ID-CONVENTIONS</code></td>
+<td>Identifier conventions: one URL-form identifier template per record kind and source, so apps converge</td>
+<td><code>in-progress</code></td>
+<td><code>records/loop-identifier-2026-10-17</code></td>
+<td>n/a</td>
+<td>1 run</td>
 </tr>
 <tr>
 <td><code>ID-VALIDATE</code></td>
@@ -16555,7 +16563,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>docs/60-research/tenancy/identifier-duplicates-2026-10-17.md</code></li>
 <li><code>docs/60-research/tenancy/identifier-format-2026-10-17.md</code></li>
 </ul>
-<p><strong>Notes.</strong> Today: v1 recognises only UUID-shaped values as identifiers in by-id routes (UUID_RE, case-insensitive, lib/server/query.js:12 at dev fade2299), while stored identifiers are compared exactly, so Loop's upper-case override UUIDs match only themselves. API v3 computes uuid.v5(device_date[_eventType], "NightscoutRocks!") when none is sent (lib/api3/shared/operationTools.js:6, 106). A random UUID cannot serve the phone-and-watch case, where both devices must derive the same value; AndroidAPS keys on pump event ids. Not required: changing an existing client's identifiers, which would break matching against records it already stored. 2026-10-17: the rewritten Loop reply states only "a string, UUID recommended" and lists the limit, character set and case under "later, only if needed"; decide when a client or ID-VALIDATE needs it.</p>
+<p><strong>Notes.</strong> Today: v1 recognises only UUID-shaped values as identifiers in by-id routes (UUID_RE, case-insensitive, lib/server/query.js:12 at dev fade2299), while stored identifiers are compared exactly, so Loop's upper-case override UUIDs match only themselves. API v3 computes uuid.v5(device_date[<em>eventType], "NightscoutRocks!") when none is sent (lib/api3/shared/operationTools.js:6, 106). A random UUID cannot serve the phone-and-watch case, where both devices must derive the same value; AndroidAPS keys on pump event ids. Not required: changing an existing client's identifiers, which would break matching against records it already stored. 2026-10-17: the rewritten Loop reply states only "a string, UUID recommended" and lists the limit, character set and case under "later, only if needed"; decide when a client or ID-VALIDATE needs it. Maintainer, 2026-10-18 (decided): identifier is opaque to the server and follows one rule in every collection, plus a published conventions table per record kind so apps converge on one value (docs/30-design/platform/identifier- conventions.md, ID-CONVENTIONS). URL syntax: <scheme>://<segment>/<segment>. Things that exist outside the app (sensor readings, pump events) use a source scheme with the manufacturer as the scheme and the model as the first segment (dexcom://g7/<serial>/<offset>, dexcom://g6/<transmitterId>/<time>, abbott://libre3/<serial>/<lifeCount>); things created in an app (manual carbs, boluses, overrides, temporary targets) use an app scheme (loop://carbs/<uuid>). A controller may use one format of its own across collections (loop://carbs/<uuid>, loop://tempbasal/<syncId>, loop://override/<uuid>, loop://devicestatus/<uuid>): unique per collection, within the limits, stable across re-sends; a registered instance declares it. The kind segment separates the measured Loop Suspend Pump + Temp Basal pairs that share one syncIdentifier (identifier-duplicates §2.2: 9 of the 13 shared values). The '/' question, measured 2026-10-18 (identifier-format §3.4, url- identifier-probes.js; 15.0.8 92d08342 and dev fade2299, mongo:7 7.0.43, no proxy, same result at both): a URL-form identifier is stored exactly; percent- encoded as one path segment (%3A, %2F) it works on v3 GET, PATCH, PUT, PUT- create and DELETE; raw '/' in the path is 404; v3 ?identifier$eq= and v1 find[identifier]= find it; v1 DELETE by it deletes nothing (UUID_RE). So C3 becomes [A-Za-z0-9.</em>~:/-] and clients must percent-encode the identifier in v3 paths. Still open: the 256 limit and the rest of C1-C8 as written in the conventions page §2, reverse proxies and %2F (not measured), the UUIDv5 client namespace, and whether the client developers accept the templates.</p>
 <h3 id="id-client-oid-decision--decide-may-a-client-set-_id-an-objectid-it-creates-and-which-field-wins-when-identifier-and-_id-match-different-records"><code>ID-CLIENT-OID-DECISION</code> &mdash; Decide: may a client set _id (an ObjectId it creates), and which field wins when identifier and _id match different records?<a class="headerlink" href="#id-client-oid-decision--decide-may-a-client-set-_id-an-objectid-it-creates-and-which-field-wins-when-identifier-and-_id-match-different-records" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -16669,7 +16677,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>reports/consumer-impact-15.0.9/clients-8758.md</code></li>
 <li><code>docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md</code></li>
 </ul>
-<p><strong>Notes.</strong> Today (tools/lab/record-identity, 2026-10-18, 15.0.8 and fade2299): entries without either id merge on sysTime + type; treatments merge on created_at + eventType (15.0.8 overwrites a second carb amount at the same time; dev keeps both, BF-121); devicestatus stores every POST. Requiring identifier would refuse the writes of clients the consumer-impact survey read as sending neither id (read-derived, clients-8758.md): DiaBLE (entries), oref0 (entries, treatments, devicestatus), tconnectsync (POSTs), share2nightscout-bridge and minimed-connect-to-nightscout (entries, devicestatus), nightscout-librelink-up (entries over v1 and v3), and Loop's own entries and device status (reply.body.md). Hand-written scripts (curl, spreadsheets, the careportal) also send neither. API v3 is not affected by the choice: it computes identifier as uuid.v5 of device, date and eventType when none is sent.</p>
+<p><strong>Notes.</strong> Today (tools/lab/record-identity, 2026-10-18, 15.0.8 and fade2299): entries without either id merge on sysTime + type; treatments merge on created_at + eventType (15.0.8 overwrites a second carb amount at the same time; dev keeps both, BF-121); devicestatus stores every POST. Requiring identifier would refuse the writes of clients the consumer-impact survey read as sending neither id (read-derived, clients-8758.md): DiaBLE (entries), oref0 (entries, treatments, devicestatus), tconnectsync (POSTs), share2nightscout-bridge and minimed-connect-to-nightscout (entries, devicestatus), nightscout-librelink-up (entries over v1 and v3), and Loop's own entries and device status (reply.body.md). Hand-written scripts (curl, spreadsheets, the careportal) also send neither. API v3 is not affected by the choice: it computes identifier as uuid.v5 of device, date and eventType when none is sent. Decided 2026-10-18 (maintainer): identifier becomes mandatory at a future version boundary, and for registered instances of controllers (registration §8); until then the legacy paths keep the time-key fallback for a write without one (choice 1 now, choice 3 at the boundary). State stays needs-decision because two parts remain: which version is the boundary (and whether a deprecation warning precedes it), and how a hub recognises a registered instance's write on a legacy path so that it can refuse one without identifier. Recorded in docs/30-design/platform/identifier-conventions.md §1 and identity §5.</p>
 <h3 id="id-delete-reuse-decision--decide-after-a-delete-what-does-a-re-send-of-the-same-identifier-or-_id-do---resurrect-refuse-or-create-new"><code>ID-DELETE-REUSE-DECISION</code> &mdash; Decide: after a delete, what does a re-send of the same identifier (or _id) do - resurrect, refuse, or create new?<a class="headerlink" href="#id-delete-reuse-decision--decide-after-a-delete-what-does-a-re-send-of-the-same-identifier-or-_id-do---resurrect-refuse-or-create-new" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -16782,7 +16790,62 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md</code></li>
 <li><code>docs/60-research/tenancy/identifier-duplicates-2026-10-17.md</code></li>
 </ul>
-<p><strong>Notes.</strong> Today no index on identifier is unique (entries.js:224,226, treatments.js:430,432, devicestatus.js:168, api3 mongoCollection/index.js:21 at 15.0.8), and every match is within one collection, so uniqueness is per collection by construction and only by convention. Cross-references: D2 (shared logical storage with a tenant discriminator) and D3 (PostgreSQL with RLS) mean a per-tenant scope is a column in the key, not a separate database; D20 rule 5 ("one identifier names one record") does not say per what. The simple contract (reply.body.md rule 2) says "one identifier names one record" without a scope.</p>
+<p><strong>Notes.</strong> Today no index on identifier is unique (entries.js:224,226, treatments.js:430,432, devicestatus.js:168, api3 mongoCollection/index.js:21 at 15.0.8), and every match is within one collection, so uniqueness is per collection by construction and only by convention. Cross-references: D2 (shared logical storage with a tenant discriminator) and D3 (PostgreSQL with RLS) mean a per-tenant scope is a column in the key, not a separate database; D20 rule 5 ("one identifier names one record") does not say per what. The simple contract (reply.body.md rule 2) says "one identifier names one record" without a scope. 2026-10-18, recommended (not decided): enforcement per collection, values globally unique by convention. The URL form's kind segment (loop://carbs/..., loop://devicestatus/..., or the model in a source scheme) keeps two collections from holding the same value (identifier-conventions.md §1).</p>
+<h3 id="id-conventions--identifier-conventions-one-url-form-identifier-template-per-record-kind-and-source-so-apps-converge"><code>ID-CONVENTIONS</code> &mdash; Identifier conventions: one URL-form identifier template per record kind and source, so apps converge<a class="headerlink" href="#id-conventions--identifier-conventions-one-url-form-identifier-template-per-record-kind-and-source-so-apps-converge" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>in-progress</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>rag-nightscout-ecosystem-alignment</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>records/loop-identifier-2026-10-17</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>main@fdd18fb72</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>n/a</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer, then the client developers (Loop first, through LOOP-ID-REPLY)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> docs/30-design/platform/identifier-conventions.md (new, living draft): the maintainer's 2026-10-18 decisions, the server's rule C1-C8, and a table of templates with the identity source each app has today. Small edits to the identity spec (§4, §5), the record identity reference §6, the Loop reply and its README. Ships nothing.</p>
+<p><strong>What an operator sees.</strong> <em>Nothing. No operator-visible change.</em></p>
+<p><strong>Why <code>n/a</code>.</strong> documentation in this repository; ships nothing</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><code>[static]</code> <code>node tools/queue/gates/id-conventions.js</code></li>
+<li>FAILS when the conventions page is missing, when any of the 17 listed (record kind, source) pairs has no row in §4, or a row has no URL-form template ("none" and "app scheme" count) or no status mark, or when the page does not state the 2026-10-18 decisions (mandatory identifier, source and app schemes, manufacturer as the scheme) or link the v3 path measurement. RED before the page existed (first finding fails); GREEN after.</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>docs/30-design/platform/identifier-conventions.md</code></li>
+<li><code>docs/60-research/tenancy/identifier-format-2026-10-17.md</code></li>
+<li><code>docs/60-research/tenancy/identifier-format-2026-10-17/url-identifier-results-2026-10-18.md</code></li>
+<li><code>docs/60-research/tenancy/identifier-duplicates-2026-10-17.md</code></li>
+</ul>
+<p><strong>Notes.</strong> In progress until the maintainer confirms the proposed templates and the client developers answer; the unknown cells (Dexcom ONE+ and Stelo model segments, the Libre 2 serial source, AndroidAPS per-driver pumpId origin, Trio override and device status ids) are listed in the page's §7. The earlier per- client table in mapping/cross-project/interoperability-matrix.md (2026-01-20) is partly wrong against the format research (Loop syncIdentifier shown as a UUID, Trio shown with syncIdentifier, entries keyed dateString + device); the page's §6 says where. How a registered instance declares its convention is a proposal (a definition meaning member, registration §7-§8): the grammar has no member for it yet.</p>
 <h3 id="id-validate--release-2-minor-validate-identifier-on-every-collection-empty-and-null-mean-absent"><code>ID-VALIDATE</code> &mdash; Release 2 (minor): validate identifier on every collection; empty and null mean absent<a class="headerlink" href="#id-validate--release-2-minor-validate-identifier-on-every-collection-empty-and-null-mean-absent" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
