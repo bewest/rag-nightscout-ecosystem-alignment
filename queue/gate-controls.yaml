@@ -2293,3 +2293,18 @@ controls:
     proves: >
       run 2026-10-18: a copy with the generated row for
       instances/owner-transfer-role deleted is reported stale and exits 1.
+
+  - gate: |-
+      node tools/queue/gates/id-conventions.js
+    cwd: .
+    control: |-
+      tools/queue/gates/id-conventions-control.sh
+    positive-control: |-
+      node tools/queue/gates/id-conventions.js
+    control-kind: static
+    proves: >
+      run 2026-10-18: the control copies the conventions page to a scratch
+      root without its "device status / Loop" row; the gate exits 1 with the
+      one finding "§4 row for device status / Loop: no row". Against an empty
+      root (the tree before the page existed) the first finding, that the
+      page exists, fails.

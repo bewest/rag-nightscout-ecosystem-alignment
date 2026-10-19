@@ -77,7 +77,15 @@ minimed-connect-to-nightscout (entries, devicestatus), nightscout-librelink-up
 (entries over v1 and v3), and Loop's own entries and device status
 (reply.body.md). Hand-written scripts (curl, spreadsheets, the careportal)
 also send neither. API v3 is not affected by the choice: it computes
-identifier as uuid.v5 of device, date and eventType when none is sent.
+identifier as uuid.v5 of device, date and eventType when none is sent. Decided
+2026-10-18 (maintainer): identifier becomes mandatory at a future version
+boundary, and for registered instances of controllers (registration §8); until
+then the legacy paths keep the time-key fallback for a write without one
+(choice 1 now, choice 3 at the boundary). State stays needs-decision because
+two parts remain: which version is the boundary (and whether a deprecation
+warning precedes it), and how a hub recognises a registered instance's write
+on a legacy path so that it can refuse one without identifier. Recorded in
+docs/30-design/platform/identifier-conventions.md §1 and identity §5.
 
 ---
 

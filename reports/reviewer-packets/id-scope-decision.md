@@ -72,7 +72,11 @@ collection by construction and only by convention. Cross-references: D2
 RLS) mean a per-tenant scope is a column in the key, not a separate database;
 D20 rule 5 ("one identifier names one record") does not say per what. The
 simple contract (reply.body.md rule 2) says "one identifier names one record"
-without a scope.
+without a scope. 2026-10-18, recommended (not decided): enforcement per
+collection, values globally unique by convention. The URL form's kind segment
+(loop://carbs/..., loop://devicestatus/..., or the model in a source scheme)
+keeps two collections from holding the same value (identifier-conventions.md
+§1).
 
 ---
 

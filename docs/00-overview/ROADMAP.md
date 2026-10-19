@@ -178,6 +178,7 @@ Until then, the order below is the order of development, not of release.
 | wave | id | what | claimed state | waits on |
 |---:|---|---|---|---|
 | 1 | `A7A-7` | §7a item 7 - the clock question | `unsettled` | &mdash; |
+| 1 | `ID-CONVENTIONS` | Identifier conventions: one URL-form identifier template per record kind and sou | `in-progress` | &mdash; |
 | 1 | `T30-AUTH` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | `ready-to-push` | &mdash; |
 | 1 | `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | &mdash; |
 | 1 | `T43` | T4.3 - ns-realtime, LISTEN per served tenant | `not-started` | &mdash; |

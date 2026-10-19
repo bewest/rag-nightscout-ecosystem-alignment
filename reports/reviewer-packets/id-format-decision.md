@@ -79,6 +79,31 @@ changing an existing client's identifiers, which would break matching against
 records it already stored. 2026-10-17: the rewritten Loop reply states only "a
 string, UUID recommended" and lists the limit, character set and case under
 "later, only if needed"; decide when a client or ID-VALIDATE needs it.
+Maintainer, 2026-10-18 (decided): identifier is opaque to the server and
+follows one rule in every collection, plus a published conventions table per
+record kind so apps converge on one value (docs/30-design/platform/identifier-
+conventions.md, ID-CONVENTIONS). URL syntax: <scheme>://<segment>/<segment>.
+Things that exist outside the app (sensor readings, pump events) use a source
+scheme with the manufacturer as the scheme and the model as the first segment
+(dexcom://g7/<serial>/<offset>, dexcom://g6/<transmitterId>/<time>,
+abbott://libre3/<serial>/<lifeCount>); things created in an app (manual carbs,
+boluses, overrides, temporary targets) use an app scheme
+(loop://carbs/<uuid>). A controller may use one format of its own across
+collections (loop://carbs/<uuid>, loop://tempbasal/<syncId>,
+loop://override/<uuid>, loop://devicestatus/<uuid>): unique per collection,
+within the limits, stable across re-sends; a registered instance declares it.
+The kind segment separates the measured Loop Suspend Pump + Temp Basal pairs
+that share one syncIdentifier (identifier-duplicates §2.2: 9 of the 13 shared
+values). The '/' question, measured 2026-10-18 (identifier-format §3.4, url-
+identifier-probes.js; 15.0.8 92d08342 and dev fade2299, mongo:7 7.0.43, no
+proxy, same result at both): a URL-form identifier is stored exactly; percent-
+encoded as one path segment (%3A, %2F) it works on v3 GET, PATCH, PUT, PUT-
+create and DELETE; raw '/' in the path is 404; v3 ?identifier$eq= and v1
+find[identifier]= find it; v1 DELETE by it deletes nothing (UUID_RE). So C3
+becomes [A-Za-z0-9._~:/-] and clients must percent-encode the identifier in v3
+paths. Still open: the 256 limit and the rest of C1-C8 as written in the
+conventions page §2, reverse proxies and %2F (not measured), the UUIDv5 client
+namespace, and whether the client developers accept the templates.
 
 ---
 

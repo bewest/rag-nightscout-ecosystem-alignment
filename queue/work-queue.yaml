@@ -5421,6 +5421,37 @@ items:
       recommended" and lists the limit, character set and case under
       "later, only if needed"; decide when a client or ID-VALIDATE needs it.
 
+      Maintainer, 2026-10-18 (decided): identifier is opaque to the server
+      and follows one rule in every collection, plus a published
+      conventions table per record kind so apps converge on one value
+      (docs/30-design/platform/identifier-conventions.md, ID-CONVENTIONS).
+      URL syntax: <scheme>://<segment>/<segment>. Things that exist outside
+      the app (sensor readings, pump events) use a source scheme with the
+      manufacturer as the scheme and the model as the first segment
+      (dexcom://g7/<serial>/<offset>, dexcom://g6/<transmitterId>/<time>,
+      abbott://libre3/<serial>/<lifeCount>); things created in an app
+      (manual carbs, boluses, overrides, temporary targets) use an app
+      scheme (loop://carbs/<uuid>). A controller may use one format of its
+      own across collections (loop://carbs/<uuid>, loop://tempbasal/<syncId>,
+      loop://override/<uuid>, loop://devicestatus/<uuid>): unique per
+      collection, within the limits, stable across re-sends; a registered
+      instance declares it. The kind segment separates the measured Loop
+      Suspend Pump + Temp Basal pairs that share one syncIdentifier
+      (identifier-duplicates §2.2: 9 of the 13 shared values).
+
+      The '/' question, measured 2026-10-18 (identifier-format §3.4,
+      url-identifier-probes.js; 15.0.8 92d08342 and dev fade2299, mongo:7
+      7.0.43, no proxy, same result at both): a URL-form identifier is
+      stored exactly; percent-encoded as one path segment (%3A, %2F) it
+      works on v3 GET, PATCH, PUT, PUT-create and DELETE; raw '/' in the
+      path is 404; v3 ?identifier$eq= and v1 find[identifier]= find it; v1
+      DELETE by it deletes nothing (UUID_RE). So C3 becomes
+      [A-Za-z0-9._~:/-] and clients must percent-encode the identifier in
+      v3 paths. Still open: the 256 limit and the rest of C1-C8 as written
+      in the conventions page §2, reverse proxies and %2F (not measured),
+      the UUIDv5 client namespace, and whether the client developers accept
+      the templates.
+
   - id: ID-CLIENT-OID-DECISION
     title: "Decide: may a client set _id (an ObjectId it creates), and which field wins when identifier and _id match different records?"
     parcel: tenancy
@@ -5515,6 +5546,16 @@ items:
       affected by the choice: it computes identifier as uuid.v5 of device,
       date and eventType when none is sent.
 
+      Decided 2026-10-18 (maintainer): identifier becomes mandatory at a
+      future version boundary, and for registered instances of controllers
+      (registration §8); until then the legacy paths keep the time-key
+      fallback for a write without one (choice 1 now, choice 3 at the
+      boundary). State stays needs-decision because two parts remain: which
+      version is the boundary (and whether a deprecation warning precedes
+      it), and how a hub recognises a registered instance's write on a
+      legacy path so that it can refuse one without identifier. Recorded in
+      docs/30-design/platform/identifier-conventions.md §1 and identity §5.
+
   - id: ID-DELETE-REUSE-DECISION
     title: "Decide: after a delete, what does a re-send of the same identifier (or _id) do - resurrect, refuse, or create new?"
     parcel: tenancy
@@ -5599,6 +5640,61 @@ items:
       ("one identifier names one record") does not say per what. The
       simple contract (reply.body.md rule 2) says "one identifier names one
       record" without a scope.
+
+      2026-10-18, recommended (not decided): enforcement per collection,
+      values globally unique by convention. The URL form's kind segment
+      (loop://carbs/..., loop://devicestatus/..., or the model in a source
+      scheme) keeps two collections from holding the same value
+      (identifier-conventions.md §1).
+
+  - id: ID-CONVENTIONS
+    title: "Identifier conventions: one URL-form identifier template per record kind and source, so apps converge"
+    parcel: tenancy
+    repo: rag-nightscout-ecosystem-alignment
+    branch: records/loop-identifier-2026-10-17
+    base: main@fdd18fb72
+    state: in-progress
+    pr: []
+    blast_radius: >
+      docs/30-design/platform/identifier-conventions.md (new, living draft):
+      the maintainer's 2026-10-18 decisions, the server's rule C1-C8, and a
+      table of templates with the identity source each app has today. Small
+      edits to the identity spec (§4, §5), the record identity reference
+      §6, the Loop reply and its README. Ships nothing.
+    review: maintainer, then the client developers (Loop first, through LOOP-ID-REPLY)
+    operator_visible: ""
+    semver: n/a
+    semver_reason: documentation in this repository; ships nothing
+    register: []
+    gates:
+      - run: node tools/queue/gates/id-conventions.js
+        kind: static
+        describe: >
+          FAILS when the conventions page is missing, when any of the 17
+          listed (record kind, source) pairs has no row in §4, or a row has
+          no URL-form template ("none" and "app scheme" count) or no status
+          mark, or when the page does not state the 2026-10-18 decisions
+          (mandatory identifier, source and app schemes, manufacturer as the
+          scheme) or link the v3 path measurement. RED before the page
+          existed (first finding fails); GREEN after.
+    blocks_on: []
+    evidence:
+      - docs/30-design/platform/identifier-conventions.md
+      - docs/60-research/tenancy/identifier-format-2026-10-17.md
+      - docs/60-research/tenancy/identifier-format-2026-10-17/url-identifier-results-2026-10-18.md
+      - docs/60-research/tenancy/identifier-duplicates-2026-10-17.md
+    notes: >
+      In progress until the maintainer confirms the proposed templates and
+      the client developers answer; the unknown cells (Dexcom ONE+ and Stelo
+      model segments, the Libre 2 serial source, AndroidAPS per-driver
+      pumpId origin, Trio override and device status ids) are listed in the
+      page's §7. The earlier per-client table in
+      mapping/cross-project/interoperability-matrix.md (2026-01-20) is
+      partly wrong against the format research (Loop syncIdentifier shown
+      as a UUID, Trio shown with syncIdentifier, entries keyed dateString +
+      device); the page's §6 says where. How a registered instance declares
+      its convention is a proposal (a definition meaning member,
+      registration §7-§8): the grammar has no member for it yet.
 
   - id: ID-VALIDATE
     title: "Release 2 (minor): validate identifier on every collection; empty and null mean absent"
