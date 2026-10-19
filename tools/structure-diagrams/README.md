@@ -32,6 +32,13 @@
   `1-access-matrix.svg`, from `access/devices.yaml` (one record per device line, mechanism level
   only). It reuses `render.py`'s font and text measure.
 
+- `history_timeline.py` draws `history-timeline.svg` into `docs/00-overview/observations/diagrams/`
+  from `history/timeline.yaml`: one row per dated row of the
+  [chronology](../../docs/00-overview/observations/HISTORY.md), each naming its section, date cell and
+  words. `test_history_timeline.py` fails naming any row that no longer matches HISTORY.md, and
+  checks the committed figure; `make history-timeline` draws it and `make diagrams-svg-check` runs
+  the test.
+
 ```sh
 python3 tools/structure-diagrams/render.py            # every input
 python3 tools/structure-diagrams/access_charts.py     # the access ladder and matrix

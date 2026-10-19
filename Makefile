@@ -941,7 +941,14 @@ diagrams-svg:
 ## diagrams-svg-check: fail naming each committed figure that differs from what its
 ## sources generate; the tamper controls show the comparison sees each source
 diagrams-svg-check:
-	@$(PY) -m pytest tools/diagrams/test_diagrams.py -q
+	@$(PY) -m pytest tools/diagrams/test_diagrams.py tools/structure-diagrams/test_history_timeline.py -q
+
+## history-timeline: draw the chronology's rows (tools/structure-diagrams/history/timeline.yaml,
+## each tied to a row of docs/00-overview/observations/HISTORY.md) into
+## docs/00-overview/observations/diagrams/history-timeline.svg; diagrams-svg-check checks it
+.PHONY: history-timeline
+history-timeline:
+	@$(PY) tools/structure-diagrams/history_timeline.py
 
 ## animations: render the animation (tools/animations/README.md) into
 ## docs/30-design/platform/animations/: <name>.webm, poster <name>.png and <name>.sources.json.

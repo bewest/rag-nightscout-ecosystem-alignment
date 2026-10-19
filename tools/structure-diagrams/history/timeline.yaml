@@ -1,0 +1,40 @@
+# Rows drawn by history_timeline.py as history-timeline.svg. Every row is one row of
+# docs/00-overview/observations/HISTORY.md: `section` is its section number there, `date` is that
+# row's date cell exactly, and `match` is words from that row's text. test_history_timeline.py fails
+# naming any row whose date or words no longer match HISTORY.md, so the drawing cannot drift from
+# the chronology. `label` is the short name drawn at the left.
+sections:
+  - {n: 1, label: "§1 2012–14", start: "2013-01-01", end: "2014-12-31"}
+  - {n: 2, label: "§2 2015–19", start: "2015-01-01", end: "2019-12-31"}
+  - {n: 3, label: "§3 2020–24", start: "2020-01-01", end: "2024-12-31"}
+  - {n: 4, label: "§4 2025–26", start: "2025-01-01", end: "2026-12-31"}
+lanes:
+  - {id: hub, label: "Hub servers"}
+  - {id: up, label: "Uploaders and bridges"}
+  - {id: ctl, label: "Controllers"}
+  - {id: fol, label: "Followers"}
+  - {id: out, label: "Hosting and regulation"}
+rows:
+  - {key: crm, lane: hub, section: 1, date: "2013-10-01", label: "cgm-remote-monitor", match: "cgm-remote-monitor's first commits"}
+  - {key: api3, lane: hub, section: 2, date: "2019-10-09", label: "API v3 merged", match: "API v3 is merged into cgm-remote-monitor"}
+  - {key: nocturne, lane: hub, section: 4, date: "2025-11-17", label: "Nocturne", match: "Nocturne, a second server implementing the Nightscout API"}
+  - {key: xdrip, lane: up, section: 1, date: "2014-11-15", label: "xDrip", match: "xDrip's first commit"}
+  - {key: share, lane: up, section: 2, date: "2015-03-13", label: "Dexcom Share bridge", match: "share2nightscout-bridge"}
+  - {key: carelink, lane: up, section: 2, date: "2015-10-06", label: "CareLink scraper", match: "minimed-connect-to-nightscout has its first commit"}
+  - {key: xdrip4ios, lane: up, section: 2, date: "2018-12-02", label: "xDrip4iOS", match: "xDrip4iOS has its first commit"}
+  - {key: llu, lane: up, section: 3, date: "2021-12-30", label: "LibreLinkUp uploader", match: "nightscout-librelink-up has its first commit"}
+  - {key: connect, lane: up, section: 3, date: "2023-03-22", label: "nightscout-connect", match: "nightscout-connect, a vendor-cloud connector"}
+  - {key: oref0, lane: ctl, section: 2, date: "2015-06-29", label: "oref0 (OpenAPS)", match: "oref0, the OpenAPS reference algorithm"}
+  - {key: loop, lane: ctl, section: 2, date: "2015-08-15", label: "Loop and LoopKit", match: "Loop and LoopKit share a first commit"}
+  - {key: aaps, lane: ctl, section: 2, date: "2016-06-04", label: "AndroidAPS", match: "AndroidAPS has its first commit"}
+  - {key: freeapsx, lane: ctl, section: 3, date: "2021-01-12", label: "FreeAPS X", match: "the FreeAPS X code base has its first commit"}
+  - {key: iaps, lane: ctl, section: 3, date: "2023-03-16", label: "iAPS repository", match: "the iAPS repository is created"}
+  - {key: trio, lane: ctl, section: 3, date: "2024-03-02", label: "Trio repository", match: "the Trio repository is created"}
+  - {key: nightguard, lane: fol, section: 2, date: "2015-11-20", label: "nightguard", match: "nightguard, an iOS follower"}
+  - {key: loopfollow, lane: fol, section: 3, date: "2020-06-01", label: "LoopFollow", match: "LoopFollow has its first commit"}
+  - {key: caregiver, lane: fol, section: 3, date: "2023-01-26", label: "LoopCaregiver repository", match: "LoopCaregiver's repository is created"}
+  - {key: mlab, lane: out, section: 3, date: "2020-07-14", label: "mLab Heroku add-on ends", match: "mLab's Heroku add-on is discontinued"}
+  - {key: heroku, lane: out, section: 3, date: "2022-08-25", label: "Heroku free-plan notice", match: "Heroku announces"}
+  - {key: tidepool, lane: out, section: 3, date: "2023-01-23", label: "Tidepool Loop cleared", match: "the FDA clears Tidepool Loop"}
+  - {key: railway, lane: out, section: 3, date: "2023-06-02", label: "Railway plan changes", match: "Railway announces plan changes"}
+  - {key: fly, lane: out, section: 3, date: "2024-10-07", label: "Fly.io earlier plans close", match: "Fly.io's earlier plans close to new customers"}

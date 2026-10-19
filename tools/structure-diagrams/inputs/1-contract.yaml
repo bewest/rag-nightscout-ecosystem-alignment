@@ -1,0 +1,42 @@
+# How a writer's data reaches its readers: as the code works today, and as the platform
+# specifications define it (specified, not built in any hub). Sources:
+#   actual   - specs/quirks/*.yaml (20 entries in four collections, among them QUIRK-DEVICESTATUS-001,
+#              pump status flat and nested); identifier format research 2026-10-17 §1 (five record-id
+#              conventions: Loop, Trio, AndroidAPS, xDrip+, xDrip4iOS); PROCESS-MODELS 3·registration
+#              (cgm-remote-monitor a8888f0d: no registration code under lib/; writer told apart by
+#              key); the quirks registry is documentation in this repository
+#   proposed - docs/30-design/platform/README.md (controller-owned definitions, accepted per element,
+#              bound to the credential that wrote them, never redefined by another controller; every
+#              stored record says which copy of which controller wrote it, under which definition);
+#              spec/identity.md (identifier, L0), spec/records.md (typed records, L1),
+#              spec/registration.md §16 (version-scoped quirks, recorded as quirksApplied);
+#              status: specified, not implemented (platform README, 2026-10-18)
+title: "1·contract · How a writer's data reaches its readers"
+base: false
+scenarios: [actual, proposed]
+nodes:
+  - {id: writers, label: "Writers: controller\napps and uploaders", kind: org, level: 0, column: 1, icon: smartphone}
+  - {id: decl, label: "Definitions: what each\nwriter's data means\n(registration, L2)", kind: entity, level: 0, column: 3, icon: clipboard-list, status: proposed, in: [proposed]}
+  - {id: hub, label: "Nightscout hub", kind: commons, level: 1, column: 1, icon: server,
+     labels: {actual: "Nightscout hub\n(stores what\nit is sent)",
+              proposed: "Nightscout hub\n(binds, routes,\nrecords)"}}
+  - {id: quirks, label: "Quirks registry", kind: entity, level: 1, column: 3, icon: database,
+     labels: {actual: "Quirks registry:\n20 entries, written\ndown in this repository",
+              proposed: "Quirks scoped to the\nversions that write\nthem (D20)"}}
+  - {id: readers, label: "Readers: followers,\nreports, research tools", kind: entity, level: 2, column: 1, icon: monitor-smartphone}
+edges:
+  - {from: writers, to: hub, kind: data, label: "records",
+     labels: {actual: "each team's own shape:\ntwo pump shapes,\nfive id conventions",
+              proposed: "typed records with\nan identifier\n(L0, L1)"}}
+  - {from: writers, to: decl, kind: control, status: proposed, in: [proposed],
+     label: "declares its\nown definitions"}
+  - {from: decl, to: hub, kind: control, status: proposed, in: [proposed],
+     label: "accepted per element;\nbound to the writer's\ncredential"}
+  - {from: quirks, to: hub, kind: data, status: proposed, in: [proposed],
+     label: "a mapping applied is\nrecorded on the record\n(quirksApplied)"}
+  - {from: hub, to: readers, kind: data, label: "records",
+     labels: {actual: "every shape as sent:\nreaders handle\neach writer",
+              proposed: "records attributed to\nthe writer and the\ndefinition"}}
+views:
+  - {id: actual, title: "as the code works today", scenario: actual}
+  - {id: proposed, title: "as specified, not built in any hub", scenario: proposed}

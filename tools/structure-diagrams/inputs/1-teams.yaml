@@ -1,0 +1,49 @@
+# Who decides the shared data contract: as believed, and as the repositories and the code show.
+# Sources:
+#   believed - inferred: the assumptions the actual panel tests (one project decides; the hub knows
+#              its writers; someone runs the shared operations)
+#   actual   - GOVERNANCE-TODAY §1 (each of 20 repositories decides what it merges and releases),
+#              §3 (the foundation: support by resource request, events, awards), §6 (no shared body
+#              for decisions that cross projects), measured 2026-10-02; PROCESS-MODELS 3·registration
+#              (cgm-remote-monitor a8888f0d: controllers told apart by the `loop` / `openaps` key,
+#              lib/plugins/loop.js:50, lib/plugins/openaps.js:82; no registration code under lib/);
+#              specs/quirks/*.yaml (20 entries in four collections); identifier format research
+#              2026-10-17 §1 (record ids: Loop syncIdentifier, Trio id, AndroidAPS identifier,
+#              xDrip+ uuid and a derived _id, xDrip4iOS a 24-character random _id);
+#              PROCESS-MODELS 2·shared-infra (no named runner for intake or registry)
+title: "1·teams · Who decides the shared data contract"
+base: false
+scenarios: [believed, actual]
+nodes:
+  - {id: fdn, label: "Nightscout Foundation\n(501(c)(3))", kind: org, level: 0, column: 2, icon: hand-heart}
+  - {id: xbody, label: "Cross-project\ndecisions", kind: org, level: 1, column: 0, icon: network,
+     labels: {actual: "Cross-project body:\nnone named"}}
+  - {id: projects, label: "Projects", kind: human, level: 1, column: 2, icon: users,
+     labels: {believed: "Nightscout\n(one project)",
+              actual: "20 repositories,\neach deciding alone"}}
+  - {id: ops, label: "Shared operations:\nsecurity contact,\nintake, registry", kind: commons, level: 1, column: 4, icon: shield-alert,
+     labels: {actual: "Shared operations:\nno named runner\nfor intake or registry"}}
+  - {id: hub, label: "Nightscout hub", kind: commons, level: 2, column: 2, icon: server,
+     labels: {believed: "Nightscout hub\n(knows each writer)",
+              actual: "Nightscout hub\n(stores what it is sent;\nwriter guessed by key)"}}
+  - {id: writers, label: "Controller apps\nand uploaders", kind: org, level: 3, column: 1, icon: smartphone}
+  - {id: readers, label: "Followers, reports,\nresearch tools", kind: entity, level: 3, column: 3, icon: monitor-smartphone}
+edges:
+  - {from: fdn, to: projects, kind: control, label: "decides", in: [believed]}
+  - {from: fdn, to: projects, kind: funding, in: [actual],
+     label: "support by resource\nrequest; events,\nawards"}
+  - {from: fdn, to: xbody, kind: control, label: "convenes", in: [believed]}
+  - {from: xbody, to: projects, kind: control, label: "shared rules", in: [believed]}
+  - {from: fdn, to: ops, kind: control, label: "someone\nruns them", in: [believed]}
+  - {from: projects, to: hub, kind: control, label: "schema",
+     labels: {believed: "owns one\nschema",
+              actual: "each display plugin\nreads its family's key\n(loop, openaps)"}}
+  - {from: writers, to: hub, kind: data, label: "records",
+     labels: {believed: "write the\nshared schema",
+              actual: "each team's own shape:\n20 recorded quirks,\nfive id conventions"}}
+  - {from: hub, to: readers, kind: data, label: "records",
+     labels: {believed: "one shape",
+              actual: "every shape as sent:\nreaders handle\neach writer"}}
+views:
+  - {id: believed, title: "as believed", scenario: believed}
+  - {id: actual, title: "as the repositories and code show", scenario: actual}

@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="483" height="434" viewBox="0 0 483 434" font-family="Helvetica, Arial, sans-serif">
+<title>1·contract · How a writer's data reaches its readers — as the code works today</title>
+<defs>
+<marker id="ah00796b" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#00796b"/></marker>
+<marker id="ah1f5fa8" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f5fa8"/></marker>
+<marker id="ah2e7d32" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2e7d32"/></marker>
+<marker id="ah555555" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#555555"/></marker>
+<marker id="ah7b3294" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7b3294"/></marker>
+<marker id="ah888888" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#888888"/></marker>
+<marker id="ahb5541b" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b5541b"/></marker>
+<marker id="ahc8c8c8" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c8c8c8"/></marker>
+<symbol id="icon-clipboard-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></symbol>
+<symbol id="icon-database" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3" /> <path d="M3 5V19A9 3 0 0 0 21 19V5" /> <path d="M3 12A9 3 0 0 0 21 12" /></symbol>
+<symbol id="icon-monitor-smartphone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h8" /> <path d="M10 19v-3.96 3.15" /> <path d="M7 19h5" /> <rect width="6" height="10" x="16" y="12" rx="2" /></symbol>
+<symbol id="icon-server" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="8" x="2" y="2" rx="2" ry="2" /> <rect width="20" height="8" x="2" y="14" rx="2" ry="2" /> <line x1="6" x2="6.01" y1="6" y2="6" /> <line x1="6" x2="6.01" y1="18" y2="18" /></symbol>
+<symbol id="icon-smartphone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2" /> <path d="M12 18h.01" /></symbol>
+</defs>
+<rect x="0" y="0" width="483" height="434" fill="#ffffff"/>
+<text x="241.5" y="22" font-size="13" text-anchor="middle" fill="#111">1·contract · How a writer's data reaches its readers — as the code works today</text>
+<g transform="translate(10.1,0.0)">
+<g class="edge"><path class="edge" d="M106.7,120.5 L106.7,242.0" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="1.5,3" stroke-linecap="round" marker-end="url(#ah555555)"/></g>
+<g class="edge"><path class="edge" d="M110.7,296.5 L110.7,374.5" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="1.5,3" stroke-linecap="round" marker-end="url(#ah555555)"/></g>
+<g class="node" data-id="writers"><rect x="38.4" y="79.5" width="144.6" height="41.0" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+<use href="#icon-smartphone" x="47.4" y="92.0" width="16" height="16" color="#3a4656"/>
+<text x="121.7" y="97.2" font-size="11" text-anchor="middle" fill="#111111">Writers: controller</text>
+<text x="121.7" y="110.8" font-size="11" text-anchor="middle" fill="#111111">apps and uploaders</text>
+</g>
+<g class="node" data-id="hub"><rect x="50.0" y="242.0" width="121.4" height="54.5" rx="5" fill="#f3e7d3" stroke="#333333" stroke-width="1"/>
+<use href="#icon-server" x="59.0" y="261.2" width="16" height="16" color="#3a4656"/>
+<text x="121.7" y="259.8" font-size="11" text-anchor="middle" fill="#111111">Nightscout hub</text>
+<text x="121.7" y="273.2" font-size="11" text-anchor="middle" fill="#111111">(stores what</text>
+<text x="121.7" y="286.8" font-size="11" text-anchor="middle" fill="#111111">it is sent)</text>
+</g>
+<g class="node" data-id="quirks"><rect x="287.4" y="242.0" width="157.4" height="54.5" rx="5" fill="#e3f0e3" stroke="#333333" stroke-width="1"/>
+<use href="#icon-database" x="296.4" y="261.2" width="16" height="16" color="#3a4656"/>
+<text x="377.1" y="259.8" font-size="11" text-anchor="middle" fill="#111111">Quirks registry:</text>
+<text x="377.1" y="273.2" font-size="11" text-anchor="middle" fill="#111111">20 entries, written</text>
+<text x="377.1" y="286.8" font-size="11" text-anchor="middle" fill="#111111">down in this repository</text>
+</g>
+<g class="node" data-id="readers"><rect x="32.0" y="374.5" width="157.4" height="41.0" rx="5" fill="#e3f0e3" stroke="#333333" stroke-width="1"/>
+<use href="#icon-monitor-smartphone" x="41.0" y="387.0" width="16" height="16" color="#3a4656"/>
+<text x="121.7" y="392.2" font-size="11" text-anchor="middle" fill="#111111">Readers: followers,</text>
+<text x="121.7" y="405.8" font-size="11" text-anchor="middle" fill="#111111">reports, research tools</text>
+</g>
+<g class="elabel" data-k="0">
+<text x="113.7" y="154.0" font-size="10" text-anchor="start" fill="#555555">each team's own shape:</text>
+<text x="113.7" y="166.0" font-size="10" text-anchor="start" fill="#555555">two pump shapes,</text>
+<text x="113.7" y="178.0" font-size="10" text-anchor="start" fill="#555555">five id conventions</text>
+</g>
+<g class="elabel" data-k="4">
+<text x="103.7" y="326.5" font-size="10" text-anchor="end" fill="#555555">every shape as sent:</text>
+<text x="103.7" y="338.5" font-size="10" text-anchor="end" fill="#555555">readers handle</text>
+<text x="103.7" y="350.5" font-size="10" text-anchor="end" fill="#555555">each writer</text>
+</g>
+</g></svg>
