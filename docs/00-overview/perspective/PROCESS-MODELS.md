@@ -1,6 +1,6 @@
 # Process models: what we believe, and how it works
 
-*What this is: a map (part 2 of the overview, perspective; [how the overview is organised](../README.md)), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after [who controls what](STRUCTURES.md); leads to [Conway's Law applied to the ecosystem](CONWAY.md). Living page,
+*What this is: a map (part 2 of the overview, perspective; [how the overview is organised](../README.md)), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after [who controls what](STRUCTURES.md); leads to [the Conway's Law case study](CONWAY.md). Living page,
 written 2026-10-17; 1·teams added 2026-10-18. Companion to [control structures](STRUCTURES.md), whose conventions,
 legend and icons apply here. Every node and edge comes from a source cited under the drawing;
 where a panel is inferred or proposed, it says so.*
@@ -525,8 +525,8 @@ use five record-id conventions
 Intake and registry have no named runner ([2·shared-infra](#2shared-infra-shared-operations-and-who-runs-them)).
 
 *Interpretation.* The organisation and the data contract have the same shape: where no team owns
-a join, the hub keeps every side of it. The set is read through Conway's Law on
-[Conway's Law applied to the ecosystem](CONWAY.md).
+a join, the hub keeps every side of it. The set is read through Conway's Law in
+[the case study](CONWAY.md).
 
 *Caveat.* Counts are as measured on the dates given; re-measure before quoting.
 

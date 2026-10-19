@@ -1,6 +1,6 @@
-# Conway's Law applied to the Nightscout ecosystem
+# The Nightscout ecosystem: a case study in Conway's Law
 
-*What this is: a frame (part 2 of the overview, perspective; [how the overview is organised](../README.md)), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after [process models](PROCESS-MODELS.md); leads to part 3, starting with the [ecosystem programme](../ECOSYSTEM-PROGRAMME.md). Living page,
+*What this is: a case study (part 2 of the overview, perspective; [how the overview is organised](../README.md)): how the ecosystem's teams explain the shape of its software and data contract, and where that points to ways to unify and move forward. For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after [process models](PROCESS-MODELS.md); leads to part 3, starting with the [ecosystem programme](../ECOSYSTEM-PROGRAMME.md). Living page,
 written 2026-10-18 against this repository at `0b0d150f`. Every fact is taken from a page linked
 beside it, which gives its own date and source; the Conway readings are interpretation and are
 marked as such.*

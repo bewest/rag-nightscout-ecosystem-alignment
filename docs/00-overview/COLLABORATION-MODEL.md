@@ -148,7 +148,7 @@ What SQLite sells, and what stays constant across every tier, is in
 ## 5a. Read the structure before the motive
 
 Teams that had no channel to agree build what each needs, and the shared data holds both
-([Conway's Law applied to the ecosystem](perspective/CONWAY.md)). Most friction between projects comes
+([the Conway's Law case study](perspective/CONWAY.md)). Most friction between projects comes
 from such a boundary, not from what a person intended. The rules below apply to maintainers,
 contributors, companies and community members alike.
 
