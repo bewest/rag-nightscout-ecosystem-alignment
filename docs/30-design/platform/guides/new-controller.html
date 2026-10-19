@@ -1,0 +1,6526 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/guides/new-controller.html">
+      
+      
+        <link rel="prev" href="index.html">
+      
+      
+        <link rel="next" href="add-a-setting.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Bringing a controller onto a hub: register it, hold a lease, receive commands and report outcomes - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#bringing-a-controller-onto-a-hub-register-it-hold-a-lease-receive-commands-and-report-outcomes" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Bringing a controller onto a hub: register it, hold a lease, receive commands and report outcomes
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../site/pages/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24" id="__nav_5_24_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_24_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    30-design/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-telemetry-emitter-map-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor Telemetry Emitter Integration Map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-adoption-roadmap-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hub-and-spoke adoption across projects: who builds what, in what order
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-integration-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Integration Guide for App Developers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-telemetry-backend-service-design-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Backend Service Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-telemetry-deployment-lifecycle-examples-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Deployment Lifecycle Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-telemetry-implementation-breakdown-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Implementation Breakdown
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-telemetry-lifecycle-policy-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Lifecycle Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-telemetry-local-integration-plan-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Local Integration Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nightscout-telemetry-scheduling-dedupe-model-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Scheduling and Dedupe Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ns2parquet-keyed-pseudonyms.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ns2parquet keyed pseudonyms: design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_13" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    platform/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24_13" id="__nav_5_24_13_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_24_13_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    platform/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-intent-workflow-landscape-2026-10-09.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intent, workflow and entity management across the AID controller landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../spec/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    spec/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_13_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    guides/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24_13_4" id="__nav_5_24_13_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_24_13_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24_13_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    guides/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bringing a controller onto a hub: register it, hold a lease, receive commands and report outcomes
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="new-controller.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bringing a controller onto a hub: register it, hold a lease, receive commands and report outcomes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-the-hub-does-and-never-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What the hub does and never does
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-before-you-start-credentials-and-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Before you start: credentials and roles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-walk-through" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Walk-through
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Walk-through">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-read-the-capability-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Read the capability document
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-register-the-product-and-its-definitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Register the product and its definitions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-create-an-instance-hold-and-hand-off-its-lease" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Create an instance, hold and hand off its lease
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-write-typed-records-with-attribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Write typed records with attribution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-receive-a-command-check-it-enact-it-once-report-the-outcome" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Receive a command, check it, enact it once, report the outcome
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-what-older-hubs-and-older-apps-see" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. What older hubs and older apps see
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-where-to-go-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Where to go next
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gaps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="add-a-setting.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Add a setting in your controller's next release: declare it typed, submit it, fall back, write it and read it back
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-typed-schema-evidence-2026-09-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Typed schemas for Nightscout, measured against stored documents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-primitive-coverage-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evidence coverage of the primitive catalogue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-devicestatus-profile-fidelity-2026-09-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Replaying a dosing decision from devicestatus and profile: what is lost, and what was never written
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-extensibility-models-2026-09-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extending the Nightscout document model: four designs, measured
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-effects-and-versioning-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Therapy effects and the sync contract's version
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-hub-sync-architecture-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hub-and-spoke sync for AID controllers: the original sketch
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../agent-trust-boundaries-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agents in the ecosystem: develop, interpret, act
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../algorithm-audition-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auditioning a dosing algorithm: same inputs, shadow only
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROPOSAL-controller-descriptions-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Controller descriptions: Nightscout describes the controllers it already recognises — proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROPOSAL-replay-fidelity-changes-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Replay fidelity: the concrete changes, per project — proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../upstream-asks-loop-identifier/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    upstream-asks-loop-identifier/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../upstream-asks-device-simulators/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    upstream-asks-device-simulators/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../command-journeys-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command journeys: plans, confirmations and moment commands for one pump with many orchestrators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../command-queue-and-planning-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command queue and planning: outstanding commands, enacting once, and plans confirmed in advance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../evidence-weighted-approval-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evidence-weighted approval: what a plan or proposal needs before a controller acts on it
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../identifier-conventions.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Identifier conventions: one identifier per real thing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integration-questionnaire-defaults-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration questionnaire: default answers for Loop, Trio, AndroidAPS and OpenAPS, read from their source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../partial-acceptance-prototype-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Partial acceptance: binding an approval that accepts part of a plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../remedial/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tenancy/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../60-research/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../guides/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    guides/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../site/pages/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-the-hub-does-and-never-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What the hub does and never does
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-before-you-start-credentials-and-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Before you start: credentials and roles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-walk-through" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Walk-through
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Walk-through">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-read-the-capability-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Read the capability document
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-register-the-product-and-its-definitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Register the product and its definitions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-create-an-instance-hold-and-hand-off-its-lease" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Create an instance, hold and hand off its lease
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-write-typed-records-with-attribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Write typed records with attribution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-receive-a-command-check-it-enact-it-once-report-the-outcome" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Receive a command, check it, enact it once, report the outcome
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-what-older-hubs-and-older-apps-see" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. What older hubs and older apps see
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-where-to-go-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Where to go next
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gaps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="bringing-a-controller-onto-a-hub-register-it-hold-a-lease-receive-commands-and-report-outcomes">Bringing a controller onto a hub: register it, hold a lease, receive commands and report outcomes<a class="headerlink" href="#bringing-a-controller-onto-a-hub-register-it-hold-a-lease-receive-commands-and-report-outcomes" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-10-18 at <code>5a47b91eb</code>.</em></p>
+<p><em>Contributor-facing. Living guide, current at <code>main</code> <code>127f69e1</code> (2026-10-18). Uses the <a href="../index.html">platform specifications</a>; terms are in the <a href="../spec/glossary.html">glossary</a>. Status: the specifications are proposed and not implemented; until <code>HUB-REG-CRM</code> is, each step is checked against its conformance case, not run against a hub.</em></p>
+<p>This guide is for a developer bringing an automated insulin delivery controller, or a controller
+app, onto a Nightscout hub that implements the platform specifications. It follows one fictional
+controller, Example TestController, whose registration is the synthetic fixture
+<code>specs/sync/registrations/fixtures/example-testcontroller.yaml</code>, from the first request to the
+outcome of a remote command.</p>
+<p>Each step names the rule it follows and a conformance case under <code>specs/sync/conformance/</code> that
+shows it. The examples are copied from those cases by <code>python3 -m tools.nsschema.guide_examples</code>
+and never typed by hand, so they name the cases' own fictional products (Example ControllerA,
+NegotiationController) where TestController would stand. Times in the command cases are seconds
+from the start of the case. Paths and permission names are proposals, as the specifications say.</p>
+<h2 id="1-what-the-hub-does-and-never-does">1. What the hub does and never does<a class="headerlink" href="#1-what-the-hub-does-and-never-does" title="Permanent link">&para;</a></h2>
+<p>The hub records, routes and refuses. It never decides whether a change to therapy is safe, never
+alters what a sender asked, and never doses (D18). Your controller validates and enacts.</p>
+<table>
+<thead>
+<tr>
+<th>the hub</th>
+<th>your controller</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>accepts or refuses each element of your registration, and stores typed records for what it accepts (<a href="../spec/registration.html#5-the-product-resource">registration §5</a>)</td>
+<td>writes everything the hub does not accept in today's document shapes, its carriers (<a href="../spec/registration.html#6-the-controllers-side-fallback-and-refused-writes">registration §6</a>)</td>
+</tr>
+<tr>
+<td>grants each (channel, role) to one live <code>device</code> instance and records overlaps (<a href="../spec/registration.html#9-channels-roles-and-provenance">registration §9</a>)</td>
+<td>keeps running when a role is refused, and writes that channel's records as carriers</td>
+</tr>
+<tr>
+<td>checks a command's channel, routing, expiry, size and the sender's permission, and nothing else (CM5)</td>
+<td>checks the payload hash, the expiry by its own clock, its own limits and the doses and carbs since the command was made (CM10, CM23)</td>
+</tr>
+<tr>
+<td>records the command, its state and the outcome you report (CM1, CM7)</td>
+<td>decides each <code>commandId</code> once, across restarts (CM21), and reports what it did</td>
+</tr>
+<tr>
+<td>reports overlapping intents as the controller reported them (<a href="../spec/state-intent.html#2-rules">state and intent S1</a>)</td>
+<td>arbitrates between the person, the algorithm, caregivers and agents acting on one pump</td>
+</tr>
+</tbody>
+</table>
+<p>The <a href="../spec/control-loops.html#6-what-the-analysis-found">control-loop analysis</a> lists the entries
+that only the controller can prevent: validating a remote command against its own limits and recent
+local actions, assigning identifiers that are unique per record, acting on its own state where the
+hub's lags, failing a command it cannot deliver to the pump, and, for plans, the checks it makes at
+each occurrence. No hub rule replaces any of them.</p>
+<p>Your app in context (C4 context; roles, not products):</p>
+<p><img alt="3·guide-context: the site owner grants roles to the hub; caregivers, follower apps and the person send commands, approvals and cancels and read records, states and the outstanding list; an agent instance sends proposals; the hub routes commands to your controller app once and takes back its registration, typed records and outcomes; the person also acts on the phone; only your app acts on the pump, and the CGM and the pump feed back to your app" src="../../../00-overview/perspective/diagrams/3-guide-context.svg" /></p>
+<h2 id="2-before-you-start-credentials-and-roles">2. Before you start: credentials and roles<a class="headerlink" href="#2-before-you-start-credentials-and-roles" title="Permanent link">&para;</a></h2>
+<p>Your controller is a device. It holds a native per-tenant credential, which belongs to a subject,
+and never signs in through the caregivers' identity service (AU1). Everything the hub binds to you
+is bound to that subject, never to a token, so rotating the token changes nothing (AU4).</p>
+<table>
+<thead>
+<tr>
+<th>you need</th>
+<th>for</th>
+<th>who grants it</th>
+<th>rule</th>
+<th>case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a credential whose subject is your controller's</td>
+<td>every request below; the binding of your product and instances</td>
+<td>the tenant: a native per-tenant credential for a device</td>
+<td>AU1, AU4, authority §3</td>
+<td><code>accepted.yaml</code>, <code>update-token-rotated.yaml</code></td>
+</tr>
+<tr>
+<td><code>api:registrations:create</code></td>
+<td>creating and updating the product, adding definitions, creating and renewing instances</td>
+<td>the tenant owner, on the owner's listener (<code>ns-tenant-admin</code>)</td>
+<td>authority §5, registration §7</td>
+<td><code>not-authorised.yaml</code>, <code>instances/instance-create.yaml</code></td>
+</tr>
+<tr>
+<td><code>api:registrations:delete</code></td>
+<td>retiring the product, deleting an instance</td>
+<td>the tenant owner</td>
+<td>authority §5, registration §5</td>
+<td><code>retire.yaml</code>, <code>retire-not-authorised.yaml</code></td>
+</tr>
+<tr>
+<td>to be the product's bound subject</td>
+<td>updating or retiring the product, adding a definition, holding a <code>device</code> <code>command-sink</code></td>
+<td>the first create binds it; the owner can release or transfer it</td>
+<td>authority §3, authority §6</td>
+<td><code>update-not-registration-owner.yaml</code>, <code>instances/instance-command-sink-not-registration-owner.yaml</code></td>
+</tr>
+<tr>
+<td>no command permission</td>
+<td>fetching your own commands and reporting their outcomes: the hub checks that you are the destination's bound subject</td>
+<td>—</td>
+<td>CM7, CM18</td>
+<td><code>commands/fetch-naming-another-instance.yaml</code>, <code>commands/report-from-other-subject-refused.yaml</code></td>
+</tr>
+<tr>
+<td>(senders) <code>api:commands:create</code>; (followers) <code>api:commands:read</code></td>
+<td>sending a command; reading a channel's outstanding list</td>
+<td>the tenant owner, to caregivers and follower apps</td>
+<td>CM5, CM24</td>
+<td><code>commands/command-without-permission.yaml</code>, <code>commands/outstanding-lists-open-items.yaml</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Under <code>TENANCY_MODE=single</code></strong> there is one listener and <code>API_SECRET</code> may register; the product is
+then bound to <code>{kind: api-secret}</code>, and any holder of the secret may update it (authority §3). Every
+holder of <code>API_SECRET</code> is one subject, so another app holding it can fetch your commands or report
+their outcomes; commands §9 lists this as open (UCA-CMD-014). Give the controller a credential of
+its own.</p>
+<p><strong>Under <code>TENANCY_MODE=multi</code></strong> each tenant has its own credential root and signing key (AU3). A
+registration is per tenant, so a controller that serves two tenants registers twice. A push is sent
+only inside a request bound to the command's tenant (CM19), so fetch is the path that always works.</p>
+<h2 id="3-walk-through">3. Walk-through<a class="headerlink" href="#3-walk-through" title="Permanent link">&para;</a></h2>
+<p>The parts of a hub your app calls (C4 containers; under <code>TENANCY_MODE=single</code> one listener serves all three, and <code>API_SECRET</code> acts as the owner):</p>
+<p><img alt="3·guide-containers: your app reads the unauthenticated capability document at launch; it calls the data listener to put its product, definition and instance, write typed records, fetch commands and report outcomes, which the hub stores per element bound to your credential and attributed to your instance; the socket brings live commands inside bound requests; the site owner acts through the owner's listener on products, definitions and instances" src="../../../00-overview/perspective/diagrams/3-guide-containers.svg" /></p>
+<h3 id="31-read-the-capability-document">3.1 Read the capability document<a class="headerlink" href="#31-read-the-capability-document" title="Permanent link">&para;</a></h3>
+<p><code>GET /.well-known/nightscout/sync</code> is unauthenticated, cacheable and about the hub software, not a
+person (<a href="../spec/registration.html#4-the-capability-document">registration §4</a>). It tells you where
+to submit and with which permissions:</p>
+<!-- BEGIN GENERATED: guide-example instances/instance-create.yaml capabilities.submit -->
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">href</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/api/v4/registrations</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nt">tiers</span><span class="p">:</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">controller-owned</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nt">permissions</span><span class="p">:</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span><span class="nt">submit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">api:registrations:create</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span><span class="nt">retire</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">api:registrations:delete</span>
+</code></pre></div>
+<!-- END GENERATED: guide-example -->
+
+<p>and, on a hub that serves definitions and instances, the lease length, the instance id form, and
+the roles and channels it grants:</p>
+<!-- BEGIN GENERATED: guide-example instances/instance-create.yaml capabilities.instances -->
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">leaseSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">900</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nt">instanceId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uuid-v4</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nt">roles</span><span class="p">:</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">source</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">command-sink</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="nt">channels</span><span class="p">:</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">slot</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">element</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="nt">labels</span><span class="p">:</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">  </span><span class="nt">maxLabels</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">  </span><span class="nt">maxKeyLength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">96</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">  </span><span class="nt">maxValueLength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">64</span>
+</code></pre></div>
+<!-- END GENERATED: guide-example -->
+
+<table>
+<thead>
+<tr>
+<th>step</th>
+<th>you do</th>
+<th>the hub answers</th>
+<th>rule</th>
+<th>case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Read the capability document at launch and after a controller release; never on a timer, on a lease renewal or because a request was refused</td>
+<td>the document, the same for every tenant on the deployment</td>
+<td>registration §4</td>
+<td><code>accepted.yaml</code>, <code>typed-write-load-503.yaml</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>If it answers 404, submit nothing and write every element as its carrier</td>
+<td>— (an older hub)</td>
+<td>registration §6, registration §17</td>
+<td><code>older-hub-no-capabilities.yaml</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>If it has no <code>submit</code>, submit nothing and write carriers</td>
+<td>—</td>
+<td>registration §6</td>
+<td><code>hub-without-submit.yaml</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>If your grammar major is not in <code>grammar.versions</code>, submit nothing</td>
+<td>a submission would be 422 <code>unsupported-grammar-major</code></td>
+<td>registration §6, registration §5.2</td>
+<td><code>rejected-unsupported-grammar-major.yaml</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>If it has no <code>instances</code>, skip §3.3: typed writes need no instance id</td>
+<td>typed writes accepted without one</td>
+<td>registration §17</td>
+<td><code>instances/typed-write-hub-without-instances.yaml</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Predict element results from <code>horizons</code>, <code>typeFragment</code> and <code>limits</code>; the fixture's experimental <code>DailyAdaptation</code> kind is refused where <code>experimental</code> is not listed</td>
+<td>the response is authoritative</td>
+<td>G5, registration §6</td>
+<td><code>rejected-unsupported-availability.yaml</code></td>
+</tr>
+</tbody>
+</table>
+<p>With no capability document the controller's plan is carriers for every element:</p>
+<!-- BEGIN GENERATED: guide-example older-hub-no-capabilities.yaml expected.fallback -->
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">stateSpans/ExampleOverride</span><span class="p">:</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">write</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">carrier</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">carrier</span><span class="p">:</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nt">collection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">treatments</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="nt">eventType</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Temporary Override</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="nt">durationField</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">duration</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="nt">durationUnit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">minutes</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="nt">extensions/com.example.negotiation.targets</span><span class="p">:</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">  </span><span class="nt">write</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">carrier</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">  </span><span class="nt">carrier</span><span class="p">:</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">    </span><span class="nt">collection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">settings</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">    </span><span class="nt">documentIdentifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example-targets</span>
+</code></pre></div>
+<!-- END GENERATED: guide-example -->
+
+<h3 id="32-register-the-product-and-its-definitions">3.2 Register the product and its definitions<a class="headerlink" href="#32-register-the-product-and-its-definitions" title="Permanent link">&para;</a></h3>
+<p>The product resource is <code>&lt;submit.href&gt;/&lt;vendor&gt;/&lt;product&gt;</code>; its identity is <code>(metadata.vendor,
+metadata.product)</code>, and <code>versionRange</code> is an attribute, so a release updates the same resource
+(<a href="../spec/registration.html#5-the-product-resource">registration §5</a>). TestController's identity:</p>
+<!-- BEGIN GENERATED: guide-example specs/sync/registrations/fixtures/example-testcontroller.yaml metadata -->
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">vendor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Example</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nt">product</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TestController</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="nt">algorithmFamily</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">other</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="nt">tier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">controller-owned</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="nt">versionRange</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0.1-test</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">synthetic fixture for tools/nsschema/test_registration_grammar.py</span>
+</code></pre></div>
+<!-- END GENERATED: guide-example -->
+
+<p>A create is a <code>PUT</code> with <code>If-None-Match: *</code>:</p>
+<!-- BEGIN GENERATED: guide-example accepted.yaml request -->
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">submit</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nt">identity</span><span class="p">:</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="nt">vendor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Example</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="nt">product</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NegotiationController</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nt">preconditions</span><span class="p">:</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">  </span><span class="nt">ifNoneMatch</span><span class="p">:</span><span class="w"> </span><span class="s">'*'</span>
+</code></pre></div>
+<!-- END GENERATED: guide-example -->
+
+<p>The response names the definition id the hub computed, the etag, the binding to your subject, and
+a result per element:</p>
+<!-- BEGIN GENERATED: guide-example accepted.yaml expected.response -->
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nightscout.dev/sync/v1</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RegistrationResponse</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">201</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="nt">outcome</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">accepted</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="nt">noop</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="nt">definitionId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sha256:a72ab7f1cf322ebd8b226ce78a030d86865a1c1b8c5b647e670c9ac17b0f064d</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="nt">registration</span><span class="p">:</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">  </span><span class="nt">vendor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Example</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">  </span><span class="nt">product</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NegotiationController</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">  </span><span class="nt">versionRange</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0.0-test</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">  </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">active</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">  </span><span class="nt">etag</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sha256:3aaaa298028f1593078375fd1ade48a265aedf04f1d5bd2b5d20b40d3a231c5d</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">  </span><span class="nt">boundTo</span><span class="p">:</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">subject</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="w">    </span><span class="nt">subject</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">subject-test-controller-a</span>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">  </span><span class="nt">credentialKind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">subject</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="nt">ignored</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="nt">elements</span><span class="p">:</span>
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">element</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stateSpans/ExampleOverride</span>
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="w">  </span><span class="nt">result</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">accepted</span>
+<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">element</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">extensions/com.example.negotiation.targets</span>
+<a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="w">  </span><span class="nt">result</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">accepted</span>
+</code></pre></div>
+<!-- END GENERATED: guide-example -->
+
+<table>
+<thead>
+<tr>
+<th>step</th>
+<th>you do</th>
+<th>the hub answers</th>
+<th>rule</th>
+<th>case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>PUT</code> the registration with <code>If-None-Match: *</code></td>
+<td>201 <code>accepted</code> or <code>partial</code>, <code>definitionId</code>, etag, <code>boundTo</code> your subject</td>
+<td>registration §5, D18</td>
+<td><code>accepted.yaml</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Expect the checks in order: permission and binding, preconditions, the owner's block, the registration as a whole, then each element</td>
+<td>403, 428, 412, 403 <code>blocked-by-owner</code>, 422 or 413 with nothing stored</td>
+<td>registration §5.2</td>
+<td><code>not-authorised.yaml</code>, <code>blocked-pre-emptive-create.yaml</code>, <code>rejected-limit-exceeded.yaml</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Read each element's result; write typed only what is <code>accepted</code> or <code>accepted-with-ignored-members</code>, and treat an unknown result or reason as not accepted</td>
+<td>per-element results; ignored members listed as dotted paths and kept as written</td>
+<td>registration §6, G1</td>
+<td><code>accepted-with-ignored-members.yaml</code>, <code>extensions-not-interpreted.yaml</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Declare every extension field with a type; the namespace (<code>com.example.testcontroller.adaptiveTargets</code>) is first to claim per tenant</td>
+<td><code>untyped-extension</code>, <code>namespace-claimed</code> or <code>namespace-not-owned</code> for that element only</td>
+<td>G2, authority §5</td>
+<td><code>accepted-first-to-claim.yaml</code>, <code>rejected-untyped-extension.yaml</code>, <code>rejected-namespace-claimed.yaml</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>Unknown terms in your vocabularies (end reasons, transports, initiators) go in the form <code>{value: other, controllerTerm}</code></td>
+<td>rendered "other: <em>term</em>", never a rejection</td>
+<td>G3, S8</td>
+<td><code>specs/sync/registrations/fixtures/example-testcontroller.yaml</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Retry a create whose response was lost with the same body</td>
+<td>200 <code>noop: true</code> with the stored etag</td>
+<td>registration §5.4</td>
+<td><code>create-retry-noop.yaml</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>On a controller release, <code>PUT</code> again with <code>If-Match: &lt;etag&gt;</code></td>
+<td>200 and a changed etag; 412 <code>stale-etag</code> if the etag is old</td>
+<td>registration §5.4</td>
+<td><code>update-accepted.yaml</code>, <code>update-stale-etag.yaml</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td>Give an element a new <code>version</code> whenever its meaning changes (a unit, an end encoding, a vocabulary)</td>
+<td>the same version with another meaning is <code>version-conflict</code> for that element</td>
+<td>G4, S12, registration §7</td>
+<td><code>instances/product-update-new-version.yaml</code>, <code>instances/product-update-version-conflict.yaml</code></td>
+</tr>
+<tr>
+<td>9</td>
+<td>Add a definition for another build that runs beside the release: <code>PUT …/definitions/&lt;definitionId&gt;</code> with <code>If-None-Match: *</code>, where the id is <code>sha256:</code> over the RFC 8785 canonical JSON of the body</td>
+<td>201, the product's etag unchanged; 422 <code>definition-id-mismatch</code> when the hash is not the path id</td>
+<td>registration §7, identity §2</td>
+<td><code>instances/definition-put.yaml</code>, <code>instances/definition-id-mismatch.yaml</code></td>
+</tr>
+<tr>
+<td>10</td>
+<td>Retire the product with <code>DELETE</code> and <code>If-Match</code> when the controller stops using it; write carriers from that moment</td>
+<td>200 <code>retired</code>; stored data kept; namespaces held until the owner frees them</td>
+<td>registration §5</td>
+<td><code>retire.yaml</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>To receive commands, declare it.</strong> A kind carries a <code>command-sink</code> role only when it declares
+<code>acceptsFromHub.channels</code> with <code>command</code> (S10); the cases' override kind does:</p>
+<!-- BEGIN GENERATED: guide-example instances/definition-put.yaml body.spec.stateSpans.0.acceptsFromHub -->
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nt">channels</span><span class="p">:</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">command</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</code></pre></div>
+<!-- END GENERATED: guide-example -->
+
+<p>The fixture's override kind declares no <code>acceptsFromHub</code>, so as written TestController can hold
+<code>source</code> but a <code>command-sink</code> claim is refused <code>not-a-command-channel</code>. Its <code>commands[]</code> declares
+how commands reach it today (S11), with an <code>other</code> transport and the hub optional in the path:</p>
+<!-- BEGIN GENERATED: guide-example specs/sync/registrations/fixtures/example-testcontroller.yaml spec.commands -->
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">transport</span><span class="p">:</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">other</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="nt">controllerTerm</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example-relay</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">  </span><span class="nt">hubInPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">  </span><span class="nt">availability</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">experimental</span>
+</code></pre></div>
+<!-- END GENERATED: guide-example -->
+
+<table>
+<thead>
+<tr>
+<th>step</th>
+<th>you do</th>
+<th>the hub answers</th>
+<th>rule</th>
+<th>case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>11</td>
+<td>Declare <code>acceptsFromHub</code> with <code>command</code> on each kind you accept commands for, and <code>commands[]</code> for each path commands reach you by</td>
+<td>a <code>command-sink</code> claim on any other channel is refused <code>not-a-command-channel</code></td>
+<td>S10, S11, registration §9</td>
+<td><code>instances/instance-not-a-command-channel.yaml</code>, <code>instances/instance-create.yaml</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-create-an-instance-hold-and-hand-off-its-lease">3.3 Create an instance, hold and hand off its lease<a class="headerlink" href="#33-create-an-instance-hold-and-hand-off-its-lease" title="Permanent link">&para;</a></h3>
+<p>An instance is one running copy of your controller: the phone that doses, a development build, a
+simulator, the old and the new phone during a migration
+(<a href="../spec/registration.html#8-instances">registration §8</a>). It names a stored definition, claims
+roles on channels and renews a lease. TestController's override slot is the shared slot <code>override</code>,
+so it contends with any other product's instance on that slot; its extension's channel is its own,
+<code>Example/TestController/extensions/com.example.testcontroller.adaptiveTargets</code>.</p>
+<!-- BEGIN GENERATED: guide-example instances/instance-create.yaml body -->
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nightscout.dev/sync/v1</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ControllerInstance</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="nt">definitionId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sha256:ee552930b207551ed46bbbe4e1065e3c67773415193f3a067ef46816201da2ab</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="nt">roles</span><span class="p">:</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">channel</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">override</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">  </span><span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">source</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">  </span><span class="nt">provenance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">device</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">channel</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">override</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">  </span><span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">command-sink</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">  </span><span class="nt">provenance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">device</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">channel</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Example/ControllerA/extensions/com.example.controllera.targets</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">  </span><span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">source</span>
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="w">  </span><span class="nt">provenance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">device</span>
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="nt">labels</span><span class="p">:</span>
+<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a><span class="w">  </span><span class="nt">dev.nightscout/purpose</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">therapy</span>
+<a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="w">  </span><span class="nt">dev.nightscout/build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">release</span>
+</code></pre></div>
+<!-- END GENERATED: guide-example -->
+
+<table>
+<thead>
+<tr>
+<th>step</th>
+<th>you do</th>
+<th>the hub answers</th>
+<th>rule</th>
+<th>case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Generate a random lowercase UUID v4 once per running copy; never derive it from a device name, model or serial</td>
+<td>422 <code>invalid-instance-id</code> for any other form</td>
+<td>identity §2, registration §8</td>
+<td><code>instances/instance-invalid-id.yaml</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>PUT …/instances/&lt;instanceId&gt;</code> with <code>If-None-Match: *</code>, naming a stored <code>definitionId</code>, each role as <code>{channel, role, provenance}</code>, and labels</td>
+<td>201 with <code>leaseExpiresAt</code> and a result per role; 422 <code>unknown-definition</code> for a definition the product does not store</td>
+<td>registration §8, registration §9</td>
+<td><code>instances/instance-create.yaml</code>, <code>instances/instance-unknown-definition.yaml</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Use labels to distinguish copies: keys are <code>&lt;reverse-DNS namespace&gt;/&lt;name&gt;</code>, <code>dev.nightscout/</code> is reserved for <code>purpose</code>, <code>build</code> and <code>migration-group</code>; never put names, device names or serials in them</td>
+<td>422 <code>invalid-label</code></td>
+<td>registration §10</td>
+<td><code>instances/instance-label-not-namespaced.yaml</code>, <code>instances/instance-label-reserved-unknown.yaml</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Give every role a provenance: <code>device</code> for the copy that doses, <code>simulated</code> for a simulator</td>
+<td>simulated roles never contend with device roles and are never a command destination</td>
+<td>registration §9, commands §2</td>
+<td><code>instances/instance-role-simulated.yaml</code>, <code>instances/command-no-destination-simulated.yaml</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>When a role is refused <code>role-held</code>, keep running and write that channel's records as carriers</td>
+<td>201 <code>partial</code>; the overlap is shown on the owner's listing</td>
+<td>registration §9, registration §6</td>
+<td><code>instances/instance-role-held.yaml</code>, <code>instances/instance-overlap-listed.yaml</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Renew before <code>leaseExpiresAt</code> with <code>If-Match: &lt;instance etag&gt;</code> and the same body</td>
+<td>200 <code>noop: true</code>; the lease moves on; a renewal is not a capability re-check</td>
+<td>registration §8</td>
+<td><code>instances/instance-renew.yaml</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>On 412 at renewal, read the instance and renew again: a role was moved or dropped</td>
+<td>412 <code>stale-etag</code> with the current etag</td>
+<td>registration §8, authority §6</td>
+<td><code>instances/instance-renew-after-transfer-stale.yaml</code>, <code>instances/rebind-release-drops-command-sink.yaml</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td>To hand the pump to another phone, delete the old instance, or renew it without the role; the new phone claims the role on its own next renewal, and both may carry one <code>dev.nightscout/migration-group</code> label</td>
+<td>200 <code>released</code>; the claimant's renewal is granted</td>
+<td>registration §9, registration §10</td>
+<td><code>instances/instance-delete.yaml</code>, <code>instances/instance-handoff-release.yaml</code></td>
+</tr>
+<tr>
+<td>9</td>
+<td>Expect a holder that stops renewing to lapse; its role goes to no one until a claimant renews, and commands meanwhile have no destination</td>
+<td>409 <code>no-command-destination</code> for a command in that window</td>
+<td>registration §9, commands §2</td>
+<td><code>instances/instance-handoff-lapse.yaml</code>, <code>instances/lapsed-role-not-auto-assigned.yaml</code></td>
+</tr>
+<tr>
+<td>10</td>
+<td>Run a development build under its own subject; it gets <code>source</code> roles, and a <code>device</code> <code>command-sink</code> only if the owner transfers it</td>
+<td>201 <code>partial</code>, <code>command-sink</code> refused <code>not-registration-owner</code></td>
+<td>authority §6</td>
+<td><code>instances/instance-command-sink-not-registration-owner.yaml</code>, <code>instances/owner-transfer-role-other-subject.yaml</code></td>
+</tr>
+</tbody>
+</table>
+<p>A refused role changes the write plan for that channel only. Here the override kind goes as its
+carrier and the extension stays typed:</p>
+<!-- BEGIN GENERATED: guide-example instances/instance-role-held.yaml expected.plan -->
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nt">stateSpans/ExampleOverride</span><span class="p">:</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">  </span><span class="nt">write</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">carrier</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">  </span><span class="nt">carrier</span><span class="p">:</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span><span class="nt">collection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">treatments</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">    </span><span class="nt">eventType</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Temporary Override</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">    </span><span class="nt">durationField</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">duration</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">    </span><span class="nt">durationUnit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">minutes</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="nt">extensions/com.example.controllera.targets</span><span class="p">:</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">  </span><span class="nt">write</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">typed</span>
+</code></pre></div>
+<!-- END GENERATED: guide-example -->
+
+<p>A lease is minutes long (<a href="../spec/registration.html#8-instances">registration §8</a>), longer than moving
+a pump to another phone takes, so a command can reach the old phone in that window. §3.5 step 14
+says what holds then.</p>
+<h3 id="34-write-typed-records-with-attribution">3.4 Write typed records with attribution<a class="headerlink" href="#34-write-typed-records-with-attribution" title="Permanent link">&para;</a></h3>
+<p>On a hub that advertises <code>instances</code>, every typed write names the writing instance (proposed as a
+request header), and the instance must be live and hold <code>source</code> on the element's channel
+(<a href="../spec/registration.html#11-typed-writes-and-attribution">registration §11</a>):</p>
+<!-- BEGIN GENERATED: guide-example instances/typed-write-attributed.yaml request.write -->
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nt">as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">typed</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="nt">element</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stateSpans/ExampleOverride</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="nt">instanceId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">00000000-0000-4000-8000-00000000000a</span>
+</code></pre></div>
+<!-- END GENERATED: guide-example -->
+
+<p>The accepted record carries its instance, its definition and the role's provenance:</p>
+<!-- BEGIN GENERATED: guide-example instances/typed-write-attributed.yaml expected.response.write -->
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nt">accepted</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nt">as</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">typed</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="nt">attributedTo</span><span class="p">:</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">  </span><span class="nt">vendor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Example</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">  </span><span class="nt">product</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ControllerA</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">  </span><span class="nt">instanceId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">00000000-0000-4000-8000-00000000000a</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="nt">definitionId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sha256:ee552930b207551ed46bbbe4e1065e3c67773415193f3a067ef46816201da2ab</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="nt">provenance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">device</span>
+</code></pre></div>
+<!-- END GENERATED: guide-example -->
+
+<table>
+<thead>
+<tr>
+<th>step</th>
+<th>you do</th>
+<th>the hub answers</th>
+<th>rule</th>
+<th>case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Write an accepted element typed, naming your instance</td>
+<td>200, attributed to the instance, its definition and its provenance</td>
+<td>registration §11</td>
+<td><code>instances/typed-write-attributed.yaml</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Never send a typed write without an instance id to a hub that advertises <code>instances</code>; on 422 <code>instance-required</code>, send that record as its carrier</td>
+<td>422 <code>instance-required</code>, a definite refusal</td>
+<td>registration §11, registration §6</td>
+<td><code>instances/typed-write-instance-required.yaml</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>On 409 <code>role-held</code> or <code>role-not-granted</code>, send that record as its carrier</td>
+<td>409</td>
+<td>registration §11</td>
+<td><code>instances/typed-write-role-held.yaml</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>On 429 or any 5xx, retry the same record with backoff, no sooner than <code>Retry-After</code>; never write it as its carrier and never drop it</td>
+<td>the record is stored once when the retry succeeds</td>
+<td>registration §6</td>
+<td><code>typed-write-load-503.yaml</code>, <code>typed-write-load-429-retry-after.yaml</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>On any other refusal (<code>blocked-by-owner</code>, a typed route answering 404, an unknown 4xx), send that record as its carrier at once and treat the element as not accepted until your next launch or release</td>
+<td>403, 404</td>
+<td>registration §6</td>
+<td><code>typed-write-blocked-by-owner.yaml</code>, <code>typed-write-route-404.yaml</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Give every record an <code>identifier</code> that is yours, stable across retries and unique per record; re-send with the same one</td>
+<td>a matched re-send stores no second copy and is answered with the stored ids</td>
+<td>I1, I4, I5, I7</td>
+<td><code>quirks/typed-write-resend-same-ids.yaml</code>, <code>quirks/typed-write-assigns-objectid.yaml</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>When the element's <code>carrierView</code> is <code>served</code>, write typed only; when it is not served and the element declares <code>dualWriteLink</code>, write typed and as its carrier</td>
+<td>older readers see one document either way</td>
+<td>registration §6, registration §13</td>
+<td><code>accepted-dual-write-view-served.yaml</code>, <code>accepted-dual-write-view-not-served.yaml</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td>Write from a simulator under its <code>simulated</code> source role</td>
+<td>provenance <code>simulated</code>, which default views and exports do not treat as therapy data</td>
+<td>registration §9, registration §11</td>
+<td><code>instances/typed-write-simulated.yaml</code></td>
+</tr>
+<tr>
+<td>9</td>
+<td>Keep writing carriers whatever your roles: exclusivity never blocks a carrier write</td>
+<td>200</td>
+<td>registration §11</td>
+<td><code>instances/carrier-write-claimant.yaml</code></td>
+</tr>
+</tbody>
+</table>
+<p>How writes are matched, ordered and delivered over REST and the socket is
+<a href="../spec/sync-transport.html">sync-transport</a>; a typed record keeps the definition it was written
+under (T13).</p>
+<h3 id="35-receive-a-command-check-it-enact-it-once-report-the-outcome">3.5 Receive a command, check it, enact it once, report the outcome<a class="headerlink" href="#35-receive-a-command-check-it-enact-it-once-report-the-outcome" title="Permanent link">&para;</a></h3>
+<p>A command names a channel. The hub sends it to the live <code>device</code> instance holding <code>command-sink</code> on
+that channel, on the command's tenant, and fixes that destination when it accepts the command
+(<a href="../spec/commands.html#2-where-a-command-goes">commands §2</a>, CM2). A sender's command, as a case
+writes it, carries a payload and an expiry:</p>
+<!-- BEGIN GENERATED: guide-example commands/route-to-holder.yaml calls.0 -->
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nt">at</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">command</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="nt">tenant</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="nt">subject</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">s-care</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="nt">channel</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">override</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="nt">product</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ControllerA</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="nt">payload</span><span class="p">:</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">  </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">start</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="w">  </span><span class="nt">preset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example</span>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="nt">expiresAt</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">600</span>
+</code></pre></div>
+<!-- END GENERATED: guide-example -->
+
+<p>The commands specification states the operations (fetch, push, report, cancel) and their answers;
+it does not name request paths. The steps below name the operation.</p>
+<table>
+<thead>
+<tr>
+<th>step</th>
+<th>you do</th>
+<th>the hub answers</th>
+<th>rule</th>
+<th>case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Hold <code>command-sink</code> with <code>device</code> provenance on each channel you accept commands for (§3.3)</td>
+<td>the command is routed to you; never to a lapsed holder, a simulator or the newest instance</td>
+<td>commands §2, CM1, CM2</td>
+<td><code>commands/route-to-holder.yaml</code>, <code>commands/route-lapsed-holder-not-destination.yaml</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Fetch your <code>pending</code> and <code>sent</code> commands with your own credential, naming your own instance; implement fetch whether or not you also take pushes</td>
+<td>200 with your commands only; an empty list once you no longer hold the role; 403 <code>not-registration-owner</code> for another instance</td>
+<td>CM18</td>
+<td><code>commands/fetch-returns-own-commands.yaml</code>, <code>commands/fetch-after-role-lost-is-empty.yaml</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Treat a push (a socket event or a platform push) as a faster copy of what fetch returns</td>
+<td>under <code>multi</code> a push from a context with no tenant bound is withheld and the command waits for your fetch</td>
+<td>CM19, CM20</td>
+<td><code>commands/push-unbound-withheld-under-multi.yaml</code>, <code>commands/push-unbound-sent-under-single.yaml</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Do not read <code>sent</code> or <code>fetched</code> as success; only your report sets an outcome</td>
+<td>the command stays <code>fetched</code> until you report</td>
+<td>CM17, CM7</td>
+<td><code>commands/sent-and-fetched-are-not-success.yaml</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>Refuse a command at or past <code>expiresAt</code> by your own clock, with reason <code>expired</code></td>
+<td>without your report, a fetched command reads <code>unconfirmed</code> after its expiry</td>
+<td>CM10, CM3, CM8</td>
+<td><code>commands/enact-after-expiry-refused.yaml</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Recompute <code>payloadHash</code> (<code>sha256:</code> over the RFC 8785 canonical JSON of the payload you received) and refuse <code>hash-mismatch</code> when it differs from the command's</td>
+<td>your report is recorded as reported, with the record marked a mismatch</td>
+<td>CM10, CM7</td>
+<td><code>commands/enact-hash-mismatch-refused.yaml</code>, <code>commands/request-id-reordered-keys-same-hash.yaml</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>Authenticate the sender by your own means where you require it; the hash detects a payload changed in transit or storage, and does not authenticate the sender or show what an approver approved</td>
+<td>the hub carries authentication material unread</td>
+<td>CM10, D18</td>
+<td><code>commands/hub-does-not-judge-payload.yaml</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td>Apply your own limits and your acceptance preference; refuse with <code>limit</code> or <code>not-accepted</code></td>
+<td>the hub never checks a dose, a limit or the therapy state, and never changes the payload</td>
+<td>CM5, CM8, S10</td>
+<td><code>commands/hub-does-not-judge-payload.yaml</code>, <code>commands/report-after-final-refused.yaml</code></td>
+</tr>
+<tr>
+<td>9</td>
+<td>Before enacting a dose or carbs, compare the doses and carbs you hold since the command was made, and refuse <code>doses-since</code> when your own rule says the command is no longer wanted</td>
+<td>the rule and its threshold are yours</td>
+<td>CM23, D18</td>
+<td><code>commands/enact-dose-refused-doses-since.yaml</code>, <code>commands/enact-dose-no-doses-since.yaml</code></td>
+</tr>
+<tr>
+<td>10</td>
+<td>Decide each <code>commandId</code> once: record it when you first enact or refuse it, keep the record across restarts until <code>expiresAt</code> by your clock, and answer any later delivery without enacting it and without a second report</td>
+<td>— (delivery is at least once)</td>
+<td>CM21</td>
+<td><code>commands/enact-push-then-fetch-once.yaml</code>, <code>commands/enact-after-restart-once.yaml</code>, <code>commands/enact-refused-then-redelivered-ignored.yaml</code></td>
+</tr>
+<tr>
+<td>11</td>
+<td>Treat two <code>commandId</code>s with the same payload as two commands; enact-once does not catch a second send, your doses-since check does</td>
+<td>each is enacted unless your checks refuse it</td>
+<td>CM21, CM4, CM23</td>
+<td><code>commands/enact-two-commands-same-payload.yaml</code></td>
+</tr>
+<tr>
+<td>12</td>
+<td>Report <code>acknowledged</code> if you want the sender to see it (optional), then one final state: <code>succeeded</code>, <code>failed</code> or <code>refused</code>, with the <code>payloadHash</code> you computed, a reason when refused or failed, and when enacted the identity of the record that shows the effect</td>
+<td>200; a report from any other subject is 403 <code>not-registration-owner</code>; a state other than the four is 422 <code>invalid-state</code></td>
+<td>CM7, CM9</td>
+<td><code>commands/acknowledged-then-succeeded.yaml</code>, <code>commands/report-from-destination-accepted.yaml</code>, <code>commands/report-state-fetched-invalid.yaml</code></td>
+</tr>
+<tr>
+<td>13</td>
+<td>Give a reason from the shared list (<code>hash-mismatch</code>, <code>expired</code>, <code>not-accepted</code>, <code>limit</code>, <code>doses-since</code>, <code>cancelled</code>) or as <code>{value: other, controllerTerm}</code>; send one final state only</td>
+<td>a bare unknown string is 422 <code>invalid-reason</code>; a second final report is 409 <code>already-final</code></td>
+<td>CM8, CM9</td>
+<td><code>commands/report-reason-other-accepted.yaml</code>, <code>commands/report-reason-bare-string-invalid.yaml</code>, <code>commands/report-after-final-refused.yaml</code></td>
+</tr>
+<tr>
+<td>14</td>
+<td>When you hand the pump to another phone with a command outstanding: a command the old phone fetched stays with it, which decides it and reports; one it never received becomes <code>undeliverable</code>, and nothing is re-routed</td>
+<td>your report is accepted from the destination's bound subject even after the role moved, and replaces <code>unconfirmed</code></td>
+<td>CM2, CM7, CM9</td>
+<td><code>commands/fetched-before-holder-changes.yaml</code>, <code>commands/undeliverable-not-rerouted.yaml</code>, <code>commands/pushed-then-lapse-unconfirmed.yaml</code></td>
+</tr>
+<tr>
+<td>15</td>
+<td>Expect no cancel for a command cancelled before hand-over: it is final and never delivered</td>
+<td>the sender gets 200 <code>cancelled</code>; your fetch returns nothing</td>
+<td>CM25</td>
+<td><code>commands/cancel-pending-is-final.yaml</code></td>
+</tr>
+<tr>
+<td>16</td>
+<td>When a fetch carries a cancel for a command you have not decided, refuse it with reason <code>cancelled</code> and report; when you have already decided it, your outcome stands</td>
+<td>the sender got 202 with <code>cancelRequested</code>; after your final report a cancel is 409 <code>already-final</code></td>
+<td>CM25, CM21</td>
+<td><code>commands/cancel-after-fetch-is-a-request.yaml</code>, <code>commands/cancel-after-outcome-refused.yaml</code></td>
+</tr>
+</tbody>
+</table>
+<p>A command pushed and then fetched, decided once (step 10). The answers below follow the case's
+calls in order: the sender's command, the push, the first enactment, the fetch that returns the
+command again, and the second enactment, answered <code>ignored</code> with nothing enacted:</p>
+<!-- BEGIN GENERATED: guide-example commands/enact-push-then-fetch-once.yaml expected.calls -->
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">201</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">  </span><span class="nt">commandId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">c1</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">  </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pending</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">sent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">succeeded</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">  </span><span class="nt">commands</span><span class="p">:</span>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">c1</span>
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ignored</span>
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="w">  </span><span class="nt">reason</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">duplicate</span>
+</code></pre></div>
+<!-- END GENERATED: guide-example -->
+
+<p>A cancel after hand-over (step 16). The answers follow the case's calls in order: the sender's
+command, your fetch, the sender's cancel (202), your next fetch carrying the cancel, your refusal
+and your report:</p>
+<!-- BEGIN GENERATED: guide-example commands/cancel-after-fetch-is-a-request.yaml expected.calls -->
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">201</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">  </span><span class="nt">commandId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">c1</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">  </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pending</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">  </span><span class="nt">commands</span><span class="p">:</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">c1</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">202</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">  </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fetched</span>
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="w">  </span><span class="nt">cancelRequested</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span>
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="w">  </span><span class="nt">commands</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="w">  </span><span class="nt">cancels</span><span class="p">:</span>
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">c1</span>
+<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">refused</span>
+<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="w">  </span><span class="nt">reason</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cancelled</span>
+<a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span>
+</code></pre></div>
+<!-- END GENERATED: guide-example -->
+
+<p>A refusal reported in the controller's own term (step 13):</p>
+<!-- BEGIN GENERATED: guide-example commands/report-reason-other-accepted.yaml calls.2 -->
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="nt">at</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">report</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="nt">tenant</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="nt">subject</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">s-ctl-a</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">c1</span>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">refused</span>
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="nt">reason</span><span class="p">:</span>
+<a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="w">  </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">other</span>
+<a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a><span class="w">  </span><span class="nt">controllerTerm</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example-busy</span>
+</code></pre></div>
+<!-- END GENERATED: guide-example -->
+
+<p>A command may also come from an approved proposal; it reaches you the same way and carries the
+proposal's <code>proposalId</code> and <code>basedOn</code> (CM13). The hub checks the proposal's state version and the
+doses that reached it after the proposal (CM15, CM22); those checks see the hub's record, which
+lags your upload, and do not replace yours (CM23).</p>
+<h2 id="4-what-older-hubs-and-older-apps-see">4. What older hubs and older apps see<a class="headerlink" href="#4-what-older-hubs-and-older-apps-see" title="Permanent link">&para;</a></h2>
+<p>The <a href="../spec/compatibility.html">compatibility table</a> says, for every app the corpus holds and every
+layer, what the app does today and what it sees from a hub that implements the specifications;
+its <a href="../spec/compatibility.html#3-overview">overview</a>, its
+<a href="../spec/compatibility.html#44-l3-state-intent-and-commands">L3 table</a> and
+<a href="../spec/compatibility.html#5-where-an-answer-changes">where an answer changes</a> are the parts a
+controller author reads first. For TestController:</p>
+<table>
+<thead>
+<tr>
+<th>who</th>
+<th>sees</th>
+<th>rule</th>
+<th>case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a hub with no capability document</td>
+<td>today's documents, written as carriers; nothing is negotiated</td>
+<td>registration §17</td>
+<td><code>older-hub-no-capabilities.yaml</code>, <code>instances/carrier-write-older-hub.yaml</code></td>
+</tr>
+<tr>
+<td>a hub with capabilities and no <code>instances</code></td>
+<td>typed writes with no instance id; no roles and no command destination</td>
+<td>registration §17</td>
+<td><code>instances/typed-write-hub-without-instances.yaml</code></td>
+</tr>
+<tr>
+<td>an older reader or follower on API v1 or v3, where the element's view is served</td>
+<td>a projected document in the carrier's shape, labelled <code>projectedFrom</code>, read-only</td>
+<td>registration §13, I8</td>
+<td><code>instances/project-served.yaml</code>, <code>instances/write-projected-read-only.yaml</code></td>
+</tr>
+<tr>
+<td>the same reader where no view is served</td>
+<td>the carrier you dual-write, linked to the typed record</td>
+<td>registration §6, registration §13</td>
+<td><code>accepted-dual-write-view-not-served.yaml</code>, <code>instances/project-no-mapping.yaml</code></td>
+</tr>
+<tr>
+<td>an older controller of another product on the shared <code>override</code> slot</td>
+<td>its writes go to its product's unregistered instance and are never refused for exclusivity</td>
+<td>registration §11, Q2</td>
+<td><code>instances/carrier-write-older-controller.yaml</code>, <code>newer-hub-older-controller.yaml</code></td>
+</tr>
+<tr>
+<td>a follower that reads the queue</td>
+<td>each open proposal and command not yet final on a channel, with its sender and the doses and carbs since</td>
+<td>CM24</td>
+<td><code>commands/outstanding-lists-open-items.yaml</code>, <code>commands/outstanding-excludes-final.yaml</code></td>
+</tr>
+</tbody>
+</table>
+<p>Follower apps read today (LoopFollow, LoopCaregiver, nightguard) do not read the outstanding list;
+the table marks the command record and the list <code>opt-in</code> for them.</p>
+<h2 id="5-checklist">5. Checklist<a class="headerlink" href="#5-checklist" title="Permanent link">&para;</a></h2>
+<ul>
+<li>The capability document is read at launch and after each release; with none, no <code>submit</code>, an
+  unlisted grammar major or no <code>instances</code>, the controller writes carriers.</li>
+<li>Every element in the registration is typed where it must be, versioned where its meaning can
+  change, and uses <code>{value: other, controllerTerm}</code> for terms outside the shared lists.</li>
+<li>Each kind that takes commands declares <code>acceptsFromHub</code> with <code>command</code>, and <code>commands[]</code> lists
+  how commands reach the controller.</li>
+<li>Each running copy has its own random UUID v4, a provenance on every role, labels without names
+  or serials, and renews its lease before it lapses; a 412 at renewal is followed by a read.</li>
+<li>A refused role or element sends that channel's or element's records as carriers; a load refusal
+  is retried, never written as a carrier.</li>
+<li>Every record has an <code>identifier</code> unique to it and stable across retries.</li>
+<li>Fetch is implemented; a push is treated as a faster copy of a fetch.</li>
+<li>Before enacting: the hash, the expiry by the controller's own clock, its limits and acceptance
+  preference, and the doses and carbs since the command was made.</li>
+<li>Each <code>commandId</code> is decided once, recorded across restarts until its expiry, and reported once
+  with one final state and a reason from the shared list or in the <code>other</code> form.</li>
+<li>A cancel carried by a fetch refuses a command not yet decided; a command already decided keeps
+  its outcome.</li>
+</ul>
+<h2 id="6-where-to-go-next">6. Where to go next<a class="headerlink" href="#6-where-to-go-next" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../spec/plans.html">Plans</a>: a recurring intent approved once, held and run by the controller and
+  mirrored by the hub.</li>
+<li><a href="../spec/commands.html#9-open">Commands §9</a> and the
+  <a href="../spec/control-loops.html#6-what-the-analysis-found">control-loop analysis</a>: what is open,
+  including a late failure after <code>succeeded</code> and an outcome per part of a command.</li>
+<li><a href="../command-journeys-2026-10-18.html">Command journeys</a>: caregivers, followers and agents acting on
+  one pump, step by step.</li>
+</ul>
+<h2 id="gaps">Gaps<a class="headerlink" href="#gaps" title="Permanent link">&para;</a></h2>
+<p>Steps this guide needs that no rule or no case covers:</p>
+<ol>
+<li><strong>How a controller learns that a hub offers the command record.</strong> The capability document
+   (<a href="../spec/registration.html#4-the-capability-document">registration §4</a>) has no member for
+   commands: none says the hub serves fetch and outcome reports, and <code>commands.maxExpirySeconds</code>
+   (CM3) and <code>commands.maxPayloadBytes</code> (CM5) are not published there. A controller cannot tell
+   from it whether to fetch.</li>
+<li><strong>Request paths and shapes for fetch, report and cancel.</strong> The commands specification states
+   the operations and their answers and names no paths; the cases model calls, not requests.</li>
+<li><strong>How often to fetch.</strong> CM18 makes fetch the path a hub must offer, and nothing says how often a
+   destination fetches, which bounds how soon it sees a command under <code>multi</code> (CM19) and a cancel
+   after hand-over (CM25).</li>
+<li><strong>The push to the destination.</strong> CM19 names a socket event to the destination; no event, and no
+   subscription by which a controller receives its commands on the socket, is specified (T11
+   covers typed records only). CM20, a platform push with the tenant's credentials, has no case.</li>
+<li><strong>The effect record in a report.</strong> CM7 asks a report of an enacted command to carry the identity
+   of the record that shows the effect; no case shows a report with it.</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+  
+      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+
+  </body>
+</html>

@@ -3815,9 +3815,10 @@
 
 
 <h1 id="cross-client-interoperability-matrix">Cross-Client Interoperability Matrix<a class="headerlink" href="#cross-client-interoperability-matrix" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-09-16 at <code>1a10007b4</code>.</em></p>
+<p><em>Living document, last changed 2026-10-18 at <code>12266c9c1</code>.</em></p>
 <p><strong>Generated</strong>: 2026-01-20<br />
 <strong>Purpose</strong>: Document Nightscout API compatibility patterns across ecosystem clients</p>
+<p><em>Corrected 2026-10-18 (queue <code>DOCS-INTEROP-MATRIX</code>): Loop's <code>syncIdentifier</code> format, Trio's identity field and the entries match key, against the <a href="../../docs/60-research/tenancy/identifier-format-2026-10-17.html">identifier format research</a> §1-§2 and the <a href="../../docs/10-domain/record-identity-reference.html">record identity reference</a>. Rows not named here are unchanged from 2026-01-20. Identifier templates now live in the <a href="../../docs/30-design/platform/identifier-conventions.html">identifier conventions</a>.</em></p>
 <h2 id="api-version-usage">API Version Usage<a class="headerlink" href="#api-version-usage" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -3988,7 +3989,7 @@
 </tr>
 <tr>
 <td><strong>Trio</strong></td>
-<td><code>enteredBy: "Trio"</code> + <code>syncIdentifier</code></td>
+<td><code>enteredBy: "Trio"</code> + <code>id</code> (a UUID; <code>_id</code> on carbs and temporary targets)</td>
 <td>❌</td>
 <td>POST only</td>
 <td><code>$ne</code> on enteredBy</td>
@@ -4043,12 +4044,18 @@
 <tr>
 <td>Loop</td>
 <td><code>syncIdentifier</code></td>
-<td>UUID</td>
-<td><code>a1b2c3d4-...</code></td>
+<td>UUID for carbs; pump-event hex of 14-72 characters for most doses (measured in the corpus)</td>
+<td><code>a1b2c3d4-...</code> / hex</td>
+</tr>
+<tr>
+<td>Loop</td>
+<td><code>_id</code> (overrides only)</td>
+<td>upper-case UUID, moved to <code>identifier</code> by <code>UUID_HANDLING</code></td>
+<td><code>A1B2C3D4-...</code></td>
 </tr>
 <tr>
 <td>Trio</td>
-<td><code>syncIdentifier</code></td>
+<td><code>id</code> (<code>_id</code> on carbs and temporary targets)</td>
 <td>UUID</td>
 <td><code>a1b2c3d4-...</code></td>
 </tr>
@@ -4077,14 +4084,19 @@
 </thead>
 <tbody>
 <tr>
-<td>All</td>
-<td><code>dateString</code> + <code>device</code></td>
-<td>Composite key</td>
+<td>Server (API v1)</td>
+<td><code>sysTime</code> + <code>type</code></td>
+<td>match key on write; <code>sysTime</code> is derived from <code>dateString</code> or <code>date</code>. <code>device</code> is not part of it</td>
 </tr>
 <tr>
-<td>Some</td>
-<td><code>sysTime</code></td>
-<td>Timestamp</td>
+<td>Server (API v3)</td>
+<td><code>identifier</code>, else <code>date</code> + <code>type</code></td>
+<td><code>identifier</code> computed from <code>device</code> + <code>date</code> when absent</td>
+</tr>
+<tr>
+<td>Clients</td>
+<td>mostly none</td>
+<td>Trio sends a UUID <code>_id</code> on CGM entries, which <code>UUID_HANDLING</code> moves to <code>identifier</code>; none of the 719,559 entries in the 12-site corpus carries a client id field</td>
 </tr>
 </tbody>
 </table>
@@ -4174,7 +4186,7 @@
 <tr>
 <td>Loop</td>
 <td>Trio</td>
-<td>LOW (different syncIdentifier)</td>
+<td>LOW (different id fields: Loop <code>syncIdentifier</code>, Trio <code>id</code>)</td>
 </tr>
 <tr>
 <td>AAPS</td>
@@ -4212,7 +4224,7 @@
 <tr>
 <td>REQ-COMPAT-003</td>
 <td><code>syncIdentifier</code> must be recognized for dedup</td>
-<td>Loop, Trio</td>
+<td>Loop (Trio sends <code>id</code>)</td>
 </tr>
 <tr>
 <td>REQ-COMPAT-004</td>

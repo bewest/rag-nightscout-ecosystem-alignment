@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="576" height="446" viewBox="0 0 576 446" font-family="Helvetica, Arial, sans-serif">
+<title>3·guide-context · Your controller app and what it deals with (C4 context)</title>
+<defs>
+<marker id="ah00796b" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#00796b"/></marker>
+<marker id="ah1f5fa8" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f5fa8"/></marker>
+<marker id="ah2e7d32" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2e7d32"/></marker>
+<marker id="ah555555" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#555555"/></marker>
+<marker id="ah7b3294" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7b3294"/></marker>
+<marker id="ah888888" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#888888"/></marker>
+<marker id="ahb5541b" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b5541b"/></marker>
+<marker id="ahc8c8c8" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c8c8c8"/></marker>
+<symbol id="icon-activity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2" /></symbol>
+<symbol id="icon-bot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8" /> <rect width="16" height="12" x="4" y="8" rx="2" /> <path d="M2 14h2" /> <path d="M20 14h2" /> <path d="M15 13v2" /> <path d="M9 13v2" /></symbol>
+<symbol id="icon-key-round" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /> <circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></symbol>
+<symbol id="icon-server" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="8" x="2" y="2" rx="2" ry="2" /> <rect width="20" height="8" x="2" y="14" rx="2" ry="2" /> <line x1="6" x2="6.01" y1="6" y2="6" /> <line x1="6" x2="6.01" y1="18" y2="18" /></symbol>
+<symbol id="icon-smartphone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2" /> <path d="M12 18h.01" /></symbol>
+<symbol id="icon-syringe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 2 4 4" /> <path d="m17 7 3-3" /> <path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5" /> <path d="m9 11 4 4" /> <path d="m5 19-3 3" /> <path d="m14 4 6 6" /></symbol>
+<symbol id="icon-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /> <circle cx="12" cy="7" r="4" /></symbol>
+<symbol id="icon-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /> <circle cx="9" cy="7" r="4" /> <path d="M22 21v-2a4 4 0 0 0-3-3.87" /> <path d="M16 3.13a4 4 0 0 1 0 7.75" /></symbol>
+</defs>
+<rect x="0" y="0" width="576" height="446" fill="#ffffff"/>
+<text x="287.8" y="22" font-size="13" text-anchor="middle" fill="#111">3·guide-context · Your controller app and what it deals with (C4 context)</text>
+<g transform="translate(0.0,0.0)">
+<rect class="band" x="0.0" y="34.0" width="576" height="91.0" fill="#f3f5f8"/>
+<line x1="0.0" x2="576" y1="34.0" y2="34.0" stroke="#b9c0ca" stroke-width="0.8"/>
+<text class="band" x="16.0" y="79.5" font-size="10" fill="#555" text-anchor="middle" font-weight="bold" transform="rotate(-90 16.0 79.5)">People and agents</text>
+<rect class="band" x="0.0" y="125.0" width="576" height="125.5" fill="#fafafa"/>
+<line x1="0.0" x2="576" y1="125.0" y2="125.0" stroke="#b9c0ca" stroke-width="0.8"/>
+<text class="band" x="16.0" y="187.8" font-size="10" fill="#555" text-anchor="middle" font-weight="bold" transform="rotate(-90 16.0 187.8)">Hub</text>
+<rect class="band" x="0.0" y="250.5" width="576" height="112.0" fill="#f3f5f8"/>
+<line x1="0.0" x2="576" y1="250.5" y2="250.5" stroke="#b9c0ca" stroke-width="0.8"/>
+<text class="band" x="16.0" y="306.5" font-size="10" fill="#555" text-anchor="middle" font-weight="bold" transform="rotate(-90 16.0 306.5)">Your app</text>
+<rect class="band" x="0.0" y="362.5" width="576" height="84.0" fill="#fafafa"/>
+<line x1="0.0" x2="576" y1="362.5" y2="362.5" stroke="#b9c0ca" stroke-width="0.8"/>
+<text class="band" x="16.0" y="404.5" font-size="10" fill="#555" text-anchor="middle" font-weight="bold" transform="rotate(-90 16.0 404.5)">Devices</text>
+<g class="edge"><path class="edge" d="M109.0,93.0 L109.0,184.2 L248.2,184.2" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M302.4,93.0 L302.4,157.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M318.4,157.0 L318.4,93.0" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
+<g class="edge"><path class="edge" d="M497.3,93.0 L497.3,184.2 L372.7,184.2" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M302.4,211.5 L302.4,289.5" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M318.4,289.5 L318.4,211.5" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
+<g class="edge"><path class="edge" d="M170.0,310.0 L240.0,310.0" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M302.4,330.5 L302.4,394.5" fill="none" stroke="#1f5fa8" stroke-width="1.4" stroke-linecap="butt" marker-end="url(#ah1f5fa8)"/></g>
+<g class="edge"><path class="edge" d="M318.4,394.5 L318.4,330.5" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
+<g class="edge"><path class="edge" d="M497.3,394.5 L497.3,310.0 L380.9,310.0" fill="none" stroke="#b5541b" stroke-width="1.4" stroke-dasharray="5,3" stroke-linecap="butt" marker-end="url(#ahb5541b)"/></g>
+<g class="node" data-id="owner"><rect x="49.0" y="52.0" width="120.0" height="41.0" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+<use href="#icon-key-round" x="58.0" y="64.5" width="16" height="16" color="#3a4656"/>
+<text x="120.0" y="69.8" font-size="11" text-anchor="middle" fill="#111111">Site owner</text>
+<text x="120.0" y="83.2" font-size="11" text-anchor="middle" fill="#111111">(grants roles)</text>
+</g>
+<g class="node" data-id="sender"><rect x="240.6" y="52.0" width="139.7" height="41.0" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+<use href="#icon-users" x="249.6" y="64.5" width="16" height="16" color="#3a4656"/>
+<text x="321.4" y="69.8" font-size="11" text-anchor="middle" fill="#111111">Caregiver, follower</text>
+<text x="321.4" y="83.2" font-size="11" text-anchor="middle" fill="#111111">apps, the person</text>
+</g>
+<g class="node" data-id="agent"><rect x="436.9" y="52.0" width="120.8" height="41.0" rx="5" fill="#e3f0e3" stroke="#333333" stroke-width="1"/>
+<use href="#icon-bot" x="445.9" y="64.5" width="16" height="16" color="#3a4656"/>
+<text x="508.3" y="69.8" font-size="11" text-anchor="middle" fill="#111111">Agent instance</text>
+<text x="508.3" y="83.2" font-size="11" text-anchor="middle" fill="#111111">(proposes)</text>
+</g>
+<g class="node" data-id="hub"><rect x="248.2" y="157.0" width="124.4" height="54.5" rx="5" fill="#f3e7d3" stroke="#333333" stroke-width="1"/>
+<use href="#icon-server" x="257.2" y="176.2" width="16" height="16" color="#3a4656"/>
+<text x="321.4" y="174.8" font-size="11" text-anchor="middle" fill="#111111">Nightscout hub:</text>
+<text x="321.4" y="188.2" font-size="11" text-anchor="middle" fill="#111111">records, routes,</text>
+<text x="321.4" y="201.8" font-size="11" text-anchor="middle" fill="#111111">mirrors</text>
+</g>
+<g class="node" data-id="person"><rect x="48.0" y="289.5" width="122.0" height="41.0" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+<use href="#icon-user" x="57.0" y="302.0" width="16" height="16" color="#3a4656"/>
+<text x="120.0" y="307.2" font-size="11" text-anchor="middle" fill="#111111">The person, on</text>
+<text x="120.0" y="320.8" font-size="11" text-anchor="middle" fill="#111111">the phone</text>
+</g>
+<g class="node" data-id="app"><rect x="240.0" y="289.5" width="140.9" height="41.0" rx="5" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+<use href="#icon-smartphone" x="249.0" y="302.0" width="16" height="16" color="#3a4656"/>
+<text x="321.4" y="307.2" font-size="11" text-anchor="middle" fill="#111111">Your controller app</text>
+<text x="321.4" y="320.8" font-size="11" text-anchor="middle" fill="#111111">(validates, enacts)</text>
+</g>
+<g class="node" data-id="pump"><rect x="250.4" y="394.5" width="120.0" height="34.0" rx="5" fill="#e8e8e8" stroke="#333333" stroke-width="1"/>
+<use href="#icon-syringe" x="259.4" y="403.5" width="16" height="16" color="#3a4656"/>
+<text x="321.4" y="415.5" font-size="11" text-anchor="middle" fill="#111111">Insulin pump</text>
+</g>
+<g class="node" data-id="cgm"><rect x="437.3" y="394.5" width="120.0" height="34.0" rx="5" fill="#e8e8e8" stroke="#333333" stroke-width="1"/>
+<use href="#icon-activity" x="446.3" y="403.5" width="16" height="16" color="#3a4656"/>
+<text x="508.3" y="415.5" font-size="11" text-anchor="middle" fill="#111111">CGM</text>
+</g>
+<g class="elabel" data-k="0">
+<text x="178.6" y="164.2" font-size="10" text-anchor="middle" fill="#1f5fa8">grants, block,</text>
+<text x="178.6" y="176.2" font-size="10" text-anchor="middle" fill="#1f5fa8">retire</text>
+</g>
+<g class="elabel" data-k="1">
+<text x="295.4" y="122.0" font-size="10" text-anchor="end" fill="#1f5fa8">commands,</text>
+<text x="295.4" y="134.0" font-size="10" text-anchor="end" fill="#1f5fa8">approvals, cancels</text>
+</g>
+<g class="elabel" data-k="2">
+<text x="325.4" y="122.0" font-size="10" text-anchor="start" fill="#b5541b">records, states,</text>
+<text x="325.4" y="134.0" font-size="10" text-anchor="start" fill="#b5541b">outstanding list</text>
+</g>
+<g class="elabel" data-k="3">
+<text x="435.0" y="176.2" font-size="10" text-anchor="middle" fill="#1f5fa8">proposals</text>
+</g>
+<g class="elabel" data-k="4">
+<text x="295.4" y="247.5" font-size="10" text-anchor="end" fill="#1f5fa8">commands,</text>
+<text x="295.4" y="259.5" font-size="10" text-anchor="end" fill="#1f5fa8">routed once</text>
+</g>
+<g class="elabel" data-k="5">
+<text x="325.4" y="241.5" font-size="10" text-anchor="start" fill="#b5541b">registration,</text>
+<text x="325.4" y="253.5" font-size="10" text-anchor="start" fill="#b5541b">typed records,</text>
+<text x="325.4" y="265.5" font-size="10" text-anchor="start" fill="#b5541b">outcomes</text>
+</g>
+<g class="elabel" data-k="6">
+<text x="205.0" y="290.0" font-size="10" text-anchor="middle" fill="#1f5fa8">settings,</text>
+<text x="205.0" y="302.0" font-size="10" text-anchor="middle" fill="#1f5fa8">local actions</text>
+</g>
+<g class="elabel" data-k="7">
+<text x="295.4" y="359.5" font-size="10" text-anchor="end" fill="#1f5fa8">dose, suspend,</text>
+<text x="295.4" y="371.5" font-size="10" text-anchor="end" fill="#1f5fa8">temporary basal</text>
+</g>
+<g class="elabel" data-k="8">
+<text x="325.4" y="365.5" font-size="10" text-anchor="start" fill="#b5541b">delivery status</text>
+</g>
+<g class="elabel" data-k="9">
+<text x="439.1" y="302.0" font-size="10" text-anchor="middle" fill="#b5541b">glucose</text>
+</g>
+</g></svg>
