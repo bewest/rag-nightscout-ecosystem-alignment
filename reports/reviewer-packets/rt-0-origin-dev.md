@@ -143,7 +143,7 @@ dev descends from master with no divergence to reconcile
 
 ## Blocked on
 
-`BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`, `RT-PR-8781`, `BFQ-142`, `BFQ-146`, `RT-PR-8788`, `BFQ-108`, `RT-PR-8790`, `BFQ-151`, `BFQ-73`, `BFQ-153`, `BFQ-155`, `BFQ-CONFIG-DOCS`, `BFQ-94`, `BFQ-124`, `BFQ-127`, `BFQ-162`, `BFQ-168`
+`BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`, `RT-PR-8781`, `BFQ-142`, `BFQ-146`, `RT-PR-8788`, `BFQ-108`, `RT-PR-8790`, `BFQ-151`, `BFQ-73`, `BFQ-153`, `BFQ-155`, `BFQ-CONFIG-DOCS`, `BFQ-94`, `BFQ-124`, `BFQ-127`, `BFQ-162`, `BFQ-168`, `RT-PR-8815`
 
 ## Evidence
 
@@ -154,8 +154,10 @@ dev descends from master with no divergence to reconcile
 
 ## Notes carried on the item
 
-2026-10-02 (maintainer): RT-VERSION is removed from blocks_on. The dev to
-master version is decided (15.0.9); RT-VERSION's red gate measures the
+2026-10-20 (maintainer): RT-PR-8815 (#8815, BF-171, a deleted subject's token
+stops the server) goes into 15.0.9 and is added to blocks_on; it is open, not
+merged. 2026-10-02 (maintainer): RT-VERSION is removed from blocks_on. The dev
+to master version is decided (15.0.9); RT-VERSION's red gate measures the
 modernization cut tips, which are renumbered when rebased, so it holds the
 cuts, not this release. 2026-10-01 - #8790 (awss1i, BF-150, Food Editor touch
 scrolling) and #8791 (BF-108) merged into dev (73c9528b, 50bc1084); dev is

@@ -1,11 +1,11 @@
 # cgm-remote-monitor 15.0.9 — decisions
 
 *Contributor-facing. Living record of the maintainer's decisions that shape 15.0.9, taken
-2026-09-22 to 2026-10-08, as of `dev` `fade2299` (2026-10-08). Each row states the decision as it stands. Item state is in
+2026-09-22 to 2026-10-20, as of `dev` `fade2299` (2026-10-08). Each row states the decision as it stands. Item state is in
 `queue/work-queue.yaml`; what 15.0.9 contains and what is still open before the tag is in
 [contents.md](contents.md); the test evidence is in the
 [15.0.9 integration record](../../docs/30-design/remedial/rc-15.0.9-integration-record.md).
-BF-72, BF-73, BF-139, BF-151 and BF-80 appear by mechanism only: all but BF-80 are live on the
+BF-72, BF-73, BF-139, BF-151, BF-171 and BF-80 appear by mechanism only: all but BF-80 are live on the
 shipping release, and this repository is public.*
 
 ## What 15.0.9 is
@@ -40,6 +40,7 @@ shipping release, and this repository is public.*
 | **BF-161 is a known issue in 15.0.9** (2026-10-07): the `braces` advisory GHSA-vfj7-8cjw-p6xm (no fixed release); a deeply nested bracket pattern on `/times`, `/times/echo` or `/slice` makes that one request answer 500 and the site keeps running. Present on 15.0.8 too. A nesting-depth limit comes after 15.0.9 | `BFQ-161` | release notes, Known issues |
 | **BF-163 is a known issue in 15.0.9** (2026-10-07): the `compression` advisory GHSA-vc2v-76pw-4v95 (a memory leak on prematurely closed responses, per the advisory); fixed upstream in 1.8.2, taken up in the modernization releases. Present on 15.0.8 too (`compression` 1.8.1) | `BFQ-163` | release notes, Known issues |
 | **BF-168 is fixed for 15.0.9 (#8807)** (2026-10-08): the context (lower) chart's time window could not always be dragged back to the current time when the chart was drawn before the page laid out; `lib/client/chart.js` now sets the brush extent from the chart's own scale and height. Display only; the same behaviour is on 15.0.8. The release head moves from `43289dde` to `fade2299` (#8598's head); run 023, a context-chart drag hand check, and #8598 re-approval are owed at `fade2299` | `BFQ-168` | #8807 merged (`fade2299`) |
+| **BF-171 is fixed for 15.0.9 by #8815** (2026-10-20; awss1i, fixes #8225): a bearer token whose subject was deleted, or lost with the database, stopped the server on the next request that carried it and again after every restart, until the token expired; it is now refused like a wrong token. Live on 15.0.8 and described by mechanism only. API v3 answers such a token 401 instead of 403 | `RT-PR-8815` | #8815 open, head `93a74ce5` |
 | **BF-152 is after 15.0.9** (API v3 `settings` documents are admin-only through search and history but readable by identifier with read permission): AndroidAPS's follower app reads its settings by identifier, so which side is the intended contract is a question for the AndroidAPS developers (2026-10-01) | `BFQ-152` | open, not in 15.0.9 |
 | **BF-145 after 15.0.9**: v3 PATCH and PUT by the id v3 GET shows miss a record stored with identifier `null`, `""` or `0` (PATCH 404, PUT stores a second copy); the same on 15.0.8 (2026-09-26) | `BFQ-145` | release notes, Known issues |
 | **Version class of #8772, #8775 and #8780 deferred**: the queue classes #8775 and #8780 as minor and #8772's 500 → 200 is an open question; the maintainer is still collecting data before deciding whether they are recorded as minor-under-patch exceptions (as #8530) or re-classed (2026-09-26) | `BFQ-129`, `BFQ-122`, `BFQ-121` | undecided |

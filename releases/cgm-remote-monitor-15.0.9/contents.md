@@ -10,7 +10,8 @@ Nothing here is tagged or released. Measured 2026-10-08 against `official/dev` `
 > unsettled.
 
 15.0.9 is **everything on `dev` at `fade2299`**. Every PR the
-maintainer decided ships in it ([decisions](decisions.md)) is merged. Crowdin #8730 is held out because its sync reverts translations `dev`
+maintainer decided ships in it ([decisions](decisions.md)) is merged, except #8815 (BF-171, decided
+2026-10-20, open). Crowdin #8730 is held out because its sync reverts translations `dev`
 corrected (BF-132). Every PR merged to `dev` is `merged`; none is `released`.
 
 ## Identity
@@ -25,6 +26,7 @@ corrected (BF-132). Every PR merged to `dev` is `merged`; none is `released`.
 | Diff on `dev` | 313 files, +30264/−1936 — `git diff --shortstat official/master official/dev` |
 | `package.json` version | `15.0.9` on `dev` — `git show official/dev:package.json \| grep '"version"'` |
 | Connector pin | `nightscout-connect` exactly `0.1.0` from npm on `dev` (#8762); `15.0.8` pins the `v0.0.13` tag tarball — `git show official/<ref>:package.json \| grep nightscout-connect` |
+| Decided, not merged | #8815 (head `93a74ce5` on `fade2299`, open, author awss1i; BF-171) — `gh pr view 8815 --json state,headRefOid` |
 | Held out | Crowdin #8730 (head `f99c0e54`, open; BF-132) — `gh pr view 8730 --json state,headRefOid` |
 | Release PR | #8598 (`dev` → `master`, head `fade2299`, author AndyLow91): open, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`; re-approval at `fade2299` is owed — `gh pr view 8598 --json state,reviewDecision,reviews`, `gh pr checks 8598` |
 | Tag | none. No `15.0.9` tag exists |
@@ -352,7 +354,14 @@ What the queue tracks is generated, and current, in
    that update waits for an upstream fix and is carried with the modernization work; `braces` has no
    fixed release and a nesting-depth limit is planned after 15.0.9; `compression` is fixed upstream
    in 1.8.2, taken up in the modernization releases. Triage [below](#npm-audit-and-dependabot-triage).
-6. **The tag**, by the maintainer.
+6. **#8815 (BF-171) merged.** Decided for 15.0.9 on 2026-10-20: a bearer token whose subject was
+   deleted, or lost with the database, stops the server on the next request that carries it, and
+   after every restart, until the token expires (live on 15.0.8; mechanism in the
+   [register](../../docs/30-design/remedial/nightscout-backfix-register.md)). Server-side only
+   (`lib/authorization/index.js`), so no browser hand check; merging moves `dev` past `fade2299`,
+   so run 023 and the #8598 re-approval are then on an older head. Its release-note line is drafted
+   in queue `RT-PR-8815`.
+7. **The tag**, by the maintainer.
 
 The [release notes](release-notes.md) and [tag message](tag-message.txt) are drafted on `fade2299`.
 

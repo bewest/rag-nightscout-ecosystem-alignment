@@ -28,11 +28,12 @@ they need is a release, and that is one item — `RT-0` — which is listed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 15 items
+### Maintainer &mdash; 16 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BFQ-09` | `in-flight-upstream` | BF-09 - socket dedup truthiness skips a falsy value | #8797 |
+| `RT-PR-8815` | `in-flight-upstream` | #8815 - a bearer token whose subject was deleted is refused instead of stopping  | #8815 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-164` | `needs-decision` | BF-164 - writes outside API v3 never reach the v3 storage socket | &mdash; |
@@ -73,10 +74,12 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
 | **#8797** | `BFQ-09` | `bf/socket-dedup-zero` | BF-09 - socket dedup truthiness skips a falsy value | Maintainer |
+| **#8815** | `RT-PR-8815` | `awss1i:wip/stale-token-crash` | #8815 - a bearer token whose subject was deleted is refused  | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 
-Every PR decided for 15.0.9 is merged; `RT-0` below gives the release's state.
+Every PR decided for 15.0.9 is merged except #8815 (BF-171, a token whose subject was deleted stops the
+server; decided 2026-10-20, open); `RT-0` below gives the release's state.
 
 The connector half is released. On 2026-09-24 the maintainer merged `nightscout-connect` #70
 (`dev` → `main`, `4dde1ec`) and tagged `main` `v0.1.0`. npm's `latest` is `0.1.0`, with
@@ -109,8 +112,8 @@ GHSA-8849 (BF-75/76, #8745), the boot notice for world-readable sites (#8746), a
 backported security fixes (BF-104, BF-105, #8751); every instance on 15.0.8 is still exposed to all
 of them.
 
-- **Merged.** Every PR decided for 15.0.9, the last being #8806 (BF-162, the
-  `proxy-addr` critical) and #8807 (BF-168, the context-chart brush fix); the list is in
+- **Merged.** Every PR decided for 15.0.9 except #8815 (BF-171, decided 2026-10-20, open), the last
+  merged being #8806 (BF-162, the `proxy-addr` critical) and #8807 (BF-168, the context-chart brush fix); the list is in
   [contents.md](../../releases/cgm-remote-monitor-15.0.9/contents.md), which also says what the
   release leaves broken. Crowdin #8730 is held out because its sync reverts translations `dev`
   corrected (BF-132).

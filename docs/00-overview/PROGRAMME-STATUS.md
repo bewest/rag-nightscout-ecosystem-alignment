@@ -24,9 +24,9 @@ current and the prose is stale.
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
 | **Remedial** | `phase0`, `register-open`, `docs-truth` | 155 | 45 | 7 |
-| **Modernization** | `release-train` | 33 | 5 | 1 |
+| **Modernization** | `release-train` | 34 | 5 | 2 |
 | **Multitenant** | `tenancy`, `platform` | 67 | 17 | 9 |
-| | **total** | **257** | **67** | **17** |
+| | **total** | **258** | **67** | **18** |
 
 <!-- END GENERATED: horizons -->
 
@@ -34,7 +34,8 @@ current and the prose is stale.
 #8807, 2026-10-08): 99 first-parent merges and 547 commits since 15.0.8
 (`git rev-list [--first-parent] --count official/master..official/dev`). None of it is released.
 
-- **Merged.** Every PR decided for 15.0.9; the PR-by-PR list is in
+- **Merged.** Every PR decided for 15.0.9 except #8815 (BF-171: a token whose subject was deleted
+  stops the server, live on 15.0.8; decided 2026-10-20, open); the PR-by-PR list is in
   [the release contents](../../releases/cgm-remote-monitor-15.0.9/contents.md). Crowdin #8730 is
   held out (BF-132). The connector fixes are in `nightscout-connect` `0.1.0`, released 2026-09-24,
   which `dev` pins exactly (#8762). The last in: #8802 (BF-127), clock views opened from the menu
@@ -195,6 +196,7 @@ cover more than one `BF-`:
 | `BFQ-CONNECTOR` | `gate-not-met` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override |
 | `BFQ-ENV` | `in-progress` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies |
 | `BFQ-MINIMED` | `not-started` | BF-44, BF-45, BF-85 - MiniMed ingestion divergences and the CareLink zero reading |
+| `RT-PR-8815` | `in-flight-upstream` | #8815 - a bearer token whose subject was deleted is refused instead of stopping the server |
 
 <!-- END GENERATED: operator-exposure -->
 
@@ -209,7 +211,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
-| `release-train` | 5 |  | 5 |  | 6 |  | 13 | 1 | 1 |  |  | 2 | **33** |
+| `release-train` | 5 |  | 5 |  | 6 | 1 | 13 | 1 | 1 |  |  | 2 | **34** |
 | `register-open` | 35 | 3 | 1 | 1 | 11 | 1 | 55 | 4 |  |  | 3 |  | **114** |
 | `tenancy` | 8 | 1 |  | 1 | 13 |  |  | 7 | 3 | 1 |  |  | **34** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 11 |  |  |  | **19** |
@@ -250,14 +252,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 222 | 86% |
+| Maintainer | 223 | 86% |
 | SECURITY reviewer | 16 | 6% |
 | Maintainer + a second human | 7 | 3% |
 | SAFETY reviewer | 6 | 2% |
 | Whoever edits it next | 3 | 1% |
 | Unassigned | 2 | 1% |
 | Upstream reviewers | 1 | 0% |
-| **total** | **257** | |
+| **total** | **258** | |
 
 <!-- END GENERATED: reviewer-load -->
 
