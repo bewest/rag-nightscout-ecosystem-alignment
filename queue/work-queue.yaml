@@ -13190,6 +13190,43 @@ items:
       toStoredId conversion v1 uses. C2 (a {"$oid": ...} body _id answers 500
       on v3) is the same code path. ID-CLIENT-OID-DECISION's answer (may a
       client set _id) bears on whether option (b) is acceptable.
+  - id: BFQ-172
+    title: "BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819 proposed), a known issue of 15.0.9"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: javier-erro:#8819
+    base: official/dev@fade2299
+    state: in-flight-upstream
+    pr: [8819]
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/plugins/boluswizardpreview.js calc and its warning check: convert
+      the profile's sensitivity and both targets to the display units before
+      use (as basalprofile.js does for sensitivity). Client and server both
+      run the plugin. No change where the profile and display units match.
+    review: maintainer
+    operator_visible: >
+      On a site whose profile is in different units from the site's display
+      units, the BWP pill, its pop-up and the BWP warning show values in the
+      right units instead of ones about 18 times off.
+    semver: patch
+    semver_reason: a wrong displayed value corrected; no API shape changes
+    register: [BF-172]
+    gates:
+      - no-gate: >
+          Measured 2026-10-21 in the plugin's unit harness (Node 24.15.0, not
+          in a browser): #8819's new test copied onto v15.0.8 92d08342 and dev
+          4bca2ac2 fails on both (estimate 80 U, expected 1.29 U); with #8819's
+          boluswizardpreview.js on 4bca2ac2 it passes (14 passing). The
+          reverse case (mg/dL profile, mmol/L site) read, not run.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-10-21 from the check of PR #8819 (opened 2026-10-20). Decision
+      2026-10-21 (the maintainers): a known issue of 15.0.9, named in the
+      release notes; #8819 is based on fade2299 and needs dev merged in before
+      it lands, after 15.0.9.
   - id: RT-PR-8815
     title: "#8815 - a bearer token whose subject was deleted is refused instead of stopping the server (awss1i; BF-171, fixes #8225), merged for 15.0.9"
     parcel: release-train

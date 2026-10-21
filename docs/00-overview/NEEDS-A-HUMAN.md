@@ -28,11 +28,12 @@ they need is a release, and that is one item — `RT-0` — which is listed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 15 items
+### Maintainer &mdash; 16 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BFQ-09` | `in-flight-upstream` | BF-09 - socket dedup truthiness skips a falsy value | #8797 |
+| `BFQ-172` | `in-flight-upstream` | BF-172 - the Bolus Wizard Preview mixes the profile's units with the display uni | #8819 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-164` | `needs-decision` | BF-164 - writes outside API v3 never reach the v3 storage socket | &mdash; |
@@ -73,6 +74,7 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
 | **#8797** | `BFQ-09` | `bf/socket-dedup-zero` | BF-09 - socket dedup truthiness skips a falsy value | Maintainer |
+| **#8819** | `BFQ-172` | `javier-erro:#8819` | BF-172 - the Bolus Wizard Preview mixes the profile's units  | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 
@@ -124,7 +126,7 @@ of them.
   running the candidate count as the soak, and reports (2026-10-02) stable behaviour from Loop, Trio
   and AndroidAPS users on `dev`. The lab's 72 h soak was not run.
 - **Release PR.** #8598 (`dev` → `master`) is at `4bca2ac2` and mergeable.
-  It was approved at `e3adc91d`; the head has since moved to `4bca2ac2`, so re-approval there is owed.
+  It was approved at `e3adc91d`; the head has since moved to `4bca2ac2`, so re-approval there is owed. The maintainers judged the candidate ready on 2026-10-21 ([ROADMAP §1](ROADMAP.md#1-the-next-release-1509)).
 - **Version.** Decided: 15.0.9. `RT-VERSION`'s gate measures the modernization cut branches, which
   also declare 15.0.9 and are renumbered when they are rebased; it holds the cuts, not this release.
 - **What remains** before the tag, including the queue's open `RT-0` blockers, is listed once, in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509).

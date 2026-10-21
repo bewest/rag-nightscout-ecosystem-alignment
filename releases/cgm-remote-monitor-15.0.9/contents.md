@@ -270,6 +270,8 @@ The facts the classification rests on, for the record:
 | BF-154 — `node-forge` advisory GHSA-86w9-cpqp-85rv, no fixed release; Nightscout does not call the affected function | open; blocked on an upstream release (`BFQ-154`) | named in the notes under Known issues |
 | BF-161 — `braces` advisory GHSA-vfj7-8cjw-p6xm, no fixed release; a deeply nested bracket pattern on the three query endpoints that read a forwarded-address list (`/times`, `/times/echo`, `/slice`) makes that one request answer 500, and the site keeps running; present on 15.0.8 too | open; known issue by decision (2026-10-07), nesting-depth limit after 15.0.9 (`BFQ-161`) | named in the notes under Known issues |
 | BF-163 — `compression` advisory GHSA-vc2v-76pw-4v95 (memory leak on prematurely closed responses, per the advisory, not measured here), fixed upstream in 1.8.2; 15.0.8 locks `compression` 1.8.1 too | open; known issue by decision (2026-10-07), the update comes with the modernization releases (`BFQ-163`) | named in the notes under Known issues |
+| BF-172 — the Bolus Wizard Preview subtracts the profile's sensitivity and targets, unconverted, from the reading in display units, so where the profile's units differ from the site's its estimate, warning and target lines are off by a factor of about 18 (80 U for 1.29 U in the reproduction); the same on 15.0.8 | open; known issue by decision (2026-10-21); fix proposed in #8819, not merged | named in the notes under Known issues |
+| `follow-redirects` advisories GHSA-q3jh-wrc6-jgq8 and GHSA-8r9p-f939-6h3c (published 2026-10-20), fixed in 1.16.1; read as not reachable through `axios` | known issue by decision (2026-10-21), update after 15.0.9 | named in the notes under Known issues ([triage](#the-11-high-findings-on-4bca2ac2)) |
 | BF-09 — in the socket `dbAdd` duplicate check a zero is ignored, so within 2 s a zero temp, 100 % temp, cancel, zero bolus or zero carbs can be taken for another record of the same type and dropped (AndroidAPS NSClient v1, the standalone NSClient app, the chart's drag-to-move) | fixed on #8797 (open); after 15.0.9 by decision (2026-10-02) | unchanged from 15.0.8 |
 | BF-156 — autoprune's delete result is never read: the deleted count is never logged, and a failed delete ends the server process (only where an `API3_AUTOPRUNE_*` setting is on; the same on 15.0.8) | fixed on the local branch `bf/autoprune-promise` (`BFQ-156`); after 15.0.9 by decision (2026-10-02) | carried as a known issue with BF-46 |
 | BF-76 — unbounded `silenceTime` | open, left open deliberately by #8745 | carried as a known issue |
@@ -298,9 +300,15 @@ this file does not copy them.
 ## Open items a releaser must settle
 
 What the queue tracks is generated, and current, in
-[ROADMAP §1](../../docs/00-overview/ROADMAP.md#1-the-next-release-1509). As of `dev` `fade2299` (2026-10-08), 15.0.9 waits on:
+[ROADMAP §1](../../docs/00-overview/ROADMAP.md#1-the-next-release-1509). As of `dev` `4bca2ac2`
+(2026-10-21), 15.0.9 waits only on the re-approval and merge of #8598 and the tag. **The maintainers
+(the maintainer and Andy Low) decided on 2026-10-21 that the candidate is ready:** it has run for
+many days on varied real Nightscout set-ups with no complaints from the testing cohort, and that
+stands in place of the hand checks listed in item 1, which were not done separately. The new
+`follow-redirects` advisories and BF-172 are known issues by the same decision. The list as it
+stood on `fade2299` (2026-10-08) follows for the record.
 
-1. **The browser hand checks still owed.**
+1. **The browser hand checks still owed** (superseded 2026-10-21 by the decision above).
    `node tools/queue/gates/client-unchanged-since-hand-check.js --base fade2299 --with ''` names
    23 paths that differ on the browser side from the hand-checked `8d797ba4` (#8807 adds
    `lib/client/chart.js`; nothing is removed): `.gitignore` and
@@ -340,7 +348,9 @@ What the queue tracks is generated, and current, in
    recorded as minor-under-patch exceptions (as #8530) or re-classed ([decisions](decisions.md)).
 3. **Re-approval of #8598 at its final head `4bca2ac2`.** Both approvals were given on `e3adc91d`;
    the head has since moved to `1ad03e29`, `43289dde`, `fade2299` and now `4bca2ac2`, so re-approval is owed.
-4. **The `CHANGELOG.md` question.** `dev` carries a hand-written `## [Unreleased]` section (lines
+4. **The `CHANGELOG.md` question** (proposed 2026-10-21: settle it in the next development cycle's
+   version-bump PR, so the released head stays the tested `4bca2ac2`; `CHANGELOG.md` on `4bca2ac2` also
+   still heads 15.0.7 "2026-03-XX (Unreleased)" and has no 15.0.8 section). `dev` carries a hand-written `## [Unreleased]` section (lines
    5–87 of `git show official/dev:CHANGELOG.md` at `fade2299`, from 14 commits —
    `git log --no-merges official/master..official/dev -- CHANGELOG.md`), against the rule in
    [`../README.md`](../README.md#open-item-changelog-on-dev) that the changelog is generated at
@@ -355,9 +365,11 @@ What the queue tracks is generated, and current, in
    that update waits for an upstream fix and is carried with the modernization work; `braces` has no
    fixed release and a nesting-depth limit is planned after 15.0.9; `compression` is fixed upstream
    in 1.8.2, taken up in the modernization releases. Triage [below](#npm-audit-and-dependabot-triage).
+   Added 2026-10-21: the `follow-redirects` advisories (read as not reachable) and BF-172 (the Bolus
+   Wizard Preview units) are named there too.
 6. **The tag**, by the maintainer.
 
-The [release notes](release-notes.md) and [tag message](tag-message.txt) are drafted on `fade2299`.
+The [release notes](release-notes.md) and [tag message](tag-message.txt) are ready for the release of `4bca2ac2` (2026-10-21).
 
 The real-time soak is done by decision: on 2026-09-30 the maintainer decided that real sites
 running the candidate count as the 24 to 72 h real-time soak, and the lab's 72 h soak
@@ -374,7 +386,13 @@ decided.
 ## `npm audit` and Dependabot triage
 
 **Summary.** 15.0.8 (the release operators run today) had 49 `npm audit` findings (19 high) on
-2026-09-27. On `dev` `fade2299` (2026-10-08, npm 11.19.0, `--package-lock-only`), `npm audit`
+2026-09-27. **Re-measured on the release head `dev` `4bca2ac2` on 2026-10-21** (npm 11.12.1,
+`--package-lock-only`): **26 findings — 11 high, 0 critical**, and **15 — 10 high, 0 critical** with
+`--omit=dev`. `4bca2ac2`'s lockfile is byte-identical to `fade2299`'s (#8815 changes no package
+file), so the rise from 24 / 9 is the advisory database alone: two `follow-redirects` advisories and
+a third `sanitize-html` advisory, all published 2026-10-20, triaged
+[below](#the-11-high-findings-on-4bca2ac2) and named as known issues by the maintainer's decision of
+2026-10-21. The rest of this summary is the 2026-10-08 measurement. On `dev` `fade2299` (2026-10-08, npm 11.19.0, `--package-lock-only`), `npm audit`
 reports **24 findings — 9 high, 0 critical** across all dependencies, and **11 — 5 high, 0 critical**
 with `--omit=dev`. #8807 changes no package file, so `fade2299`'s lockfile is byte-identical to
 `43289dde`'s and these figures equal `43289dde`'s; run 023's same-moment A/B audit confirms the two
@@ -431,6 +449,8 @@ is in `dependencies`, not `devDependencies`, because the bundle is built at inst
 | `dev` `43289dde` (2026-10-07; the lockfile #8806 left) | 24 | 0 | 9 | 15 | 0 |
 | `dev` `fade2299` (2026-10-08; lockfile byte-identical to `43289dde`, the candidate) | 24 | 0 | 9 | 15 | 0 |
 | `dev` `fade2299` `--omit=dev` | 11 | 0 | 5 | 6 | 0 |
+| `dev` `4bca2ac2` (2026-10-21; lockfile byte-identical to `fade2299`, the release head) | 26 | 0 | 11 | 15 | 0 |
+| `dev` `4bca2ac2` `--omit=dev` | 15 | 0 | 10 | 5 | 0 |
 | `rh/cut2` `02205d91` | 6 | 0 | 0 | 6 | 0 |
 | `rh/cut4` `135faa3b`, `rh/cut35` `cd93d8e8`, cut 5 `b1bdaca0` | 0 | 0 | 0 | 0 | 0 |
 
@@ -459,6 +479,19 @@ measures something narrower than it looks:
 
 What a count does show is the backlog to triage. The measured result for 15.0.9 is the table
 below: which findings reach a running site, and what is done about each.
+
+### The 11 high findings on `4bca2ac2`
+
+Re-measured 2026-10-21 on the release head. The 9 high of `fade2299` ([next section](#the-9-high-findings-on-fade2299))
+are unchanged; two are new, both from advisories published 2026-10-20 against a lockfile that did not
+change. With `--omit=dev` the same two advisories also mark `nightscout-connect`,
+`axios-cookiejar-support` and `minimed-connect-to-nightscout` high, as packages above
+`follow-redirects`, which is why that count rises from 5 to 10.
+
+| advisory | high nodes | reach in 15.0.9 | disposition |
+|---|---|---|---|
+| GHSA-q3jh-wrc6-jgq8 and GHSA-8r9p-f939-6h3c (`follow-redirects` 1.16.0, held by the override in `package.json`) | `follow-redirects`, `axios` (2); with `--omit=dev` also `nightscout-connect`, `axios-cookiejar-support`, `minimed-connect-to-nightscout` | credential headers survive a cross-origin redirect only when headers are given as an array (q3jh) or a declared `sensitiveHeaders` name contains `^` or `\|` (8r9p). Read, not run: `axios` 1.20.0 (the connector's) passes headers as an object (`lib/adapters/http.js:957`) and sets `sensitiveHeaders = []` (`:1056`); `axios` 0.34.0 (`minimed-connect-to-nightscout`, and the top-level dev dependency) passes a plain object and no `sensitiveHeaders`; neither `nightscout-connect` `v0.1.0` nor Nightscout's `lib/` uses `follow-redirects` directly | **known issue** by the maintainer's decision (2026-10-21), named in the release notes; fixed in 1.16.1 (a patch release, one override value), taken up after 15.0.9 |
+| GHSA-x3q4-9hxx-gx8m (`sanitize-html` < 2.18.0; moderate, listed here because it is new) | — | run 2026-10-21 on 2.17.5 with `lib/server/purifier.js`'s options: the advisory's `<noscript>` case lets `<img src="http://…">` and `<a href>` through, both already allowed by the configuration when written directly; `onerror` is still stripped. Nothing is let through that a writer could not store anyway | not changed in 15.0.9: 2.18.0 (Dependabot #8822) requires Node ≥ 22.12, the same reason as the existing pin; the advisory count for `sanitize-html` stays 1 |
 
 ### The 9 high findings on `fade2299`
 

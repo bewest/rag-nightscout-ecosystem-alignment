@@ -23,10 +23,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 155 | 45 | 7 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 156 | 45 | 8 |
 | **Modernization** | `release-train` | 34 | 5 | 1 |
 | **Multitenant** | `tenancy`, `platform` | 67 | 17 | 9 |
-| | **total** | **258** | **67** | **17** |
+| | **total** | **259** | **67** | **18** |
 
 <!-- END GENERATED: horizons -->
 
@@ -52,7 +52,7 @@ current and the prose is stale.
   running the candidate count as the soak, and reports (2026-10-02) stable behaviour from Loop, Trio
   and AndroidAPS users on `dev`. The lab's 72 h soak was not run.
 - **Release PR.** #8598 (`dev` → `master`) is at `4bca2ac2` and mergeable.
-  It was approved at `e3adc91d`; the head has since moved to `4bca2ac2`, so re-approval there is owed.
+  It was approved at `e3adc91d`; the head has since moved to `4bca2ac2`, so re-approval there is owed. The maintainers judged the candidate ready on 2026-10-21 ([ROADMAP §1](ROADMAP.md#1-the-next-release-1509)).
 - **Version.** Decided: 15.0.9. `RT-VERSION`'s gate measures the modernization cut branches, which
   also declare 15.0.9 and are renumbered when they are rebased; it holds the cuts, not this release.
 - **What remains** before the tag, including the queue's open `RT-0` blockers, is listed once, in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509).
@@ -176,6 +176,7 @@ cover more than one `BF-`:
 | `BFQ-168` | `merged-upstream` | BF-168 - the context chart's window sometimes cannot be dragged back to now |
 | `BFQ-169` | `not-started` | BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a  |
 | `BFQ-170` | `not-started` | BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent |
+| `BFQ-172` | `in-flight-upstream` | BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819  |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `in-progress` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `merged-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -212,7 +213,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 5 |  | 5 |  | 6 |  | 14 | 1 | 1 |  |  | 2 | **34** |
-| `register-open` | 35 | 3 | 1 | 1 | 11 | 1 | 55 | 4 |  |  | 3 |  | **114** |
+| `register-open` | 35 | 3 | 1 | 1 | 11 | 2 | 55 | 4 |  |  | 3 |  | **115** |
 | `tenancy` | 8 | 1 |  | 1 | 13 |  |  | 7 | 3 | 1 |  |  | **34** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 11 |  |  |  | **19** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
@@ -252,14 +253,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 223 | 86% |
+| Maintainer | 224 | 86% |
 | SECURITY reviewer | 16 | 6% |
 | Maintainer + a second human | 7 | 3% |
 | SAFETY reviewer | 6 | 2% |
 | Whoever edits it next | 3 | 1% |
 | Unassigned | 2 | 1% |
 | Upstream reviewers | 1 | 0% |
-| **total** | **258** | |
+| **total** | **259** | |
 
 <!-- END GENERATED: reviewer-load -->
 

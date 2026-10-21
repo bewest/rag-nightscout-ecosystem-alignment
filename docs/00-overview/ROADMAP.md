@@ -65,31 +65,28 @@ release.
 
 <!-- END GENERATED: release-waits -->
 
-Before the tag, and not queue items of their own (they are in `RT-0`'s notes and gates):
+**Decided 2026-10-21 by the maintainers (the maintainer and Andy Low): the candidate is ready.** It ran
+for many days on varied real Nightscout set-ups with no complaints from the testing cohort, which
+stands in place of the browser hand checks the records still listed as owed (they were not done
+separately; the list is kept in
+[contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#open-items-a-releaser-must-settle)).
+Three advisories published 2026-10-20 and BF-172 (the Bolus Wizard Preview mixes profile and display
+units; on 15.0.8 too; fix proposed in #8819) are known issues by the same decision and are named in
+the release notes. On `4bca2ac2` (lockfile identical to `fade2299`'s) `npm audit` reports 26
+findings, 11 high, 0 critical, re-measured 2026-10-21
+([triage](../../releases/cgm-remote-monitor-15.0.9/contents.md#the-11-high-findings-on-4bca2ac2)).
 
-1. The browser hand checks still owed: a remote bolus; LoopCaregiver from its own app; clock views;
-   the pump pill; alarm level labels; the Bolus Wizard Preview pill and reports during a percentage
-   switch; the Day to Day report (#8788, smoke checklist §3); the Food Editor on a touch screen
-   (#8790, smoke checklist §5); an AndroidAPS (API v3) or Trio temp basal cancelled while a page is
-   open (#8800, BF-94; `tools/lab/bf94-browser` drives it in Chromium); a treatment's BG in the
-   chart tooltip on an mmol/L site with an mg/dL profile (#8801, BF-124); a clock view opened from
-   the menu with an access token on a site that requires sign-in (#8802, BF-127); the context chart's
-   time window dragged all the way back to now after the page loads on a narrow screen (#8807, BF-168). The rest was checked by hand on `ff93fa94` on 2026-09-26
-   ([browser record](../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md)).
-2. The version class of #8772, #8775 and #8780: a minor change shipped under the patch number as an
-   exception, as #8530 was, or a different class. The maintainer is collecting data.
-3. Re-approval of #8598 at its final head, `4bca2ac2`.
-4. The release notes name three advisories under Known issues: BF-154 (`node-forge`, decided
-   2026-10-02; low, Nightscout does not call the affected function), BF-161 (`braces`, known issue
-   2026-10-07) and BF-163 (`compression`, known issue 2026-10-07). On `fade2299` (2026-10-08,
-   unchanged from `43289dde`) `npm audit` reports 24 findings, 9 high, 0 critical — #8806 (BF-162)
-   cleared the one critical by bumping `proxy-addr` to 2.0.8; #8807 changes no package. None of the
-   three blocks the release
-   ([contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#the-9-high-findings-on-fade2299)).
-5. The `CHANGELOG.md` question: `dev` carries a hand-written `## [Unreleased]` section against the
-   rule that the changelog is generated at release time; no decision is recorded
-   ([contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#open-items-a-releaser-must-settle)).
-6. The tag, by the maintainer. The release notes and tag message are drafted on `fade2299`.
+What is left:
+
+1. Re-approval of #8598 at its final head, `4bca2ac2`, and its merge (a merge commit). The merge
+   to `master` publishes the `15.0.9` and `latest` Docker images.
+2. The tag and the GitHub release, by the maintainer, from the
+   [release notes](../../releases/cgm-remote-monitor-15.0.9/release-notes.md) and
+   [tag message](../../releases/cgm-remote-monitor-15.0.9/tag-message.txt).
+3. The next development cycle: a version-bump PR into `dev` from the new `master` (as #8597 was),
+   which is also the proposed place to settle the `CHANGELOG.md` question, and a new `dev` → `master`
+   PR (as #8598 was). The version class of #8772, #8775 and #8780 stays recorded as open in
+   [decisions](../../releases/cgm-remote-monitor-15.0.9/decisions.md).
 
 The full `npm audit` triage, which findings reach a running site and what is done about each, is in
 [contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#npm-audit-and-dependabot-triage).

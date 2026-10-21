@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 258 |
+| items | 259 |
 | runnable gates | 322 |
-| explicit `no-gate:` markers | 280 |
+| explicit `no-gate:` markers | 281 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 280 of the 602 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 281 of the 603 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -46,7 +46,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 30 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, WC-STEP-PATCH, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-72, BFQ-52, BFQ-93, BFQ-95, BFQ-67, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-152, BFQ-154, BFQ-156 |
-| `in-flight-upstream` | 1 | BFQ-09 |
+| `in-flight-upstream` | 2 | BFQ-09, BFQ-172 |
 | `merged-upstream` | 88 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 12 | RT-0, T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164 |
 | `done` | 39 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
@@ -124,6 +124,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-168** BF-168 - the context chart's window sometimes cannot be dragged back to now
 - **BFQ-169** BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a client-supplied one
 - **BFQ-170** BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent
+- **BFQ-172** BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819 proposed), a known issue of 15.0.9
 - **RT-PR-8815** #8815 - a bearer token whose subject was deleted is refused instead of stopping the server (awss1i; BF-171, fixes #8225), merged for 15.0.9
 - **BFQ-134** BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 - **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
@@ -2186,7 +2187,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 114 items
+`parcel: register-open` &mdash; 115 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2291,6 +2292,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-168` | BF-168 - the context chart's window sometimes cannot be dragged back to now | `merged-upstream` | `bf/brush-extent` | patch | 2 run + 1 no-gate |
 | `BFQ-169` | BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a client-supplied one | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-170` | BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent | `not-started` | `-` | minor | 0 run + 1 no-gate |
+| `BFQ-172` | BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819 proposed), a known issue of 15.0.9 | `in-flight-upstream` | `javier-erro:#8819` | patch | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `merged-upstream` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -5480,6 +5482,36 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
 
 **Notes.** Candidate C1 of the write-contract note (section 7), filed 2026-10-18. On 15.0.8 a v1 find[_id] for the record misses it (query.js converts to an ObjectId); on dev v1 matches both forms (object-id-forms matchEitherForm), except an upper-case string asked for in lower case. Both read, not measured. No corpus client sends _id to v3; the Loop reply's rule 1 says a client ObjectId _id holds over v1 only. Natural vehicle for option (a): OID-STORAGE- HELPER, one storage-level rule for writes by _id, which would give v3 create the same toStoredId conversion v1 uses. C2 (a {"$oid": ...} body _id answers 500 on v3) is the same code path. ID-CLIENT-OID-DECISION's answer (may a client set _id) bears on whether option (b) is acceptable.
+
+### `BFQ-172` &mdash; BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819 proposed), a known issue of 15.0.9
+
+| | |
+|---|---|
+| state (claimed) | `in-flight-upstream` |
+| repo | `cgm-remote-monitor` |
+| branch | `javier-erro:#8819` |
+| base | `official/dev@fade2299` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-172` |
+
+**Blast radius.** lib/plugins/boluswizardpreview.js calc and its warning check: convert the profile's sensitivity and both targets to the display units before use (as basalprofile.js does for sensitivity). Client and server both run the plugin. No change where the profile and display units match.
+
+**What an operator sees.** On a site whose profile is in different units from the site's display units, the BWP pill, its pop-up and the BWP warning show values in the right units instead of ones about 18 times off.
+
+**Why `patch`.** a wrong displayed value corrected; no API shape changes
+
+**Gates.**
+
+- **NO GATE** &mdash; Measured 2026-10-21 in the plugin's unit harness (Node 24.15.0, not in a browser): #8819's new test copied onto v15.0.8 92d08342 and dev 4bca2ac2 fails on both (estimate 80 U, expected 1.29 U); with #8819's boluswizardpreview.js on 4bca2ac2 it passes (14 passing). The reverse case (mg/dL profile, mmol/L site) read, not run.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-10-21 from the check of PR #8819 (opened 2026-10-20). Decision 2026-10-21 (the maintainers): a known issue of 15.0.9, named in the release notes; #8819 is based on fade2299 and needs dev merged in before it lands, after 15.0.9.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 

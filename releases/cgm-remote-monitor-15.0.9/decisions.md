@@ -1,7 +1,7 @@
 # cgm-remote-monitor 15.0.9 — decisions
 
 *Contributor-facing. Living record of the maintainer's decisions that shape 15.0.9, taken
-2026-09-22 to 2026-10-20, as of `dev` `4bca2ac2` (2026-10-20). Each row states the decision as it stands. Item state is in
+2026-09-22 to 2026-10-21, as of `dev` `4bca2ac2` (2026-10-21). Each row states the decision as it stands. Item state is in
 `queue/work-queue.yaml`; what 15.0.9 contains and what is still open before the tag is in
 [contents.md](contents.md); the test evidence is in the
 [15.0.9 integration record](../../docs/30-design/remedial/rc-15.0.9-integration-record.md).
@@ -12,6 +12,7 @@ shipping release, and this repository is public.*
 
 | decision | queue | as it stands |
 |---|---|---|
+| **The candidate `4bca2ac2` is ready to release** (2026-10-21, the maintainer and Andy Low): many days on varied real Nightscout set-ups with no complaints from the testing cohort stand in place of the browser hand checks still listed as owed. The `follow-redirects` advisories (GHSA-q3jh, GHSA-8r9p, published 2026-10-20; read as not reachable) and BF-172 (the Bolus Wizard Preview mixes profile and display units; on 15.0.8 too; #8819 proposed) are **known issues**, named in the release notes | `RT-0` | #8598 re-approval, merge and tag remain |
 | The `dev` → `master` release is numbered **15.0.9**, the number `dev`'s `package.json` carries (2026-09-22). Reads tolerate the `count` shapes oref0 and GluPredKit send, so 15.0.9 stays a patch (2026-09-24) | `RT-VERSION`, `RT-COUNT-COMPAT` | #8761 merged |
 | **The release goes out through #8598** (`dev` → `master`, opened by AndyLow91) | `RT-0` | open, head `4bca2ac2`, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`, and the head has since moved through `1ad03e29`, `43289dde` `fade2299` and now `4bca2ac2`, so re-approval at `4bca2ac2` is owed |
 | **Backfix 2 ships inside 15.0.9**: `bf2/ops`, `bf2/backports` and `bf2/auth-hardening`, with the subject-edit fix folded into the last (2026-09-23) | `BF2-AUTH` | #8753, #8751, #8754 merged |

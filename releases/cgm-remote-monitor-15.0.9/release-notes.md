@@ -1,7 +1,5 @@
 # Nightscout 15.0.9 — release notes
 
-**Draft: 15.0.9 is not yet released, and the wording may change before it is.**
-
 *For people who run a Nightscout site for themselves or a family member. Nightscout is a
 secondary display, nothing in these notes is advice about insulin doses, and you should talk
 with your care team before changing therapy settings.*
@@ -1219,6 +1217,16 @@ and many other software library updates.
   are the numbers you meant, keep
   your device's own alarms on, and talk through your alarm settings with your care team. This
   is not medical advice.
+- **The bolus estimate (Bolus Wizard Preview) is wrong when your profile and your site use
+  different units.** If your site shows glucose in mg/dL and the profile in use is in mmol/L, or
+  the other way round, the "BWP" pill, its pop-up (target, sensitivity, "aiming at") and the BWP
+  warning use the profile's numbers as if they were in the site's units. The estimate can be
+  about 18 times too large, or report "excess insulin" when there is none. Sites whose profile
+  and display use the same units are not affected. This is the same on 15.0.8 and earlier, and a
+  fix is proposed for a later release. Check that the units in your Profile Editor match the units
+  your site shows; if they differ, do not rely on the BWP number until this is fixed. Your pump or
+  AID app makes its own calculation. This is not medical advice; talk to your care team about
+  how you use these numbers.
 - **Deleting a treatment anywhere except AndroidAPS does not reach AndroidAPS.** A treatment
   deleted in the careportal, Loop, Trio or xDrip+ is removed from your site but keeps counting on
   an AndroidAPS phone. Delete it in AndroidAPS as well.
@@ -1286,6 +1294,14 @@ and many other software library updates.
   description; it has not been measured on Nightscout. It is fixed in `compression` 1.8.2, which
   Nightscout takes up in the modernization releases that follow 15.0.9. The same version is on
   15.0.8. You do not need to do anything.
+- **A security check also reports "high" findings about `follow-redirects`, and so about
+  `axios`, which uses it** (GHSA-q3jh-wrc6-jgq8 and GHSA-8r9p-f939-6h3c, published 2026-10-20).
+  According to the notices, when a request is redirected to a different site, login headers that
+  should be removed can be passed on in two special cases: headers given as a list, or a declared
+  list of extra private headers. Nightscout and its CGM connector send their requests through
+  `axios`, which uses neither, so the project's reading of the code is that these findings do not
+  affect Nightscout; this was read in the code, not tested. They are fixed in `follow-redirects`
+  1.16.1, which Nightscout takes up after 15.0.9. You do not need to do anything.
 
 ### Access tokens stored in plain text
 
@@ -1341,4 +1357,4 @@ a report from "15.0.9" made before this release is from that channel.
 
 ---
 
-*Draft, 2026-10-08, on the development version fade2299, with #8815 added on 2026-10-20 at 4bca2ac2; not yet released.*
+*Nightscout 15.0.9 is the development version `4bca2ac2`. These notes were written from 2026-10-08 to 2026-10-21.*
