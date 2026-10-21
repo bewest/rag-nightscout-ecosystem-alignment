@@ -54,7 +54,13 @@ meta:
       first-parent merges) behind origin/dev 153e5658 (`git -C
       externals/cgm-remote-monitor-official rev-list --count
       origin/master..origin/dev`). Only a release (RT-0) moves
-      an item out of this state.
+      an item out of this state, into released.
+    released: >
+      in a tagged cgm-remote-monitor release that operators install; the item's
+      notes name the tag. First used on 2026-10-21 for 15.0.9 (tag v15.0.9,
+      master c6a0d8ed, the merge of #8598, tree c53c2c7f = dev 4bca2ac2), which
+      carried every item then merged-upstream. A connector item is released
+      when a released Nightscout pins a connector version that carries it
     needs-decision: waiting on a maintainer decision, not on work
     done: >
       finished work in THIS repository, which ships nothing to operators; never
@@ -142,7 +148,7 @@ items:
     branch: bf/alarms
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-alarms
-    state: merged-upstream
+    state: released
     blast_radius: 3 commits. lib/plugins/insulinage.js, lib/plugins/index.js,
       lib/api/googlehome/index.js, lib/api/alexa/index.js. Zero file overlap
       with any other Phase 0 branch.
@@ -255,6 +261,8 @@ items:
       - docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev by #8739 (7a5561f4, 2026-09-20); not released. It
       reaches operators with 15.0.9 (RT-0). Nothing is owed on this
       item.
@@ -278,7 +286,7 @@ items:
     branch: bf/cache
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-cache
-    state: merged-upstream
+    state: released
     blast_radius: 2 commits at 4f86bab1, 6 files, +385/-8. lib/server/cache.js,
       lib/data/dataloader.js, lib/api/entries/index.js, plus three test files.
     review: >
@@ -361,6 +369,8 @@ items:
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
       - tools/mt-bench/apitier.js
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev by #8740 (49f562d8, 2026-09-20); not released. It
       reaches operators with 15.0.9 (RT-0). Nothing is owed on this
       item.
@@ -388,7 +398,7 @@ items:
     branch: bf/auth
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-auth
-    state: merged-upstream
+    state: released
     pr: [8754]
     blast_radius: >
       Content: 2 commits at ce82f0cd, 3 files, +310/-18.
@@ -471,6 +481,8 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Not shipping on its own. bf/auth (content ce82f0cd, tip 404e714c,
       a merge of dev 59430336 made 2026-09-21) is contained by ancestry
       in bf2/auth-hardening, PR #8754 (BF2-AUTH), which is what ships
@@ -522,7 +534,7 @@ items:
     branch: bf/throttle
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-throttle
-    state: merged-upstream
+    state: released
     pr: [8754]
     blast_radius: >
       Content: 1 commit at 435419ce, 3 files, +388/-45.
@@ -617,6 +629,8 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Not shipping on its own. bf/throttle (content 435419ce, tip
       a0823c4f, a merge of dev 59430336 made 2026-09-21) is contained by
       ancestry in bf2/auth-hardening, PR #8754 (BF2-AUTH), which is what
@@ -747,7 +761,7 @@ items:
     branch: bf/coercion
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-coercion
-    state: merged-upstream
+    state: released
     blast_radius: 2 commits at b7234753, the largest change in the set. lib/server/query.js
       plus a generated coercion table over 5 collections; 158 coercions replace
       13 hand-written entries.
@@ -855,6 +869,8 @@ items:
       - tools/nsschema/emit/coercion_emit.py
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev by #8737 (025f1310, 2026-09-18); not released. It
       reaches operators with 15.0.9 (RT-0). Nothing is owed on this
       item.
@@ -871,7 +887,7 @@ items:
     branch: bf/reads
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-reads
-    state: merged-upstream
+    state: released
     blast_radius: >
       6 commits at 2ecfeb53, all its own, based directly on origin/dev.
       lib/server/aggregate.js, entries.js and four siblings,
@@ -1006,6 +1022,8 @@ items:
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
       - docs/60-research/remedial/e3-gate-vacuity-audit-2026-09-15.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev by #8738 (d3358e91, 2026-09-18) at tip 2ecfeb53,
       six commits; not released. It reaches operators with 15.0.9
       (RT-0). Its ?count=0 answer was amended before release by #8748
@@ -1035,7 +1053,7 @@ items:
     branch: fix/connect-timer-jitter
     base: official/dev@d208c7d
     worktree: externals/work/nc-jitter
-    state: merged-upstream
+    state: released
     pr: [68]
     blast_radius: >
       Merged into connector dev as 3f73288 on 2026-09-22. README.md, index.js,
@@ -1102,6 +1120,8 @@ items:
     evidence:
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into connector dev by #68 (3f73288, 2026-09-22) and
       released in nightscout-connect 0.1.0 (2026-09-24, P0-TAG).
       Nightscout dev installs 0.1.0 exactly (#8762, P0-PIN); it reaches
@@ -1134,7 +1154,7 @@ items:
     branch: bf/food
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-food
-    state: merged-upstream
+    state: released
     blast_radius: 1 commit. lib/client/boluscalc.js, lib/food/food.js,
       lib/food/quickpick.js (new), lib/server/food.js, 2 new test files.
     review: >
@@ -1212,6 +1232,8 @@ items:
     evidence:
       - docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev by #8735 (ff0d506c, 2026-09-20); not released. It
       reaches operators with 15.0.9 (RT-0). Still owed (this
       repository): tighten the schema-drift anchors now that the branch
@@ -1242,7 +1264,7 @@ items:
     branch: bf/merge
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-merge
-    state: merged-upstream
+    state: released
     blast_radius: 1 commit. lib/client/receiveddata.js, one new test file.
     review: >
       maintainer. PR #8734, base dev, merged 2026-09-18.
@@ -1299,6 +1321,8 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev by #8734 (fdd08706, 2026-09-18); not released. It
       reaches operators with 15.0.9 (RT-0). Nothing is owed on this
       item. Sequencing letter H.
@@ -1310,7 +1334,7 @@ items:
     branch: bf/parms
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-parms
-    state: merged-upstream
+    state: released
     blast_radius: 3 commits at eb0bc918. lib/client/browser-utils.js,
       lib/language.js.
     review: >
@@ -1377,6 +1401,8 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev by #8736 (2e94de1b, 2026-09-20); not released. It
       reaches operators with 15.0.9 (RT-0). Nothing is owed on this
       item.
@@ -1395,7 +1421,7 @@ items:
     base: origin/dev@fdd08706
     worktree: externals/work/crm-bf-operators
     pr: [8743]
-    state: merged-upstream
+    state: released
     blast_radius: >
       3 commits at 52b7b640. New: lib/storage/assert-no-query-javascript.js,
       lib/server/query-operator-allowlist.js, lib/api/shared/query-error.js and
@@ -1534,6 +1560,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/tenancy/v1-operator-census-2026-09-14.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev by #8743 (1a36f023, 2026-09-18); not released. It
       reaches operators with 15.0.9 (RT-0). What remains of the advisory
       it answers is tracked in BFQ-71 and BFQ-72.
@@ -1665,7 +1693,7 @@ items:
     branch: fix/nightscout-reader-roles
     base: official/dev@1946beb
     worktree: externals/work/nc-roles-typo
-    state: merged-upstream
+    state: released
     blast_radius: lib/sources/nightscout.js (the subject it POSTs to /api/v2/authorization/subjects) and a test.
     review: maintainer
     operator_visible: >
@@ -1703,6 +1731,8 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into connector dev by #77 (dea2bec, 2026-09-23) and
       released in nightscout-connect 0.1.0 (2026-09-24, P0-TAG);
       Nightscout dev pins 0.1.0 (#8762), so it reaches Nightscout
@@ -1733,7 +1763,7 @@ items:
     branch: fix/trace-axios-path
     base: official/dev@1946beb
     worktree: externals/work/nc-trace-axios
-    state: merged-upstream
+    state: released
     ships_to_operators_today: true
     blast_radius: Two require paths - lib/sources/nightscout.js:190 and lib/sources/dexcomshare.js:243.
     review: maintainer
@@ -1764,6 +1794,8 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into connector dev by #78 (894b132, 2026-09-23) and
       released in nightscout-connect 0.1.0 (2026-09-24, P0-TAG). Nothing
       is owed on this item.
@@ -1779,7 +1811,7 @@ items:
     branch: bf/connect-pin-0.1.0-exact
     base: origin/dev@f1591069
     worktree: externals/work/crm-connect-pin-0.1.0-exact
-    state: merged-upstream
+    state: released
     pr: [8752, 8759, 8762]
     blast_radius: >
       One line of package.json (the nightscout-connect dependency) plus
@@ -1818,6 +1850,8 @@ items:
     evidence:
       - docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged. #8762 (bf/connect-pin-0.1.0-exact, head 1e6e5008 on dev
       f1591069) merged 2026-09-24 as 153e5658: dev's package.json pins
       nightscout-connect exactly 0.1.0 from npm, and the lockfile entry
@@ -1860,7 +1894,7 @@ items:
     branch: bf/connect-pin-0.1.0-exact
     base: origin/dev@f1591069
     worktree: externals/work/crm-connect-pin-0.1.0-exact
-    state: merged-upstream
+    state: released
     blast_radius: package-lock.json, the nightscout-connect entries.
     review: maintainer - same PR as P0-PIN
     operator_visible: >
@@ -1884,6 +1918,8 @@ items:
     evidence:
       - docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged with P0-PIN in #8762 (153e5658, 2026-09-24); not released.
       The lockfile's nightscout-connect entry resolves the registry
       tarball of 0.1.0 with npm's integrity; only that entry and the
@@ -1896,7 +1932,7 @@ items:
     branch: ci/npm-trusted-publish, ci/prerelease-tags
     base: official/dev@1946beb
     worktree: externals/nightscout-connect
-    state: merged-upstream
+    state: released
     pr: [74, 75]
     blast_radius: >
       Merged into connector dev 2026-09-22 (#74 5837abc, #75 89be9d9):
@@ -1935,6 +1971,8 @@ items:
     evidence:
       - docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into connector dev 2026-09-22 (#74 5837abc, #75 89be9d9).
       The workflow has since published 0.1.0-dev.1, dev.2, dev.3 (under
       `next`) and the full release 0.1.0 (under `latest`, 2026-09-24),
@@ -1955,7 +1993,7 @@ items:
     branch: fix/quadratic-treatment-processing
     base: origin/dev
     worktree: externals/work/crm-quadratics
-    state: merged-upstream
+    state: released
     blast_radius: dfe2753d. Pushed as bewest/wip/optimize-treatment-processing.
     review: >
       upstream reviewers on PR #8733 - not ours to land
@@ -1980,6 +2018,8 @@ items:
     evidence:
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev by #8733 (77d153d2, 2026-09-17); not released. It
       reaches operators with 15.0.9 (RT-0). The plan says "everything
       downstream assumes it".
@@ -2193,7 +2233,7 @@ items:
     branch: bf/count-zero-empty
     base: origin/dev@74fc6619
     worktree: externals/work/crm-count-zero
-    state: merged-upstream
+    state: released
     blast_radius: >
       Tip ce9503ac, two commits, 5 files - lib/server/count.js (isZeroCount;
       applyCount answers zero without querying), lib/api/index.js validateCount
@@ -2231,6 +2271,8 @@ items:
     evidence:
       - releases/cgm-remote-monitor-15.0.9/decisions.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev by #8748 (42c5e21e, head fc2d25ca, 2026-09-23);
       not released. CI and CodeQL green on the merge commit. Amended on
       2026-09-24 by #8761 (RT-COUNT-COMPAT) for the forms oref0 and
@@ -2277,7 +2319,7 @@ items:
     branch: docs/mongodb-floor
     base: origin/dev@74fc6619
     worktree: externals/cgm-remote-monitor-official
-    state: merged-upstream
+    state: released
     blast_radius: README.md, one line of the installation requirements. No code.
     review: maintainer
     operator_visible: >
@@ -2300,6 +2342,8 @@ items:
     evidence:
       - releases/cgm-remote-monitor-15.0.9/decisions.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev by #8750 (1f9a9d10, 2026-09-23); not released. The
       README on dev says MongoDB 4.4 is deprecated, not unsupported, and
       the 15.0.9 release notes say it will be dropped in a later
@@ -2319,7 +2363,7 @@ items:
     branch: bf/count-client-compat
     base: origin/dev@ddd9b600
     worktree: externals/work/crm-count-compat-59
-    state: merged-upstream
+    state: released
     blast_radius: >
       The v1 count rule from #8738 as amended by #8748 (lib/server/count.js,
       lib/api/index.js validateCount), and the number 15.0.9 ships under.
@@ -2351,6 +2395,8 @@ items:
     evidence:
       - docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev by #8761 (f1591069, head 516f971a, 2026-09-24);
       not released. CI green on the head (tests on Node 20/22/24 x
       MongoDB 4.4/5/6, CodeQL, npm and Docker validation). The combined
@@ -2421,7 +2467,7 @@ items:
     branch: rt/trust-one-source
     base: official/bf2/auth-hardening@e549e1a6
     worktree: ""
-    state: merged-upstream
+    state: released
     pr: [8763]
     blast_radius: >
       lib/server/client-ip.js, lib/api3/security.js, lib/server/app.js and
@@ -2480,6 +2526,8 @@ items:
       - docs/30-design/modernization/cut-rehearsal-on-15.0.9-rc-2026-09-23.md
       - reports/phase0-pr-bodies/rt-trust-one-source.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Target: cut 1 or cut 2 of the modernization train, or earlier on dev if
       it fits this release cycle (maintainer, 2026-09-24). Today two routes
       deliver the policy: five modules compile env.trustProxy themselves, and
@@ -2510,7 +2558,7 @@ items:
     branch: rt/trust-one-source
     base: official/bf2/auth-hardening@708af170
     worktree: ""
-    state: merged-upstream
+    state: released
     pr: [8764, 8765]
     blast_radius: >
       lib/api2/notifications-v2.js:34 (passes req.connection.remoteAddress)
@@ -2579,6 +2627,8 @@ items:
       - reports/phase0-pr-bodies/rt-loop-remote-address.md
       - reports/phase0-pr-bodies/rt-trust-one-source-into-8754.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Found 2026-09-24 while narrowing client-ip.js (RT-TRUST-ONE-SOURCE): the
       only client-address read in lib/ that does not go through client-ip.js.
       Present unchanged on origin/dev 153e5658; introduced with the V2 API in
@@ -2807,7 +2857,7 @@ items:
     branch: origin/dev
     base: origin/master
     worktree: externals/cgm-remote-monitor-official
-    state: needs-decision
+    state: released
     blast_radius: >
       15.0.9 is everything in origin/master..origin/dev: master 92d08342
       (tag 15.0.8) to dev 7000eb18 (merge of #8786), measured 2026-09-27:
@@ -2933,6 +2983,19 @@ items:
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
       - docs/30-design/remedial/rc-15.0.9-integration-record.md
     notes: >
+      2026-10-21 - RELEASED. #8598 merged by the maintainer at 20:09:51Z as
+      master c6a0d8ed (parents 92d08342 and 4bca2ac2, tree c53c2c7f, the same
+      tree as dev 4bca2ac2); both approvals were the maintainer's at
+      e3adc91d, not repeated at 4bca2ac2. GitHub release v15.0.9 "Release
+      15.0.9 Cinnamon Muffin" published 20:21:31Z, Latest, body
+      releases/cgm-remote-monitor-15.0.9/release-notes.md. Master CI run
+      39667944235: attempt 1 failed in one cell's npm install
+      (ECONNRESET, before any test) and cancelled the rest; attempt 2 passed
+      all nine test cells, both Docker builds and Publish to Docker Hub
+      (Validate Docker image skipped). The 15.0.9 readiness decision of
+      2026-10-21 (real-site running in place of the owed hand checks;
+      follow-redirects, BF-172, BF-173 and BF-174 known issues) stands as
+      the release's basis. Every item that was merged-upstream is released.
       2026-10-20 (maintainer): RT-PR-8815 (#8815, BF-171, a deleted
       subject's token stops the server) goes into 15.0.9 and is added to
       blocks_on; merged the same day (23:57Z) as 4bca2ac2, which is now dev:
@@ -3346,7 +3409,7 @@ items:
     branch: ""
     base: chore/nightscout-modernization
     worktree: externals/cgm-remote-monitor-official
-    state: merged-upstream
+    state: released
     blast_radius: >
       New code, not just a warning string. lib/server/mmconnect-connect-compat.js
       does NOT exist on dev or master - it is born in cut 4, the same branch that
@@ -3382,6 +3445,8 @@ items:
     evidence:
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev by #8757 (d0d6b433, 2026-09-23): the MiniMed
       warning names every replacement setting (the names match the
       connector's extendedSettings keys). Not released. The notice
@@ -3708,7 +3773,7 @@ items:
     branch: ""
     base: origin/dev@a8888f0d
     worktree: externals/cgm-remote-monitor-official
-    state: merged-upstream
+    state: released
     ships_to_operators_today: true
     blast_radius: docker-compose.yml at the repo root, one `ulimits:` block.
     review: maintainer
@@ -3753,6 +3818,8 @@ items:
     evidence:
       - docs/60-research/remedial/gt3-register-truth-2026-09-15.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev with bf2/ops by #8753 (3a38c6f2, 2026-09-23) as
       commit 03fba725: origin/dev's docker-compose.yml gives the mongo
       service ulimits nofile 64000 (checked with `git show
@@ -3779,7 +3846,7 @@ items:
     branch: bf/operators
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-operators
-    state: merged-upstream
+    state: released
     ships_to_operators_today: true
     blast_radius: >
       lib/server/query.js:157 - API v1 filter pass-through reached
@@ -3818,6 +3885,8 @@ items:
       - docs/60-research/remedial/gt3-register-truth-2026-09-15.md
       - docs/60-research/remedial/bf04-bf70-operator-allowlist-2026-09-18.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       BF-04 is high severity and ships to every current operator on
       15.0.8. The fix is merged into dev by #8743 (P0-K, 1a36f023,
       2026-09-18) and not released; P0-K carries the gates. This row
@@ -6356,7 +6425,7 @@ items:
     branch: bf3/quickpick-rebuild
     base: origin/dev@74fc6619
     worktree: externals/work/crm-bf3-quickpick
-    state: merged-upstream
+    state: released
     ships_to_operators_today: true
     blast_radius: >
       One commit, 83cfff14, 2 files, +215/-2. lib/client/boluscalc.js only -
@@ -6434,6 +6503,8 @@ items:
       - docs/30-design/remedial/rc-15.0.9-integration-record.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev by #8756 (c11888ed, 2026-09-23); not released. It
       reaches operators with 15.0.9 (RT-0). CI and CodeQL green. Food
       edits made while a page is open still do not reach it (BFQ-93).
@@ -6698,7 +6769,7 @@ items:
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-coercion
     branch_note: "covered by bf/coercion, PR #8737 (P0-D)"
-    state: merged-upstream
+    state: released
     ships_to_operators_today: true
     blast_radius: >
       BOOLEAN_OPERANDS / readBooleanOperand in lib/server/query.js, applied over
@@ -6738,6 +6809,8 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev by #8737 (P0-D, 2026-09-18); not released. It
       reaches operators with 15.0.9 (RT-0). The merged #8737 body's
       operator-facing text says find[sgv][$exists]=true "became $exists:
@@ -6835,7 +6908,7 @@ items:
     branch: bf/qs-6.16
     base: origin/dev@74fc6619
     worktree: externals/work/crm-qs-616
-    state: merged-upstream
+    state: released
     ships_to_operators_today: true
     blast_radius: >
       package.json overrides.qs and overrides.request.qs (both 6.15.1, from
@@ -6872,6 +6945,8 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev by #8749 (9fd4600e, 2026-09-23); not released. CI
       and CodeQL green on the merge commit. It reaches operators with
       15.0.9 (RT-0).
@@ -7160,7 +7235,7 @@ items:
     branch: bf2/subject-edit-keeps-fields
     base: bf2/auth-hardening@29e6430e
     worktree: externals/work/crm-bf47
-    state: merged-upstream
+    state: released
     ships_to_operators_today: true
     blast_radius: >
       lib/authorization/endpoints.js:40 pick(), lib/admin_plugins/subjects.js
@@ -7210,6 +7285,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/remedial/rc-15.0.9-integration-record.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev with #8754 (BF2-AUTH, merge 4f705217, 2026-09-25):
       the fix, 7103f657, is #8754's last content commit and an ancestor of
       origin/dev. Not released; it reaches operators with 15.0.9 (RT-0),
@@ -7452,7 +7529,7 @@ items:
     branch: bf3/alarm-no-reading
     base: origin/dev@74fc6619
     worktree: externals/work/crm-bf3-alarmnoread
-    state: merged-upstream
+    state: released
     ships_to_operators_today: true
     blast_radius: >
       One commit, 92544d8f, 2 files, +165/-4. lib/client/index.js - two helpers,
@@ -7508,6 +7585,8 @@ items:
       - docs/30-design/remedial/rc-15.0.9-integration-record.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev by #8755 (728351e3, 2026-09-23); not released. CI
       and CodeQL green. It reaches operators with 15.0.9 (RT-0). BF-92
       (a page with no reading presents no server alarm) is unchanged by
@@ -7651,7 +7730,7 @@ items:
     branch: bf/profile-temp-cache
     base: official/dev@ca6fcfaf
     worktree: externals/work/crm-bf94-fix
-    state: merged-upstream
+    state: released
     pr: [8800]
     ships_to_operators_today: false
     blast_radius: >
@@ -7683,6 +7762,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/bf09-dedup-zero-measurement-2026-09-23.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-10-03: merged into dev by the maintainer as #8800 (merge 74942ec6,
       00:04Z, head a06e75d6); dev's tree 5671b8d3 is a06e75d6's, so the
       3538/0/4 suite ran on the exact candidate tree.
@@ -8302,7 +8383,7 @@ items:
     branch: ""
     base: origin/dev@a8888f0d
     worktree: externals/cgm-remote-monitor-official
-    state: merged-upstream
+    state: released
     blast_radius: >
       Three one-line changes in three files - lib/plugins/index.js:241,
       lib/authorization/storage.js:82, lib/api/alexa/index.js switch (line
@@ -8362,6 +8443,8 @@ items:
     evidence:
       - docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Follow-ups 3 and 7 are merged into dev with bf2/ops by #8753
       (e72ba30d and af8eee45, 2026-09-23), not released; their gates
       pass. Follow-up 4 (the console.log('Loading',opts) in
@@ -8532,7 +8615,7 @@ items:
     branch: bf/ws-loadretro-auth
     base: origin/dev@59430336
     worktree: externals/work/crm-adv-retro
-    state: merged-upstream
+    state: released
     pr: [8744]
     ships_to_operators_today: true
     register: [BF-79]
@@ -8626,6 +8709,8 @@ items:
       - docs/30-design/remedial/advisory-response-2026-09/README.md
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev by #8744 (a9acd313, 2026-09-21) from
       bf/ws-loadretro-auth at 9765e8cd, the tip this item was measured
       against. Not released: BF-79 is live on 15.0.8 and earlier. Still
@@ -8651,7 +8736,7 @@ items:
     branch: bf/alarm-socket-scope
     base: origin/dev@59430336
     worktree: externals/work/crm-adv-alarm
-    state: merged-upstream
+    state: released
     pr: [8745]
     ships_to_operators_today: true
     register: [BF-75, BF-76, BF-80]
@@ -8796,6 +8881,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev by #8745 (2b22c0ce, 2026-09-21). origin's
       bf/alarm-socket-scope is at a198e308, not this item's measured tip
       012f1623, because an integration merge of dev was added before it
@@ -9119,7 +9206,7 @@ items:
     branch: bf2/auth-hardening
     base: origin/dev@74fc6619
     worktree: externals/work/crm-bf2-auth
-    state: merged-upstream
+    state: released
     pr: [8754]
     blast_radius: >
       #8754 head 708af170 (2026-09-24, with #8763) against dev 153e5658: 30 commits, 22 files, +2120/-101; with the pending #8764 follow-up, 25 files, +2167/-105.
@@ -9190,6 +9277,8 @@ items:
       - releases/cgm-remote-monitor-15.0.9/decisions.md
       - docs/30-design/remedial/rc-15.0.9-integration-record.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev as 4f705217 on 2026-09-25T01:33Z, head bae655a0 (#8765 on 708af170; tree identical to 71987bb4's). On dev 4f705217: 2577/3/0 on Node 20.20.0, 22.22.0 and 24.15.0 against MongoDB 7.0.43, and in all nine CI jobs (Node 20/22/24 x MongoDB 4.4/5.0/6.0). Before the merge, head 708af170 (2026-09-24): e549e1a6 plus #8763 (one TRUST_PROXY policy per env, behaviour-neutral; full suite 2572/3/0 on its tree). #8764 (the Loop remote-address label follows TRUST_PROXY; stores caregivers' addresses on remote overrides) comes in through a follow-up PR from rt/trust-one-source, decided for 15.0.9; full suite 2577/3/0 on the merged tree. Before #8763: It carries dev 153e5658 (merged in by e32f7a1c); f6f361b1, which puts the failed-login wait back before the credential check, as in earlier releases; 9c6cde72 (an explicit TRUST_PROXY accepts a forwarded address that carries a port, the form Azure App Service is reported to send; unset is unchanged); b5f61f19 (the proxy guide recommends `1` on Azure); and e549e1a6 (an API v3 failed-login key test through the trust its app inherits). Full suite 2570/3/0 at e549e1a6 (session -66); CI green on b5f61f19. That fix is part of #8754 and 15.0.9. Destination
       15.0.9 (backfix-2 plan section 1a, 2026-09-23). Reviewers: the
       maintainer and Andy (security review); no review is recorded on
@@ -9249,7 +9338,7 @@ items:
     branch: bf2/backports
     base: origin/dev@74fc6619
     worktree: externals/work/crm-bf2-backports
-    state: merged-upstream
+    state: released
     blast_radius: >
       Six candidate commits on chore/nightscout-modernization b1bdaca0 -
       31c354d8, d3ac8026, 973a2849, 71c42c9a, d48be5e5, ad4a8cd5. Only 31c354d8
@@ -9273,6 +9362,8 @@ items:
     evidence:
       - releases/cgm-remote-monitor-15.0.9/decisions.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev by #8751 (4011193e, 2026-09-23); not released. It
       reaches operators with 15.0.9 (RT-0). Register ids: BF-104
       (alarm-subscription credentials in the server log) and BF-105 (two
@@ -9312,7 +9403,7 @@ items:
     branch: bf2/ops
     base: origin/dev@74fc6619
     worktree: externals/work/crm-bf2-ops
-    state: merged-upstream
+    state: released
     pr: [8753]
     blast_radius: >
       docker-compose.yml, lib/plugins/index.js, lib/api/alexa/index.js,
@@ -9343,6 +9434,8 @@ items:
       - releases/cgm-remote-monitor-15.0.9/decisions.md
       - docs/30-design/remedial/rc-15.0.9-integration-record.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev by #8753 (3a38c6f2, 2026-09-23); not released. CI
       and CodeQL green. It reaches operators with 15.0.9 (RT-0). Four
       commits: 03fba725 BF-10 (BFQ-10), e72ba30d follow-up 3 and
@@ -9363,7 +9456,7 @@ items:
     branch: bf/split-drag-time
     base: origin/dev@4011193e
     worktree: externals/work/crm-bf-split-drag
-    state: merged-upstream
+    state: released
     pr: [8760]
     ships_to_operators_today: true
     blast_radius: >
@@ -9398,6 +9491,8 @@ items:
       - docs/60-research/remedial/bf103-split-drag-time.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev by #8760 (ddd9b600, 2026-09-24 01:43Z); not
       released. CI and CodeQL green. It reaches operators with 15.0.9
       (RT-0); 15.0.8 still has BF-103. Nothing is owed on this item.
@@ -9445,7 +9540,7 @@ items:
     branch: bf/activity-date-coercion
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-6a-fix-activity-date-coercion
-    state: merged-upstream
+    state: released
     pr: [8771]
     blast_radius: >
       lib/server/query.js default_options (a named collection with no walker
@@ -9491,6 +9586,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-09-26 - MERGED into dev as ab9c96e6 (#8771, head 20c197bb). Not
       released; goes into 15.0.9. The bf106 gate without --ref exits 0 on
       origin/dev ff93fa94.
@@ -9528,7 +9625,7 @@ items:
     repo: cgm-remote-monitor
     branch: fix/treatments-query-errors-8675
     base: origin/dev
-    state: merged-upstream
+    state: released
     pr: [8697]
     ships_to_operators_today: true
     blast_radius: >
@@ -9558,6 +9655,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into dev by #8697 (0ab266a3, 2026-09-06); not released, so
       15.0.8 still has it and 15.0.9 fixes it. Filed 2026-09-23 (session
       -6a) after the consumer-replay lab. Upstream issue #8675 and PR
@@ -9569,7 +9668,7 @@ items:
     repo: cgm-remote-monitor
     branch: bf/date-filter-list
     base: official/dev@3014f883
-    state: merged-upstream
+    state: released
     pr: [8791]
     ships_to_operators_today: false
     blast_radius: >
@@ -9610,6 +9709,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-10-01: merged into dev by the maintainer as 50bc1084 (11:08 PDT),
       from head ee1ba31f (350f6f09 plus a merge of dev 73c9528b, which
       brought #8790); CI at that head 13 passed and 2 skipped (14 and 2 at
@@ -9635,7 +9736,7 @@ items:
     branch: fix/profile-sync-bounded-update
     base: official/dev@fbd4e55
     worktree: externals/work/nc-profile-sync
-    state: merged-upstream
+    state: released
     pr: [79]
     ships_to_operators_today: false
     blast_radius: >
@@ -9666,6 +9767,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into connector dev by #79 (977da8a, 2026-09-23; commits
       f6359b4, f924de2, 1d2ebc8, de3cee1) and released in
       nightscout-connect 0.1.0 (2026-09-24, P0-TAG); Nightscout dev pins
@@ -9715,7 +9818,7 @@ items:
     branch: fix/profile-duplicate-stall
     base: official/dev@fbd4e55
     worktree: externals/work/nc-profile-dup
-    state: merged-upstream
+    state: released
     pr: [79]
     ships_to_operators_today: true
     blast_radius: >
@@ -9743,6 +9846,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged into connector dev by #79 (977da8a, 2026-09-23) and
       released in nightscout-connect 0.1.0 (2026-09-24, P0-TAG). One
       warning per process when the reused nightscout-connect-reader has
@@ -9889,7 +9994,7 @@ items:
     branch: bf/object-id-crud
     base: origin/dev@1f9a9d10
     worktree: externals/work/crm-bf-object-id-crud
-    state: merged-upstream
+    state: released
     pr: [8758]
     ships_to_operators_today: true
     blast_radius: >
@@ -9931,6 +10036,8 @@ items:
       - docs/60-research/remedial/profile-object-id-2026-09-23.md
       - docs/60-research/remedial/crud-by-id-matrix-2026-09-23.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Open upstream as #8758 (head 6d120fa2, 2026-09-23), CI green, zero
       reviews (2026-09-24). One PR from bf/object-id-crud, which
       contains bf/object-id-consistency 597e2899. Owed: a review and the
@@ -9978,7 +10085,7 @@ items:
     branch: wip/object-id-crud-fixes
     base: official/bf/object-id-crud@572bfc32
     worktree: externals/work/crm-object-id-fixes
-    state: merged-upstream
+    state: released
     pr: [8758]
     ships_to_operators_today: false
     blast_radius: >
@@ -10012,6 +10119,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/object-id/results/object-id-2026-09-24.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Open, found 2026-09-24 in the review of #8758, which it blocks in
       the review's judgement; whether it holds the merge is the
       maintainer's call. Ablation 2026-09-24: 6d120fa2 with only utils.js
@@ -10039,7 +10148,7 @@ items:
     branch: bf/object-id-crud
     base: origin/dev@1f9a9d10
     worktree: externals/work/crm-bf-object-id-crud
-    state: merged-upstream
+    state: released
     pr: [8758]
     ships_to_operators_today: false
     blast_radius: >
@@ -10075,6 +10184,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/object-id/results/object-id-2026-09-24.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Decided 2026-09-24: behaviour kept (option b). Before the decision it read: (a) when both forms
       are stored, a delete by the hex removes only the string form, or (b)
       keep the behaviour and change the PR body and the release notes
@@ -10093,7 +10204,7 @@ items:
     branch: wip/object-id-crud-fixes
     base: official/bf/object-id-crud@572bfc32
     worktree: externals/work/crm-object-id-fixes
-    state: merged-upstream
+    state: released
     pr: [8758]
     ships_to_operators_today: true
     blast_radius: >
@@ -10125,6 +10236,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/object-id/results/object-id-2026-09-24.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Open, found 2026-09-24 in the #8758 review; not a #8758 regression.
       Natural follow-up on the #8758 helper once it merges (expand each hex
       leaf of $in and $nin to its forms). Candidate for 15.0.10.
@@ -10147,7 +10260,7 @@ items:
     branch: wip/object-id-crud-fixes
     base: official/bf/object-id-crud@572bfc32
     worktree: externals/work/crm-object-id-fixes
-    state: merged-upstream
+    state: released
     pr: [8758]
     ships_to_operators_today: true
     blast_radius: lib/authorization/storage.js create and remove.
@@ -10177,6 +10290,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/object-id/results/object-id-2026-09-24.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Open, found 2026-09-24 in the #8758 review; same class as BF-99 in
       auth_subjects, which #8758 does not touch. The web admin page does
       not send _id, so reaching it needs a restore or a tool. The access
@@ -10201,7 +10316,7 @@ items:
     branch: wip/object-id-crud-fixes
     base: official/bf/object-id-crud@572bfc32
     worktree: externals/work/crm-object-id-fixes
-    state: merged-upstream
+    state: released
     pr: [8758]
     ships_to_operators_today: false
     blast_radius: >
@@ -10228,6 +10343,8 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Open, found 2026-09-24 in the #8758 review. The v1 routes refuse
       non-hex ids with 400; only in-process callers (the connector's
       internal output) can pass one. The effect through profile.save and
@@ -10252,7 +10369,7 @@ items:
     branch: wip/object-id-crud-fixes-2
     base: official/bf/object-id-crud@ab7b22d6
     worktree: externals/work/crm-6a-rc-cand
-    state: merged-upstream
+    state: released
     pr: [8758]
     ships_to_operators_today: true
     blast_radius: >
@@ -10288,6 +10405,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - reports/consumer-impact-15.0.9/clients-8758.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Open, found 2026-09-25 in the #8758 freeze pass (corpus CANDIDATE-1,
       reproduced by the review). Live on 15.0.8; needs a credential that
       can create treatments or entries; no corpus client sends such a
@@ -10313,7 +10432,7 @@ items:
     branch: wip/object-id-crud-fixes-2
     base: official/bf/object-id-crud@ab7b22d6
     worktree: externals/work/crm-6a-rc-cand
-    state: merged-upstream
+    state: released
     pr: [8758]
     ships_to_operators_today: false
     blast_radius: >
@@ -10345,6 +10464,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - reports/consumer-impact-15.0.9/clients-8758.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Open, found 2026-09-25 in the #8758 freeze pass (corpus CANDIDATE-2,
       reproduced by the review). This reverses #8758's own design, which
       refused a re-send with 500 as profile create does (BF-99); the
@@ -10363,7 +10484,7 @@ items:
     branch: wip/object-id-crud-fixes-2
     base: official/bf/object-id-crud@ab7b22d6
     worktree: externals/work/crm-6a-rc-cand
-    state: merged-upstream
+    state: released
     pr: [8758]
     ships_to_operators_today: true
     blast_radius: >
@@ -10401,6 +10522,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - reports/consumer-impact-15.0.9/clients-8758.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Open, found 2026-09-25 in the #8758 freeze pass (corpus CANDIDATE-3;
       the copy-picking regression found by the review, 40/40 trials). Put
       on #8758 at the maintainer's request (2026-09-25, this session). Fix
@@ -10422,7 +10545,7 @@ items:
     repo: cgm-remote-monitor
     branch: fix-loop-status-timeline
     base: origin/dev@4f705217
-    state: merged-upstream
+    state: released
     pr: [8568]
     ships_to_operators_today: true
     blast_radius: >
@@ -10464,6 +10587,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/aaps-offline/probe.js
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-09-25 - MERGED into dev as 99689bf9 (#8568), with the follow-up 1fd09446 for the AndroidAPS-dev shape. Not released; goes into 15.0.9.
       Open upstream as #8568 (lejcey, opened 2026-07-24), not merged; filed
       2026-09-25 from the open-PR triage. Loop's indefinite overrides
@@ -10478,7 +10603,7 @@ items:
     repo: cgm-remote-monitor
     branch: extend-api-tests
     base: origin/dev@4f705217
-    state: merged-upstream
+    state: released
     pr: [8419]
     blast_radius: >
       Tests only, 9 files: moves the APNs test certificates to tests/fixtures/,
@@ -10503,6 +10628,8 @@ items:
     evidence:
       - docs/60-research/remedial/github-triage-2026-09-25.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-09-25 - MERGED into dev as 96a2c948 (#8419, head 8cffc05e = je-l's
       tests + the hook cleanup, pushed to their branch by the maintainer).
       Not released; in 15.0.9.
@@ -10530,7 +10657,7 @@ items:
     repo: cgm-remote-monitor
     branch: feature/focus-range-48h-upstream
     base: origin/dev@4f705217
-    state: merged-upstream
+    state: released
     pr: [8530]
     blast_radius: >
       One line of views/index.html: a 48 entry in the focus chart's hour
@@ -10558,6 +10685,8 @@ items:
     evidence:
       - docs/60-research/remedial/github-triage-2026-09-25.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged 2026-09-25 as c3d42d4e; not released.
       Outside contributor (alanshurafa); the maintainer merged dev into it on
       2026-09-24. Decided 2026-09-25 (maintainer): carry into 15.0.9.
@@ -10568,7 +10697,7 @@ items:
     branch: bf/mmol-partial-thresholds
     base: origin/dev@4f705217
     worktree: externals/work/crm-bf118-mmol-thresholds
-    state: merged-upstream
+    state: released
     pr: [8766]
     ships_to_operators_today: true
     blast_radius: >
@@ -10612,6 +10741,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/mmol-partial-thresholds.js
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-09-25 - MERGED into dev as e812a68c (#8766; head ee804b45 is 93359650
       plus a dev merge, and the fix's files are unchanged). Not released; goes
       into 15.0.9 (decided 2026-09-25, maintainer).
@@ -10637,7 +10768,7 @@ items:
     branch: bf/pump-warn-on-suspend
     base: origin/dev@4f705217
     worktree: externals/work/crm-bf119-pump-suspend
-    state: merged-upstream
+    state: released
     pr: [8767]
     ships_to_operators_today: true
     blast_radius: >
@@ -10674,6 +10805,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/pump-suspend.js
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-09-25 - MERGED into dev as ecb63223 (#8767); dev's pump.js and
       tests/pump.test.js are identical to 7b239c01. Not released; goes into
       15.0.9.
@@ -10697,7 +10830,7 @@ items:
     branch: bf/clock-stale-offline
     base: origin/dev@ecb63223
     worktree: externals/work/crm-bf120-clock-stale
-    state: merged-upstream
+    state: released
     pr: [8768]
     ships_to_operators_today: true
     blast_radius: >
@@ -10736,6 +10869,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/clock-stale-offline.js
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-09-25 - MERGED into dev as e2bbeb66 (#8768). Not released; goes into 15.0.9.
       2026-09-25 - FIXED on bf/clock-stale-offline 48ba1856 (local, not pushed),
       on dev ecb63223: the 20 s timer redraws from the last data before fetching,
@@ -10756,7 +10891,7 @@ items:
     branch: bf/same-time-treatments
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-r2-fix-121
-    state: merged-upstream
+    state: released
     pr: [8780]
     ships_to_operators_today: true
     blast_radius: >
@@ -10827,6 +10962,8 @@ items:
       - tools/lab/triage-2026-09/same-time-resend-shapes.js
       - reports/phase0-pr-bodies/same-time-treatments.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-09-26 - MERGED into dev as ff93fa94 (#8780, head f3eb68de: fc821024
       merged with dev 13f235e9 as f55fd8d8, suite 3310/0/3, then with dev
       aa1111b2). Not released; goes into 15.0.9. On ff93fa94:
@@ -10901,7 +11038,7 @@ items:
     branch: bf/v1-writes-v3-history
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-6a-fix-v1-writes-v3-history
-    state: merged-upstream
+    state: released
     pr: [8775]
     ships_to_operators_today: true
     blast_radius: >
@@ -10985,6 +11122,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/v1-writes-v3-history.js
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-09-26 - MERGED into dev as 1157a8de (#8775, head 4658b233 =
       dbc4c5fc merged with dev). Not released; goes into 15.0.9. CodeQL on
       #8775: alert #122 (js/sql-injection, the deleteMany in
@@ -11078,7 +11217,7 @@ items:
     branch: bf/profile-switch-percentage
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-6a-fix-profile-switch-percentage
-    state: merged-upstream
+    state: released
     pr: [8774]
     ships_to_operators_today: true
     blast_radius: >
@@ -11127,6 +11266,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/profile-switch-percentage.js
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-09-26 - MERGED into dev as f0174d05 (#8774, head 9d2e9c24). Not
       released; goes into 15.0.9. profile-switch-percentage.js exits 0 on
       origin/dev ff93fa94.
@@ -11172,7 +11313,7 @@ items:
     branch: bf/tooltip-bg-units
     base: official/dev@74942ec6
     worktree: externals/work/crm-bf124
-    state: merged-upstream
+    state: released
     pr: [8801]
     ships_to_operators_today: false
     blast_radius: >
@@ -11213,6 +11354,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/tooltip-bg-units.js
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-10-03: merged into dev by the maintainer as #8801 (merge 68262e86,
       00:37Z, head affbc8fd); CI read 13 passed, 1 pending, 2 skipped.
       2026-10-03 (session -d4's agent): bf/tooltip-bg-units affbc8fd, one
@@ -11238,7 +11381,7 @@ items:
     branch: bf/maker-level-names
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-6a-fix-maker-level-names
-    state: merged-upstream
+    state: released
     pr: [8773]
     ships_to_operators_today: true
     blast_radius: >
@@ -11281,6 +11424,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/maker-language.js
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-09-26 - MERGED into dev as e759a989 (#8773, head 54bf05d2). Not
       released; goes into 15.0.9. maker-language.js exits 0 on origin/dev
       ff93fa94.
@@ -11323,7 +11468,7 @@ items:
     branch: bf/authsubject-nameless
     base: origin/dev@ecb63223
     worktree: externals/work/crm-bf126-authsubject
-    state: merged-upstream
+    state: released
     pr: [8769]
     ships_to_operators_today: true
     blast_radius: >
@@ -11361,6 +11506,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - a probe held outside this repository (the defect is live on 15.0.8)
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-09-25 - MERGED into dev as fbaa4a2a (#8769). Not released; goes into 15.0.9.
       2026-09-25 - FIXED on bf/authsubject-nameless 1942920a (local, not pushed),
       on dev ecb63223: create and save refuse a subject or role without a
@@ -11380,7 +11527,7 @@ items:
     branch: bf/clock-token-link
     base: official/dev@74942ec6
     worktree: externals/work/crm-bf127
-    state: merged-upstream
+    state: released
     pr: [8802]
     ships_to_operators_today: true
     blast_radius: >
@@ -11422,6 +11569,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/clock-token-link.js
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged 2026-10-03 01:00Z as #8802 (merge 1ad03e29, head b13b7a3a); not
       released, goes into 15.0.9. CodeQL passed on b13b7a3a: alert 126 fixed,
       alert 127 (raised on an older merge ref) dismissed as a false positive
@@ -11469,7 +11618,7 @@ items:
     branch: bf/pebble-delta-units
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-6a-fix-pebble-delta-units
-    state: merged-upstream
+    state: released
     pr: [8777]
     ships_to_operators_today: true
     blast_radius: >
@@ -11535,6 +11684,8 @@ items:
       - tools/lab/triage-2026-09/pebble-shared-scaled.js
       - reports/phase0-pr-bodies/pebble-delta-units.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-09-26 - MERGED into dev as d613c35f (#8777, head 4864d679 =
       b3db0f36 merged with dev). Not released; goes into 15.0.9.
       pebble-units.js and pebble-shared-scaled.js exit 0 on origin/dev
@@ -11606,7 +11757,7 @@ items:
     branch: bf/api3-app-field-v1-records
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-r2-fix-136
-    state: merged-upstream
+    state: released
     pr: [8776]
     ships_to_operators_today: true
     blast_radius: >
@@ -11671,6 +11822,8 @@ items:
       - tools/lab/triage-2026-09/api3-app-field.js
       - reports/phase0-pr-bodies/api3-app-field-v1-records.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-09-26 - MERGED into dev as 13f235e9 (#8776, head 962d189b). Not
       released; goes into 15.0.9. api3-app-field.js on origin/dev ff93fa94:
       13/13 arms, 0 controls failed (exit 0). #8778 (BF-140) changes only the
@@ -11722,7 +11875,7 @@ items:
     branch: bf/alarm-anonymous-no-delay
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-r2-fix-80
-    state: merged-upstream
+    state: released
     pr: [8779]
     blast_radius: >
       Two commits, 8e295769 and cd2dfb1f. lib/authorization/index.js (new
@@ -11779,6 +11932,8 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-09-26 - MERGED into dev as 750801a9 (#8779, head 1b243f14 =
       cd2dfb1f merged with dev). Not released; goes into 15.0.9. CodeQL on
       #8779: alert #123 (js/weak-cryptographic-algorithm, the sha1 in the new
@@ -11900,7 +12055,7 @@ items:
     repo: cgm-remote-monitor
     branch: bf/override-advisory-pins
     base: origin/dev@295f1177
-    state: merged-upstream
+    state: released
     pr: [8786]
     ships_to_operators_today: true
     blast_radius: >
@@ -11928,6 +12083,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - releases/cgm-remote-monitor-15.0.9/contents.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Filed 2026-09-27 from the 15.0.9 npm audit triage. On v15.0.8 too.
       Merged 2026-09-27 as #8786 (7000eb18); dev audits at 7, all
       moderate. The 15.0.9 records re-anchor on 7000eb18. Retired on the modernization
@@ -11987,7 +12144,7 @@ items:
     repo: cgm-remote-monitor
     branch: codex/fix-api3-empty-identifier-delete
     base: origin/dev@750801a9
-    state: merged-upstream
+    state: released
     pr: [8778]
     ships_to_operators_today: false
     blast_radius: >
@@ -12029,6 +12186,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/api3-empty-identifier-delete.js
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-09-26 - MERGED into dev as aa1111b2 (#8778, head 18141136), the
       same day it was opened, before #8780. Not released; goes into 15.0.9.
       Outside contributor (AndyLow91). The defect (BF-140) came with #8758's
@@ -12060,7 +12219,7 @@ items:
     repo: cgm-remote-monitor
     branch: awss1i:wip/daytoday-duration-past-midnight
     base: origin/dev@7000eb18
-    state: merged-upstream
+    state: released
     pr: [8788]
     ships_to_operators_today: false
     blast_radius: >
@@ -12105,6 +12264,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - releases/cgm-remote-monitor-15.0.9/contents.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged 2026-09-30 22:38Z by the maintainer as 3014f883 (tree 3549306b,
       the same as bbc6e75e); dev is 3014f883, 509 commits and 87
       first-parent merges ahead of master. BF-148 merged; BF-149 is after
@@ -12178,7 +12339,7 @@ items:
     repo: cgm-remote-monitor
     branch: awss1i:wip/food-editor-touch-scroll
     base: origin/dev@3014f883
-    state: merged-upstream
+    state: released
     pr: [8790]
     ships_to_operators_today: false
     blast_radius: >
@@ -12209,6 +12370,8 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Opened 2026-10-01 by awss1i, merged the same day by the maintainer
       (73c9528b). static/css/food.css joins the files the browser-check gate
       names.
@@ -12218,7 +12381,7 @@ items:
     repo: cgm-remote-monitor
     branch: bf/braces-expansion-cap
     base: official/dev@50bc1084
-    state: merged-upstream
+    state: released
     pr: [8795]
     ships_to_operators_today: false
     blast_radius: >
@@ -12256,6 +12419,8 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-10-02: merged into dev by the maintainer as 25fc41d9 (17:33Z), CI
       14 passed and 2 skipped.
       2026-10-02: pushed and opened as #8795 by the maintainer (head
@@ -12282,7 +12447,7 @@ items:
     repo: cgm-remote-monitor
     branch: bf/production-error-handler
     base: official/dev@50bc1084
-    state: merged-upstream
+    state: released
     pr: [8793]
     ships_to_operators_today: false
     blast_radius: >
@@ -12319,6 +12484,8 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-10-02: merged into dev by the maintainer as 839a1565 (10:09 PDT).
       2026-10-02: pushed and opened as #8793 by the maintainer (head
       dc64e82d, MERGEABLE). Advisory reply drafted outside version control.
@@ -12339,7 +12506,7 @@ items:
     repo: cgm-remote-monitor
     branch: bf/dependency-refresh-2026-10
     base: official/dev@50bc1084
-    state: merged-upstream
+    state: released
     pr: [8794]
     ships_to_operators_today: false
     blast_radius: >
@@ -12382,6 +12549,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - releases/cgm-remote-monitor-15.0.9/contents.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-10-02: merged into dev by the maintainer as a143d507 (17:17Z), CI
       14 passed and 2 skipped; Dependabot #8787 and #8789 closed with a
       pointer to it.
@@ -12534,7 +12703,7 @@ items:
     repo: cgm-remote-monitor
     branch: bf/activity-read-error
     base: official/dev@25fc41d9
-    state: merged-upstream
+    state: released
     pr: [8796]
     ships_to_operators_today: false
     blast_radius: >
@@ -12571,6 +12740,8 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-10-02: pushed, opened and merged by the maintainer as #8796
       (merge ca6fcfaf, 18:09Z, head e20b66ba); the nine test cells passed
       before the merge, the Docker image check was still running.
@@ -12639,7 +12810,7 @@ items:
     branch: bf/config-docs-truth
     base: official/dev@ca6fcfaf
     worktree: externals/work/crm-bf46-env
-    state: merged-upstream
+    state: released
     pr: [8799]
     ships_to_operators_today: false
     blast_radius: >
@@ -12680,6 +12851,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - reports/phase0-pr-bodies/config-docs-truth.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-10-02: opened and merged by the maintainer as #8799 (merge
       f105f688, 23:58Z, head e42144ff), CI 14 passed and 2 skipped.
       2026-10-02 (maintainer, relayed by session -d4): draft README wording
@@ -12829,7 +13002,7 @@ items:
     repo: cgm-remote-monitor
     branch: bf/proxy-addr-2.0.8
     base: official/dev@1ad03e29
-    state: merged-upstream
+    state: released
     pr: [8806]
     ships_to_operators_today: false
     blast_radius: >
@@ -12854,6 +13027,8 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged 2026-10-07 20:52Z as #8806 (merge 43289dde, head 7dd4f400); CI
       (Node 20/22/24 x Mongo 4.4/5/6, npm 12 install, Docker) and CodeQL
       green. Not released, goes into 15.0.9; run 022 on dev 43289dde and the
@@ -13040,7 +13215,7 @@ items:
     repo: cgm-remote-monitor
     branch: bf/brush-extent
     base: official/dev@43289dde
-    state: merged-upstream
+    state: released
     pr: [8807]
     ships_to_operators_today: true
     blast_radius: >
@@ -13082,6 +13257,8 @@ items:
       - tools/lab/brush-extent/README.md
       - reports/phase0-pr-bodies/brush-extent.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Merged 2026-10-08 00:47Z as #8807 (merge fade2299, head b919af9f), merged
       by the maintainer; CI (Node 20/22/24 x Mongo 4.4/5/6, npm 12 install) and
       CodeQL green, Docker image validation still running when recorded. Not
@@ -13323,7 +13500,7 @@ items:
     repo: cgm-remote-monitor
     branch: awss1i:wip/stale-token-crash
     base: official/dev@fade2299
-    state: merged-upstream
+    state: released
     pr: [8815]
     ships_to_operators_today: true
     blast_radius: >
@@ -13367,6 +13544,8 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Opened 2026-10-17 by awss1i (one commit on dev fade2299). 2026-10-20
       (maintainer): goes into 15.0.9; merged by the maintainer the same day
       23:57Z as 4bca2ac2 (tree c53c2c7f, identical to the head 93a74ce5);
@@ -13384,7 +13563,7 @@ items:
     repo: cgm-remote-monitor
     branch: codex/fix-treatment-retries-history-restart
     base: origin/dev@ff93fa94
-    state: merged-upstream
+    state: released
     pr: [8781]
     ships_to_operators_today: false
     blast_radius: >
@@ -13444,6 +13623,8 @@ items:
       - tools/lab/triage-2026-09/retry-keeps-srvcreated.js
       - tools/lab/triage-2026-09/history-clock-restart.js
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-09-26 - MERGED into dev as ce7d754a (#8781, fix a28fcecb) at
       19:34Z. Not released; goes into 15.0.9. Outside contributor
       (AndyLow91). BF-141 came with #8780 (ff93fa94); BF-143 needs #8780's
@@ -13463,7 +13644,7 @@ items:
     branch: bf/loop-apns-shutdown
     base: origin/dev@96a2c948
     worktree: externals/work/crm-bf134-apns-shutdown
-    state: merged-upstream
+    state: released
     pr: [8770]
     ships_to_operators_today: true
     blast_radius: >
@@ -13496,6 +13677,8 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-09-25 - MERGED into dev as e3adc91d (#8770, head c068f935). Not
       released; in 15.0.9 (the maintainer merged it for the release).
       2026-09-25 - Re-merged with dev 96a2c948 after #8419 (68937a77: the
@@ -13711,7 +13894,7 @@ items:
     branch: bf/entries-unknown-id
     base: origin/dev@e3adc91d
     worktree: externals/work/crm-6a-fix-entries-unknown-id
-    state: merged-upstream
+    state: released
     pr: [8772]
     ships_to_operators_today: true
     blast_radius: >
@@ -13735,6 +13918,8 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-09-26 - MERGED into dev as f1151832 (#8772, head b18c4a1e =
       f79dc732 merged with dev). Not released; goes into 15.0.9.
       2026-09-26 - OPENED upstream as #8772 (pushed to official, head unchanged from the tested commit; dev e3adc91d).
@@ -13872,7 +14057,7 @@ items:
     branch: wip/object-id-crud-fixes-2
     base: official/bf/object-id-crud@ab7b22d6
     worktree: externals/work/crm-6a-rc-cand
-    state: merged-upstream
+    state: released
     pr: [8758]
     ships_to_operators_today: false
     blast_radius: >
@@ -13900,6 +14085,8 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Open, found 2026-09-25 by the #8758 freeze review, queued at the
       maintainer's request. New in #8758 and a silent 200 drop, so it is a
       candidate to fold into #8758 before the tag, like BF-115 to BF-117;
@@ -14007,7 +14194,7 @@ items:
     branch: wip/object-id-crud-fixes-2
     base: official/bf/object-id-crud@ab7b22d6
     worktree: externals/work/crm-6a-rc-cand
-    state: merged-upstream
+    state: released
     pr: [8758]
     ships_to_operators_today: false
     blast_radius: >
@@ -14037,6 +14224,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/rc-soak/probe-deleted-entry.js
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Found 2026-09-25 by the 15.0.9 A/B soak (tools/lab/rc-soak, RT-SOAK),
       after runs 011 to 014 of the full suite were green: the suite never
       read the cache after a delete. Fixed the same day as e9dbb1fb before
@@ -14125,7 +14314,7 @@ items:
     branch: bf/api3-cache-derived-fields
     base: official/dev@699eb5fa
     worktree: externals/work/crm-r4-fix-146
-    state: merged-upstream
+    state: released
     pr: [8784]
     ships_to_operators_today: true
     blast_radius: >
@@ -14166,6 +14355,8 @@ items:
       - tools/lab/rc-soak/results/proof-2026-09-27.md
       - docs/30-design/remedial/rc-15.0.9-integration-record.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Filed 2026-09-25 from the soak's CANDIDATE-2, which turned out to be
       15.0.8 behaviour, not a 15.0.9 regression.
       2026-09-26/27 - cause traced by RC run 019 (04a873ce): treatments
@@ -14253,7 +14444,7 @@ items:
     branch: bf/api3-delete-nonstring-identifier
     base: official/dev@ce7d754a
     worktree: externals/work/crm-r3-fix-142
-    state: merged-upstream
+    state: released
     pr: [8783]
     ships_to_operators_today: true
     blast_radius: >
@@ -14300,6 +14491,8 @@ items:
       - tools/lab/triage-2026-09/api3-empty-identifier-delete.js
       - reports/phase0-pr-bodies/api3-delete-nonstring-identifier.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       2026-09-26 - MERGED into dev as 699eb5fa (#8783). Not released; goes into 15.0.9. Run 019 on 699eb5fa is the final-candidate run.
       2026-09-26 - OPENED upstream as #8783 (head 1c3aeb8c, on dev ce7d754a); CI 14 pass, 2 skipped, no CodeQL alerts; mergeable clean.
       Filed 2026-09-26 from the review of #8778 (BF-140) and deferred past
@@ -14324,7 +14517,7 @@ items:
     branch: bf/api3-cache-derived-fields
     base: official/dev@699eb5fa
     worktree: externals/work/crm-r4-fix-146
-    state: merged-upstream
+    state: released
     pr: [8784]
     ships_to_operators_today: true
     blast_radius: >
@@ -14403,6 +14596,8 @@ items:
       - tools/lab/rc-soak/probe-v3-late-mills.js
       - docs/30-design/remedial/rc-15.0.9-integration-record.md
     notes: >
+      2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the
+      merge of #8598; tree c53c2c7f = dev 4bca2ac2).
       Found by RC run 019 (04a873ce, trace T1) as the cause of BF-133; the
       IOB/COB omission was found while tracing it. Maintainer decision
       2026-09-26: "fix as appropriate".

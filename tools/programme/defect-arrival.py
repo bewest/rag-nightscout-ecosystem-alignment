@@ -61,6 +61,8 @@ def statuses():
         if not m or int(m.group(1)) in st:
             continue
         cell = [c.strip() for c in m.group(2).split('|') if c.strip()][-1].replace('*', '')
+        # A released cell keeps its merge history after the status word; the merge date is the close date.
+        cell = re.sub(r'^(partly )?released `[^`]+` \([^)]*\);\s*', '', cell)
         d = re.match(r'(partly merged|merged|closed|decided|fixed)\s+(\d{4}-\d\d-\d\d)', cell)
         st[int(m.group(1))] = (d.group(1), d.group(2)) if d else (cell.split()[0].strip(',—'), None)
     return st

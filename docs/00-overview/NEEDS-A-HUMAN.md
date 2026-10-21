@@ -3,7 +3,8 @@
 *What this is: a record (contributor-facing). Read after the [roadmap](ROADMAP.md); leads to the
 [definition of done: when a change is ready for the apps that depend on it](DEFINITION-OF-DONE.md). The subset of the work queue where no further engineering
 advances anything — a person has to push, decide, or review. Prose revised
-2026-10-08 against cgm-remote-monitor `official/dev` `fade2299` and nightscout-connect
+2026-10-08 against cgm-remote-monitor `official/dev` `fade2299` (the `RT-0` section 2026-10-21,
+against `official/master` `c6a0d8ed`, tag `v15.0.9`) and nightscout-connect
 `official/main` `4dde1ec` (tag `v0.1.0`); tables generated.*
 
 This page lists only the items whose claimed state means **the next move belongs to
@@ -19,8 +20,9 @@ Four states qualify:
 | `in-flight-upstream` | handed to upstream; not ours to land |
 | `unsettled` | not yet established that this is a defect at all |
 
-`merged-upstream` items do not appear here. They need no person individually; what
-they need is a release, and that is one item — `RT-0` — which is listed.
+`merged-upstream` and `released` items do not appear here. A `merged-upstream` item needs no
+person individually; what it needs is a release. 15.0.9 (`RT-0`) was released on 2026-10-21, and
+every item that was `merged-upstream` then is `released`.
 
 ---
 
@@ -49,12 +51,6 @@ they need is a release, and that is one item — `RT-0` — which is listed.
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
 
-### Maintainer + a second human &mdash; 1 item
-
-| id | claimed state | what it is | PR |
-|---|---|---|---|
-| `RT-0` | `needs-decision` | Release 15.0.9 | #8598, #8605 |
-
 ### SAFETY reviewer &mdash; 1 item
 
 | id | claimed state | what it is | PR |
@@ -78,7 +74,7 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 <!-- END GENERATED: open-prs -->
 
-Every PR decided for 15.0.9 is merged; `RT-0` below gives the release's state.
+Every PR decided for 15.0.9 is merged and was released with it on 2026-10-21; `RT-0` below records the release.
 
 The connector half is released. On 2026-09-24 the maintainer merged `nightscout-connect` #70
 (`dev` → `main`, `4dde1ec`) and tagged `main` `v0.1.0`. npm's `latest` is `0.1.0`, with
@@ -100,36 +96,20 @@ passed on 2026-09-23 in automation and by hand: mouse in mg/dL and mmol/L, and t
 15.0.8. The hand check found BF-103 (a split drag keeps the old time, so IOB and COB ignore the move),
 which is on 15.0.8 as well and is tracked as `BFQ-103`.
 
-### `RT-0` — release 15.0.9
+### `RT-0` — 15.0.9 released (2026-10-21)
 
-The most consequential row on this page. `dev` is at `4bca2ac2` (the merge of #8815, 2026-10-20):
-100 first-parent merges and 549 commits since 15.0.8
-(`git rev-list [--first-parent] --count official/master..official/dev`). Until 15.0.9 ships, every
-one of those fixes exists in code and protects nobody. They include the fixes for two
-published-advisory defects that survive `AUTH_DEFAULT_ROLES=denied`, GHSA-gjhc (BF-79, #8744) and
-GHSA-8849 (BF-75/76, #8745), the boot notice for world-readable sites (#8746), and the two
-backported security fixes (BF-104, BF-105, #8751); every instance on 15.0.8 is still exposed to all
-of them.
-
-- **Merged.** Every PR decided for 15.0.9, the last being #8806 (BF-162, the `proxy-addr`
-  critical), #8807 (BF-168, the context-chart brush fix) and #8815 (BF-171, a deleted subject's token
-  stopping the server, merged 2026-10-20); the list is in
-  [contents.md](../../releases/cgm-remote-monitor-15.0.9/contents.md), which also says what the
-  release leaves broken. Crowdin #8730 is held out because its sync reverts translations `dev`
-  corrected (BF-132).
-- **Tests.** The last full run is run 023 on `fade2299` (2026-10-08): 3566/0/4 in all six cells
-  (Node 20, 22 and 24 against MongoDB 4.4.24 and 7.0.43), with run 022's probes and an A/B soak
-  against 15.0.8. Each PR merged after run 020 carries its own evidence (its GitHub CI and a full
-  suite on its branch). The previous six-cell run, run 022 on `43289dde` (2026-10-07), gave 3564/0/4
-  ([15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md)).
-- **Real-site soak.** `RT-SOAK` is done: the maintainer decided on 2026-09-30 that real sites
-  running the candidate count as the soak, and reports (2026-10-02) stable behaviour from Loop, Trio
-  and AndroidAPS users on `dev`. The lab's 72 h soak was not run.
-- **Release PR.** #8598 (`dev` → `master`) is at `4bca2ac2` and mergeable.
-  It was approved at `e3adc91d`; the head has since moved to `4bca2ac2`, so re-approval there is owed. The maintainers judged the candidate ready on 2026-10-21 ([ROADMAP §1](ROADMAP.md#1-the-next-release-1509)).
-- **Version.** Decided: 15.0.9. `RT-VERSION`'s gate measures the modernization cut branches, which
-  also declare 15.0.9 and are renumbered when they are rebased; it holds the cuts, not this release.
-- **What remains** before the tag, including the queue's open `RT-0` blockers, is listed once, in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509).
+15.0.9 was released on 2026-10-21: #8598 merged as `master` `c6a0d8ed` (tree `c53c2c7f`, the same as
+`dev` `4bca2ac2`'s), GitHub release `v15.0.9` "Release 15.0.9 Cinnamon Muffin", Latest, and the
+`15.0.9` and `latest` Docker images published by the `master` CI run (39667944235, second attempt;
+the first failed in one cell's `npm install` on `ECONNRESET` before any test ran). It carries 549
+commits and 100 first-parent merges since 15.0.8, among them the fixes for two published-advisory
+defects that survive `AUTH_DEFAULT_ROLES=denied`, GHSA-gjhc (BF-79, #8744) and GHSA-8849 (BF-75/76,
+#8745), the boot notice for world-readable sites (#8746), and the two backported security fixes
+(BF-104, BF-105, #8751). Operators who have not upgraded from 15.0.8 still have all of them. Both
+approvals of #8598 were the maintainer's, at `e3adc91d`; they were not repeated at `4bca2ac2`. The
+release rests on the maintainers' readiness decision of 2026-10-21; its known issues and what is
+left (the plain `15.0.9` tag, the next development cycle) are in
+[ROADMAP §1](ROADMAP.md#1-1509-is-released-the-next-development-cycle).
 
 ### `P0-TAG` — done: `nightscout-connect` 0.1.0 is released
 

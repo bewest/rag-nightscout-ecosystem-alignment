@@ -126,6 +126,11 @@ function isNotFixed(status) {
   if (/closed .*invalid|^\*\*closed/.test(s)) return false;
   if (/^\**fixed\b|^\**partly fixed\b|^\**fixed-in-seam\b/.test(s)) return false;
   if (/^\**merged\b/.test(s)) return false;
+  // `released <tag>` ADDED 2026-10-21 with 15.0.9: in a tagged release. The
+  // cell keeps its `merged <date>` history after the status word; only the
+  // leading word classifies. `partly released` stays not fixed, as
+  // `partly merged` does.
+  if (/^\**released\b/.test(s)) return false;
   return true;
 }
 

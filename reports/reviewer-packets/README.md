@@ -21,7 +21,6 @@ repository.
 
 | packet | PR | claimed state | what it is |
 |---|---|---|---|
-| [`RT-0`](rt-0-origin-dev.md) | #8598 | `needs-decision` | Release 15.0.9 |
 | [`ADV-CONFIG`](adv-config.md) | #8746 | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) |
 | [`BFQ-09`](bfq-09-bf-socket-dedup-zero.md) | #8797 | `in-flight-upstream` | BF-09 - socket dedup truthiness skips a falsy value |
 | [`BFQ-172`](bfq-172-javier-erro-8819.md) | #8819 | `in-flight-upstream` | BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819 proposed), a known issue of 15.0.9 |

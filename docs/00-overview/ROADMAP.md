@@ -2,9 +2,10 @@
 
 *What this is: a map of the work ahead (contributor-facing). Read after [programme
 status](PROGRAMME-STATUS.md); leads to [work waiting on a person](NEEDS-A-HUMAN.md). Prepared for the
-Nightscout project; proposed for Nightscout Foundation stewardship. Living document: prose dated
-2026-10-08 against cgm-remote-monitor `official/dev` `fade2299` and `official/master` `92d08342`
-(tag `15.0.8`). The two order tables are generated from `queue/work-queue.yaml`, and
+Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 dated
+2026-10-21 against cgm-remote-monitor `official/master` `c6a0d8ed` (tag `v15.0.9`) and
+`official/dev` `4bca2ac2`; other prose dated 2026-10-08 against `dev` `fade2299` and `master`
+`92d08342` (tag `15.0.8`). The two order tables are generated from `queue/work-queue.yaml`, and
 `make views-check` fails when they drift.*
 
 This page gives the order of the work ahead. It records no decisions itself. The decisions
@@ -33,29 +34,34 @@ not measurements.
 
 ---
 
-## 1. The next release: 15.0.9
+## 1. 15.0.9 is released; the next development cycle
 
-Everything merged since 15.0.8 reaches operators only through 15.0.9 (queue `RT-0`, release PR
-#8598), and every later step waits behind it. Operators running 15.0.8 keep every defect fixed on
-`dev` until it is tagged.
+**15.0.9 was released on 2026-10-21** (queue `RT-0`, state `released`). The maintainer merged
+release PR #8598 at 20:09Z as `master` `c6a0d8ed` (parents `92d08342` = `15.0.8` and `dev`
+`4bca2ac2`; tree `c53c2c7f`, the same as `dev`'s), and published the GitHub release `v15.0.9`,
+"Release 15.0.9 Cinnamon Muffin", at 20:21Z as Latest, from the
+[release notes](../../releases/cgm-remote-monitor-15.0.9/release-notes.md). Both approvals of
+#8598 were the maintainer's, at `e3adc91d`; they were not repeated at `4bca2ac2`. The release
+carries 549 commits and 100 first-parent merges since 15.0.8. Every entry of the
+[backfix register](../30-design/remedial/nightscout-backfix-register.md) that was merged is now
+`released 15.0.9`, and every queue item that was `merged-upstream` is `released`. Operators who
+have not upgraded from 15.0.8 still have all of them.
 
-`dev` is at `4bca2ac2` (the merge of #8815, 2026-10-20): 100 first-parent merges and 549 commits
-since 15.0.8. Every PR decided for 15.0.9 is merged, including the fixes for BF-124 (#8801),
-BF-127 (#8802), the `proxy-addr` critical BF-162 (#8806), the context-chart brush BF-168 (#8807)
-and BF-171, a token whose subject was deleted stopping the server (#8815, merged 2026-10-20);
-Crowdin #8730 is held out (BF-132). The
-last full run is run 023 on `fade2299` (2026-10-08), 3566/0/4 in all six cells (Node 20/22/24 ×
-MongoDB 4.4.24 and 7.0.43), with run 022's probes and a compressed A/B soak against 15.0.8; each PR
-merged after run 020 carries its own evidence. The previous six-cell run, run 022 on `43289dde`
-(2026-10-07), gave 3564/0/4. The
-real-site soak (`RT-SOAK`) is done by the maintainer's decision of 2026-09-30. Release PR #8598 is at `4bca2ac2`,
-approved at `e3adc91d`; re-approval at `4bca2ac2` is owed.
+The `master` CI run (39667944235) failed on its first attempt in one cell's `npm install`
+(`ECONNRESET`, before any test ran) and cancelled the other cells; the second attempt passed all
+nine test cells (Node 20/22/24 × MongoDB 4.4/5/6), both Docker builds and *Publish to Docker Hub*,
+which published the `15.0.9` and `latest` images (*Validate Docker image* was skipped). The last
+full local run is run 023 on `fade2299` (2026-10-08), 3566/0/4.
 
-The version is decided: 15.0.9. `RT-VERSION`'s gate measures the modernization cut branches, which
-also declare 15.0.9 and are renumbered when they are rebased, so it holds the cuts, not this
-release.
+The release rests on the maintainers' decision of 2026-10-21 that the candidate was ready: many
+days on varied real Nightscout set-ups with no complaints from the testing cohort stood in place of
+the browser hand checks still listed as owed (kept in
+[contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#open-items-a-releaser-must-settle)).
+The `follow-redirects` advisories, BF-172, BF-173 and BF-174 are known issues named in the release
+notes. On `4bca2ac2` `npm audit` reports 26 findings, 11 high, 0 critical
+([triage](../../releases/cgm-remote-monitor-15.0.9/contents.md#the-11-high-findings-on-4bca2ac2)).
 
-**What 15.0.9 still waits on**, generated from `RT-0`'s open blockers:
+Open blockers of `RT-0`, generated:
 
 <!-- BEGIN GENERATED: release-waits -->
 
@@ -65,27 +71,24 @@ release.
 
 <!-- END GENERATED: release-waits -->
 
-**Decided 2026-10-21 by the maintainers (the maintainer and Andy Low): the candidate is ready.** It ran
-for many days on varied real Nightscout set-ups with no complaints from the testing cohort, which
-stands in place of the browser hand checks the records still listed as owed (they were not done
-separately; the list is kept in
-[contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#open-items-a-releaser-must-settle)).
-Three advisories published 2026-10-20 and BF-172 (the Bolus Wizard Preview mixes profile and display
-units; on 15.0.8 too; fix proposed in #8819) are known issues by the same decision and are named in
-the release notes. On `4bca2ac2` (lockfile identical to `fade2299`'s) `npm audit` reports 26
-findings, 11 high, 0 critical, re-measured 2026-10-21
-([triage](../../releases/cgm-remote-monitor-15.0.9/contents.md#the-11-high-findings-on-4bca2ac2)).
+What is left from the release, and the start of the next cycle:
 
-What is left:
-
-1. Re-approval of #8598 at its final head, `4bca2ac2`, and its merge (a merge commit). The merge
-   to `master` publishes the `15.0.9` and `latest` Docker images.
-2. The tag and the GitHub release, by the maintainer, from the
-   [release notes](../../releases/cgm-remote-monitor-15.0.9/release-notes.md) and
-   [tag message](../../releases/cgm-remote-monitor-15.0.9/tag-message.txt).
-3. The next development cycle: a version-bump PR into `dev` from the new `master` (as #8597 was),
-   which is also the proposed place to settle the `CHANGELOG.md` question, and a new `dev` → `master`
-   PR (as #8598 was). The version class of #8772, #8775 and #8780 stays recorded as open in
+1. The tag `15.0.9` without the `v`: `15.0.7` and `15.0.8` have both forms; on 2026-10-21 only
+   `v15.0.9` exists.
+2. The next development cycle. `dev` (`4bca2ac2`) is an ancestor of `master`, so it moves to
+   `c6a0d8ed` by a fast-forward, with no merge commit. The version bump is prepared on
+   `wip/15.0.10-dev-bump` (`04d435eb` on `c6a0d8ed`, not pushed): `package.json` and
+   `package-lock.json` to 15.0.10, and in `CHANGELOG.md` the `[Unreleased]` entries become
+   `[15.0.9] - 2026-10-21`, a new empty `[Unreleased]` opens, and 15.0.8 and 15.0.7 get dated
+   headings. That settles the `CHANGELOG.md` question. Whether the next release is 15.0.10 or
+   15.1.0 is the maintainer's decision. Then a new `dev` → `master` PR, as #8598 was.
+3. Dependabot PRs that target `master` (#8822, #8818, #8817, #8814, #8811, #8805, #8798) are
+   retargeted to `dev` or closed. `follow-redirects` 1.16.1 and `compression` 1.8.2 go to `dev`.
+4. Eleven items list `RT-0` among their blockers. Nine wait on nothing else that is open and still
+   claim `blocked`, to be re-stated for the next cycle: `SEAM-REFRESH`, `BFQ-67`, `BFQ-72`,
+   `BFQ-93`, `BFQ-95`, `BFQ-152`, `BFQ-156`, `BFQ-173` and `BFQ-174`. `RT-1` and
+   `ID-SIMPLE-MATCH` also wait on `RT-REBASE`.
+5. The version class of #8772, #8775 and #8780 stays recorded as open in
    [decisions](../../releases/cgm-remote-monitor-15.0.9/decisions.md).
 
 The full `npm audit` triage, which findings reach a running site and what is done about each, is in
@@ -104,7 +107,7 @@ The adopted order ([§8.3](../30-design/modernization/semver-and-release-version
 
 | step | release | contents |
 |---|---|---|
-| 1 | 15.0.9 | `dev` as it stands |
+| 1 | 15.0.9 | `dev` as it stood at `4bca2ac2`; released 2026-10-21 |
 | 2 | cut 1, `chore/retire-jsdom` | the real-browser test suite, the Node floor, and removal of the legacy Dexcom and MiniMed bridges |
 | 3 | cut 2, `chore/build-runtime-separation` | page bundles and the build/runtime split |
 | 4 | cuts 3 + 5 | dependency majors, including the MongoDB driver and Express 5 |
@@ -127,15 +130,14 @@ rebase cut 1 is right after 15.0.9 is tagged, while `dev` is quiet.
 | 1 | `OID-STORAGE-HELPER` | One storage-level rule for writes by _id instead of six hand-written copies | `not-started` | &mdash; |
 | 1 | `OID-V3-EDIT-MERGE` | API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an  | `not-started` | &mdash; |
 | 1 | `OID-WS-EDIT-MERGE` | Websocket dbUpdate of a record stored twice by _id edits both copies and leaves  | `not-started` | &mdash; |
-| 1 | `RT-0` | Release 15.0.9 | `needs-decision` | &mdash; |
 | 1 | `RT-BOOTERROR` | BF-63 - the page that reports a boot error crashes on cut 4's boot errors | `gate-not-met` | &mdash; |
 | 1 | `RT-CONNECT-PIN-CUTS` | BF-65 - cuts 1-3 ship the leaking connector to upgraders first | `gate-not-met` | &mdash; |
 | 1 | `RT-PR-8730` | #8730 - Crowdin translation updates, held out of 15.0.9 (BF-132) | `gate-not-met` | &mdash; |
 | 1 | `RT-REBASE` | Cuts 1-5 are far behind dev and all five conflict | `gate-not-met` | &mdash; |
 | 1 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | &mdash; |
-| 2 | `ID-SIMPLE-MATCH` | API v1 entries and devicestatus match on identifier like treatments (the simple  | `blocked` | `RT-0`, `RT-REBASE` |
+| 2 | `ID-SIMPLE-MATCH` | API v1 entries and devicestatus match on identifier like treatments (the simple  | `blocked` | `RT-REBASE` |
 | 2 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then ret | `not-started` | `OID-PREVALENCE` |
-| 2 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `RT-0`, `RT-REBASE` |
+| 2 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `RT-REBASE` |
 | 3 | `RT-2` | Cut 2 - chore/build-runtime-separation | `blocked` | `RT-1` |
 | 3 | `RT-D3-SUITE` | The treatment-drag clamps get a regression test in cut 1's real-browser suite | `blocked` | `RT-1` |
 | 3 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | `RT-1` |
@@ -177,20 +179,20 @@ Until then, the order below is the order of development, not of release.
 |---:|---|---|---|---|
 | 1 | `A7A-7` | §7a item 7 - the clock question | `unsettled` | &mdash; |
 | 1 | `ID-CONVENTIONS` | Identifier conventions: one URL-form identifier template per record kind and sou | `in-progress` | &mdash; |
+| 1 | `SEAM-REFRESH` | Refresh the seam chain once after 15.0.9, onto the base the release train leaves | `blocked` | &mdash; |
 | 1 | `T30-AUTH` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | `ready-to-push` | &mdash; |
 | 1 | `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | &mdash; |
 | 1 | `T43` | T4.3 - ns-realtime, LISTEN per served tenant | `not-started` | &mdash; |
-| 2 | `SEAM-REFRESH` | Refresh the seam chain once after 15.0.9, onto the base the release train leaves | `blocked` | `RT-0` |
 | 2 | `T30-SCHEMA-CONFIG` | T3.0 part 2b - per-tenant configuration table, and where human identity lives | `not-started` | `T30-RESEARCH` |
+| 2 | `WC-STEP-PATCH` | Release 1 (patch): one write step for every v1, v3 and socket path, today's beha | `blocked` | `SEAM-REFRESH` |
+| 2 | `WRITE-CONTRACT` | One write step behind the storage interface: _id form, srv dates, soft delete, r | `blocked` | `SEAM-REFRESH` |
+| 3 | `BFQ-CAP02` | CAP-02 - no importer, and no Mongo to PostgreSQL loader | `not-started` | `T30-SCHEMA-CONFIG`, `WRITE-CONTRACT` |
+| 3 | `ID-BATCH-RESULTS` | Release 2 (minor): per-item results in v1 batch replies; one bad item no longer  | `blocked` | `WC-STEP-PATCH` |
+| 3 | `ID-FIRST-MATCH` | Release 2 (minor): identifier-first matching for entries, devicestatus and socke | `blocked` | `WC-STEP-PATCH`, `ID-SIMPLE-MATCH` |
+| 3 | `ID-V1-LOOKUP` | Release 2 (minor): v1 GET and DELETE by any identifier, without the default time | `blocked` | `WC-STEP-PATCH` |
+| 3 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection; empty and null mean  | `blocked` | `WC-STEP-PATCH` |
 | 3 | `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `not-started` | `T30-SCHEMA-CONFIG` |
 | 3 | `T32-REM` | T3.2 remainder - platform.sql carries no config, secret or signing key | `blocked` | `T30-SCHEMA-CONFIG` |
-| 3 | `WC-STEP-PATCH` | Release 1 (patch): one write step for every v1, v3 and socket path, today's beha | `blocked` | `SEAM-REFRESH` |
-| 3 | `WRITE-CONTRACT` | One write step behind the storage interface: _id form, srv dates, soft delete, r | `blocked` | `SEAM-REFRESH` |
-| 4 | `BFQ-CAP02` | CAP-02 - no importer, and no Mongo to PostgreSQL loader | `not-started` | `T30-SCHEMA-CONFIG`, `WRITE-CONTRACT` |
-| 4 | `ID-BATCH-RESULTS` | Release 2 (minor): per-item results in v1 batch replies; one bad item no longer  | `blocked` | `WC-STEP-PATCH` |
-| 4 | `ID-FIRST-MATCH` | Release 2 (minor): identifier-first matching for entries, devicestatus and socke | `blocked` | `WC-STEP-PATCH`, `ID-SIMPLE-MATCH` |
-| 4 | `ID-V1-LOOKUP` | Release 2 (minor): v1 GET and DELETE by any identifier, without the default time | `blocked` | `WC-STEP-PATCH` |
-| 4 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection; empty and null mean  | `blocked` | `WC-STEP-PATCH` |
 | 4 | `T30-TENANT-ADMIN` | cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside n | `not-started` | `T30-WIRING` |
 | 4 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | `T30-WIRING` |
 | 4 | `T33-REM` | T3.3 remainder - the shared enclave, and language/levels per tenant | `blocked` | `T30-WIRING` |

@@ -4,7 +4,8 @@
 [mission](mission.md); leads to the [roadmap](ROADMAP.md). Prepared for the Nightscout project;
 proposed for Nightscout Foundation stewardship.
 Prose revised 2026-10-08 against cgm-remote-monitor `official/dev` `fade2299` and
-`official/master` `92d08342` (tag `15.0.8`). The tables are generated from
+`official/master` `92d08342` (tag `15.0.8`); the remedial horizon and the register paragraph
+2026-10-21, against `official/master` `c6a0d8ed` (tag `v15.0.9`). The tables are generated from
 `queue/work-queue.yaml`; see [How to check any of this yourself](#how-to-check-any-of-this-yourself).*
 
 This page answers "where is the work, and what is it waiting for" across the three
@@ -24,38 +25,24 @@ current and the prose is stale.
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
 | **Remedial** | `phase0`, `register-open`, `docs-truth` | 158 | 45 | 8 |
-| **Modernization** | `release-train` | 34 | 5 | 1 |
+| **Modernization** | `release-train` | 34 | 5 | 0 |
 | **Multitenant** | `tenancy`, `platform` | 67 | 17 | 9 |
-| | **total** | **261** | **67** | **18** |
+| | **total** | **261** | **67** | **17** |
 
 <!-- END GENERATED: horizons -->
 
-**Remedial** — finding and fixing defects that already ship. `dev` is at `4bca2ac2` (the merge of
-#8815, 2026-10-20): 100 first-parent merges and 549 commits since 15.0.8
-(`git rev-list [--first-parent] --count official/master..official/dev`). None of it is released.
-
-- **Merged.** Every PR decided for 15.0.9; the PR-by-PR list is in
-  [the release contents](../../releases/cgm-remote-monitor-15.0.9/contents.md). Crowdin #8730 is
-  held out (BF-132). The connector fixes are in `nightscout-connect` `0.1.0`, released 2026-09-24,
-  which `dev` pins exactly (#8762). The last in: #8802 (BF-127), clock views opened from the menu
-  keep the page's access token and a refused clock says so instead of staying blank; #8806
-  (BF-162), which bumps `proxy-addr` to 2.0.8 to clear the GHSA-jqcg-44mw-7w3h critical (the
-  reachable path is new in 15.0.9); and #8807 (BF-168), so the context chart's time window can be
-  dragged all the way back to now; and #8815 (BF-171, merged 2026-10-20), so a token whose subject
-  was deleted is refused instead of stopping the server.
-- **Tests.** The last full run is run 023 on `fade2299` (2026-10-08): 3566/0/4 in all six cells
-  (Node 20, 22 and 24 against MongoDB 4.4.24 and 7.0.43), with run 022's probes and an A/B soak
-  against 15.0.8. Each PR merged after run 020 carries its own evidence (its GitHub CI and a full
-  suite on its branch). The previous six-cell run, run 022 on `43289dde` (2026-10-07), gave 3564/0/4
-  ([15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md)).
-- **Real-site soak.** `RT-SOAK` is done: the maintainer decided on 2026-09-30 that real sites
-  running the candidate count as the soak, and reports (2026-10-02) stable behaviour from Loop, Trio
-  and AndroidAPS users on `dev`. The lab's 72 h soak was not run.
-- **Release PR.** #8598 (`dev` → `master`) is at `4bca2ac2` and mergeable.
-  It was approved at `e3adc91d`; the head has since moved to `4bca2ac2`, so re-approval there is owed. The maintainers judged the candidate ready on 2026-10-21 ([ROADMAP §1](ROADMAP.md#1-the-next-release-1509)).
-- **Version.** Decided: 15.0.9. `RT-VERSION`'s gate measures the modernization cut branches, which
-  also declare 15.0.9 and are renumbered when they are rebased; it holds the cuts, not this release.
-- **What remains** before the tag, including the queue's open `RT-0` blockers, is listed once, in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509).
+**Remedial** — finding and fixing defects that already ship. 15.0.9 was released on 2026-10-21: #8598 merged as `master` `c6a0d8ed` (tree `c53c2c7f`, the same as
+`dev` `4bca2ac2`'s), GitHub release `v15.0.9` "Release 15.0.9 Cinnamon Muffin", Latest, and the
+`15.0.9` and `latest` Docker images published by the `master` CI run (39667944235, second attempt;
+the first failed in one cell's `npm install` on `ECONNRESET` before any test ran). It carries 549
+commits and 100 first-parent merges since 15.0.8, among them the fixes for two published-advisory
+defects that survive `AUTH_DEFAULT_ROLES=denied`, GHSA-gjhc (BF-79, #8744) and GHSA-8849 (BF-75/76,
+#8745), the boot notice for world-readable sites (#8746), and the two backported security fixes
+(BF-104, BF-105, #8751). Operators who have not upgraded from 15.0.8 still have all of them. Both
+approvals of #8598 were the maintainer's, at `e3adc91d`; they were not repeated at `4bca2ac2`. The
+release rests on the maintainers' readiness decision of 2026-10-21; its known issues and what is
+left (the plain `15.0.9` tag, the next development cycle) are in
+[ROADMAP §1](ROADMAP.md#1-1509-is-released-the-next-development-cycle).
 
 The [backfix register](../30-design/remedial/nightscout-backfix-register.md) holds the defect facts;
 `make queue-coverage` proves the queue names every entry that is not fixed.
@@ -100,11 +87,9 @@ replacement.
 **In the backfix register, neither `fixed` nor `merged` means an operator is safe.**
 `fixed` means repaired on a branch that has not been merged. `merged` means merged
 into `origin/dev` and not released. `released` means in a tagged release operators
-run, and no programme fix is released: `official/master` is 545 commits behind `dev`
-(`git -C externals/cgm-remote-monitor-official rev-list --count official/master..official/dev`,
-2026-10-03) and the shipping tag is 15.0.8. Merging to `dev` publishes a Docker Hub
-image; that is not a release. `RT-0` (release 15.0.9) is the item that changes this.
-If a defect marked `fixed` or `merged` exists in 15.0.8, anyone running 15.0.8 still has it.
+run. 15.0.9 (`RT-0`) was released on 2026-10-21 (tag `v15.0.9`, `master` `c6a0d8ed`), so every
+entry merged before then is `released 15.0.9`. Merging to `dev` publishes a Docker Hub
+image; that is not a release. If a defect marked `fixed` or `merged` exists in 15.0.9, anyone running 15.0.9 still has it; anyone still on 15.0.8 also has every `released 15.0.9` entry.
 
 The size of that, from the register's §1 (the section whose defects reach existing operators),
 measured 2026-10-07 with `node tools/queue/gates/register-exposure-legend.js`: **120 defects**
@@ -125,42 +110,42 @@ cover more than one `BF-`:
 
 | id | claimed state | defect |
 |---|---|---|
-| `ADV-ALARM` | `merged-upstream` | GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76) |
+| `ADV-ALARM` | `released` | GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76) |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-7 |
-| `ADV-RETRO` | `merged-upstream` | GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79) |
+| `ADV-RETRO` | `released` | GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79) |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
-| `BFQ-04` | `merged-upstream` | BF-04 - the v1 operator allowlist - superseded by P0-K |
+| `BFQ-04` | `released` | BF-04 - the v1 operator allowlist - superseded by P0-K |
 | `BFQ-09` | `in-flight-upstream` | BF-09 - socket dedup truthiness skips a falsy value |
-| `BFQ-10` | `merged-upstream` | BF-10 - mongod fatal-asserts at Docker's default nofile=1024 |
+| `BFQ-10` | `released` | BF-10 - mongod fatal-asserts at Docker's default nofile=1024 |
 | `BFQ-100` | `blocked` | BF-100 - devicestatus, food and activity store a hex _id as a string |
 | `BFQ-101` | `blocked` | BF-101 - API v3 id filters miss records stored with a string _id |
-| `BFQ-102` | `merged-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatu |
-| `BFQ-103` | `merged-upstream` | BF-103 - a split drag stores the old time, so IOB and COB ignore the move |
-| `BFQ-107` | `merged-upstream` | BF-107 - a failed treatments query ends the Nightscout process on 15.0.8 |
-| `BFQ-111` | `merged-upstream` | BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk delete |
-| `BFQ-112` | `merged-upstream` | BF-112 - an auth subject created with a hex _id is stored as a string and cannot be delete |
-| `BFQ-114` | `merged-upstream` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is  |
-| `BFQ-115` | `merged-upstream` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value  |
-| `BFQ-117` | `merged-upstream` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 read |
-| `BFQ-118` | `merged-upstream` | BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so low alarms c |
-| `BFQ-119` | `merged-upstream` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622) |
-| `BFQ-120` | `merged-upstream` | BF-120 - the clock view shows an old reading as current when its data fetch fails (issue # |
-| `BFQ-121` | `merged-upstream` | BF-121 - two carb entries at the same time are stored as one, and the carbs of one are los |
-| `BFQ-122` | `merged-upstream` | BF-122 - records written, changed or deleted through API v1 never appear in API v3 history |
-| `BFQ-123` | `merged-upstream` | BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb rat |
-| `BFQ-125` | `merged-upstream` | BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every |
-| `BFQ-126` | `merged-upstream` | BF-126 - an authorization subject without a name ends the server at every boot (issue #711 |
-| `BFQ-127` | `merged-upstream` | BF-127 - clock views opened from the menu are blank for a token viewer on a site that deni |
-| `BFQ-128` | `merged-upstream` | BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue  |
-| `BFQ-129` | `merged-upstream` | BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500 |
-| `BFQ-133` | `merged-upstream` | BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one |
-| `BFQ-134` | `merged-upstream` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open |
-| `BFQ-136` | `merged-upstream` | BF-136 - API v3 refuses an AndroidAPS write that lands on a record written through v1 (Fie |
+| `BFQ-102` | `released` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatu |
+| `BFQ-103` | `released` | BF-103 - a split drag stores the old time, so IOB and COB ignore the move |
+| `BFQ-107` | `released` | BF-107 - a failed treatments query ends the Nightscout process on 15.0.8 |
+| `BFQ-111` | `released` | BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk delete |
+| `BFQ-112` | `released` | BF-112 - an auth subject created with a hex _id is stored as a string and cannot be delete |
+| `BFQ-114` | `released` | BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is  |
+| `BFQ-115` | `released` | BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value  |
+| `BFQ-117` | `released` | BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 read |
+| `BFQ-118` | `released` | BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so low alarms c |
+| `BFQ-119` | `released` | BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622) |
+| `BFQ-120` | `released` | BF-120 - the clock view shows an old reading as current when its data fetch fails (issue # |
+| `BFQ-121` | `released` | BF-121 - two carb entries at the same time are stored as one, and the carbs of one are los |
+| `BFQ-122` | `released` | BF-122 - records written, changed or deleted through API v1 never appear in API v3 history |
+| `BFQ-123` | `released` | BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb rat |
+| `BFQ-125` | `released` | BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every |
+| `BFQ-126` | `released` | BF-126 - an authorization subject without a name ends the server at every boot (issue #711 |
+| `BFQ-127` | `released` | BF-127 - clock views opened from the menu are blank for a token viewer on a site that deni |
+| `BFQ-128` | `released` | BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue  |
+| `BFQ-129` | `released` | BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500 |
+| `BFQ-133` | `released` | BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one |
+| `BFQ-134` | `released` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open |
+| `BFQ-136` | `released` | BF-136 - API v3 refuses an AndroidAPS write that lands on a record written through v1 (Fie |
 | `BFQ-137` | `not-started` | BF-137 - with more than one IFTTT Maker key, an alarm's Maker calls run out of order and a |
-| `BFQ-142` | `merged-upstream` | BF-142 - API v3 DELETE answers 404 for a record whose stored identifier is 0 or an array,  |
+| `BFQ-142` | `released` | BF-142 - API v3 DELETE answers 404 for a record whose stored identifier is 0 or an array,  |
 | `BFQ-145` | `not-started` | BF-145 - API v3 PATCH and PUT by the shown id miss a record whose identifier is null, "" o |
-| `BFQ-146` | `merged-upstream` | BF-146 - API v3 treatments are held in the server's memory without mills: a late or edited |
-| `BFQ-147` | `merged-upstream` | BF-147 - two package.json overrides hold ajv and request's form-data inside published advi |
+| `BFQ-146` | `released` | BF-146 - API v3 treatments are held in the server's memory without mills: a late or edited |
+| `BFQ-147` | `released` | BF-147 - two package.json overrides hold ajv and request's form-data inside published advi |
 | `BFQ-149` | `not-started` | BF-149 - the Day to Day report draws a cancelled or replaced temp target or override for i |
 | `BFQ-152` | `blocked` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier |
 | `BFQ-154` | `blocked` | BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed  |
@@ -173,33 +158,33 @@ cover more than one `BF-`:
 | `BFQ-164` | `needs-decision` | BF-164 - writes outside API v3 never reach the v3 storage socket |
 | `BFQ-165` | `not-started` | BF-165 - a treatment re-send matched by its fallback key is answered without _id |
 | `BFQ-166` | `not-started` | BF-166 - a profile re-sent with its own _id answers 500 |
-| `BFQ-168` | `merged-upstream` | BF-168 - the context chart's window sometimes cannot be dragged back to now |
+| `BFQ-168` | `released` | BF-168 - the context chart's window sometimes cannot be dragged back to now |
 | `BFQ-169` | `not-started` | BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a  |
 | `BFQ-170` | `not-started` | BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent |
 | `BFQ-172` | `in-flight-upstream` | BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819  |
 | `BFQ-173` | `blocked` | BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units, a k |
 | `BFQ-174` | `blocked` | BF-174 - the bolus calculator's profile picker is ignored; every value comes from the acti |
-| `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
+| `BFQ-40` | `released` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `in-progress` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
-| `BFQ-47` | `merged-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
+| `BFQ-47` | `released` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
 | `BFQ-52` | `blocked` | BF-52 - an age reminder whose 20-minute window passed without a check was never sent |
 | `BFQ-67` | `blocked` | BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work |
-| `BFQ-69` | `merged-upstream` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing |
+| `BFQ-69` | `released` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing |
 | `BFQ-71` | `closed` | BF-71 - any dateString key drops the default date window, and the window is not a control |
 | `BFQ-72` | `blocked` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
-| `BFQ-87` | `merged-upstream` | BF-87 - the root qs override holds the connector below its range and pins the server's que |
-| `BFQ-90` | `merged-upstream` | BF-90 - an alarm at a page with no reading throws in the client |
-| `BFQ-91` | `merged-upstream` | BF-91 - connector capture mode cannot find trace-axios for two sources |
+| `BFQ-87` | `released` | BF-87 - the root qs override holds the connector below its range and pins the server's que |
+| `BFQ-90` | `released` | BF-90 - an alarm at a page with no reading throws in the client |
+| `BFQ-91` | `released` | BF-91 - connector capture mode cannot find trace-axios for two sources |
 | `BFQ-92` | `not-started` | BF-92 - a page with no glucose reading never presents a server alarm, including device ala |
 | `BFQ-93` | `blocked` | BF-93 - food changes never reach an open page |
 | `BFQ-95` | `blocked` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
-| `BFQ-98` | `merged-upstream` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not rep |
+| `BFQ-98` | `released` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not rep |
 | `BFQ-99` | `blocked` | bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and str |
 | `BFQ-CAP01` | `not-started` | CAP-01 - Nightscout cannot be served from a sub-path |
 | `BFQ-CONNECTOR` | `gate-not-met` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override |
 | `BFQ-ENV` | `in-progress` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies |
 | `BFQ-MINIMED` | `not-started` | BF-44, BF-45, BF-85 - MiniMed ingestion divergences and the CareLink zero reading |
-| `RT-PR-8815` | `merged-upstream` | #8815 - a bearer token whose subject was deleted is refused instead of stopping the server |
+| `RT-PR-8815` | `released` | #8815 - a bearer token whose subject was deleted is refused instead of stopping the server |
 
 <!-- END GENERATED: operator-exposure -->
 
@@ -211,10 +196,10 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 <!-- BEGIN GENERATED: state-matrix -->
 
-| parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
+| parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `released` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
-| `release-train` | 5 |  | 5 |  | 6 |  | 14 | 1 | 1 |  |  | 2 | **34** |
+| `release-train` | 5 |  | 5 |  | 6 |  | 15 |  | 1 |  |  | 2 | **34** |
 | `register-open` | 35 | 3 | 1 | 1 | 13 | 2 | 55 | 4 |  |  | 3 |  | **117** |
 | `tenancy` | 8 | 1 |  | 1 | 13 |  |  | 7 | 3 | 1 |  |  | **34** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 11 |  |  |  | **19** |
@@ -286,7 +271,6 @@ expanded in [NEEDS-A-HUMAN.md](NEEDS-A-HUMAN.md).
 
 | | decision | why it blocks a train |
 |---|---|---|
-| `RT-0` | Release 15.0.9 (PR #8598 at `dev` `4bca2ac2`). | Every merged fix reaches operators only through it, and every later cut waits behind it. What remains before the tag is in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509). |
 | `BFQ-09` | BF-09: is a zero-valued temp basal a real value in the socket dedup? Measured; waits on the maintainer. | It ships to operators now. |
 | `A7A-7` | The clock question inside the alarm path. The maintainer owns it. | It gates alarms under `TENANCY_MODE=multi`. |
 
@@ -323,7 +307,7 @@ measurement.
 | item state, gates, review routing | `queue/work-queue.yaml` (source of truth) |
 | defect facts and `BF-` ids | [`../30-design/remedial/nightscout-backfix-register.md`](../30-design/remedial/nightscout-backfix-register.md) |
 | what 15.0.9 contains and leaves broken | [`../../releases/cgm-remote-monitor-15.0.9/contents.md`](../../releases/cgm-remote-monitor-15.0.9/contents.md) |
-| what 15.0.9 still waits on | [`ROADMAP.md` §1](ROADMAP.md#1-the-next-release-1509) (generated) |
+| how 15.0.9 was released, and what is left | [`ROADMAP.md` §1](ROADMAP.md#1-1509-is-released-the-next-development-cycle) (generated) |
 | Phase 0 PR ordering and coupling | [`../30-design/remedial/phase0-pr-sequencing-2026-09-15.md`](../30-design/remedial/phase0-pr-sequencing-2026-09-15.md) |
 | the release train and its order | [`../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md`](../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md) |
 | tenancy decisions D1–D20 | [`../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) |

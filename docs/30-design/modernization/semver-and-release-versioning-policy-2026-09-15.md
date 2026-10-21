@@ -1321,8 +1321,9 @@ report from "15.0.9" made before the release is from that channel.
 **The cut branches still claim `15.0.9`** (§5.1, D-b); each is renumbered when it is rebased
 (maintainer, 2026-09-23, `RT-VERSION`).
 
-What stands between dev and the tag is queue `RT-0`'s notes, generated on
-[ROADMAP §1](../../00-overview/ROADMAP.md#1-the-next-release-1509). Release PR #8598 (dev → master)
+*2026-10-21: 15.0.9 is released* (tag `v15.0.9`, `master` `c6a0d8ed`, the merge of #8598 at `dev`
+`4bca2ac2`); the rest of this paragraph is as written before the release. What stood between dev and the tag is queue `RT-0`'s notes, generated on
+[ROADMAP §1](../../00-overview/ROADMAP.md#1-1509-is-released-the-next-development-cycle). Release PR #8598 (dev → master)
 is at `ce7d754a`, mergeable, with 27 checks green and 3 skipped, and `APPROVED` by the maintainer
 (2026-09-26 00:39Z, at `e3adc91d`). The last full test run is run 018 on `ff93fa94`, one merge
 before `ce7d754a` (3396/0/3 in all six cells;

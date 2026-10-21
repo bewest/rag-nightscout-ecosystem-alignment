@@ -250,7 +250,7 @@ def block_open_prs(doc):
 
 # States that take an item off the road ahead: its work is merged, finished,
 # withdrawn or answered. Everything else is still in front of someone.
-OFF_THE_ROAD = {"merged-upstream", "done", "closed", "answered"}
+OFF_THE_ROAD = {"merged-upstream", "released", "done", "closed", "answered"}
 
 
 def _road(doc, parcel):
@@ -304,7 +304,7 @@ def block_release_waits(doc):
     """What the next release (RT-0) still waits on: its open blockers, and theirs.
 
     Only blockers still open are listed, so an item drops off this table the
-    moment its claimed state says it is merged, done, closed or answered.
+    moment its claimed state says it is merged, released, done, closed or answered.
     """
     by_id = {i["id"]: i for i in doc["items"]}
     open_ids = {i["id"] for i in doc["items"] if i["state"] not in OFF_THE_ROAD}

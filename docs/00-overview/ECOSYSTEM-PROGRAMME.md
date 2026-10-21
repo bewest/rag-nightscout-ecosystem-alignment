@@ -141,8 +141,8 @@ cgm-remote-monitor is the server most existing sites run, on MongoDB, with its o
 and hosting. The work on it runs in three horizons ([PROGRAMME-STATUS](PROGRAMME-STATUS.md)):
 
 - **Remedial.** Defects in what ships to operators today, tracked in the
-  [backfix register](../30-design/remedial/nightscout-backfix-register.md). The 15.0.9 candidate is
-  on `dev`, not yet tagged; its current head is in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509).
+  [backfix register](../30-design/remedial/nightscout-backfix-register.md). 15.0.9 was released on
+  2026-10-21 (tag `v15.0.9`, `master` `c6a0d8ed`); what is left is in [ROADMAP §1](ROADMAP.md#1-1509-is-released-the-next-development-cycle).
 - **Modernization.** A staged release train for the dependency tree and runtime
   ([ROADMAP §2](ROADMAP.md#2-modernization-the-release-train)).
 - **Multitenancy.** A second deployment target for hosting providers, on PostgreSQL. Self-hosted,

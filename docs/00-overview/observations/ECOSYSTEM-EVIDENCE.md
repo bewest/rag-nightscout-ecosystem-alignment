@@ -59,7 +59,7 @@ Tag dates in cgm-remote-monitor (`git tag --sort=creatordate`):
 | 15.0.4 | 2026-02-28 | 296 |
 | 15.0.7 | 2026-04-29 | 57 (15.0.5 and 15.0.6 in between) |
 | 15.0.8 | 2026-09-04 | 128 |
-| 15.0.9 | candidate on `dev`, not tagged; current head in [ROADMAP §1](../ROADMAP.md#1-the-next-release-1509), [how it was made](../../../releases/cgm-remote-monitor-15.0.9/colophon.md) | — |
+| 15.0.9 | released 2026-10-21, tag `v15.0.9` (`master` `c6a0d8ed`); [ROADMAP §1](../ROADMAP.md#1-1509-is-released-the-next-development-cycle), [how it was made](../../../releases/cgm-remote-monitor-15.0.9/colophon.md) | — |
 
 Longest gaps between stable GitHub releases in the main projects
 (`gh api repos/<owner>/<repo>/releases`, measured 2026-09-29):

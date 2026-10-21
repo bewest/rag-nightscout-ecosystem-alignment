@@ -733,7 +733,7 @@ def build_gaps(record, register, chosen_ids, doc, enabled):
         (e for e in register.values()
          if e["id"] not in touched
          and not e["status_verbatim"].lower().startswith(("fixed", "partly fixed",
-                                                          "landed", "closed",
+                                                          "landed", "released", "closed",
                                                           "wontfix"))),
         key=lambda e: _register_sort(e["id"]))
     if untouched_open:

@@ -62,7 +62,10 @@ for (const line of lines) {
   if (!row) continue;
   const cells = row[2].split('|');
   const status = (cells[cells.length - 1] || '').toLowerCase();
-  statuses.push({ id: row[1], section, status });
+  // The leading status word, before any history the cell keeps after it (a
+  // released cell still says `merged <date>` further on).
+  const word = status.replace(/[*`~]/g, '').trim().split(/[\s;,(]+/).slice(0, 2).join(' ');
+  statuses.push({ id: row[1], section, status, word });
 }
 
 if (statuses.length === 0) {
@@ -75,13 +78,20 @@ if (statuses.length === 0) {
 }
 
 const s1 = statuses.filter((r) => r.section === '1');
-const landed = statuses.filter((r) => /\blanded\b/.test(r.status));
-const openS1 = s1.filter((r) => /\bopen\b/.test(r.status));
+// RENAMED 2026-10-21: the register's legend calls this state `released <tag>`;
+// `landed` was this gate's name for it before any entry had it. 15.0.9 is the
+// first release that carries register entries. Released cells keep their
+// `merged <date>` history, so they are classified by the leading word and taken
+// out of every other count before those counts read the cell.
+const isReleased = (r) => /^(partly )?released\b/.test(r.word) || /\blanded\b/.test(r.status);
+const landed = statuses.filter(isReleased);
+const released1 = s1.filter(isReleased);
+const openS1 = s1.filter((r) => !isReleased(r) && /\bopen\b/.test(r.status));
 // `invalid` means investigated and does not reproduce, so it is not a defect
 // that ships. Counting it among "still present" would overstate the exposure,
 // and this gate's whole purpose is to get that number right.
 const invalidS1 = s1.filter((r) => /\binvalid\b/.test(r.status));
-const notOpen = s1.filter((r) => !/\bopen\b/.test(r.status) && !/\binvalid\b/.test(r.status));
+const notOpen = s1.filter((r) => !isReleased(r) && !/\bopen\b/.test(r.status) && !/\binvalid\b/.test(r.status));
 // SPLIT 2026-09-21. `merged <date>` was added to the register's legend when ten
 // Phase 0 PRs landed on `dev`, because one word was covering both "sits on a
 // branch nobody has looked at" and "is in the release candidate". BOTH are still
@@ -102,7 +112,7 @@ findings.push({
   ok: true,
   text: `§1: ${openS1.length} marked open, ${fixedS1.length} marked fixed (on an unmerged `
       + `branch), ${mergedS1.length} marked merged (in \`dev\`, not released), `
-      + `${invalidS1.length} invalid (not a defect), ${landed.length} with status \`landed\``,
+      + `${invalidS1.length} invalid (not a defect), ${released1.length} released (in a tagged release)`,
 });
 
 // --- the fact that makes the framing wrong ---------------------------------
