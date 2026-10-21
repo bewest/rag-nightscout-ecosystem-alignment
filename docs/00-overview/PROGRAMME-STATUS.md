@@ -23,10 +23,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 156 | 45 | 8 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 158 | 45 | 8 |
 | **Modernization** | `release-train` | 34 | 5 | 1 |
 | **Multitenant** | `tenancy`, `platform` | 67 | 17 | 9 |
-| | **total** | **259** | **67** | **18** |
+| | **total** | **261** | **67** | **18** |
 
 <!-- END GENERATED: horizons -->
 
@@ -177,6 +177,8 @@ cover more than one `BF-`:
 | `BFQ-169` | `not-started` | BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a  |
 | `BFQ-170` | `not-started` | BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent |
 | `BFQ-172` | `in-flight-upstream` | BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819  |
+| `BFQ-173` | `blocked` | BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units |
+| `BFQ-174` | `blocked` | BF-174 - the bolus calculator's profile picker is ignored; every value comes from the acti |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `in-progress` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `merged-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -213,7 +215,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 5 |  | 5 |  | 6 |  | 14 | 1 | 1 |  |  | 2 | **34** |
-| `register-open` | 35 | 3 | 1 | 1 | 11 | 2 | 55 | 4 |  |  | 3 |  | **115** |
+| `register-open` | 35 | 3 | 1 | 1 | 13 | 2 | 55 | 4 |  |  | 3 |  | **117** |
 | `tenancy` | 8 | 1 |  | 1 | 13 |  |  | 7 | 3 | 1 |  |  | **34** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 11 |  |  |  | **19** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
@@ -253,14 +255,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 224 | 86% |
+| Maintainer | 226 | 87% |
 | SECURITY reviewer | 16 | 6% |
 | Maintainer + a second human | 7 | 3% |
 | SAFETY reviewer | 6 | 2% |
 | Whoever edits it next | 3 | 1% |
 | Unassigned | 2 | 1% |
 | Upstream reviewers | 1 | 0% |
-| **total** | **259** | |
+| **total** | **261** | |
 
 <!-- END GENERATED: reviewer-load -->
 

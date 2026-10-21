@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 259 |
+| items | 261 |
 | runnable gates | 322 |
-| explicit `no-gate:` markers | 281 |
+| explicit `no-gate:` markers | 283 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 281 of the 603 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 283 of the 605 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -45,7 +45,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-progress` | 5 | ID-CONVENTIONS, BFQ-46, BFQ-ENV, OID-LAB, LOOP-ID-REPLY |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
-| `blocked` | 30 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, WC-STEP-PATCH, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-72, BFQ-52, BFQ-93, BFQ-95, BFQ-67, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-152, BFQ-154, BFQ-156 |
+| `blocked` | 32 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, WC-STEP-PATCH, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-72, BFQ-52, BFQ-93, BFQ-95, BFQ-67, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-152, BFQ-154, BFQ-156, BFQ-173, BFQ-174 |
 | `in-flight-upstream` | 2 | BFQ-09, BFQ-172 |
 | `merged-upstream` | 88 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 12 | RT-0, T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164 |
@@ -125,6 +125,8 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-169** BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a client-supplied one
 - **BFQ-170** BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent
 - **BFQ-172** BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819 proposed), a known issue of 15.0.9
+- **BFQ-173** BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units
+- **BFQ-174** BF-174 - the bolus calculator's profile picker is ignored; every value comes from the active profile
 - **RT-PR-8815** #8815 - a bearer token whose subject was deleted is refused instead of stopping the server (awss1i; BF-171, fixes #8225), merged for 15.0.9
 - **BFQ-134** BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 - **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
@@ -2187,7 +2189,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 115 items
+`parcel: register-open` &mdash; 117 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2293,6 +2295,8 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-169` | BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a client-supplied one | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-170` | BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `BFQ-172` | BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819 proposed), a known issue of 15.0.9 | `in-flight-upstream` | `javier-erro:#8819` | patch | 0 run + 1 no-gate |
+| `BFQ-173` | BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units | `blocked` | `bf/boluscalc-profile-units` | patch | 0 run + 1 no-gate |
+| `BFQ-174` | BF-174 - the bolus calculator's profile picker is ignored; every value comes from the active profile | `blocked` | `bf/profile-spec-honoured` | patch | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `merged-upstream` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -5512,6 +5516,69 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** Filed 2026-10-21 from the check of PR #8819 (opened 2026-10-20). Decision 2026-10-21 (the maintainers): a known issue of 15.0.9, named in the release notes; #8819 is based on fade2299 and needs dev merged in before it lands, after 15.0.9.
+
+### `BFQ-173` &mdash; BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units
+
+| | |
+|---|---|
+| state (claimed) | `blocked` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/boluscalc-profile-units` |
+| base | `official/dev@4bca2ac2` |
+| worktree | `externals/work/crm-bf173` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-173` |
+| blocks on | `RT-0` |
+
+**Blast radius.** lib/client/boluscalc.js gatherBoluscalcData (+11): where the profile's units differ from the display units, its targets and sensitivity are converted to the display units and rounded as shown, as basalprofile.js does. Browser only. No change where the units match.
+
+**What an operator sees.** Where your profile is in different units (mg/dL or mmol/L) from the units your browser shows, the Careportal Bolus Wizard's suggested insulin is worked out in one unit instead of being far too large or negative. The saved Bolus Wizard entry then records the values it used, in the units shown.
+
+**Why `patch`.** a wrong suggested value corrected; no API shape changes
+
+**Gates.**
+
+- **NO GATE** &mdash; Reproduced 2026-10-21 in the headless client (each tree's own webpack bundle, jsdom, Node 24.15.0, not a browser): an mmol/L profile on an mg/dl site gives 81 U and an mg/dl profile on an mmol/L site -1.41 U on v15.0.8 92d08342 and dev 4bca2ac2, where 2.3 U is right; the same-unit controls give 2.30 U on both. With ee0cc4f7 all four give 2.30 U.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/30-design/platform/glucose-units-at-the-profile-boundary-2026-10-21.md`
+
+**Notes.** 2026-10-21: bf/boluscalc-profile-units ee0cc4f7, one commit on dev 4bca2ac2, not pushed; 4 tests added to tests/careportal.test.js (a separate headless file breaks the next headless suite in the same mocha process). Break-it: the 2 mismatch tests fail on the unfixed bundle, the 2 controls pass. 257 passing across the profile, boluscalc, careportal, BWP, basal profile, IOB, COB, plugins, profile editor, units, sandbox, Loop and OpenAPS suites; full suite not run. Filed after the 15.0.9 readiness decision; whether 15.0.9's notes name it is decision UD1 in the design note.
+
+### `BFQ-174` &mdash; BF-174 - the bolus calculator's profile picker is ignored; every value comes from the active profile
+
+| | |
+|---|---|
+| state (claimed) | `blocked` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/profile-spec-honoured` |
+| base | `official/dev@4bca2ac2` |
+| worktree | `externals/work/crm-bf174` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-174` |
+| blocks on | `RT-0` |
+
+**Blast radius.** lib/profilefunctions.js getCurrentProfile (+5/-1): a spec_profile that names a store entry is used; anything else gives the active profile as before. The bolus calculator is the only caller that passes a name, so only its values (and the IOB and COB it adds) change.
+
+**What an operator sees.** Only for sites that show the profile choice in the Careportal Bolus Wizard (more than one profile and the profile plugin's multiple setting): the profile you choose is now the one whose sensitivity, targets and carb ratio are used. Before, the active profile was used whichever you chose.
+
+**Why `patch`.** a documented control that had no effect now works; no API shape changes
+
+**Gates.**
+
+- **NO GATE** &mdash; Reproduced 2026-10-21 in the headless client: with Default (sens 54) and Other (sens 27) in the store and Other chosen, v15.0.8 92d08342 and dev 4bca2ac2 save profile Other with isf 54; with 292f909a, isf 27. tests/profile.spec-profile.test.js runs the accessor directly (5 tests, the named-profile one fails without the fix).
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** 2026-10-21: bf/profile-spec-honoured 292f909a, one commit on dev 4bca2ac2, not pushed. 260 passing across the same suites as BFQ-173; full suite not run. A scratch merge with bf/boluscalc-profile-units and #8819 passes 266 (#8819's getUnits(sbx.time) falls back to the active profile). Broken since 14.0.0 by #5572 and #5729 (2020). Filed after the 15.0.9 readiness decision.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 
