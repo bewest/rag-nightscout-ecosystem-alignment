@@ -290,7 +290,6 @@ The compatibility behaviour in this release was decided against what clients act
   command can still be sent to the old device.
 - `$exists` understands only `true`, `false`, `1` and `0`. Silencing an alarm over the socket has
   no upper bound.
-- Crowdin translations made after early September are not included.
 - `npm audit` reports these advisories in 15.0.9:
   - `node-forge` GHSA-86w9-cpqp-85rv: the signature check it concerns is not used by Nightscout.
   - `braces` GHSA-vfj7-8cjw-p6xm: a deeply nested pattern on `/times`, `/times/echo` or `/slice`
