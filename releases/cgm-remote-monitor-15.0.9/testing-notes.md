@@ -77,7 +77,7 @@ particular setup to try them.
 "It worked" reports are useful too. Say which check you did.
 
 **Already known — please don't report these again**, but do tell us if one looks worse than
-described: the [known issues](release-notes.md#known-issues--not-fixed-in-this-release) in the release
+described: the [known issues](release-notes.md#known-issues) in the release
 notes.
 
 ## Getting the test build
@@ -144,7 +144,7 @@ appears twice; followers keep updating.
 
 **This is the most important check for anyone on mmol/L.** 15.0.9 reads each alarm level on its own,
 so on some sites **low alarms start working** where they never did. See
-[Low alarms on sites that use mmol/L](release-notes.md#low-alarms-on-sites-that-use-mmoll).
+[Low alarms on sites that use mmol/L](release-notes.md#changes-in-behaviour).
 
 1. **Before switching,** write down the alarm levels you expect (urgent high, top and bottom of your
    target range, urgent low), and whether each is set on your site or left at the default.
@@ -161,7 +161,7 @@ so on some sites **low alarms start working** where they never did. See
 
 ## 1.3 AndroidAPS
 
-See [AndroidAPS, the careportal and caregivers](release-notes.md#androidaps-the-careportal-and-caregivers).
+See [AndroidAPS, the careportal and caregivers](release-notes.md#changes-in-behaviour).
 
 - **Silencing an alarm from AAPS.** In 15.0.9 an app can silence a Nightscout alarm only if its token's
   user has the `admin` role. With any other role, the silence does nothing, and **the app is not
@@ -283,7 +283,7 @@ checks below are the ones only a real deployment or a real client can answer.
 ## 2.1 `TRUST_PROXY` on your actual host
 
 `TRUST_PROXY` is new and optional; unset behaves as 15.0.8. See
-[The new `TRUST_PROXY` setting](release-notes.md#the-new-trust_proxy-setting). We would like one
+[The new `TRUST_PROXY` setting](release-notes.md#security). We would like one
 report per hosting setup: Heroku, Railway, Northflank, Render, Fly, Azure App Service, a VPS behind
 nginx or Caddy, Cloudflare in front of any of these, and hosted Nightscout services.
 
@@ -322,7 +322,7 @@ The replay lab reproduced these, but no one has run the real thing against the t
 |---|---|---|
 | **OpenAPS / oref0 rig** | the rig's logs during normal looping | no `400 Bad count`; the rig does not re-upload its last 24 h of treatments on every loop; the site's server log shows one `API v1: … (logged once)` deprecation line |
 | **GluPredKit** | building a dataset over a date range | entries, treatments and profiles come back, not empty lists; one `API v1: … (logged once)` line |
-| **nightscout-reporter** (the current app), **Sugarmate**, **python-nightscout**, home-made scripts, spreadsheets | whatever you use them for | same results as on 15.0.8; any `Bad count` or "unsupported operator" error is from the [corrections](release-notes.md#corrections-requests-answered-differently): report the tool, its version and the request's shape (not its data) |
+| **nightscout-reporter** (the current app), **Sugarmate**, **python-nightscout**, home-made scripts, spreadsheets | whatever you use them for | same results as on 15.0.8; any `Bad count` or "unsupported operator" error is from the [corrections](release-notes.md#changes-in-behaviour): report the tool, its version and the request's shape (not its data) |
 | **xDrip+, xDrip4iOS, Loop, tconnectsync** on a site with records from 15.0.6 or earlier, or copied from another site | edit and delete an old record from the app | the record updates in place or is deleted, with no second copy |
 | **Bulk-delete tools** | a delete by a list of more than 20 ids | on 15.0.8 this failed and deleted nothing; on 15.0.9 it deletes every match. Check that is what you meant |
 | **xDrip4iOS** (build `50bc1084` or later) | readings xDrip4iOS deletes from your site in bulk | the readings are removed from the site. On 15.0.8 these deletes answered with a server error and removed nothing; deletes of one reading or of a time range already worked |
@@ -331,10 +331,10 @@ The replay lab reproduced these, but no one has run the real thing against the t
 
 - **Docker Compose** with the bundled `docker-compose.yml` or a copy: MongoDB should start and stay up
   (the file now raises its open-files limit). See
-  [If you run Nightscout with Docker Compose](release-notes.md#if-you-run-nightscout-with-docker-compose).
+  [If you run Nightscout with Docker Compose](release-notes.md#server-stability-and-operations).
 - **`MMCONNECT_` or `BRIDGE_` settings:** move to the connector's `CONNECT_*` settings and check that
   readings arrive through the connector. See
-  [The old MiniMed and Dexcom connections are being retired](release-notes.md#the-old-minimed-and-dexcom-connections-are-being-retired).
+  [The old MiniMed and Dexcom connections are being retired](release-notes.md#deprecated).
 - **The built-in CGM connector** (Dexcom Share, LibreLinkUp, CareLink, Glooko): readings keep arriving
   over several days, including after the vendor app logs you out or you change your CGM account
   password.
