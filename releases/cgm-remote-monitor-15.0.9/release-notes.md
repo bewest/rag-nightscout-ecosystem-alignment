@@ -242,10 +242,12 @@ The compatibility behaviour in this release was decided against what clients act
 - **A client survey.** The source of 40 client projects was surveyed: uploaders, AID apps,
   followers, reports and tools.
 - **Replay probes.** Thirteen probes sent those clients' request shapes to 15.0.8 and to the
-  development version. The `count`, filter and identity handling described above follows from those results.
-- **A side-by-side soak.** 15.0.8 and the release candidate received the same traffic. Their replies were
-  compared against a list of intended differences.
+  development version. The `count`, filter and identity handling described above follows from
+  those results.
+- **A side-by-side soak.** 15.0.8 and the release candidate received the same traffic. Their
+  replies were compared against a list of intended differences.
 
+## Upgrade notes
 
 - Node.js 20 or later is required. Node 20, 22 and 24 are tested.
 - MongoDB 4.4 is deprecated. MongoDB 5.0 and 6.0 are supported.
@@ -260,8 +262,7 @@ The compatibility behaviour in this release was decided against what clients act
   the server log says so.
 - The Bolus Wizard Preview uses the profile's sensitivity and targets unconverted, so where the
   profile's units differ from the display units, its estimate and warning are off by a factor of
-  about 18. The careportal's Bolus Wizard has
-  the same unit mix, and its profile picker saves the chosen profile's name with the active
+  about 18. The careportal's Bolus Wizard has the same unit mix, and its profile picker saves the chosen profile's name with the active
   profile's values. All three are unchanged since 15.0.8.
 - A page with no current glucose reading does not present server alarms, including device
   alarms.
