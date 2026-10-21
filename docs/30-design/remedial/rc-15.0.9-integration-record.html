@@ -4652,7 +4652,7 @@
 
 
 <h1 id="1509-integration-record">15.0.9 integration record<a class="headerlink" href="#1509-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-07 at <code>12ea387c1</code>.</em></p>
+<p><em>Living document, last changed 2026-10-20 at <code>da858f5e9</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 15.0.9 candidate was assembled
 and tested. Item state is in <code>queue/work-queue.yaml</code> (<code>RT-0</code>); defect facts are in the
 <a href="nightscout-backfix-register.html">backfix register</a>; release contents are in
@@ -4662,8 +4662,15 @@ Several units fix defects that are live on the shipping release (15.0.8, <code>o
 <p><strong>Where the candidate stands, 2026-10-08.</strong> The candidate is <code>official/dev</code> <code>fade2299</code> (tree
 <code>0bdc42f6</code>, package version 15.0.9), merged 2026-10-08 00:47Z. 15.0.8..<code>fade2299</code>: 547 commits, 99
 first-parent merges, 313 files, +30264/−1936 (<code>git rev-list --count</code>, <code>--first-parent --count</code> and <code>git diff --shortstat</code>
-<code>official/master official/dev</code>). There is no <code>15.0.9</code> tag. Every PR decided for 15.0.9 is merged;
-Crowdin #8730 (BF-132) is held out.</p>
+<code>official/master official/dev</code>). There is no <code>15.0.9</code> tag. Crowdin #8730 (BF-132) is held out.</p>
+<p><strong>2026-10-20: #8815 merged, and <code>dev</code> is <code>4bca2ac2</code></strong> (tree <code>c53c2c7f</code>, parents <code>fade2299</code> and
+<code>93a74ce5</code>, merged 23:57Z; 15.0.8..<code>4bca2ac2</code>: 549 commits, 100 first-parent merges, 314 files,
++30337/−1938). Every PR decided for 15.0.9 is merged. #8815 (BF-171) changes
+<code>lib/authorization/index.js</code>, <code>tests/api.security.test.js</code> and <code>CHANGELOG.md</code> only, no package or
+browser file; the merged tree is identical to its head <code>93a74ce5</code> (<code>git diff 93a74ce5 4bca2ac2</code> is
+empty). Its evidence is its own: GitHub CI (Node 20/22/24 × MongoDB 4.4/5/6, npm 12 install, Docker
+image) and CodeQL green, and the BF-171 reproduction on <code>93a74ce5</code> (register). Run 023 below ran on
+<code>fade2299</code> and was not repeated on <code>4bca2ac2</code>.</p>
 <ul>
 <li><strong>Current full run: run 023 on <code>fade2299</code> (2026-10-08).</strong> 3566/0/4 (passing/failing/pending) in
   all six cells, Node 20/22/24 × MongoDB 4.4.24 and 7.0.43; run 022's probes (every one gave run

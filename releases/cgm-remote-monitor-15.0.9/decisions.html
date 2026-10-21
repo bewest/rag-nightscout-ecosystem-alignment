@@ -2231,13 +2231,13 @@
 
 
 <h1 id="cgm-remote-monitor-1509--decisions">cgm-remote-monitor 15.0.9 — decisions<a class="headerlink" href="#cgm-remote-monitor-1509--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-17 at <code>d0c2b9726</code>.</em></p>
+<p><em>Living document, last changed 2026-10-20 at <code>da858f5e9</code>.</em></p>
 <p><em>Contributor-facing. Living record of the maintainer's decisions that shape 15.0.9, taken
-2026-09-22 to 2026-10-08, as of <code>dev</code> <code>fade2299</code> (2026-10-08). Each row states the decision as it stands. Item state is in
+2026-09-22 to 2026-10-20, as of <code>dev</code> <code>4bca2ac2</code> (2026-10-20). Each row states the decision as it stands. Item state is in
 <code>queue/work-queue.yaml</code>; what 15.0.9 contains and what is still open before the tag is in
 <a href="contents.html">contents.md</a>; the test evidence is in the
 <a href="../../docs/30-design/remedial/rc-15.0.9-integration-record.html">15.0.9 integration record</a>.
-BF-72, BF-73, BF-139, BF-151 and BF-80 appear by mechanism only: all but BF-80 are live on the
+BF-72, BF-73, BF-139, BF-151, BF-171 and BF-80 appear by mechanism only: all but BF-80 are live on the
 shipping release, and this repository is public.</em></p>
 <h2 id="what-1509-is">What 15.0.9 is<a class="headerlink" href="#what-1509-is" title="Permanent link">&para;</a></h2>
 <table>
@@ -2257,7 +2257,7 @@ shipping release, and this repository is public.</em></p>
 <tr>
 <td><strong>The release goes out through #8598</strong> (<code>dev</code> → <code>master</code>, opened by AndyLow91)</td>
 <td><code>RT-0</code></td>
-<td>open, head <code>fade2299</code>, mergeable, <code>reviewDecision</code> <code>APPROVED</code>; both approvals (the maintainer, 2026-09-26 00:39Z) were given on <code>e3adc91d</code>, and the head has since moved through <code>1ad03e29</code>, <code>43289dde</code> and now <code>fade2299</code>, so re-approval at <code>fade2299</code> is owed</td>
+<td>open, head <code>4bca2ac2</code>, mergeable, <code>reviewDecision</code> <code>APPROVED</code>; both approvals (the maintainer, 2026-09-26 00:39Z) were given on <code>e3adc91d</code>, and the head has since moved through <code>1ad03e29</code>, <code>43289dde</code> <code>fade2299</code> and now <code>4bca2ac2</code>, so re-approval at <code>4bca2ac2</code> is owed</td>
 </tr>
 <tr>
 <td><strong>Backfix 2 ships inside 15.0.9</strong>: <code>bf2/ops</code>, <code>bf2/backports</code> and <code>bf2/auth-hardening</code>, with the subject-edit fix folded into the last (2026-09-23)</td>
@@ -2388,6 +2388,11 @@ shipping release, and this repository is public.</em></p>
 <td><strong>BF-168 is fixed for 15.0.9 (#8807)</strong> (2026-10-08): the context (lower) chart's time window could not always be dragged back to the current time when the chart was drawn before the page laid out; <code>lib/client/chart.js</code> now sets the brush extent from the chart's own scale and height. Display only; the same behaviour is on 15.0.8. The release head moves from <code>43289dde</code> to <code>fade2299</code> (#8598's head); run 023, a context-chart drag hand check, and #8598 re-approval are owed at <code>fade2299</code></td>
 <td><code>BFQ-168</code></td>
 <td>#8807 merged (<code>fade2299</code>)</td>
+</tr>
+<tr>
+<td><strong>BF-171 is fixed in 15.0.9 by #8815</strong> (2026-10-20; awss1i, fixes #8225): a bearer token whose subject was deleted, or lost with the database, stopped the server on the next request that carried it and again after every restart, until the token expired; it is now refused like a wrong token. Live on 15.0.8 and described by mechanism only. API v3 answers such a token 401 instead of 403</td>
+<td><code>RT-PR-8815</code></td>
+<td>#8815 merged (<code>4bca2ac2</code>)</td>
 </tr>
 <tr>
 <td><strong>BF-152 is after 15.0.9</strong> (API v3 <code>settings</code> documents are admin-only through search and history but readable by identifier with read permission): AndroidAPS's follower app reads its settings by identifier, so which side is the intended contract is a question for the AndroidAPS developers (2026-10-01)</td>

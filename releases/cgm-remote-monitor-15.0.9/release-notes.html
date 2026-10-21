@@ -3525,7 +3525,7 @@
 
 
 <h1 id="nightscout-1509--release-notes">Nightscout 15.0.9 — release notes<a class="headerlink" href="#nightscout-1509--release-notes" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-07 at <code>12ea387c1</code>.</em></p>
+<p><em>Living document, last changed 2026-10-20 at <code>da858f5e9</code>.</em></p>
 <p><strong>Draft: 15.0.9 is not yet released, and the wording may change before it is.</strong></p>
 <p><em>For people who run a Nightscout site for themselves or a family member. Nightscout is a
 secondary display, nothing in these notes is advice about insulin doses, and you should talk
@@ -3960,6 +3960,13 @@ security advisories are published.</p>
    error pages you see in a browser also stop showing the trace.</li>
 <li><strong>A kind of request to two little-used API addresses could make Nightscout stop responding
     for several seconds, and it is now refused.</strong> Nothing you see changes.</li>
+<li><strong>A sign-in token for a user that no longer exists no longer stops Nightscout.</strong> If an app
+    kept a token after you deleted its user on the admin page, or after your database was reset,
+    Nightscout stopped as soon as the app connected, and stopped again after every restart, for up
+    to 8 hours. That token is now refused like a wrong one: the admin page shows a "Failed
+    authentication" notice, and Nightscout keeps running. Give the app a new token from the admin
+    page. Apps that use the newer API (version 3) are now told such a token is not valid (401)
+    instead of not allowed (403).</li>
 </ol>
 <p><strong>What to do:</strong> upgrade. If you rely on <code>AUTH_DEFAULT_ROLES=denied</code> to keep your data private,
 this release is the one that makes the live-update connection respect it. If you use
@@ -4772,7 +4779,7 @@ corrections of behaviour that was never intended, not as new features, and nothi
 depends on the number. Sites that follow the development channel may already report <code>15.0.9</code>;
 a report from "15.0.9" made before this release is from that channel.</p>
 <hr />
-<p><em>Draft, 2026-10-08, on the development version fade2299; not yet released.</em></p>
+<p><em>Draft, 2026-10-08, on the development version fade2299, with #8815 added on 2026-10-20 at 4bca2ac2; not yet released.</em></p>
 
 
 

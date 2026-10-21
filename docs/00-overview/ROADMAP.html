@@ -2254,7 +2254,7 @@
 
 
 <h1 id="roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order">Roadmap for cgm-remote-monitor: what comes next, and in what order<a class="headerlink" href="#roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-19 at <code>c10adf924</code>.</em></p>
+<p><em>Living document, last changed 2026-10-20 at <code>da858f5e9</code>.</em></p>
 <p><em>What this is: a map of the work ahead (contributor-facing). Read after <a href="PROGRAMME-STATUS.html">programme
 status</a>; leads to <a href="NEEDS-A-HUMAN.html">work waiting on a person</a>. Prepared for the
 Nightscout project; proposed for Nightscout Foundation stewardship. Living document: prose dated
@@ -2306,16 +2306,17 @@ not measurements.</p>
 <p>Everything merged since 15.0.8 reaches operators only through 15.0.9 (queue <code>RT-0</code>, release PR</p>
 <h1 id="8598-and-every-later-step-waits-behind-it-operators-running-1508-keep-every-defect-fixed-on">8598), and every later step waits behind it. Operators running 15.0.8 keep every defect fixed on<a class="headerlink" href="#8598-and-every-later-step-waits-behind-it-operators-running-1508-keep-every-defect-fixed-on" title="Permanent link">&para;</a></h1>
 <p><code>dev</code> until it is tagged.</p>
-<p><code>dev</code> is at <code>fade2299</code> (the merge of #8807, 2026-10-08): 99 first-parent merges and 547 commits
+<p><code>dev</code> is at <code>4bca2ac2</code> (the merge of #8815, 2026-10-20): 100 first-parent merges and 549 commits
 since 15.0.8. Every PR decided for 15.0.9 is merged, including the fixes for BF-124 (#8801),
-BF-127 (#8802), the <code>proxy-addr</code> critical BF-162 (#8806) and the context-chart brush BF-168 (#8807);
+BF-127 (#8802), the <code>proxy-addr</code> critical BF-162 (#8806), the context-chart brush BF-168 (#8807)
+and BF-171, a token whose subject was deleted stopping the server (#8815, merged 2026-10-20);
 Crowdin #8730 is held out (BF-132). The
 last full run is run 023 on <code>fade2299</code> (2026-10-08), 3566/0/4 in all six cells (Node 20/22/24 ×
 MongoDB 4.4.24 and 7.0.43), with run 022's probes and a compressed A/B soak against 15.0.8; each PR
 merged after run 020 carries its own evidence. The previous six-cell run, run 022 on <code>43289dde</code>
 (2026-10-07), gave 3564/0/4. The
-real-site soak (<code>RT-SOAK</code>) is done by the maintainer's decision of 2026-09-30. Release PR #8598 is at <code>fade2299</code>,
-approved at <code>e3adc91d</code>; re-approval at <code>fade2299</code> is owed.</p>
+real-site soak (<code>RT-SOAK</code>) is done by the maintainer's decision of 2026-09-30. Release PR #8598 is at <code>4bca2ac2</code>,
+approved at <code>e3adc91d</code>; re-approval at <code>4bca2ac2</code> is owed.</p>
 <p>The version is decided: 15.0.9. <code>RT-VERSION</code>'s gate measures the modernization cut branches, which
 also declare 15.0.9 and are renumbered when they are rebased, so it holds the cuts, not this
 release.</p>
@@ -2357,7 +2358,7 @@ release.</p>
    (<a href="../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.html">browser record</a>).</li>
 <li>The version class of #8772, #8775 and #8780: a minor change shipped under the patch number as an
    exception, as #8530 was, or a different class. The maintainer is collecting data.</li>
-<li>Re-approval of #8598 at its final head, <code>fade2299</code>.</li>
+<li>Re-approval of #8598 at its final head, <code>4bca2ac2</code>.</li>
 <li>The release notes name three advisories under Known issues: BF-154 (<code>node-forge</code>, decided
    2026-10-02; low, Nightscout does not call the affected function), BF-161 (<code>braces</code>, known issue
    2026-10-07) and BF-163 (<code>compression</code>, known issue 2026-10-07). On <code>fade2299</code> (2026-10-08,

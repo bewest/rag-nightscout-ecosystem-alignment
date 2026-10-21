@@ -2254,7 +2254,7 @@
 
 
 <h1 id="programme-status--cgm-remote-monitor">Programme status — cgm-remote-monitor<a class="headerlink" href="#programme-status--cgm-remote-monitor" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>baa67a88f</code>.</em></p>
+<p><em>Living document, last changed 2026-10-20 at <code>da858f5e9</code>.</em></p>
 <p><em>What this is: a record (contributor-facing; technical throughout). Read after the
 <a href="mission.html">mission</a>; leads to the <a href="ROADMAP.html">roadmap</a>. Prepared for the Nightscout project;
 proposed for Nightscout Foundation stewardship.
@@ -2292,7 +2292,7 @@ current and the prose is stale.</p>
 <tr>
 <td><strong>Modernization</strong></td>
 <td><code>release-train</code></td>
-<td style="text-align: right;">33</td>
+<td style="text-align: right;">34</td>
 <td style="text-align: right;">5</td>
 <td style="text-align: right;">1</td>
 </tr>
@@ -2306,7 +2306,7 @@ current and the prose is stale.</p>
 <tr>
 <td></td>
 <td><strong>total</strong></td>
-<td style="text-align: right;"><strong>257</strong></td>
+<td style="text-align: right;"><strong>258</strong></td>
 <td style="text-align: right;"><strong>67</strong></td>
 <td style="text-align: right;"><strong>17</strong></td>
 </tr>
@@ -2314,8 +2314,8 @@ current and the prose is stale.</p>
 </table>
 <!-- END GENERATED: horizons -->
 
-<p><strong>Remedial</strong> — finding and fixing defects that already ship. <code>dev</code> is at <code>fade2299</code> (the merge of</p>
-<h1 id="8807-2026-10-08-99-first-parent-merges-and-547-commits-since-1508">8807, 2026-10-08): 99 first-parent merges and 547 commits since 15.0.8<a class="headerlink" href="#8807-2026-10-08-99-first-parent-merges-and-547-commits-since-1508" title="Permanent link">&para;</a></h1>
+<p><strong>Remedial</strong> — finding and fixing defects that already ship. <code>dev</code> is at <code>4bca2ac2</code> (the merge of</p>
+<h1 id="8815-2026-10-20-100-first-parent-merges-and-549-commits-since-1508">8815, 2026-10-20): 100 first-parent merges and 549 commits since 15.0.8<a class="headerlink" href="#8815-2026-10-20-100-first-parent-merges-and-549-commits-since-1508" title="Permanent link">&para;</a></h1>
 <p>(<code>git rev-list [--first-parent] --count official/master..official/dev</code>). None of it is released.</p>
 <ul>
 <li><strong>Merged.</strong> Every PR decided for 15.0.9; the PR-by-PR list is in
@@ -2325,7 +2325,8 @@ current and the prose is stale.</p>
   keep the page's access token and a refused clock says so instead of staying blank; #8806
   (BF-162), which bumps <code>proxy-addr</code> to 2.0.8 to clear the GHSA-jqcg-44mw-7w3h critical (the
   reachable path is new in 15.0.9); and #8807 (BF-168), so the context chart's time window can be
-  dragged all the way back to now.</li>
+  dragged all the way back to now; and #8815 (BF-171, merged 2026-10-20), so a token whose subject
+  was deleted is refused instead of stopping the server.</li>
 <li><strong>Tests.</strong> The last full run is run 023 on <code>fade2299</code> (2026-10-08): 3566/0/4 in all six cells
   (Node 20, 22 and 24 against MongoDB 4.4.24 and 7.0.43), with run 022's probes and an A/B soak
   against 15.0.8. Each PR merged after run 020 carries its own evidence (its GitHub CI and a full
@@ -2334,8 +2335,8 @@ current and the prose is stale.</p>
 <li><strong>Real-site soak.</strong> <code>RT-SOAK</code> is done: the maintainer decided on 2026-09-30 that real sites
   running the candidate count as the soak, and reports (2026-10-02) stable behaviour from Loop, Trio
   and AndroidAPS users on <code>dev</code>. The lab's 72 h soak was not run.</li>
-<li><strong>Release PR.</strong> #8598 (<code>dev</code> → <code>master</code>) is at <code>fade2299</code> and mergeable.
-  It was approved at <code>e3adc91d</code>; the head has since moved to <code>fade2299</code>, so re-approval there is owed.</li>
+<li><strong>Release PR.</strong> #8598 (<code>dev</code> → <code>master</code>) is at <code>4bca2ac2</code> and mergeable.
+  It was approved at <code>e3adc91d</code>; the head has since moved to <code>4bca2ac2</code>, so re-approval there is owed.</li>
 <li><strong>Version.</strong> Decided: 15.0.9. <code>RT-VERSION</code>'s gate measures the modernization cut branches, which
   also declare 15.0.9 and are renumbered when they are rebased; it holds the cuts, not this release.</li>
 <li><strong>What remains</strong> before the tag, including the queue's open <code>RT-0</code> blockers, is listed once, in <a href="ROADMAP.html#1-the-next-release-1509">ROADMAP §1</a>.</li>
@@ -2794,6 +2795,11 @@ cover more than one <code>BF-</code>:</p>
 <td><code>not-started</code></td>
 <td>BF-44, BF-45, BF-85 - MiniMed ingestion divergences and the CareLink zero reading</td>
 </tr>
+<tr>
+<td><code>RT-PR-8815</code></td>
+<td><code>merged-upstream</code></td>
+<td>#8815 - a bearer token whose subject was deleted is refused instead of stopping the server</td>
+</tr>
 </tbody>
 </table>
 <!-- END GENERATED: operator-exposure -->
@@ -2847,13 +2853,13 @@ cover more than one <code>BF-</code>:</p>
 <td></td>
 <td>6</td>
 <td></td>
-<td>13</td>
+<td>14</td>
 <td>1</td>
 <td>1</td>
 <td></td>
 <td></td>
 <td>2</td>
-<td><strong>33</strong></td>
+<td><strong>34</strong></td>
 </tr>
 <tr>
 <td><code>register-open</code></td>
@@ -2974,7 +2980,7 @@ each cut needs a reviewer other than its author before it reaches <code>dev</cod
 <tbody>
 <tr>
 <td>Maintainer</td>
-<td style="text-align: right;">222</td>
+<td style="text-align: right;">223</td>
 <td style="text-align: right;">86%</td>
 </tr>
 <tr>
@@ -3009,7 +3015,7 @@ each cut needs a reviewer other than its author before it reaches <code>dev</cod
 </tr>
 <tr>
 <td><strong>total</strong></td>
-<td style="text-align: right;"><strong>257</strong></td>
+<td style="text-align: right;"><strong>258</strong></td>
 <td style="text-align: right;"></td>
 </tr>
 </tbody>
@@ -3040,7 +3046,7 @@ expanded in <a href="NEEDS-A-HUMAN.html">NEEDS-A-HUMAN.md</a>.</p>
 <tbody>
 <tr>
 <td><code>RT-0</code></td>
-<td>Release 15.0.9 (PR #8598 at <code>dev</code> <code>fade2299</code>).</td>
+<td>Release 15.0.9 (PR #8598 at <code>dev</code> <code>4bca2ac2</code>).</td>
 <td>Every merged fix reaches operators only through it, and every later cut waits behind it. What remains before the tag is in <a href="ROADMAP.html#1-the-next-release-1509">ROADMAP §1</a>.</td>
 </tr>
 <tr>
