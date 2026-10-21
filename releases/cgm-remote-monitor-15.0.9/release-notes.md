@@ -38,7 +38,7 @@ separately.
 - **API v1 accepts a fixed list of query operators.** Any other operator, and the undocumented
   `pipeline` option on the count endpoints, is refused with an HTTP 400 that names it. (#8743)
 - **Two shared read routes check per-collection read permission**, and the alarm socket no longer
-  logs credentials. These are backports from #8605. (#8751)
+  logs credentials. (#8751)
 - **The admin page no longer stores a subject's access token in readable form when the subject is
   edited.** Copies written by earlier releases stay in the database until those tokens are
   rotated. (#8754)
@@ -242,7 +242,7 @@ sees.
   the server log says so.
 - The Bolus Wizard Preview uses the profile's sensitivity and targets unconverted, so where the
   profile's units differ from the display units, its estimate and warning are off by a factor of
-  about 18. Reported with a proposed fix by @javier-erro (#8819). The careportal's Bolus Wizard has
+  about 18. The careportal's Bolus Wizard has
   the same unit mix, and its profile picker saves the chosen profile's name with the active
   profile's values. All three are unchanged since 15.0.8.
 - A page with no current glucose reading does not present server alarms, including device
@@ -299,8 +299,7 @@ also to @sulkaharo for the Crowdin syncs, and to the Crowdin translators.
 @stevoh6 and @Tuphal.
 
 **nightscout-connect 0.1.0** includes work from @erikpendragon, @HockeyTrafalgar,
-@lukas-slansky, @lsandini and @ryceg, and an idea from @highflyer123.
+@lukas-slansky, @lsandini and @ryceg.
 
 **Testers**: thanks to the Loop, Trio and AndroidAPS users who ran the development version on
-their own sites for weeks before this release. Thanks also to @javier-erro, whose review of this
-release found the Bolus Wizard Preview units issue.
+their own sites for weeks before this release.
