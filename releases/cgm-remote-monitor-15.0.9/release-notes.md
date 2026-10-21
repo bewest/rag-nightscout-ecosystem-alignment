@@ -7,7 +7,9 @@
 - making records consistent between API v1, API v3 and the websocket, which is what AndroidAPS,
   Loop, Trio, xDrip+ and the careportal each use;
 - correcting alarms and displays that had never worked as documented;
-- stopping several ways a single request could stop the server.
+- stopping several ways a single request could stop the server;
+- defining how the server treats the request shapes real clients send, checked against those
+  clients and against 15.0.8.
 
 ## Highlights
 
@@ -23,6 +25,7 @@
 - **nightscout-connect 0.1.0**, the built-in CGM connector, no longer writes CGM account details
   to the log, and it backs off properly after a service outage.
 - **Quieter logs by default**, with opt-in debug settings.
+- **A test suite more than twice the size**: 3,566 passing tests, against 1,533 on 15.0.8.
 
 ## Security
 
@@ -227,7 +230,22 @@ sees.
   #8586)
 - **Translations from Crowdin.** (#8599, #8603)
 
-## Upgrade notes
+## Testing and compatibility
+
+The largest area of change in this release is the test suite. Tests make up 143 of the 314 files
+changed and 21,641 of the 30,337 lines added; `lib/` accounts for 5,126. The suite grew from
+1,533 passing tests on 15.0.8 to 3,566 in the last full run before release. That run covered
+Node 20, 22 and 24 against MongoDB 4.4 and 7.0, with 0 failing.
+
+The compatibility behaviour in this release was decided against what clients actually send:
+
+- **A client survey.** The source of 40 client projects was surveyed: uploaders, AID apps,
+  followers, reports and tools.
+- **Replay probes.** Thirteen probes sent those clients' request shapes to 15.0.8 and to the
+  development version. The `count`, filter and identity handling described above follows from those results.
+- **A side-by-side soak.** 15.0.8 and the release candidate received the same traffic. Their replies were
+  compared against a list of intended differences.
+
 
 - Node.js 20 or later is required. Node 20, 22 and 24 are tested.
 - MongoDB 4.4 is deprecated. MongoDB 5.0 and 6.0 are supported.
