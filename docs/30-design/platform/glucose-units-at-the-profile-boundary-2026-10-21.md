@@ -101,7 +101,7 @@ the next consumer that forgets.
 
 | # | question | options |
 |---|---|---|
-| UD1 | Do BF-173 and BF-174 go into the 15.0.9 notes as known issues, like BF-172? | name them / leave them for the next release's notes |
+| UD1 | Do BF-173 and BF-174 go into the 15.0.9 notes as known issues, like BF-172? | **decided 2026-10-21:** named, without ids, beside BF-172 in the rewritten release notes (`9ed4a5441`) |
 | UD2 | Land U0 as three small PRs, or wait for U1 and land one change? | U0 first, then U1 as a refactor that keeps U0's tests green / U1 only |
 | UD3 | U1's form | optional `units` argument (the smallest change, matches the existing signatures) / a converted view `profile.inUnits(units)` |
 | UD4 | A profile without `units` (U4) | keep reading it as mg/dl / infer mmol/L below a threshold, as oref0 (20) and Nightscout's alarm thresholds (50) do / report it as unreadable for unit-sensitive consumers (A11) |

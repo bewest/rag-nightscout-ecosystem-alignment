@@ -13228,7 +13228,7 @@ items:
       release notes; #8819 is based on fade2299 and needs dev merged in before
       it lands, after 15.0.9.
   - id: BFQ-173
-    title: "BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units"
+    title: "BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units, a known issue of 15.0.9"
     parcel: register-open
     repo: cgm-remote-monitor
     branch: bf/boluscalc-profile-units
@@ -13272,10 +13272,10 @@ items:
       2 controls pass. 257 passing across the profile, boluscalc, careportal,
       BWP, basal profile, IOB, COB, plugins, profile editor, units, sandbox,
       Loop and OpenAPS suites; full suite not run. Filed after the 15.0.9
-      readiness decision; whether 15.0.9's notes name it is decision UD1 in the
-      design note.
+      readiness decision; named in 15.0.9's release notes as a known issue
+      (9ed4a5441, 2026-10-21), which settles UD1 in the design note.
   - id: BFQ-174
-    title: "BF-174 - the bolus calculator's profile picker is ignored; every value comes from the active profile"
+    title: "BF-174 - the bolus calculator's profile picker is ignored; every value comes from the active profile, a known issue of 15.0.9"
     parcel: register-open
     repo: cgm-remote-monitor
     branch: bf/profile-spec-honoured
@@ -13315,7 +13315,8 @@ items:
       full suite not run. A scratch merge with bf/boluscalc-profile-units and
       #8819 passes 266 (#8819's getUnits(sbx.time) falls back to the active
       profile). Broken since 14.0.0 by #5572 and #5729 (2020). Filed after the
-      15.0.9 readiness decision.
+      15.0.9 readiness decision; named in 15.0.9's release notes as a known
+      issue (9ed4a5441, 2026-10-21).
   - id: RT-PR-8815
     title: "#8815 - a bearer token whose subject was deleted is refused instead of stopping the server (awss1i; BF-171, fixes #8225), merged for 15.0.9"
     parcel: release-train

@@ -177,7 +177,7 @@ cover more than one `BF-`:
 | `BFQ-169` | `not-started` | BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a  |
 | `BFQ-170` | `not-started` | BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent |
 | `BFQ-172` | `in-flight-upstream` | BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819  |
-| `BFQ-173` | `blocked` | BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units |
+| `BFQ-173` | `blocked` | BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units, a k |
 | `BFQ-174` | `blocked` | BF-174 - the bolus calculator's profile picker is ignored; every value comes from the acti |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `in-progress` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
