@@ -1,4 +1,4 @@
-# Nightscout 15.0.9
+# Release 15.0.9 — Cinnamon Muffin
 
 15.0.9 is a bug-fix and security release. It brings 100 pull requests (549 commits) merged since
 15.0.8. Its main themes:

@@ -1,4 +1,4 @@
-cgm-remote-monitor 15.0.9
+cgm-remote-monitor 15.0.9 Cinnamon Muffin
 
 Test evidence: the last full release-candidate run is run 023 on
 fade2299 (2026-10-08), 3566/0/4 in all six cells (Node 20/22/24 x
