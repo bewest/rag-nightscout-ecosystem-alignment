@@ -2345,6 +2345,8 @@
       
         
       
+        
+      
     
     
     
@@ -4652,17 +4654,30 @@
 
 
 <h1 id="1509-integration-record">15.0.9 integration record<a class="headerlink" href="#1509-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-20 at <code>da858f5e9</code>.</em></p>
+<p><em>Living document, last changed 2026-10-21 at <code>59b35119d</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 15.0.9 candidate was assembled
 and tested. Item state is in <code>queue/work-queue.yaml</code> (<code>RT-0</code>); defect facts are in the
 <a href="nightscout-backfix-register.html">backfix register</a>; release contents are in
 <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html">releases/cgm-remote-monitor-15.0.9</a>.
-Several units fix defects that are live on the shipping release (15.0.8, <code>official/master</code>
-<code>92d08342</code>), so this record describes mechanisms only.</em></p>
+Several units fixed defects that were live on 15.0.8 (<code>official/master</code> <code>92d08342</code>) and are
+live for anyone who has not upgraded, so this record describes mechanisms only. 15.0.9 was
+released on 2026-10-21 (tag <code>v15.0.9</code>, <code>master</code> <code>c6a0d8ed</code>).</em></p>
 <p><strong>Where the candidate stands, 2026-10-08.</strong> The candidate is <code>official/dev</code> <code>fade2299</code> (tree
 <code>0bdc42f6</code>, package version 15.0.9), merged 2026-10-08 00:47Z. 15.0.8..<code>fade2299</code>: 547 commits, 99
 first-parent merges, 313 files, +30264/−1936 (<code>git rev-list --count</code>, <code>--first-parent --count</code> and <code>git diff --shortstat</code>
 <code>official/master official/dev</code>). There is no <code>15.0.9</code> tag. Crowdin #8730 (BF-132) is held out.</p>
+<p><strong>2026-10-21: released as 15.0.9.</strong> The maintainer merged #8598 at 20:09:51Z as <code>official/master</code>
+<code>c6a0d8ed</code> (a merge commit; parents <code>92d08342</code> and <code>4bca2ac2</code>; tree <code>c53c2c7f</code>, the same as
+<code>4bca2ac2</code>'s, so the released code is the candidate below byte for byte) and published the GitHub
+release <code>v15.0.9</code> ("Release 15.0.9 Cinnamon Muffin", Latest, 20:21:31Z; tag <code>v15.0.9</code> on
+<code>c6a0d8ed</code>; body <a href="../../../releases/cgm-remote-monitor-15.0.9/release-notes.html">release-notes.md</a>).
+Review state at merge: <code>reviewDecision</code> <code>APPROVED</code>, both approvals the maintainer's at <code>e3adc91d</code>
+(2026-09-26 00:39Z), not repeated at <code>4bca2ac2</code>. CI on <code>master</code> (run 39667944235): attempt 1
+failed in the Node 20 / MongoDB 6 cell's <code>npm install</code> (<code>npm error network read ECONNRESET</code>,
+before any test) and fail-fast cancelled the other eight cells, so the Docker jobs were skipped;
+attempt 2 passed all nine test cells, both Docker builds (amd64, arm64) and <em>Publish to Docker
+Hub</em>; <em>Validate Docker image</em> was skipped. CodeQL on <code>c6a0d8ed</code> passed. No test run of this
+programme was repeated on <code>c6a0d8ed</code>: run 023 on <code>fade2299</code> stays the last full local run.</p>
 <p><strong>2026-10-20: #8815 merged, and <code>dev</code> is <code>4bca2ac2</code></strong> (tree <code>c53c2c7f</code>, parents <code>fade2299</code> and
 <code>93a74ce5</code>, merged 23:57Z; 15.0.8..<code>4bca2ac2</code>: 549 commits, 100 first-parent merges, 314 files,
 +30337/−1938). Every PR decided for 15.0.9 is merged. #8815 (BF-171) changes
@@ -4699,13 +4714,13 @@ image) and CodeQL green, and the BF-171 reproduction on <code>93a74ce5</code> (r
   affected function), <code>braces</code> (BF-161, known issue), <code>compression</code> (BF-163, known issue) and
   <code>source-map-js</code> (build time only).
   Triage: <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html#the-9-high-findings-on-fade2299">contents</a>.</li>
-<li><strong>Still owed before the tag:</strong> the browser hand checks listed under
-  <a href="#what-the-current-run-does-not-cover">What the current run does not cover</a>, now including a
-  context-chart drag check on <code>lib/client/chart.js</code> (#8807); the version class of
-  #8772, #8775 and #8780; re-approval of the release PR #8598 at <code>fade2299</code> (its two approvals
-  were given on <code>e3adc91d</code>); the tag, by the maintainer. The release notes name BF-154 (<code>node-forge</code>),
-  BF-161 (<code>braces</code>) and BF-163 (<code>compression</code>) under Known issues, and #8807 (BF-168) as a fix. #8598's
-  head is <code>fade2299</code>. The release notes and tag message are drafted on <code>fade2299</code>.</li>
+<li><strong>Decided 2026-10-21 (the maintainer and Andy Low): the candidate <code>4bca2ac2</code> is ready.</strong> Many days on
+  varied real Nightscout set-ups with no complaints from the testing cohort stand in place of the browser
+  hand checks listed under <a href="#what-the-current-run-does-not-cover">What the current run does not cover</a>,
+  which were not done separately. Left: re-approval of #8598 at <code>4bca2ac2</code>, its merge and the tag. The
+  release notes name BF-154 (<code>node-forge</code>), BF-161 (<code>braces</code>), BF-163 (<code>compression</code>), the
+  <code>follow-redirects</code> advisories published 2026-10-20 and BF-172 (Bolus Wizard Preview units) under
+  Known issues; <code>npm audit</code> on <code>4bca2ac2</code> (2026-10-21) is 26 findings, 11 high, 0 critical.</li>
 </ul>
 <p>This record has five parts:</p>
 <ul>

@@ -1093,7 +1093,7 @@
   <span class="md-ellipsis">
     
   
-    Nightscout 15.0.9 — release notes
+    Release 15.0.9 — Cinnamon Muffin
   
 
     
@@ -2231,9 +2231,9 @@
 
 
 <h1 id="cgm-remote-monitor-1509--decisions">cgm-remote-monitor 15.0.9 — decisions<a class="headerlink" href="#cgm-remote-monitor-1509--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-20 at <code>da858f5e9</code>.</em></p>
+<p><em>Living document, last changed 2026-10-21 at <code>59ab75fbe</code>.</em></p>
 <p><em>Contributor-facing. Living record of the maintainer's decisions that shape 15.0.9, taken
-2026-09-22 to 2026-10-20, as of <code>dev</code> <code>4bca2ac2</code> (2026-10-20). Each row states the decision as it stands. Item state is in
+2026-09-22 to 2026-10-21, as of <code>dev</code> <code>4bca2ac2</code> (2026-10-21). Each row states the decision as it stands. Item state is in
 <code>queue/work-queue.yaml</code>; what 15.0.9 contains and what is still open before the tag is in
 <a href="contents.html">contents.md</a>; the test evidence is in the
 <a href="../../docs/30-design/remedial/rc-15.0.9-integration-record.html">15.0.9 integration record</a>.
@@ -2249,6 +2249,16 @@ shipping release, and this repository is public.</em></p>
 </tr>
 </thead>
 <tbody>
+<tr>
+<td><strong>Code name: Cinnamon Muffin</strong> (2026-10-21). The 15 series uses muffins: 15.0.0 Apple Gluten Free, 15.0.7 Blueberry, 15.0.8 Chocolate Chip. GitHub release title "Release 15.0.9 Cinnamon Muffin"; the notes open "# Release 15.0.9 — Cinnamon Muffin", as 15.0.8's did</td>
+<td><code>RT-0</code></td>
+<td>in the release notes and tag message</td>
+</tr>
+<tr>
+<td><strong>The candidate <code>4bca2ac2</code> is ready to release</strong> (2026-10-21, the maintainer and Andy Low): many days on varied real Nightscout set-ups with no complaints from the testing cohort stand in place of the browser hand checks still listed as owed. The <code>follow-redirects</code> advisories (GHSA-q3jh, GHSA-8r9p, published 2026-10-20; read as not reachable) and BF-172 (the Bolus Wizard Preview mixes profile and display units; on 15.0.8 too; #8819 proposed) are <strong>known issues</strong>, named in the release notes</td>
+<td><code>RT-0</code></td>
+<td>#8598 re-approval, merge and tag remain</td>
+</tr>
 <tr>
 <td>The <code>dev</code> → <code>master</code> release is numbered <strong>15.0.9</strong>, the number <code>dev</code>'s <code>package.json</code> carries (2026-09-22). Reads tolerate the <code>count</code> shapes oref0 and GluPredKit send, so 15.0.9 stays a patch (2026-09-24)</td>
 <td><code>RT-VERSION</code>, <code>RT-COUNT-COMPAT</code></td>

@@ -3120,6 +3120,8 @@
       
         
       
+        
+      
     
     
     
@@ -5790,7 +5792,7 @@
 
 
 <h1 id="semver-and-release-versioning-policy--cgm-remote-monitor-and-nightscout-connect">Semver and release versioning policy — cgm-remote-monitor and nightscout-connect<a class="headerlink" href="#semver-and-release-versioning-policy--cgm-remote-monitor-and-nightscout-connect" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-09-26 at <code>be5adcc3e</code>.</em></p>
+<p><em>Living document, last changed 2026-10-21 at <code>59b35119d</code>.</em></p>
 <p><em>Contributor- and maintainer-facing. Full technical depth is intended. Operator-facing text
 derived from this document has its own rules — §5.6.</em></p>
 <p><strong>Status: living document.</strong> Three parts with different standing:</p>
@@ -5824,7 +5826,7 @@ is 498 commits and 82 first-parent merges.</p>
 (where the two disagree, this document is the later position);
 <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html">15.0.9 contents</a>;
 <a href="../remedial/nightscout-backfix-register.html">backfix register</a> (defect facts);
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/da858f5e9c93924cf74183716fad66db55cdae6f/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> (item state);
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/d473ad816a6fa95c809aedec66365f5eac9f6d27/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> (item state);
 <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>
 (decisions D1–D17, cited here by number).</p>
 <hr />
@@ -7385,8 +7387,9 @@ deployments already answer <code>/api/v1/status</code> with <code>15.0.9</code>;
 report from "15.0.9" made before the release is from that channel.</p>
 <p><strong>The cut branches still claim <code>15.0.9</code></strong> (§5.1, D-b); each is renumbered when it is rebased
 (maintainer, 2026-09-23, <code>RT-VERSION</code>).</p>
-<p>What stands between dev and the tag is queue <code>RT-0</code>'s notes, generated on
-<a href="../../00-overview/ROADMAP.html#1-the-next-release-1509">ROADMAP §1</a>. Release PR #8598 (dev → master)
+<p><em>2026-10-21: 15.0.9 is released</em> (tag <code>v15.0.9</code>, <code>master</code> <code>c6a0d8ed</code>, the merge of #8598 at <code>dev</code>
+<code>4bca2ac2</code>); the rest of this paragraph is as written before the release. What stood between dev and the tag is queue <code>RT-0</code>'s notes, generated on
+<a href="../../00-overview/ROADMAP.html#1-1509-is-released-the-next-development-cycle">ROADMAP §1</a>. Release PR #8598 (dev → master)
 is at <code>ce7d754a</code>, mergeable, with 27 checks green and 3 skipped, and <code>APPROVED</code> by the maintainer
 (2026-09-26 00:39Z, at <code>e3adc91d</code>). The last full test run is run 018 on <code>ff93fa94</code>, one merge
 before <code>ce7d754a</code> (3396/0/3 in all six cells;

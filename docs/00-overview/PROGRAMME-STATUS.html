@@ -2254,12 +2254,13 @@
 
 
 <h1 id="programme-status--cgm-remote-monitor">Programme status — cgm-remote-monitor<a class="headerlink" href="#programme-status--cgm-remote-monitor" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-20 at <code>da858f5e9</code>.</em></p>
+<p><em>Living document, last changed 2026-10-21 at <code>59b35119d</code>.</em></p>
 <p><em>What this is: a record (contributor-facing; technical throughout). Read after the
 <a href="mission.html">mission</a>; leads to the <a href="ROADMAP.html">roadmap</a>. Prepared for the Nightscout project;
 proposed for Nightscout Foundation stewardship.
 Prose revised 2026-10-08 against cgm-remote-monitor <code>official/dev</code> <code>fade2299</code> and
-<code>official/master</code> <code>92d08342</code> (tag <code>15.0.8</code>). The tables are generated from
+<code>official/master</code> <code>92d08342</code> (tag <code>15.0.8</code>); the remedial horizon and the register paragraph
+2026-10-21, against <code>official/master</code> <code>c6a0d8ed</code> (tag <code>v15.0.9</code>). The tables are generated from
 <code>queue/work-queue.yaml</code>; see <a href="#how-to-check-any-of-this-yourself">How to check any of this yourself</a>.</em></p>
 <p>This page answers "where is the work, and what is it waiting for" across the three
 horizons the project runs in parallel. The detail lives in the queue, the backfix
@@ -2285,16 +2286,16 @@ current and the prose is stale.</p>
 <tr>
 <td><strong>Remedial</strong></td>
 <td><code>phase0</code>, <code>register-open</code>, <code>docs-truth</code></td>
-<td style="text-align: right;">155</td>
+<td style="text-align: right;">158</td>
 <td style="text-align: right;">45</td>
-<td style="text-align: right;">7</td>
+<td style="text-align: right;">8</td>
 </tr>
 <tr>
 <td><strong>Modernization</strong></td>
 <td><code>release-train</code></td>
 <td style="text-align: right;">34</td>
 <td style="text-align: right;">5</td>
-<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
 </tr>
 <tr>
 <td><strong>Multitenant</strong></td>
@@ -2306,7 +2307,7 @@ current and the prose is stale.</p>
 <tr>
 <td></td>
 <td><strong>total</strong></td>
-<td style="text-align: right;"><strong>258</strong></td>
+<td style="text-align: right;"><strong>261</strong></td>
 <td style="text-align: right;"><strong>67</strong></td>
 <td style="text-align: right;"><strong>17</strong></td>
 </tr>
@@ -2314,33 +2315,18 @@ current and the prose is stale.</p>
 </table>
 <!-- END GENERATED: horizons -->
 
-<p><strong>Remedial</strong> — finding and fixing defects that already ship. <code>dev</code> is at <code>4bca2ac2</code> (the merge of</p>
-<h1 id="8815-2026-10-20-100-first-parent-merges-and-549-commits-since-1508">8815, 2026-10-20): 100 first-parent merges and 549 commits since 15.0.8<a class="headerlink" href="#8815-2026-10-20-100-first-parent-merges-and-549-commits-since-1508" title="Permanent link">&para;</a></h1>
-<p>(<code>git rev-list [--first-parent] --count official/master..official/dev</code>). None of it is released.</p>
-<ul>
-<li><strong>Merged.</strong> Every PR decided for 15.0.9; the PR-by-PR list is in
-  <a href="../../releases/cgm-remote-monitor-15.0.9/contents.html">the release contents</a>. Crowdin #8730 is
-  held out (BF-132). The connector fixes are in <code>nightscout-connect</code> <code>0.1.0</code>, released 2026-09-24,
-  which <code>dev</code> pins exactly (#8762). The last in: #8802 (BF-127), clock views opened from the menu
-  keep the page's access token and a refused clock says so instead of staying blank; #8806
-  (BF-162), which bumps <code>proxy-addr</code> to 2.0.8 to clear the GHSA-jqcg-44mw-7w3h critical (the
-  reachable path is new in 15.0.9); and #8807 (BF-168), so the context chart's time window can be
-  dragged all the way back to now; and #8815 (BF-171, merged 2026-10-20), so a token whose subject
-  was deleted is refused instead of stopping the server.</li>
-<li><strong>Tests.</strong> The last full run is run 023 on <code>fade2299</code> (2026-10-08): 3566/0/4 in all six cells
-  (Node 20, 22 and 24 against MongoDB 4.4.24 and 7.0.43), with run 022's probes and an A/B soak
-  against 15.0.8. Each PR merged after run 020 carries its own evidence (its GitHub CI and a full
-  suite on its branch). The previous six-cell run, run 022 on <code>43289dde</code> (2026-10-07), gave 3564/0/4
-  (<a href="../30-design/remedial/rc-15.0.9-integration-record.html">15.0.9 integration record</a>).</li>
-<li><strong>Real-site soak.</strong> <code>RT-SOAK</code> is done: the maintainer decided on 2026-09-30 that real sites
-  running the candidate count as the soak, and reports (2026-10-02) stable behaviour from Loop, Trio
-  and AndroidAPS users on <code>dev</code>. The lab's 72 h soak was not run.</li>
-<li><strong>Release PR.</strong> #8598 (<code>dev</code> → <code>master</code>) is at <code>4bca2ac2</code> and mergeable.
-  It was approved at <code>e3adc91d</code>; the head has since moved to <code>4bca2ac2</code>, so re-approval there is owed.</li>
-<li><strong>Version.</strong> Decided: 15.0.9. <code>RT-VERSION</code>'s gate measures the modernization cut branches, which
-  also declare 15.0.9 and are renumbered when they are rebased; it holds the cuts, not this release.</li>
-<li><strong>What remains</strong> before the tag, including the queue's open <code>RT-0</code> blockers, is listed once, in <a href="ROADMAP.html#1-the-next-release-1509">ROADMAP §1</a>.</li>
-</ul>
+<p><strong>Remedial</strong> — finding and fixing defects that already ship. 15.0.9 was released on 2026-10-21: #8598 merged as <code>master</code> <code>c6a0d8ed</code> (tree <code>c53c2c7f</code>, the same as
+<code>dev</code> <code>4bca2ac2</code>'s), GitHub release <code>v15.0.9</code> "Release 15.0.9 Cinnamon Muffin", Latest, and the
+<code>15.0.9</code> and <code>latest</code> Docker images published by the <code>master</code> CI run (39667944235, second attempt;
+the first failed in one cell's <code>npm install</code> on <code>ECONNRESET</code> before any test ran). It carries 549
+commits and 100 first-parent merges since 15.0.8, among them the fixes for two published-advisory
+defects that survive <code>AUTH_DEFAULT_ROLES=denied</code>, GHSA-gjhc (BF-79, #8744) and GHSA-8849 (BF-75/76,</p>
+<h1 id="8745-the-boot-notice-for-world-readable-sites-8746-and-the-two-backported-security-fixes">8745), the boot notice for world-readable sites (#8746), and the two backported security fixes<a class="headerlink" href="#8745-the-boot-notice-for-world-readable-sites-8746-and-the-two-backported-security-fixes" title="Permanent link">&para;</a></h1>
+<p>(BF-104, BF-105, #8751). Operators who have not upgraded from 15.0.8 still have all of them. Both
+approvals of #8598 were the maintainer's, at <code>e3adc91d</code>; they were not repeated at <code>4bca2ac2</code>. The
+release rests on the maintainers' readiness decision of 2026-10-21; its known issues and what is
+left (the plain <code>15.0.9</code> tag, the next development cycle) are in
+<a href="ROADMAP.html#1-1509-is-released-the-next-development-cycle">ROADMAP §1</a>.</p>
 <p>The <a href="../30-design/remedial/nightscout-backfix-register.html">backfix register</a> holds the defect facts;
 <code>make queue-coverage</code> proves the queue names every entry that is not fixed.</p>
 <p><strong>Modernization</strong> — bringing dependencies and code up to date. The adopted release
@@ -2412,11 +2398,9 @@ replacement.</p>
 <p><strong>In the backfix register, neither <code>fixed</code> nor <code>merged</code> means an operator is safe.</strong>
 <code>fixed</code> means repaired on a branch that has not been merged. <code>merged</code> means merged
 into <code>origin/dev</code> and not released. <code>released</code> means in a tagged release operators
-run, and no programme fix is released: <code>official/master</code> is 545 commits behind <code>dev</code>
-(<code>git -C externals/cgm-remote-monitor-official rev-list --count official/master..official/dev</code>,
-2026-10-03) and the shipping tag is 15.0.8. Merging to <code>dev</code> publishes a Docker Hub
-image; that is not a release. <code>RT-0</code> (release 15.0.9) is the item that changes this.
-If a defect marked <code>fixed</code> or <code>merged</code> exists in 15.0.8, anyone running 15.0.8 still has it.</p>
+run. 15.0.9 (<code>RT-0</code>) was released on 2026-10-21 (tag <code>v15.0.9</code>, <code>master</code> <code>c6a0d8ed</code>), so every
+entry merged before then is <code>released 15.0.9</code>. Merging to <code>dev</code> publishes a Docker Hub
+image; that is not a release. If a defect marked <code>fixed</code> or <code>merged</code> exists in 15.0.9, anyone running 15.0.9 still has it; anyone still on 15.0.8 also has every <code>released 15.0.9</code> entry.</p>
 <p>The size of that, from the register's §1 (the section whose defects reach existing operators),
 measured 2026-10-07 with <code>node tools/queue/gates/register-exposure-legend.js</code>: <strong>120 defects</strong>
 (BF-12, invalid, BF-41, closed, and BF-71, closed as working as intended, excluded) — 27 <code>open</code>,
@@ -2442,7 +2426,7 @@ cover more than one <code>BF-</code>:</p>
 <tbody>
 <tr>
 <td><code>ADV-ALARM</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76)</td>
 </tr>
 <tr>
@@ -2452,7 +2436,7 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>ADV-RETRO</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79)</td>
 </tr>
 <tr>
@@ -2462,7 +2446,7 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-04</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-04 - the v1 operator allowlist - superseded by P0-K</td>
 </tr>
 <tr>
@@ -2472,7 +2456,7 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-10</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-10 - mongod fatal-asserts at Docker's default nofile=1024</td>
 </tr>
 <tr>
@@ -2487,112 +2471,112 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-102</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatu</td>
 </tr>
 <tr>
 <td><code>BFQ-103</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-103 - a split drag stores the old time, so IOB and COB ignore the move</td>
 </tr>
 <tr>
 <td><code>BFQ-107</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-107 - a failed treatments query ends the Nightscout process on 15.0.8</td>
 </tr>
 <tr>
 <td><code>BFQ-111</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-111 - find[_id][$in] misses records stored with a string _id, for reads and bulk delete</td>
 </tr>
 <tr>
 <td><code>BFQ-112</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-112 - an auth subject created with a hex _id is stored as a string and cannot be delete</td>
 </tr>
 <tr>
 <td><code>BFQ-114</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-114 - an AAPS open-ended loop disable keeps loop and pump alerts off after the loop is</td>
 </tr>
 <tr>
 <td><code>BFQ-115</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-115 - an entry or treatment with an unusable _id is stored with it, and one such value</td>
 </tr>
 <tr>
 <td><code>BFQ-117</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-117 - an API v3 DELETE of a record stored twice leaves one copy valid; on #8758 v3 read</td>
 </tr>
 <tr>
 <td><code>BFQ-118</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-118 - on an mmol site, targets set without BG_HIGH are never converted, so low alarms c</td>
 </tr>
 <tr>
 <td><code>BFQ-119</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-119 - PUMP_WARN_ON_SUSPEND never raises a suspended-pump warning (issue #5622)</td>
 </tr>
 <tr>
 <td><code>BFQ-120</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-120 - the clock view shows an old reading as current when its data fetch fails (issue #</td>
 </tr>
 <tr>
 <td><code>BFQ-121</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-121 - two carb entries at the same time are stored as one, and the carbs of one are los</td>
 </tr>
 <tr>
 <td><code>BFQ-122</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-122 - records written, changed or deleted through API v1 never appear in API v3 history</td>
 </tr>
 <tr>
 <td><code>BFQ-123</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb rat</td>
 </tr>
 <tr>
 <td><code>BFQ-125</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every</td>
 </tr>
 <tr>
 <td><code>BFQ-126</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-126 - an authorization subject without a name ends the server at every boot (issue #711</td>
 </tr>
 <tr>
 <td><code>BFQ-127</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-127 - clock views opened from the menu are blank for a token viewer on a site that deni</td>
 </tr>
 <tr>
 <td><code>BFQ-128</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue</td>
 </tr>
 <tr>
 <td><code>BFQ-129</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500</td>
 </tr>
 <tr>
 <td><code>BFQ-133</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one</td>
 </tr>
 <tr>
 <td><code>BFQ-134</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open</td>
 </tr>
 <tr>
 <td><code>BFQ-136</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-136 - API v3 refuses an AndroidAPS write that lands on a record written through v1 (Fie</td>
 </tr>
 <tr>
@@ -2602,7 +2586,7 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-142</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-142 - API v3 DELETE answers 404 for a record whose stored identifier is 0 or an array,</td>
 </tr>
 <tr>
@@ -2612,12 +2596,12 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-146</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-146 - API v3 treatments are held in the server's memory without mills: a late or edited</td>
 </tr>
 <tr>
 <td><code>BFQ-147</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-147 - two package.json overrides hold ajv and request's form-data inside published advi</td>
 </tr>
 <tr>
@@ -2682,7 +2666,7 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-168</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-168 - the context chart's window sometimes cannot be dragged back to now</td>
 </tr>
 <tr>
@@ -2696,8 +2680,23 @@ cover more than one <code>BF-</code>:</p>
 <td>BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent</td>
 </tr>
 <tr>
+<td><code>BFQ-172</code></td>
+<td><code>in-flight-upstream</code></td>
+<td>BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819</td>
+</tr>
+<tr>
+<td><code>BFQ-173</code></td>
+<td><code>blocked</code></td>
+<td>BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units, a k</td>
+</tr>
+<tr>
+<td><code>BFQ-174</code></td>
+<td><code>blocked</code></td>
+<td>BF-174 - the bolus calculator's profile picker is ignored; every value comes from the acti</td>
+</tr>
+<tr>
 <td><code>BFQ-40</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion</td>
 </tr>
 <tr>
@@ -2707,7 +2706,7 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-47</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-47 - an ordinary subject edit destroys stored fields, on today's release</td>
 </tr>
 <tr>
@@ -2722,7 +2721,7 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-69</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing</td>
 </tr>
 <tr>
@@ -2737,17 +2736,17 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-87</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-87 - the root qs override holds the connector below its range and pins the server's que</td>
 </tr>
 <tr>
 <td><code>BFQ-90</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-90 - an alarm at a page with no reading throws in the client</td>
 </tr>
 <tr>
 <td><code>BFQ-91</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-91 - connector capture mode cannot find trace-axios for two sources</td>
 </tr>
 <tr>
@@ -2767,7 +2766,7 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-98</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not rep</td>
 </tr>
 <tr>
@@ -2797,7 +2796,7 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>RT-PR-8815</code></td>
-<td><code>merged-upstream</code></td>
+<td><code>released</code></td>
 <td>#8815 - a bearer token whose subject was deleted is refused instead of stopping the server</td>
 </tr>
 </tbody>
@@ -2819,7 +2818,7 @@ cover more than one <code>BF-</code>:</p>
 <th><code>ready-to-push</code></th>
 <th><code>blocked</code></th>
 <th><code>in-flight-upstream</code></th>
-<th><code>merged-upstream</code></th>
+<th><code>released</code></th>
 <th><code>needs-decision</code></th>
 <th><code>done</code></th>
 <th><code>unsettled</code></th>
@@ -2853,8 +2852,8 @@ cover more than one <code>BF-</code>:</p>
 <td></td>
 <td>6</td>
 <td></td>
-<td>14</td>
-<td>1</td>
+<td>15</td>
+<td></td>
 <td>1</td>
 <td></td>
 <td></td>
@@ -2867,15 +2866,15 @@ cover more than one <code>BF-</code>:</p>
 <td>3</td>
 <td>1</td>
 <td>1</td>
-<td>11</td>
-<td>1</td>
+<td>13</td>
+<td>2</td>
 <td>55</td>
 <td>4</td>
 <td></td>
 <td></td>
 <td>3</td>
 <td></td>
-<td><strong>114</strong></td>
+<td><strong>117</strong></td>
 </tr>
 <tr>
 <td><code>tenancy</code></td>
@@ -2980,8 +2979,8 @@ each cut needs a reviewer other than its author before it reaches <code>dev</cod
 <tbody>
 <tr>
 <td>Maintainer</td>
-<td style="text-align: right;">223</td>
-<td style="text-align: right;">86%</td>
+<td style="text-align: right;">226</td>
+<td style="text-align: right;">87%</td>
 </tr>
 <tr>
 <td>SECURITY reviewer</td>
@@ -3015,7 +3014,7 @@ each cut needs a reviewer other than its author before it reaches <code>dev</cod
 </tr>
 <tr>
 <td><strong>total</strong></td>
-<td style="text-align: right;"><strong>258</strong></td>
+<td style="text-align: right;"><strong>261</strong></td>
 <td style="text-align: right;"></td>
 </tr>
 </tbody>
@@ -3044,11 +3043,6 @@ expanded in <a href="NEEDS-A-HUMAN.html">NEEDS-A-HUMAN.md</a>.</p>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td><code>RT-0</code></td>
-<td>Release 15.0.9 (PR #8598 at <code>dev</code> <code>4bca2ac2</code>).</td>
-<td>Every merged fix reaches operators only through it, and every later cut waits behind it. What remains before the tag is in <a href="ROADMAP.html#1-the-next-release-1509">ROADMAP §1</a>.</td>
-</tr>
 <tr>
 <td><code>BFQ-09</code></td>
 <td>BF-09: is a zero-valued temp basal a real value in the socket dedup? Measured; waits on the maintainer.</td>
@@ -3111,8 +3105,8 @@ measurement.</p>
 <td><a href="../../releases/cgm-remote-monitor-15.0.9/contents.html"><code>../../releases/cgm-remote-monitor-15.0.9/contents.md</code></a></td>
 </tr>
 <tr>
-<td>what 15.0.9 still waits on</td>
-<td><a href="ROADMAP.html#1-the-next-release-1509"><code>ROADMAP.md</code> §1</a> (generated)</td>
+<td>how 15.0.9 was released, and what is left</td>
+<td><a href="ROADMAP.html#1-1509-is-released-the-next-development-cycle"><code>ROADMAP.md</code> §1</a> (generated)</td>
 </tr>
 <tr>
 <td>Phase 0 PR ordering and coupling</td>

@@ -1002,7 +1002,7 @@
   <span class="md-ellipsis">
     
   
-    Nightscout 15.0.9 — release notes
+    Release 15.0.9 — Cinnamon Muffin
   
 
     
@@ -2231,7 +2231,7 @@
 
 
 <h1 id="nightscout-1509--testing-notes-for-the-release-candidate">Nightscout 15.0.9 — testing notes for the release candidate<a class="headerlink" href="#nightscout-1509--testing-notes-for-the-release-candidate" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-07 at <code>12ea387c1</code>.</em></p>
+<p><em>Living document, last changed 2026-10-21 at <code>9ed4a5441</code>.</em></p>
 <p><strong>DRAFT — prepared for maintainer review before it is shared.</strong> Kept current as reports arrive and
 as the test build changes. Last updated 2026-10-03.</p>
 <p><em>For people who would like to help test the next Nightscout release before it comes out. Part 1 is
@@ -2336,7 +2336,7 @@ particular setup to try them.</p>
 <p><strong>Where to report:</strong> <em>[maintainer to fill in: the channel or issue template for 15.0.9 reports]</em>.
 "It worked" reports are useful too. Say which check you did.</p>
 <p><strong>Already known — please don't report these again</strong>, but do tell us if one looks worse than
-described: the <a href="release-notes.html#known-issues--not-fixed-in-this-release">known issues</a> in the release
+described: the <a href="release-notes.html#known-issues">known issues</a> in the release
 notes.</p>
 <h2 id="getting-the-test-build">Getting the test build<a class="headerlink" href="#getting-the-test-build" title="Permanent link">&para;</a></h2>
 <p>The test build is the <code>dev</code> branch of <code>nightscout/cgm-remote-monitor</code> at commit <strong><code>fade2299</code></strong>
@@ -2394,7 +2394,7 @@ appears twice; followers keep updating.</p>
 <h2 id="12-sites-that-show-mmoll">1.2 Sites that show mmol/L<a class="headerlink" href="#12-sites-that-show-mmoll" title="Permanent link">&para;</a></h2>
 <p><strong>This is the most important check for anyone on mmol/L.</strong> 15.0.9 reads each alarm level on its own,
 so on some sites <strong>low alarms start working</strong> where they never did. See
-<a href="release-notes.html#low-alarms-on-sites-that-use-mmoll">Low alarms on sites that use mmol/L</a>.</p>
+<a href="release-notes.html#changes-in-behaviour">Low alarms on sites that use mmol/L</a>.</p>
 <ol>
 <li><strong>Before switching,</strong> write down the alarm levels you expect (urgent high, top and bottom of your
    target range, urgent low), and whether each is set on your site or left at the default.</li>
@@ -2410,7 +2410,7 @@ so on some sites <strong>low alarms start working</strong> where they never did.
    saved in mg/dL, as some apps upload it; on 15.0.8 such a site could show 5 as 0.3.</li>
 </ol>
 <h2 id="13-androidaps">1.3 AndroidAPS<a class="headerlink" href="#13-androidaps" title="Permanent link">&para;</a></h2>
-<p>See <a href="release-notes.html#androidaps-the-careportal-and-caregivers">AndroidAPS, the careportal and caregivers</a>.</p>
+<p>See <a href="release-notes.html#changes-in-behaviour">AndroidAPS, the careportal and caregivers</a>.</p>
 <ul>
 <li><strong>Silencing an alarm from AAPS.</strong> In 15.0.9 an app can silence a Nightscout alarm only if its token's
   user has the <code>admin</code> role. With any other role, the silence does nothing, and <strong>the app is not
@@ -2522,7 +2522,7 @@ This build fixes that.</p>
 checks below are the ones only a real deployment or a real client can answer.</p>
 <h2 id="21-trust_proxy-on-your-actual-host">2.1 <code>TRUST_PROXY</code> on your actual host<a class="headerlink" href="#21-trust_proxy-on-your-actual-host" title="Permanent link">&para;</a></h2>
 <p><code>TRUST_PROXY</code> is new and optional; unset behaves as 15.0.8. See
-<a href="release-notes.html#the-new-trust_proxy-setting">The new <code>TRUST_PROXY</code> setting</a>. We would like one
+<a href="release-notes.html#security">The new <code>TRUST_PROXY</code> setting</a>. We would like one
 report per hosting setup: Heroku, Railway, Northflank, Render, Fly, Azure App Service, a VPS behind
 nginx or Caddy, Cloudflare in front of any of these, and hosted Nightscout services.</p>
 <ol>
@@ -2576,7 +2576,7 @@ saw, only whether it was the phone's, the proxy's or something else.</p>
 <tr>
 <td><strong>nightscout-reporter</strong> (the current app), <strong>Sugarmate</strong>, <strong>python-nightscout</strong>, home-made scripts, spreadsheets</td>
 <td>whatever you use them for</td>
-<td>same results as on 15.0.8; any <code>Bad count</code> or "unsupported operator" error is from the <a href="release-notes.html#corrections-requests-answered-differently">corrections</a>: report the tool, its version and the request's shape (not its data)</td>
+<td>same results as on 15.0.8; any <code>Bad count</code> or "unsupported operator" error is from the <a href="release-notes.html#changes-in-behaviour">corrections</a>: report the tool, its version and the request's shape (not its data)</td>
 </tr>
 <tr>
 <td><strong>xDrip+, xDrip4iOS, Loop, tconnectsync</strong> on a site with records from 15.0.6 or earlier, or copied from another site</td>
@@ -2599,10 +2599,10 @@ saw, only whether it was the phone's, the proxy's or something else.</p>
 <ul>
 <li><strong>Docker Compose</strong> with the bundled <code>docker-compose.yml</code> or a copy: MongoDB should start and stay up
   (the file now raises its open-files limit). See
-  <a href="release-notes.html#if-you-run-nightscout-with-docker-compose">If you run Nightscout with Docker Compose</a>.</li>
+  <a href="release-notes.html#server-stability-and-operations">If you run Nightscout with Docker Compose</a>.</li>
 <li><strong><code>MMCONNECT_</code> or <code>BRIDGE_</code> settings:</strong> move to the connector's <code>CONNECT_*</code> settings and check that
   readings arrive through the connector. See
-  <a href="release-notes.html#the-old-minimed-and-dexcom-connections-are-being-retired">The old MiniMed and Dexcom connections are being retired</a>.</li>
+  <a href="release-notes.html#deprecated">The old MiniMed and Dexcom connections are being retired</a>.</li>
 <li><strong>The built-in CGM connector</strong> (Dexcom Share, LibreLinkUp, CareLink, Glooko): readings keep arriving
   over several days, including after the vendor app logs you out or you change your CGM account
   password.</li>

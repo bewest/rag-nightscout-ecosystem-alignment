@@ -1012,7 +1012,7 @@
   <span class="md-ellipsis">
     
   
-    Nightscout 15.0.9 — release notes
+    Release 15.0.9 — Cinnamon Muffin
   
 
     
@@ -2098,9 +2098,10 @@
 
 
 <h1 id="cgm-remote-monitor-1509--contents">cgm-remote-monitor 15.0.9 — contents<a class="headerlink" href="#cgm-remote-monitor-1509--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-20 at <code>da858f5e9</code>.</em></p>
-<p><strong>Status: DRAFT for maintainer review. Contributor-facing; full technical depth intended.</strong>
-Nothing here is tagged or released. Identity re-measured 2026-10-20 at <code>official/dev</code> <code>4bca2ac2</code> (merge of</p>
+<p><em>Living document, last changed 2026-10-21 at <code>59b35119d</code>.</em></p>
+<p><strong>Status: released 2026-10-21 as <code>v15.0.9</code></strong> (<code>official/master</code> <code>c6a0d8ed</code>, the merge of #8598;
+tree <code>c53c2c7f</code>, the same as <code>dev</code> <code>4bca2ac2</code>'s). Contributor-facing; full technical depth intended.
+Identity re-measured 2026-10-21 at the tag; before that 2026-10-20 at <code>official/dev</code> <code>4bca2ac2</code> (merge of</p>
 <h1 id="8815-the-rest-measured-2026-10-08-against-officialdev-fade2299">8815); the rest measured 2026-10-08 against <code>official/dev</code> <code>fade2299</code><a class="headerlink" href="#8815-the-rest-measured-2026-10-08-against-officialdev-fade2299" title="Permanent link">&para;</a></h1>
 <p>(merge of #8807) and <code>official/master</code> <code>92d08342</code> (= tag <code>15.0.8</code>, the shipping release), in
 <code>externals/cgm-remote-monitor-official</code> after <code>git fetch official</code>.</p>
@@ -2111,7 +2112,7 @@ unsettled.</p>
 </blockquote>
 <p>15.0.9 is <strong>everything on <code>dev</code> at <code>4bca2ac2</code></strong>. Every PR the
 maintainer decided ships in it (<a href="decisions.html">decisions</a>) is merged. Crowdin #8730 is held out because its sync reverts translations <code>dev</code>
-corrected (BF-132). Every PR merged to <code>dev</code> is <code>merged</code>; none is <code>released</code>.</p>
+corrected (BF-132). Every register entry merged to <code>dev</code> before 2026-10-21 is <code>released 15.0.9</code>.</p>
 <h2 id="identity">Identity<a class="headerlink" href="#identity" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -2159,11 +2160,15 @@ corrected (BF-132). Every PR merged to <code>dev</code> is <code>merged</code>; 
 </tr>
 <tr>
 <td>Release PR</td>
-<td>#8598 (<code>dev</code> → <code>master</code>, head <code>4bca2ac2</code>, author AndyLow91): open, mergeable, <code>reviewDecision</code> <code>APPROVED</code>; both approvals (the maintainer, 2026-09-26 00:39Z) were given on <code>e3adc91d</code>; re-approval at <code>4bca2ac2</code> is owed — <code>gh pr view 8598 --json state,reviewDecision,reviews</code>, <code>gh pr checks 8598</code></td>
+<td>#8598 (<code>dev</code> → <code>master</code>, head <code>4bca2ac2</code>, author AndyLow91): <strong>merged</strong> 2026-10-21 20:09:51Z by the maintainer as <code>c6a0d8ed</code> (merge commit); <code>reviewDecision</code> <code>APPROVED</code>; both approvals (the maintainer, 2026-09-26 00:39Z) were given on <code>e3adc91d</code> and not repeated at <code>4bca2ac2</code> — <code>gh pr view 8598 --json state,reviewDecision,reviews</code>, <code>gh pr checks 8598</code></td>
 </tr>
 <tr>
 <td>Tag</td>
-<td>none. No <code>15.0.9</code> tag exists</td>
+<td><code>v15.0.9</code> on <code>c6a0d8ed</code> (lightweight ref, created with the GitHub release, 2026-10-21 20:21:31Z); no <code>15.0.9</code> without the <code>v</code> yet (<code>15.0.7</code> and <code>15.0.8</code> have both) — <code>gh api repos/nightscout/cgm-remote-monitor/git/refs/tags</code></td>
+</tr>
+<tr>
+<td>Released</td>
+<td>GitHub release <code>v15.0.9</code>, "Release 15.0.9 Cinnamon Muffin", Latest; Docker <code>15.0.9</code> and <code>latest</code> published by <code>master</code> CI run 39667944235 (attempt 2) — <code>gh release view v15.0.9</code>, <code>gh run view 39667944235</code></td>
 </tr>
 </tbody>
 </table>
@@ -3022,6 +3027,16 @@ in a future release.</p>
 <td>named in the notes under Known issues</td>
 </tr>
 <tr>
+<td>BF-172 — the Bolus Wizard Preview subtracts the profile's sensitivity and targets, unconverted, from the reading in display units, so where the profile's units differ from the site's its estimate, warning and target lines are off by a factor of about 18 (80 U for 1.29 U in the reproduction); the same on 15.0.8</td>
+<td>open; known issue by decision (2026-10-21); fix proposed in #8819, not merged</td>
+<td>named in the notes under Known issues</td>
+</tr>
+<tr>
+<td><code>follow-redirects</code> advisories GHSA-q3jh-wrc6-jgq8 and GHSA-8r9p-f939-6h3c (published 2026-10-20), fixed in 1.16.1; read as not reachable through <code>axios</code></td>
+<td>known issue by decision (2026-10-21), update after 15.0.9</td>
+<td>named in the notes under Known issues (<a href="#the-11-high-findings-on-4bca2ac2">triage</a>)</td>
+</tr>
+<tr>
 <td>BF-09 — in the socket <code>dbAdd</code> duplicate check a zero is ignored, so within 2 s a zero temp, 100 % temp, cancel, zero bolus or zero carbs can be taken for another record of the same type and dropped (AndroidAPS NSClient v1, the standalone NSClient app, the chart's drag-to-move)</td>
 <td>fixed on #8797 (open); after 15.0.9 by decision (2026-10-02)</td>
 <td>unchanged from 15.0.8</td>
@@ -3123,10 +3138,20 @@ items for everything present on 15.0.8 are in the operator-exposure table on
 <a href="../../docs/00-overview/PROGRAMME-STATUS.html#status-words-merged-is-not-released">PROGRAMME-STATUS</a>;
 this file does not copy them.</p>
 <h2 id="open-items-a-releaser-must-settle">Open items a releaser must settle<a class="headerlink" href="#open-items-a-releaser-must-settle" title="Permanent link">&para;</a></h2>
-<p>What the queue tracks is generated, and current, in
-<a href="../../docs/00-overview/ROADMAP.html#1-the-next-release-1509">ROADMAP §1</a>. As of <code>dev</code> <code>fade2299</code> (2026-10-08), 15.0.9 waits on:</p>
+<p><strong>Settled: 15.0.9 was released on 2026-10-21</strong> (see Identity). #8598 was merged without
+re-approval at <code>4bca2ac2</code> (item 3), and the tag and GitHub release were made by the maintainer (item
+6). The <code>CHANGELOG.md</code> question (item 4) is settled in the next cycle's version-bump branch, as
+proposed; the version class (item 2) stays open. What is left is in
+<a href="../../docs/00-overview/ROADMAP.html#1-1509-is-released-the-next-development-cycle">ROADMAP §1</a>. Before
+the release, as of <code>dev</code> <code>4bca2ac2</code> (2026-10-21), 15.0.9 waited only on the re-approval and merge of</p>
+<h1 id="8598-and-the-tag-the-maintainers">8598 and the tag. **The maintainers<a class="headerlink" href="#8598-and-the-tag-the-maintainers" title="Permanent link">&para;</a></h1>
+<p>(the maintainer and Andy Low) decided on 2026-10-21 that the candidate is ready:** it has run for
+many days on varied real Nightscout set-ups with no complaints from the testing cohort, and that
+stands in place of the hand checks listed in item 1, which were not done separately. The new
+<code>follow-redirects</code> advisories and BF-172 are known issues by the same decision. The list as it
+stood on <code>fade2299</code> (2026-10-08) follows for the record.</p>
 <ol>
-<li><strong>The browser hand checks still owed.</strong>
+<li><strong>The browser hand checks still owed</strong> (superseded 2026-10-21 by the decision above).
    <code>node tools/queue/gates/client-unchanged-since-hand-check.js --base fade2299 --with ''</code> names
    23 paths that differ on the browser side from the hand-checked <code>8d797ba4</code> (#8807 adds
    <code>lib/client/chart.js</code>; nothing is removed): <code>.gitignore</code> and
@@ -3166,7 +3191,9 @@ this file does not copy them.</p>
    recorded as minor-under-patch exceptions (as #8530) or re-classed (<a href="decisions.html">decisions</a>).</li>
 <li><strong>Re-approval of #8598 at its final head <code>4bca2ac2</code>.</strong> Both approvals were given on <code>e3adc91d</code>;
    the head has since moved to <code>1ad03e29</code>, <code>43289dde</code>, <code>fade2299</code> and now <code>4bca2ac2</code>, so re-approval is owed.</li>
-<li><strong>The <code>CHANGELOG.md</code> question.</strong> <code>dev</code> carries a hand-written <code>## [Unreleased]</code> section (lines
+<li><strong>The <code>CHANGELOG.md</code> question</strong> (proposed 2026-10-21: settle it in the next development cycle's
+   version-bump PR, so the released head stays the tested <code>4bca2ac2</code>; <code>CHANGELOG.md</code> on <code>4bca2ac2</code> also
+   still heads 15.0.7 "2026-03-XX (Unreleased)" and has no 15.0.8 section). <code>dev</code> carries a hand-written <code>## [Unreleased]</code> section (lines
    5–87 of <code>git show official/dev:CHANGELOG.md</code> at <code>fade2299</code>, from 14 commits —
    <code>git log --no-merges official/master..official/dev -- CHANGELOG.md</code>), against the rule in
    <a href="../index.html#open-item-changelog-on-dev"><code>../README.md</code></a> that the changelog is generated at
@@ -3180,10 +3207,12 @@ this file does not copy them.</p>
    modernization line's version, and the latest) still depends on <code>node-forge</code> 1.4.0 exactly, so
    that update waits for an upstream fix and is carried with the modernization work; <code>braces</code> has no
    fixed release and a nesting-depth limit is planned after 15.0.9; <code>compression</code> is fixed upstream
-   in 1.8.2, taken up in the modernization releases. Triage <a href="#npm-audit-and-dependabot-triage">below</a>.</li>
+   in 1.8.2, taken up in the modernization releases. Triage <a href="#npm-audit-and-dependabot-triage">below</a>.
+   Added 2026-10-21: the <code>follow-redirects</code> advisories (read as not reachable) and BF-172 (the Bolus
+   Wizard Preview units) are named there too.</li>
 <li><strong>The tag</strong>, by the maintainer.</li>
 </ol>
-<p>The <a href="release-notes.html">release notes</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/da858f5e9c93924cf74183716fad66db55cdae6f/releases/cgm-remote-monitor-15.0.9/tag-message.txt">tag message</a> are drafted on <code>fade2299</code>.</p>
+<p>The <a href="release-notes.html">release notes</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/d473ad816a6fa95c809aedec66365f5eac9f6d27/releases/cgm-remote-monitor-15.0.9/tag-message.txt">tag message</a> are ready for the release of <code>4bca2ac2</code> (2026-10-21).</p>
 <p>The real-time soak is done by decision: on 2026-09-30 the maintainer decided that real sites
 running the candidate count as the 24 to 72 h real-time soak, and the lab's 72 h soak
 (<code>lab.sh soak --hours 72</code>) is not run. Recorded reports: as of 2026-09-29, one Loop, one Trio and
@@ -3196,7 +3225,19 @@ renumbered when they are rebased; it does not hold the <code>dev</code> → <cod
 decided.</p>
 <h2 id="npm-audit-and-dependabot-triage"><code>npm audit</code> and Dependabot triage<a class="headerlink" href="#npm-audit-and-dependabot-triage" title="Permanent link">&para;</a></h2>
 <p><strong>Summary.</strong> 15.0.8 (the release operators run today) had 49 <code>npm audit</code> findings (19 high) on
-2026-09-27. On <code>dev</code> <code>fade2299</code> (2026-10-08, npm 11.19.0, <code>--package-lock-only</code>), <code>npm audit</code>
+2026-09-27. <strong>Re-measured on the release head <code>dev</code> <code>4bca2ac2</code> on 2026-10-21</strong> (npm 11.12.1,
+<code>--package-lock-only</code>): <strong>26 findings — 11 high, 0 critical</strong>, and <strong>15 — 10 high, 0 critical</strong> with
+<code>--omit=dev</code>. <code>4bca2ac2</code>'s lockfile is byte-identical to <code>fade2299</code>'s (#8815 changes no package
+file), so the rise from 24 / 9 is the advisory database alone: two <code>follow-redirects</code> advisories and
+a third <code>sanitize-html</code> advisory, all published 2026-10-20, triaged
+<a href="#the-11-high-findings-on-4bca2ac2">below</a> and named as known issues by the maintainer's decision of
+2026-10-21. <strong>Re-measured on the tag <code>v15.0.9</code> the same evening, after the release</strong> (the
+lockfile is <code>4bca2ac2</code>'s; npm 11.12.1, <code>--package-lock-only</code>): <strong>28 findings — 14 high, 0
+critical</strong>; with <code>--omit=dev</code>, 15 — 10 high, 0 critical. The new high finding is <code>source-map-js</code>
+GHSA-68fv-2mgg-jv7q (affected 1.0.0–1.2.1; the lockfile has 1.2.1, through <code>css-loader</code> 5.2.7 →
+<code>postcss</code> 8.5.28, <code>npm ls source-map-js</code>; npm reports a fix available). It was not in the morning's
+measurement and is not triaged here; the next development cycle takes it up. The rest of this
+summary is the 2026-10-08 measurement. On <code>dev</code> <code>fade2299</code> (2026-10-08, npm 11.19.0, <code>--package-lock-only</code>), <code>npm audit</code>
 reports <strong>24 findings — 9 high, 0 critical</strong> across all dependencies, and <strong>11 — 5 high, 0 critical</strong>
 with <code>--omit=dev</code>. #8807 changes no package file, so <code>fade2299</code>'s lockfile is byte-identical to
 <code>43289dde</code>'s and these figures equal <code>43289dde</code>'s; run 023's same-moment A/B audit confirms the two
@@ -3369,6 +3410,22 @@ is in <code>dependencies</code>, not <code>devDependencies</code>, because the b
 <td style="text-align: right;">0</td>
 </tr>
 <tr>
+<td><code>dev</code> <code>4bca2ac2</code> (2026-10-21; lockfile byte-identical to <code>fade2299</code>, the release head)</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>dev</code> <code>4bca2ac2</code> <code>--omit=dev</code></td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
 <td><code>rh/cut2</code> <code>02205d91</code></td>
 <td style="text-align: right;">6</td>
 <td style="text-align: right;">0</td>
@@ -3410,6 +3467,36 @@ measures something narrower than it looks:</p>
 </ul>
 <p>What a count does show is the backlog to triage. The measured result for 15.0.9 is the table
 below: which findings reach a running site, and what is done about each.</p>
+<h3 id="the-11-high-findings-on-4bca2ac2">The 11 high findings on <code>4bca2ac2</code><a class="headerlink" href="#the-11-high-findings-on-4bca2ac2" title="Permanent link">&para;</a></h3>
+<p>Re-measured 2026-10-21 on the release head. The 9 high of <code>fade2299</code> (<a href="#the-9-high-findings-on-fade2299">next section</a>)
+are unchanged; two are new, both from advisories published 2026-10-20 against a lockfile that did not
+change. With <code>--omit=dev</code> the same two advisories also mark <code>nightscout-connect</code>,
+<code>axios-cookiejar-support</code> and <code>minimed-connect-to-nightscout</code> high, as packages above
+<code>follow-redirects</code>, which is why that count rises from 5 to 10.</p>
+<table>
+<thead>
+<tr>
+<th>advisory</th>
+<th>high nodes</th>
+<th>reach in 15.0.9</th>
+<th>disposition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GHSA-q3jh-wrc6-jgq8 and GHSA-8r9p-f939-6h3c (<code>follow-redirects</code> 1.16.0, held by the override in <code>package.json</code>)</td>
+<td><code>follow-redirects</code>, <code>axios</code> (2); with <code>--omit=dev</code> also <code>nightscout-connect</code>, <code>axios-cookiejar-support</code>, <code>minimed-connect-to-nightscout</code></td>
+<td>credential headers survive a cross-origin redirect only when headers are given as an array (q3jh) or a declared <code>sensitiveHeaders</code> name contains <code>^</code> or <code>\|</code> (8r9p). Read, not run: <code>axios</code> 1.20.0 (the connector's) passes headers as an object (<code>lib/adapters/http.js:957</code>) and sets <code>sensitiveHeaders = []</code> (<code>:1056</code>); <code>axios</code> 0.34.0 (<code>minimed-connect-to-nightscout</code>, and the top-level dev dependency) passes a plain object and no <code>sensitiveHeaders</code>; neither <code>nightscout-connect</code> <code>v0.1.0</code> nor Nightscout's <code>lib/</code> uses <code>follow-redirects</code> directly</td>
+<td><strong>known issue</strong> by the maintainer's decision (2026-10-21), named in the release notes; fixed in 1.16.1 (a patch release, one override value), taken up after 15.0.9</td>
+</tr>
+<tr>
+<td>GHSA-x3q4-9hxx-gx8m (<code>sanitize-html</code> &lt; 2.18.0; moderate, listed here because it is new)</td>
+<td>—</td>
+<td>run 2026-10-21 on 2.17.5 with <code>lib/server/purifier.js</code>'s options: the advisory's <code>&lt;noscript&gt;</code> case lets <code>&lt;img src="http://…"&gt;</code> and <code>&lt;a href&gt;</code> through, both already allowed by the configuration when written directly; <code>onerror</code> is still stripped. Nothing is let through that a writer could not store anyway</td>
+<td>not changed in 15.0.9: 2.18.0 (Dependabot #8822) requires Node ≥ 22.12, the same reason as the existing pin; the advisory count for <code>sanitize-html</code> stays 1</td>
+</tr>
+</tbody>
+</table>
 <h3 id="the-9-high-findings-on-fade2299">The 9 high findings on <code>fade2299</code><a class="headerlink" href="#the-9-high-findings-on-fade2299" title="Permanent link">&para;</a></h3>
 <p>The candidate's 9 high findings (2026-10-08; unchanged from <code>43289dde</code>, whose lockfile <code>fade2299</code>
 shares byte-for-byte) are four advisories. <code>npm audit</code> lists each once for the
