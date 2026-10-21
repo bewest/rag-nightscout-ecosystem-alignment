@@ -24,25 +24,25 @@ current and the prose is stale.
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
 | **Remedial** | `phase0`, `register-open`, `docs-truth` | 155 | 45 | 7 |
-| **Modernization** | `release-train` | 34 | 5 | 2 |
+| **Modernization** | `release-train` | 34 | 5 | 1 |
 | **Multitenant** | `tenancy`, `platform` | 67 | 17 | 9 |
-| | **total** | **258** | **67** | **18** |
+| | **total** | **258** | **67** | **17** |
 
 <!-- END GENERATED: horizons -->
 
-**Remedial** — finding and fixing defects that already ship. `dev` is at `fade2299` (the merge of
-#8807, 2026-10-08): 99 first-parent merges and 547 commits since 15.0.8
+**Remedial** — finding and fixing defects that already ship. `dev` is at `4bca2ac2` (the merge of
+#8815, 2026-10-20): 100 first-parent merges and 549 commits since 15.0.8
 (`git rev-list [--first-parent] --count official/master..official/dev`). None of it is released.
 
-- **Merged.** Every PR decided for 15.0.9 except #8815 (BF-171: a token whose subject was deleted
-  stops the server, live on 15.0.8; decided 2026-10-20, open); the PR-by-PR list is in
+- **Merged.** Every PR decided for 15.0.9; the PR-by-PR list is in
   [the release contents](../../releases/cgm-remote-monitor-15.0.9/contents.md). Crowdin #8730 is
   held out (BF-132). The connector fixes are in `nightscout-connect` `0.1.0`, released 2026-09-24,
   which `dev` pins exactly (#8762). The last in: #8802 (BF-127), clock views opened from the menu
   keep the page's access token and a refused clock says so instead of staying blank; #8806
   (BF-162), which bumps `proxy-addr` to 2.0.8 to clear the GHSA-jqcg-44mw-7w3h critical (the
   reachable path is new in 15.0.9); and #8807 (BF-168), so the context chart's time window can be
-  dragged all the way back to now.
+  dragged all the way back to now; and #8815 (BF-171, merged 2026-10-20), so a token whose subject
+  was deleted is refused instead of stopping the server.
 - **Tests.** The last full run is run 023 on `fade2299` (2026-10-08): 3566/0/4 in all six cells
   (Node 20, 22 and 24 against MongoDB 4.4.24 and 7.0.43), with run 022's probes and an A/B soak
   against 15.0.8. Each PR merged after run 020 carries its own evidence (its GitHub CI and a full
@@ -51,8 +51,8 @@ current and the prose is stale.
 - **Real-site soak.** `RT-SOAK` is done: the maintainer decided on 2026-09-30 that real sites
   running the candidate count as the soak, and reports (2026-10-02) stable behaviour from Loop, Trio
   and AndroidAPS users on `dev`. The lab's 72 h soak was not run.
-- **Release PR.** #8598 (`dev` → `master`) is at `fade2299` and mergeable.
-  It was approved at `e3adc91d`; the head has since moved to `fade2299`, so re-approval there is owed.
+- **Release PR.** #8598 (`dev` → `master`) is at `4bca2ac2` and mergeable.
+  It was approved at `e3adc91d`; the head has since moved to `4bca2ac2`, so re-approval there is owed.
 - **Version.** Decided: 15.0.9. `RT-VERSION`'s gate measures the modernization cut branches, which
   also declare 15.0.9 and are renumbered when they are rebased; it holds the cuts, not this release.
 - **What remains** before the tag, including the queue's open `RT-0` blockers, is listed once, in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509).
@@ -196,7 +196,7 @@ cover more than one `BF-`:
 | `BFQ-CONNECTOR` | `gate-not-met` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override |
 | `BFQ-ENV` | `in-progress` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies |
 | `BFQ-MINIMED` | `not-started` | BF-44, BF-45, BF-85 - MiniMed ingestion divergences and the CareLink zero reading |
-| `RT-PR-8815` | `in-flight-upstream` | #8815 - a bearer token whose subject was deleted is refused instead of stopping the server |
+| `RT-PR-8815` | `merged-upstream` | #8815 - a bearer token whose subject was deleted is refused instead of stopping the server |
 
 <!-- END GENERATED: operator-exposure -->
 
@@ -211,7 +211,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
-| `release-train` | 5 |  | 5 |  | 6 | 1 | 13 | 1 | 1 |  |  | 2 | **34** |
+| `release-train` | 5 |  | 5 |  | 6 |  | 14 | 1 | 1 |  |  | 2 | **34** |
 | `register-open` | 35 | 3 | 1 | 1 | 11 | 1 | 55 | 4 |  |  | 3 |  | **114** |
 | `tenancy` | 8 | 1 |  | 1 | 13 |  |  | 7 | 3 | 1 |  |  | **34** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 11 |  |  |  | **19** |
@@ -283,7 +283,7 @@ expanded in [NEEDS-A-HUMAN.md](NEEDS-A-HUMAN.md).
 
 | | decision | why it blocks a train |
 |---|---|---|
-| `RT-0` | Release 15.0.9 (PR #8598 at `dev` `fade2299`). | Every merged fix reaches operators only through it, and every later cut waits behind it. What remains before the tag is in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509). |
+| `RT-0` | Release 15.0.9 (PR #8598 at `dev` `4bca2ac2`). | Every merged fix reaches operators only through it, and every later cut waits behind it. What remains before the tag is in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509). |
 | `BFQ-09` | BF-09: is a zero-valued temp basal a real value in the socket dedup? Measured; waits on the maintainer. | It ships to operators now. |
 | `A7A-7` | The clock question inside the alarm path. The maintainer owns it. | It gates alarms under `TENANCY_MODE=multi`. |
 

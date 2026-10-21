@@ -23,12 +23,14 @@ cell, Node 24.15.0, MongoDB 7.0.43), the same tree as 1ad03e29,
 test), the same tree as 43289dde, and #8807 head b919af9f 3566/0/4
 (3564 plus two new context-brush tests), the same tree as fade2299,
 so it ran on the exact candidate tree, and run 023 then ran the
-full six cells on it. Release PR #8598: both approvals are at
-e3adc91d; the head has moved through 1ad03e29, 43289dde and now
-fade2299, so re-approval at fade2299 is owed.
+full six cells on it. #8815 (merged 2026-10-20 as 4bca2ac2, the
+same tree as its head 93a74ce5) passed its own GitHub CI and
+CodeQL; run 023 was not repeated on 4bca2ac2. Release PR #8598: both approvals are at
+e3adc91d; the head has moved through 1ad03e29, 43289dde, fade2299
+and now 4bca2ac2, so re-approval at 4bca2ac2 is owed.
 
-15.0.8..dev at fade2299: 99 first-parent PR merges, 547 commits,
-313 files, +30264/-1936. Crowdin #8730 is held out (BF-132).
+15.0.8..dev at 4bca2ac2: 100 first-parent PR merges, 549 commits,
+314 files, +30337/-1938. Crowdin #8730 is held out (BF-132).
 
 Query and API correctness
   #8737 025f1310  schema-driven query coercion; $exists operand;
@@ -122,6 +124,9 @@ Security
   #8795 25fc41d9  an unbounded request to two little-used v1
                   addresses is refused before the work starts
                   (BF-151)
+  #8815 4bca2ac2  a bearer token whose subject was deleted is
+                  refused like a wrong one instead of stopping the
+                  server; v3 answers it 401, not 403 (BF-171, #8225)
 
 Alarms and client
   #8800 74942ec6  an open page shows a temp basal shortened or

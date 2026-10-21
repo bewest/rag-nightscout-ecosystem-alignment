@@ -155,8 +155,11 @@ dev descends from master with no divergence to reconcile
 ## Notes carried on the item
 
 2026-10-20 (maintainer): RT-PR-8815 (#8815, BF-171, a deleted subject's token
-stops the server) goes into 15.0.9 and is added to blocks_on; it is open, not
-merged. 2026-10-02 (maintainer): RT-VERSION is removed from blocks_on. The dev
+stops the server) goes into 15.0.9 and is added to blocks_on; merged the same
+day (23:57Z) as 4bca2ac2, which is now dev: 549 commits and 100 first-parent
+merges ahead of master. Release PR #8598 is at 4bca2ac2; re-approval there is
+owed. Run 023 (fade2299) was not repeated; #8815 changes no package or browser
+file. 2026-10-02 (maintainer): RT-VERSION is removed from blocks_on. The dev
 to master version is decided (15.0.9); RT-VERSION's red gate measures the
 modernization cut tips, which are renumbered when rebased, so it holds the
 cuts, not this release. 2026-10-01 - #8790 (awss1i, BF-150, Food Editor touch

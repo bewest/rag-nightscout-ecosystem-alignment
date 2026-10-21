@@ -1,7 +1,8 @@
 # cgm-remote-monitor 15.0.9 — contents
 
 **Status: DRAFT for maintainer review. Contributor-facing; full technical depth intended.**
-Nothing here is tagged or released. Measured 2026-10-08 against `official/dev` `fade2299`
+Nothing here is tagged or released. Identity re-measured 2026-10-20 at `official/dev` `4bca2ac2` (merge of
+#8815); the rest measured 2026-10-08 against `official/dev` `fade2299`
 (merge of #8807) and `official/master` `92d08342` (= tag `15.0.8`, the shipping release), in
 `externals/cgm-remote-monitor-official` after `git fetch official`.
 
@@ -9,9 +10,8 @@ Nothing here is tagged or released. Measured 2026-10-08 against `official/dev` `
 > this file records what the release is made of, how each figure was measured, and what is
 > unsettled.
 
-15.0.9 is **everything on `dev` at `fade2299`**. Every PR the
-maintainer decided ships in it ([decisions](decisions.md)) is merged, except #8815 (BF-171, decided
-2026-10-20, open). Crowdin #8730 is held out because its sync reverts translations `dev`
+15.0.9 is **everything on `dev` at `4bca2ac2`**. Every PR the
+maintainer decided ships in it ([decisions](decisions.md)) is merged. Crowdin #8730 is held out because its sync reverts translations `dev`
 corrected (BF-132). Every PR merged to `dev` is `merged`; none is `released`.
 
 ## Identity
@@ -20,15 +20,14 @@ corrected (BF-132). Every PR merged to `dev` is `merged`; none is `released`.
 |---|---|
 | Merged part | `official/master..official/dev` |
 | Base (shipping) | `92d08342` = `15.0.8` |
-| `dev` head | `fade2299` (merge of #8807, 2026-10-08 00:47Z), tree `0bdc42f6`; parents `43289dde` (run 022's candidate) and `b919af9f` |
-| Commits on `dev` | 547 — `git rev-list --count official/master..official/dev` |
-| First-parent merges on `dev` | **99** — `git rev-list --first-parent --count official/master..official/dev`; every first-parent commit in the range is a PR merge (`git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'` prints 0) |
-| Diff on `dev` | 313 files, +30264/−1936 — `git diff --shortstat official/master official/dev` |
+| `dev` head | `4bca2ac2` (merge of #8815, 2026-10-20 23:57Z), tree `c53c2c7f`; parents `fade2299` (run 023's candidate, tree `0bdc42f6`) and `93a74ce5` |
+| Commits on `dev` | 549 — `git rev-list --count official/master..official/dev` |
+| First-parent merges on `dev` | **100** — `git rev-list --first-parent --count official/master..official/dev`; every first-parent commit in the range is a PR merge (`git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'` prints 0) |
+| Diff on `dev` | 314 files, +30337/−1938 — `git diff --shortstat official/master official/dev` |
 | `package.json` version | `15.0.9` on `dev` — `git show official/dev:package.json \| grep '"version"'` |
 | Connector pin | `nightscout-connect` exactly `0.1.0` from npm on `dev` (#8762); `15.0.8` pins the `v0.0.13` tag tarball — `git show official/<ref>:package.json \| grep nightscout-connect` |
-| Decided, not merged | #8815 (head `93a74ce5` on `fade2299`, open, author awss1i; BF-171) — `gh pr view 8815 --json state,headRefOid` |
 | Held out | Crowdin #8730 (head `f99c0e54`, open; BF-132) — `gh pr view 8730 --json state,headRefOid` |
-| Release PR | #8598 (`dev` → `master`, head `fade2299`, author AndyLow91): open, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`; re-approval at `fade2299` is owed — `gh pr view 8598 --json state,reviewDecision,reviews`, `gh pr checks 8598` |
+| Release PR | #8598 (`dev` → `master`, head `4bca2ac2`, author AndyLow91): open, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`; re-approval at `4bca2ac2` is owed — `gh pr view 8598 --json state,reviewDecision,reviews`, `gh pr checks 8598` |
 | Tag | none. No `15.0.9` tag exists |
 
 ## What 15.0.9 contains
@@ -102,6 +101,7 @@ which is the home of every defect fact; these tables do not restate them.
 | #8802 | `1ad03e29` | 2026-10-03 | BF-127 | fixes #7377. On a site that denies anonymous reads, a clock view opened from the Clock menu by a viewer using an access token was blank: the menu links were plain paths and the clock page looked for a token only in its own address. The four Clock menu links now carry the page's token, URL-encoded (`lib/client/browser-settings.js`); a clock whose requests are answered 401 says "Not authorized" instead of drawing nothing (`lib/client/clock-client.js`, `views/clockviews/clock.html`, `clock-shared.css`), and the clock designer's "Open my clock view!" link URL-encodes the face and the token (`views/clockviews/clock-config.html`; CodeQL `js/xss-through-dom` alert 126 fixed, alert 127 dismissed by the maintainer as a false positive). New `tests/clock-token-link.test.js` (11 tests). Measured in Chromium on a denied site with a readable token: the three clocks are blank on `68262e86` and draw on the branch. Its own CI: 13 passed, 2 skipped, CodeQL passed. Head `b13b7a3a` (`9238fd32` and the CodeQL fix); 6 files, +291/−1 |
 | #8806 | `43289dde` | 2026-10-07 | BF-162 | `proxy-addr` 2.0.7 → 2.0.8 (GHSA-jqcg-44mw-7w3h, critical, fixed in 2.0.8): an explicit `TRUST_PROXY` list that names an IPv6-notation subnet with zero leading bits (an IPv4-mapped-IPv6 subnet with a short prefix, or an IPv6 subnet with leading zero bits) compiled on `proxy-addr` 2.0.7 to trust every address; 2.0.8 trusts only the named block. The path is new in 15.0.9: `lib/server/client-ip.js` (added 2026-09-06) compiles the subnet list, while 15.0.8 enables trust proxy unconditionally and never compiles a subnet, so 15.0.8 cannot reach it. A plain IPv4 subnet (`10.0.0.0/8`), the default, `true`, `false` and a hop count are unaffected. `package.json` (`^2.0.8`), `package-lock.json` and one new `tests/client-ip.test.js` case. Its own CI: green across Node 20/22/24 × MongoDB 4.4/5/6, the npm 12 job, Docker and CodeQL. Head `7dd4f400`; 3 files |
 | #8807 | `fade2299` | 2026-10-08 | BF-168 | the context (lower) chart's time window could not always be dragged all the way back to the current time. d3's brush reads its drag range from the `<svg>` element's own size, which is the browser default 300×150 when the chart is drawn before the page lays out, and `chart.update()` never re-read it; the brush now declares an explicit extent from the chart's own scale and height, and `update()` re-reads it and rebinds the overlay (`lib/client/chart.js`). Display-only — no stored-data or API change — and the same behaviour is on 15.0.8. Two new `tests/dependency-d3.test.js` cases (drag-back-to-now, mouse and touch) prove it; no package change, so dependencies and `npm audit` are unchanged. Its own CI and CodeQL: green. Head `b919af9f`; 3 files (`lib/client/chart.js`, `tests/dependency-d3.test.js`, `tests/fixtures/d3-chart.js`) |
+| #8815 | `4bca2ac2` | 2026-10-20 | BF-171, by awss1i (fixes #8225) | a bearer token whose subject was deleted, or lost with the database, stopped the server on the next request that carried it and again after each restart until it expired: `authorization.resolve` returned the `null` `resolveAccessToken` gives for a missing subject, and every caller read `.shiros` from it. The token now takes the failed-credential path (401, the "Failed authentication" notice, the failed-login delay); API v3 answers it 401 instead of 403. Live on 15.0.8, described by mechanism. Three tests in `tests/api.security.test.js`; its own CI and CodeQL green. Head `93a74ce5`, the same tree as `4bca2ac2` |
 | #8741 | `bcd171cb` | 2026-09-20 | — (external contributor) | credential and identifier settings kept as strings (leading `+`, leading zeros) |
 
 **#8754** (`bf2/auth-hardening`, head `bae655a0`, merged as `4f705217`; 34 commits, 25 files,
@@ -227,8 +227,9 @@ The outside contributors whose PRs the 2026-09-25 decision carries into 15.0.9, 
 - **lejcey** — #8568, the AAPS loop-status timeline fix
 - **je-l** — #8419, the iOS Loop push-notification and websocket tests
 - **alanshurafa** — #8530, the 48-hour chart choice
-- **awss1i** — #8788, Day to Day events past midnight (merged 2026-09-30), and #8790, the Food
-  Editor on phones (merged 2026-10-01)
+- **awss1i** — #8788, Day to Day events past midnight (merged 2026-09-30), #8790, the Food
+  Editor on phones (merged 2026-10-01), and #8815, a deleted subject's token no longer stopping the
+  server (merged 2026-10-20)
 
 ## Version number: 15.0.9
 
@@ -337,8 +338,8 @@ What the queue tracks is generated, and current, in
    say "Not authorized" (measured in Chromium on the branch; a check by hand is owed).
 2. **The version class of #8772, #8775 and #8780**, by the maintainer, who is collecting data:
    recorded as minor-under-patch exceptions (as #8530) or re-classed ([decisions](decisions.md)).
-3. **Re-approval of #8598 at its final head `fade2299`.** Both approvals were given on `e3adc91d`;
-   the head has since moved to `1ad03e29`, `43289dde` and now `fade2299`, so re-approval is owed.
+3. **Re-approval of #8598 at its final head `4bca2ac2`.** Both approvals were given on `e3adc91d`;
+   the head has since moved to `1ad03e29`, `43289dde`, `fade2299` and now `4bca2ac2`, so re-approval is owed.
 4. **The `CHANGELOG.md` question.** `dev` carries a hand-written `## [Unreleased]` section (lines
    5–87 of `git show official/dev:CHANGELOG.md` at `fade2299`, from 14 commits —
    `git log --no-merges official/master..official/dev -- CHANGELOG.md`), against the rule in
@@ -354,14 +355,7 @@ What the queue tracks is generated, and current, in
    that update waits for an upstream fix and is carried with the modernization work; `braces` has no
    fixed release and a nesting-depth limit is planned after 15.0.9; `compression` is fixed upstream
    in 1.8.2, taken up in the modernization releases. Triage [below](#npm-audit-and-dependabot-triage).
-6. **#8815 (BF-171) merged.** Decided for 15.0.9 on 2026-10-20: a bearer token whose subject was
-   deleted, or lost with the database, stops the server on the next request that carries it, and
-   after every restart, until the token expires (live on 15.0.8; mechanism in the
-   [register](../../docs/30-design/remedial/nightscout-backfix-register.md)). Server-side only
-   (`lib/authorization/index.js`), so no browser hand check; merging moves `dev` past `fade2299`,
-   so run 023 and the #8598 re-approval are then on an older head. Its release-note line is drafted
-   in queue `RT-PR-8815`.
-7. **The tag**, by the maintainer.
+6. **The tag**, by the maintainer.
 
 The [release notes](release-notes.md) and [tag message](tag-message.txt) are drafted on `fade2299`.
 

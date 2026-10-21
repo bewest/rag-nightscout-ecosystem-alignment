@@ -475,6 +475,13 @@ security advisories are published.
    error pages you see in a browser also stop showing the trace.
 10. **A kind of request to two little-used API addresses could make Nightscout stop responding
     for several seconds, and it is now refused.** Nothing you see changes.
+11. **A sign-in token for a user that no longer exists no longer stops Nightscout.** If an app
+    kept a token after you deleted its user on the admin page, or after your database was reset,
+    Nightscout stopped as soon as the app connected, and stopped again after every restart, for up
+    to 8 hours. That token is now refused like a wrong one: the admin page shows a "Failed
+    authentication" notice, and Nightscout keeps running. Give the app a new token from the admin
+    page. Apps that use the newer API (version 3) are now told such a token is not valid (401)
+    instead of not allowed (403).
 
 **What to do:** upgrade. If you rely on `AUTH_DEFAULT_ROLES=denied` to keep your data private,
 this release is the one that makes the live-update connection respect it. If you use
@@ -1334,4 +1341,4 @@ a report from "15.0.9" made before this release is from that channel.
 
 ---
 
-*Draft, 2026-10-08, on the development version fade2299; not yet released.*
+*Draft, 2026-10-08, on the development version fade2299, with #8815 added on 2026-10-20 at 4bca2ac2; not yet released.*
