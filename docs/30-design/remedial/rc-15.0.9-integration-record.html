@@ -4654,7 +4654,7 @@
 
 
 <h1 id="1509-integration-record">15.0.9 integration record<a class="headerlink" href="#1509-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-21 at <code>59b35119d</code>.</em></p>
+<p><em>Living document, last changed 2026-10-21 at <code>b50f1c1fa</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 15.0.9 candidate was assembled
 and tested. Item state is in <code>queue/work-queue.yaml</code> (<code>RT-0</code>); defect facts are in the
 <a href="nightscout-backfix-register.html">backfix register</a>; release contents are in
@@ -4677,7 +4677,10 @@ failed in the Node 20 / MongoDB 6 cell's <code>npm install</code> (<code>npm err
 before any test) and fail-fast cancelled the other eight cells, so the Docker jobs were skipped;
 attempt 2 passed all nine test cells, both Docker builds (amd64, arm64) and <em>Publish to Docker
 Hub</em>; <em>Validate Docker image</em> was skipped. CodeQL on <code>c6a0d8ed</code> passed. No test run of this
-programme was repeated on <code>c6a0d8ed</code>: run 023 on <code>fade2299</code> stays the last full local run.</p>
+programme was repeated on <code>c6a0d8ed</code>: run 023 on <code>fade2299</code> stays the last full local run. The
+plain tag <code>15.0.9</code> was added on <code>c6a0d8ed</code> the same evening. <code>dev</code> then moved by the maintainer's
+push (20:40:09Z) to <code>04d435eb</code>, the 15.0.10 version bump on <code>c6a0d8ed</code> (push CI 39672291233
+green), and #8824 opened as the next <code>dev</code> → <code>master</code> staging PR (28 checks passed, 3 skipped).</p>
 <p><strong>2026-10-20: #8815 merged, and <code>dev</code> is <code>4bca2ac2</code></strong> (tree <code>c53c2c7f</code>, parents <code>fade2299</code> and
 <code>93a74ce5</code>, merged 23:57Z; 15.0.8..<code>4bca2ac2</code>: 549 commits, 100 first-parent merges, 314 files,
 +30337/−1938). Every PR decided for 15.0.9 is merged. #8815 (BF-171) changes

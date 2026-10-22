@@ -8488,10 +8488,10 @@ reached <code>dev</code> in #8456) [R].</p>
   finds it [M]. <code>$in</code> lists are not rewritten [R]. Devicestatus lookups do not pass the flag [R].</li>
 <li><strong>Version-scoped quirks it serves</strong> (D20 rule 7: today's handling becomes a registry entry
   scoped to the versions that send it, its behaviour unchanged).
-  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/d473ad816a6fa95c809aedec66365f5eac9f6d27/specs/quirks/treatments.yaml">QUIRK-TREATMENTS-006</a>: Loop sends a Temporary Override's
+  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b50f1c1fa96e9f0346152eb8274b4898a563d64a/specs/quirks/treatments.yaml">QUIRK-TREATMENTS-006</a>: Loop sends a Temporary Override's
   <code>syncIdentifier</code> UUID as <code>_id</code> (read at LoopWorkspace <code>f8412858</code>, Loop 3.14.8; measured in the
   corpus: every stored document it fires on is an override with an upper-case UUID).
-  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/d473ad816a6fa95c809aedec66365f5eac9f6d27/specs/quirks/entries.yaml">QUIRK-ENTRIES-004</a>: upper-case UUIDs and 24-character
+  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b50f1c1fa96e9f0346152eb8274b4898a563d64a/specs/quirks/entries.yaml">QUIRK-ENTRIES-004</a>: upper-case UUIDs and 24-character
   non-hex strings stored as entries <code>_id</code> on two corpus sites, attributed to older Trio versions
   by a backlog, unmeasured. Trio 1.0.1 (<code>e41c9db3</code>) sends <code>_id</code> on carbs and temporary targets
   (<code>CarbsEntry.swift:29</code>, <code>TempTarget.swift:50</code>) and its other treatments' UUID as <code>id</code>, which

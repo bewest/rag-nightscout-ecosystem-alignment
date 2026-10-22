@@ -2254,12 +2254,12 @@
 
 
 <h1 id="roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order">Roadmap for cgm-remote-monitor: what comes next, and in what order<a class="headerlink" href="#roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-21 at <code>59b35119d</code>.</em></p>
+<p><em>Living document, last changed 2026-10-21 at <code>b50f1c1fa</code>.</em></p>
 <p><em>What this is: a map of the work ahead (contributor-facing). Read after <a href="PROGRAMME-STATUS.html">programme
 status</a>; leads to <a href="NEEDS-A-HUMAN.html">work waiting on a person</a>. Prepared for the
 Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 dated
-2026-10-21 against cgm-remote-monitor <code>official/master</code> <code>c6a0d8ed</code> (tag <code>v15.0.9</code>) and
-<code>official/dev</code> <code>4bca2ac2</code>; other prose dated 2026-10-08 against <code>dev</code> <code>fade2299</code> and <code>master</code>
+2026-10-21 against cgm-remote-monitor <code>official/master</code> <code>c6a0d8ed</code> (tags <code>v15.0.9</code>, <code>15.0.9</code>) and
+<code>official/dev</code> <code>04d435eb</code>; other prose dated 2026-10-08 against <code>dev</code> <code>fade2299</code> and <code>master</code>
 <code>92d08342</code> (tag <code>15.0.8</code>). The two order tables are generated from <code>queue/work-queue.yaml</code>, and
 <code>make views-check</code> fails when they drift.</em></p>
 <p>This page gives the order of the work ahead. It records no decisions itself. The decisions
@@ -2353,17 +2353,23 @@ notes. On <code>4bca2ac2</code> <code>npm audit</code> reports 26 findings, 11 h
 
 <p>What is left from the release, and the start of the next cycle:</p>
 <ol>
-<li>The tag <code>15.0.9</code> without the <code>v</code>: <code>15.0.7</code> and <code>15.0.8</code> have both forms; on 2026-10-21 only
-   <code>v15.0.9</code> exists.</li>
-<li>The next development cycle. <code>dev</code> (<code>4bca2ac2</code>) is an ancestor of <code>master</code>, so it moves to
-   <code>c6a0d8ed</code> by a fast-forward, with no merge commit. The version bump is prepared on
-   <code>wip/15.0.10-dev-bump</code> (<code>04d435eb</code> on <code>c6a0d8ed</code>, not pushed): <code>package.json</code> and
-   <code>package-lock.json</code> to 15.0.10, and in <code>CHANGELOG.md</code> the <code>[Unreleased]</code> entries become
-   <code>[15.0.9] - 2026-10-21</code>, a new empty <code>[Unreleased]</code> opens, and 15.0.8 and 15.0.7 get dated
-   headings. That settles the <code>CHANGELOG.md</code> question. Whether the next release is 15.0.10 or
-   15.1.0 is the maintainer's decision. Then a new <code>dev</code> → <code>master</code> PR, as #8598 was.</li>
+<li>Done 2026-10-21: the tag <code>15.0.9</code> without the <code>v</code>, on <code>c6a0d8ed</code>, as <code>15.0.7</code> and <code>15.0.8</code>
+   have both forms.</li>
+<li>Done 2026-10-21: the next development cycle is open. <code>dev</code> is the 15.0.10 cycle: the maintainer pushed <code>04d435eb</code> ("Start 15.0.10 development cycle") to
+   <code>dev</code> at 2026-10-21 20:40:09Z, a fast-forward from <code>4bca2ac2</code> over <code>c6a0d8ed</code>, so <code>dev</code> is one commit
+   ahead of <code>master</code>: <code>package.json</code> and <code>package-lock.json</code> at 15.0.10, and in <code>CHANGELOG.md</code> the
+   <code>[Unreleased]</code> entries became <code>[15.0.9] - 2026-10-21</code>, a new empty <code>[Unreleased]</code> opened, and 15.0.8
+   and 15.0.7 got dated headings, which settles the <code>CHANGELOG.md</code> question. The push's CI run
+   (39672291233) passed. The staging PR is #8824 ("new dev branch post 15.0.9 release", <code>dev</code> →
+   <code>master</code>, opened by the maintainer 20:40:54Z at <code>04d435eb</code>): mergeable, 28 checks passed and 3
+   skipped, review required.
+   <code>dev</code> declares 15.0.10; whether the next release is 15.0.10 or 15.1.0 stays the maintainer's
+   decision.</li>
 <li>Dependabot PRs that target <code>master</code> (#8822, #8818, #8817, #8814, #8811, #8805, #8798) are
-   retargeted to <code>dev</code> or closed. <code>follow-redirects</code> 1.16.1 and <code>compression</code> 1.8.2 go to <code>dev</code>.</li>
+   retargeted to <code>dev</code> or closed. <code>follow-redirects</code> 1.16.1, <code>compression</code> 1.8.2 (BF-163) and
+   <code>source-map-js</code> 1.2.2 (GHSA-68fv-2mgg-jv7q) go to <code>dev</code>; a local lockfile-refresh branch on
+   <code>04d435eb</code> is being prepared by another session, not yet a PR. <code>sanitize-html</code> stays at 2.17.5,
+   since every release from 2.17.6 requires Node ≥22.12 and Node 20 is in the CI matrix.</li>
 <li>Eleven items list <code>RT-0</code> among their blockers. Nine wait on nothing else that is open and still
    claim <code>blocked</code>, to be re-stated for the next cycle: <code>SEAM-REFRESH</code>, <code>BFQ-67</code>, <code>BFQ-72</code>,
    <code>BFQ-93</code>, <code>BFQ-95</code>, <code>BFQ-152</code>, <code>BFQ-156</code>, <code>BFQ-173</code> and <code>BFQ-174</code>. <code>RT-1</code> and
