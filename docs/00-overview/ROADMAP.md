@@ -3,8 +3,8 @@
 *What this is: a map of the work ahead (contributor-facing). Read after [programme
 status](PROGRAMME-STATUS.md); leads to [work waiting on a person](NEEDS-A-HUMAN.md). Prepared for the
 Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 dated
-2026-10-21 against cgm-remote-monitor `official/master` `c6a0d8ed` (tag `v15.0.9`) and
-`official/dev` `04d435eb` (the release itself at `dev` `4bca2ac2`); other prose dated 2026-10-08 against `dev` `fade2299` and `master`
+2026-10-21 against cgm-remote-monitor `official/master` `c6a0d8ed` (tags `v15.0.9`, `15.0.9`) and
+`official/dev` `04d435eb`; other prose dated 2026-10-08 against `dev` `fade2299` and `master`
 `92d08342` (tag `15.0.8`). The two order tables are generated from `queue/work-queue.yaml`, and
 `make views-check` fails when they drift.*
 
@@ -77,18 +77,20 @@ where no cut or modernization branch already covers them.
 
 What is left from the release, and the next cycle as it stands on 2026-10-21:
 
-1. The tag `15.0.9` without the `v`: `15.0.7` and `15.0.8` have both forms; on 2026-10-21 only
-   `v15.0.9` exists.
-2. The next development cycle has started. `official/dev` is `04d435eb`, "Start 15.0.10
-   development cycle", one commit on `master` `c6a0d8ed` (the bump prepared as
-   `wip/15.0.10-dev-bump`, pushed as `dev`): `package.json` and `package-lock.json` to 15.0.10, and
-   in `CHANGELOG.md` the `[Unreleased]` entries become `[15.0.9] - 2026-10-21`, a new empty
-   `[Unreleased]` opens, and 15.0.8 and 15.0.7 get dated headings. The staging PR #8824 (`dev` →
-   `master`, "new dev branch post 15.0.9 release") is open. The next version is open: the
-   maintainer has said the work decides patch, minor or major, and the version string may change to
-   follow it, so it is driven by the semver class of what lands (each queue item's `semver`). The
-   `dev` baseline, full suite on `04d435eb`: 3569 passing, 0 failing, 4 pending (Node 24.15.0,
-   MongoDB 7.0.43 in a container).
+1. Done 2026-10-21: the tag `15.0.9` without the `v`, on `c6a0d8ed`, as `15.0.7` and `15.0.8`
+   have both forms.
+2. Done 2026-10-21: the next development cycle is open. `dev` is the 15.0.10 cycle: the maintainer pushed `04d435eb` ("Start 15.0.10 development cycle") to
+   `dev` at 2026-10-21 20:40:09Z, a fast-forward from `4bca2ac2` over `c6a0d8ed`, so `dev` is one commit
+   ahead of `master`: `package.json` and `package-lock.json` at 15.0.10, and in `CHANGELOG.md` the
+   `[Unreleased]` entries became `[15.0.9] - 2026-10-21`, a new empty `[Unreleased]` opened, and 15.0.8
+   and 15.0.7 got dated headings, which settles the `CHANGELOG.md` question. The push's CI run
+   (39672291233) passed. The staging PR is #8824 ("new dev branch post 15.0.9 release", `dev` →
+   `master`, opened by the maintainer 20:40:54Z at `04d435eb`): mergeable, 28 checks passed and 3
+   skipped, review required.
+   `dev` declares 15.0.10, but the next version is open: the maintainer has said the work decides
+   patch, minor or major, and the version string may change to follow it, so it is driven by the
+   semver class of what lands (each queue item's `semver`). The `dev` baseline, full suite on
+   `04d435eb`: 3569 passing, 0 failing, 4 pending (Node 24.15.0, MongoDB 7.0.43 in a container).
 3. Dependabot is settled apart from the `dev` bumps. On 2026-10-21 no Dependabot PR is open:
    #8818, #8811, #8805 and #8798 were closed by Dependabot as up to date, and #8822 (`sanitize-html`
    2.18.1), #8817 (`compression` 1.8.2) and #8814 (`source-map-js` 1.2.2) were closed by AndyLow91.

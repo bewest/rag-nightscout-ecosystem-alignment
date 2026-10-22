@@ -123,8 +123,9 @@ defects that survive `AUTH_DEFAULT_ROLES=denied`, GHSA-gjhc (BF-79, #8744) and G
 #8745), the boot notice for world-readable sites (#8746), and the two backported security fixes
 (BF-104, BF-105, #8751). Operators who have not upgraded from 15.0.8 still have all of them. Both
 approvals of #8598 were the maintainer's, at `e3adc91d`; they were not repeated at `4bca2ac2`. The
-release rests on the maintainers' readiness decision of 2026-10-21; its known issues and what is
-left (the plain `15.0.9` tag, the next development cycle) are in
+release rests on the maintainers' readiness decision of 2026-10-21. Both tags exist, `v15.0.9` and
+`15.0.9`, on `c6a0d8ed`. `dev` is `04d435eb`, the 15.0.10 version bump on top of the release, and
+#8824 is the new `dev` → `master` staging PR. Known issues and what is left are in
 [ROADMAP §1](ROADMAP.md#1-1509-is-released-the-next-development-cycle).
 
 ### `P0-TAG` — done: `nightscout-connect` 0.1.0 is released
