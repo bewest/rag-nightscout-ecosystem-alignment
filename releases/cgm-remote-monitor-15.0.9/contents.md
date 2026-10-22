@@ -29,7 +29,7 @@ corrected (BF-132). Every register entry merged to `dev` before 2026-10-21 is `r
 | Connector pin | `nightscout-connect` exactly `0.1.0` from npm on `dev` (#8762); `15.0.8` pins the `v0.0.13` tag tarball — `git show official/<ref>:package.json \| grep nightscout-connect` |
 | Held out | Crowdin #8730 (head `f99c0e54`, open; BF-132) — `gh pr view 8730 --json state,headRefOid` |
 | Release PR | #8598 (`dev` → `master`, head `4bca2ac2`, author AndyLow91): **merged** 2026-10-21 20:09:51Z by the maintainer as `c6a0d8ed` (merge commit); `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d` and not repeated at `4bca2ac2` — `gh pr view 8598 --json state,reviewDecision,reviews`, `gh pr checks 8598` |
-| Tag | `v15.0.9` on `c6a0d8ed` (lightweight ref, created with the GitHub release, 2026-10-21 20:21:31Z); no `15.0.9` without the `v` yet (`15.0.7` and `15.0.8` have both) — `gh api repos/nightscout/cgm-remote-monitor/git/refs/tags` |
+| Tag | `v15.0.9` on `c6a0d8ed` (lightweight ref, created with the GitHub release, 2026-10-21 20:21:31Z) and `15.0.9` on `c6a0d8ed` (lightweight, the same evening), both forms as for `15.0.7` and `15.0.8` — `gh api repos/nightscout/cgm-remote-monitor/git/refs/tags` |
 | Released | GitHub release `v15.0.9`, "Release 15.0.9 Cinnamon Muffin", Latest; Docker `15.0.9` and `latest` published by `master` CI run 39667944235 (attempt 2) — `gh release view v15.0.9`, `gh run view 39667944235` |
 
 ## What 15.0.9 contains
@@ -303,8 +303,9 @@ this file does not copy them.
 
 **Settled: 15.0.9 was released on 2026-10-21** (see Identity). #8598 was merged without
 re-approval at `4bca2ac2` (item 3), and the tag and GitHub release were made by the maintainer (item
-6). The `CHANGELOG.md` question (item 4) is settled in the next cycle's version-bump branch, as
-proposed; the version class (item 2) stays open. What is left is in
+6). The `CHANGELOG.md` question (item 4) is settled by the next cycle's version bump, as proposed:
+`04d435eb`, pushed to `dev` on 2026-10-21 (staging PR #8824), dates the 15.0.9, 15.0.8 and 15.0.7
+headings; the version class (item 2) stays open. What is left is in
 [ROADMAP §1](../../docs/00-overview/ROADMAP.md#1-1509-is-released-the-next-development-cycle). Before
 the release, as of `dev` `4bca2ac2` (2026-10-21), 15.0.9 waited only on the re-approval and merge of
 #8598 and the tag. **The maintainers
@@ -403,7 +404,8 @@ lockfile is `4bca2ac2`'s; npm 11.12.1, `--package-lock-only`): **28 findings —
 critical**; with `--omit=dev`, 15 — 10 high, 0 critical. The new high finding is `source-map-js`
 GHSA-68fv-2mgg-jv7q (affected 1.0.0–1.2.1; the lockfile has 1.2.1, through `css-loader` 5.2.7 →
 `postcss` 8.5.28, `npm ls source-map-js`; npm reports a fix available). It was not in the morning's
-measurement and is not triaged here; the next development cycle takes it up. The rest of this
+measurement and is not triaged here; the next development cycle takes it up (`source-map-js`
+1.2.2 fixes it). The rest of this
 summary is the 2026-10-08 measurement. On `dev` `fade2299` (2026-10-08, npm 11.19.0, `--package-lock-only`), `npm audit`
 reports **24 findings — 9 high, 0 critical** across all dependencies, and **11 — 5 high, 0 critical**
 with `--omit=dev`. #8807 changes no package file, so `fade2299`'s lockfile is byte-identical to

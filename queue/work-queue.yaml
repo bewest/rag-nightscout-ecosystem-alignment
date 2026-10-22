@@ -2996,6 +2996,10 @@ items:
       2026-10-21 (real-site running in place of the owed hand checks;
       follow-redirects, BF-172, BF-173 and BF-174 known issues) stands as
       the release's basis. Every item that was merged-upstream is released.
+      Later the same evening: tag 15.0.9 (no v) on c6a0d8ed; dev pushed to
+      04d435eb, the 15.0.10 bump (package files and CHANGELOG headings), push
+      CI 39672291233 green; #8824 opened as the next dev -> master staging
+      PR (28 passed, 3 skipped, review required).
       2026-10-20 (maintainer): RT-PR-8815 (#8815, BF-171, a deleted
       subject's token stops the server) goes into 15.0.9 and is added to
       blocks_on; merged the same day (23:57Z) as 4bca2ac2, which is now dev:

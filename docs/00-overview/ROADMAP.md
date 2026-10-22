@@ -3,8 +3,8 @@
 *What this is: a map of the work ahead (contributor-facing). Read after [programme
 status](PROGRAMME-STATUS.md); leads to [work waiting on a person](NEEDS-A-HUMAN.md). Prepared for the
 Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 dated
-2026-10-21 against cgm-remote-monitor `official/master` `c6a0d8ed` (tag `v15.0.9`) and
-`official/dev` `4bca2ac2`; other prose dated 2026-10-08 against `dev` `fade2299` and `master`
+2026-10-21 against cgm-remote-monitor `official/master` `c6a0d8ed` (tags `v15.0.9`, `15.0.9`) and
+`official/dev` `04d435eb`; other prose dated 2026-10-08 against `dev` `fade2299` and `master`
 `92d08342` (tag `15.0.8`). The two order tables are generated from `queue/work-queue.yaml`, and
 `make views-check` fails when they drift.*
 
@@ -73,17 +73,23 @@ Open blockers of `RT-0`, generated:
 
 What is left from the release, and the start of the next cycle:
 
-1. The tag `15.0.9` without the `v`: `15.0.7` and `15.0.8` have both forms; on 2026-10-21 only
-   `v15.0.9` exists.
-2. The next development cycle. `dev` (`4bca2ac2`) is an ancestor of `master`, so it moves to
-   `c6a0d8ed` by a fast-forward, with no merge commit. The version bump is prepared on
-   `wip/15.0.10-dev-bump` (`04d435eb` on `c6a0d8ed`, not pushed): `package.json` and
-   `package-lock.json` to 15.0.10, and in `CHANGELOG.md` the `[Unreleased]` entries become
-   `[15.0.9] - 2026-10-21`, a new empty `[Unreleased]` opens, and 15.0.8 and 15.0.7 get dated
-   headings. That settles the `CHANGELOG.md` question. Whether the next release is 15.0.10 or
-   15.1.0 is the maintainer's decision. Then a new `dev` → `master` PR, as #8598 was.
+1. Done 2026-10-21: the tag `15.0.9` without the `v`, on `c6a0d8ed`, as `15.0.7` and `15.0.8`
+   have both forms.
+2. Done 2026-10-21: the next development cycle is open. `dev` is the 15.0.10 cycle: the maintainer pushed `04d435eb` ("Start 15.0.10 development cycle") to
+   `dev` at 2026-10-21 20:40:09Z, a fast-forward from `4bca2ac2` over `c6a0d8ed`, so `dev` is one commit
+   ahead of `master`: `package.json` and `package-lock.json` at 15.0.10, and in `CHANGELOG.md` the
+   `[Unreleased]` entries became `[15.0.9] - 2026-10-21`, a new empty `[Unreleased]` opened, and 15.0.8
+   and 15.0.7 got dated headings, which settles the `CHANGELOG.md` question. The push's CI run
+   (39672291233) passed. The staging PR is #8824 ("new dev branch post 15.0.9 release", `dev` →
+   `master`, opened by the maintainer 20:40:54Z at `04d435eb`): mergeable, 28 checks passed and 3
+   skipped, review required.
+   `dev` declares 15.0.10; whether the next release is 15.0.10 or 15.1.0 stays the maintainer's
+   decision.
 3. Dependabot PRs that target `master` (#8822, #8818, #8817, #8814, #8811, #8805, #8798) are
-   retargeted to `dev` or closed. `follow-redirects` 1.16.1 and `compression` 1.8.2 go to `dev`.
+   retargeted to `dev` or closed. `follow-redirects` 1.16.1, `compression` 1.8.2 (BF-163) and
+   `source-map-js` 1.2.2 (GHSA-68fv-2mgg-jv7q) go to `dev`; a local lockfile-refresh branch on
+   `04d435eb` is being prepared by another session, not yet a PR. `sanitize-html` stays at 2.17.5,
+   since every release from 2.17.6 requires Node ≥22.12 and Node 20 is in the CI matrix.
 4. Eleven items list `RT-0` among their blockers. Nine wait on nothing else that is open and still
    claim `blocked`, to be re-stated for the next cycle: `SEAM-REFRESH`, `BFQ-67`, `BFQ-72`,
    `BFQ-93`, `BFQ-95`, `BFQ-152`, `BFQ-156`, `BFQ-173` and `BFQ-174`. `RT-1` and
