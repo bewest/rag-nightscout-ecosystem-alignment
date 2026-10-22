@@ -418,10 +418,21 @@ where Nightscout reaches it ([triage below](#the-9-high-findings-on-fade2299)): 
 moderate are the 2026-09-27 triage's chain — a deliberate pin whose advisories need elements the
 sanitizer does not allow (tested), the legacy `request` chain, loaded only when a legacy bridge is
 switched on (read from `lib/server/bootevent.js`), and the dev-dependency tooling — plus `moment`,
-held at 2.30.1 by decision, and the advisories published since. **After the
-modernization pass (cut 4 onward, including cut 5 `b1bdaca0`) there are none:** `npm audit` reports
-0 findings with dev dependencies included, and none of the 80 open Dependabot alerts matches a
-version in cut 5's lockfile. The work that gets there was planned in the open:
+held at 2.30.1 by decision, and the advisories published since. **On 2026-09-27, after the
+modernization pass (cut 4 onward, including cut 5 `b1bdaca0`) there were none:** `npm audit`
+reported 0 findings with dev dependencies included, and none of the 80 open Dependabot alerts
+matched a version in cut 5's lockfile. **Corrected 2026-10-21: that no longer holds.** With the
+advisory data of 2026-10-21 (npm 11.12.1, `--package-lock-only`), cut 5 (#8605, `b1bdaca0`) has 21
+findings (9 high, 1 critical), and the published cut tips have `chore/retire-jsdom` `bce12ecc` 49
+(18 high, 1 critical: `proxy-addr`, already fixed on `dev`), `chore/build-runtime-separation`
+`b6e8c7cd` 41, `chore/compose-mongodb6` `ebb690cf` 41 and `chore/mime-exposure-review` `b80aa147` 30.
+None of cuts 1–4 or #8605 fixes `braces`, `node-forge`, `source-map-js`, `follow-redirects` or
+`compression`. The `sanitize-html` advisories GHSA-x3q4 and GHSA-cv27 need 2.18.0, which needs Node
+>=22.12; no cut fixes them (cut 1 as rehearsed, `rh/cut1-retire-legacy` `c043fb2d`, keeps 2.17.5;
+cuts 2–4 and #8605 have 2.17.7). GHSA-374f, a new moderate, is untriaged. On the next cycle's `dev`
+`04d435eb` (2026-10-21 20:49Z): 27 findings, 13 high, 0 critical in the worktree (14 / 9 with
+`--omit=dev`); the same lockfile audited in a scratch directory gives 28 / 14, the extra high being
+`axios-cookiejar-support`, cause not found. The work that gets there was planned in the open:
 
 | date | what |
 |---|---|
@@ -442,7 +453,8 @@ already fixed on `dev` (below).
 Measured with `npm audit --package-lock-only` (npm 11.12.1), advisory data as of the date given:
 2026-09-27 for `v15.0.8`, `295f1177`, `7000eb18` and the cut branches; 2026-10-01 and 2026-10-02 for
 `50bc1084` and `a143d507` (the same lockfile as `25fc41d9`); 2026-10-07 for `43289dde` and 2026-10-08
-for `fade2299` (identical lockfile, identical counts). The counts
+for `fade2299` (identical lockfile, identical counts); 2026-10-21 for `4bca2ac2`, `04d435eb` and
+the published cut tips. The counts
 on `25fc41d9` and `43289dde` differ mostly because the advisory database grew between those dates;
 the lockfile moved only by `proxy-addr` (#8806), and not at all from `43289dde` to `fade2299` (#8807). Build tooling (webpack, its loaders, `browserslist`)
 is in `dependencies`, not `devDependencies`, because the bundle is built at install time
@@ -464,7 +476,14 @@ is in `dependencies`, not `devDependencies`, because the bundle is built at inst
 | `dev` `4bca2ac2` (2026-10-21; lockfile byte-identical to `fade2299`, the release head) | 26 | 0 | 11 | 15 | 0 |
 | `dev` `4bca2ac2` `--omit=dev` | 15 | 0 | 10 | 5 | 0 |
 | `rh/cut2` `02205d91` | 6 | 0 | 0 | 6 | 0 |
-| `rh/cut4` `135faa3b`, `rh/cut35` `cd93d8e8`, cut 5 `b1bdaca0` | 0 | 0 | 0 | 0 | 0 |
+| `rh/cut4` `135faa3b`, `rh/cut35` `cd93d8e8`, cut 5 `b1bdaca0` (2026-09-27) | 0 | 0 | 0 | 0 | 0 |
+| `dev` `04d435eb` (2026-10-21, the next cycle; worktree) | 27 | 0 | 13 | — | — |
+| `dev` `04d435eb` `--omit=dev` | 14 | 0 | 9 | — | — |
+| `chore/retire-jsdom` `bce12ecc` (2026-10-21) | 49 | 1 | 18 | — | — |
+| `chore/build-runtime-separation` `b6e8c7cd` (2026-10-21) | 41 | — | — | — | — |
+| `chore/compose-mongodb6` `ebb690cf` (2026-10-21) | 41 | — | — | — | — |
+| `chore/mime-exposure-review` `b80aa147` (2026-10-21) | 30 | — | — | — | — |
+| cut 5 `b1bdaca0` (#8605, 2026-10-21) | 21 | 1 | 9 | — | — |
 
 ### Reading these counts
 

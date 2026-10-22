@@ -62,16 +62,20 @@ replaced by a gate on its contents.
 
 ## Notes carried on the item
 
-Raised by the maintainer 2026-10-01 ("I wonder if dependabot is configured
-correctly; it produces a lot of noise that gets taken out of context").
-Options, none decided: (1) a dependabot.yml with version updates targeting
-dev, grouped, on a schedule, so routine bumps arrive where work happens; (2)
-keep alerts, and dismiss each one that is fixed on dev or not reachable, with
-GitHub's dismissal reason and a comment linking the triage, so the alert list
-shows the project's assessment; (3) release more often, since alerts close
-only when master moves. Security-update PRs follow the default branch and
-dependabot.yml's target-branch does not change that, so turning them off and
-relying on (1) and (2) is the way to stop PRs against master.
+2026-10-21: 0 open Dependabot PRs. #8818, #8811, #8805 and #8798 were closed
+by Dependabot as up to date; #8822 (sanitize-html 2.18.1), #8817 (compression
+1.8.2) and #8814 (source-map-js 1.2.2) were closed by AndyLow91. 15 open
+alerts, measured against master (15.0.9). The configuration question stays
+open. Raised by the maintainer 2026-10-01 ("I wonder if dependabot is
+configured correctly; it produces a lot of noise that gets taken out of
+context"). Options, none decided: (1) a dependabot.yml with version updates
+targeting dev, grouped, on a schedule, so routine bumps arrive where work
+happens; (2) keep alerts, and dismiss each one that is fixed on dev or not
+reachable, with GitHub's dismissal reason and a comment linking the triage, so
+the alert list shows the project's assessment; (3) release more often, since
+alerts close only when master moves. Security-update PRs follow the default
+branch and dependabot.yml's target-branch does not change that, so turning
+them off and relying on (1) and (2) is the way to stop PRs against master.
 
 ---
 

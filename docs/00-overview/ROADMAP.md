@@ -4,7 +4,7 @@
 status](PROGRAMME-STATUS.md); leads to [work waiting on a person](NEEDS-A-HUMAN.md). Prepared for the
 Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 dated
 2026-10-21 against cgm-remote-monitor `official/master` `c6a0d8ed` (tag `v15.0.9`) and
-`official/dev` `4bca2ac2`; other prose dated 2026-10-08 against `dev` `fade2299` and `master`
+`official/dev` `04d435eb` (the release itself at `dev` `4bca2ac2`); other prose dated 2026-10-08 against `dev` `fade2299` and `master`
 `92d08342` (tag `15.0.8`). The two order tables are generated from `queue/work-queue.yaml`, and
 `make views-check` fails when they drift.*
 
@@ -71,24 +71,56 @@ Open blockers of `RT-0`, generated:
 
 <!-- END GENERATED: release-waits -->
 
-What is left from the release, and the start of the next cycle:
+**Priorities for the next cycle** (maintainer, 2026-10-21): (1) modernization, cut 1 first
+(`RT-REBASE`, `RT-1`); (2) backfixes that affect dosing or security; (3) other exposure fixes, only
+where no cut or modernization branch already covers them.
+
+What is left from the release, and the next cycle as it stands on 2026-10-21:
 
 1. The tag `15.0.9` without the `v`: `15.0.7` and `15.0.8` have both forms; on 2026-10-21 only
    `v15.0.9` exists.
-2. The next development cycle. `dev` (`4bca2ac2`) is an ancestor of `master`, so it moves to
-   `c6a0d8ed` by a fast-forward, with no merge commit. The version bump is prepared on
-   `wip/15.0.10-dev-bump` (`04d435eb` on `c6a0d8ed`, not pushed): `package.json` and
-   `package-lock.json` to 15.0.10, and in `CHANGELOG.md` the `[Unreleased]` entries become
-   `[15.0.9] - 2026-10-21`, a new empty `[Unreleased]` opens, and 15.0.8 and 15.0.7 get dated
-   headings. That settles the `CHANGELOG.md` question. Whether the next release is 15.0.10 or
-   15.1.0 is the maintainer's decision. Then a new `dev` → `master` PR, as #8598 was.
-3. Dependabot PRs that target `master` (#8822, #8818, #8817, #8814, #8811, #8805, #8798) are
-   retargeted to `dev` or closed. `follow-redirects` 1.16.1 and `compression` 1.8.2 go to `dev`.
-4. Eleven items list `RT-0` among their blockers. Nine wait on nothing else that is open and still
-   claim `blocked`, to be re-stated for the next cycle: `SEAM-REFRESH`, `BFQ-67`, `BFQ-72`,
-   `BFQ-93`, `BFQ-95`, `BFQ-152`, `BFQ-156`, `BFQ-173` and `BFQ-174`. `RT-1` and
-   `ID-SIMPLE-MATCH` also wait on `RT-REBASE`.
-5. The version class of #8772, #8775 and #8780 stays recorded as open in
+2. The next development cycle has started. `official/dev` is `04d435eb`, "Start 15.0.10
+   development cycle", one commit on `master` `c6a0d8ed` (the bump prepared as
+   `wip/15.0.10-dev-bump`, pushed as `dev`): `package.json` and `package-lock.json` to 15.0.10, and
+   in `CHANGELOG.md` the `[Unreleased]` entries become `[15.0.9] - 2026-10-21`, a new empty
+   `[Unreleased]` opens, and 15.0.8 and 15.0.7 get dated headings. The staging PR #8824 (`dev` →
+   `master`, "new dev branch post 15.0.9 release") is open. The next version is open: the
+   maintainer has said the work decides patch, minor or major, and the version string may change to
+   follow it, so it is driven by the semver class of what lands (each queue item's `semver`). The
+   `dev` baseline, full suite on `04d435eb`: 3569 passing, 0 failing, 4 pending (Node 24.15.0,
+   MongoDB 7.0.43 in a container).
+3. Dependabot is settled apart from the `dev` bumps. On 2026-10-21 no Dependabot PR is open:
+   #8818, #8811, #8805 and #8798 were closed by Dependabot as up to date, and #8822 (`sanitize-html`
+   2.18.1), #8817 (`compression` 1.8.2) and #8814 (`source-map-js` 1.2.2) were closed by AndyLow91.
+   15 open alerts are measured against `master` (15.0.9). The configuration question stays open
+   (`DEPENDABOT-CONFIG`, `needs-decision`). The `dev` bumps for `compression`, `follow-redirects`
+   and `source-map-js` are being prepared on `wip/15.0.10-lockfile-refresh` (peer session, not
+   pushed); it leaves `sanitize-html` out on purpose, because GHSA-x3q4 and GHSA-cv27 need 2.18.0,
+   which needs Node >=22.12.
+4. `npm audit` on `dev` `04d435eb` (2026-10-21 20:49Z, npm 11.12.1, `--package-lock-only`): 27
+   findings, 13 high, 0 critical in the worktree (14 / 9 with `--omit=dev`); the same lockfile
+   audited in a scratch directory gives 28 / 14 (the extra high is `axios-cookiejar-support`, cause
+   not found). None of cuts 1–4 or #8605 fixes `braces`, `node-forge`, `source-map-js`,
+   `follow-redirects` or `compression`, and none fixes the two `sanitize-html` advisories (cut 1
+   `c043fb2d` keeps 2.17.5; cuts 2–4 and #8605 have 2.17.7). GHSA-374f, a new moderate, is
+   untriaged. Figures per cut are in
+   [contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#npm-audit-and-dependabot-triage).
+5. Pushed by the maintainer on 2026-10-21 as PRs to `dev`: #8825 (`BFQ-173`,
+   `bf/boluscalc-profile-units` `34c73bd7`, 3573/0/4), #8826 (`BFQ-174`, `bf/profile-spec-honoured`
+   `827df15e`, 3576/0/4), which must land with or after #8825, never alone: on its own, an mmol/L
+   profile chosen on an mg/dl display gives 81 U where `dev` gives 2.3 U; and #8827 (`BFQ-157`,
+   `bf/treatment-bubble-units` `a9c6b3d1`, 3577/0/4, not measured in a browser). #8797 (`BFQ-09`)
+   now has head `542b7e97`, with `dev` merged in (3591/0/4). #8819 (`BFQ-172`) merges cleanly with
+   `dev` (3571/0/4); a review note is drafted, not posted. The four dosing changes together
+   (`scratch/dosing-1510` `203027c5`: `BFQ-173`, `BFQ-174`, `BFQ-09` and #8819 on `dev`) pass
+   3604/0/4. Ready to push, local: `BFQ-161` (`bf/entries-pattern-limit` `fe1f6220`, 3576/0/4; the
+   depth limit of 10 awaits the maintainer's confirmation). `BFQ-72` (`bf/regex-limits` `9cbf6615`,
+   3599/0/4, minor) waits on two decisions: the fix shape and the disclosure route.
+6. The nine items whose only open blocker was `RT-0` are re-stated: `BFQ-173` and `BFQ-174`
+   `in-flight-upstream` (#8825, #8826); `BFQ-72`, `BFQ-95` and `BFQ-152` `needs-decision`; `BFQ-67` and `BFQ-93`
+   `not-started`; `BFQ-156` `in-progress` (its branch owes a merge of `dev`); `SEAM-REFRESH` now
+   waits on `RT-REBASE`. `RT-1` and `ID-SIMPLE-MATCH` wait on `RT-REBASE`, which is in progress.
+7. The version class of #8772, #8775 and #8780 stays recorded as open in
    [decisions](../../releases/cgm-remote-monitor-15.0.9/decisions.md).
 
 The full `npm audit` triage, which findings reach a running site and what is done about each, is in
@@ -121,7 +153,13 @@ Two questions are open in §8.3:
 
 **Rebasing costs more with every merge to `dev`.** The cuts conflict with `dev` in files the
 merged remedial PRs touched (queue `RT-REBASE` re-measures the conflicts). The cheapest time to
-rebase cut 1 is right after 15.0.9 is tagged, while `dev` is quiet.
+rebase cut 1 is right after 15.0.9 is tagged, while `dev` is quiet. On 2026-10-21 cut 1's catch-up
+merge is in progress (`RT-REBASE`): on `dev` `04d435eb`, `chore/retire-jsdom` `bce12ecc` is 376
+commits behind and 99 ahead, with 13 conflicting paths, and 14 `dev` test files (about 109 cases)
+use the jsdom harness cut 1 deletes. The maintainer chose option C that day: cut 1 ports the D3,
+clock-client and pill-title coverage to the real-browser suite and keeps the jsdom harness for the
+rest, which a later cut retires (`RT-JSDOM-REST`); the decided Node floor `^22.12 || >=24` and the
+legacy bridge removal come into the cut 1 merge.
 
 <!-- BEGIN GENERATED: road-release-train -->
 
@@ -133,13 +171,14 @@ rebase cut 1 is right after 15.0.9 is tagged, while `dev` is quiet.
 | 1 | `RT-BOOTERROR` | BF-63 - the page that reports a boot error crashes on cut 4's boot errors | `gate-not-met` | &mdash; |
 | 1 | `RT-CONNECT-PIN-CUTS` | BF-65 - cuts 1-3 ship the leaking connector to upgraders first | `gate-not-met` | &mdash; |
 | 1 | `RT-PR-8730` | #8730 - Crowdin translation updates, held out of 15.0.9 (BF-132) | `gate-not-met` | &mdash; |
-| 1 | `RT-REBASE` | Cuts 1-5 are far behind dev and all five conflict | `gate-not-met` | &mdash; |
+| 1 | `RT-REBASE` | Cuts 1-5 are far behind dev and all five conflict | `in-progress` | &mdash; |
 | 1 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | &mdash; |
 | 2 | `ID-SIMPLE-MATCH` | API v1 entries and devicestatus match on identifier like treatments (the simple  | `blocked` | `RT-REBASE` |
 | 2 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then ret | `not-started` | `OID-PREVALENCE` |
 | 2 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `RT-REBASE` |
 | 3 | `RT-2` | Cut 2 - chore/build-runtime-separation | `blocked` | `RT-1` |
 | 3 | `RT-D3-SUITE` | The treatment-drag clamps get a regression test in cut 1's real-browser suite | `blocked` | `RT-1` |
+| 3 | `RT-JSDOM-REST` | Retire the jsdom test harness that cut 1 keeps (option C) | `not-started` | `RT-1` |
 | 3 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | `RT-1` |
 | 4 | `RT-3` | Cuts 3+5 combined - dependency release | `blocked` | `RT-2` |
 | 5 | `RT-5` | Cut 4 - chore/mime-exposure-review, the one to slow down on | `blocked` | `RT-3` |
@@ -179,20 +218,20 @@ Until then, the order below is the order of development, not of release.
 |---:|---|---|---|---|
 | 1 | `A7A-7` | §7a item 7 - the clock question | `unsettled` | &mdash; |
 | 1 | `ID-CONVENTIONS` | Identifier conventions: one URL-form identifier template per record kind and sou | `in-progress` | &mdash; |
-| 1 | `SEAM-REFRESH` | Refresh the seam chain once after 15.0.9, onto the base the release train leaves | `blocked` | &mdash; |
 | 1 | `T30-AUTH` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | `ready-to-push` | &mdash; |
 | 1 | `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | &mdash; |
 | 1 | `T43` | T4.3 - ns-realtime, LISTEN per served tenant | `not-started` | &mdash; |
+| 2 | `SEAM-REFRESH` | Refresh the seam chain once after 15.0.9, onto the base the release train leaves | `blocked` | `RT-REBASE` |
 | 2 | `T30-SCHEMA-CONFIG` | T3.0 part 2b - per-tenant configuration table, and where human identity lives | `not-started` | `T30-RESEARCH` |
-| 2 | `WC-STEP-PATCH` | Release 1 (patch): one write step for every v1, v3 and socket path, today's beha | `blocked` | `SEAM-REFRESH` |
-| 2 | `WRITE-CONTRACT` | One write step behind the storage interface: _id form, srv dates, soft delete, r | `blocked` | `SEAM-REFRESH` |
-| 3 | `BFQ-CAP02` | CAP-02 - no importer, and no Mongo to PostgreSQL loader | `not-started` | `T30-SCHEMA-CONFIG`, `WRITE-CONTRACT` |
-| 3 | `ID-BATCH-RESULTS` | Release 2 (minor): per-item results in v1 batch replies; one bad item no longer  | `blocked` | `WC-STEP-PATCH` |
-| 3 | `ID-FIRST-MATCH` | Release 2 (minor): identifier-first matching for entries, devicestatus and socke | `blocked` | `WC-STEP-PATCH`, `ID-SIMPLE-MATCH` |
-| 3 | `ID-V1-LOOKUP` | Release 2 (minor): v1 GET and DELETE by any identifier, without the default time | `blocked` | `WC-STEP-PATCH` |
-| 3 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection; empty and null mean  | `blocked` | `WC-STEP-PATCH` |
 | 3 | `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `not-started` | `T30-SCHEMA-CONFIG` |
 | 3 | `T32-REM` | T3.2 remainder - platform.sql carries no config, secret or signing key | `blocked` | `T30-SCHEMA-CONFIG` |
+| 3 | `WC-STEP-PATCH` | Release 1 (patch): one write step for every v1, v3 and socket path, today's beha | `blocked` | `SEAM-REFRESH` |
+| 3 | `WRITE-CONTRACT` | One write step behind the storage interface: _id form, srv dates, soft delete, r | `blocked` | `SEAM-REFRESH` |
+| 4 | `BFQ-CAP02` | CAP-02 - no importer, and no Mongo to PostgreSQL loader | `not-started` | `T30-SCHEMA-CONFIG`, `WRITE-CONTRACT` |
+| 4 | `ID-BATCH-RESULTS` | Release 2 (minor): per-item results in v1 batch replies; one bad item no longer  | `blocked` | `WC-STEP-PATCH` |
+| 4 | `ID-FIRST-MATCH` | Release 2 (minor): identifier-first matching for entries, devicestatus and socke | `blocked` | `WC-STEP-PATCH`, `ID-SIMPLE-MATCH` |
+| 4 | `ID-V1-LOOKUP` | Release 2 (minor): v1 GET and DELETE by any identifier, without the default time | `blocked` | `WC-STEP-PATCH` |
+| 4 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection; empty and null mean  | `blocked` | `WC-STEP-PATCH` |
 | 4 | `T30-TENANT-ADMIN` | cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside n | `not-started` | `T30-WIRING` |
 | 4 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | `T30-WIRING` |
 | 4 | `T33-REM` | T3.3 remainder - the shared enclave, and language/levels per tenant | `blocked` | `T30-WIRING` |

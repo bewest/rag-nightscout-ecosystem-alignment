@@ -24,10 +24,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 158 | 45 | 8 |
-| **Modernization** | `release-train` | 34 | 5 | 0 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 159 | 45 | 16 |
+| **Modernization** | `release-train` | 35 | 6 | 0 |
 | **Multitenant** | `tenancy`, `platform` | 67 | 17 | 9 |
-| | **total** | **261** | **67** | **17** |
+| | **total** | **263** | **68** | **25** |
 
 <!-- END GENERATED: horizons -->
 
@@ -147,13 +147,13 @@ cover more than one `BF-`:
 | `BFQ-146` | `released` | BF-146 - API v3 treatments are held in the server's memory without mills: a late or edited |
 | `BFQ-147` | `released` | BF-147 - two package.json overrides hold ajv and request's form-data inside published advi |
 | `BFQ-149` | `not-started` | BF-149 - the Day to Day report draws a cancelled or replaced temp target or override for i |
-| `BFQ-152` | `blocked` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier |
+| `BFQ-152` | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier |
 | `BFQ-154` | `blocked` | BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed  |
-| `BFQ-156` | `blocked` | BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the pro |
-| `BFQ-157` | `not-started` | BF-157 - a treatment's glucose bubble is placed as mg/dL when its units are spelled mmol/L |
+| `BFQ-156` | `in-progress` | BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the pro |
+| `BFQ-157` | `in-flight-upstream` | BF-157 - a treatment's glucose bubble is placed as mg/dL when its units are spelled mmol/L |
 | `BFQ-159` | `not-started` | BF-159 - the main page sometimes leaves for the Profile Editor while a profile exists, wit |
 | `BFQ-160` | `not-started` | BF-160 - the clock designer's link target is written with curly quotes |
-| `BFQ-161` | `not-started` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fi |
+| `BFQ-161` | `ready-to-push` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fi |
 | `BFQ-163` | `not-started` | BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in |
 | `BFQ-164` | `needs-decision` | BF-164 - writes outside API v3 never reach the v3 storage socket |
 | `BFQ-165` | `not-started` | BF-165 - a treatment re-send matched by its fallback key is answered without _id |
@@ -162,22 +162,23 @@ cover more than one `BF-`:
 | `BFQ-169` | `not-started` | BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a  |
 | `BFQ-170` | `not-started` | BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent |
 | `BFQ-172` | `in-flight-upstream` | BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819  |
-| `BFQ-173` | `blocked` | BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units, a k |
-| `BFQ-174` | `blocked` | BF-174 - the bolus calculator's profile picker is ignored; every value comes from the acti |
+| `BFQ-173` | `in-flight-upstream` | BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units, a k |
+| `BFQ-174` | `in-flight-upstream` | BF-174 - the bolus calculator's profile picker is ignored; every value comes from the acti |
+| `BFQ-175` | `unsettled` | BF-175 - temp targets are converted from mmol/L only when units is exactly 'mmol' (candida |
 | `BFQ-40` | `released` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `in-progress` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `released` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
 | `BFQ-52` | `blocked` | BF-52 - an age reminder whose 20-minute window passed without a check was never sent |
-| `BFQ-67` | `blocked` | BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work |
+| `BFQ-67` | `not-started` | BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work |
 | `BFQ-69` | `released` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing |
 | `BFQ-71` | `closed` | BF-71 - any dateString key drops the default date window, and the window is not a control |
-| `BFQ-72` | `blocked` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
+| `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | `BFQ-87` | `released` | BF-87 - the root qs override holds the connector below its range and pins the server's que |
 | `BFQ-90` | `released` | BF-90 - an alarm at a page with no reading throws in the client |
 | `BFQ-91` | `released` | BF-91 - connector capture mode cannot find trace-axios for two sources |
 | `BFQ-92` | `not-started` | BF-92 - a page with no glucose reading never presents a server alarm, including device ala |
-| `BFQ-93` | `blocked` | BF-93 - food changes never reach an open page |
-| `BFQ-95` | `blocked` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
+| `BFQ-93` | `not-started` | BF-93 - food changes never reach an open page |
+| `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
 | `BFQ-98` | `released` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not rep |
 | `BFQ-99` | `blocked` | bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and str |
 | `BFQ-CAP01` | `not-started` | CAP-01 - Nightscout cannot be served from a sub-path |
@@ -199,8 +200,8 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `released` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
-| `release-train` | 5 |  | 5 |  | 6 |  | 15 |  | 1 |  |  | 2 | **34** |
-| `register-open` | 35 | 3 | 1 | 1 | 13 | 2 | 55 | 4 |  |  | 3 |  | **117** |
+| `release-train` | 6 | 1 | 4 |  | 6 |  | 15 |  | 1 |  |  | 2 | **35** |
+| `register-open` | 35 | 4 | 1 | 2 | 5 | 5 | 55 | 7 |  | 1 | 3 |  | **118** |
 | `tenancy` | 8 | 1 |  | 1 | 13 |  |  | 7 | 3 | 1 |  |  | **34** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 11 |  |  |  | **19** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
@@ -240,14 +241,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 226 | 87% |
+| Maintainer | 228 | 87% |
 | SECURITY reviewer | 16 | 6% |
 | Maintainer + a second human | 7 | 3% |
 | SAFETY reviewer | 6 | 2% |
 | Whoever edits it next | 3 | 1% |
 | Unassigned | 2 | 1% |
 | Upstream reviewers | 1 | 0% |
-| **total** | **261** | |
+| **total** | **263** | |
 
 <!-- END GENERATED: reviewer-load -->
 

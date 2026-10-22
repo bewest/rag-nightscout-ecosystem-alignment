@@ -67,10 +67,17 @@ maintainer
 
 ## Notes carried on the item
 
-Filed 2026-10-21 from the check of PR #8819 (opened 2026-10-20). Decision
-2026-10-21 (the maintainers): a known issue of 15.0.9, named in the release
-notes; #8819 is based on fade2299 and needs dev merged in before it lands,
-after 15.0.9.
+2026-10-21 (after the release): #8819 (javier-erro, head 18319a9f) merges
+cleanly with dev 04d435eb (scratch 55f7970b, full suite 3571/0/4). A review
+note is drafted, not posted: the new test is duplicated; the reverse direction
+runs only with DISPLAY_UNITS=mmol, which CI does not set; the pop-up shows
+unrounded values; getUnits(sbx.time) is passed a time where it takes a profile
+name. BF-173's fix and #8819 agree that values end up in display units; their
+rounding differs by about 0.01 U. Integration: scratch/dosing-1510 203027c5
+(BF-173, BF-174, BF-09's branch and #8819 on dev 04d435eb), 3604/0/4. Filed
+2026-10-21 from the check of PR #8819 (opened 2026-10-20). Decision 2026-10-21
+(the maintainers): a known issue of 15.0.9, named in the release notes; #8819
+is based on fade2299 and needs dev merged in before it lands, after 15.0.9.
 
 ---
 

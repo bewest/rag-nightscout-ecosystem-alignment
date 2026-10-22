@@ -30,15 +30,20 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 16 items
+### Maintainer &mdash; 23 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BFQ-09` | `in-flight-upstream` | BF-09 - socket dedup truthiness skips a falsy value | #8797 |
+| `BFQ-157` | `in-flight-upstream` | BF-157 - a treatment's glucose bubble is placed as mg/dL when its units are spel | #8827 |
 | `BFQ-172` | `in-flight-upstream` | BF-172 - the Bolus Wizard Preview mixes the profile's units with the display uni | #8819 |
+| `BFQ-173` | `in-flight-upstream` | BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display  | #8825 |
+| `BFQ-174` | `in-flight-upstream` | BF-174 - the bolus calculator's profile picker is ignored; every value comes fro | #8826 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
+| `BFQ-152` | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by  | &mdash; |
 | `BFQ-164` | `needs-decision` | BF-164 - writes outside API v3 never reach the v3 storage socket | &mdash; |
+| `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
 | `DEPENDABOT-CONFIG` | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts co | &mdash; |
 | `ID-ABSENT-DECISION` | `needs-decision` | Decide: a write that carries no identifier (and no _id) - keep the time-key fall | &mdash; |
 | `ID-CLIENT-OID-DECISION` | `needs-decision` | Decide: may a client set _id (an ObjectId it creates), and which field wins when | &mdash; |
@@ -47,15 +52,23 @@ every item that was `merged-upstream` then is `released`.
 | `ID-SCOPE-DECISION` | `needs-decision` | Decide: is identifier unique per collection, across collections, and per tenant  | &mdash; |
 | `ID-V3-IMMUTABLE-DECISION` | `needs-decision` | Decide: on an identifier match, may date, device or eventType change? | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
+| `BFQ-161` | `ready-to-push` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory  | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
+| `BFQ-175` | `unsettled` | BF-175 - temp targets are converted from mmol/L only when units is exactly 'mmol | &mdash; |
 
 ### SAFETY reviewer &mdash; 1 item
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `A7A-7` | `unsettled` | §7a item 7 - the clock question | &mdash; |
+
+### SECURITY reviewer &mdash; 1 item
+
+| id | claimed state | what it is | PR |
+|---|---|---|---|
+| `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | &mdash; |
 
 <!-- END GENERATED: needs-a-human -->
 
@@ -71,6 +84,9 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 |---|---|---|---|---|
 | **#8797** | `BFQ-09` | `bf/socket-dedup-zero` | BF-09 - socket dedup truthiness skips a falsy value | Maintainer |
 | **#8819** | `BFQ-172` | `javier-erro:#8819` | BF-172 - the Bolus Wizard Preview mixes the profile's units  | Maintainer |
+| **#8825** | `BFQ-173` | `bf/boluscalc-profile-units` | BF-173 - the Careportal Bolus Wizard mixes the profile's uni | Maintainer |
+| **#8826** | `BFQ-174` | `bf/profile-spec-honoured` | BF-174 - the bolus calculator's profile picker is ignored; e | Maintainer |
+| **#8827** | `BFQ-157` | `bf/treatment-bubble-units` | BF-157 - a treatment's glucose bubble is placed as mg/dL whe | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 

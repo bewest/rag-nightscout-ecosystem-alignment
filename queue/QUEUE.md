@@ -31,26 +31,26 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 261 |
-| runnable gates | 322 |
-| explicit `no-gate:` markers | 283 |
+| items | 263 |
+| runnable gates | 326 |
+| explicit `no-gate:` markers | 285 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 283 of the 605 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 285 of the 611 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 67 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
-| `in-progress` | 5 | ID-CONVENTIONS, BFQ-46, BFQ-ENV, OID-LAB, LOOP-ID-REPLY |
-| `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
-| `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
-| `blocked` | 32 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, WC-STEP-PATCH, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-72, BFQ-52, BFQ-93, BFQ-95, BFQ-67, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-152, BFQ-154, BFQ-156, BFQ-173, BFQ-174 |
-| `in-flight-upstream` | 2 | BFQ-09, BFQ-172 |
+| `not-started` | 68 | RT-VERSION, RT-JSDOM-REST, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-158, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `in-progress` | 7 | RT-REBASE, ID-CONVENTIONS, BFQ-46, BFQ-ENV, BFQ-156, OID-LAB, LOOP-ID-REPLY |
+| `gate-not-met` | 6 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
+| `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, BFQ-161, WS-LAB |
+| `blocked` | 24 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, WC-STEP-PATCH, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-154 |
+| `in-flight-upstream` | 5 | BFQ-09, BFQ-157, BFQ-172, BFQ-173, BFQ-174 |
 | `released` | 89 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
-| `needs-decision` | 11 | T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164 |
+| `needs-decision` | 14 | T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG, BFQ-152, DEPENDABOT-CONFIG, BFQ-164 |
 | `done` | 39 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
-| `unsettled` | 1 | A7A-7 |
+| `unsettled` | 2 | A7A-7, BFQ-175 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
 | `answered` | 2 | RT-D3, RT-PROPAGATION |
 
@@ -127,6 +127,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-172** BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819 proposed), a known issue of 15.0.9
 - **BFQ-173** BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units, a known issue of 15.0.9
 - **BFQ-174** BF-174 - the bolus calculator's profile picker is ignored; every value comes from the active profile, a known issue of 15.0.9
+- **BFQ-175** BF-175 - temp targets are converted from mmol/L only when units is exactly 'mmol' (candidate)
 - **RT-PR-8815** #8815 - a bearer token whose subject was deleted is refused instead of stopping the server (awss1i; BF-171, fixes #8225), merged for 15.0.9
 - **BFQ-134** BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 - **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
@@ -1024,7 +1025,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 ## Modernization release train
 
-`parcel: release-train` &mdash; 34 items
+`parcel: release-train` &mdash; 35 items
 
 The adopted order (maintainer, 2026-09-15): 15.0.9, then cut 1, then cut 2,
 then cuts 3+5 combined, then a deprecation release, then cut 4. The premise of
@@ -1041,7 +1042,8 @@ that costs.
 | `RT-COUNT-COMPAT` | Reads accept the count shapes oref0 and GluPredKit send; 15.0.9 stays a patch | `released` | `bf/count-client-compat` | patch | 0 run + 1 no-gate |
 | `RT-TRUST-ONE-SOURCE` | Every client-address consumer uses one TRUST_PROXY policy compiled from env | `released` | `rt/trust-one-source` | patch | 3 run + 1 no-gate |
 | `RT-LOOP-REMOTE-ADDRESS` | Loop remote commands carry the proxy's address as their sender label | `released` | `rt/trust-one-source` | patch | 2 run + 2 no-gate |
-| `RT-REBASE` | Cuts 1-5 are far behind dev and all five conflict | `gate-not-met` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review` | n/a | 6 run + 1 no-gate |
+| `RT-REBASE` | Cuts 1-5 are far behind dev and all five conflict | `in-progress` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review` | n/a | 6 run + 1 no-gate |
+| `RT-JSDOM-REST` | Retire the jsdom test harness that cut 1 keeps (option C) | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `RT-PROPAGATION` | How the release train reaches dev: merge dev into the cuts, or rebase the cuts onto dev | `answered` | `-` | n/a | 0 run + 1 no-gate |
 | `RT-0` | Release 15.0.9 | `released` | `origin/dev` | minor | 2 run + 2 no-gate |
 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `chore/retire-jsdom` | major | 2 run + 2 no-gate |
@@ -1328,10 +1330,10 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `gate-not-met` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
 | branch | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review` |
-| base | `origin/dev@74fc6619` |
+| base | `official/dev@04d435eb` |
 | worktree | `externals/cgm-remote-monitor-official` |
 | semver | `n/a` |
 | review | maintainer - this changes the cost of the adopted train |
@@ -1363,7 +1365,36 @@ that costs.
 
 - `docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md`
 
-**Notes.** The published cuts are unrebased and far behind dev; the real propagation is done on dev after 15.0.9 is tagged. Measured 2026-09-25 against official/dev e3adc91d: cuts 1-4 are 286 commits behind with 11 / 17 / 19 / 35 conflicting paths; cut 5 is 162 behind and 498 ahead with 25 (`git rev-list --left-right --count official/dev...<cut>`; `git merge-tree --write-tree --name-only official/dev <cut>`). The blast_radius paths are from 2026-09-24. Two local rehearsals exist, neither pushed, and every count in them must be re-measured when the real propagation is done: - rt/cut1..rt/cut4 in externals/work/crm- cuts (2026-09-21, on dev 59430336; tips ed21961f, b5bf7d77, c313f5b1, 95bb6295, which also carry the Node-floor change, RT-NODE-FLOOR-TESTED). - rh/cut1..rh/cut4 and rh/cut35 in externals/work/crm-rh-cuts (2026-09-23, on the 15.0.9 candidate rc/15.0.9-additions-c b9c9828b = dev 74fc6619 + eight additions), recorded in docs/30-design/modernization/cut-rehearsal- on-15.0.9-rc-2026-09-23.md. Each trial-merges clean into its base. rh/cut35 contains cut 4, because cut 5 descends from cut 4. Method, as rehearsed: dev is propagated up the stack (dev into cut 1, cut 1 into cut 2, and so on), so the prefix property is preserved and cut 1's resolutions are inherited. On rt/*, propagation needed 7 conflict resolutions at cut 1, then 9 / 5 / 4, against the 14 / 16 / 18 each would have had against dev directly. Nine of those conflicts were Phase 0 fixes the cuts predate, and taking the cut's side would have reintroduced each: BF-01, BF-07, BF-16 and BF-35, BF-36, plus the BF-04 allowlist and BF-70 pipeline refusal; all were verified present on cut 4 after the merges. Tests on rt/* (Node 24.20.0, mongod 7.0.43): cut 1 348 passing, cut 2 357, cut 3 324, cut 4 310, zero failures (later cuts remove suites). Cut 1's ported browser coverage was ablated: removing dev's 06372e1d takes it from 21 passing to 12 passing / 9 failing. Still owed at the real propagation: - The coverage of tests/pluginbase.modern.test.js and tests/profile-sinks.test.js, both deleted by cut 1's jsdom retirement, has not been audited against cut 1's Playwright replacements (12 and 6 it() cases unaccounted for). Only clock-client's was audited, because it had a named production fix behind it (see the no-gate). - The cut 5 tip carries only two thirds of BF-07: b1bdaca0 keeps getDataRef in lib/server/cache.js and both lib/data/dataloader.js callers but reverted lib/api/entries/index.js to getData (origin/dev has 7 occurrences under lib/, b1bdaca0 has 6). The rehearsals do not copy that. Worth raising against e3b22034 upstream. - The connector pin moves to the exact npm 0.1.0 pin dev has (P0-PIN, RT-CONNECT- PIN-CUTS). rt/cut4 resolved the old pin fork (dev's 234d47c8 vs cut 4's c962a13f) to connector b77e5bb7, whose commits are all in 0.1.0. - Each cut is renumbered when it is rebased (RT-VERSION), and cut 5's client-ip.js takes 15.0.9's TRUST_PROXY behaviour (RT-3). Release-readiness §5's "each costs zero rebase work today" was false when written: the cut tips date to 2026-09-05/06 and dev's tip to 2026-09-09; "0 commits behind dev" was true of the stack tip only, because of one commit, 0a4109f6.
+**Notes.** 2026-10-21 (post-15.0.9 cycle): measured on official/dev 04d435eb against official/chore/retire-jsdom bce12ecc: cut 1 is 376 commits behind and 99 ahead, merge base 9205ea30, 13 conflicting paths (README.md, azuredeploy.json, lib/plugins/pluginbase.js, lib/server/bootevent.js, lib/server/loop.js, package-lock.json, package.json, tests/browser/chart.source.js, tests/clock- client.test.js, tests/dependency-d3.test.js, tests/loop-server.test.js, tests/pluginbase.modern.test.js, tests/profile-sinks.test.js). 14 dev test files (about 109 cases) depend on the jsdom harness that cut 1 deletes. Maintainer decisions 2026-10-21: (1) option C - cut 1 ports the D3 (BF-103), clock-client and pill-title coverage to tests/browser, keeps the jsdom harness for the rest, and a later cut retires it (RT-JSDOM-REST); (2) the decided Node floor ^22.12 || >=24 (ed21961f on rt/cut1) and the legacy bridge removal (rh/cut1-retire-legacy c043fb2d) come into the cut 1 merge; (3) the connector teardown listener stays in the merge, and its removal is a follow-up. Work is in progress on wip/cut1-onto-15.0.10 (worktree externals/work/crm-cut1-1510), not pushed; the catch-up merge is not committed yet. Cuts 2-5 are not re- measured on 04d435eb. The gates below read origin/dev, which in externals/cgm- remote-monitor-official is still 4bca2ac2. The published cuts are unrebased and far behind dev; the real propagation is done on dev after 15.0.9 is tagged. Measured 2026-09-25 against official/dev e3adc91d: cuts 1-4 are 286 commits behind with 11 / 17 / 19 / 35 conflicting paths; cut 5 is 162 behind and 498 ahead with 25 (`git rev-list --left-right --count official/dev...<cut>`; `git merge-tree --write-tree --name-only official/dev <cut>`). The blast_radius paths are from 2026-09-24. Two local rehearsals exist, neither pushed, and every count in them must be re-measured when the real propagation is done: - rt/cut1..rt/cut4 in externals/work/crm-cuts (2026-09-21, on dev 59430336; tips ed21961f, b5bf7d77, c313f5b1, 95bb6295, which also carry the Node-floor change, RT-NODE-FLOOR-TESTED). - rh/cut1..rh/cut4 and rh/cut35 in externals/work/crm-rh-cuts (2026-09-23, on the 15.0.9 candidate rc/15.0.9-additions-c b9c9828b = dev 74fc6619 + eight additions), recorded in docs/30-design/modernization/cut-rehearsal- on-15.0.9-rc-2026-09-23.md. Each trial-merges clean into its base. rh/cut35 contains cut 4, because cut 5 descends from cut 4. Method, as rehearsed: dev is propagated up the stack (dev into cut 1, cut 1 into cut 2, and so on), so the prefix property is preserved and cut 1's resolutions are inherited. On rt/*, propagation needed 7 conflict resolutions at cut 1, then 9 / 5 / 4, against the 14 / 16 / 18 each would have had against dev directly. Nine of those conflicts were Phase 0 fixes the cuts predate, and taking the cut's side would have reintroduced each: BF-01, BF-07, BF-16 and BF-35, BF-36, plus the BF-04 allowlist and BF-70 pipeline refusal; all were verified present on cut 4 after the merges. Tests on rt/* (Node 24.20.0, mongod 7.0.43): cut 1 348 passing, cut 2 357, cut 3 324, cut 4 310, zero failures (later cuts remove suites). Cut 1's ported browser coverage was ablated: removing dev's 06372e1d takes it from 21 passing to 12 passing / 9 failing. Still owed at the real propagation: - The coverage of tests/pluginbase.modern.test.js and tests/profile-sinks.test.js, both deleted by cut 1's jsdom retirement, has not been audited against cut 1's Playwright replacements (12 and 6 it() cases unaccounted for). Only clock-client's was audited, because it had a named production fix behind it (see the no-gate). - The cut 5 tip carries only two thirds of BF-07: b1bdaca0 keeps getDataRef in lib/server/cache.js and both lib/data/dataloader.js callers but reverted lib/api/entries/index.js to getData (origin/dev has 7 occurrences under lib/, b1bdaca0 has 6). The rehearsals do not copy that. Worth raising against e3b22034 upstream. - The connector pin moves to the exact npm 0.1.0 pin dev has (P0-PIN, RT-CONNECT- PIN-CUTS). rt/cut4 resolved the old pin fork (dev's 234d47c8 vs cut 4's c962a13f) to connector b77e5bb7, whose commits are all in 0.1.0. - Each cut is renumbered when it is rebased (RT-VERSION), and cut 5's client-ip.js takes 15.0.9's TRUST_PROXY behaviour (RT-3). Release-readiness §5's "each costs zero rebase work today" was false when written: the cut tips date to 2026-09-05/06 and dev's tip to 2026-09-09; "0 commits behind dev" was true of the stack tip only, because of one commit, 0a4109f6.
+
+### `RT-JSDOM-REST` &mdash; Retire the jsdom test harness that cut 1 keeps (option C)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@04d435eb` |
+| worktree | `externals/cgm-remote-monitor-official` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `RT-1` |
+
+**Blast radius.** Tests only. The dev test files that use the jsdom harness (tests/fixtures: headless.js, benv-shim.js, secure-jsdom.js, dom-globals.js and their users) and that cut 1 does not port: of the 14 files and about 109 cases measured on official/dev 04d435eb (2026-10-21), all but the D3, clock-client and pill- title coverage cut 1 moves to tests/browser. Then the harness and the jsdom devDependency go.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** test infrastructure; no product code changes
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started. Gate to write: no tracked test outside tests/browser requires the jsdom harness or jsdom, with dev 04d435eb, where 14 files do, as the red control.
+
+**Evidence.**
+
+- `docs/00-overview/ROADMAP.md`
+
+**Notes.** Added 2026-10-21 from the maintainer's option C for cut 1 (RT-REBASE, RT-1): cut 1 ports only the D3 (BF-103), clock-client and pill-title coverage and keeps the harness for the rest, so retiring the harness moves to a later cut. Which cut carries it is not decided.
 
 ### `RT-PROPAGATION` &mdash; How the release train reaches dev: merge dev into the cuts, or rebase the cuts onto dev
 
@@ -1443,13 +1474,13 @@ that costs.
 | semver | `major` |
 | review | maintainer plus a human reviewer; low blast radius is the reason it is second on the train, not a reason to skip review |
 | register | `BF-55`, `BF-58` |
-| blocks on | `RT-0`, `RT-REBASE` |
+| blocks on | `RT-REBASE` |
 
 **Blast radius.** 99 commits. Incremental production diff 11 files +68/-54 (GT2, 2026-09-15), not the 21 files +91/-123 the release-readiness §5 table publishes - that row was measured on a different basis from rows 2-5 and counts dev's own commits as deletions. Total 106 files, not 163.
 
-**What an operator sees.** A maintenance release. THE ONE THING TO CHECK BEFORE UPGRADING: it will refuse to start on older versions of Node. You need Node 22.23.2 or newer, or 24.20.0 or newer. Node 20 no longer works, and neither do Node 21, 23, or 25 and above - the requirement is two specific ranges, not a minimum. If Nightscout stops starting after this upgrade, that is why.
+**What an operator sees.** A maintenance release. THE ONE THING TO CHECK BEFORE UPGRADING: it will refuse to start on older versions of Node. You need Node 22.12 or newer within Node 22, or Node 24 or newer. Node 20 no longer works, and neither do Node 21 or 23 - the requirement is two ranges, not a single minimum. If Nightscout stops starting after this upgrade, that is why.
 
-**Why `major`.** GT4: the ENFORCED floor today is Node >=16 in bootevent.js, not the >=20 that `engines` declares - engines is not enforced on dev or master. Cut 1 introduces runtime-policy.js, which reads engines.node and calls process.exit(1). So the enforced floor jumps SIX majors, the declared range becomes a whitelist excluding Node 21/23/25+ and 22.0-22.23.1, and the check becomes a hard exit. Cut 1 also drops MongoDB 4.4 from CI in the same branch.
+**Why `major`.** GT4: the ENFORCED floor today is Node >=16 in bootevent.js, not the >=20 that `engines` declares - engines is not enforced on dev or master. Cut 1 introduces runtime-policy.js, which reads engines.node and calls process.exit(1). So the enforced floor jumps SIX majors, the declared range becomes ^22.12 || >=24 (decided 2026-09-21; the published cut 1 bce12ecc still declares ^22.23.2), excluding Node 21, 23 and 22.0-22.11, and the check becomes a hard exit. Cut 1 also drops MongoDB 4.4 from CI in the same branch.
 
 **Gates.**
 
@@ -1465,7 +1496,7 @@ that costs.
 - `docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md`
 - `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`
 
-**Notes.** Blocked on 15.0.9 (RT-0) and the rebase (RT-REBASE). The published cut 1 (origin/chore/retire-jsdom bce12ecc) is 175 commits behind dev 153e5658 and conflicts in nine paths (RT-REBASE). Decisions: - 2026-09-23 (maintainer): the legacy CGM bridge removal (MiniMed mmconnect and Dexcom share2nightscout- bridge) moves from cut 4 onto cut 1. Rehearsed on local rh/cut1-retire-legacy (c043fb2d, from rh/cut1, not pushed): 8 cherry-picks plus the BF-61 decision-A fixes (the named fix boots, no release number in the message, BF-62 logged). Node suite 2121/0/1 on 22.23.2 and 24.20.0 x Mongo 7; npm audit --omit=dev 15 -> 9 (request and form-data highs clear). Leftover MMCONNECT_* settings stop the site with a page naming the fix. See docs/60-research/modernization/cut1-legacy-bridge-lift-2026-09-23.md. That rehearsal pins connector 0.1.0-dev.1; at the real rebase cut 1 takes dev's exact 0.1.0 pin (RT-CONNECT-PIN-CUTS). - 2026-09-21 (maintainer): the Node floor becomes ^22.12 || >=24 (RT-NODE-FLOOR-TESTED); prepared on rt/cut1, not pushed. From cut 1 onward docker-build and docker-build-pr carry needs: [test, browser-test], so a browser-test failure blocks image publication. On dev, docker-build has needs: test only.
+**Notes.** 2026-10-21: 15.0.9 is released, so RT-0 is removed from blocks_on; cut 1 waits on its catch-up merge (RT-REBASE, in progress on wip/cut1-onto-15.0.10, not pushed). Cut 1 is first in the cycle's priorities (maintainer, 2026-10-21). Decided the same day: option C (port the D3, clock-client and pill-title coverage to tests/browser in cut 1, keep the jsdom harness for the rest, retire it later: RT-JSDOM-REST); the Node floor ^22.12 || >=24 (ed21961f) and the legacy bridge removal (c043fb2d) come into the merge; the connector teardown listener stays, its removal a follow-up. The clock-client no-gate below is the coverage option C ports. Blocked on 15.0.9 (RT-0) and the rebase (RT-REBASE). The published cut 1 (origin/chore/retire-jsdom bce12ecc) is 175 commits behind dev 153e5658 and conflicts in nine paths (RT-REBASE). Decisions: - 2026-09-23 (maintainer): the legacy CGM bridge removal (MiniMed mmconnect and Dexcom share2nightscout-bridge) moves from cut 4 onto cut 1. Rehearsed on local rh/cut1-retire-legacy (c043fb2d, from rh/cut1, not pushed): 8 cherry-picks plus the BF-61 decision-A fixes (the named fix boots, no release number in the message, BF-62 logged). Node suite 2121/0/1 on 22.23.2 and 24.20.0 x Mongo 7; npm audit --omit=dev 15 -> 9 (request and form-data highs clear). Leftover MMCONNECT_* settings stop the site with a page naming the fix. See docs/60-research/modernization/cut1-legacy-bridge- lift-2026-09-23.md. That rehearsal pins connector 0.1.0-dev.1; at the real rebase cut 1 takes dev's exact 0.1.0 pin (RT-CONNECT-PIN-CUTS). - 2026-09-21 (maintainer): the Node floor becomes ^22.12 || >=24 (RT-NODE-FLOOR-TESTED); prepared on rt/cut1, not pushed. From cut 1 onward docker-build and docker- build-pr carry needs: [test, browser-test], so a browser-test failure blocks image publication. On dev, docker-build has needs: test only.
 
 ### `RT-2` &mdash; Cut 2 - chore/build-runtime-separation
 
@@ -1610,7 +1641,7 @@ that costs.
 | worktree | `externals/cgm-remote-monitor-official` |
 | semver | `minor` |
 | review | maintainer - re-send behaviour clients see changes |
-| blocks on | `RT-0`, `RT-REBASE` |
+| blocks on | `RT-REBASE` |
 
 **Blast radius.** Small and standalone, one PR to dev with BF-169 (BFQ-169). lib/server/entries.js upsertQueryFor (301-319 at fade2299): match identifier first, as treatments do, then sysTime+type. lib/server/devicestatus.js create (92-172 at fade2299; insertMany unordered after #8758's withoutStoredIds at 57-90): a status carrying identifier is upserted on it, the rest are inserted as today. Tests for both. No change to treatments, API v3 or the websocket.
 
@@ -1628,7 +1659,7 @@ that costs.
 - `tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md`
 - `docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md`
 
-**Notes.** Decided by the maintainer 2026-10-17: not in 15.0.9; lands on dev after cut 1's rebase, with BFQ-169. 15.0.9 is dev as it stands at fade2299 (releases/cgm-remote-monitor-15.0.9/contents.md), and any merge to dev moves the head off the candidate whose re-approval RT-0 owes. blocks_on names RT- REBASE because no separate item marks cut 1's catch-up merge done; only cut 1's part is needed (RT-1 blocks on the same two). Why after the rebase: RT- REBASE records that each further merge to dev raises the cuts' catch-up cost. Cuts 2-5 already change both files this item touches: `git diff --name-only $(git merge-base fade2299 <cut>) <cut> -- lib/server/entries.js lib/server/devicestatus.js` lists entries.js on cut 2 and both files on cuts 3, 4 and 5 (measured 2026-10-17); cut 1 touches neither. Landing after the catch-up merge keeps this change out of that merge's conflicts. The tenancy item ID-FIRST-MATCH absorbs this rule into the write step once WC-STEP-PATCH exists (it blocks on this item). Background: the simple contract in the Loop reply (LOOP-ID-REPLY) - _id an ObjectId or absent; identifier when _id is absent; the time key when neither.
+**Notes.** 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Still waits on cut 1's catch-up merge (RT-REBASE, in progress). Decided by the maintainer 2026-10-17: not in 15.0.9; lands on dev after cut 1's rebase, with BFQ-169. 15.0.9 is dev as it stands at fade2299 (releases/cgm-remote- monitor-15.0.9/contents.md), and any merge to dev moves the head off the candidate whose re-approval RT-0 owes. blocks_on names RT-REBASE because no separate item marks cut 1's catch-up merge done; only cut 1's part is needed (RT-1 blocks on the same two). Why after the rebase: RT-REBASE records that each further merge to dev raises the cuts' catch-up cost. Cuts 2-5 already change both files this item touches: `git diff --name-only $(git merge-base fade2299 <cut>) <cut> -- lib/server/entries.js lib/server/devicestatus.js` lists entries.js on cut 2 and both files on cuts 3, 4 and 5 (measured 2026-10-17); cut 1 touches neither. Landing after the catch-up merge keeps this change out of that merge's conflicts. The tenancy item ID-FIRST-MATCH absorbs this rule into the write step once WC-STEP-PATCH exists (it blocks on this item). Background: the simple contract in the Loop reply (LOOP-ID-REPLY) - _id an ObjectId or absent; identifier when _id is absent; the time key when neither.
 
 ### `RT-CONNECT-PIN-CUTS` &mdash; BF-65 - cuts 1-3 ship the leaking connector to upgraders first
 
@@ -2189,7 +2220,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 117 items
+`parcel: register-open` &mdash; 118 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2214,7 +2245,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-CAP01` | CAP-01 - Nightscout cannot be served from a sub-path | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `BFQ-69` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing | `released` | `bf3/quickpick-rebuild` | patch | 3 run + 1 no-gate |
 | `BFQ-71` | BF-71 - any dateString key drops the default date window, and the window is not a control | `closed` | `-` | patch | 2 run + 2 no-gate |
-| `BFQ-72` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | `blocked` | `bf/regex-limits` | minor | 1 run + 3 no-gate |
+| `BFQ-72` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | `needs-decision` | `bf/regex-limits` | minor | 1 run + 3 no-gate |
 | `BFQ-40` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion | `released` | `-` | minor | 1 run |
 | `BFQ-41` | BF-41 - a reading dated ahead of the clock silences the stale-data alarm (closed, does not reproduce) | `closed` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-87` | BF-87 - the root qs override holds the connector below its range and pins the server's query parser | `released` | `bf/qs-6.16` | patch | 3 run + 1 no-gate |
@@ -2226,12 +2257,12 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-52` | BF-52 - an age reminder whose 20-minute window passed without a check was never sent | `blocked` | `bf3/age-push-once` | patch | 2 run + 1 no-gate |
 | `BFQ-90` | BF-90 - an alarm at a page with no reading throws in the client | `released` | `bf3/alarm-no-reading` | patch | 1 run + 2 no-gate |
 | `BFQ-92` | BF-92 - a page with no glucose reading never presents a server alarm, including device alarms | `not-started` | `-` | minor | 0 run + 1 no-gate |
-| `BFQ-93` | BF-93 - food changes never reach an open page | `blocked` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-93` | BF-93 - food changes never reach an open page | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-94` | BF-94 - a kept profile instance can return a temp basal that has been replaced | `released` | `bf/profile-temp-cache` | patch | 0 run + 1 no-gate |
-| `BFQ-95` | BF-95 - an uploader clock running ahead delays the stale-data alarm | `blocked` | `-` | minor | 0 run + 1 no-gate |
+| `BFQ-95` | BF-95 - an uploader clock running ahead delays the stale-data alarm | `needs-decision` | `-` | minor | 0 run + 1 no-gate |
 | `BFQ-96` | BF-96 - the headless test fixture's bundle cache key is an un-normalised path | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `BFQ-158` | BF-158 - the count=0 tests assume an empty database | `not-started` | `-` | n/a | 0 run + 1 no-gate |
-| `BFQ-67` | BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work | `blocked` | `-` | minor | 1 run + 1 no-gate |
+| `BFQ-67` | BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work | `not-started` | `-` | minor | 1 run + 1 no-gate |
 | `ADV-RETRO` | GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79) | `released` | `bf/ws-loadretro-auth` | patch | 2 run + 1 no-gate |
 | `ADV-ALARM` | GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76) | `released` | `bf/alarm-socket-scope` | minor | 2 run + 2 no-gate |
 | `ADV-XSS-META` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | `needs-decision` | `-` | n/a | 2 run + 1 no-gate |
@@ -2275,16 +2306,16 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-151` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (brace expansion has no bound), for 15.0.9 | `released` | `bf/braces-expansion-cap` | patch | 1 run + 1 no-gate |
 | `BFQ-73` | BF-73 - error responses carry a stack trace and server paths in production, for 15.0.9 | `released` | `bf/production-error-handler` | patch | 1 run + 1 no-gate |
 | `BFQ-153` | BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 style refresh) | `released` | `bf/dependency-refresh-2026-10` | patch | 1 run + 1 no-gate |
-| `BFQ-152` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission | `blocked` | `-` | n/a | 0 run + 1 no-gate |
+| `BFQ-152` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
 | `DEPENDABOT-CONFIG` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev | `needs-decision` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-154` | BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed release | `blocked` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-155` | BF-155 - a failed storage read on GET /api/v1/activity ends the server process, for 15.0.9 | `released` | `bf/activity-read-error` | patch | 1 run + 1 no-gate |
-| `BFQ-156` | BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the process | `blocked` | `bf/autoprune-promise` | patch | 0 run + 1 no-gate |
+| `BFQ-156` | BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the process | `in-progress` | `bf/autoprune-promise` | patch | 0 run + 1 no-gate |
 | `BFQ-CONFIG-DOCS` | bf/config-docs-truth - documentation for BF-46, BF-48, BF-49, BF-74, BF-78, BF-81 and the fixes for BF-50, BF-51, for 15.0.9 | `released` | `bf/config-docs-truth` | patch | 1 run + 1 no-gate |
-| `BFQ-157` | BF-157 - a treatment's glucose bubble is placed as mg/dL when its units are spelled mmol/L | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-157` | BF-157 - a treatment's glucose bubble is placed as mg/dL when its units are spelled mmol/L | `in-flight-upstream` | `bf/treatment-bubble-units` | patch | 1 run + 1 no-gate |
 | `BFQ-159` | BF-159 - the main page sometimes leaves for the Profile Editor while a profile exists, without the token | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-160` | BF-160 - the clock designer's link target is written with curly quotes | `not-started` | `-` | patch | 0 run + 1 no-gate |
-| `BFQ-161` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-161` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes | `ready-to-push` | `bf/entries-pattern-limit` | patch | 1 run + 1 no-gate |
 | `BFQ-162` | BF-162 - an explicit TRUST_PROXY address list reaches proxy-addr 2.0.7, inside a critical advisory fixed in 2.0.8 | `released` | `bf/proxy-addr-2.0.8` | patch | 0 run + 1 no-gate |
 | `BFQ-163` | BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in 1.8.2 | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-164` | BF-164 - writes outside API v3 never reach the v3 storage socket | `needs-decision` | `-` | minor | 0 run + 1 no-gate |
@@ -2295,8 +2326,9 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-169` | BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a client-supplied one | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-170` | BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `BFQ-172` | BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819 proposed), a known issue of 15.0.9 | `in-flight-upstream` | `javier-erro:#8819` | patch | 0 run + 1 no-gate |
-| `BFQ-173` | BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units, a known issue of 15.0.9 | `blocked` | `bf/boluscalc-profile-units` | patch | 0 run + 1 no-gate |
-| `BFQ-174` | BF-174 - the bolus calculator's profile picker is ignored; every value comes from the active profile, a known issue of 15.0.9 | `blocked` | `bf/profile-spec-honoured` | patch | 0 run + 1 no-gate |
+| `BFQ-173` | BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units, a known issue of 15.0.9 | `in-flight-upstream` | `bf/boluscalc-profile-units` | patch | 1 run + 1 no-gate |
+| `BFQ-174` | BF-174 - the bolus calculator's profile picker is ignored; every value comes from the active profile, a known issue of 15.0.9 | `in-flight-upstream` | `bf/profile-spec-honoured` | patch | 1 run + 1 no-gate |
+| `BFQ-175` | BF-175 - temp targets are converted from mmol/L only when units is exactly 'mmol' (candidate) | `unsettled` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `released` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -2382,7 +2414,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/60-research/remedial/gt3-register-truth-2026-09-15.md`
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-02 (maintainer, later the same day, relayed by session -d4): DEFERRED until after 15.0.9, reversing the decision to take it in; removed from RT-0's blocks_on. #8797 stays open for the next release. Reasoning: the practical impact is small. The affected path is AAPS NSClient v1 (3.4.2.6; removed on AAPS master in 30fe4591a7), the standalone NSClient app xDrip+ broadcasts to, and the chart's drag-to-move; a temp is lost only when two temps with the same whole-minute duration start within 2 s; no field report. 2026-10-02: opened as #8797 by the maintainer (head 7dff9f38, MERGEABLE, base dev). 2026-10-02 (session -d4's agent): bf/socket-dedup-zero 7dff9f38, one commit on dev ca6fcfaf (lib/server/websocket.js +26/-15, new tests/websocket.dedup- zero.test.js), not pushed. percent, absolute and duration treat 0 as a value matched exactly; insulin and carbs treat 0 as none ({$in: [0, null]}); '', false and null are still not keys. 22 new tests; reverting websocket.js fails 9 with the record dropped; an exact zero key on all five fields fails the 2 xDrip filler re-sends, zero-or-absent on all five fails the 2 cross-temp cases. Full suite 3556/0/4 (dev ca6fcfaf 3534/0/4; Node 22.23.2, MongoDB 7.0.43, one cell). PR body: reports/phase0-pr-bodies/socket-dedup-zero.md. 2026-10-02 (maintainer, relayed by session -d4): taken into 15.0.9; in RT-0's blocks_on. dev is still ca6fcfaf, so no merge is needed before the push. 2026-10-02 (maintainer, relayed by session -d4): confirm and adopt conditional handling of zero by field and type. The maintainer's reading: a temp basal with 0 is a real value and a bolus with 0 is a real value, but insulin: 0 on a carbs entry is not a match key. A local fix branch is being prepared by -d4's agent in externals/work/crm-bf09 off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Measured, awaiting the maintainer's decision. docs/60-research/remedial/bf09-dedup-zero- measurement-2026-09-23.md (dev 74fc6619 and 15.0.8, identical): treating zero as a real value fixes 6 dedup cases and changes no control, and bec641ca, the candidate for the old AAPS zero-temp display problem, was rendering only. No fix branch. Decisions: - 2026-09-23 (maintainer): measure first, then decide. The maintainer leans towards treating zero as a real value (a zero temp basal is a real value in AID terms), and the fix must not bring back the temp-basal display problem seen when AAPS issues zero temps seconds apart. Reproduced 2026-09-23 as cases X1 and X2: because a falsy field is left out of the lookup, the lookup can end up keyed on fields another eventType also has, so a zero temp can match a different eventType within the ±2 s window (maxtimediff). Only uploaders using the socket path without NSCLIENT_ID reach this. The register entry names the wrong fields: over 277,690 treatments there are zero zero-valued `insulin` (0 of 107,732) and zero zero-valued `carbs` (0 of 12,394); the field that carries falsy values is `absolute`, 67,521 of 153,315 (44%), the zero temp basal, and `duration:0` adds 2,094. GT3's reading: a bug, not intent, because the author built an explicit selected/fallback mechanism. tools/queue/gates/bf09-corpus-divergence.js undercounts and needs fixing before its figure is trusted. 2026-09-26 - BF-121's fix (bf/same-time-treatments fc821024, BFQ-121) makes the socket similar match always key on eventType, which fixes X1 and X2; Z2, Z5, P2, B2 and C2 remain. A BF-09 branch will conflict with BF-121's on the similar-match lines.
+**Notes.** 2026-10-21 (later): the maintainer pushed bf/socket-dedup-zero; #8797 now has head 542b7e97, and the update note was posted as a comment on the PR. 2026-10-21: local bf/socket-dedup-zero 542b7e97 = merge of dev 04d435eb into 7dff9f38; full suite 3591/0/4. Not pushed, so #8797 still shows 7dff9f38. Also in the integration scratch branch scratch/dosing-1510 203027c5 (BF-173, BF-174, this branch and #8819 on dev 04d435eb), 3604/0/4. 2026-10-02 (maintainer, later the same day, relayed by session -d4): DEFERRED until after 15.0.9, reversing the decision to take it in; removed from RT-0's blocks_on. #8797 stays open for the next release. Reasoning: the practical impact is small. The affected path is AAPS NSClient v1 (3.4.2.6; removed on AAPS master in 30fe4591a7), the standalone NSClient app xDrip+ broadcasts to, and the chart's drag-to-move; a temp is lost only when two temps with the same whole- minute duration start within 2 s; no field report. 2026-10-02: opened as #8797 by the maintainer (head 7dff9f38, MERGEABLE, base dev). 2026-10-02 (session -d4's agent): bf/socket-dedup-zero 7dff9f38, one commit on dev ca6fcfaf (lib/server/websocket.js +26/-15, new tests/websocket.dedup-zero.test.js), not pushed. percent, absolute and duration treat 0 as a value matched exactly; insulin and carbs treat 0 as none ({$in: [0, null]}); '', false and null are still not keys. 22 new tests; reverting websocket.js fails 9 with the record dropped; an exact zero key on all five fields fails the 2 xDrip filler re- sends, zero-or-absent on all five fails the 2 cross-temp cases. Full suite 3556/0/4 (dev ca6fcfaf 3534/0/4; Node 22.23.2, MongoDB 7.0.43, one cell). PR body: reports/phase0-pr-bodies/socket-dedup-zero.md. 2026-10-02 (maintainer, relayed by session -d4): taken into 15.0.9; in RT-0's blocks_on. dev is still ca6fcfaf, so no merge is needed before the push. 2026-10-02 (maintainer, relayed by session -d4): confirm and adopt conditional handling of zero by field and type. The maintainer's reading: a temp basal with 0 is a real value and a bolus with 0 is a real value, but insulin: 0 on a carbs entry is not a match key. A local fix branch is being prepared by -d4's agent in externals/work/crm-bf09 off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Measured, awaiting the maintainer's decision. docs/60-research/remedial/bf09-dedup-zero-measurement-2026-09-23.md (dev 74fc6619 and 15.0.8, identical): treating zero as a real value fixes 6 dedup cases and changes no control, and bec641ca, the candidate for the old AAPS zero-temp display problem, was rendering only. No fix branch. Decisions: - 2026-09-23 (maintainer): measure first, then decide. The maintainer leans towards treating zero as a real value (a zero temp basal is a real value in AID terms), and the fix must not bring back the temp-basal display problem seen when AAPS issues zero temps seconds apart. Reproduced 2026-09-23 as cases X1 and X2: because a falsy field is left out of the lookup, the lookup can end up keyed on fields another eventType also has, so a zero temp can match a different eventType within the ±2 s window (maxtimediff). Only uploaders using the socket path without NSCLIENT_ID reach this. The register entry names the wrong fields: over 277,690 treatments there are zero zero-valued `insulin` (0 of 107,732) and zero zero-valued `carbs` (0 of 12,394); the field that carries falsy values is `absolute`, 67,521 of 153,315 (44%), the zero temp basal, and `duration:0` adds 2,094. GT3's reading: a bug, not intent, because the author built an explicit selected/fallback mechanism. tools/queue/gates/bf09-corpus- divergence.js undercounts and needs fixing before its figure is trusted. 2026-09-26 - BF-121's fix (bf/same-time-treatments fc821024, BFQ-121) makes the socket similar match always key on eventType, which fixes X1 and X2; Z2, Z5, P2, B2 and C2 remain. A BF-09 branch will conflict with BF-121's on the similar-match lines.
 
 ### `BFQ-10` &mdash; BF-10 - mongod fatal-asserts at Docker's default nofile=1024
 
@@ -2856,16 +2888,15 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `blocked` |
+| state (claimed) | `needs-decision` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/regex-limits` |
-| base | `official/dev@25fc41d9` |
+| base | `official/dev@04d435eb` |
 | worktree | `externals/work/crm-bf72` |
 | semver | `minor` |
 | review | SECURITY, and the same person who answered P0-K's sequencing question, because it is the same advisory. Disclosure-sensitive: a one-request unauthenticated denial of service against a default install, live on 15.0.8 and on dev, with no fix yet. The register describes the mechanism only; the reproducing patterns are deliberately not in any tracked file, and the probe is outside version control. A public issue or PR carrying the reproduction would publish a working attack against every unpatched Nightscout. The disclosure disposition was decided by the maintainer on 2026-09-23 and is held outside version control; the open decision is the fix shape. |
 | ships to operators today | **yes** |
 | register | `BF-72` |
-| blocks on | `RT-0` |
 
 **Blast radius.** No line is wrong, which is why this is needs-decision and not not-started. $regex and $options are in lib/server/query-operator-allowlist.js FIELD_OPERATORS by design, and lib/server/query.js promotes a treatments text field to a regex as a documented search affordance. A fix changes what the search affordance accepts, so its blast radius is every client that sends a pattern - which the 14-project census counted as source, not runtime.
 
@@ -2885,7 +2916,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-02 (maintainer): DEFERRED until after 15.0.9; not in RT-0's blocks_on. Branch bf/regex-limits d359f00b (on dev 25fc41d9, not pushed): Ruben Sutton's 5f71598b and 4cfe9132 with his authorship, then ours 49a48506 (/times and /slice), 3910948b (400 for a refused pattern, 503 at the time limit, v1 and v3, no driver text) and d359f00b (/count). Full suite 3562/0/4 against dev 3532/0/4; the new tests fail on dev's files and on his commits alone. No known client sends $regex or v3 re; the patterns Nightscout's Reports page and oref0 send pass the check. Adds safe-regex 2.1.1 (MIT). Time limit checked on MongoDB 4.4.24 and 7.0.43. Not covered: deletes with a regex filter. PR body draft in the session scratchpad. 2026-10-02 (maintainer): start the adoption branch for after 15.0.9. bf/regex-limits off dev 25fc41d9 in externals/work/crm-bf72, being built by a background agent: Ruben Sutton's bddbdfe7 and 0182bb07 picked with his authorship, then our adjustments as separate commits (time-limit errors answered without driver text; server-built regexes not refused), after a check of which clients send regex filters. Not pushed. Covers GHSA-47gq (API v3 re) as well. 2026-10-02: a candidate fix exists in the private fork of GHSA-r3gv (branch advisory-fix-1, by Ruben Sutton, code2344: bddbdfe7 2026-09-23 and 0182bb07 2026-10-02, on v15.0.8 92d08342, not on dev): a pattern check through the safe-regex package (length 512, two nested-quantifier heuristics) on v1 $regex, v1 regex shorthand and v3 re, answered 400, plus maxTimeMS on cursors whose query has a regex (5 s for caller filters, 30 s for server ones; settable by environment). It needs a rebase onto dev (query.js changed under it: operator allowlist, BF-108) and a check of which clients send regex filters, since the heuristic refuses patterns rather than bounding them. Adopting his commits keeps his authorship in the history. 2026-10-01: API v3's re filter operator is the same class (reported privately 2026-09-28); measured directly on mongod 7.0.43, one count over 20 000 documents of backtracking-prone text took 49.6 s, 9 ms on short text. Any fix here (for example a server-side time limit on find queries) should cover both APIs. After 15.0.9. Open on 15.0.8 and on dev (bf72-regex- operand-bounded.js fails on origin/dev 153e5658, 2026-09-24); no fix branch. The disclosure disposition was decided by the maintainer on 2026-09-23 and its details are held outside version control. What remains open is the fix shape: which bound on the $regex operand (see the no-gates), a decision about the search affordance's contract. Found 2026-09-21 while re-measuring the security advisory's third proof of concept, which the advisory frames as $regex data extraction. On the shipped `readable` default that is close to vacuous - entries, treatments and devicestatus are the three collections prep_storage admits, all three are already readable, and the API returns whole documents, so a regex oracle reveals nothing a plain read does not. What the same operator does do is cost the database, which the advisory does not describe. #8743 (P0-K, merged 2026-09-18) did not narrow $regex, because the client census found real clients sending it, so this is not a regression from that branch and is not fixed by it.
+**Notes.** 2026-10-21: bf/regex-limits 9cbf6615 = merge of dev 04d435eb into d359f00b; full suite 3599/0/4; not pushed; semver minor. 15.0.9 is released and RT-0 is removed from blocks_on; what it waits on now is two maintainer decisions, not an item. (1) The fix shape: keep the pattern-refusal heuristic, or a length cap plus the time limit only, or the heuristic behind a flag; the 503 status at the time limit; the 5 s / 30 s defaults. (2) Disclosure: the branch's tracked tests contain literal costly inputs, so it cannot go to a public PR as it stands; the private advisory-fork route is recommended, and the choice is the maintainer's. 2026-10-02 (maintainer): DEFERRED until after 15.0.9; not in RT-0's blocks_on. Branch bf/regex-limits d359f00b (on dev 25fc41d9, not pushed): Ruben Sutton's 5f71598b and 4cfe9132 with his authorship, then ours 49a48506 (/times and /slice), 3910948b (400 for a refused pattern, 503 at the time limit, v1 and v3, no driver text) and d359f00b (/count). Full suite 3562/0/4 against dev 3532/0/4; the new tests fail on dev's files and on his commits alone. No known client sends $regex or v3 re; the patterns Nightscout's Reports page and oref0 send pass the check. Adds safe-regex 2.1.1 (MIT). Time limit checked on MongoDB 4.4.24 and 7.0.43. Not covered: deletes with a regex filter. PR body draft in the session scratchpad. 2026-10-02 (maintainer): start the adoption branch for after 15.0.9. bf/regex-limits off dev 25fc41d9 in externals/work/crm-bf72, being built by a background agent: Ruben Sutton's bddbdfe7 and 0182bb07 picked with his authorship, then our adjustments as separate commits (time-limit errors answered without driver text; server-built regexes not refused), after a check of which clients send regex filters. Not pushed. Covers GHSA-47gq (API v3 re) as well. 2026-10-02: a candidate fix exists in the private fork of GHSA-r3gv (branch advisory-fix-1, by Ruben Sutton, code2344: bddbdfe7 2026-09-23 and 0182bb07 2026-10-02, on v15.0.8 92d08342, not on dev): a pattern check through the safe-regex package (length 512, two nested-quantifier heuristics) on v1 $regex, v1 regex shorthand and v3 re, answered 400, plus maxTimeMS on cursors whose query has a regex (5 s for caller filters, 30 s for server ones; settable by environment). It needs a rebase onto dev (query.js changed under it: operator allowlist, BF-108) and a check of which clients send regex filters, since the heuristic refuses patterns rather than bounding them. Adopting his commits keeps his authorship in the history. 2026-10-01: API v3's re filter operator is the same class (reported privately 2026-09-28); measured directly on mongod 7.0.43, one count over 20 000 documents of backtracking-prone text took 49.6 s, 9 ms on short text. Any fix here (for example a server-side time limit on find queries) should cover both APIs. After 15.0.9. Open on 15.0.8 and on dev (bf72-regex-operand-bounded.js fails on origin/dev 153e5658, 2026-09-24); no fix branch. The disclosure disposition was decided by the maintainer on 2026-09-23 and its details are held outside version control. What remains open is the fix shape: which bound on the $regex operand (see the no-gates), a decision about the search affordance's contract. Found 2026-09-21 while re- measuring the security advisory's third proof of concept, which the advisory frames as $regex data extraction. On the shipped `readable` default that is close to vacuous - entries, treatments and devicestatus are the three collections prep_storage admits, all three are already readable, and the API returns whole documents, so a regex oracle reveals nothing a plain read does not. What the same operator does do is cost the database, which the advisory does not describe. #8743 (P0-K, merged 2026-09-18) did not narrow $regex, because the client census found real clients sending it, so this is not a regression from that branch and is not fixed by it.
 
 ### `BFQ-40` &mdash; BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion
 
@@ -3273,7 +3304,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `blocked` |
+| state (claimed) | `not-started` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `origin/dev@74fc6619` |
@@ -3282,7 +3313,6 @@ distinction is the only thing that makes the register mean anything - widening
 | review | maintainer |
 | ships to operators today | **yes** |
 | register | `BF-93` |
-| blocks on | `RT-0` |
 
 **Blast radius.** lib/data/calcdelta.js - compressArrays covers sgvs, treatments, mbgs, cals and devicestatus, deleteSkippables covers profiles, and food is in neither. The same on 15.0.8.
 
@@ -3299,7 +3329,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/remedial/bf69-quickpick-rebuild-2026-09-23.md`
 
-**Notes.** 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9. dev 74942ec6 still leaves food out of calcdelta's compressibleArrays (lib/data/calcdelta.js:106); #8756 (BF-69) only rebuilds the quick-pick chooser when the drawer opens. Filed 2026-09-23 from the BF-69 work (evidence section 8.1). An edited carb total on an existing quick pick takes the same path and was not run separately.
+**Notes.** 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Deferred until after 15.0.9 (2026-10-02); the fix the item names (food in calcdelta's broadcast delta) is a patch with no branch yet, so not-started. 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9. dev 74942ec6 still leaves food out of calcdelta's compressibleArrays (lib/data/calcdelta.js:106); #8756 (BF-69) only rebuilds the quick-pick chooser when the drawer opens. Filed 2026-09-23 from the BF-69 work (evidence section 8.1). An edited carb total on an existing quick pick takes the same path and was not run separately.
 
 ### `BFQ-94` &mdash; BF-94 - a kept profile instance can return a temp basal that has been replaced
 
@@ -3336,7 +3366,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `blocked` |
+| state (claimed) | `needs-decision` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `origin/dev@74fc6619` |
@@ -3345,7 +3375,6 @@ distinction is the only thing that makes the register mean anything - widening
 | review | maintainer - a design decision before code |
 | ships to operators today | **yes** |
 | register | `BF-95` |
-| blocks on | `RT-0` |
 
 **Blast radius.** lib/sandbox.js lastEntry, lib/plugins/timeago.js checkStatus. v1 entries store no server-receipt time (lib/server/entries.js:118-126), so an arrival-based check needs new data.
 
@@ -3362,7 +3391,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/remedial/bf41-future-reading-2026-09-23.md`
 
-**Notes.** 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9. Long-standing, and an uploader sending future-dated data is visible to the site operator to fix. Stays a known issue. Open, needs a design decision; 15.0.9 carries it as a known issue. Filed 2026-09-23 from the BF-41 measurement (F7/F8) when BF-41 was closed. One option is a notice for readings that arrive already ahead of the clock (evidence section 5, option 3). BF-44 (BFQ-MINIMED) is a shipping source of forward skew.
+**Notes.** 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Question for the maintainer: a notice for readings that arrive dated ahead of the server clock by more than a tolerance, or the status quo? (The 2026-10-13 decision that alarm timing itself is unchanged is recorded on records/rt- propagation-merge 4f083622f, not yet on main.) 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9. Long-standing, and an uploader sending future-dated data is visible to the site operator to fix. Stays a known issue. Open, needs a design decision; 15.0.9 carries it as a known issue. Filed 2026-09-23 from the BF-41 measurement (F7/F8) when BF-41 was closed. One option is a notice for readings that arrive already ahead of the clock (evidence section 5, option 3). BF-44 (BFQ-MINIMED) is a shipping source of forward skew.
 
 ### `BFQ-96` &mdash; BF-96 - the headless test fixture's bundle cache key is an un-normalised path
 
@@ -3429,7 +3458,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `blocked` |
+| state (claimed) | `not-started` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `origin/dev@a8888f0d` |
@@ -3438,7 +3467,6 @@ distinction is the only thing that makes the register mean anything - widening
 | review | maintainer, and it is a decision with a safety dimension before it is code. Refusing a contradictory threshold set, correcting it and announcing it, and unit-checking the input are three different products. |
 | ships to operators today | **yes** |
 | register | `BF-67`, `BF-86` |
-| blocks on | `RT-0` |
 
 **Blast radius.** lib/settings.js verifyThresholds(), four branches. Unconditional at settings load on every deployment.
 
@@ -3457,7 +3485,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/remedial/e4-queue-register-reconciliation-2026-09-15.md`
 
-**Notes.** 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9. The default is mg/dL, and a site kept in mg/dL with thresholds entered in mmol/L is unlikely without the site being meant as mmol/L. BF-67 and BF-86 stay known issues in the 15.0.9 release notes. Open, no branch; it needs a product decision with a safety dimension before code (see review). The register's BF-67 text is inaccurate in one respect, measured while building the gate: a BG_LOW of 3.9 does not become bgTargetBottom - 1 = 79. The low check is `bgLow >= bgTargetBottom`, so a value far below the band passes through untouched and BG_LOW=3.9 is stored as 3.9. The low-side rewrite is real from the other direction (BG_LOW=90 -> 79). The residue no entry owns: a low alarm set to 3.9 mg/dL can never fire, and is stored with no warning of any kind. Also relevant to T3.0: the per-tenant configuration spec proposes a CHECK constraint as a backstop for this, and it is not one - a partial override leaves absent paths SQL NULL, the AND chain evaluates to NULL rather than FALSE, and PostgreSQL accepts the row.
+**Notes.** 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. The maintainer's 2026-10-13 decision (permissive to strict over several releases; stage 1, in the next minor, announces through a persistent admin notification and leaves stored values unchanged) is recorded on records/rt-propagation- merge 4f083622f, not yet on main. By it, stage 1 is the next code and waits on nothing, so not-started; no branch. 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9. The default is mg/dL, and a site kept in mg/dL with thresholds entered in mmol/L is unlikely without the site being meant as mmol/L. BF-67 and BF-86 stay known issues in the 15.0.9 release notes. Open, no branch; it needs a product decision with a safety dimension before code (see review). The register's BF-67 text is inaccurate in one respect, measured while building the gate: a BG_LOW of 3.9 does not become bgTargetBottom - 1 = 79. The low check is `bgLow >= bgTargetBottom`, so a value far below the band passes through untouched and BG_LOW=3.9 is stored as 3.9. The low-side rewrite is real from the other direction (BG_LOW=90 -> 79). The residue no entry owns: a low alarm set to 3.9 mg/dL can never fire, and is stored with no warning of any kind. Also relevant to T3.0: the per-tenant configuration spec proposes a CHECK constraint as a backstop for this, and it is not one - a partial override leaves absent paths SQL NULL, the AND chain evaluates to NULL rather than FALSE, and PostgreSQL accepts the row.
 
 ### `ADV-RETRO` &mdash; GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79)
 
@@ -4899,7 +4927,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `blocked` |
+| state (claimed) | `needs-decision` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `official/dev@50bc1084` |
@@ -4908,7 +4936,6 @@ distinction is the only thing that makes the register mean anything - widening
 | review | maintainer |
 | ships to operators today | **yes** |
 | register | `BF-152` |
-| blocks on | `RT-0` |
 
 **Blast radius.** lib/api3/generic/read/operation.js (or a per-collection permission map shared by search, history and read), if the decision is to gate.
 
@@ -4924,7 +4951,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9. Needs more research on AndroidAPS's use of settings first. 2026-10-02: the private fork of GHSA-25pr has a fix by Ruben Sutton (code2344, 28d1efa6, on v15.0.8): a shared requiredReadPermission that makes read by identifier and lastModified demand api:settings:admin, as search and history do. That is the gating choice, which breaks AAPSClient followers with read tokens; it is not taken until the AndroidAPS question is answered. After 15.0.9. The question for the AndroidAPS developers: is settings meant to be readable by a follower's read token (then search and history are the inconsistent side), or admin-only (then AAPSClient needs a token change first)?
+**Notes.** 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Question (for the maintainer, with the AndroidAPS developers): is API v3 settings meant to be readable with a follower's read token, or admin-only? 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9. Needs more research on AndroidAPS's use of settings first. 2026-10-02: the private fork of GHSA-25pr has a fix by Ruben Sutton (code2344, 28d1efa6, on v15.0.8): a shared requiredReadPermission that makes read by identifier and lastModified demand api:settings:admin, as search and history do. That is the gating choice, which breaks AAPSClient followers with read tokens; it is not taken until the AndroidAPS question is answered. After 15.0.9. The question for the AndroidAPS developers: is settings meant to be readable by a follower's read token (then search and history are the inconsistent side), or admin-only (then AAPSClient needs a token change first)?
 
 ### `DEPENDABOT-CONFIG` &mdash; Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev
 
@@ -4955,7 +4982,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `releases/cgm-remote-monitor-15.0.9/contents.md`
 
-**Notes.** Raised by the maintainer 2026-10-01 ("I wonder if dependabot is configured correctly; it produces a lot of noise that gets taken out of context"). Options, none decided: (1) a dependabot.yml with version updates targeting dev, grouped, on a schedule, so routine bumps arrive where work happens; (2) keep alerts, and dismiss each one that is fixed on dev or not reachable, with GitHub's dismissal reason and a comment linking the triage, so the alert list shows the project's assessment; (3) release more often, since alerts close only when master moves. Security-update PRs follow the default branch and dependabot.yml's target-branch does not change that, so turning them off and relying on (1) and (2) is the way to stop PRs against master.
+**Notes.** 2026-10-21: 0 open Dependabot PRs. #8818, #8811, #8805 and #8798 were closed by Dependabot as up to date; #8822 (sanitize-html 2.18.1), #8817 (compression 1.8.2) and #8814 (source-map-js 1.2.2) were closed by AndyLow91. 15 open alerts, measured against master (15.0.9). The configuration question stays open. Raised by the maintainer 2026-10-01 ("I wonder if dependabot is configured correctly; it produces a lot of noise that gets taken out of context"). Options, none decided: (1) a dependabot.yml with version updates targeting dev, grouped, on a schedule, so routine bumps arrive where work happens; (2) keep alerts, and dismiss each one that is fixed on dev or not reachable, with GitHub's dismissal reason and a comment linking the triage, so the alert list shows the project's assessment; (3) release more often, since alerts close only when master moves. Security-update PRs follow the default branch and dependabot.yml's target-branch does not change that, so turning them off and relying on (1) and (2) is the way to stop PRs against master.
 
 ### `BFQ-154` &mdash; BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed release
 
@@ -5023,7 +5050,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `blocked` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/autoprune-promise` |
 | base | `official/dev@ca6fcfaf` |
@@ -5032,7 +5059,6 @@ distinction is the only thing that makes the register mean anything - widening
 | review | maintainer |
 | ships to operators today | **yes** |
 | register | `BF-156` |
-| blocks on | `RT-0` |
 
 **Blast radius.** lib/api3/generic/collection.js autoPrune: await or .then/.catch the promise deleteManyOr returns, log the count and any error.
 
@@ -5048,7 +5074,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-02 (session -d4's agent): bf/autoprune-promise 8e4f7dce, one commit on dev ca6fcfaf (lib/api3/generic/collection.js +11/-10, the returned promise handled with .then/.catch; new tests/api3.autoprune.test.js, 3 tests), not pushed. The deleted count is logged; a failed delete is logged and the process keeps running; nextAutoPrune still advances hourly after a failure. Break-its: the unfixed code fails both behaviour tests, dropping only .catch gives an unhandled rejection, deletedCount for deleted fails the log test, advancing only on success fails the throttle test; outside mocha the unfixed code exits 1. Full suite 3537/0/4 (dev 3534/0/4). No other callback-style calls to async API v3 storage methods. PR body: reports/phase0-pr-bodies/autoprune- promise.md. Not measured, read only: the cached collection looks up at most 1000 ids to invalidate while the delete removes every match (mongoCachedCollection/index.js :119-124); worth a check before this merges. 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9, and carried in 15.0.9's BF-46 known issue. A fix branch, bf/autoprune-promise, is being prepared by -d4 in externals/work/crm-bf156 for the next release. Filed 2026-10-02. Whether it goes into 15.0.9 is being put to the maintainer by session -d4; not in RT-0's blocks_on until decided.
+**Notes.** 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. bf/autoprune-promise is still 8e4f7dce on dev ca6fcfaf and does not contain dev 04d435eb: before it is ready to push it owes a merge of dev and a full- suite re-run; the 1000-id cache invalidation question in the notes below is still unmeasured. 2026-10-02 (session -d4's agent): bf/autoprune-promise 8e4f7dce, one commit on dev ca6fcfaf (lib/api3/generic/collection.js +11/-10, the returned promise handled with .then/.catch; new tests/api3.autoprune.test.js, 3 tests), not pushed. The deleted count is logged; a failed delete is logged and the process keeps running; nextAutoPrune still advances hourly after a failure. Break-its: the unfixed code fails both behaviour tests, dropping only .catch gives an unhandled rejection, deletedCount for deleted fails the log test, advancing only on success fails the throttle test; outside mocha the unfixed code exits 1. Full suite 3537/0/4 (dev 3534/0/4). No other callback-style calls to async API v3 storage methods. PR body: reports/phase0-pr-bodies/autoprune-promise.md. Not measured, read only: the cached collection looks up at most 1000 ids to invalidate while the delete removes every match (mongoCachedCollection/index.js :119-124); worth a check before this merges. 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9, and carried in 15.0.9's BF-46 known issue. A fix branch, bf/autoprune-promise, is being prepared by -d4 in externals/work/crm- bf156 for the next release. Filed 2026-10-02. Whether it goes into 15.0.9 is being put to the maintainer by session -d4; not in RT-0's blocks_on until decided.
 
 ### `BFQ-CONFIG-DOCS` &mdash; bf/config-docs-truth - documentation for BF-46, BF-48, BF-49, BF-74, BF-78, BF-81 and the fixes for BF-50, BF-51, for 15.0.9
 
@@ -5087,17 +5113,17 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
-| base | `official/dev@74942ec6` |
-| worktree | `-` |
+| branch | `bf/treatment-bubble-units` |
+| base | `official/dev@04d435eb` |
+| worktree | `externals/work/crm-bf157` |
 | semver | `patch` |
 | review | maintainer |
 | ships to operators today | **yes** |
 | register | `BF-157` |
 
-**Blast radius.** lib/report_plugins/utils.js:69-77 and lib/data/treatmenttocurve.js:66: read the units with the same normalisation BF-124's fix uses.
+**Blast radius.** lib/report_plugins/utils.js:69-77 and lib/data/treatmenttocurve.js:66: read the units with the same normalisation BF-124's fix uses. The branch changes those two files (+7/-3) and adds 8 tests (tests/data.treatmenttocurve.test.js, tests/report-utils.treatment-units.test.js).
 
 **What an operator sees.** On a site that shows mmol/L, a treatment saved with its glucose in "mmol/L" could be drawn in the wrong place on the chart. The number itself is not affected.
 
@@ -5105,13 +5131,15 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- **NO GATE** &mdash; Read, not run: the exact comparison is confirmed in the code on dev 74942ec6. A browser or renderer measurement is owed before a fix.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/treatment-bubble-units`
+  - the branch contains official/dev (04d435eb on 2026-10-21), so it can be pushed without a further merge; goes red when dev moves ahead
+- **NO GATE** &mdash; The defect was read, not run, on dev 74942ec6; the fix is covered by its 8 unit tests (full suite 3577/0/4 on a9c6b3d1) and was not measured in a browser.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Filed 2026-10-03 from session -d4's BF-124 work. Not decided for 15.0.9.
+**Notes.** 2026-10-21 (later): pushed by the maintainer and opened as #8827 against dev (bf/treatment-bubble-units, head a9c6b3d1; checked with gh). 2026-10-21: bf/treatment-bubble-units a9c6b3d1, on dev 04d435eb (lib/data/treatmenttocurve.js and lib/report_plugins/utils.js, +7/-3; 8 tests); full suite 3577/0/4; not measured in a browser; not pushed. A similar exact match, units == 'mmol', converts temp targets in lib/data/ddata.js:466, where a below-20 check catches mmol/L values whatever the spelling; filed as candidate BF-175 (BFQ-175), not changed on this branch. Filed 2026-10-03 from session -d4's BF-124 work. Not decided for 15.0.9.
 
 ### `BFQ-159` &mdash; BF-159 - the main page sometimes leaves for the Profile Editor while a profile exists, without the token
 
@@ -5178,11 +5206,11 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
-| base | `official/dev@1ad03e29` |
-| worktree | `-` |
+| branch | `bf/entries-pattern-limit` |
+| base | `official/dev@04d435eb` |
+| worktree | `externals/work/crm-bf161` |
 | semver | `patch` |
 | review | maintainer |
 | ships to operators today | **yes** |
@@ -5196,13 +5224,15 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/entries-pattern-limit`
+  - the branch contains official/dev (04d435eb on 2026-10-21), so it can be pushed without a further merge; goes red when dev moves ahead
 - **NO GATE** &mdash; Read, not run: GHSA-vfj7-8cjw-p6xm (braces <= 3.0.3, no patched version); the routes call braces.parse and expand synchronously in Express middleware, so the RangeError is caught and answered 500. A gate would send a nested pattern within the count limit and assert a 400 before parsing, and that the server still answers afterwards.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Filed 2026-10-06 from session -d4's run 021 npm audit on dev 1ad03e29 (15 findings, 7 high, against 10 and 2 on 2026-10-02: new advisories for braces, @parse/node-apn and eslint-webpack-plugin). Graded low by -d4 from the code, same class as BF-154. 2026-10-06 (maintainer): a known issue in 15.0.9, named in the release notes; the nesting-depth limit is after 15.0.9. Mechanism only in public records (live on 15.0.8).
+**Notes.** 2026-10-21: bf/entries-pattern-limit fe1f6220 on dev 04d435eb: a nesting-depth limit of 10, answered 400 before braces parses or expands the pattern; full suite 3576/0/4; break-it ok; patch; not pushed. The limit value 10 awaits the maintainer's confirmation. Filed 2026-10-06 from session -d4's run 021 npm audit on dev 1ad03e29 (15 findings, 7 high, against 10 and 2 on 2026-10-02: new advisories for braces, @parse/node-apn and eslint-webpack-plugin). Graded low by -d4 from the code, same class as BF-154. 2026-10-06 (maintainer): a known issue in 15.0.9, named in the release notes; the nesting-depth limit is after 15.0.9. Mechanism only in public records (live on 15.0.8).
 
 ### `BFQ-162` &mdash; BF-162 - an explicit TRUST_PROXY address list reaches proxy-addr 2.0.7, inside a critical advisory fixed in 2.0.8
 
@@ -5262,7 +5292,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Filed 2026-10-07 from session -d4's npm audit on dev 43289dde. Decision 2026-10-07 (maintainer): a known issue in 15.0.9, named in the release notes; the update goes early in the modernization releases (the first cut after 15.0.9, RT-1, or the dependency refresh that precedes it).
+**Notes.** 2026-10-21: peer session -40 is preparing wip/15.0.10-lockfile-refresh (worktree externals/work/crm-1510-deps), a lockfile refresh for compression, follow-redirects and source-map-js on the next cycle's dev; this item's state is left to that session. Dependabot #8817 (compression 1.8.2, against master) was closed by AndyLow91 on 2026-10-21. None of cuts 1-4 or #8605 updates compression (npm audit 2026-10-21). Filed 2026-10-07 from session -d4's npm audit on dev 43289dde. Decision 2026-10-07 (maintainer): a known issue in 15.0.9, named in the release notes; the update goes early in the modernization releases (the first cut after 15.0.9, RT-1, or the dependency refresh that precedes it).
 
 ### `BFQ-164` &mdash; BF-164 - writes outside API v3 never reach the v3 storage socket
 
@@ -5515,22 +5545,21 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Filed 2026-10-21 from the check of PR #8819 (opened 2026-10-20). Decision 2026-10-21 (the maintainers): a known issue of 15.0.9, named in the release notes; #8819 is based on fade2299 and needs dev merged in before it lands, after 15.0.9.
+**Notes.** 2026-10-21 (after the release): #8819 (javier-erro, head 18319a9f) merges cleanly with dev 04d435eb (scratch 55f7970b, full suite 3571/0/4). A review note is drafted, not posted: the new test is duplicated; the reverse direction runs only with DISPLAY_UNITS=mmol, which CI does not set; the pop-up shows unrounded values; getUnits(sbx.time) is passed a time where it takes a profile name. BF-173's fix and #8819 agree that values end up in display units; their rounding differs by about 0.01 U. Integration: scratch/dosing-1510 203027c5 (BF-173, BF-174, BF-09's branch and #8819 on dev 04d435eb), 3604/0/4. Filed 2026-10-21 from the check of PR #8819 (opened 2026-10-20). Decision 2026-10-21 (the maintainers): a known issue of 15.0.9, named in the release notes; #8819 is based on fade2299 and needs dev merged in before it lands, after 15.0.9.
 
 ### `BFQ-173` &mdash; BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units, a known issue of 15.0.9
 
 | | |
 |---|---|
-| state (claimed) | `blocked` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/boluscalc-profile-units` |
-| base | `official/dev@4bca2ac2` |
+| base | `official/dev@04d435eb` |
 | worktree | `externals/work/crm-bf173` |
 | semver | `patch` |
 | review | maintainer |
 | ships to operators today | **yes** |
 | register | `BF-173` |
-| blocks on | `RT-0` |
 
 **Blast radius.** lib/client/boluscalc.js gatherBoluscalcData (+11): where the profile's units differ from the display units, its targets and sensitivity are converted to the display units and rounded as shown, as basalprofile.js does. Browser only. No change where the units match.
 
@@ -5540,6 +5569,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/boluscalc-profile-units`
+  - the branch contains official/dev (04d435eb on 2026-10-21), so it can be pushed without a further merge; goes red when dev moves ahead
 - **NO GATE** &mdash; Reproduced 2026-10-21 in the headless client (each tree's own webpack bundle, jsdom, Node 24.15.0, not a browser): an mmol/L profile on an mg/dl site gives 81 U and an mg/dl profile on an mmol/L site -1.41 U on v15.0.8 92d08342 and dev 4bca2ac2, where 2.3 U is right; the same-unit controls give 2.30 U on both. With ee0cc4f7 all four give 2.30 U.
 
 **Evidence.**
@@ -5547,22 +5578,22 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/30-design/platform/glucose-units-at-the-profile-boundary-2026-10-21.md`
 
-**Notes.** 2026-10-21: bf/boluscalc-profile-units ee0cc4f7, one commit on dev 4bca2ac2, not pushed; 4 tests added to tests/careportal.test.js (a separate headless file breaks the next headless suite in the same mocha process). Break-it: the 2 mismatch tests fail on the unfixed bundle, the 2 controls pass. 257 passing across the profile, boluscalc, careportal, BWP, basal profile, IOB, COB, plugins, profile editor, units, sandbox, Loop and OpenAPS suites; full suite not run. Filed after the 15.0.9 readiness decision; named in 15.0.9's release notes as a known issue (9ed4a5441, 2026-10-21), which settles UD1 in the design note.
+**Notes.** 2026-10-21 (later): pushed by the maintainer and opened as #8825 against dev (bf/boluscalc-profile-units, head 34c73bd7; checked with gh). #8826 (BF-174) must land with or after #8825 (BF-173). 2026-10-21 (after the release): bf/boluscalc-profile-units 34c73bd7 = merge of dev 04d435eb into ee0cc4f7; full suite 3573/0/4; break-it ok; not pushed. 15.0.9 is released and RT-0 is removed from blocks_on. It lands before or with BF-174 (BFQ-174), which must not land alone. Integration: scratch/dosing-1510 203027c5 (this branch, BF-174's, BF-09's and #8819 on dev 04d435eb), 3604/0/4. 2026-10-21: bf/boluscalc-profile-units ee0cc4f7, one commit on dev 4bca2ac2, not pushed; 4 tests added to tests/careportal.test.js (a separate headless file breaks the next headless suite in the same mocha process). Break-it: the 2 mismatch tests fail on the unfixed bundle, the 2 controls pass. 257 passing across the profile, boluscalc, careportal, BWP, basal profile, IOB, COB, plugins, profile editor, units, sandbox, Loop and OpenAPS suites; full suite not run. Filed after the 15.0.9 readiness decision; named in 15.0.9's release notes as a known issue (9ed4a5441, 2026-10-21), which settles UD1 in the design note.
 
 ### `BFQ-174` &mdash; BF-174 - the bolus calculator's profile picker is ignored; every value comes from the active profile, a known issue of 15.0.9
 
 | | |
 |---|---|
-| state (claimed) | `blocked` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/profile-spec-honoured` |
-| base | `official/dev@4bca2ac2` |
+| base | `official/dev@04d435eb` |
 | worktree | `externals/work/crm-bf174` |
 | semver | `patch` |
 | review | maintainer |
 | ships to operators today | **yes** |
 | register | `BF-174` |
-| blocks on | `RT-0` |
+| blocks on | `BFQ-173` |
 
 **Blast radius.** lib/profilefunctions.js getCurrentProfile (+5/-1): a spec_profile that names a store entry is used; anything else gives the active profile as before. The bolus calculator is the only caller that passes a name, so only its values (and the IOB and COB it adds) change.
 
@@ -5572,13 +5603,45 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/profile-spec-honoured`
+  - the branch contains official/dev (04d435eb on 2026-10-21), so it can be pushed without a further merge; goes red when dev moves ahead
 - **NO GATE** &mdash; Reproduced 2026-10-21 in the headless client: with Default (sens 54) and Other (sens 27) in the store and Other chosen, v15.0.8 92d08342 and dev 4bca2ac2 save profile Other with isf 54; with 292f909a, isf 27. tests/profile.spec-profile.test.js runs the accessor directly (5 tests, the named-profile one fails without the fix).
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-21: bf/profile-spec-honoured 292f909a, one commit on dev 4bca2ac2, not pushed. 260 passing across the same suites as BFQ-173; full suite not run. A scratch merge with bf/boluscalc-profile-units and #8819 passes 266 (#8819's getUnits(sbx.time) falls back to the active profile). Broken since 14.0.0 by #5572 and #5729 (2020). Filed after the 15.0.9 readiness decision; named in 15.0.9's release notes as a known issue (9ed4a5441, 2026-10-21).
+**Notes.** 2026-10-21 (later): pushed by the maintainer and opened as #8826 against dev (bf/profile-spec-honoured, head 827df15e; checked with gh). #8826 (BF-174) must land with or after #8825 (BF-173). 2026-10-21 (after the release): bf/profile-spec-honoured 827df15e = merge of dev 04d435eb into 292f909a; full suite 3576/0/4; not pushed; ready to push, but ORDERING HAZARD: it lands with or after BF-173 (BFQ-173), never alone. On this branch alone, choosing an mmol/L profile on an mg/dl display gives 81 U where dev gives 2.3 U, because dev ignores the choice and uses the active profile; with both branches all four unit combinations give 2.3 U. blocks_on names BFQ-173 for that reason; one PR carrying both also satisfies it. RT-0 is removed from blocks_on (15.0.9 released). Integration: scratch/dosing-1510 203027c5, 3604/0/4. 2026-10-21: bf/profile-spec-honoured 292f909a, one commit on dev 4bca2ac2, not pushed. 260 passing across the same suites as BFQ-173; full suite not run. A scratch merge with bf/boluscalc-profile-units and #8819 passes 266 (#8819's getUnits(sbx.time) falls back to the active profile). Broken since 14.0.0 by #5572 and #5729 (2020). Filed after the 15.0.9 readiness decision; named in 15.0.9's release notes as a known issue (9ed4a5441, 2026-10-21).
+
+### `BFQ-175` &mdash; BF-175 - temp targets are converted from mmol/L only when units is exactly 'mmol' (candidate)
+
+| | |
+|---|---|
+| state (claimed) | `unsettled` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@04d435eb` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-175` |
+
+**Blast radius.** lib/data/ddata.js convertTempTargetTreatmentUnites (:455-485 on dev 04d435eb, :320 on v15.0.8): read the units with the normalisation BF-124's and BF-157's fixes use.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `patch`.** if it is a defect, the fix normalises a units spelling; no API shape changes
+
+**Gates.**
+
+- **NO GATE** &mdash; Read, not run. A unit gate would feed a temp target with units 'mmol/L' and targets at or above 20 through ddata.processTreatments and assert mg/dL targets; whether such a record is ever sent is not known.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-10-21 from the BF-157 work, as a candidate. The comparison is exact (units == 'mmol'), so 'mmol/L' does not take that branch; the fallback that follows converts any target below 20 whatever the units say, which covers every ordinary mmol/L target. Whether any record escapes both is not established, so unsettled.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 
@@ -6672,7 +6735,7 @@ alarm-readiness items, and the seam branch refresh.
 | worktree | `externals/work/crm-seam` |
 | semver | `n/a` |
 | review | maintainer |
-| blocks on | `RT-0` |
+| blocks on | `RT-REBASE` |
 
 **Blast radius.** 16 seam branches. GT1 measured the chain as LINEAR - all 15 others are ancestors of seam/t1-2-storage-interface (81a1f6ce), and that still holds. The base moved on 2026-09-21: dev was merged into chore/nightscout-modernization as e3b22034 ("Merge dev into modernization and reconcile regression coverage"), 0a4109f6..b1bdaca0, 68 commits. Measured 2026-09-22 against origin/chore/nightscout-modernization b1bdaca0: the seam is 68 behind its base and 50 ahead (`git rev-list --left-right --count origin/chore/nightscout- modernization...seam/t1-2-storage-interface`), and the trial-merge has 19 conflicting paths. Three are add/add supersessions rather than real conflicts: lib/server/query-operator-allowlist.js, lib/api/shared/query-error.js and tests/api-v1-operator-allowlist.test.js exist on BOTH sides because BF-04 was extracted out of the seam onto bf/operators and merged to dev via #8743, while the seam kept its own copy. Upstream's version wins on all three; BF-04's register detail prices that as the seam owing a $type node to its AST. The other sixteen are content conflicts across the v1 API and server storage modules - lib/api/{activity,entries,profile}/index.js, lib/server/{activity,ag gregate,devicestatus,entries,food,profile,query,treatments}.js, lib/authorization/storage.js, both swagger files, and two test files - and those are the actual cost.
 
@@ -6693,7 +6756,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/60-research/remedial/gt1-branch-inventory-2026-09-15.md`
 - `docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md`
 
-**Notes.** GT1 also found that crm-pool, crm-tenant and crm-write are three separate worktrees all detached at the SAME commit 239f8c25, a mid-chain commit of seam/t1-2-storage-interface, with no branch of their own. Rule 5 - do not repoint a worktree you did not create - so they are recorded, not touched. Timing (maintainer, 2026-09-27; execution plan section 5.1): refresh once, after the 15.0.9 freeze and the release train's next propagation, as the first step of WRITE-CONTRACT. Not now: nothing builds on the seam, and nine of the 19 conflicting paths are files that now call a 15.0.9 write rule (lib/api/entries/index.js, lib/authorization/storage.js, lib/server/{activity, devicestatus, entries, food, profile, query, treatments}.js), so resolving them is re-expressing those rules through the storage interface. Measured 2026-09-27 against dev 295f1177: since dev 59430336 (the dev side of e3b22034) dev has taken 206 commits, 77 in lib/server, lib/api or lib/api3, and 30 files the seam changes have also changed on dev. The chain's first 16 commits (seam/t1-2-e, T1.2 and T1.3, 38 files +1962/-242) carry no tenancy behaviour and trial-merge onto b1bdaca0 with 8 conflicting paths, against 19 for the whole chain. 2026-10-07 rehearsal (docs/60-research/tenancy/seam-propagation- rehearsal-2026-10-07.md): a refresh by rebase must use --rebase-merges --onto <old modernization base>. Open before the real refresh, on either path: (1) the conf.pipeline hook, which BF-70 keeps and the seam's count() refuses, needs a decision; (2) 3 to 5 tests that stub or spy on the raw collection need re-expressing; (3) $exists with an empty operand: dev passes it to MongoDB, the seam's fromMongo reads it as false; (4) bulkUpsert cannot express $setOnInsert/$unset or interleaved deletes (entries create, BF-130), and the AST lacks $not/$type (treatment-fallback-key), all WRITE-CONTRACT inputs. The prefix alone (a2690bd4) inverts $exists, and its suite (2213/0) does not see it; the fix e0564167 is in seam/t2-4-allowlist, so the prefix must not ship without e0564167 or dev's normalizeOperands. Conflict cost: measured for the prefix (rehearsal §5); the full chain is classified only (§4: 19 against the modernization branch = 3 BF-04 supersessions, 2 test, 14 other lib, 0 write- rule; 50 against dev = 11 write-rule, 21 of them the modernization branch's own). Decided by the maintainer 2026-10-12: the conf.pipeline hook on the v1 count path is removed. count() takes a filter only, and a supplied pipeline is an error, as the seam already does. The modernization test "keeps the server- side conf.pipeline hook working" (tests/api-v1-count-pipeline.test.js) is rewritten to assert the refusal. Nothing in the tree supplies one (all three construction sites pass {}); BF-70 kept it as a minimal change, not for a user.
+**Notes.** 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. By the 2026-09-27 timing (refresh once, after the 15.0.9 freeze and the release train's next propagation), it now waits on RT-REBASE, which merges dev into the cuts and chore/nightscout-modernization (RT-PROPAGATION, decided merge); the seam's base is the modernization branch, not yet re-measured against dev 04d435eb. GT1 also found that crm-pool, crm-tenant and crm-write are three separate worktrees all detached at the SAME commit 239f8c25, a mid-chain commit of seam/t1-2-storage-interface, with no branch of their own. Rule 5 - do not repoint a worktree you did not create - so they are recorded, not touched. Timing (maintainer, 2026-09-27; execution plan section 5.1): refresh once, after the 15.0.9 freeze and the release train's next propagation, as the first step of WRITE-CONTRACT. Not now: nothing builds on the seam, and nine of the 19 conflicting paths are files that now call a 15.0.9 write rule (lib/api/entries/index.js, lib/authorization/storage.js, lib/server/{activity, devicestatus, entries, food, profile, query, treatments}.js), so resolving them is re-expressing those rules through the storage interface. Measured 2026-09-27 against dev 295f1177: since dev 59430336 (the dev side of e3b22034) dev has taken 206 commits, 77 in lib/server, lib/api or lib/api3, and 30 files the seam changes have also changed on dev. The chain's first 16 commits (seam/t1-2-e, T1.2 and T1.3, 38 files +1962/-242) carry no tenancy behaviour and trial-merge onto b1bdaca0 with 8 conflicting paths, against 19 for the whole chain. 2026-10-07 rehearsal (docs/60-research/tenancy/seam-propagation- rehearsal-2026-10-07.md): a refresh by rebase must use --rebase-merges --onto <old modernization base>. Open before the real refresh, on either path: (1) the conf.pipeline hook, which BF-70 keeps and the seam's count() refuses, needs a decision; (2) 3 to 5 tests that stub or spy on the raw collection need re-expressing; (3) $exists with an empty operand: dev passes it to MongoDB, the seam's fromMongo reads it as false; (4) bulkUpsert cannot express $setOnInsert/$unset or interleaved deletes (entries create, BF-130), and the AST lacks $not/$type (treatment-fallback-key), all WRITE-CONTRACT inputs. The prefix alone (a2690bd4) inverts $exists, and its suite (2213/0) does not see it; the fix e0564167 is in seam/t2-4-allowlist, so the prefix must not ship without e0564167 or dev's normalizeOperands. Conflict cost: measured for the prefix (rehearsal §5); the full chain is classified only (§4: 19 against the modernization branch = 3 BF-04 supersessions, 2 test, 14 other lib, 0 write- rule; 50 against dev = 11 write-rule, 21 of them the modernization branch's own). Decided by the maintainer 2026-10-12: the conf.pipeline hook on the v1 count path is removed. count() takes a filter only, and a supplied pipeline is an error, as the seam already does. The modernization test "keeps the server- side conf.pipeline hook working" (tests/api-v1-count-pipeline.test.js) is rewritten to assert the refusal. Nothing in the tree supplies one (all three construction sites pass {}); BF-70 kept it as a minimal change, not for a user.
 
 ### `WRITE-CONTRACT` &mdash; One write step behind the storage interface: _id form, srv dates, soft delete, re-send identity, one change event
 

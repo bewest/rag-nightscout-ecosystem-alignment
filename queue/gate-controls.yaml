@@ -2308,3 +2308,55 @@ controls:
       one finding "§4 row for device status / Loop: no row". Against an empty
       root (the tree before the page existed) the first finding, that the
       page exists, fails.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/treatment-bubble-units
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/treatment-bubble-units
+    control-kind: static
+    proves: >
+      run 2026-10-21: official/chore/nightscout-modernization is a base
+      bf/treatment-bubble-units has NOT taken, and the same command reports it
+      not-an-ancestor (exit 1); the gate itself exits 0 with official/dev
+      at 04d435eb. That is the shape this gate goes red in when dev moves
+      ahead of the branch.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/entries-pattern-limit
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/entries-pattern-limit
+    control-kind: static
+    proves: >
+      run 2026-10-21: official/chore/nightscout-modernization is a base
+      bf/entries-pattern-limit has NOT taken, and the same command reports it
+      not-an-ancestor (exit 1); the gate itself exits 0 with official/dev
+      at 04d435eb. That is the shape this gate goes red in when dev moves
+      ahead of the branch.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/boluscalc-profile-units
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/boluscalc-profile-units
+    control-kind: static
+    proves: >
+      run 2026-10-21: official/chore/nightscout-modernization is a base
+      bf/boluscalc-profile-units has NOT taken, and the same command reports it
+      not-an-ancestor (exit 1); the gate itself exits 0 with official/dev
+      at 04d435eb. That is the shape this gate goes red in when dev moves
+      ahead of the branch.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/profile-spec-honoured
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/profile-spec-honoured
+    control-kind: static
+    proves: >
+      run 2026-10-21: official/chore/nightscout-modernization is a base
+      bf/profile-spec-honoured has NOT taken, and the same command reports it
+      not-an-ancestor (exit 1); the gate itself exits 0 with official/dev
+      at 04d435eb. That is the shape this gate goes red in when dev moves
+      ahead of the branch.
