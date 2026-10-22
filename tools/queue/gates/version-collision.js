@@ -16,13 +16,19 @@
 
 const { show, report } = require('./_gate');
 
+// 2026-10-21: reads `official/*`, the remote the maintainer pushes to and this
+// checkout fetches; `origin/*` here is an older fetch of the same repository
+// (origin/dev was still 4bca2ac2 when dev was 04d435eb). official/master is
+// included because the released version is the one an operator reports: a cut
+// that still says 15.0.9 collides with the 15.0.9 release, not only with dev.
 const REFS = [
-  'origin/dev',
-  'origin/chore/retire-jsdom',
-  'origin/chore/build-runtime-separation',
-  'origin/chore/compose-mongodb6',
-  'origin/chore/mime-exposure-review',
-  'origin/chore/nightscout-modernization',
+  'official/master',
+  'official/dev',
+  'official/chore/retire-jsdom',
+  'official/chore/build-runtime-separation',
+  'official/chore/compose-mongodb6',
+  'official/chore/mime-exposure-review',
+  'official/chore/nightscout-modernization',
 ];
 
 const seen = [];

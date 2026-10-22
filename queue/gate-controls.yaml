@@ -771,16 +771,18 @@ controls:
       tree.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/retire-jsdom >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev official/chore/retire-jsdom
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/chore/retire-jsdom bf/reads >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bce12ecc
     control-kind: static
     proves: >
-      origin/chore/retire-jsdom and bf/reads were measured to conflict
-      on 2026-09-15 and merge-tree exits 1 on the pair. A trial merge
-      that returned 0 for a conflicting pair would make every "merges
-      cleanly" row in this queue meaningless.
+      bce12ecc is cut 1 as published before the catch-up merge (4b617f78,
+      2026-10-21) and does not contain official/dev 04d435eb; the same
+      command exits 1 on it (measured 2026-10-21). The gate replaced a
+      merge-tree trial-merge on origin/* refs when cut 1 took dev by merge;
+      containment is the sharper question once the cut is meant to be 0
+      behind.
 
   - gate: |-
       git -C externals/cgm-remote-monitor-official show origin/chore/compose-mongodb6:.github/workflows/main.yml | grep -q "'22.23.2'" && git -C externals/cgm-remote-monitor-official show origin/chore/compose-mongodb6:.github/workflows/main.yml | grep -q "'24.20.0'"
@@ -1091,10 +1093,10 @@ controls:
       control was run by hand the audit says so.
 
   - gate: |-
-      node tools/queue/gates/connector-pin-exposure.js --refs origin/chore/retire-jsdom,origin/chore/build-runtime-separation,origin/chore/compose-mongodb6,origin/dev
+      node tools/queue/gates/connector-pin-exposure.js --refs official/chore/retire-jsdom,official/chore/build-runtime-separation,official/chore/compose-mongodb6,official/dev
     cwd: .
     control: |-
-      tools/queue/gates/empty-root-control.sh tools/queue/gates/connector-pin-exposure.js --refs origin/chore/retire-jsdom,origin/chore/build-runtime-separation,origin/chore/compose-mongodb6,origin/dev
+      tools/queue/gates/empty-root-control.sh tools/queue/gates/connector-pin-exposure.js --refs official/chore/retire-jsdom,official/chore/build-runtime-separation,official/chore/compose-mongodb6,official/dev
     control-kind: static
     proves: >
       run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of
@@ -1169,17 +1171,18 @@ controls:
       control was run by hand the audit says so.
 
   - gate: |-
-      node tools/queue/gates/node-floor-consistency.js
+      NODE_FLOOR_REF=official/chore/retire-jsdom node tools/queue/gates/node-floor-consistency.js
     cwd: .
     control: |-
-      tools/queue/gates/empty-root-control.sh tools/queue/gates/node-floor-consistency.js
+      NODE_FLOOR_REF=bce12ecc node tools/queue/gates/node-floor-consistency.js
     control-kind: static
     proves: >
-      run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of
-      the files it reads exist, the gate does not exit 0. THIS IS THE
-      WEAK FORM: it proves the gate is coupled to its inputs, not that
-      it is coupled to the right property of them. Where a sharper
-      control was run by hand the audit says so.
+      the identical assertions against cut 1 as published before
+      2026-10-21 (bce12ecc), whose engines ^22.23.2 || ^24.20.0 sets a
+      patch floor inside the Dockerfile's floating node:22-alpine tag; the
+      gate reports that pair BAD and exits 1 (measured 2026-10-21; 9
+      checked, 1 failing). The strong form: same instrument, a real tree
+      where the property is false.
 
   - gate: |-
       node tools/queue/gates/platform-sql-surface.js

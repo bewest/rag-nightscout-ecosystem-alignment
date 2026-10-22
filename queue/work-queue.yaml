@@ -2170,15 +2170,17 @@ items:
     branch: ""
     base: ""
     worktree: externals/cgm-remote-monitor-official
-    state: not-started
-    blast_radius: package.json "version" on origin/dev and all five cut tips.
+    state: answered
+    blast_radius: package.json "version" on official/master, official/dev and all five cut tips.
     review: maintainer
     operator_visible: >
-      Right now two quite different builds of Nightscout both call themselves
-      15.0.9 - one runs on Node 20, one refuses to start on anything below Node
-      22.23.2, and one of them removes two ways of getting CGM data in. If you
-      report "my 15.0.9 will not start", nobody can tell from the version number
-      which one you have.
+      The next release changes which versions of Node (the program Nightscout
+      runs on) it will start on, and removes two older built-in ways of getting
+      CGM data in (the Dexcom Share and MiniMed CareLink bridges). It will be
+      called 16.0.0, so the version number tells you which kind of build you
+      have. Some unreleased development branches still call themselves 15.0.9,
+      the same number as the current release; they get new numbers before any
+      of them is released.
     semver: n/a
     semver_reason: this item IS the versioning decision
     register: [BF-60]
@@ -2186,8 +2188,11 @@ items:
       - run: node tools/queue/gates/version-collision.js
         kind: static
         describe: >
-          FAILS while origin/dev and any cut tip carry the same package.json
-          version string (GT4's finding, as a measurement).
+          FAILS while two of official/master, official/dev and the five cut
+          tips carry the same package.json version string with different
+          engines.node (GT4's finding, as a measurement). Reads official/*
+          since 2026-10-21; official/master was added the same day, because
+          the released version is the one an operator reports.
       - no-gate: >
           Both cut-4 migration shims emit error text saying "retired in
           Nightscout 15.0.9", but on the adopted train 15.0.9 is the bug-fix
@@ -2197,6 +2202,22 @@ items:
     evidence:
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
     notes: >
+      2026-10-21 (maintainer): settled. Cut 1 lands on dev now and the next
+      release is 16.0.0: cut 1 is semver major (the enforced Node floor
+      ^22.12 || >=24 exits at boot on Node 20, 21, 23 and 22.0-22.11; the
+      legacy Dexcom Share and MiniMed CareLink bridges are removed; MongoDB
+      4.4 is no longer tested). Cut 1 at official/chore/retire-jsdom
+      806ff2f0 (#8828) declares 16.0.0 and dev 04d435eb declares 15.0.10,
+      so cut 1 no longer collides with dev; once #8828 merges, dev is cut 1
+      and declares 16.0.0. Gate re-run 2026-10-21 on official/* (3 checked,
+      1 failing): 15.0.10 only on dev, 16.0.0 only on cut 1; 15.0.9 is
+      still claimed by official/master c6a0d8ed (>=20.x) and by cuts 2-5
+      (b6e8c7cd, ebb690cf, b80aa147, b1bdaca0; ^22.23.2 || ^24.20.0). The
+      remaining collision is cleared by the existing rule that each cut is
+      renumbered at its catch-up merge (RT-REBASE). Read against the stale
+      origin/* refs (origin/dev 4bca2ac2, origin/chore/retire-jsdom
+      bce12ecc) the same script reported all six refs at 15.0.9.
+
       2026-10-02 (maintainer): no longer in RT-0's blocks_on; this item
       holds the cuts (RT-1 onward), not 15.0.9.
       The version is decided; the gate is red on the cut tips. The dev
@@ -2643,7 +2664,7 @@ items:
       carry the stored-address notice.
 
   - id: RT-REBASE
-    title: Cuts 1-5 are far behind dev and all five conflict
+    title: "Catch the cuts up with dev: cut 1 done (#8828); cuts 2-5 are far behind and conflict"
     parcel: release-train
     repo: cgm-remote-monitor
     branch: chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review
@@ -2682,9 +2703,12 @@ items:
     semver_reason: rebase mechanics, not a release
     register: [BF-55, BF-56]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/retire-jsdom >/dev/null
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev official/chore/retire-jsdom
         kind: static
-        describe: cut 1 trial-merges into dev cleanly - FAILS as of 2026-09-24 (origin/dev 153e5658)
+        describe: >
+          cut 1 contains dev. PASSES since 2026-10-21: official/chore/retire-jsdom
+          806ff2f0 has official/dev 04d435eb merged in (4b617f78), 0 behind and
+          120 ahead. Goes red when dev moves ahead of cut 1 before #8828 merges.
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/build-runtime-separation >/dev/null
         kind: static
         describe: cut 2 trial-merges into dev cleanly - FAILS as of 2026-09-24 (origin/dev 153e5658)
@@ -2725,6 +2749,26 @@ items:
       - docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md
       - docs/30-design/modernization/jsdom-harness-test-tiers-2026-10-21.md
     notes: >
+      2026-10-21, later: cut 1's part is done. The maintainer pushed
+      chore/retire-jsdom as a fast-forward bce12ecc -> 806ff2f0 and opened
+      #8828 to dev (RT-1). dev 04d435eb is merged in as 4b617f78 (a merge,
+      not a rebase; bce12ecc is a first-parent ancestor of 806ff2f0), so cut
+      1 is 0 behind official/dev and 120 ahead, and merge-tree is clean. On
+      top of the merge: the floor commit dfbb611b (ed21961f), the nine
+      bridge-retirement commits 6671bcd0..6cd5e362 (from
+      rh/cut1-retire-legacy 43df8603..c043fb2d), test and doc fixes
+      358d2f49, 86473698, 25dcfa7f, deee9793 and 8c117dd4, the option C
+      ports 853b4145, fcd90f26 and 65248bed, #8823 folded in as 42a2729e,
+      and the 16.0.0 version bump 806ff2f0. The cut 1 gate now asks whether
+      cut 1 contains official/dev and passes. Cuts 2-5 remain, measured the
+      same day against official/dev 04d435eb (`git rev-list --left-right
+      --count official/dev...<cut>`; conflicting paths from `git merge-tree
+      --write-tree --name-only`): cut 2 b6e8c7cd 376 behind / 258 ahead, 20
+      paths; cut 3 ebb690cf 376 / 321, 23; cut 4 b80aa147 376 / 400, 37;
+      cut 5 b1bdaca0 252 / 498, 28. Their four gates still read origin/dev,
+      which is 4bca2ac2 in this checkout; they are red on either ref. Each
+      of cuts 2-5 is renumbered at its catch-up merge (RT-VERSION).
+
       2026-10-21 (post-15.0.9 cycle): measured on official/dev 04d435eb
       against official/chore/retire-jsdom bce12ecc: cut 1 is 376 commits
       behind and 99 ahead, merge base 9205ea30, 13 conflicting paths
@@ -2861,6 +2905,43 @@ items:
       files B keeps on secure-jsdom plus clock-token-link (36 cases) run in
       about 2 s wall in one mocha process; the browser suite (444 cases) in
       85-88 s per browser, run in CI for 3 browsers x 2 Node versions.
+
+  - id: RT-CONNECT-TEARDOWN
+    title: Remove the redundant connector teardown listener in bootevent.js once cut 1 is on dev
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/chore/retire-jsdom@806ff2f0
+    worktree: externals/cgm-remote-monitor-official
+    state: not-started
+    pr: []
+    blast_radius: >
+      lib/server/bootevent.js on 806ff2f0, lines 390-395: the
+      ctx.bus.once('teardown') listener that calls the connector's stop()
+      (from 78141628, kept through the catch-up merge 4b617f78). Its own
+      comment says nightscout-connect 0.1.0 also stops on teardown itself.
+      One listener and any test that asserts it.
+    review: maintainer
+    operator_visible: ""
+    semver: patch
+    semver_reason: removes a duplicate shutdown call; no declared surface moves
+    register: []
+    gates:
+      - no-gate: >
+          Not started. Gate to write: lib/server/bootevent.js on the fix
+          branch registers no teardown listener for the connector, and a
+          booted server with CONNECT enabled still stops the connector exactly
+          once on teardown, with 806ff2f0's listener as the red control for the
+          first half.
+    blocks_on: [RT-1]
+    evidence:
+      - docs/00-overview/ROADMAP.md
+    notes: >
+      Filed 2026-10-21 as a follow-up from cut 1 (#8828). The maintainer
+      decided the same day that the listener stays in the cut 1 merge and
+      its removal is a follow-up (RT-REBASE, RT-1). Connector 0.1.0 stops
+      itself on the bus's tearDown/teardown event, so the listener in
+      bootevent.js is redundant; stop() runs once either way.
 
   - id: RT-PROPAGATION
     title: "How the release train reaches dev: merge dev into the cuts, or rebase the cuts onto dev"
@@ -3276,41 +3357,56 @@ items:
       dev publishes a Docker Hub image, which is not a release.
 
   - id: RT-1
-    title: Cut 1 - chore/retire-jsdom
+    title: "Cut 1 - chore/retire-jsdom, PR #8828 to dev (16.0.0)"
     parcel: release-train
     repo: cgm-remote-monitor
     branch: chore/retire-jsdom
-    base: 9205ea30
+    base: official/dev@04d435eb
     worktree: externals/cgm-remote-monitor-official
-    state: blocked
+    state: in-flight-upstream
+    pr: [8828]
     blast_radius: >
-      99 commits. Incremental production diff 11 files +68/-54 (GT2,
+      At 806ff2f0 (#8828): 120 commits ahead of official/dev 04d435eb, 0
+      behind; the commit list is in RT-REBASE's notes. Before the catch-up
+      merge, bce12ecc was 99 commits. Incremental production diff 11 files +68/-54 (GT2,
       2026-09-15), not the 21 files +91/-123 the release-readiness §5 table
       publishes - that row was measured on a different basis from rows 2-5 and
       counts dev's own commits as deletions. Total 106 files, not 163.
     review: maintainer plus a human reviewer; low blast radius is the reason it
       is second on the train, not a reason to skip review
     operator_visible: >
-      A maintenance release. THE ONE THING TO CHECK BEFORE UPGRADING: it will
-      refuse to start on older versions of Node. You need Node 22.12 or newer
-      within Node 22, or Node 24 or newer. Node 20 no longer works, and neither
-      do Node 21 or 23 - the requirement is two ranges, not a single minimum.
-      If Nightscout stops starting after this upgrade, that is why.
+      Planned as release 16.0.0. TWO THINGS TO CHECK BEFORE UPGRADING. First,
+      it will refuse to start on older versions of Node (the program
+      Nightscout runs on). You need Node 22.12 or newer within Node 22, or
+      Node 24 or newer. Node 20 no longer works, and neither do Node 21 or 23
+      - the requirement is two ranges, not a single minimum. If Nightscout
+      stops starting after this upgrade, that is why. Second, the older
+      built-in Dexcom Share and MiniMed CareLink bridges are removed; CGM
+      data from those services comes in through Nightscout Connect instead.
+      If old bridge settings are left in place, the site stops at a page
+      naming the settings that work. Merged into the development branch is
+      not released: nothing changes for a running site until 16.0.0 is
+      released and installed.
     semver: major
     semver_reason: >
       GT4: the ENFORCED floor today is Node >=16 in bootevent.js, not the >=20
       that `engines` declares - engines is not enforced on dev or master. Cut 1
       introduces runtime-policy.js, which reads engines.node and calls
       process.exit(1). So the enforced floor jumps SIX majors, the declared range
-      becomes ^22.12 || >=24 (decided 2026-09-21; the published cut 1 bce12ecc
-      still declares ^22.23.2), excluding Node 21, 23 and 22.0-22.11, and the
-      check becomes a hard exit. Cut 1 also drops MongoDB 4.4 from CI in the same branch.
+      becomes ^22.12 || >=24 (decided 2026-09-21; in cut 1 since dfbb611b,
+      the published bce12ecc declared ^22.23.2), excluding Node 21, 23 and
+      22.0-22.11, and the check becomes a hard exit. Cut 1 also removes the
+      legacy Dexcom Share and MiniMed CareLink bridges and drops MongoDB 4.4
+      from CI. Maintainer 2026-10-21: the next release is 16.0.0
+      (RT-VERSION); 806ff2f0 declares it.
     register: [BF-55, BF-58]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/retire-jsdom >/dev/null
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev official/chore/retire-jsdom
         kind: static
-        describe: trial-merges into dev cleanly - FAILS as of 2026-09-24 (origin/dev 153e5658), see RT-REBASE
-      - run: node tools/queue/gates/node-floor-consistency.js
+        describe: >
+          cut 1 contains dev (806ff2f0 contains 04d435eb since 2026-10-21; see
+          RT-REBASE), so #8828 merges without conflict; red when dev moves ahead
+      - run: NODE_FLOOR_REF=official/chore/retire-jsdom node tools/queue/gates/node-floor-consistency.js
         kind: static
         describe: >
           "Trivially revertible - the engines field plus a boot check" is
@@ -3319,11 +3415,20 @@ items:
           README.md, CONTRIBUTING.md, docs/meta/architecture-overview.md). This
           gate checks they agree; a one-field revert would leave them stale.
       - no-gate: >
-          Dockerfile is node:22-alpine on both dev and cut 1, while cut 1's
-          engines requires ^22.23.2 - a floating major tag against a patch floor.
-          Nothing checks a Dockerfile base tag against an engines range.
+          Dockerfile is node:22-alpine on both dev and cut 1. Under the
+          published bce12ecc's ^22.23.2 that was a floating major tag against a
+          patch floor; under 806ff2f0's ^22.12 || >=24 the tag cannot resolve
+          below the floor, and node-floor-consistency.js (above) now checks the
+          tag against the range: 9/9 ok on 806ff2f0, red on bce12ecc. Nothing
+          pulls or builds the image here.
       - no-gate: >
-          The clock-client concern/falling coverage is lost in the conflict
+          2026-10-21: ported under option C. 65248bed moves the 15.0.9 clock
+          regression tests to tests/browser/clock-client.test.js (which on
+          806ff2f0 mentions concern and falling), fcd90f26 the D3 chart
+          tests and 853b4145 the pill-title tests; the browser suite is
+          444/0 on Chromium 153 at 806ff2f0. No queue gate re-runs the
+          browser suite. Earlier text, kept as the record: the clock-client
+          concern/falling coverage is lost in the conflict
           resolution (RT-REBASE). Porting it to the Playwright suite is real work
           nobody has scheduled, and release-readiness §2 Option 1's
           "one CI run plus a cherry-pick of tests/browser/" undercosts it - cut 1
@@ -3331,11 +3436,43 @@ items:
           tests/fixtures/d3-chart.js and tests/client.renderer.test.js, and its
           browser suite requires a playwright-core fixture and a module builder
           that dev does not have.
-    blocks_on: [RT-REBASE]
+    blocks_on: []
     evidence:
       - docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
     notes: >
+      2026-10-21, later: pushed and in review. The maintainer pushed
+      chore/retire-jsdom as a fast-forward of official/chore/retire-jsdom
+      bce12ecc -> 806ff2f0 and opened #8828 (chore/retire-jsdom -> dev,
+      "Cut 1: retire jsdom, Node floor ^22.12 || >=24, retire the legacy
+      Dexcom and MiniMed bridges (16.0.0)"). Decided the same day: cut 1
+      lands on dev now and the next release is 16.0.0 (RT-VERSION).
+      RT-REBASE's cut 1 part is done (dev 04d435eb merged in as 4b617f78;
+      0 behind, 120 ahead), so RT-REBASE is removed from blocks_on. Tests on
+      806ff2f0: npm test 3224 passing / 3 pending / 0 failing (Node 24.20.0,
+      MongoDB 7.0.43 in a container); browser suite Chromium 153 444/0. On
+      8c117dd4, before the last two commits: Node 22.12.0 3209/3/0, Firefox
+      155 444/0, test:core 286/0. WebKit did not launch on the host; #8828's
+      CI run 39704672667 on 806ff2f0 reports Browser tests (22, webkit) and
+      (24, webkit) as success, with all Run Tests cells (Node 22 and 24 x
+      MongoDB 5 and 6) and the other browser cells passing, and the two
+      Docker validation jobs still in progress when read. dev baseline on
+      04d435eb: 3569/4/0. Gates on official/*: node-floor-consistency 9/9
+      ok (red on bce12ecc), connector-pin-exposure ok at v0.1.0 (bce12ecc
+      pinned the v0.0.13 tag), cut 1 contains dev.
+
+      #8823 ("Fix BRIDGE_SERVER=US/ous/URL mapping in bridge-connect
+      compatibility", no queue item of its own) is folded into cut 1 as 42a2729e with
+      its authorship kept; its 15 tests are unchanged and 7 of them fail
+      with the fix reverted. It is closed in favour of #8828; the close
+      comment is the maintainer's (#8823 still read OPEN at f75f9401 when
+      measured).
+
+      Follow-ups from cut 1, each its own item: RT-CONNECT-TEARDOWN (the
+      redundant connector teardown listener in bootevent.js), BFQ-158 (the
+      count=0 tests on a reused database). RT-JSDOM-REST and RT-D3-SUITE
+      already wait on this item.
+
       2026-10-21: 15.0.9 is released, so RT-0 is removed from blocks_on; cut 1
       waits on its catch-up merge (RT-REBASE, in progress on
       wip/cut1-onto-15.0.10, not pushed). Cut 1 is first in the cycle's
@@ -3708,12 +3845,20 @@ items:
           control: the same lab against fade2299. The lab needs docker and two
           archived builds, so it is not wired as a queue gate here; a mocha
           case in the PR is the CI gate.
-    blocks_on: [RT-REBASE]
+    blocks_on: [RT-1]
     evidence:
       - docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md
       - tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md
       - docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
     notes: >
+      2026-10-21, later: cut 1's catch-up merge is done (RT-REBASE's cut 1
+      part; 806ff2f0 contains dev 04d435eb), so blocks_on moves from
+      RT-REBASE to RT-1: this lands on dev after #8828 merges, which is the
+      maintainer's 2026-10-17 order. Cut 1 still touches neither
+      lib/server/entries.js nor lib/server/devicestatus.js (`git diff
+      --name-only official/dev official/chore/retire-jsdom` on 806ff2f0
+      lists neither).
+
       2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Still
       waits on cut 1's catch-up merge (RT-REBASE, in progress).
 
@@ -5198,6 +5343,13 @@ items:
       - docs/60-research/remedial/gt1-branch-inventory-2026-09-15.md
       - docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md
     notes: >
+      2026-10-21, later: RT-REBASE's cut 1 part is done (#8828), and that
+      part is not what the seam waits on. The seam's base is
+      chore/nightscout-modernization (cut 5, b1bdaca0, 252 behind official/dev
+      04d435eb and 498 ahead, 28 conflicting paths), which takes dev through
+      the cut chain under RT-PROPAGATION's merge order, so the refresh still
+      waits on RT-REBASE's cut 5 part. blocks_on is unchanged.
+
       2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. By
       the 2026-09-27 timing (refresh once, after the 15.0.9 freeze and the
       release train's next propagation), it now waits on RT-REBASE, which
@@ -6739,7 +6891,8 @@ items:
     branch: bf/regex-limits
     base: official/dev@04d435eb
     worktree: externals/work/crm-bf72
-    state: ready-to-push
+    state: in-flight-upstream
+    pr: []
     ships_to_operators_today: true
     blast_radius: >
       No line is wrong, which is why this is needs-decision and not not-started. $regex and
@@ -6818,6 +6971,13 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21, later still: pushed by the maintainer to the private fork
+      of GHSA-r3gv as bf/regex-limits 1833ab00. No pull request is open
+      inside the fork yet; opening it is the next step, and the fix is
+      published with the release that carries it. Not in the public
+      repository, so pr is empty. The static gate below reads official/dev
+      and stays red until the fix is merged there.
+
       2026-10-21, later (maintainer): both decisions made. Fix shape (c),
       chosen by the rule that every intended use must keep working (the uses
       in the maintainer's public gist dbe590ab "Get one day data out of
@@ -8036,6 +8196,12 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21, seen again in the cut 1 runs (#8828): the same 6 count=0
+      tests in tests/api.count-parameter.test.js fail on a reused database,
+      because tests/websocket.shape-handling.test.js leaves records inside the count
+      window; the same happens on dev, so it is not a cut 1 regression. The
+      fix proposed below (clear the collections in before) covers it.
+
       Filed 2026-10-03. The "a read with count=0" block clears treatments,
       devicestatus, profile and activity in after but not in before. Fix:
       clear them in before too. The maintainer wants it fixed so the test is
@@ -8154,12 +8320,14 @@ items:
     semver_reason: a dependency pin moves to a newer patch of the same package
     register: [BF-65]
     gates:
-      - run: node tools/queue/gates/connector-pin-exposure.js --refs origin/chore/retire-jsdom,origin/chore/build-runtime-separation,origin/chore/compose-mongodb6,origin/dev
+      - run: node tools/queue/gates/connector-pin-exposure.js --refs official/chore/retire-jsdom,official/chore/build-runtime-separation,official/chore/compose-mongodb6,official/dev
         kind: static
         describe: >
-          FAILS on all three cut tips, which pin the v0.0.13 tag tarball, and
-          PASSES on origin/dev (pinned to the released connector 0.1.0) as the
-          control. The gate refuses to report when every ref agrees, because a
+          FAILS while any of the three cut tips pins the v0.0.13 tag tarball.
+          On 2026-10-21 cut 1 806ff2f0 pins v0.1.0 (ok) and cuts 2 and 3 still
+          pin v0.0.13 (bad); official/dev (pinned to the released connector
+          0.1.0) is the control. Reads official/* since 2026-10-21; origin/*
+          in this checkout is an older fetch. The gate refuses to report when every ref agrees, because a
           run that distinguishes nothing is not a result.
       - no-gate: >
           The pins are measured; the release ordering is quoted from
@@ -8171,6 +8339,13 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21: cut 1's part is met. official/chore/retire-jsdom 806ff2f0
+      (#8828) pins nightscout-connect v0.1.0 through the catch-up merge of
+      dev 04d435eb; the published bce12ecc pinned the v0.0.13 tag. Gate on
+      official/*: 8 checked, 2 failing, both on cuts 2 (b6e8c7cd) and 3
+      (ebb690cf), which take the pin at their own catch-up merges
+      (RT-REBASE).
+
       Open on the published cut tips, which still pin the v0.0.13 tag
       tarball. The fix exists to pin: nightscout-connect 0.1.0 (released
       2026-09-24, P0-TAG), which origin/dev pins exactly since #8762. It
@@ -8242,6 +8417,25 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21: cut 1's part is pushed. official/chore/retire-jsdom
+      806ff2f0 (#8828) declares ^22.12 || >=24 (dfbb611b, from ed21961f),
+      its test and browser matrices are ['22','24'], and the Dockerfile
+      stays node:22-alpine; node-floor-consistency.js with NODE_FLOOR_REF
+      on 806ff2f0 is 9/9 ok (RT-1). What the two gates below mean has
+      changed: they ask whether CI runs the exact patch floor 22.23.2 and
+      24.20.0, which matters only under a patch floor. Under the minor floor
+      a floating major alias cannot resolve below 22.12, so cut 1 has no
+      patch boundary for CI to guard (its main.yml says so), and the first
+      gate, re-run 2026-10-21, still passes because it reads
+      origin/chore/retire-jsdom, which is bce12ecc here; against 806ff2f0
+      the same grep exits 1. The exact floor was run by hand: Node 22.12.0
+      3209/3/0 on 8c117dd4. The second gate stays red on cut 3 ebb690cf,
+      which, like cuts 2, 4 and 5, still enforces ^22.23.2 || ^24.20.0 and
+      takes cut 1's floor at its catch-up merge (RT-REBASE); BF-58 and
+      BF-59 stay open on those tips until then. The gates are left as they
+      are; they should be rewritten (or this item narrowed to cuts 2-5)
+      when the next cut is caught up.
+
       Open on the published cuts; a fix is prepared and not pushed.
       BF-58 (high): every pushed cut enforces ^22.23.2 || ^24.20.0 while
       its Dockerfile uses node:22-alpine, which on 2026-09-21 resolved
@@ -13158,7 +13352,7 @@ items:
     branch: bf/entries-pattern-limit
     worktree: externals/work/crm-bf161
     base: official/dev@04d435eb
-    state: ready-to-push
+    state: in-flight-upstream
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -13187,6 +13381,15 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21, later still: pushed by the maintainer to the draft
+      advisory's private fork as bf/entries-pattern-limit d2c4df9f. No pull
+      request is open inside the fork yet; opening it is the next step.
+      Open decision, the maintainer's: publish the draft advisory now for
+      BF-151 (fixed in 15.0.9) with BF-161 as a follow-up, or extend it to
+      include BF-161 and publish with the release that carries this fix.
+      The gate below asks only whether the branch contains official/dev,
+      read in this checkout's local branch.
+
       2026-10-21, later: head d2c4df9f adds 9 intended-use tests from the
       maintainer's public gist dbe590ab (/times echo forms and /times JSON
       and CSV); the deepest real use nests 1 level, so the limit of 10 keeps

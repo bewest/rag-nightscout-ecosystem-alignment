@@ -27,11 +27,12 @@ repository.
 | [`BFQ-173`](bfq-173-bf-boluscalc-profile-units.md) | #8825 | `in-flight-upstream` | BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units, a known issue of 15.0.9 |
 | [`BFQ-174`](bfq-174-bf-profile-spec-honoured.md) | #8826 | `in-flight-upstream` | BF-174 - the bolus calculator's profile picker is ignored; every value comes from the active profile, a known issue of 15.0.9 |
 | [`BFQ-157`](bfq-157-bf-treatment-bubble-units.md) | #8827 | `in-flight-upstream` | BF-157 - a treatment's glucose bubble is placed as mg/dL when its units are spelled mmol/L |
+| [`RT-1`](rt-1-chore-retire-jsdom.md) | #8828 | `in-flight-upstream` | Cut 1 - chore/retire-jsdom, PR #8828 to dev (16.0.0) |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`BFQ-152`](bfq-152.md) | &mdash; | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission |
-| [`BFQ-161`](bfq-161-bf-entries-pattern-limit.md) | &mdash; | `ready-to-push` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes |
+| [`BFQ-161`](bfq-161-bf-entries-pattern-limit.md) | &mdash; | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes |
 | [`BFQ-164`](bfq-164.md) | &mdash; | `needs-decision` | BF-164 - writes outside API v3 never reach the v3 storage socket |
-| [`BFQ-72`](bfq-72-bf-regex-limits.md) | &mdash; | `ready-to-push` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
+| [`BFQ-72`](bfq-72-bf-regex-limits.md) | &mdash; | `in-flight-upstream` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | [`BFQ-95`](bfq-95.md) | &mdash; | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
 | [`DEPENDABOT-CONFIG`](dependabot-config.md) | &mdash; | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev |
 | [`ID-ABSENT-DECISION`](id-absent-decision.md) | &mdash; | `needs-decision` | Decide: a write that carries no identifier (and no _id) - keep the time-key fallback, deprecate it, or require identifier? |

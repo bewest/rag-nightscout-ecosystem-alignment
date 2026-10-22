@@ -21,7 +21,7 @@ advisory with no fixed release, reachable from the entries pattern routes**
 | repository | `cgm-remote-monitor` |
 | branch | `bf/entries-pattern-limit` |
 | base | `official/dev@04d435eb` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-161` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-161` is the measurement |
 | semver | `patch` |
 | register entries | `BF-161` |
 | operator exposure | **reaches an operator on today's release** |
@@ -67,15 +67,22 @@ without a further merge; goes red when dev moves ahead
 
 ## Notes carried on the item
 
-2026-10-21, later: head d2c4df9f adds 9 intended-use tests from the
-maintainer's public gist dbe590ab (/times echo forms and /times JSON and CSV);
-the deepest real use nests 1 level, so the limit of 10 keeps a wide margin;
-full suite 3585/0/4. Route decided by the maintainer: a draft security
-advisory covers this defect, so the fix goes through that advisory's private
-fork and is published with the release that carries it, not as a public PR.
-2026-10-21: bf/entries-pattern-limit fe1f6220 on dev 04d435eb: a nesting-depth
-limit of 10, answered 400 before braces parses or expands the pattern; full
-suite 3576/0/4; break-it ok; patch; not pushed. The limit value 10 awaits the
+2026-10-21, later still: pushed by the maintainer to the draft advisory's
+private fork as bf/entries-pattern-limit d2c4df9f. No pull request is open
+inside the fork yet; opening it is the next step. Open decision, the
+maintainer's: publish the draft advisory now for BF-151 (fixed in 15.0.9) with
+BF-161 as a follow-up, or extend it to include BF-161 and publish with the
+release that carries this fix. The gate below asks only whether the branch
+contains official/dev, read in this checkout's local branch. 2026-10-21,
+later: head d2c4df9f adds 9 intended-use tests from the maintainer's public
+gist dbe590ab (/times echo forms and /times JSON and CSV); the deepest real
+use nests 1 level, so the limit of 10 keeps a wide margin; full suite
+3585/0/4. Route decided by the maintainer: a draft security advisory covers
+this defect, so the fix goes through that advisory's private fork and is
+published with the release that carries it, not as a public PR. 2026-10-21:
+bf/entries-pattern-limit fe1f6220 on dev 04d435eb: a nesting-depth limit of
+10, answered 400 before braces parses or expands the pattern; full suite
+3576/0/4; break-it ok; patch; not pushed. The limit value 10 awaits the
 maintainer's confirmation. Filed 2026-10-06 from session -d4's run 021 npm
 audit on dev 1ad03e29 (15 findings, 7 high, against 10 and 2 on 2026-10-02:
 new advisories for braces, @parse/node-apn and eslint-webpack-plugin). Graded

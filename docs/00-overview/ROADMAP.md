@@ -4,7 +4,7 @@
 status](PROGRAMME-STATUS.md); leads to [work waiting on a person](NEEDS-A-HUMAN.md). Prepared for the
 Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 dated
 2026-10-21 against cgm-remote-monitor `official/master` `c6a0d8ed` (tags `v15.0.9`, `15.0.9`) and
-`official/dev` `04d435eb`; other prose dated 2026-10-08 against `dev` `fade2299` and `master`
+`official/dev` `04d435eb` (cut 1, #8828, at `official/chore/retire-jsdom` `806ff2f0`); other prose dated 2026-10-08 against `dev` `fade2299` and `master`
 `92d08342` (tag `15.0.8`). The two order tables are generated from `queue/work-queue.yaml`, and
 `make views-check` fails when they drift.*
 
@@ -115,17 +115,39 @@ What is left from the release, and the next cycle as it stands on 2026-10-21:
    now has head `542b7e97`, with `dev` merged in (3591/0/4). #8819 (`BFQ-172`) merges cleanly with
    `dev` (3571/0/4); a review note is drafted, not posted. The four dosing changes together
    (`scratch/dosing-1510` `203027c5`: `BFQ-173`, `BFQ-174`, `BFQ-09` and #8819 on `dev`) pass
-   3604/0/4. Through private advisory forks, to be published with the release that carries them:
+   3604/0/4. Pushed by the maintainer on 2026-10-21 to private advisory forks, to be published with
+   the release that carries them; no pull request is open inside either fork yet:
    `BFQ-161` (`bf/entries-pattern-limit` `d2c4df9f`, 3585/0/4, patch; a depth limit of 10, the
    deepest intended use nests 1 level) and `BFQ-72` (`bf/regex-limits` `1833ab00`, 3646/0/4, minor;
    a length cap and a time limit on every regex query, and a refusal check for caller-written
    patterns behind `QUERY_REGEX_REFUSE_UNSAFE`, default off). Both keep the intended uses in the
-   maintainer's public gist `dbe590ab` working.
+   maintainer's public gist `dbe590ab` working. Open for `BFQ-161`, the maintainer's call: publish
+   its draft advisory now for BF-151 (released in 15.0.9) with BF-161 as a follow-up, or extend the
+   advisory to include BF-161.
 6. The nine items whose only open blocker was `RT-0` are re-stated: `BFQ-173` and `BFQ-174`
-   `in-flight-upstream` (#8825, #8826); `BFQ-72` `ready-to-push` (private fork); `BFQ-95` and `BFQ-152` `needs-decision`; `BFQ-67` and `BFQ-93`
-   `not-started`; `BFQ-156` `in-progress` (its branch owes a merge of `dev`); `SEAM-REFRESH` now
-   waits on `RT-REBASE`. `RT-1` and `ID-SIMPLE-MATCH` wait on `RT-REBASE`, which is in progress.
-7. The version class of #8772, #8775 and #8780 stays recorded as open in
+   `in-flight-upstream` (#8825, #8826); `BFQ-72` and `BFQ-161` `in-flight-upstream` (private
+   advisory forks, no PR yet); `BFQ-95` and `BFQ-152` `needs-decision`; `BFQ-67` and `BFQ-93`
+   `not-started`; `BFQ-156` `in-progress` (its branch owes a merge of `dev`). `RT-1` is
+   `in-flight-upstream` as #8828 (below); `ID-SIMPLE-MATCH` now waits on `RT-1` (it lands on `dev`
+   after #8828), and `SEAM-REFRESH` still waits on `RT-REBASE`, for the catch-up of cut 5, the
+   seam's base.
+7. **Cut 1 is PR #8828, and the next release is 16.0.0** (maintainer, 2026-10-21: cut 1 lands on
+   `dev` now; `RT-VERSION` `answered`). Cut 1 is semver major: the enforced Node floor
+   `^22.12 || >=24` stops the server at boot on Node 20, 21, 23 and 22.0–22.11; the legacy Dexcom
+   Share and MiniMed CareLink bridges are removed; MongoDB 4.4 is no longer tested. The maintainer
+   pushed `chore/retire-jsdom` as a fast-forward `bce12ecc` → `806ff2f0` and opened #8828
+   (`chore/retire-jsdom` → `dev`). `dev` `04d435eb` is merged in as `4b617f78` (0 behind, 120 ahead);
+   on top are the floor commit, the nine bridge-retirement commits, the option C browser ports,
+   #8823 folded in as `42a2729e` (authorship kept; #8823 is closed in favour of #8828), and the
+   16.0.0 version bump `806ff2f0`. On `806ff2f0`: `npm test` 3224 passing / 3 pending / 0 failing
+   (Node 24.20.0, MongoDB 7.0.43), browser suite 444/0 on Chromium 153; #8828's CI run 39704672667
+   reports every test cell passing, WebKit included (WebKit did not launch on the local host). Gates:
+   `node-floor-consistency` 9/9 ok (red on `bce12ecc`), connector pin at 0.1.0 (`bce12ecc` pinned
+   the 0.0.13 tag). Follow-ups: `RT-CONNECT-TEARDOWN` (the redundant connector teardown listener),
+   `BFQ-158` (the count=0 tests on a reused database, on `dev` too), `RT-JSDOM-REST`.
+8. Next step, not started: open `releases/cgm-remote-monitor-16.0.0/` from `releases/_template/`
+   when the maintainer starts the 16.0.0 release record.
+9. The version class of #8772, #8775 and #8780 stays recorded as open in
    [decisions](../../releases/cgm-remote-monitor-15.0.9/decisions.md).
 
 The full `npm audit` triage, which findings reach a running site and what is done about each, is in
@@ -145,10 +167,14 @@ The adopted order ([§8.3](../30-design/modernization/semver-and-release-version
 | step | release | contents |
 |---|---|---|
 | 1 | 15.0.9 | `dev` as it stood at `4bca2ac2`; released 2026-10-21 |
-| 2 | cut 1, `chore/retire-jsdom` | the real-browser test suite, the Node floor, and removal of the legacy Dexcom and MiniMed bridges |
+| 2 | 16.0.0: cut 1, `chore/retire-jsdom`, PR #8828 | the real-browser test suite, the Node floor `^22.12 \|\| >=24`, and removal of the legacy Dexcom and MiniMed bridges |
 | 3 | cut 2, `chore/build-runtime-separation` | page bundles and the build/runtime split |
 | 4 | cuts 3 + 5 | dependency majors, including the MongoDB driver and Express 5 |
 | 5 | cut 4, `chore/mime-exposure-review` | the remainder: trusted proxies, DOMPurify, Moment, MIME, webpack, ESLint |
+
+Step 2 is PR #8828 to `dev`, and the next release is 16.0.0 (maintainer, 2026-10-21: cut 1 now).
+`dev` declares 15.0.10, but 15.0.10 will not be released as a separate patch if cut 1 merges first:
+the next release from `dev` is then 16.0.0.
 
 Two questions are open in §8.3:
 
@@ -158,8 +184,9 @@ Two questions are open in §8.3:
 
 **Rebasing costs more with every merge to `dev`.** The cuts conflict with `dev` in files the
 merged remedial PRs touched (queue `RT-REBASE` re-measures the conflicts). The cheapest time to
-rebase cut 1 is right after 15.0.9 is tagged, while `dev` is quiet. On 2026-10-21 cut 1's catch-up
-merge is in progress (`RT-REBASE`): on `dev` `04d435eb`, `chore/retire-jsdom` `bce12ecc` is 376
+rebase cut 1 is right after 15.0.9 is tagged, while `dev` is quiet. Cut 1's catch-up merge was done
+on 2026-10-21 (`4b617f78`, in #8828); cuts 2–5 remain, each 376 commits behind `dev` `04d435eb`
+(cut 5 252) with 20, 23, 37 and 28 conflicting paths. Before that merge, `chore/retire-jsdom` `bce12ecc` was 376
 commits behind and 99 ahead, with 13 conflicting paths, and 14 `dev` test files (about 109 cases)
 use the jsdom harness cut 1 deletes. The maintainer chose option C that day: cut 1 ports the D3,
 clock-client and pill-title coverage to the real-browser suite and keeps the jsdom harness for the
@@ -174,20 +201,20 @@ legacy bridge removal come into the cut 1 merge.
 | 1 | `OID-STORAGE-HELPER` | One storage-level rule for writes by _id instead of six hand-written copies | `not-started` | &mdash; |
 | 1 | `OID-V3-EDIT-MERGE` | API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an  | `not-started` | &mdash; |
 | 1 | `OID-WS-EDIT-MERGE` | Websocket dbUpdate of a record stored twice by _id edits both copies and leaves  | `not-started` | &mdash; |
+| 1 | `RT-1` | Cut 1 - chore/retire-jsdom, PR #8828 to dev (16.0.0) | `in-flight-upstream` | &mdash; |
 | 1 | `RT-BOOTERROR` | BF-63 - the page that reports a boot error crashes on cut 4's boot errors | `gate-not-met` | &mdash; |
 | 1 | `RT-CONNECT-PIN-CUTS` | BF-65 - cuts 1-3 ship the leaking connector to upgraders first | `gate-not-met` | &mdash; |
 | 1 | `RT-PR-8730` | #8730 - Crowdin translation updates, held out of 15.0.9 (BF-132) | `gate-not-met` | &mdash; |
-| 1 | `RT-REBASE` | Cuts 1-5 are far behind dev and all five conflict | `in-progress` | &mdash; |
-| 1 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | &mdash; |
-| 2 | `ID-SIMPLE-MATCH` | API v1 entries and devicestatus match on identifier like treatments (the simple  | `blocked` | `RT-REBASE` |
+| 1 | `RT-REBASE` | Catch the cuts up with dev: cut 1 done (#8828); cuts 2-5 are far behind and conf | `in-progress` | &mdash; |
+| 2 | `ID-SIMPLE-MATCH` | API v1 entries and devicestatus match on identifier like treatments (the simple  | `blocked` | `RT-1` |
 | 2 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then ret | `not-started` | `OID-PREVALENCE` |
-| 2 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `RT-REBASE` |
-| 3 | `RT-2` | Cut 2 - chore/build-runtime-separation | `blocked` | `RT-1` |
-| 3 | `RT-D3-SUITE` | The treatment-drag clamps get a regression test in cut 1's real-browser suite | `blocked` | `RT-1` |
-| 3 | `RT-JSDOM-REST` | Retire the whole-bundle jsdom harness that cut 1 keeps; secure-jsdom stays as th | `not-started` | `RT-1` |
-| 3 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | `RT-1` |
-| 4 | `RT-3` | Cuts 3+5 combined - dependency release | `blocked` | `RT-2` |
-| 5 | `RT-5` | Cut 4 - chore/mime-exposure-review, the one to slow down on | `blocked` | `RT-3` |
+| 2 | `RT-2` | Cut 2 - chore/build-runtime-separation | `blocked` | `RT-1` |
+| 2 | `RT-CONNECT-TEARDOWN` | Remove the redundant connector teardown listener in bootevent.js once cut 1 is o | `not-started` | `RT-1` |
+| 2 | `RT-D3-SUITE` | The treatment-drag clamps get a regression test in cut 1's real-browser suite | `blocked` | `RT-1` |
+| 2 | `RT-JSDOM-REST` | Retire the whole-bundle jsdom harness that cut 1 keeps; secure-jsdom stays as th | `not-started` | `RT-1` |
+| 2 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | `RT-1` |
+| 3 | `RT-3` | Cuts 3+5 combined - dependency release | `blocked` | `RT-2` |
+| 4 | `RT-5` | Cut 4 - chore/mime-exposure-review, the one to slow down on | `blocked` | `RT-3` |
 
 <!-- END GENERATED: road-release-train -->
 

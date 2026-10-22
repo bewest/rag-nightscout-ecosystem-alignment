@@ -20,7 +20,7 @@
 | repository | `cgm-remote-monitor` |
 | branch | `bf/regex-limits` |
 | base | `official/dev@04d435eb` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-72` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-72` is the measurement |
 | semver | `minor` |
 | register entries | `BF-72` |
 | operator exposure | **reaches an operator on today's release** |
@@ -116,6 +116,11 @@ same ablation.
 
 ## Notes carried on the item
 
+2026-10-21, later still: pushed by the maintainer to the private fork of
+GHSA-r3gv as bf/regex-limits 1833ab00. No pull request is open inside the fork
+yet; opening it is the next step, and the fix is published with the release
+that carries it. Not in the public repository, so pr is empty. The static gate
+below reads official/dev and stays red until the fix is merged there.
 2026-10-21, later (maintainer): both decisions made. Fix shape (c), chosen by
 the rule that every intended use must keep working (the uses in the
 maintainer's public gist dbe590ab "Get one day data out of Nightscout": /times
