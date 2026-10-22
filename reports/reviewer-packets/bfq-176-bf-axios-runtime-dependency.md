@@ -13,8 +13,8 @@
 
 # Review packet — BFQ-176
 
-**BF-176 - axios is declared only as a devDependency, so cut 1's production
-install stops at boot when IMPORT_CONFIG is set**
+**BF-176 - axios is only a devDependency and lodash is undeclared, so cut 1's
+production install stops at boot when IMPORT_CONFIG is set**
 
 | | |
 |---|---|
@@ -27,19 +27,24 @@ install stops at boot when IMPORT_CONFIG is set**
 
 ## What this changes
 
-One commit 366c6ea4 on dev 04d435eb: package.json moves axios from
-devDependencies to dependencies at the same ^0.34.0, package-lock.json moves
-only the root entries (+1/-1 each), and three tests in tests/dependency-
-axios.test.js (+34) check that every package lib/server/bootevent.js loads is
-under dependencies. No runtime code changes. Full suite 3572/4/0 on Node
-24.15.0 and MongoDB 7.0.43 (dev baseline 3569/4/0, plus the three tests).
+One commit 43ed462a on dev 04d435eb, package files and one test file only
+(+53/-2). package.json moves axios from devDependencies to dependencies at the
+same ^0.34.0 and declares lodash as exactly 4.18.1, the version its existing
+override pins (the overrides block is unchanged). package-lock.json: the two
+root entries, plus "dev": true on node_modules/@types/tough-cookie, which npm
+sets when it recomputes the lockfile (TypeScript declarations only; its one
+non-dev dependent is a peerDependency that legacy-peer-deps=true does not
+follow; cut 1's lockfile already has it). Five tests in tests/dependency-
+axios.test.js (+48). No runtime code changes. Full suite 3574/4/0 on Node
+24.15.0 and MongoDB 7.0.43 (dev baseline 3569/4/0, plus the five tests).
 
 ## Why that semver
 
 Packaging only: axios moves from devDependencies to dependencies at the same
-version range; no API, setting or stored-data shape changes. On 15.0.x the
-production tree already contains axios 0.34.0 through minimed-connect-to-
-nightscout, so the installed set does not change.
+version range and lodash is declared at the version already installed; no API,
+setting or stored-data shape changes. On 15.0.x the production tree already
+contains axios 0.34.0 and lodash 4.18.1 through other packages, so the
+installed runtime set does not change.
 
 ## What an operator would notice
 
@@ -59,22 +64,24 @@ maintainer
 
 ## What was measured
 
-**`BOOT_DEPS_REF=bf/axios-runtime-dependency node tools/queue/gates/boot-requires-runtime-deps.js`** &nbsp;·&nbsp; kind: `static`
+**`RUNTIME_REQUIRES_REF=bf/axios-runtime-dependency node tools/queue/gates/runtime-requires-declared.js`** &nbsp;·&nbsp; kind: `static`
 
-every package lib/server/bootevent.js loads (axios, bootevent, moment-
-timezone, nightscout-connect, semver) is declared under dependencies on the
-fix branch; red on v15.0.9, official/dev 04d435eb and cut 1 806ff2f0, where
-axios is only a devDependency
+every package that server code loads (server.js, bin/*.js and lib/ except the
+browser-only lib/client, lib/report and lib/report_plugins) is declared under
+dependencies on the fix branch, with webpack-dev-middleware and webpack-hot-
+middleware allowed only inside lib/server/app.js's NODE_ENV === 'development'
+block; red on v15.0.9, official/dev 04d435eb and cut 1 806ff2f0 (axios only a
+devDependency, lodash undeclared)
 
 ## What these gates do NOT prove
 
 *Each of these is the author recording, at the time, a property they could not measure. This is the reviewer's worklist.*
 
 - The boot itself is not a queue gate: it needs npm ci --omit=dev, MongoDB
-  and a local config server (minutes). Run by hand 2026-10-22, see the
-  register's BF-176 detail. cut 2's tools/validate-pruned-runtime.js
-  (d660e272's message) boots the pruned tree with IMPORT_CONFIG in cut 2's
-  CI.
+  and a local config server (minutes). Run by hand 2026-10-22 on v15.0.9,
+  cut 1 806ff2f0 and the fix branch 43ed462a, see the register's BF-176
+  detail. cut 2's tools/validate-pruned-runtime.js (d660e272's message)
+  boots the pruned tree with IMPORT_CONFIG in cut 2's CI.
 
 ## Evidence
 
@@ -89,20 +96,23 @@ node_modules/axios in every production install (npm ls axios --omit=dev). Cut
 1 (RT-1, #8828, 806ff2f0) removes the MiniMed bridge, and its lockfile then
 marks node_modules/axios dev: true; with IMPORT_CONFIG set, npm ci --omit=dev
 and the Dockerfile's commands both exit 1 at augmentSettings. Register §1b,
-kind (b). Cut 2 already makes this move (d660e272, "axios is a runtime
-dependency, at dev's ^0.34.0"), found there by tools/validate-pruned-
-runtime.js; cut 2 lands after cut 1, so 16.0.0 as cut 1 alone would carry the
-defect. The fix branch is local and not pushed; it conflicts with 806ff2f0 in
-package.json and package-lock.json (git merge-tree), and on cut 1 the same
-move also drops the dev flag from node_modules/axios and node_modules/proxy-
-from-env in the lockfile. Open choice for the maintainer: push this to dev and
-resolve in #8828's next catch-up, or make the move inside #8828 and drop this
-branch. Proved on cut 1 by hand: with the move applied to 806ff2f0, npm ci
---omit=dev plus IMPORT_CONFIG boots and applies the imported settings. PR body
-drafted outside the repository. Related, not filed: lib/utils.js requires
-lodash/escape and lodash is not declared at all; it reaches the production
-tree through node-cache and @parse/node-apn (jsonwebtoken) on both 15.0.9 and
-cut 1, so nothing fails today. Read, not run.
+kind (b). lodash is covered by the same fix: lib/utils.js requires
+lodash/escape and lodash is not declared. It is supplied transitively today by
+node-cache, jsonwebtoken (through @parse/node-apn) and minimed-connect-to-
+nightscout on 15.0.9 and dev, and by node-cache and jsonwebtoken on cut 1
+(read, and verified with npm ls lodash --omit=dev on both installs), so
+nothing fails today. Route (2026-10-22): a PR to dev from bf/axios-runtime-
+dependency, and #8828 takes it in its next catch-up merge of dev. The branch
+conflicts with 806ff2f0 in package.json and package-lock.json (git merge-
+tree); on cut 1 the resolution also drops the dev flag from node_modules/axios
+and node_modules/proxy-from-env in the lockfile. Proved on cut 1 by hand: with
+the axios move applied to 806ff2f0, npm ci --omit=dev plus IMPORT_CONFIG boots
+and applies the imported settings. Not pushed; PR body drafted outside the
+repository. Cut 2 already moves axios (d660e272, "axios is a runtime
+dependency, at dev's ^0.34.0"), found by its tools/validate-pruned-runtime.js.
+The widened gate on d660e272 still reports lodash undeclared and webpack a
+devDependency required inside the development guard of lib/server/app.js
+(:340); both are for cut 2's next catch-up, not for this item.
 
 ---
 

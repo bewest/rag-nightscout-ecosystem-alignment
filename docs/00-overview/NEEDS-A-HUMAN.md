@@ -53,7 +53,7 @@ every item that was `merged-upstream` then is `released`.
 | `ID-SCOPE-DECISION` | `needs-decision` | Decide: is identifier unique per collection, across collections, and per tenant  | &mdash; |
 | `ID-V3-IMMUTABLE-DECISION` | `needs-decision` | Decide: on an identifier match, may date, device or eventType change? | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
-| `BFQ-176` | `ready-to-push` | BF-176 - axios is declared only as a devDependency, so cut 1's production instal | &mdash; |
+| `BFQ-176` | `ready-to-push` | BF-176 - axios is only a devDependency and lodash is undeclared, so cut 1's prod | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |

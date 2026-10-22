@@ -2365,19 +2365,22 @@ controls:
       ahead of the branch.
 
   - gate: |-
-      BOOT_DEPS_REF=bf/axios-runtime-dependency node tools/queue/gates/boot-requires-runtime-deps.js
+      RUNTIME_REQUIRES_REF=bf/axios-runtime-dependency node tools/queue/gates/runtime-requires-declared.js
     cwd: .
     control: |-
-      BOOT_DEPS_REF=v15.0.9 node tools/queue/gates/boot-requires-runtime-deps.js
-    positive-control: |-
-      BOOT_DEPS_REF=d660e272 node tools/queue/gates/boot-requires-runtime-deps.js
+      tools/queue/gates/runtime-requires-declared-control.sh
     control-kind: static
     proves: >
-      the identical assertions against the released tag v15.0.9 (immutable,
-      so the control cannot go stale when the fix merges), where axios is
-      declared only under devDependencies: the gate reports axios BAD and
-      exits 1 (measured 2026-10-22; 5 checked, 1 failing; official/dev
-      04d435eb and cut 1 806ff2f0 give the same). The positive control is
-      cut 2's d660e272, which made the same move independently: 3 checked,
-      0 failing, exit 0. The strong form: same instrument, real trees on
-      both sides.
+      two known negatives, and the control exits non-zero only when the gate
+      refuses both. (1) The released tag v15.0.9 (immutable, so it cannot go
+      stale when the fix merges): axios BAD (devDependencies only, required
+      at bin/testdatarunner.js:4 and lib/server/bootevent.js:140) and lodash
+      BAD (undeclared, lib/utils.js:92); 45 checked, 2 failing, exit 1
+      (measured 2026-10-22; official/dev 04d435eb and cut 1 806ff2f0 give the
+      same two). (2) A git-archive copy of the fix branch with one
+      require('webpack-hot-middleware') appended after the end of
+      lib/server/app.js, outside the NODE_ENV === 'development' block: the
+      allowlisted package is reported BAD at lib/server/app.js:395; 45
+      checked, 1 failing, exit 1. The unmutated copy passes in the same tree
+      mode (45 checked, 0 failing), so (2) is red for the mutation and not
+      for the mode. The strong form: the same instrument on real trees.

@@ -32,7 +32,7 @@ repository.
 | [`BFQ-152`](bfq-152.md) | &mdash; | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission |
 | [`BFQ-161`](bfq-161-bf-entries-pattern-limit.md) | &mdash; | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes |
 | [`BFQ-164`](bfq-164.md) | &mdash; | `needs-decision` | BF-164 - writes outside API v3 never reach the v3 storage socket |
-| [`BFQ-176`](bfq-176-bf-axios-runtime-dependency.md) | &mdash; | `ready-to-push` | BF-176 - axios is declared only as a devDependency, so cut 1's production install stops at boot when IMPORT_CONFIG is set |
+| [`BFQ-176`](bfq-176-bf-axios-runtime-dependency.md) | &mdash; | `ready-to-push` | BF-176 - axios is only a devDependency and lodash is undeclared, so cut 1's production install stops at boot when IMPORT_CONFIG is set |
 | [`BFQ-72`](bfq-72-bf-regex-limits.md) | &mdash; | `in-flight-upstream` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | [`BFQ-95`](bfq-95.md) | &mdash; | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
 | [`DEPENDABOT-CONFIG`](dependabot-config.md) | &mdash; | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev |
