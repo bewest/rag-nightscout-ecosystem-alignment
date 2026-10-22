@@ -20,7 +20,7 @@
 | repository | `cgm-remote-monitor` |
 | branch | `bf/regex-limits` |
 | base | `official/dev@04d435eb` |
-| claimed state | `needs-decision` — a claim; `make queue-status ID=BFQ-72` is the measurement |
+| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-72` is the measurement |
 | semver | `minor` |
 | register entries | `BF-72` |
 | operator exposure | **reaches an operator on today's release** |
@@ -116,58 +116,71 @@ same ablation.
 
 ## Notes carried on the item
 
-2026-10-21: bf/regex-limits 9cbf6615 = merge of dev 04d435eb into d359f00b;
-full suite 3599/0/4; not pushed; semver minor. 15.0.9 is released and RT-0 is
-removed from blocks_on; what it waits on now is two maintainer decisions, not
-an item. (1) The fix shape: keep the pattern-refusal heuristic, or a length
-cap plus the time limit only, or the heuristic behind a flag; the 503 status
-at the time limit; the 5 s / 30 s defaults. (2) Disclosure: the branch's
-tracked tests contain literal costly inputs, so it cannot go to a public PR as
-it stands; the private advisory-fork route is recommended, and the choice is
-the maintainer's. 2026-10-02 (maintainer): DEFERRED until after 15.0.9; not in
-RT-0's blocks_on. Branch bf/regex-limits d359f00b (on dev 25fc41d9, not
-pushed): Ruben Sutton's 5f71598b and 4cfe9132 with his authorship, then ours
-49a48506 (/times and /slice), 3910948b (400 for a refused pattern, 503 at the
-time limit, v1 and v3, no driver text) and d359f00b (/count). Full suite
-3562/0/4 against dev 3532/0/4; the new tests fail on dev's files and on his
-commits alone. No known client sends $regex or v3 re; the patterns
-Nightscout's Reports page and oref0 send pass the check. Adds safe-regex 2.1.1
-(MIT). Time limit checked on MongoDB 4.4.24 and 7.0.43. Not covered: deletes
-with a regex filter. PR body draft in the session scratchpad. 2026-10-02
-(maintainer): start the adoption branch for after 15.0.9. bf/regex-limits off
-dev 25fc41d9 in externals/work/crm-bf72, being built by a background agent:
-Ruben Sutton's bddbdfe7 and 0182bb07 picked with his authorship, then our
-adjustments as separate commits (time-limit errors answered without driver
-text; server-built regexes not refused), after a check of which clients send
-regex filters. Not pushed. Covers GHSA-47gq (API v3 re) as well. 2026-10-02: a
-candidate fix exists in the private fork of GHSA-r3gv (branch advisory-fix-1,
-by Ruben Sutton, code2344: bddbdfe7 2026-09-23 and 0182bb07 2026-10-02, on
-v15.0.8 92d08342, not on dev): a pattern check through the safe-regex package
-(length 512, two nested-quantifier heuristics) on v1 $regex, v1 regex
-shorthand and v3 re, answered 400, plus maxTimeMS on cursors whose query has a
-regex (5 s for caller filters, 30 s for server ones; settable by environment).
-It needs a rebase onto dev (query.js changed under it: operator allowlist,
-BF-108) and a check of which clients send regex filters, since the heuristic
-refuses patterns rather than bounding them. Adopting his commits keeps his
-authorship in the history. 2026-10-01: API v3's re filter operator is the same
-class (reported privately 2026-09-28); measured directly on mongod 7.0.43, one
-count over 20 000 documents of backtracking-prone text took 49.6 s, 9 ms on
-short text. Any fix here (for example a server-side time limit on find
-queries) should cover both APIs. After 15.0.9. Open on 15.0.8 and on dev
-(bf72-regex-operand-bounded.js fails on origin/dev 153e5658, 2026-09-24); no
-fix branch. The disclosure disposition was decided by the maintainer on
-2026-09-23 and its details are held outside version control. What remains open
-is the fix shape: which bound on the $regex operand (see the no-gates), a
-decision about the search affordance's contract. Found 2026-09-21 while re-
-measuring the security advisory's third proof of concept, which the advisory
-frames as $regex data extraction. On the shipped `readable` default that is
-close to vacuous - entries, treatments and devicestatus are the three
-collections prep_storage admits, all three are already readable, and the API
-returns whole documents, so a regex oracle reveals nothing a plain read does
-not. What the same operator does do is cost the database, which the advisory
-does not describe. #8743 (P0-K, merged 2026-09-18) did not narrow $regex,
-because the client census found real clients sending it, so this is not a
-regression from that branch and is not fixed by it.
+2026-10-21, later (maintainer): both decisions made. Fix shape (c), chosen by
+the rule that every intended use must keep working (the uses in the
+maintainer's public gist dbe590ab "Get one day data out of Nightscout": /times
+and /slice brace globs, created_at bounds, /echo/): a 512-character length cap
+on every pattern and a 5 s time limit on every query whose filter holds a
+regex, generated ones included; the refusal heuristic only for caller-written
+$regex, /x/ and v3 re, and only with QUERY_REGEX_REFUSE_UNSAFE=true (default
+off; the name may be revisited as the release candidate matures). Shape (a)
+was ruled out: it refuses patterns the /times and /slice generator builds.
+Head 1833ab00 (9cbf6615 plus the shape commit), full suite 3646/0/4 against
+dev 3569/0/4, semver minor. Route: the private fork of the advisory this item
+answers (GHSA-r3gv), pushed now; the original author of the regex-limit
+commits is asked to rebuild the tests' hostile inputs in code before anything
+is published. 2026-10-21: bf/regex-limits 9cbf6615 = merge of dev 04d435eb
+into d359f00b; full suite 3599/0/4; not pushed; semver minor. 15.0.9 is
+released and RT-0 is removed from blocks_on; what it waits on now is two
+maintainer decisions, not an item. (1) The fix shape: keep the pattern-refusal
+heuristic, or a length cap plus the time limit only, or the heuristic behind a
+flag; the 503 status at the time limit; the 5 s / 30 s defaults. (2)
+Disclosure: the branch's tracked tests contain literal costly inputs, so it
+cannot go to a public PR as it stands; the private advisory-fork route is
+recommended, and the choice is the maintainer's. 2026-10-02 (maintainer):
+DEFERRED until after 15.0.9; not in RT-0's blocks_on. Branch bf/regex-limits
+d359f00b (on dev 25fc41d9, not pushed): Ruben Sutton's 5f71598b and 4cfe9132
+with his authorship, then ours 49a48506 (/times and /slice), 3910948b (400 for
+a refused pattern, 503 at the time limit, v1 and v3, no driver text) and
+d359f00b (/count). Full suite 3562/0/4 against dev 3532/0/4; the new tests
+fail on dev's files and on his commits alone. No known client sends $regex or
+v3 re; the patterns Nightscout's Reports page and oref0 send pass the check.
+Adds safe-regex 2.1.1 (MIT). Time limit checked on MongoDB 4.4.24 and 7.0.43.
+Not covered: deletes with a regex filter. PR body draft in the session
+scratchpad. 2026-10-02 (maintainer): start the adoption branch for after
+15.0.9. bf/regex-limits off dev 25fc41d9 in externals/work/crm-bf72, being
+built by a background agent: Ruben Sutton's bddbdfe7 and 0182bb07 picked with
+his authorship, then our adjustments as separate commits (time-limit errors
+answered without driver text; server-built regexes not refused), after a check
+of which clients send regex filters. Not pushed. Covers GHSA-47gq (API v3 re)
+as well. 2026-10-02: a candidate fix exists in the private fork of GHSA-r3gv
+(branch advisory-fix-1, by Ruben Sutton, code2344: bddbdfe7 2026-09-23 and
+0182bb07 2026-10-02, on v15.0.8 92d08342, not on dev): a pattern check through
+the safe-regex package (length 512, two nested-quantifier heuristics) on v1
+$regex, v1 regex shorthand and v3 re, answered 400, plus maxTimeMS on cursors
+whose query has a regex (5 s for caller filters, 30 s for server ones;
+settable by environment). It needs a rebase onto dev (query.js changed under
+it: operator allowlist, BF-108) and a check of which clients send regex
+filters, since the heuristic refuses patterns rather than bounding them.
+Adopting his commits keeps his authorship in the history. 2026-10-01: API v3's
+re filter operator is the same class (reported privately 2026-09-28); measured
+directly on mongod 7.0.43, one count over 20 000 documents of backtracking-
+prone text took 49.6 s, 9 ms on short text. Any fix here (for example a
+server-side time limit on find queries) should cover both APIs. After 15.0.9.
+Open on 15.0.8 and on dev (bf72-regex-operand-bounded.js fails on origin/dev
+153e5658, 2026-09-24); no fix branch. The disclosure disposition was decided
+by the maintainer on 2026-09-23 and its details are held outside version
+control. What remains open is the fix shape: which bound on the $regex operand
+(see the no-gates), a decision about the search affordance's contract. Found
+2026-09-21 while re-measuring the security advisory's third proof of concept,
+which the advisory frames as $regex data extraction. On the shipped `readable`
+default that is close to vacuous - entries, treatments and devicestatus are
+the three collections prep_storage admits, all three are already readable, and
+the API returns whole documents, so a regex oracle reveals nothing a plain
+read does not. What the same operator does do is cost the database, which the
+advisory does not describe. #8743 (P0-K, merged 2026-09-18) did not narrow
+$regex, because the client census found real clients sending it, so this is
+not a regression from that branch and is not fixed by it.
 
 ---
 

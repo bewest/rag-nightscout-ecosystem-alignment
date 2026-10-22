@@ -115,11 +115,14 @@ What is left from the release, and the next cycle as it stands on 2026-10-21:
    now has head `542b7e97`, with `dev` merged in (3591/0/4). #8819 (`BFQ-172`) merges cleanly with
    `dev` (3571/0/4); a review note is drafted, not posted. The four dosing changes together
    (`scratch/dosing-1510` `203027c5`: `BFQ-173`, `BFQ-174`, `BFQ-09` and #8819 on `dev`) pass
-   3604/0/4. Ready to push, local: `BFQ-161` (`bf/entries-pattern-limit` `fe1f6220`, 3576/0/4; the
-   depth limit of 10 awaits the maintainer's confirmation). `BFQ-72` (`bf/regex-limits` `9cbf6615`,
-   3599/0/4, minor) waits on two decisions: the fix shape and the disclosure route.
+   3604/0/4. Through private advisory forks, to be published with the release that carries them:
+   `BFQ-161` (`bf/entries-pattern-limit` `d2c4df9f`, 3585/0/4, patch; a depth limit of 10, the
+   deepest intended use nests 1 level) and `BFQ-72` (`bf/regex-limits` `1833ab00`, 3646/0/4, minor;
+   a length cap and a time limit on every regex query, and a refusal check for caller-written
+   patterns behind `QUERY_REGEX_REFUSE_UNSAFE`, default off). Both keep the intended uses in the
+   maintainer's public gist `dbe590ab` working.
 6. The nine items whose only open blocker was `RT-0` are re-stated: `BFQ-173` and `BFQ-174`
-   `in-flight-upstream` (#8825, #8826); `BFQ-72`, `BFQ-95` and `BFQ-152` `needs-decision`; `BFQ-67` and `BFQ-93`
+   `in-flight-upstream` (#8825, #8826); `BFQ-72` `ready-to-push` (private fork); `BFQ-95` and `BFQ-152` `needs-decision`; `BFQ-67` and `BFQ-93`
    `not-started`; `BFQ-156` `in-progress` (its branch owes a merge of `dev`); `SEAM-REFRESH` now
    waits on `RT-REBASE`. `RT-1` and `ID-SIMPLE-MATCH` wait on `RT-REBASE`, which is in progress.
 7. The version class of #8772, #8775 and #8780 stays recorded as open in

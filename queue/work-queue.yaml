@@ -6722,7 +6722,7 @@ items:
     branch: bf/regex-limits
     base: official/dev@04d435eb
     worktree: externals/work/crm-bf72
-    state: needs-decision
+    state: ready-to-push
     ships_to_operators_today: true
     blast_radius: >
       No line is wrong, which is why this is needs-decision and not not-started. $regex and
@@ -6801,6 +6801,22 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21, later (maintainer): both decisions made. Fix shape (c),
+      chosen by the rule that every intended use must keep working (the uses
+      in the maintainer's public gist dbe590ab "Get one day data out of
+      Nightscout": /times and /slice brace globs, created_at bounds, /echo/):
+      a 512-character length cap on every pattern and a 5 s time limit on
+      every query whose filter holds a regex, generated ones included; the
+      refusal heuristic only for caller-written $regex, /x/ and v3 re, and
+      only with QUERY_REGEX_REFUSE_UNSAFE=true (default off; the name may be
+      revisited as the release candidate matures). Shape (a) was ruled out:
+      it refuses patterns the /times and /slice generator builds. Head
+      1833ab00 (9cbf6615 plus the shape commit), full suite 3646/0/4 against
+      dev 3569/0/4, semver minor. Route: the private fork of the advisory
+      this item answers (GHSA-r3gv), pushed now; the original author of the
+      regex-limit commits is asked to rebuild the tests' hostile inputs in
+      code before anything is published.
+
       2026-10-21: bf/regex-limits 9cbf6615 = merge of dev 04d435eb into
       d359f00b; full suite 3599/0/4; not pushed; semver minor. 15.0.9 is
       released and RT-0 is removed from blocks_on; what it waits on now is two
@@ -13154,6 +13170,14 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-21, later: head d2c4df9f adds 9 intended-use tests from the
+      maintainer's public gist dbe590ab (/times echo forms and /times JSON
+      and CSV); the deepest real use nests 1 level, so the limit of 10 keeps
+      a wide margin; full suite 3585/0/4. Route decided by the maintainer: a
+      draft security advisory covers this defect, so the fix goes through
+      that advisory's private fork and is published with the release that
+      carries it, not as a public PR.
+
       2026-10-21: bf/entries-pattern-limit fe1f6220 on dev 04d435eb: a
       nesting-depth limit of 10, answered 400 before braces parses or expands
       the pattern; full suite 3576/0/4; break-it ok; patch; not pushed. The

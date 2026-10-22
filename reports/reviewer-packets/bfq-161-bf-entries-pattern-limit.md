@@ -67,6 +67,12 @@ without a further merge; goes red when dev moves ahead
 
 ## Notes carried on the item
 
+2026-10-21, later: head d2c4df9f adds 9 intended-use tests from the
+maintainer's public gist dbe590ab (/times echo forms and /times JSON and CSV);
+the deepest real use nests 1 level, so the limit of 10 keeps a wide margin;
+full suite 3585/0/4. Route decided by the maintainer: a draft security
+advisory covers this defect, so the fix goes through that advisory's private
+fork and is published with the release that carries it, not as a public PR.
 2026-10-21: bf/entries-pattern-limit fe1f6220 on dev 04d435eb: a nesting-depth
 limit of 10, answered 400 before braces parses or expands the pattern; full
 suite 3576/0/4; break-it ok; patch; not pushed. The limit value 10 awaits the

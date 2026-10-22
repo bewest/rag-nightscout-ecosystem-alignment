@@ -68,7 +68,7 @@ every item that was `merged-upstream` then is `released`.
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
-| `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | &mdash; |
+| `BFQ-72` | `ready-to-push` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | &mdash; |
 
 <!-- END GENERATED: needs-a-human -->
 

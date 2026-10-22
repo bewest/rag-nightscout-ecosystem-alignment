@@ -173,7 +173,7 @@ cover more than one `BF-`:
 | `BFQ-67` | `not-started` | BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work |
 | `BFQ-69` | `released` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing |
 | `BFQ-71` | `closed` | BF-71 - any dateString key drops the default date window, and the window is not a control |
-| `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
+| `BFQ-72` | `ready-to-push` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | `BFQ-87` | `released` | BF-87 - the root qs override holds the connector below its range and pins the server's que |
 | `BFQ-90` | `released` | BF-90 - an alarm at a page with no reading throws in the client |
 | `BFQ-91` | `released` | BF-91 - connector capture mode cannot find trace-axios for two sources |
@@ -202,7 +202,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 6 | 1 | 4 |  | 6 |  | 15 |  | 1 |  |  | 2 | **35** |
-| `register-open` | 35 | 4 | 1 | 2 | 5 | 5 | 55 | 7 |  | 1 | 3 |  | **118** |
+| `register-open` | 35 | 4 | 1 | 3 | 5 | 5 | 55 | 6 |  | 1 | 3 |  | **118** |
 | `tenancy` | 8 | 1 |  | 1 | 13 |  |  | 7 | 3 | 1 |  |  | **34** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 11 |  |  |  | **19** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
