@@ -2723,6 +2723,7 @@ items:
     blocks_on: []
     evidence:
       - docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md
+      - docs/30-design/modernization/jsdom-harness-test-tiers-2026-10-21.md
     notes: >
       2026-10-21 (post-15.0.9 cycle): measured on official/dev 04d435eb
       against official/chore/retire-jsdom bce12ecc: cut 1 is 376 commits
@@ -2839,6 +2840,7 @@ items:
     blocks_on: [RT-1]
     evidence:
       - docs/00-overview/ROADMAP.md
+      - docs/30-design/modernization/jsdom-harness-test-tiers-2026-10-21.md
     notes: >
       Added 2026-10-21 from the maintainer's option C for cut 1 (RT-REBASE,
       RT-1): cut 1 ports only the D3 (BF-103), clock-client and pill-title
