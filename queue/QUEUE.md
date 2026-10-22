@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 264 |
-| runnable gates | 326 |
-| explicit `no-gate:` markers | 286 |
+| items | 265 |
+| runnable gates | 327 |
+| explicit `no-gate:` markers | 287 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 286 of the 612 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 287 of the 614 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -44,7 +44,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `not-started` | 68 | RT-JSDOM-REST, RT-CONNECT-TEARDOWN, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-158, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 7 | RT-REBASE, ID-CONVENTIONS, BFQ-46, BFQ-ENV, BFQ-156, OID-LAB, LOOP-ID-REPLY |
 | `gate-not-met` | 6 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
-| `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
+| `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, BFQ-176, WS-LAB |
 | `blocked` | 23 | RT-D3-SUITE, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, WC-STEP-PATCH, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-154 |
 | `in-flight-upstream` | 8 | RT-1, BFQ-09, BFQ-72, BFQ-157, BFQ-161, BFQ-172, BFQ-173, BFQ-174 |
 | `released` | 89 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
@@ -2251,7 +2251,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 118 items
+`parcel: register-open` &mdash; 119 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2360,6 +2360,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-173` | BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units, a known issue of 15.0.9 | `in-flight-upstream` | `bf/boluscalc-profile-units` | patch | 1 run + 1 no-gate |
 | `BFQ-174` | BF-174 - the bolus calculator's profile picker is ignored; every value comes from the active profile, a known issue of 15.0.9 | `in-flight-upstream` | `bf/profile-spec-honoured` | patch | 1 run + 1 no-gate |
 | `BFQ-175` | BF-175 - temp targets are converted from mmol/L only when units is exactly 'mmol' (candidate) | `unsettled` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-176` | BF-176 - axios is declared only as a devDependency, so cut 1's production install stops at boot when IMPORT_CONFIG is set | `ready-to-push` | `bf/axios-runtime-dependency` | patch | 1 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `released` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -5673,6 +5674,38 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** Filed 2026-10-21 from the BF-157 work, as a candidate. The comparison is exact (units == 'mmol'), so 'mmol/L' does not take that branch; the fallback that follows converts any target below 20 whatever the units say, which covers every ordinary mmol/L target. Whether any record escapes both is not established, so unsettled.
+
+### `BFQ-176` &mdash; BF-176 - axios is declared only as a devDependency, so cut 1's production install stops at boot when IMPORT_CONFIG is set
+
+| | |
+|---|---|
+| state (claimed) | `ready-to-push` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/axios-runtime-dependency` |
+| base | `official/dev@04d435eb` |
+| worktree | `externals/work/crm-axios-fix` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | no (pre-release) |
+| register | `BF-176` |
+
+**Blast radius.** One commit 366c6ea4 on dev 04d435eb: package.json moves axios from devDependencies to dependencies at the same ^0.34.0, package-lock.json moves only the root entries (+1/-1 each), and three tests in tests/dependency- axios.test.js (+34) check that every package lib/server/bootevent.js loads is under dependencies. No runtime code changes. Full suite 3572/4/0 on Node 24.15.0 and MongoDB 7.0.43 (dev baseline 3569/4/0, plus the three tests).
+
+**What an operator sees.** IMPORT_CONFIG is an optional setting that tells Nightscout to load extra settings from a web address when it starts. In the planned 16.0.0 (cut 1, not released), a site that uses IMPORT_CONFIG and is installed the usual production way (the official Docker image, Azure, or any install that leaves out development packages) would stop during startup with the message "Cannot find module 'axios'" and would not come up until IMPORT_CONFIG is removed. Sites without IMPORT_CONFIG are not affected. Nothing changes on 15.0.9 or earlier releases: they start and apply the imported settings normally.
+
+**Why `patch`.** Packaging only: axios moves from devDependencies to dependencies at the same version range; no API, setting or stored-data shape changes. On 15.0.x the production tree already contains axios 0.34.0 through minimed-connect-to- nightscout, so the installed set does not change.
+
+**Gates.**
+
+- `[static]` `BOOT_DEPS_REF=bf/axios-runtime-dependency node tools/queue/gates/boot-requires-runtime-deps.js`
+  - every package lib/server/bootevent.js loads (axios, bootevent, moment-timezone, nightscout-connect, semver) is declared under dependencies on the fix branch; red on v15.0.9, official/dev 04d435eb and cut 1 806ff2f0, where axios is only a devDependency
+- **NO GATE** &mdash; The boot itself is not a queue gate: it needs npm ci --omit=dev, MongoDB and a local config server (minutes). Run by hand 2026-10-22, see the register's BF-176 detail. cut 2's tools/validate-pruned-runtime.js (d660e272's message) boots the pruned tree with IMPORT_CONFIG in cut 2's CI.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-10-22 from a colleague's read of package.json, then reproduced. The read hypothesis was that 15.0.x fails; it does not, because minimed-connect- to-nightscout depends on axios and npm hoists that 0.34.0 copy to node_modules/axios in every production install (npm ls axios --omit=dev). Cut 1 (RT-1, #8828, 806ff2f0) removes the MiniMed bridge, and its lockfile then marks node_modules/axios dev: true; with IMPORT_CONFIG set, npm ci --omit=dev and the Dockerfile's commands both exit 1 at augmentSettings. Register §1b, kind (b). Cut 2 already makes this move (d660e272, "axios is a runtime dependency, at dev's ^0.34.0"), found there by tools/validate-pruned- runtime.js; cut 2 lands after cut 1, so 16.0.0 as cut 1 alone would carry the defect. The fix branch is local and not pushed; it conflicts with 806ff2f0 in package.json and package-lock.json (git merge-tree), and on cut 1 the same move also drops the dev flag from node_modules/axios and node_modules/proxy- from-env in the lockfile. Open choice for the maintainer: push this to dev and resolve in #8828's next catch-up, or make the move inside #8828 and drop this branch. Proved on cut 1 by hand: with the move applied to 806ff2f0, npm ci --omit=dev plus IMPORT_CONFIG boots and applies the imported settings. PR body drafted outside the repository. Related, not filed: lib/utils.js requires lodash/escape and lodash is not declared at all; it reaches the production tree through node-cache and @parse/node-apn (jsonwebtoken) on both 15.0.9 and cut 1, so nothing fails today. Read, not run.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 

@@ -13995,6 +13995,87 @@ items:
       fallback that follows converts any target below 20 whatever the units
       say, which covers every ordinary mmol/L target. Whether any record
       escapes both is not established, so unsettled.
+  - id: BFQ-176
+    title: "BF-176 - axios is declared only as a devDependency, so cut 1's production install stops at boot when IMPORT_CONFIG is set"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/axios-runtime-dependency
+    base: official/dev@04d435eb
+    worktree: externals/work/crm-axios-fix
+    state: ready-to-push
+    pr: []
+    ships_to_operators_today: false
+    blast_radius: >
+      One commit 366c6ea4 on dev 04d435eb: package.json moves axios from
+      devDependencies to dependencies at the same ^0.34.0, package-lock.json
+      moves only the root entries (+1/-1 each), and three tests in
+      tests/dependency-axios.test.js (+34) check that every package
+      lib/server/bootevent.js loads is under dependencies. No runtime code
+      changes. Full suite 3572/4/0 on Node 24.15.0 and MongoDB 7.0.43
+      (dev baseline 3569/4/0, plus the three tests).
+    review: maintainer
+    operator_visible: >
+      IMPORT_CONFIG is an optional setting that tells Nightscout to load extra
+      settings from a web address when it starts. In the planned 16.0.0
+      (cut 1, not released), a site that uses IMPORT_CONFIG and is installed
+      the usual production way (the official Docker image, Azure, or any
+      install that leaves out development packages) would stop during startup
+      with the message "Cannot find module 'axios'" and would not come up
+      until IMPORT_CONFIG is removed. Sites without IMPORT_CONFIG are not
+      affected. Nothing changes on 15.0.9 or earlier releases: they start
+      and apply the imported settings normally.
+    semver: patch
+    semver_reason: >
+      Packaging only: axios moves from devDependencies to dependencies at the
+      same version range; no API, setting or stored-data shape changes. On
+      15.0.x the production tree already contains axios 0.34.0 through
+      minimed-connect-to-nightscout, so the installed set does not change.
+    register: [BF-176]
+    gates:
+      - run: BOOT_DEPS_REF=bf/axios-runtime-dependency node tools/queue/gates/boot-requires-runtime-deps.js
+        kind: static
+        describe: >
+          every package lib/server/bootevent.js loads (axios, bootevent,
+          moment-timezone, nightscout-connect, semver) is declared under
+          dependencies on the fix branch; red on v15.0.9, official/dev
+          04d435eb and cut 1 806ff2f0, where axios is only a devDependency
+      - no-gate: >
+          The boot itself is not a queue gate: it needs npm ci --omit=dev,
+          MongoDB and a local config server (minutes). Run by hand 2026-10-22,
+          see the register's BF-176 detail. cut 2's
+          tools/validate-pruned-runtime.js (d660e272's message) boots the
+          pruned tree with IMPORT_CONFIG in cut 2's CI.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-10-22 from a colleague's read of package.json, then
+      reproduced. The read hypothesis was that 15.0.x fails; it does not,
+      because minimed-connect-to-nightscout depends on axios and npm hoists
+      that 0.34.0 copy to node_modules/axios in every production install
+      (npm ls axios --omit=dev). Cut 1 (RT-1, #8828, 806ff2f0) removes the
+      MiniMed bridge, and its lockfile then marks node_modules/axios dev:
+      true; with IMPORT_CONFIG set, npm ci --omit=dev and the Dockerfile's
+      commands both exit 1 at augmentSettings. Register §1b, kind (b).
+
+      Cut 2 already makes this move (d660e272, "axios is a runtime
+      dependency, at dev's ^0.34.0"), found there by
+      tools/validate-pruned-runtime.js; cut 2 lands after cut 1, so 16.0.0
+      as cut 1 alone would carry the defect. The fix branch is local and not
+      pushed; it conflicts with 806ff2f0 in package.json and
+      package-lock.json (git merge-tree), and on cut 1 the same move also
+      drops the dev flag from node_modules/axios and
+      node_modules/proxy-from-env in the lockfile. Open choice for the
+      maintainer: push this to dev and resolve in #8828's next catch-up, or
+      make the move inside #8828 and drop this branch. Proved on cut 1 by
+      hand: with the move applied to 806ff2f0, npm ci --omit=dev plus
+      IMPORT_CONFIG boots and applies the imported settings. PR body
+      drafted outside the repository.
+
+      Related, not filed: lib/utils.js requires lodash/escape and lodash is
+      not declared at all; it reaches the production tree through
+      node-cache and @parse/node-apn (jsonwebtoken) on both 15.0.9 and cut
+      1, so nothing fails today. Read, not run.
   - id: RT-PR-8815
     title: "#8815 - a bearer token whose subject was deleted is refused instead of stopping the server (awss1i; BF-171, fixes #8225), merged for 15.0.9"
     parcel: release-train
