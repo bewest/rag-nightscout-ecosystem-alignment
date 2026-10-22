@@ -20,15 +20,14 @@ the jsdom harness for the rest of `dev`'s tests, and a later cut retires the har
 ports (`fcd90f26`, `65248bed`, `853b4145`) and still has jsdom `^26.1.0` and every harness
 fixture.
 
-**Open for `RT-JSDOM-REST`:** what "retire the harness" removes. `RT-JSDOM-REST` is written
-as removing the harness and the jsdom devDependency. This note sets out two scopes:
+**Decided for `RT-JSDOM-REST`** (maintainer, 2026-10-21): scope B.
 
 | scope | what `RT-JSDOM-REST` removes | jsdom afterwards |
 |---|---|---|
-| **A. Full removal** (as `RT-JSDOM-REST` is written) | `benv`/`headless` and `secure-jsdom`; every remaining DOM test becomes a browser test or a DOM-free test | removed |
-| **B. Three tiers** (recommended) | `benv`/`headless` only; `secure-jsdom` stays for DOM tests with no layout dependency | kept, upgraded to 29.x |
+| A. Full removal | `benv`/`headless` and `secure-jsdom`; every remaining DOM test becomes a browser test or a DOM-free test | removed |
+| **B. Three tiers** (decided) | `benv`/`headless` only; `secure-jsdom` stays for DOM tests with no layout dependency | kept, upgraded to 29.x |
 
-**Recommendation: B.** Section 4 shows that A and B differ on four test files today, because
+**Why B.** Section 4 shows that A and B differ on four test files today, because
 cut 1, the rehearsals and the cut 1 work branch have ported most of the suite. The
 difference is in what happens next. Between 2026-09-05 and 2026-10-07 `dev` added 11 jsdom
 test files (9 of them on `secure-jsdom`) and changed 4 more and the `d3-chart` fixture
@@ -194,3 +193,26 @@ Each port is checked the way the rehearsal's were: break the fix on the branch, 
 ported test fails, restore. Under B, the T1 candidates named in section 4.1 (the BF-124
 units choice and the four #7377 link-building cases) can move to `lib/client-core/` at any
 time; nothing in `RT-JSDOM-REST` depends on it.
+
+## 6. Run time
+
+Measured 2026-10-21 on `wip/cut1-onto-15.0.10` `8c117dd4` in a scratch worktree (Node
+24.15.0, Chromium 153.0.8010.12, 16 cores, load average below 2), `playwright-core` 1.63.0:
+
+| run | cases | wall time | anchor |
+|---|---|---|---|
+| the four files B keeps on `secure-jsdom` or moves onto it (`boluscalc.quickpick-rebuild`, `client.renderer.tooltip-units`, `clock-token-link`, `report-daytoday-durations`), one mocha process | 36 | 1.93-2.09 s over 3 runs, of which about 1 s is mocha start-up | `npx mocha --exit <files>` |
+| the same four, one file per process | 8 / 14 / 11 / 3 | 0.63 / 0.82 / 1.62 / 0.72 s | as above |
+| the browser suite, Chromium | 444 | 85.4-87.7 s over 3 clean runs | `npm run test:browser` |
+
+In the browser suite, comparable DOM tests (`stored-outputs`, `profile-settings`,
+`pill-tooltips`, `hashauth`) take about 0.2 s per case. At that rate, the 36 cases scope A
+would have moved to the browser add an estimated 7 s per browser run, against about 1 s of
+in-process jsdom time; this is an estimate from per-case averages, not a measured port. CI
+runs the browser suite in 6 cells (Chromium, Firefox and WebKit on Node 22 and 24). The
+largest single cost is `tests/browser/clock-client.test.js`: 17 cases, 31 s, of which the four
+stale-data cases from `48ba1856` take 29 s (three at about 8 s, one at 4 s; each runs 15 to 30
+simulated minutes under `page.clock.runFor`).
+
+One further run, the first of four, reported 408 passing and 6 failing; its failures were not
+captured (dot reporter), and the three runs after it passed all 444.

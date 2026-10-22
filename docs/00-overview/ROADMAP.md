@@ -163,7 +163,8 @@ merge is in progress (`RT-REBASE`): on `dev` `04d435eb`, `chore/retire-jsdom` `b
 commits behind and 99 ahead, with 13 conflicting paths, and 14 `dev` test files (about 109 cases)
 use the jsdom harness cut 1 deletes. The maintainer chose option C that day: cut 1 ports the D3,
 clock-client and pill-title coverage to the real-browser suite and keeps the jsdom harness for the
-rest, which a later cut retires (`RT-JSDOM-REST`); the decided Node floor `^22.12 || >=24` and the
+rest. A later cut retires the whole-bundle part of that harness and keeps the locked-down
+`secure-jsdom` harness as the middle test tier (scope B, decided 2026-10-21; `RT-JSDOM-REST`); the decided Node floor `^22.12 || >=24` and the
 legacy bridge removal come into the cut 1 merge.
 
 <!-- BEGIN GENERATED: road-release-train -->
@@ -183,7 +184,7 @@ legacy bridge removal come into the cut 1 merge.
 | 2 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `RT-REBASE` |
 | 3 | `RT-2` | Cut 2 - chore/build-runtime-separation | `blocked` | `RT-1` |
 | 3 | `RT-D3-SUITE` | The treatment-drag clamps get a regression test in cut 1's real-browser suite | `blocked` | `RT-1` |
-| 3 | `RT-JSDOM-REST` | Retire the jsdom test harness that cut 1 keeps (option C) | `not-started` | `RT-1` |
+| 3 | `RT-JSDOM-REST` | Retire the whole-bundle jsdom harness that cut 1 keeps; secure-jsdom stays as th | `not-started` | `RT-1` |
 | 3 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | `RT-1` |
 | 4 | `RT-3` | Cuts 3+5 combined - dependency release | `blocked` | `RT-2` |
 | 5 | `RT-5` | Cut 4 - chore/mime-exposure-review, the one to slow down on | `blocked` | `RT-3` |

@@ -2812,7 +2812,7 @@ items:
       tip only, because of one commit, 0a4109f6.
 
   - id: RT-JSDOM-REST
-    title: Retire the jsdom test harness that cut 1 keeps (option C)
+    title: Retire the whole-bundle jsdom harness that cut 1 keeps; secure-jsdom stays as the middle test tier (scope B)
     parcel: release-train
     repo: cgm-remote-monitor
     branch: ""
@@ -2826,7 +2826,13 @@ items:
       dom-globals.js and their users) and that cut 1 does not port: of the 14
       files and about 109 cases measured on official/dev 04d435eb
       (2026-10-21), all but the D3, clock-client and pill-title coverage cut 1
-      moves to tests/browser. Then the harness and the jsdom devDependency go.
+      moves to tests/browser. Scope B (decided 2026-10-21): the whole-bundle
+      harness (headless.js, benv-loader.js, benv-shim.js and its fixtures)
+      goes; secure-jsdom.js, dom-globals.js and the jsdom devDependency stay,
+      jsdom moving to ^29.1.1. Per-file disposition: 2 new browser ports
+      (client.alarm-no-reading, food-editor-touch-scroll), clock-token-link
+      moves off benv onto secure-jsdom, 3 files stay on secure-jsdom
+      unchanged, the rest take existing ports.
     review: maintainer
     operator_visible: ""
     semver: n/a
@@ -2834,9 +2840,11 @@ items:
     register: []
     gates:
       - no-gate: >
-          Not started. Gate to write: no tracked test outside tests/browser
-          requires the jsdom harness or jsdom, with dev 04d435eb, where 14 files
-          do, as the red control.
+          Not started. Gate to write: no tracked test requires
+          tests/fixtures/headless.js, benv-loader.js or benv-shim.js or loads
+          the built bundle under jsdom, and no test that requires
+          secure-jsdom.js uses d3-chart.js, with dev 04d435eb as the red
+          control.
     blocks_on: [RT-1]
     evidence:
       - docs/00-overview/ROADMAP.md
@@ -2846,6 +2854,13 @@ items:
       RT-1): cut 1 ports only the D3 (BF-103), clock-client and pill-title
       coverage and keeps the harness for the rest, so retiring the harness
       moves to a later cut. Which cut carries it is not decided.
+      2026-10-21, maintainer: scope B of the jsdom tier note (evidence) -
+      keep secure-jsdom as tier 2 for DOM tests with no layout dependency,
+      retire only the whole-bundle harness. Measured the same day on
+      wip/cut1-onto-15.0.10 8c117dd4 (Node 24.15.0, Chromium 153): the 3
+      files B keeps on secure-jsdom plus clock-token-link (36 cases) run in
+      about 2 s wall in one mocha process; the browser suite (444 cases) in
+      85-88 s per browser, run in CI for 3 browsers x 2 Node versions.
 
   - id: RT-PROPAGATION
     title: "How the release train reaches dev: merge dev into the cuts, or rebase the cuts onto dev"
