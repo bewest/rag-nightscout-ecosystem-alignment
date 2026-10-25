@@ -152,6 +152,7 @@ harness cut 1 keeps is retired later under scope B (`RT-JSDOM-REST`, decided 202
 | 1 | `RT-REBASE` | Catch the cuts up with dev: cut 1 merged (#8828, 2026-10-25); cuts 2-5 are far b | `in-progress` | &mdash; |
 | 2 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then ret | `not-started` | `OID-PREVALENCE` |
 | 2 | `RT-3` | Cuts 3+5 combined - dependency release | `blocked` | `RT-2` |
+| 2 | `RT-TEST-TIERS` | Test tier map, tier check and inner-loop test selection (test:affected, test:smo | `blocked` | `RT-2`, `BFQ-158` |
 | 3 | `RT-5` | Cut 4 - chore/mime-exposure-review, the one to slow down on | `blocked` | `RT-3` |
 
 <!-- END GENERATED: road-release-train -->

@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 266 |
+| items | 267 |
 | runnable gates | 329 |
-| explicit `no-gate:` markers | 288 |
+| explicit `no-gate:` markers | 289 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 288 of the 617 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 289 of the 618 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -45,7 +45,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-progress` | 8 | RT-REBASE, RT-2, ID-CONVENTIONS, BFQ-46, BFQ-ENV, BFQ-156, OID-LAB, LOOP-ID-REPLY |
 | `gate-not-met` | 6 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
-| `blocked` | 20 | RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, WC-STEP-PATCH, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-154 |
+| `blocked` | 21 | RT-TEST-TIERS, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, WC-STEP-PATCH, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-154 |
 | `in-flight-upstream` | 4 | BFQ-72, BFQ-161, BFQ-163, BFQ-176 |
 | `merged-upstream` | 6 | RT-1, BFQ-09, BFQ-157, BFQ-172, BFQ-173, BFQ-174 |
 | `released` | 89 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
@@ -1026,7 +1026,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 ## Modernization release train
 
-`parcel: release-train` &mdash; 36 items
+`parcel: release-train` &mdash; 37 items
 
 The adopted order (maintainer, 2026-09-15): 15.0.9, then cut 1, then cut 2,
 then cuts 3+5 combined, then a deprecation release, then cut 4. The premise of
@@ -1045,6 +1045,7 @@ that costs.
 | `RT-LOOP-REMOTE-ADDRESS` | Loop remote commands carry the proxy's address as their sender label | `released` | `rt/trust-one-source` | patch | 2 run + 2 no-gate |
 | `RT-REBASE` | Catch the cuts up with dev: cut 1 merged (#8828, 2026-10-25); cuts 2-5 are far behind and conflict | `in-progress` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review` | n/a | 6 run + 1 no-gate |
 | `RT-JSDOM-REST` | Retire the whole-bundle jsdom harness that cut 1 keeps; secure-jsdom stays as the middle test tier (scope B) | `not-started` | `-` | n/a | 0 run + 1 no-gate |
+| `RT-TEST-TIERS` | Test tier map, tier check and inner-loop test selection (test:affected, test:smoke) | `blocked` | `test/tier-map-and-selection` | n/a | 0 run + 1 no-gate |
 | `RT-CONNECT-TEARDOWN` | Remove the redundant connector teardown listener in bootevent.js once cut 1 is on dev | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `RT-PROPAGATION` | How the release train reaches dev: merge dev into the cuts, or rebase the cuts onto dev | `answered` | `-` | n/a | 0 run + 1 no-gate |
 | `RT-0` | Release 15.0.9 | `released` | `origin/dev` | minor | 2 run + 2 no-gate |
@@ -1399,6 +1400,36 @@ that costs.
 - `docs/30-design/modernization/jsdom-harness-test-tiers-2026-10-21.md`
 
 **Notes.** 2026-10-25: cut 1 is on dev (RT-1, #8828, eb72a1d3), so this can start on dev. On eb72a1d3 tests/fixtures/headless.js, benv-loader.js, benv-shim.js, secure- jsdom.js and dom-globals.js are all present and package.json has jsdom ^26.1.0 under devDependencies. Three test files load the whole-bundle harness (git grep for headless, benv-loader and benv-shim under tests/): client.alarm-no- reading, clock-token-link, and client.alarm-snooze, which is new, from #8816 (awss1i, merged 2026-10-25 as b1dce5e8), so scope B's per-file table gains one file to port or move. Added 2026-10-21 from the maintainer's option C for cut 1 (RT-REBASE, RT-1): cut 1 ports only the D3 (BF-103), clock-client and pill- title coverage and keeps the harness for the rest, so retiring the harness moves to a later cut. Which cut carries it is not decided. 2026-10-21, maintainer: scope B of the jsdom tier note (evidence) - keep secure-jsdom as tier 2 for DOM tests with no layout dependency, retire only the whole-bundle harness. Measured the same day on wip/cut1-onto-15.0.10 8c117dd4 (Node 24.15.0, Chromium 153): the 3 files B keeps on secure-jsdom plus clock-token- link (36 cases) run in about 2 s wall in one mocha process; the browser suite (444 cases) in 85-88 s per browser, run in CI for 3 browsers x 2 Node versions.
+
+### `RT-TEST-TIERS` &mdash; Test tier map, tier check and inner-loop test selection (test:affected, test:smoke)
+
+| | |
+|---|---|
+| state (claimed) | `blocked` |
+| repo | `cgm-remote-monitor` |
+| branch | `test/tier-map-and-selection` |
+| base | `official/dev@eb72a1d3` |
+| worktree | `externals/work/crm-devloop` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `RT-2`, `BFQ-158` |
+
+**Blast radius.** Tests, test scripts and CI only. Adds tests/tiers.json (every test file in exactly one of 8 tiers: unit, dom, dependency, core, harness, integration, stress, browser), scripts/test-tiers.js (runs a tier; `check` fails on a test file in no tier or two, a stale tier entry, or a test that reaches no source file), and scripts/test-select.js (test:affected, tests within 4 require hops of recent changes; test:smoke, a seeded random sample). Routes test:unit, test:integration, test:stress, test:all, test:core, test:browser and the mocha half of test:dependencies through the map; npm test and test-ci are unchanged. Adds two CI steps (the tier check and the harness tier). Three browser tests gain a `// covers:` line; tests/fixtures/dom-globals.js hides a leftover global window while loading jquery.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** test infrastructure; no product code changes
+
+**Gates.**
+
+- **NO GATE** &mdash; Gate to write at the rebase: on the rebased branch `node scripts/test-tiers.js check` exits 0, with the five planted defects of 2026-10-25 as the red control (a stray test file, a removed covers line, a misspelled covers path, a renamed test, a file in two tiers - each exits 1). Measured on 29ea17b6 over dev eb72a1d3 (Node 24.22.1, MongoDB 7.0.43, TZ=UTC): every tier passes on its own, and the main-suite tiers add up to the full run's 3382 cases plus the 4 tests/fixtures/secure-jsdom.test.js cases no script ran before.
+
+**Evidence.**
+
+- `releases/cgm-remote-monitor-16.0.0/contents.md`
+- `docs/30-design/modernization/jsdom-harness-test-tiers-2026-10-21.md`
+
+**Notes.** 2026-10-25: local commits 29ea17b6 and fe002d42 on test/tier-map-and-selection over dev eb72a1d3, not pushed. Lands on dev after cut 2 (RT-2, wip/cut2-onto- cut1-16.0.0) and the test and CI hygiene PR (chore/16.0.0-test-ci-hygiene, which carries BF-158), as one themed PR - agreed with the session preparing cut 2's catch-up. At the rebase: drop this branch's api.count-parameter change (BF-158 is fixed in the hygiene PR, which is taking this branch's runtime- cache flush: with only the collections cleared, "devicestatus, served from the cache" fails when devicestatus documents exist at boot), move the two CI steps into the hygiene PR's edge-only matrix, and resolve the package.json test:* lines, the only git merge-tree conflict against cut 2. fe002d42 already runs env tiers through cut 2's bin/with-env.js when it exists, since cut 2 removes env-cmd. Tiers were assigned by measurement: unit = passes with no MongoDB reachable (each file run against a closed port); dom = uses secure-jsdom.js and no MongoDB, serial, since these failed in the parallel unit run - this is the middle tier RT-JSDOM-REST scope B keeps. The old test:unit and test:integration lists left 86 of 234 tests/*.test.js files out of test:all and named 4 files that no longer exist; test:integration did not run 00_production-safety first. test:affected's depth 4 (maintainer, 2026-10-25) comes from a 100-mutant sample of lib/ on dev eb72a1d3, run against the main and client-core suites: every caught mutant was caught by a test within 4 require hops (79% at 1, 93% within 2). The first pass was contaminated by BF-158's leftover data; a clean re-run with the test database dropped before each mutant is in progress.
 
 ### `RT-CONNECT-TEARDOWN` &mdash; Remove the redundant connector teardown listener in bootevent.js once cut 1 is on dev
 
