@@ -3092,10 +3092,14 @@ items:
 
       test:affected's depth 4 (maintainer, 2026-10-25) comes from a
       100-mutant sample of lib/ on dev eb72a1d3, run against the main and
-      client-core suites: every caught mutant was caught by a test within 4
-      require hops (79% at 1, 93% within 2). The first pass was contaminated
-      by BF-158's leftover data; a clean re-run with the test database
-      dropped before each mutant is in progress.
+      client-core suites with the test database dropped before each mutant:
+      43 caught, 56 survived, 1 crashed the suite; of the caught, 79% at 1
+      require hop, 93% within 2, 95% within 3 and 100% within 4. The API3
+      SEARCH setup-hook timeout (39 of 100 runs, load; fixed in #8838) is
+      excluded; no lib/api3 mutant's run hit it. A first pass without the
+      database reset gave every mutant the same verdict. 17 of the survivors
+      are in server, storage, data or plugin code, not yet checked for
+      equivalent mutants.
 
   - id: RT-BUNDLE-THEME-SPLIT
     title: "Load the modern theme's client code only when it is chosen (page-bundle budget option B)"
