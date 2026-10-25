@@ -10,7 +10,9 @@
  * dependency of something else, or not at all. On v15.0.9 axios (a
  * devDependency, loaded by lib/server/bootevent.js for IMPORT_CONFIG) and
  * lodash (undeclared, loaded by lib/utils.js) are both supplied that way, and
- * cut 1 (#8828, 806ff2f0) removes the package that supplied axios.
+ * cut 1 (#8828, 806ff2f0) removes the package that supplied axios. Cut 1 is
+ * merged to dev at eb72a1d3 (2026-10-25, 16.0.0), where a production install
+ * with IMPORT_CONFIG set exits at boot with "Cannot find module 'axios'".
  *
  * WHAT COUNTS AS SERVER CODE. The server starts as `node lib/server/server.js`
  * (Procfile, `npm start`, package.json `main`, the Dockerfile's CMD). The rule:
