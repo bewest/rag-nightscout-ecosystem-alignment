@@ -2,9 +2,9 @@
 
 *What this is: a map of the work ahead (contributor-facing). Read after [programme
 status](PROGRAMME-STATUS.md); leads to [work waiting on a person](NEEDS-A-HUMAN.md). Prepared for the
-Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 dated
-2026-10-21 against cgm-remote-monitor `official/master` `c6a0d8ed` (tags `v15.0.9`, `15.0.9`) and
-`official/dev` `04d435eb` (cut 1, #8828, at `official/chore/retire-jsdom` `806ff2f0`); other prose dated 2026-10-08 against `dev` `fade2299` and `master`
+Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 and §2 dated
+2026-10-25 against cgm-remote-monitor `official/master` `c6a0d8ed` (tags `v15.0.9`, `15.0.9`) and
+`official/dev` `eb72a1d3` (16.0.0, cut 1 merged as #8828); other prose dated 2026-10-08 against `dev` `fade2299` and `master`
 `92d08342` (tag `15.0.8`). The two order tables are generated from `queue/work-queue.yaml`, and
 `make views-check` fails when they drift.*
 
@@ -34,34 +34,62 @@ not measurements.
 
 ---
 
-## 1. 15.0.9 is released; the next development cycle
+## 1. 16.0.0: the development cycle after 15.0.9
 
-**15.0.9 was released on 2026-10-21** (queue `RT-0`, state `released`). The maintainer merged
-release PR #8598 at 20:09Z as `master` `c6a0d8ed` (parents `92d08342` = `15.0.8` and `dev`
-`4bca2ac2`; tree `c53c2c7f`, the same as `dev`'s), and published the GitHub release `v15.0.9`,
-"Release 15.0.9 Cinnamon Muffin", at 20:21Z as Latest, from the
-[release notes](../../releases/cgm-remote-monitor-15.0.9/release-notes.md). Both approvals of
-#8598 were the maintainer's, at `e3adc91d`; they were not repeated at `4bca2ac2`. The release
-carries 549 commits and 100 first-parent merges since 15.0.8. Every entry of the
-[backfix register](../30-design/remedial/nightscout-backfix-register.md) that was merged is now
-`released 15.0.9`, and every queue item that was `merged-upstream` is `released`. Operators who
-have not upgraded from 15.0.8 still have all of them.
+<a id="1-1509-is-released-the-next-development-cycle"></a>
 
-The `master` CI run (39667944235) failed on its first attempt in one cell's `npm install`
-(`ECONNRESET`, before any test ran) and cancelled the other cells; the second attempt passed all
-nine test cells (Node 20/22/24 × MongoDB 4.4/5/6), both Docker builds and *Publish to Docker Hub*,
-which published the `15.0.9` and `latest` images (*Validate Docker image* was skipped). The last
-full local run is run 023 on `fade2299` (2026-10-08), 3566/0/4.
+**16.0.0 is the next release** (maintainer, 2026-10-21; `RT-VERSION`), and **cut 1 is on `dev`**:
+AndyLow91 merged #8828 on 2026-10-25 at 16:29:06Z as `dev` `eb72a1d3` (head `12154df9`), after ten other
+PRs the same day. `dev` declares 16.0.0 and `engines.node` `^22.23.4 || ^24.22.1 || >=26.12.1`
+(AndyLow91's `6a146a4c`, "require Node Brotli security patches", which supersedes the decided
+`^22.12 || >=24`). The release record is open:
+**[releases/cgm-remote-monitor-16.0.0](../../releases/cgm-remote-monitor-16.0.0/contents.md)**, with its
+[decisions](../../releases/cgm-remote-monitor-16.0.0/decisions.md), the open items a releaser must settle
+and the suggested order of the next merges, and the
+[16.0.0 integration record](../30-design/remedial/rc-16.0.0-integration-record.md) for the runs.
 
-The release rests on the maintainers' decision of 2026-10-21 that the candidate was ready: many
-days on varied real Nightscout set-ups with no complaints from the testing cohort stood in place of
-the browser hand checks still listed as owed (kept in
-[contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#open-items-a-releaser-must-settle)).
-The `follow-redirects` advisories, BF-172, BF-173 and BF-174 are known issues named in the release
-notes. On `4bca2ac2` `npm audit` reports 26 findings, 11 high, 0 critical
-([triage](../../releases/cgm-remote-monitor-15.0.9/contents.md#the-11-high-findings-on-4bca2ac2)).
+**Priorities for the next cycle** (maintainer, 2026-10-21): (1) modernization, cut 1 first
+(`RT-REBASE`, `RT-1`); (2) backfixes that affect dosing or security; (3) other exposure fixes, only
+where no cut or modernization branch already covers them.
 
-Open blockers of `RT-0`, generated:
+What is left, as it stands on 2026-10-25 (`dev` `eb72a1d3`, `master` `c6a0d8ed`):
+
+1. **Merged to `dev` on 2026-10-25, all by AndyLow91, none released:** #8831 (opt-in `THEME=modern`
+   dashboard), #8825 (`BFQ-173`), #8826 (`BFQ-174`, after #8825 as required), #8827 (`BFQ-157`), #8823
+   (the `BRIDGE_SERVER` mapping, also folded into cut 1; one copy of the code, the test block twice),
+   #8819 (`BFQ-172`, javier-erro), #8797 (`BFQ-09`), #8816, #8812, #8808 and #8828 (`RT-1`, cut 1).
+   183 commits and 12 first-parent commits ahead of `master`. CI on `eb72a1d3` passed in every cell and
+   published the `dev` Docker image (push run 40211895500). The staging PR #8824 (`dev` → `master`) is
+   open at `eb72a1d3`, mergeable, review required.
+2. **Known defects on `dev`**: BF-176, a production install stops at boot when `IMPORT_CONFIG` is set
+   (reproduced on `eb72a1d3`; it reached `dev` because #8828 merged before its fix; in the published
+   `dev` image, in no release); BF-177, a glucose distribution test from #8812 that fails outside UTC
+   (test only).
+3. **In flight.** Open PRs to `dev`, pushed by the maintainer on 2026-10-25: #8834, the BF-176 fix
+   (`bf/axios-runtime-dependency` `f3d73f43`, `BFQ-176`), and #8835, the dependency refresh
+   (`deps/16.0.0-security-refresh` `341b843a`: `compression`, `follow-redirects`, `source-map-js`;
+   `BFQ-163`). Not yet PRs: cut 2's catch-up merge of `dev` on `wip/cut2-onto-cut1-16.0.0` (`RT-2`);
+   `sanitize-html` 2.18 as its own PR (`BFQ-163`); BF-72 and BF-161 in the private forks of their draft advisories, no fork PR
+   opened yet, each owing a merge of `dev` (`BFQ-72`, `BFQ-161`).
+4. **Re-stated now that cut 1 is on `dev`:** `RT-2` is in progress; `ID-SIMPLE-MATCH`, `RT-D3-SUITE`,
+   `RT-JSDOM-REST` and `RT-CONNECT-TEARDOWN` can start on `dev` (`not-started`);
+   `RT-NODE-FLOOR-TESTED` records that on `dev` the Dockerfile pins `node:24.22.1-alpine` and CI tests
+   the exact floors, and its gates still read the cut tips.
+5. **Open decisions** are listed with their owners in
+   [16.0.0 contents](../../releases/cgm-remote-monitor-16.0.0/contents.md#open-items-a-releaser-must-settle):
+   whether cut 2 ships in 16.0.0, `sanitize-html` 2.18's stored-output difference, the scope of BF-161's
+   draft advisory, BF-72's test inputs, BF-95, BF-152, `DEPENDABOT-CONFIG`, and the required MongoDB 4.4
+   check.
+6. The version class of #8772, #8775 and #8780 stays recorded as open in
+   [15.0.9 decisions](../../releases/cgm-remote-monitor-15.0.9/decisions.md).
+
+**15.0.9, for the record.** Released on 2026-10-21 (queue `RT-0`, `released`): #8598 merged as `master`
+`c6a0d8ed` (tree `c53c2c7f`, `dev` `4bca2ac2`'s), GitHub release `v15.0.9` "Release 15.0.9 Cinnamon
+Muffin", tags `v15.0.9` and `15.0.9`, Docker `15.0.9` and `latest` published by `master` CI run
+39667944235 (attempt 2). Its records are in
+[releases/cgm-remote-monitor-15.0.9](../../releases/cgm-remote-monitor-15.0.9/contents.md) and the
+[15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md). Open blockers of
+`RT-0`, generated:
 
 <!-- BEGIN GENERATED: release-waits -->
 
@@ -71,150 +99,60 @@ Open blockers of `RT-0`, generated:
 
 <!-- END GENERATED: release-waits -->
 
-**Priorities for the next cycle** (maintainer, 2026-10-21): (1) modernization, cut 1 first
-(`RT-REBASE`, `RT-1`); (2) backfixes that affect dosing or security; (3) other exposure fixes, only
-where no cut or modernization branch already covers them.
-
-What is left from the release, and the next cycle as it stands on 2026-10-21:
-
-1. Done 2026-10-21: the tag `15.0.9` without the `v`, on `c6a0d8ed`, as `15.0.7` and `15.0.8`
-   have both forms.
-2. Done 2026-10-21: the next development cycle is open. `dev` is the 15.0.10 cycle: the maintainer pushed `04d435eb` ("Start 15.0.10 development cycle") to
-   `dev` at 2026-10-21 20:40:09Z, a fast-forward from `4bca2ac2` over `c6a0d8ed`, so `dev` is one commit
-   ahead of `master`: `package.json` and `package-lock.json` at 15.0.10, and in `CHANGELOG.md` the
-   `[Unreleased]` entries became `[15.0.9] - 2026-10-21`, a new empty `[Unreleased]` opened, and 15.0.8
-   and 15.0.7 got dated headings, which settles the `CHANGELOG.md` question. The push's CI run
-   (39672291233) passed. The staging PR is #8824 ("new dev branch post 15.0.9 release", `dev` →
-   `master`, opened by the maintainer 20:40:54Z at `04d435eb`): mergeable, 28 checks passed and 3
-   skipped, review required.
-   `dev` declares 15.0.10, but the next version is open: the maintainer has said the work decides
-   patch, minor or major, and the version string may change to follow it, so it is driven by the
-   semver class of what lands (each queue item's `semver`). The `dev` baseline, full suite on
-   `04d435eb`: 3569 passing, 0 failing, 4 pending (Node 24.15.0, MongoDB 7.0.43 in a container).
-3. Dependabot is settled apart from the `dev` bumps. On 2026-10-21 no Dependabot PR is open:
-   #8818, #8811, #8805 and #8798 were closed by Dependabot as up to date, and #8822 (`sanitize-html`
-   2.18.1), #8817 (`compression` 1.8.2) and #8814 (`source-map-js` 1.2.2) were closed by AndyLow91.
-   15 open alerts are measured against `master` (15.0.9). The configuration question stays open
-   (`DEPENDABOT-CONFIG`, `needs-decision`). The `dev` bumps for `compression`, `follow-redirects`
-   and `source-map-js` are being prepared on `wip/15.0.10-lockfile-refresh` (peer session, not
-   pushed); it leaves `sanitize-html` out on purpose, because GHSA-x3q4 and GHSA-cv27 need 2.18.0,
-   which needs Node >=22.12.
-4. `npm audit` on `dev` `04d435eb` (2026-10-21 20:49Z, npm 11.12.1, `--package-lock-only`): 27
-   findings, 13 high, 0 critical in the worktree (14 / 9 with `--omit=dev`); the same lockfile
-   audited in a scratch directory gives 28 / 14 (the extra high is `axios-cookiejar-support`, cause
-   not found). None of cuts 1–4 or #8605 fixes `braces`, `node-forge`, `source-map-js`,
-   `follow-redirects` or `compression`, and none fixes the two `sanitize-html` advisories (cut 1
-   `c043fb2d` keeps 2.17.5; cuts 2–4 and #8605 have 2.17.7). GHSA-374f, a new moderate, is
-   untriaged. Figures per cut are in
-   [contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#npm-audit-and-dependabot-triage).
-5. Pushed by the maintainer on 2026-10-21 as PRs to `dev`: #8825 (`BFQ-173`,
-   `bf/boluscalc-profile-units` `34c73bd7`, 3573/0/4), #8826 (`BFQ-174`, `bf/profile-spec-honoured`
-   `827df15e`, 3576/0/4), which must land with or after #8825, never alone: on its own, an mmol/L
-   profile chosen on an mg/dl display gives 81 U where `dev` gives 2.3 U; and #8827 (`BFQ-157`,
-   `bf/treatment-bubble-units` `a9c6b3d1`, 3577/0/4, not measured in a browser). #8797 (`BFQ-09`)
-   now has head `542b7e97`, with `dev` merged in (3591/0/4). #8819 (`BFQ-172`) merges cleanly with
-   `dev` (3571/0/4); a review note is drafted, not posted. The four dosing changes together
-   (`scratch/dosing-1510` `203027c5`: `BFQ-173`, `BFQ-174`, `BFQ-09` and #8819 on `dev`) pass
-   3604/0/4. Pushed by the maintainer on 2026-10-21 to private advisory forks, to be published with
-   the release that carries them; no pull request is open inside either fork yet:
-   `BFQ-161` (`bf/entries-pattern-limit` `d2c4df9f`, 3585/0/4, patch; a depth limit of 10, the
-   deepest intended use nests 1 level) and `BFQ-72` (`bf/regex-limits` `1833ab00`, 3646/0/4, minor;
-   a length cap and a time limit on every regex query, and a refusal check for caller-written
-   patterns behind `QUERY_REGEX_REFUSE_UNSAFE`, default off). Both keep the intended uses in the
-   maintainer's public gist `dbe590ab` working. Open for `BFQ-161`, the maintainer's call: publish
-   its draft advisory now for BF-151 (released in 15.0.9) with BF-161 as a follow-up, or extend the
-   advisory to include BF-161.
-6. The nine items whose only open blocker was `RT-0` are re-stated: `BFQ-173` and `BFQ-174`
-   `in-flight-upstream` (#8825, #8826); `BFQ-72` and `BFQ-161` `in-flight-upstream` (private
-   advisory forks, no PR yet); `BFQ-95` and `BFQ-152` `needs-decision`; `BFQ-67` and `BFQ-93`
-   `not-started`; `BFQ-156` `in-progress` (its branch owes a merge of `dev`). `RT-1` is
-   `in-flight-upstream` as #8828 (below); `ID-SIMPLE-MATCH` now waits on `RT-1` (it lands on `dev`
-   after #8828), and `SEAM-REFRESH` still waits on `RT-REBASE`, for the catch-up of cut 5, the
-   seam's base.
-7. **Cut 1 is PR #8828, and the next release is 16.0.0** (maintainer, 2026-10-21: cut 1 lands on
-   `dev` now; `RT-VERSION` `answered`). Cut 1 is semver major: the enforced Node floor
-   `^22.12 || >=24` stops the server at boot on Node 20, 21, 23 and 22.0–22.11; the legacy Dexcom
-   Share and MiniMed CareLink bridges are removed; MongoDB 4.4 is no longer tested. The maintainer
-   pushed `chore/retire-jsdom` as a fast-forward `bce12ecc` → `806ff2f0` and opened #8828
-   (`chore/retire-jsdom` → `dev`). `dev` `04d435eb` is merged in as `4b617f78` (0 behind, 120 ahead);
-   on top are the floor commit, the nine bridge-retirement commits, the option C browser ports,
-   #8823 folded in as `42a2729e` (authorship kept; #8823 is closed in favour of #8828), and the
-   16.0.0 version bump `806ff2f0`. On `806ff2f0`: `npm test` 3224 passing / 3 pending / 0 failing
-   (Node 24.20.0, MongoDB 7.0.43), browser suite 444/0 on Chromium 153; #8828's CI run 39704672667
-   reports every test cell passing, WebKit included (WebKit did not launch on the local host). Gates:
-   `node-floor-consistency` 9/9 ok (red on `bce12ecc`), connector pin at 0.1.0 (`bce12ecc` pinned
-   the 0.0.13 tag). Follow-ups: `RT-CONNECT-TEARDOWN` (the redundant connector teardown listener),
-   `BFQ-158` (the count=0 tests on a reused database, on `dev` too), `RT-JSDOM-REST`.
-8. Next step, not started: open `releases/cgm-remote-monitor-16.0.0/` from `releases/_template/`
-   when the maintainer starts the 16.0.0 release record.
-9. The version class of #8772, #8775 and #8780 stays recorded as open in
-   [decisions](../../releases/cgm-remote-monitor-15.0.9/decisions.md).
-
-The full `npm audit` triage, which findings reach a running site and what is done about each, is in
-[contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#npm-audit-and-dependabot-triage).
-
 | for | read |
 |---|---|
-| what 15.0.9 contains, what it leaves broken, and what a releaser must settle | [contents.md](../../releases/cgm-remote-monitor-15.0.9/contents.md) |
-| the decisions that shape it | [decisions.md](../../releases/cgm-remote-monitor-15.0.9/decisions.md) |
-| how the candidate was tested | [15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md) |
-| the user-facing draft | [release-notes.md](../../releases/cgm-remote-monitor-15.0.9/release-notes.md) |
+| what 16.0.0 contains so far, what is in flight and what a releaser must settle | [16.0.0 contents.md](../../releases/cgm-remote-monitor-16.0.0/contents.md) |
+| the decisions that shape 16.0.0 | [16.0.0 decisions.md](../../releases/cgm-remote-monitor-16.0.0/decisions.md) |
+| how 16.0.0 is being tested | [16.0.0 integration record](../30-design/remedial/rc-16.0.0-integration-record.md) |
+| what 15.0.9 contains and leaves broken | [15.0.9 contents.md](../../releases/cgm-remote-monitor-15.0.9/contents.md) |
 
 ## 2. Modernization: the release train
 
-The adopted order ([§8.3](../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md#83-the-release-train)):
+The adopted order ([§8.3](../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md#83-the-release-train)),
+as it stands on 2026-10-25:
 
-| step | release | contents |
-|---|---|---|
-| 1 | 15.0.9 | `dev` as it stood at `4bca2ac2`; released 2026-10-21 |
-| 2 | 16.0.0: cut 1, `chore/retire-jsdom`, PR #8828 | the real-browser test suite, the Node floor `^22.12 \|\| >=24`, and removal of the legacy Dexcom and MiniMed bridges |
-| 3 | cut 2, `chore/build-runtime-separation` | page bundles and the build/runtime split |
-| 4 | cuts 3 + 5 | dependency majors, including the MongoDB driver and Express 5 |
-| 5 | cut 4, `chore/mime-exposure-review` | the remainder: trusted proxies, DOMPurify, Moment, MIME, webpack, ESLint |
-
-Step 2 is PR #8828 to `dev`, and the next release is 16.0.0 (maintainer, 2026-10-21: cut 1 now).
-`dev` declares 15.0.10, but 15.0.10 will not be released as a separate patch if cut 1 merges first:
-the next release from `dev` is then 16.0.0.
+| step | release | contents | state |
+|---|---|---|---|
+| 1 | 15.0.9 | `dev` as it stood at `4bca2ac2` | released 2026-10-21 |
+| 2 | 16.0.0: cut 1, `chore/retire-jsdom`, PR #8828 | the real-browser test suite (option C), the Node floor `^22.23.4 \|\| ^24.22.1 \|\| >=26.12.1`, removal of the legacy Dexcom and MiniMed bridges | merged to `dev` 2026-10-25 (`eb72a1d3`); not released |
+| 3 | cut 2, `chore/build-runtime-separation` | page bundles and the build/runtime split | next: catch-up merge of `dev` `eb72a1d3` in progress; in 16.0.0 or its own release is open |
+| 4 | cuts 3 + 5 | dependency majors, including the MongoDB driver and Express 5 | blocked on cut 2 |
+| 5 | cut 4, `chore/mime-exposure-review` | the remainder: trusted proxies, DOMPurify, Moment, MIME, webpack, ESLint | blocked on cuts 3 + 5 |
 
 Two questions are open in §8.3:
 
-- whether the cuts ship as separate releases or as one combined release;
-- BF-64: cut 4 is an ancestor of cut 5, so steps 4 and 5 cannot be separated as the branches
-  stand.
+- whether the cuts ship as separate releases or as one combined release, which now decides whether
+  cut 2 is in 16.0.0;
+- BF-64: cut 4 is an ancestor of cut 5, so steps 4 and 5 cannot be separated as the branches stand.
 
-**Rebasing costs more with every merge to `dev`.** The cuts conflict with `dev` in files the
-merged remedial PRs touched (queue `RT-REBASE` re-measures the conflicts). The cheapest time to
-rebase cut 1 is right after 15.0.9 is tagged, while `dev` is quiet. Cut 1's catch-up merge was done
-on 2026-10-21 (`4b617f78`, in #8828); cuts 2–5 remain, each 376 commits behind `dev` `04d435eb`
-(cut 5 252) with 20, 23, 37 and 28 conflicting paths. Before that merge, `chore/retire-jsdom` `bce12ecc` was 376
-commits behind and 99 ahead, with 13 conflicting paths, and 14 `dev` test files (about 109 cases)
-use the jsdom harness cut 1 deletes. The maintainer chose option C that day: cut 1 ports the D3,
-clock-client and pill-title coverage to the real-browser suite and keeps the jsdom harness for the
-rest. A later cut retires the whole-bundle part of that harness and keeps the locked-down
-`secure-jsdom` harness as the middle test tier (scope B, decided 2026-10-21; `RT-JSDOM-REST`); the decided Node floor `^22.12 || >=24` and the
-legacy bridge removal come into the cut 1 merge.
+**Rebasing costs more with every merge to `dev`.** Against `dev` `eb72a1d3` (`git rev-list
+--left-right --count` and `git merge-tree --write-tree --name-only --no-messages`): cut 2 `b6e8c7cd` is
+459 behind and 159 ahead with 20 conflicting paths; cut 3 459 / 222, 25; cut 4 459 / 301, 43; cut 5
+`b1bdaca0` (#8605) 335 / 399, 42 (`RT-REBASE`). Cut 2's catch-up is under way, and it keeps cut 2's
+`queryLeaves` walker instead of the `traverse` package when it takes `dev`'s query rules (`948a142e`,
+2026-10-21). Cuts 2–5 still declare the old floors and take `dev`'s at their catch-up merges. The jsdom
+harness cut 1 keeps is retired later under scope B (`RT-JSDOM-REST`, decided 2026-10-21).
 
 <!-- BEGIN GENERATED: road-release-train -->
 
 | wave | id | what | claimed state | waits on |
 |---:|---|---|---|---|
+| 1 | `ID-SIMPLE-MATCH` | API v1 entries and devicestatus match on identifier like treatments (the simple  | `not-started` | &mdash; |
 | 1 | `OID-STORAGE-HELPER` | One storage-level rule for writes by _id instead of six hand-written copies | `not-started` | &mdash; |
 | 1 | `OID-V3-EDIT-MERGE` | API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an  | `not-started` | &mdash; |
 | 1 | `OID-WS-EDIT-MERGE` | Websocket dbUpdate of a record stored twice by _id edits both copies and leaves  | `not-started` | &mdash; |
-| 1 | `RT-1` | Cut 1 - chore/retire-jsdom, PR #8828 to dev (16.0.0) | `in-flight-upstream` | &mdash; |
+| 1 | `RT-2` | Cut 2 - chore/build-runtime-separation | `in-progress` | &mdash; |
 | 1 | `RT-BOOTERROR` | BF-63 - the page that reports a boot error crashes on cut 4's boot errors | `gate-not-met` | &mdash; |
 | 1 | `RT-CONNECT-PIN-CUTS` | BF-65 - cuts 1-3 ship the leaking connector to upgraders first | `gate-not-met` | &mdash; |
+| 1 | `RT-CONNECT-TEARDOWN` | Remove the redundant connector teardown listener in bootevent.js once cut 1 is o | `not-started` | &mdash; |
+| 1 | `RT-D3-SUITE` | The treatment-drag clamps get a regression test in cut 1's real-browser suite | `not-started` | &mdash; |
+| 1 | `RT-JSDOM-REST` | Retire the whole-bundle jsdom harness that cut 1 keeps; secure-jsdom stays as th | `not-started` | &mdash; |
+| 1 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | &mdash; |
 | 1 | `RT-PR-8730` | #8730 - Crowdin translation updates, held out of 15.0.9 (BF-132) | `gate-not-met` | &mdash; |
-| 1 | `RT-REBASE` | Catch the cuts up with dev: cut 1 done (#8828); cuts 2-5 are far behind and conf | `in-progress` | &mdash; |
-| 2 | `ID-SIMPLE-MATCH` | API v1 entries and devicestatus match on identifier like treatments (the simple  | `blocked` | `RT-1` |
+| 1 | `RT-REBASE` | Catch the cuts up with dev: cut 1 merged (#8828, 2026-10-25); cuts 2-5 are far b | `in-progress` | &mdash; |
 | 2 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then ret | `not-started` | `OID-PREVALENCE` |
-| 2 | `RT-2` | Cut 2 - chore/build-runtime-separation | `blocked` | `RT-1` |
-| 2 | `RT-CONNECT-TEARDOWN` | Remove the redundant connector teardown listener in bootevent.js once cut 1 is o | `not-started` | `RT-1` |
-| 2 | `RT-D3-SUITE` | The treatment-drag clamps get a regression test in cut 1's real-browser suite | `blocked` | `RT-1` |
-| 2 | `RT-JSDOM-REST` | Retire the whole-bundle jsdom harness that cut 1 keeps; secure-jsdom stays as th | `not-started` | `RT-1` |
-| 2 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | `RT-1` |
-| 3 | `RT-3` | Cuts 3+5 combined - dependency release | `blocked` | `RT-2` |
-| 4 | `RT-5` | Cut 4 - chore/mime-exposure-review, the one to slow down on | `blocked` | `RT-3` |
+| 2 | `RT-3` | Cuts 3+5 combined - dependency release | `blocked` | `RT-2` |
+| 3 | `RT-5` | Cut 4 - chore/mime-exposure-review, the one to slow down on | `blocked` | `RT-3` |
 
 <!-- END GENERATED: road-release-train -->
 
@@ -261,9 +199,15 @@ Until then, the order below is the order of development, not of release.
 | 3 | `WC-STEP-PATCH` | Release 1 (patch): one write step for every v1, v3 and socket path, today's beha | `blocked` | `SEAM-REFRESH` |
 | 3 | `WRITE-CONTRACT` | One write step behind the storage interface: _id form, srv dates, soft delete, r | `blocked` | `SEAM-REFRESH` |
 | 4 | `BFQ-CAP02` | CAP-02 - no importer, and no Mongo to PostgreSQL loader | `not-started` | `T30-SCHEMA-CONFIG`, `WRITE-CONTRACT` |
+| 4 | `ID-ABSENT-DECISION` | Decide: a write that carries no identifier (and no _id) - keep the time-key fall | `needs-decision` | `LOOP-ID-REPLY` |
 | 4 | `ID-BATCH-RESULTS` | Release 2 (minor): per-item results in v1 batch replies; one bad item no longer  | `blocked` | `WC-STEP-PATCH` |
+| 4 | `ID-CLIENT-OID-DECISION` | Decide: may a client set _id (an ObjectId it creates), and which field wins when | `needs-decision` | `LOOP-ID-REPLY` |
+| 4 | `ID-DELETE-REUSE-DECISION` | Decide: after a delete, what does a re-send of the same identifier (or _id) do - | `needs-decision` | `LOOP-ID-REPLY` |
 | 4 | `ID-FIRST-MATCH` | Release 2 (minor): identifier-first matching for entries, devicestatus and socke | `blocked` | `WC-STEP-PATCH`, `ID-SIMPLE-MATCH` |
+| 4 | `ID-FORMAT-DECISION` | Decide: the client identifier's format (opaque string with limits; UUID not requ | `needs-decision` | `LOOP-ID-REPLY` |
+| 4 | `ID-SCOPE-DECISION` | Decide: is identifier unique per collection, across collections, and per tenant  | `needs-decision` | `LOOP-ID-REPLY` |
 | 4 | `ID-V1-LOOKUP` | Release 2 (minor): v1 GET and DELETE by any identifier, without the default time | `blocked` | `WC-STEP-PATCH` |
+| 4 | `ID-V3-IMMUTABLE-DECISION` | Decide: on an identifier match, may date, device or eventType change? | `needs-decision` | `LOOP-ID-REPLY` |
 | 4 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection; empty and null mean  | `blocked` | `WC-STEP-PATCH` |
 | 4 | `T30-TENANT-ADMIN` | cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside n | `not-started` | `T30-WIRING` |
 | 4 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | `T30-WIRING` |
@@ -272,14 +216,8 @@ Until then, the order below is the order of development, not of release.
 | 5 | `A7A-3` | §7a item 3 - a per-tenant error boundary | `not-started` | `T44` |
 | 5 | `A7A-4` | §7a item 4 - a health signal for a silent per-tenant outage | `not-started` | `T44` |
 | 5 | `BFQ-66` | BF-66 - the deployment's own tokens fail its own tenant check | `blocked` | `T30-WIRING`, `T31-REM`, `SEAM-REFRESH` |
-| 5 | `ID-ABSENT-DECISION` | Decide: a write that carries no identifier (and no _id) - keep the time-key fall | `needs-decision` | `LOOP-ID-REPLY` |
-| 5 | `ID-CLIENT-OID-DECISION` | Decide: may a client set _id (an ObjectId it creates), and which field wins when | `needs-decision` | `LOOP-ID-REPLY` |
-| 5 | `ID-DELETE-REUSE-DECISION` | Decide: after a delete, what does a re-send of the same identifier (or _id) do - | `needs-decision` | `LOOP-ID-REPLY` |
-| 5 | `ID-FORMAT-DECISION` | Decide: the client identifier's format (opaque string with limits; UUID not requ | `needs-decision` | `LOOP-ID-REPLY` |
-| 5 | `ID-SCOPE-DECISION` | Decide: is identifier unique per collection, across collections, and per tenant  | `needs-decision` | `LOOP-ID-REPLY` |
-| 5 | `ID-V3-IMMUTABLE-DECISION` | Decide: on an identifier match, may date, device or eventType change? | `needs-decision` | `LOOP-ID-REPLY` |
+| 5 | `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up s | `blocked` | `ID-FIRST-MATCH`, `ID-BATCH-RESULTS`, `ID-V3-IMMUTABLE-DECISION` |
 | 6 | `A7A-GATE` | The alarms-on gate itself - nothing here may be marked done by inference | `blocked` | `T44`, `A7A-3`, `A7A-4`, `A7A-7` |
-| 6 | `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up s | `blocked` | `ID-FIRST-MATCH`, `ID-BATCH-RESULTS`, `ID-V3-IMMUTABLE-DECISION` |
 
 <!-- END GENERATED: road-tenancy -->
 

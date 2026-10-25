@@ -771,18 +771,26 @@ controls:
       tree.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev official/chore/retire-jsdom
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 12154df9 official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bce12ecc
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 12154df9 official/master
     control-kind: static
     proves: >
-      bce12ecc is cut 1 as published before the catch-up merge (4b617f78,
-      2026-10-21) and does not contain official/dev 04d435eb; the same
-      command exits 1 on it (measured 2026-10-21). The gate replaced a
-      merge-tree trial-merge on origin/* refs when cut 1 took dev by merge;
-      containment is the sharper question once the cut is meant to be 0
-      behind.
+      run 2026-10-25: official/master c6a0d8ed (15.0.9) does not contain
+      #8828's head 12154df9 (cut 1), and the same command reports it not-an-ancestor (exit 1); the
+      gate itself exits 0 against official/dev eb72a1d3.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/retire-jsdom official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/retire-jsdom official/master
+    control-kind: static
+    proves: >
+      run 2026-10-25: official/master c6a0d8ed (15.0.9) does not contain
+      official/chore/retire-jsdom 12154df9 (cut 1), and the same command reports it not-an-ancestor (exit 1); the
+      gate itself exits 0 against official/dev eb72a1d3.
 
   - gate: |-
       git -C externals/cgm-remote-monitor-official show origin/chore/compose-mongodb6:.github/workflows/main.yml | grep -q "'22.23.2'" && git -C externals/cgm-remote-monitor-official show origin/chore/compose-mongodb6:.github/workflows/main.yml | grep -q "'24.20.0'"
@@ -2313,17 +2321,15 @@ controls:
       page exists, fails.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/treatment-bubble-units
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8d2a3b8c official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/treatment-bubble-units
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8d2a3b8c official/master
     control-kind: static
     proves: >
-      run 2026-10-21: official/chore/nightscout-modernization is a base
-      bf/treatment-bubble-units has NOT taken, and the same command reports it
-      not-an-ancestor (exit 1); the gate itself exits 0 with official/dev
-      at 04d435eb. That is the shape this gate goes red in when dev moves
-      ahead of the branch.
+      run 2026-10-25: official/master c6a0d8ed (15.0.9) does not contain
+      #8827's head 8d2a3b8c, and the same command reports it not-an-ancestor (exit 1); the
+      gate itself exits 0 against official/dev eb72a1d3.
 
   - gate: |-
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/entries-pattern-limit
@@ -2339,30 +2345,26 @@ controls:
       ahead of the branch.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/boluscalc-profile-units
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b20a710b official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/boluscalc-profile-units
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b20a710b official/master
     control-kind: static
     proves: >
-      run 2026-10-21: official/chore/nightscout-modernization is a base
-      bf/boluscalc-profile-units has NOT taken, and the same command reports it
-      not-an-ancestor (exit 1); the gate itself exits 0 with official/dev
-      at 04d435eb. That is the shape this gate goes red in when dev moves
-      ahead of the branch.
+      run 2026-10-25: official/master c6a0d8ed (15.0.9) does not contain
+      #8825's head b20a710b, and the same command reports it not-an-ancestor (exit 1); the
+      gate itself exits 0 against official/dev eb72a1d3.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/profile-spec-honoured
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9e3e1cc0 official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/profile-spec-honoured
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9e3e1cc0 official/master
     control-kind: static
     proves: >
-      run 2026-10-21: official/chore/nightscout-modernization is a base
-      bf/profile-spec-honoured has NOT taken, and the same command reports it
-      not-an-ancestor (exit 1); the gate itself exits 0 with official/dev
-      at 04d435eb. That is the shape this gate goes red in when dev moves
-      ahead of the branch.
+      run 2026-10-25: official/master c6a0d8ed (15.0.9) does not contain
+      #8826's head 9e3e1cc0, and the same command reports it not-an-ancestor (exit 1); the
+      gate itself exits 0 against official/dev eb72a1d3.
 
   - gate: |-
       RUNTIME_REQUIRES_REF=bf/axios-runtime-dependency node tools/queue/gates/runtime-requires-declared.js
@@ -2384,3 +2386,25 @@ controls:
       checked, 1 failing, exit 1. The unmutated copy passes in the same tree
       mode (45 checked, 0 failing), so (2) is red for the mutation and not
       for the mode. The strong form: the same instrument on real trees.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bbca2892 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bbca2892 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-25: official/master c6a0d8ed (15.0.9) does not contain
+      #8819's head bbca2892, and the same command reports it not-an-ancestor (exit 1); the
+      gate itself exits 0 against official/dev eb72a1d3.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a4badcc6 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a4badcc6 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-25: official/master c6a0d8ed (15.0.9) does not contain
+      #8797's head a4badcc6, and the same command reports it not-an-ancestor (exit 1); the
+      gate itself exits 0 against official/dev eb72a1d3.

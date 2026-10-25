@@ -521,7 +521,10 @@ size of the branch.* A dead URGENT alarm is a missing alarm, and restoring it is
    `semver.satisfies('26.0.0', '^22.23.2 || ^24.20.0')`. That is a recurring maintenance
    obligation created by the notation, not by any incompatibility. The decided range
    `^22.12 || >=24` (maintainer, 2026-09-21) is open-ended above 24, so it accepts Node 26; it
-   still excludes Node 23, and the cut 1 PR should name the reason.
+   still excludes Node 23, and the cut 1 PR should name the reason. 2026-10-25: `dev` (16.0.0, cut 1
+   merged as #8828) declares `^22.23.4 || ^24.22.1 || >=26.12.1` (AndyLow91's `6a146a4c`, "require Node
+   Brotli security patches"), a patch floor again, open-ended above 26.12.1; it also excludes Node 25 and
+   26.0-26.12.0. The Dockerfile pins `node:24.22.1-alpine` and CI tests the three exact floors.
 2. **The declared floor and the enforced floor must be the same thing.** Today `engines` says
    `>=20.x` and `bootevent.js` enforces `>=16.x`. Cut 1 derives the check from `engines`, which
    is the right design: **`engines.node` is the single source of truth for the runtime floor, and
@@ -1377,8 +1380,10 @@ everything before it ships with it):
 
 - **Cut 1 first and alone.** It is the smallest production change in the stack (21 files,
   +91/−123 at 2026-09-21) and it delivers the real-browser test suite, which makes every later
-  step, and the D3 migration already in 15.0.9, verifiable in a browser. Its Node floor
-  `^22.12 || >=24` is a dependency bound, not an application one: the suite passes on Node 22.12
+  step, and the D3 migration already in 15.0.9, verifiable in a browser. (Merged to `dev` on
+  2026-10-25 as #8828, with the floor raised to `^22.23.4 || ^24.22.1 || >=26.12.1` for the Node
+  Brotli security patches.) Its Node floor as decided,
+  `^22.12 || >=24`, is a dependency bound, not an application one: the suite passes on Node 22.12
   and later and on 20.20, and fails on 18 only with `ERR_REQUIRE_ESM` from `sanitize-html`. Node
   20 is left out of range because it reached end of life on 2026-04-30.
 - **The legacy-bridge removal carries the data-availability risk**, and it now travels on cut 1.

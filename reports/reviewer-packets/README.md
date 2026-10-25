@@ -22,17 +22,12 @@ repository.
 | packet | PR | claimed state | what it is |
 |---|---|---|---|
 | [`ADV-CONFIG`](adv-config.md) | #8746 | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) |
-| [`BFQ-09`](bfq-09-bf-socket-dedup-zero.md) | #8797 | `in-flight-upstream` | BF-09 - socket dedup truthiness skips a falsy value |
-| [`BFQ-172`](bfq-172-javier-erro-8819.md) | #8819 | `in-flight-upstream` | BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819 proposed), a known issue of 15.0.9 |
-| [`BFQ-173`](bfq-173-bf-boluscalc-profile-units.md) | #8825 | `in-flight-upstream` | BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units, a known issue of 15.0.9 |
-| [`BFQ-174`](bfq-174-bf-profile-spec-honoured.md) | #8826 | `in-flight-upstream` | BF-174 - the bolus calculator's profile picker is ignored; every value comes from the active profile, a known issue of 15.0.9 |
-| [`BFQ-157`](bfq-157-bf-treatment-bubble-units.md) | #8827 | `in-flight-upstream` | BF-157 - a treatment's glucose bubble is placed as mg/dL when its units are spelled mmol/L |
-| [`RT-1`](rt-1-chore-retire-jsdom.md) | #8828 | `in-flight-upstream` | Cut 1 - chore/retire-jsdom, PR #8828 to dev (16.0.0) |
+| [`BFQ-176`](bfq-176-bf-axios-runtime-dependency.md) | #8834 | `in-flight-upstream` | BF-176 - axios is only a devDependency and lodash is undeclared, so a production install of dev (16.0.0 line, cut 1 merged) stops at boot when IMPORT_CONFIG is set |
+| [`BFQ-163`](bfq-163-deps-16-0-0-security-refresh.md) | #8835 | `in-flight-upstream` | BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in 1.8.2 |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`BFQ-152`](bfq-152.md) | &mdash; | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission |
 | [`BFQ-161`](bfq-161-bf-entries-pattern-limit.md) | &mdash; | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes |
 | [`BFQ-164`](bfq-164.md) | &mdash; | `needs-decision` | BF-164 - writes outside API v3 never reach the v3 storage socket |
-| [`BFQ-176`](bfq-176-bf-axios-runtime-dependency.md) | &mdash; | `ready-to-push` | BF-176 - axios is only a devDependency and lodash is undeclared, so cut 1's production install stops at boot when IMPORT_CONFIG is set |
 | [`BFQ-72`](bfq-72-bf-regex-limits.md) | &mdash; | `in-flight-upstream` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | [`BFQ-95`](bfq-95.md) | &mdash; | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
 | [`DEPENDABOT-CONFIG`](dependabot-config.md) | &mdash; | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev |

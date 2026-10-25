@@ -2113,13 +2113,62 @@ items:
       what IOB/COB key off. They are the exact lines the D3 6 migration
       rewrote and the least covered lines it touched.
 
+  - id: BFQ-177
+    title: "BF-177 - a glucose distribution report test added by #8812 fails outside UTC (dev eb72a1d3)"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@eb72a1d3
+    worktree: externals/cgm-remote-monitor-official
+    state: not-started
+    pr: []
+    ships_to_operators_today: false
+    blast_radius: >
+      tests/glucosedistribution.test.js:116 on dev eb72a1d3, the case
+      "includes the first selected interval when earlier hours are
+      excluded", added by ba5f7f4b (AndyLow91, "test(reports): cover
+      distribution counts and statistics"), the head commit of #8812
+      (cpruijsen, merged 2026-10-25 as bb56989c, issue 7659). Test code
+      only, unless the failure turns out to be in the report.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: >
+      test only; the report applies the profile's time zone as intended
+      (read-derived)
+    register: [BF-177]
+    gates:
+      - no-gate: >
+          Seen 2026-10-25 by the peer session preparing
+          deps/16.0.0-security-refresh (Node 24.22.1, npm 11.19.1, MongoDB
+          7.0.43): npm test on dev eb72a1d3 is 3378 passing / 3 pending / 1
+          failing, the failure is this case ("expected '213.5' to be
+          '117.5'"), and it passes with TZ=UTC and fails with
+          TZ=America/Los_Angeles. GitHub CI runs in UTC, which is why CI is
+          green. A gate would run this one file under a non-UTC TZ
+          (it needs the checkout's node_modules, so it is not wired here).
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - releases/cgm-remote-monitor-16.0.0/contents.md
+    notes: >
+      Filed 2026-10-25 as BF-177 (register §1b) from the deps refresh's test
+      runs (its branch fails the same case). Read: the test's stub
+      applyTimezone returns moment(value) in the machine's zone, while the
+      readings start at 00:00Z, so the selected hour 1 holds different
+      readings in each zone; the report applies the profile's zone
+      (lib/profilefunctions.js applyTimezone) and is not wrong in a non-UTC
+      zone, read-derived and not run in a browser. The fix is test-only
+      (UNVERIFIED): local-time readings or a fixed-zone stub, and the file
+      run under two TZ values.
+
   - id: RT-D3-SUITE
     title: The treatment-drag clamps get a regression test in cut 1's real-browser suite
     parcel: release-train
     repo: cgm-remote-monitor
-    branch: chore/retire-jsdom
-    base: origin/chore/retire-jsdom
-    state: blocked
+    branch: ""
+    base: official/dev@eb72a1d3
+    state: not-started
     pr: []
     blast_radius: >
       A new test under tests/browser/ on cut 1 (playwright-core 1.63, Chromium,
@@ -2152,6 +2201,10 @@ items:
       - docs/60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
     notes: >
+      2026-10-25: cut 1 is on dev (RT-1, #8828, eb72a1d3), so the port goes
+      to dev as its own PR; not started. The gate stays red by design until
+      the test exists.
+
       Blocked on cut 1 (RT-1). Split out of RT-D3 on 2026-09-24 when
       RT-D3 was answered for 15.0.9 (maintainer, session -6a). Cut 1
       (chore/retire-jsdom) replaces jsdom with a real-browser mocha
@@ -2664,7 +2717,7 @@ items:
       carry the stored-address notice.
 
   - id: RT-REBASE
-    title: "Catch the cuts up with dev: cut 1 done (#8828); cuts 2-5 are far behind and conflict"
+    title: "Catch the cuts up with dev: cut 1 merged (#8828, 2026-10-25); cuts 2-5 are far behind and conflict"
     parcel: release-train
     repo: cgm-remote-monitor
     branch: chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review
@@ -2703,12 +2756,12 @@ items:
     semver_reason: rebase mechanics, not a release
     register: [BF-55, BF-56]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev official/chore/retire-jsdom
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/retire-jsdom official/dev
         kind: static
         describe: >
-          cut 1 contains dev. PASSES since 2026-10-21: official/chore/retire-jsdom
-          806ff2f0 has official/dev 04d435eb merged in (4b617f78), 0 behind and
-          120 ahead. Goes red when dev moves ahead of cut 1 before #8828 merges.
+          cut 1 is in dev: #8828 merged 2026-10-25 as eb72a1d3, and
+          official/chore/retire-jsdom 12154df9 is its head. Red if the branch
+          moves past what dev took, or the merge leaves dev's history.
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/build-runtime-separation >/dev/null
         kind: static
         describe: cut 2 trial-merges into dev cleanly - FAILS as of 2026-09-24 (origin/dev 153e5658)
@@ -2749,6 +2802,17 @@ items:
       - docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md
       - docs/30-design/modernization/jsdom-harness-test-tiers-2026-10-21.md
     notes: >
+      2026-10-25: cut 1 merged into dev (#8828, eb72a1d3, head 12154df9;
+      RT-1). Cuts 2-5 against official/dev eb72a1d3 (git rev-list
+      --left-right --count official/dev...<cut>; git merge-tree --write-tree
+      --name-only --no-messages official/dev <cut>): cut 2
+      build-runtime-separation b6e8c7cd 459 behind / 159 ahead, 20
+      conflicting paths; cut 3 compose-mongodb6 ebb690cf 459 / 222, 25; cut 4
+      mime-exposure-review b80aa147 459 / 301, 43; cut 5
+      nightscout-modernization b1bdaca0 (#8605) 335 / 399, 42. Cut 2's
+      catch-up is in progress in a peer session on the local
+      wip/cut2-onto-cut1-16.0.0 (RT-2).
+
       2026-10-21, later: cut 1's part is done. The maintainer pushed
       chore/retire-jsdom as a fast-forward bce12ecc -> 806ff2f0 and opened
       #8828 to dev (RT-1). dev 04d435eb is merged in as 4b617f78 (a merge,
@@ -2860,7 +2924,7 @@ items:
     parcel: release-train
     repo: cgm-remote-monitor
     branch: ""
-    base: official/dev@04d435eb
+    base: official/dev@eb72a1d3
     worktree: externals/cgm-remote-monitor-official
     state: not-started
     pr: []
@@ -2894,6 +2958,16 @@ items:
       - docs/00-overview/ROADMAP.md
       - docs/30-design/modernization/jsdom-harness-test-tiers-2026-10-21.md
     notes: >
+      2026-10-25: cut 1 is on dev (RT-1, #8828, eb72a1d3), so this can start
+      on dev. On eb72a1d3 tests/fixtures/headless.js, benv-loader.js,
+      benv-shim.js, secure-jsdom.js and dom-globals.js are all present and
+      package.json has jsdom ^26.1.0 under devDependencies. Three test files
+      load the whole-bundle harness (git grep for headless, benv-loader and
+      benv-shim under tests/): client.alarm-no-reading, clock-token-link,
+      and client.alarm-snooze, which is new, from #8816 (awss1i, merged
+      2026-10-25 as b1dce5e8), so scope B's per-file table gains one file
+      to port or move.
+
       Added 2026-10-21 from the maintainer's option C for cut 1 (RT-REBASE,
       RT-1): cut 1 ports only the D3 (BF-103), clock-client and pill-title
       coverage and keeps the harness for the rest, so retiring the harness
@@ -2911,12 +2985,13 @@ items:
     parcel: release-train
     repo: cgm-remote-monitor
     branch: ""
-    base: official/chore/retire-jsdom@806ff2f0
+    base: official/dev@eb72a1d3
     worktree: externals/cgm-remote-monitor-official
     state: not-started
     pr: []
     blast_radius: >
-      lib/server/bootevent.js on 806ff2f0, lines 390-395: the
+      lib/server/bootevent.js on 806ff2f0, lines 390-395 (391-395 on dev
+      eb72a1d3): the
       ctx.bus.once('teardown') listener that calls the connector's stop()
       (from 78141628, kept through the catch-up merge 4b617f78). Its own
       comment says nightscout-connect 0.1.0 also stops on teardown itself.
@@ -2937,6 +3012,11 @@ items:
     evidence:
       - docs/00-overview/ROADMAP.md
     notes: >
+      2026-10-25: cut 1 is on dev (RT-1, eb72a1d3) with the listener at
+      lib/server/bootevent.js:393 (ctx.bus.once('teardown', function
+      stopConnect ...)), so the removal goes to dev as its own PR; not
+      started.
+
       Filed 2026-10-21 as a follow-up from cut 1 (#8828). The maintainer
       decided the same day that the listener stays in the cut 1 merge and
       its removal is a follow-up (RT-REBASE, RT-1). Connector 0.1.0 stops
@@ -3357,13 +3437,13 @@ items:
       dev publishes a Docker Hub image, which is not a release.
 
   - id: RT-1
-    title: "Cut 1 - chore/retire-jsdom, PR #8828 to dev (16.0.0)"
+    title: "Cut 1 - chore/retire-jsdom, PR #8828, merged to dev 2026-10-25 (16.0.0)"
     parcel: release-train
     repo: cgm-remote-monitor
     branch: chore/retire-jsdom
     base: official/dev@04d435eb
     worktree: externals/cgm-remote-monitor-official
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8828]
     blast_radius: >
       At 806ff2f0 (#8828): 120 commits ahead of official/dev 04d435eb, 0
@@ -3377,9 +3457,12 @@ items:
     operator_visible: >
       Planned as release 16.0.0. TWO THINGS TO CHECK BEFORE UPGRADING. First,
       it will refuse to start on older versions of Node (the program
-      Nightscout runs on). You need Node 22.12 or newer within Node 22, or
-      Node 24 or newer. Node 20 no longer works, and neither do Node 21 or 23
-      - the requirement is two ranges, not a single minimum. If Nightscout
+      Nightscout runs on). You need Node 22.23.4 or newer within Node 22,
+      Node 24.22.1 or newer within Node 24, or Node 26.12.1 or newer. Node 20
+      no longer works, and neither do Node 21, 23 or 25, nor the earlier
+      releases of Node 22, 24 and 26 - the requirement is three ranges, not a
+      single minimum. The official Docker image already carries a Node that
+      meets it. If Nightscout
       stops starting after this upgrade, that is why. Second, the older
       built-in Dexcom Share and MiniMed CareLink bridges are removed; CGM
       data from those services comes in through Nightscout Connect instead.
@@ -3398,14 +3481,19 @@ items:
       22.0-22.11, and the check becomes a hard exit. Cut 1 also removes the
       legacy Dexcom Share and MiniMed CareLink bridges and drops MongoDB 4.4
       from CI. Maintainer 2026-10-21: the next release is 16.0.0
-      (RT-VERSION); 806ff2f0 declares it.
+      (RT-VERSION); 806ff2f0 declares it. 2026-10-25: AndyLow91's 6a146a4c
+      ("require Node Brotli security patches", on the cut 1 branch before
+      the merge) raises engines.node to ^22.23.4 || ^24.22.1 || >=26.12.1,
+      a patch floor, superseding ^22.12 || >=24; it also excludes Node 25
+      and 26.0-26.12.0.
     register: [BF-55, BF-58]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev official/chore/retire-jsdom
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 12154df9 official/dev
         kind: static
         describe: >
-          cut 1 contains dev (806ff2f0 contains 04d435eb since 2026-10-21; see
-          RT-REBASE), so #8828 merges without conflict; red when dev moves ahead
+          official/dev contains #8828's head 12154df9 (merged 2026-10-25 as
+          eb72a1d3); red if dev is rewritten or the merge is reverted out of
+          history
       - run: NODE_FLOOR_REF=official/chore/retire-jsdom node tools/queue/gates/node-floor-consistency.js
         kind: static
         describe: >
@@ -3441,6 +3529,39 @@ items:
       - docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
     notes: >
+      2026-10-25: merged. AndyLow91 merged #8828 into dev at 16:29:06Z as
+      eb72a1d3 (head 12154df9; gh pr view 8828). Between 806ff2f0 and the
+      merge, AndyLow91 added to the branch 2c46e35b (runtime-upgrade guide
+      connector version), 6a146a4c (engines.node ^22.23.4 || ^24.22.1 ||
+      >=26.12.1, "require Node Brotli security patches"), d49a81f7 (CI
+      resolves the newest Node patch, check-latest), 32489dc5 (Dockerfile
+      FROM node:24.22.1-alpine for builder and runtime, .nvmrc 24.22.1),
+      the dev catch-up merge 43eb6066 (dev 1cae31e1, after the ten other
+      2026-10-25 merges), 36fa3121 (keeps a Node 22 x MongoDB 4.4 test cell
+      as the existing required check "until branch protection is updated
+      separately"; the matrix is otherwise MongoDB 5.0 and 6.0), 76c73056,
+      13507b38 (CI) and 12154df9 (a bounded Firefox month-report test). Test
+      matrix on eb72a1d3: Node 22.23.4, 22, 24.22.1, 24, 26.12.1 and 26 x
+      MongoDB 5.0 and 6.0, plus 22 x 4.4; browser tests on the same six Node
+      versions x Chromium, Firefox and WebKit. CI on eb72a1d3: the
+      pull_request run 40211897810 and the push run 40211895500 passed every
+      test and browser cell; the push run's Publish to Docker Hub job
+      succeeded, so dev's image is published. Not re-run locally on
+      eb72a1d3. The node-floor-consistency gate below now reads 8/9 on
+      chore/retire-jsdom 12154df9 and official/dev: it parses .nvmrc
+      "24.22.1" as the majors 24, 22 and 1, so its one BAD line is the
+      gate's parser, not a floor disagreement (every other file states 22,
+      24 or 26, and the Dockerfile is pinned to a patch). The gate is left as
+      it is. #8823 also merged on its own the same day (4c1a5f1a, before
+      #8828): on eb72a1d3 lib/server/bridge-connect-compat.js has one
+      bridgeServerToConnect and is byte-identical to 806ff2f0's, and
+      tests/bridge-connect-compat.test.js carries the BRIDGE_SERVER mapping
+      describe block twice (lines 127-182 and 184-239, identical), so those
+      cases run twice; no code is duplicated. Items that waited on this one
+      are re-stated: ID-SIMPLE-MATCH, RT-D3-SUITE and RT-2 leave blocked;
+      RT-JSDOM-REST, RT-CONNECT-TEARDOWN and RT-NODE-FLOOR-TESTED are
+      re-based on dev eb72a1d3. BF-176's boot crash is now on dev (BFQ-176).
+
       2026-10-21, later: pushed and in review. The maintainer pushed
       chore/retire-jsdom as a fast-forward of official/chore/retire-jsdom
       bce12ecc -> 806ff2f0 and opened #8828 (chore/retire-jsdom -> dev,
@@ -3515,9 +3636,9 @@ items:
     parcel: release-train
     repo: cgm-remote-monitor
     branch: chore/build-runtime-separation
-    base: chore/retire-jsdom
+    base: official/dev@eb72a1d3
     worktree: externals/cgm-remote-monitor-official
-    state: blocked
+    state: in-progress
     blast_radius: 159 commits, prod 60 files +923/-465 (GT2 reproduced §5's row
       exactly). Page bundles, narrowed D3, event bus, boot sequence, Babel 8.
     review: maintainer plus a human reviewer
@@ -3544,6 +3665,13 @@ items:
     evidence:
       - docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md
     notes: >
+      2026-10-25: cut 1 merged (RT-1, #8828, dev eb72a1d3), so cut 2 is next
+      on the train. A peer session is merging dev eb72a1d3 into cut 2 on the
+      local branch wip/cut2-onto-cut1-16.0.0 (head pending; not pushed;
+      official/chore/build-runtime-separation is still b6e8c7cd). Its result,
+      conflicts and test counts are that session's to record. Cut 2 at
+      d660e272 already declares axios as a runtime dependency (BFQ-176).
+
       Blocked on cut 1 (RT-1). Third on the adopted train, as a separate
       low-blast-radius release. The published cut 2 is 175 commits
       behind dev 153e5658 and conflicts in fifteen paths (RT-REBASE,
@@ -3811,9 +3939,9 @@ items:
     parcel: release-train
     repo: cgm-remote-monitor
     branch: ""
-    base: official/dev@fade2299
+    base: official/dev@eb72a1d3
     worktree: externals/cgm-remote-monitor-official
-    state: blocked
+    state: not-started
     pr: []
     blast_radius: >
       Small and standalone, one PR to dev with BF-169 (BFQ-169).
@@ -3851,6 +3979,13 @@ items:
       - tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md
       - docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
     notes: >
+      2026-10-25: RT-1 merged (#8828, dev eb72a1d3), so this item is no
+      longer blocked and can go to dev. Neither lib/server/entries.js nor
+      lib/server/devicestatus.js changed between fade2299 and eb72a1d3 (git
+      diff --name-only fade2299 official/dev -- both files prints nothing),
+      so the line numbers above still hold. Cut 2 changes entries.js, so
+      landing before cut 2's catch-up adds to that merge (RT-2).
+
       2026-10-21, later: cut 1's catch-up merge is done (RT-REBASE's cut 1
       part; 806ff2f0 contains dev 04d435eb), so blocks_on moves from
       RT-REBASE to RT-1: this lands on dev after #8828 merges, which is the
@@ -3901,7 +4036,7 @@ items:
     branch: bf/socket-dedup-zero
     base: official/dev@ca6fcfaf
     worktree: externals/work/crm-bf09
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8797]
     ships_to_operators_today: true
     blast_radius: >
@@ -3918,6 +4053,12 @@ items:
     semver_reason: if it is a defect at all, the fix is a bug fix
     register: [BF-09]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a4badcc6 official/dev
+        kind: static
+        describe: >
+          official/dev contains #8797's head a4badcc6 (merged 2026-10-25 as
+          ecf32222); red if dev is rewritten or the merge is reverted out of
+          history
       - run: node tools/queue/gates/bf09-corpus-divergence.js
         kind: static
         describe: >
@@ -3940,6 +4081,11 @@ items:
       - docs/60-research/remedial/gt3-register-truth-2026-09-15.md
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: merged. AndyLow91 merged #8797 into dev at 13:57:31Z as
+      ecf32222 (head a4badcc6, a merge of dev into 542b7e97; gh pr view
+      8797). Not re-run locally on the merged tree. Merged is not released
+      (16.0.0).
+
       2026-10-21 (later): the maintainer pushed bf/socket-dedup-zero; #8797
       now has head 542b7e97, and the update note was posted as a comment on
       the PR.
@@ -8417,6 +8563,21 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: cut 1 merged into dev (RT-1, eb72a1d3) with AndyLow91's
+      6a146a4c, which makes the floor a patch floor again: engines.node is
+      ^22.23.4 || ^24.22.1 || >=26.12.1 ("require Node Brotli security
+      patches"), superseding the decided ^22.12 || >=24. On eb72a1d3 the
+      two findings do not arise: the Dockerfile pins node:24.22.1-alpine
+      for builder and runtime (32489dc5), so no floating tag can resolve
+      below the floor (BF-58), and the test and browser matrices include
+      the exact floors 22.23.4, 24.22.1 and 26.12.1 beside 22, 24 and 26
+      (BF-59). The two gates below still read origin/chore/* refs and are
+      left as they are; they measure the cut tips, and cuts 2-5 take the
+      new floor at their catch-up merges (RT-REBASE, RT-2). The
+      node-floor-consistency gate (RT-1) reads 8/9 on dev: its one BAD
+      line is its own .nvmrc parser reading "24.22.1" as the majors 24, 22
+      and 1.
+
       2026-10-21: cut 1's part is pushed. official/chore/retire-jsdom
       806ff2f0 (#8828) declares ^22.12 || >=24 (dfbb611b, from ed21961f),
       its test and browser matrices are ['22','24'], and the Dockerfile
@@ -13236,7 +13397,7 @@ items:
     branch: bf/treatment-bubble-units
     worktree: externals/work/crm-bf157
     base: official/dev@04d435eb
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8827]
     ships_to_operators_today: true
     blast_radius: >
@@ -13254,11 +13415,12 @@ items:
     semver_reason: a display position
     register: [BF-157]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/treatment-bubble-units
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8d2a3b8c official/dev
         kind: static
         describe: >
-          the branch contains official/dev (04d435eb on 2026-10-21), so it can
-          be pushed without a further merge; goes red when dev moves ahead
+          official/dev contains #8827's head 8d2a3b8c (merged 2026-10-25 as
+          1c70fc8c); red if dev is rewritten or the merge is reverted out of
+          history
       - no-gate: >
           The defect was read, not run, on dev 74942ec6; the fix is covered by
           its 8 unit tests (full suite 3577/0/4 on a9c6b3d1) and was not
@@ -13267,6 +13429,10 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: merged. AndyLow91 merged #8827 into dev at 13:29:41Z as
+      1c70fc8c (head 8d2a3b8c, a merge of dev into a9c6b3d1; gh pr view
+      8827). Still not measured in a browser. Merged is not released.
+
       2026-10-21 (later): pushed by the maintainer and opened as #8827 against
       dev (bf/treatment-bubble-units, head a9c6b3d1; checked with gh).
 
@@ -13466,10 +13632,10 @@ items:
     title: "BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in 1.8.2"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
-    base: official/dev@43289dde
-    state: not-started
-    pr: []
+    branch: deps/16.0.0-security-refresh
+    base: official/dev@eb72a1d3
+    state: in-flight-upstream
+    pr: [8835]
     ships_to_operators_today: true
     blast_radius: >
       package-lock.json only: compression 1.8.1 -> 1.8.2 (package.json's
@@ -13488,6 +13654,45 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25, 17:28Z: the maintainer pushed deps/16.0.0-security-refresh
+      341b843a and opened #8835 ("Update compression, follow-redirects and
+      source-map-js") against dev; open, checked with gh pr view 8835. The
+      follow-redirects and source-map-js updates have no register entry or
+      item of their own and are tracked here.
+
+      2026-10-25, later: deps/16.0.0-security-refresh 341b843a (in
+      externals/work/crm-deps-1600; 0 behind dev eb72a1d3, 3 ahead, merges
+      cleanly): feb3944c compression 1.8.2 (package.json range
+      raised to ^1.8.2), ad458fa0 follow-redirects 1.16.1 (an override pin),
+      341b843a source-map-js 1.2.2; only those three lockfile entries change.
+      Tests (Node 24.22.1, npm 11.19.1, MongoDB 7.0.43): npm test 3378
+      passing / 3 pending / 1 failing on both dev eb72a1d3 and the branch,
+      the one failure the time-zone-dependent glucosedistribution case
+      (RT-TEST-TZ-GLUCOSEDIST); browser suite Chromium 455 passing on both.
+      npm audit, 2026-10-25 17:13Z: dev 23 findings (8 high, 1 critical),
+      the branch 18 (3 high, 1 critical); with --omit=dev 16 -> 11. A
+      reading a minute earlier gave 20 on dev, from the advisory service,
+      not the tree. sanitize-html stays at 2.17.5, pending a maintainer
+      decision: 2.17.6 and later need the htmlparser2 12, domhandler 6,
+      domutils 4, dom-serializer 3 and domelementtype 3 majors, and 1 of 35
+      purifier inputs is stored differently (a malformed textarea sequence is
+      stored as an img element with src x instead of the empty string; the
+      event handler is still stripped). The Node 20 reason for the pin in
+      lib/server/purifier.js:38 is stale under the 16.0.0 floor. The three
+      sanitize-html advisories the 2026-10-21 triage names stay open. All
+      figures are that session's; not re-run here. sanitize-html 2.18 is no longer
+      part of this branch: it goes to dev as its own PR for 16.0.0 from
+      deps/sanitize-html-2.18 (in flight in a peer session; the maintainer
+      asks for it to be integrated as quickly as possible).
+
+      2026-10-25: session -40's wip/15.0.10-lockfile-refresh (dbc4519f,
+      compression, follow-redirects and source-map-js on dev 04d435eb) was
+      never pushed, and is now 182 commits behind dev. A peer session is
+      redoing the refresh on dev eb72a1d3 as deps/16.0.0-security-refresh
+      (local, not pushed), with sanitize-html 2.18.x in scope, which the
+      16.0.0 floor ^22.23.4 || ^24.22.1 || >=26.12.1 permits (2.18.0 needs
+      Node >=22.12; dev locks 2.17.5). Its result is the paragraph above.
+
       2026-10-21: peer session -40 is preparing wip/15.0.10-lockfile-refresh
       (worktree externals/work/crm-1510-deps), a lockfile refresh for
       compression, follow-redirects and source-map-js on the next cycle's dev;
@@ -13794,7 +13999,7 @@ items:
     repo: cgm-remote-monitor
     branch: javier-erro:#8819
     base: official/dev@fade2299
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8819]
     ships_to_operators_today: true
     blast_radius: >
@@ -13811,6 +14016,12 @@ items:
     semver_reason: a wrong displayed value corrected; no API shape changes
     register: [BF-172]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bbca2892 official/dev
+        kind: static
+        describe: >
+          official/dev contains #8819's head bbca2892 (merged 2026-10-25 as
+          f09a9382); red if dev is rewritten or the merge is reverted out of
+          history
       - no-gate: >
           Measured 2026-10-21 in the plugin's unit harness (Node 24.15.0, not
           in a browser): #8819's new test copied onto v15.0.8 92d08342 and dev
@@ -13821,6 +14032,16 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: merged. AndyLow91 merged #8819 into dev at 13:48:08Z as
+      f09a9382 (head bbca2892; gh pr view 8819). Before merging he merged
+      dev into the branch (e04554d7) and added bbca2892 ("resolve profile
+      units at calculation time"): toDisplayUnits reads the profile's units
+      with getUnits(undefined, sbx.time), which answers the review point
+      that getUnits(sbx.time) passed a time where it takes a profile name;
+      boluswizardpreview.test.js gains tests (+57). The review note drafted
+      on 2026-10-21 was not posted. Not re-run locally on the merged tree.
+      Merged is not released (16.0.0).
+
       2026-10-21 (after the release): #8819 (javier-erro, head 18319a9f)
       merges cleanly with dev 04d435eb (scratch 55f7970b, full suite
       3571/0/4). A review note is drafted, not posted: the new test is
@@ -13843,7 +14064,7 @@ items:
     branch: bf/boluscalc-profile-units
     worktree: externals/work/crm-bf173
     base: official/dev@04d435eb
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8825]
     ships_to_operators_today: true
     blast_radius: >
@@ -13862,11 +14083,12 @@ items:
     semver_reason: a wrong suggested value corrected; no API shape changes
     register: [BF-173]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/boluscalc-profile-units
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b20a710b official/dev
         kind: static
         describe: >
-          the branch contains official/dev (04d435eb on 2026-10-21), so it can
-          be pushed without a further merge; goes red when dev moves ahead
+          official/dev contains #8825's head b20a710b (merged 2026-10-25 as
+          dfd659ba); red if dev is rewritten or the merge is reverted out of
+          history
       - no-gate: >
           Reproduced 2026-10-21 in the headless client (each tree's own webpack
           bundle, jsdom, Node 24.15.0, not a browser): an mmol/L profile on an
@@ -13879,6 +14101,16 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/platform/glucose-units-at-the-profile-boundary-2026-10-21.md
     notes: >
+      2026-10-25: merged. AndyLow91 merged #8825 into dev at 13:12:03Z as
+      dfd659ba (head b20a710b; gh pr view 8825). Before merging he merged
+      dev into the branch (f3f4ee83) and added b20a710b ("resolve profile
+      units at calculation time"): getUnits(spec_profile, time) takes the
+      event time, and the calculator reads the profile's units at the
+      record's eventTime, the time its targets and sensitivity are read at;
+      2 more tests in tests/careportal.test.js. Not re-run locally on the
+      merged tree; #8825's CI passed. #8826 merged after it, as required.
+      Merged is not released: no release carries it yet (16.0.0, RT-1).
+
       2026-10-21 (later): pushed by the maintainer and opened as #8825 against
       dev (bf/boluscalc-profile-units, head 34c73bd7; checked with gh). #8826
       (BF-174) must land with or after #8825 (BF-173).
@@ -13906,7 +14138,7 @@ items:
     branch: bf/profile-spec-honoured
     worktree: externals/work/crm-bf174
     base: official/dev@04d435eb
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8826]
     ships_to_operators_today: true
     blast_radius: >
@@ -13925,11 +14157,12 @@ items:
     semver_reason: a documented control that had no effect now works; no API shape changes
     register: [BF-174]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/profile-spec-honoured
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9e3e1cc0 official/dev
         kind: static
         describe: >
-          the branch contains official/dev (04d435eb on 2026-10-21), so it can
-          be pushed without a further merge; goes red when dev moves ahead
+          official/dev contains #8826's head 9e3e1cc0 (merged 2026-10-25 as
+          e2857b89); red if dev is rewritten or the merge is reverted out of
+          history
       - no-gate: >
           Reproduced 2026-10-21 in the headless client: with Default (sens 54)
           and Other (sens 27) in the store and Other chosen, v15.0.8 92d08342
@@ -13940,6 +14173,11 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: merged after #8825, as required. AndyLow91 merged #8826
+      into dev at 13:21:08Z as e2857b89 (head 9e3e1cc0, a merge of dev into
+      the branch; gh pr view 8826). Not re-run locally on the merged tree.
+      Merged is not released: no release carries it yet (16.0.0).
+
       2026-10-21 (later): pushed by the maintainer and opened as #8826 against
       dev (bf/profile-spec-honoured, head 827df15e; checked with gh). #8826
       (BF-174) must land with or after #8825 (BF-173).
@@ -13996,14 +14234,14 @@ items:
       say, which covers every ordinary mmol/L target. Whether any record
       escapes both is not established, so unsettled.
   - id: BFQ-176
-    title: "BF-176 - axios is only a devDependency and lodash is undeclared, so cut 1's production install stops at boot when IMPORT_CONFIG is set"
+    title: "BF-176 - axios is only a devDependency and lodash is undeclared, so a production install of dev (16.0.0 line, cut 1 merged) stops at boot when IMPORT_CONFIG is set"
     parcel: register-open
     repo: cgm-remote-monitor
     branch: bf/axios-runtime-dependency
-    base: official/dev@04d435eb
+    base: official/dev@eb72a1d3
     worktree: externals/work/crm-axios-fix
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8834]
     ships_to_operators_today: false
     blast_radius: >
       One commit 43ed462a on dev 04d435eb, package files and one test file
@@ -14021,7 +14259,8 @@ items:
     operator_visible: >
       IMPORT_CONFIG is an optional setting that tells Nightscout to load extra
       settings from a web address when it starts. In the planned 16.0.0
-      (cut 1, not released), a site that uses IMPORT_CONFIG and is installed
+      (not released; the development branch and its Docker image already
+      have it), a site that uses IMPORT_CONFIG and is installed
       the usual production way (the official Docker image, Azure, or any
       install that leaves out development packages) would stop during startup
       with the message "Cannot find module 'axios'" and would not come up
@@ -14058,6 +14297,40 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25, 17:28Z: the maintainer pushed bf/axios-runtime-dependency
+      f3d73f43 and opened #8834 ("axios and lodash are runtime
+      dependencies (IMPORT_CONFIG boot crash on 16.0.0 dev)") against dev;
+      open, checked with gh pr view 8834.
+
+      2026-10-25, later: measured by the BF-176 session (Node 24.22.1, npm
+      11.19.1, MongoDB 7.0.43). Crash confirmed on dev eb72a1d3: with
+      IMPORT_CONFIG set, the Dockerfile's install commands and npm ci
+      --omit=dev exit 1 with "Cannot find module 'axios'" at
+      bootevent.js:114; unset, both boot; full npm ci with it set boots
+      with the imported settings. bf/axios-runtime-dependency is now
+      f3d73f43 (43ed462a plus a merge of dev eb72a1d3; 0 behind, 2 ahead, 3
+      files; not pushed), where every arm boots with the settings applied.
+      Tests with TZ=UTC: branch 3384/3/0, dev 3379/3/0;
+      tests/dependency-axios.test.js 30 passing, 4 failing with dev's
+      package.json. runtime-requires-declared on dev: 41 checked, 2
+      failing (axios, lodash); on the branch 0 failing. The gate control
+      gains dev eb72a1d3 as a negative (ee7a3cb49, merged into this
+      records branch). The paragraph below said these were pending.
+
+      2026-10-25: the exposure moved from cut 1 only to dev and the 16.0.0
+      line. #8828 (cut 1) merged into dev as eb72a1d3 before this fix went
+      to dev, so dev now carries the condition BF-176 predicted for cut 1:
+      on eb72a1d3 package.json still lists axios ^0.34.0 only under
+      devDependencies and declares no lodash (read with git show
+      official/dev:package.json). No release carries it
+      (ships_to_operators_today stays false; 15.0.9 boots, see below). dev's
+      push CI run 40211895500 published the dev Docker image, so anyone
+      running the dev image with IMPORT_CONFIG set is exposed. A peer
+      session is confirming the boot failure on eb72a1d3 and merging dev
+      into bf/axios-runtime-dependency; its measurements, the new branch
+      head and the PR number are pending and are not recorded here. The
+      state stays ready-to-push as a claim until that session reports.
+
       Filed 2026-10-22 from a colleague's read of package.json, then
       reproduced. The read hypothesis was that 15.0.x fails; it does not,
       because minimed-connect-to-nightscout depends on axios and npm hoists

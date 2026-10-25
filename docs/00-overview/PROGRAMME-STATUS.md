@@ -24,10 +24,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 160 | 45 | 17 |
-| **Modernization** | `release-train` | 36 | 6 | 1 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 161 | 45 | 13 |
+| **Modernization** | `release-train` | 36 | 8 | 0 |
 | **Multitenant** | `tenancy`, `platform` | 67 | 17 | 9 |
-| | **total** | **265** | **68** | **27** |
+| | **total** | **266** | **70** | **22** |
 
 <!-- END GENERATED: horizons -->
 
@@ -116,7 +116,7 @@ cover more than one `BF-`:
 | `ADV-RETRO` | `released` | GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79) |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | `BFQ-04` | `released` | BF-04 - the v1 operator allowlist - superseded by P0-K |
-| `BFQ-09` | `in-flight-upstream` | BF-09 - socket dedup truthiness skips a falsy value |
+| `BFQ-09` | `merged-upstream` | BF-09 - socket dedup truthiness skips a falsy value |
 | `BFQ-10` | `released` | BF-10 - mongod fatal-asserts at Docker's default nofile=1024 |
 | `BFQ-100` | `blocked` | BF-100 - devicestatus, food and activity store a hex _id as a string |
 | `BFQ-101` | `blocked` | BF-101 - API v3 id filters miss records stored with a string _id |
@@ -151,20 +151,20 @@ cover more than one `BF-`:
 | `BFQ-152` | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier |
 | `BFQ-154` | `blocked` | BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed  |
 | `BFQ-156` | `in-progress` | BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the pro |
-| `BFQ-157` | `in-flight-upstream` | BF-157 - a treatment's glucose bubble is placed as mg/dL when its units are spelled mmol/L |
+| `BFQ-157` | `merged-upstream` | BF-157 - a treatment's glucose bubble is placed as mg/dL when its units are spelled mmol/L |
 | `BFQ-159` | `not-started` | BF-159 - the main page sometimes leaves for the Profile Editor while a profile exists, wit |
 | `BFQ-160` | `not-started` | BF-160 - the clock designer's link target is written with curly quotes |
 | `BFQ-161` | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fi |
-| `BFQ-163` | `not-started` | BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in |
+| `BFQ-163` | `in-flight-upstream` | BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in |
 | `BFQ-164` | `needs-decision` | BF-164 - writes outside API v3 never reach the v3 storage socket |
 | `BFQ-165` | `not-started` | BF-165 - a treatment re-send matched by its fallback key is answered without _id |
 | `BFQ-166` | `not-started` | BF-166 - a profile re-sent with its own _id answers 500 |
 | `BFQ-168` | `released` | BF-168 - the context chart's window sometimes cannot be dragged back to now |
 | `BFQ-169` | `not-started` | BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a  |
 | `BFQ-170` | `not-started` | BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent |
-| `BFQ-172` | `in-flight-upstream` | BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819  |
-| `BFQ-173` | `in-flight-upstream` | BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units, a k |
-| `BFQ-174` | `in-flight-upstream` | BF-174 - the bolus calculator's profile picker is ignored; every value comes from the acti |
+| `BFQ-172` | `merged-upstream` | BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819  |
+| `BFQ-173` | `merged-upstream` | BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units, a k |
+| `BFQ-174` | `merged-upstream` | BF-174 - the bolus calculator's profile picker is ignored; every value comes from the acti |
 | `BFQ-175` | `unsettled` | BF-175 - temp targets are converted from mmol/L only when units is exactly 'mmol' (candida |
 | `BFQ-40` | `released` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `in-progress` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
@@ -198,15 +198,15 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 <!-- BEGIN GENERATED: state-matrix -->
 
-| parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `released` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
-| `release-train` | 6 | 1 | 4 |  | 5 | 1 | 15 |  | 1 |  |  | 3 | **36** |
-| `register-open` | 35 | 4 | 1 | 2 | 5 | 7 | 55 | 6 |  | 1 | 3 |  | **119** |
-| `tenancy` | 8 | 1 |  | 1 | 13 |  |  | 7 | 3 | 1 |  |  | **34** |
-| `docs-truth` | 7 |  | 1 |  |  |  |  |  | 11 |  |  |  | **19** |
-| `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
-| `platform` | 9 | 1 |  |  |  |  |  |  | 23 |  |  |  | **33** |
+| parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `released` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `phase0` | 3 |  |  | 1 |  |  |  | 17 |  | 1 |  |  |  | **22** |
+| `release-train` | 8 | 2 | 4 |  | 2 |  | 1 | 15 |  | 1 |  |  | 3 | **36** |
+| `register-open` | 35 | 4 | 1 | 1 | 5 | 4 | 5 | 55 | 6 |  | 1 | 3 |  | **120** |
+| `tenancy` | 8 | 1 |  | 1 | 13 |  |  |  | 7 | 3 | 1 |  |  | **34** |
+| `docs-truth` | 7 |  | 1 |  |  |  |  |  |  | 11 |  |  |  | **19** |
+| `backfix2` |  |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
+| `platform` | 9 | 1 |  |  |  |  |  |  |  | 23 |  |  |  | **33** |
 
 <!-- END GENERATED: state-matrix -->
 
@@ -242,14 +242,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 230 | 87% |
+| Maintainer | 231 | 87% |
 | SECURITY reviewer | 16 | 6% |
 | Maintainer + a second human | 7 | 3% |
 | SAFETY reviewer | 6 | 2% |
 | Whoever edits it next | 3 | 1% |
 | Unassigned | 2 | 1% |
 | Upstream reviewers | 1 | 0% |
-| **total** | **265** | |
+| **total** | **266** | |
 
 <!-- END GENERATED: reviewer-load -->
 
