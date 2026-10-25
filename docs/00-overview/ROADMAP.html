@@ -1121,10 +1121,65 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-1509-is-released-the-next-development-cycle" class="md-nav__link">
+  <a href="#1-1600-the-development-cycle-after-1509" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 15.0.9 is released; the next development cycle
+        1. 16.0.0: the development cycle after 15.0.9
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-modernization-the-release-train" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Modernization: the release train
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-multitenant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Multitenant
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-remedial-fix-what-ships" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Remedial: fix what ships
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-proposals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Proposals
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-what-bounds-all-of-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. What bounds all of it
       
     </span>
   </a>
@@ -1242,6 +1297,8 @@
       
         
           
+        
+      
         
       
         
@@ -2226,10 +2283,65 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-1509-is-released-the-next-development-cycle" class="md-nav__link">
+  <a href="#1-1600-the-development-cycle-after-1509" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 15.0.9 is released; the next development cycle
+        1. 16.0.0: the development cycle after 15.0.9
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-modernization-the-release-train" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Modernization: the release train
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-multitenant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Multitenant
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-remedial-fix-what-ships" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Remedial: fix what ships
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-proposals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Proposals
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-what-bounds-all-of-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. What bounds all of it
       
     </span>
   </a>
@@ -2254,12 +2366,12 @@
 
 
 <h1 id="roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order">Roadmap for cgm-remote-monitor: what comes next, and in what order<a class="headerlink" href="#roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-21 at <code>b50f1c1fa</code>.</em></p>
+<p><em>Living document, last changed 2026-10-25 at <code>dda680fe7</code>.</em></p>
 <p><em>What this is: a map of the work ahead (contributor-facing). Read after <a href="PROGRAMME-STATUS.html">programme
 status</a>; leads to <a href="NEEDS-A-HUMAN.html">work waiting on a person</a>. Prepared for the
-Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 dated
-2026-10-21 against cgm-remote-monitor <code>official/master</code> <code>c6a0d8ed</code> (tags <code>v15.0.9</code>, <code>15.0.9</code>) and
-<code>official/dev</code> <code>04d435eb</code>; other prose dated 2026-10-08 against <code>dev</code> <code>fade2299</code> and <code>master</code>
+Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 and §2 dated
+2026-10-25 against cgm-remote-monitor <code>official/master</code> <code>c6a0d8ed</code> (tags <code>v15.0.9</code>, <code>15.0.9</code>) and
+<code>official/dev</code> <code>eb72a1d3</code> (16.0.0, cut 1 merged as #8828); other prose dated 2026-10-08 against <code>dev</code> <code>fade2299</code> and <code>master</code>
 <code>92d08342</code> (tag <code>15.0.8</code>). The two order tables are generated from <code>queue/work-queue.yaml</code>, and
 <code>make views-check</code> fails when they drift.</em></p>
 <p>This page gives the order of the work ahead. It records no decisions itself. The decisions
@@ -2303,30 +2415,58 @@ than its latest-wave open blocker. Items that are merged, done, closed or answer
 A wave shows dependency, not a date. The states shown are claims about what the gates will say,
 not measurements.</p>
 <hr />
-<h2 id="1-1509-is-released-the-next-development-cycle">1. 15.0.9 is released; the next development cycle<a class="headerlink" href="#1-1509-is-released-the-next-development-cycle" title="Permanent link">&para;</a></h2>
-<p><strong>15.0.9 was released on 2026-10-21</strong> (queue <code>RT-0</code>, state <code>released</code>). The maintainer merged
-release PR #8598 at 20:09Z as <code>master</code> <code>c6a0d8ed</code> (parents <code>92d08342</code> = <code>15.0.8</code> and <code>dev</code>
-<code>4bca2ac2</code>; tree <code>c53c2c7f</code>, the same as <code>dev</code>'s), and published the GitHub release <code>v15.0.9</code>,
-"Release 15.0.9 Cinnamon Muffin", at 20:21Z as Latest, from the
-<a href="../../releases/cgm-remote-monitor-15.0.9/release-notes.html">release notes</a>. Both approvals of</p>
-<h1 id="8598-were-the-maintainers-at-e3adc91d-they-were-not-repeated-at-4bca2ac2-the-release">8598 were the maintainer's, at <code>e3adc91d</code>; they were not repeated at <code>4bca2ac2</code>. The release<a class="headerlink" href="#8598-were-the-maintainers-at-e3adc91d-they-were-not-repeated-at-4bca2ac2-the-release" title="Permanent link">&para;</a></h1>
-<p>carries 549 commits and 100 first-parent merges since 15.0.8. Every entry of the
-<a href="../30-design/remedial/nightscout-backfix-register.html">backfix register</a> that was merged is now
-<code>released 15.0.9</code>, and every queue item that was <code>merged-upstream</code> is <code>released</code>. Operators who
-have not upgraded from 15.0.8 still have all of them.</p>
-<p>The <code>master</code> CI run (39667944235) failed on its first attempt in one cell's <code>npm install</code>
-(<code>ECONNRESET</code>, before any test ran) and cancelled the other cells; the second attempt passed all
-nine test cells (Node 20/22/24 × MongoDB 4.4/5/6), both Docker builds and <em>Publish to Docker Hub</em>,
-which published the <code>15.0.9</code> and <code>latest</code> images (<em>Validate Docker image</em> was skipped). The last
-full local run is run 023 on <code>fade2299</code> (2026-10-08), 3566/0/4.</p>
-<p>The release rests on the maintainers' decision of 2026-10-21 that the candidate was ready: many
-days on varied real Nightscout set-ups with no complaints from the testing cohort stood in place of
-the browser hand checks still listed as owed (kept in
-<a href="../../releases/cgm-remote-monitor-15.0.9/contents.html#open-items-a-releaser-must-settle">contents</a>).
-The <code>follow-redirects</code> advisories, BF-172, BF-173 and BF-174 are known issues named in the release
-notes. On <code>4bca2ac2</code> <code>npm audit</code> reports 26 findings, 11 high, 0 critical
-(<a href="../../releases/cgm-remote-monitor-15.0.9/contents.html#the-11-high-findings-on-4bca2ac2">triage</a>).</p>
-<p>Open blockers of <code>RT-0</code>, generated:</p>
+<h2 id="1-1600-the-development-cycle-after-1509">1. 16.0.0: the development cycle after 15.0.9<a class="headerlink" href="#1-1600-the-development-cycle-after-1509" title="Permanent link">&para;</a></h2>
+<p><a id="1-1509-is-released-the-next-development-cycle"></a></p>
+<p><strong>16.0.0 is the next release</strong> (maintainer, 2026-10-21; <code>RT-VERSION</code>), and <strong>cut 1 is on <code>dev</code></strong>:
+AndyLow91 merged #8828 on 2026-10-25 at 16:29:06Z as <code>dev</code> <code>eb72a1d3</code> (head <code>12154df9</code>), after ten other
+PRs the same day. <code>dev</code> declares 16.0.0 and <code>engines.node</code> <code>^22.23.4 || ^24.22.1 || &gt;=26.12.1</code>
+(AndyLow91's <code>6a146a4c</code>, "require Node Brotli security patches", which supersedes the decided
+<code>^22.12 || &gt;=24</code>). The release record is open:
+<strong><a href="../../releases/cgm-remote-monitor-16.0.0/contents.html">releases/cgm-remote-monitor-16.0.0</a></strong>, with its
+<a href="../../releases/cgm-remote-monitor-16.0.0/decisions.html">decisions</a>, the open items a releaser must settle
+and the suggested order of the next merges, and the
+<a href="../30-design/remedial/rc-16.0.0-integration-record.html">16.0.0 integration record</a> for the runs.</p>
+<p><strong>Priorities for the next cycle</strong> (maintainer, 2026-10-21): (1) modernization, cut 1 first
+(<code>RT-REBASE</code>, <code>RT-1</code>); (2) backfixes that affect dosing or security; (3) other exposure fixes, only
+where no cut or modernization branch already covers them.</p>
+<p>What is left, as it stands on 2026-10-25 (<code>dev</code> <code>eb72a1d3</code>, <code>master</code> <code>c6a0d8ed</code>):</p>
+<ol>
+<li><strong>Merged to <code>dev</code> on 2026-10-25, all by AndyLow91, none released:</strong> #8831 (opt-in <code>THEME=modern</code>
+   dashboard), #8825 (<code>BFQ-173</code>), #8826 (<code>BFQ-174</code>, after #8825 as required), #8827 (<code>BFQ-157</code>), #8823
+   (the <code>BRIDGE_SERVER</code> mapping, also folded into cut 1; one copy of the code, the test block twice),
+   #8819 (<code>BFQ-172</code>, javier-erro), #8797 (<code>BFQ-09</code>), #8816, #8812, #8808 and #8828 (<code>RT-1</code>, cut 1).
+   183 commits and 12 first-parent commits ahead of <code>master</code>. CI on <code>eb72a1d3</code> passed in every cell and
+   published the <code>dev</code> Docker image (push run 40211895500). The staging PR #8824 (<code>dev</code> → <code>master</code>) is
+   open at <code>eb72a1d3</code>, mergeable, review required.</li>
+<li><strong>Known defects on <code>dev</code></strong>: BF-176, a production install stops at boot when <code>IMPORT_CONFIG</code> is set
+   (reproduced on <code>eb72a1d3</code>; it reached <code>dev</code> because #8828 merged before its fix; in the published
+   <code>dev</code> image, in no release); BF-177, a glucose distribution test from #8812 that fails outside UTC
+   (test only).</li>
+<li><strong>In flight.</strong> Open PRs to <code>dev</code>, pushed by the maintainer on 2026-10-25: #8834, the BF-176 fix
+   (<code>bf/axios-runtime-dependency</code> <code>f3d73f43</code>, <code>BFQ-176</code>), and #8835, the dependency refresh
+   (<code>deps/16.0.0-security-refresh</code> <code>341b843a</code>: <code>compression</code>, <code>follow-redirects</code>, <code>source-map-js</code>;
+   <code>BFQ-163</code>). Not yet PRs: cut 2's catch-up merge of <code>dev</code> on <code>wip/cut2-onto-cut1-16.0.0</code> (<code>RT-2</code>);
+   <code>sanitize-html</code> 2.18 as its own PR (<code>BFQ-163</code>); BF-72 and BF-161 in the private forks of their draft advisories, no fork PR
+   opened yet, each owing a merge of <code>dev</code> (<code>BFQ-72</code>, <code>BFQ-161</code>).</li>
+<li><strong>Re-stated now that cut 1 is on <code>dev</code>:</strong> <code>RT-2</code> is in progress; <code>ID-SIMPLE-MATCH</code>, <code>RT-D3-SUITE</code>,
+   <code>RT-JSDOM-REST</code> and <code>RT-CONNECT-TEARDOWN</code> can start on <code>dev</code> (<code>not-started</code>);
+   <code>RT-NODE-FLOOR-TESTED</code> records that on <code>dev</code> the Dockerfile pins <code>node:24.22.1-alpine</code> and CI tests
+   the exact floors, and its gates still read the cut tips.</li>
+<li><strong>Open decisions</strong> are listed with their owners in
+   <a href="../../releases/cgm-remote-monitor-16.0.0/contents.html#open-items-a-releaser-must-settle">16.0.0 contents</a>:
+   whether cut 2 ships in 16.0.0, <code>sanitize-html</code> 2.18's stored-output difference, the scope of BF-161's
+   draft advisory, BF-72's test inputs, BF-95, BF-152, <code>DEPENDABOT-CONFIG</code>, and the required MongoDB 4.4
+   check.</li>
+<li>The version class of #8772, #8775 and #8780 stays recorded as open in
+   <a href="../../releases/cgm-remote-monitor-15.0.9/decisions.html">15.0.9 decisions</a>.</li>
+</ol>
+<p><strong>15.0.9, for the record.</strong> Released on 2026-10-21 (queue <code>RT-0</code>, <code>released</code>): #8598 merged as <code>master</code>
+<code>c6a0d8ed</code> (tree <code>c53c2c7f</code>, <code>dev</code> <code>4bca2ac2</code>'s), GitHub release <code>v15.0.9</code> "Release 15.0.9 Cinnamon
+Muffin", tags <code>v15.0.9</code> and <code>15.0.9</code>, Docker <code>15.0.9</code> and <code>latest</code> published by <code>master</code> CI run
+39667944235 (attempt 2). Its records are in
+<a href="../../releases/cgm-remote-monitor-15.0.9/contents.html">releases/cgm-remote-monitor-15.0.9</a> and the
+<a href="../30-design/remedial/rc-15.0.9-integration-record.html">15.0.9 integration record</a>. Open blockers of
+<code>RT-0</code>, generated:</p>
 <!-- BEGIN GENERATED: release-waits -->
 
 <table>
@@ -2351,34 +2491,6 @@ notes. On <code>4bca2ac2</code> <code>npm audit</code> reports 26 findings, 11 h
 </table>
 <!-- END GENERATED: release-waits -->
 
-<p>What is left from the release, and the start of the next cycle:</p>
-<ol>
-<li>Done 2026-10-21: the tag <code>15.0.9</code> without the <code>v</code>, on <code>c6a0d8ed</code>, as <code>15.0.7</code> and <code>15.0.8</code>
-   have both forms.</li>
-<li>Done 2026-10-21: the next development cycle is open. <code>dev</code> is the 15.0.10 cycle: the maintainer pushed <code>04d435eb</code> ("Start 15.0.10 development cycle") to
-   <code>dev</code> at 2026-10-21 20:40:09Z, a fast-forward from <code>4bca2ac2</code> over <code>c6a0d8ed</code>, so <code>dev</code> is one commit
-   ahead of <code>master</code>: <code>package.json</code> and <code>package-lock.json</code> at 15.0.10, and in <code>CHANGELOG.md</code> the
-   <code>[Unreleased]</code> entries became <code>[15.0.9] - 2026-10-21</code>, a new empty <code>[Unreleased]</code> opened, and 15.0.8
-   and 15.0.7 got dated headings, which settles the <code>CHANGELOG.md</code> question. The push's CI run
-   (39672291233) passed. The staging PR is #8824 ("new dev branch post 15.0.9 release", <code>dev</code> →
-   <code>master</code>, opened by the maintainer 20:40:54Z at <code>04d435eb</code>): mergeable, 28 checks passed and 3
-   skipped, review required.
-   <code>dev</code> declares 15.0.10; whether the next release is 15.0.10 or 15.1.0 stays the maintainer's
-   decision.</li>
-<li>Dependabot PRs that target <code>master</code> (#8822, #8818, #8817, #8814, #8811, #8805, #8798) are
-   retargeted to <code>dev</code> or closed. <code>follow-redirects</code> 1.16.1, <code>compression</code> 1.8.2 (BF-163) and
-   <code>source-map-js</code> 1.2.2 (GHSA-68fv-2mgg-jv7q) go to <code>dev</code>; a local lockfile-refresh branch on
-   <code>04d435eb</code> is being prepared by another session, not yet a PR. <code>sanitize-html</code> stays at 2.17.5,
-   since every release from 2.17.6 requires Node ≥22.12 and Node 20 is in the CI matrix.</li>
-<li>Eleven items list <code>RT-0</code> among their blockers. Nine wait on nothing else that is open and still
-   claim <code>blocked</code>, to be re-stated for the next cycle: <code>SEAM-REFRESH</code>, <code>BFQ-67</code>, <code>BFQ-72</code>,
-   <code>BFQ-93</code>, <code>BFQ-95</code>, <code>BFQ-152</code>, <code>BFQ-156</code>, <code>BFQ-173</code> and <code>BFQ-174</code>. <code>RT-1</code> and
-   <code>ID-SIMPLE-MATCH</code> also wait on <code>RT-REBASE</code>.</li>
-<li>The version class of #8772, #8775 and #8780 stays recorded as open in
-   <a href="../../releases/cgm-remote-monitor-15.0.9/decisions.html">decisions</a>.</li>
-</ol>
-<p>The full <code>npm audit</code> triage, which findings reach a running site and what is done about each, is in
-<a href="../../releases/cgm-remote-monitor-15.0.9/contents.html#npm-audit-and-dependabot-triage">contents</a>.</p>
 <table>
 <thead>
 <tr>
@@ -2388,70 +2500,81 @@ notes. On <code>4bca2ac2</code> <code>npm audit</code> reports 26 findings, 11 h
 </thead>
 <tbody>
 <tr>
-<td>what 15.0.9 contains, what it leaves broken, and what a releaser must settle</td>
-<td><a href="../../releases/cgm-remote-monitor-15.0.9/contents.html">contents.md</a></td>
+<td>what 16.0.0 contains so far, what is in flight and what a releaser must settle</td>
+<td><a href="../../releases/cgm-remote-monitor-16.0.0/contents.html">16.0.0 contents.md</a></td>
 </tr>
 <tr>
-<td>the decisions that shape it</td>
-<td><a href="../../releases/cgm-remote-monitor-15.0.9/decisions.html">decisions.md</a></td>
+<td>the decisions that shape 16.0.0</td>
+<td><a href="../../releases/cgm-remote-monitor-16.0.0/decisions.html">16.0.0 decisions.md</a></td>
 </tr>
 <tr>
-<td>how the candidate was tested</td>
-<td><a href="../30-design/remedial/rc-15.0.9-integration-record.html">15.0.9 integration record</a></td>
+<td>how 16.0.0 is being tested</td>
+<td><a href="../30-design/remedial/rc-16.0.0-integration-record.html">16.0.0 integration record</a></td>
 </tr>
 <tr>
-<td>the user-facing draft</td>
-<td><a href="../../releases/cgm-remote-monitor-15.0.9/release-notes.html">release-notes.md</a></td>
+<td>what 15.0.9 contains and leaves broken</td>
+<td><a href="../../releases/cgm-remote-monitor-15.0.9/contents.html">15.0.9 contents.md</a></td>
 </tr>
 </tbody>
 </table>
 <h2 id="2-modernization-the-release-train">2. Modernization: the release train<a class="headerlink" href="#2-modernization-the-release-train" title="Permanent link">&para;</a></h2>
-<p>The adopted order (<a href="../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.html#83-the-release-train">§8.3</a>):</p>
+<p>The adopted order (<a href="../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.html#83-the-release-train">§8.3</a>),
+as it stands on 2026-10-25:</p>
 <table>
 <thead>
 <tr>
 <th>step</th>
 <th>release</th>
 <th>contents</th>
+<th>state</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>1</td>
 <td>15.0.9</td>
-<td><code>dev</code> as it stood at <code>4bca2ac2</code>; released 2026-10-21</td>
+<td><code>dev</code> as it stood at <code>4bca2ac2</code></td>
+<td>released 2026-10-21</td>
 </tr>
 <tr>
 <td>2</td>
-<td>cut 1, <code>chore/retire-jsdom</code></td>
-<td>the real-browser test suite, the Node floor, and removal of the legacy Dexcom and MiniMed bridges</td>
+<td>16.0.0: cut 1, <code>chore/retire-jsdom</code>, PR #8828</td>
+<td>the real-browser test suite (option C), the Node floor <code>^22.23.4 \|\| ^24.22.1 \|\| &gt;=26.12.1</code>, removal of the legacy Dexcom and MiniMed bridges</td>
+<td>merged to <code>dev</code> 2026-10-25 (<code>eb72a1d3</code>); not released</td>
 </tr>
 <tr>
 <td>3</td>
 <td>cut 2, <code>chore/build-runtime-separation</code></td>
 <td>page bundles and the build/runtime split</td>
+<td>next: catch-up merge of <code>dev</code> <code>eb72a1d3</code> in progress; in 16.0.0 or its own release is open</td>
 </tr>
 <tr>
 <td>4</td>
 <td>cuts 3 + 5</td>
 <td>dependency majors, including the MongoDB driver and Express 5</td>
+<td>blocked on cut 2</td>
 </tr>
 <tr>
 <td>5</td>
 <td>cut 4, <code>chore/mime-exposure-review</code></td>
 <td>the remainder: trusted proxies, DOMPurify, Moment, MIME, webpack, ESLint</td>
+<td>blocked on cuts 3 + 5</td>
 </tr>
 </tbody>
 </table>
 <p>Two questions are open in §8.3:</p>
 <ul>
-<li>whether the cuts ship as separate releases or as one combined release;</li>
-<li>BF-64: cut 4 is an ancestor of cut 5, so steps 4 and 5 cannot be separated as the branches
-  stand.</li>
+<li>whether the cuts ship as separate releases or as one combined release, which now decides whether
+  cut 2 is in 16.0.0;</li>
+<li>BF-64: cut 4 is an ancestor of cut 5, so steps 4 and 5 cannot be separated as the branches stand.</li>
 </ul>
-<p><strong>Rebasing costs more with every merge to <code>dev</code>.</strong> The cuts conflict with <code>dev</code> in files the
-merged remedial PRs touched (queue <code>RT-REBASE</code> re-measures the conflicts). The cheapest time to
-rebase cut 1 is right after 15.0.9 is tagged, while <code>dev</code> is quiet.</p>
+<p><strong>Rebasing costs more with every merge to <code>dev</code>.</strong> Against <code>dev</code> <code>eb72a1d3</code> (<code>git rev-list
+--left-right --count</code> and <code>git merge-tree --write-tree --name-only --no-messages</code>): cut 2 <code>b6e8c7cd</code> is
+459 behind and 159 ahead with 20 conflicting paths; cut 3 459 / 222, 25; cut 4 459 / 301, 43; cut 5
+<code>b1bdaca0</code> (#8605) 335 / 399, 42 (<code>RT-REBASE</code>). Cut 2's catch-up is under way, and it keeps cut 2's
+<code>queryLeaves</code> walker instead of the <code>traverse</code> package when it takes <code>dev</code>'s query rules (<code>948a142e</code>,
+2026-10-21). Cuts 2–5 still declare the old floors and take <code>dev</code>'s at their catch-up merges. The jsdom
+harness cut 1 keeps is retired later under scope B (<code>RT-JSDOM-REST</code>, decided 2026-10-21).</p>
 <!-- BEGIN GENERATED: road-release-train -->
 
 <table>
@@ -2465,6 +2588,13 @@ rebase cut 1 is right after 15.0.9 is tagged, while <code>dev</code> is quiet.</
 </tr>
 </thead>
 <tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>ID-SIMPLE-MATCH</code></td>
+<td>API v1 entries and devicestatus match on identifier like treatments (the simple</td>
+<td><code>not-started</code></td>
+<td>&mdash;</td>
+</tr>
 <tr>
 <td style="text-align: right;">1</td>
 <td><code>OID-STORAGE-HELPER</code></td>
@@ -2488,6 +2618,13 @@ rebase cut 1 is right after 15.0.9 is tagged, while <code>dev</code> is quiet.</
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
+<td><code>RT-2</code></td>
+<td>Cut 2 - chore/build-runtime-separation</td>
+<td><code>in-progress</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
 <td><code>RT-BOOTERROR</code></td>
 <td>BF-63 - the page that reports a boot error crashes on cut 4's boot errors</td>
 <td><code>gate-not-met</code></td>
@@ -2502,6 +2639,34 @@ rebase cut 1 is right after 15.0.9 is tagged, while <code>dev</code> is quiet.</
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
+<td><code>RT-CONNECT-TEARDOWN</code></td>
+<td>Remove the redundant connector teardown listener in bootevent.js once cut 1 is o</td>
+<td><code>not-started</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>RT-D3-SUITE</code></td>
+<td>The treatment-drag clamps get a regression test in cut 1's real-browser suite</td>
+<td><code>not-started</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>RT-JSDOM-REST</code></td>
+<td>Retire the whole-bundle jsdom harness that cut 1 keeps; secure-jsdom stays as th</td>
+<td><code>not-started</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>RT-NODE-FLOOR-TESTED</code></td>
+<td>BF-58, BF-59 - the enforced Node floor is not the Node anything exercises</td>
+<td><code>gate-not-met</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
 <td><code>RT-PR-8730</code></td>
 <td>#8730 - Crowdin translation updates, held out of 15.0.9 (BF-132)</td>
 <td><code>gate-not-met</code></td>
@@ -2510,23 +2675,9 @@ rebase cut 1 is right after 15.0.9 is tagged, while <code>dev</code> is quiet.</
 <tr>
 <td style="text-align: right;">1</td>
 <td><code>RT-REBASE</code></td>
-<td>Cuts 1-5 are far behind dev and all five conflict</td>
-<td><code>gate-not-met</code></td>
+<td>Catch the cuts up with dev: cut 1 merged (#8828, 2026-10-25); cuts 2-5 are far b</td>
+<td><code>in-progress</code></td>
 <td>&mdash;</td>
-</tr>
-<tr>
-<td style="text-align: right;">1</td>
-<td><code>RT-VERSION</code></td>
-<td>Two artefacts claim version 15.0.9 with different Node floors</td>
-<td><code>not-started</code></td>
-<td>&mdash;</td>
-</tr>
-<tr>
-<td style="text-align: right;">2</td>
-<td><code>ID-SIMPLE-MATCH</code></td>
-<td>API v1 entries and devicestatus match on identifier like treatments (the simple</td>
-<td><code>blocked</code></td>
-<td><code>RT-REBASE</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
@@ -2537,41 +2688,20 @@ rebase cut 1 is right after 15.0.9 is tagged, while <code>dev</code> is quiet.</
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
-<td><code>RT-1</code></td>
-<td>Cut 1 - chore/retire-jsdom</td>
-<td><code>blocked</code></td>
-<td><code>RT-REBASE</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">3</td>
-<td><code>RT-2</code></td>
-<td>Cut 2 - chore/build-runtime-separation</td>
-<td><code>blocked</code></td>
-<td><code>RT-1</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">3</td>
-<td><code>RT-D3-SUITE</code></td>
-<td>The treatment-drag clamps get a regression test in cut 1's real-browser suite</td>
-<td><code>blocked</code></td>
-<td><code>RT-1</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">3</td>
-<td><code>RT-NODE-FLOOR-TESTED</code></td>
-<td>BF-58, BF-59 - the enforced Node floor is not the Node anything exercises</td>
-<td><code>gate-not-met</code></td>
-<td><code>RT-1</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">4</td>
 <td><code>RT-3</code></td>
 <td>Cuts 3+5 combined - dependency release</td>
 <td><code>blocked</code></td>
 <td><code>RT-2</code></td>
 </tr>
 <tr>
-<td style="text-align: right;">5</td>
+<td style="text-align: right;">2</td>
+<td><code>RT-TEST-TIERS</code></td>
+<td>Test tier map, tier check and inner-loop test selection (test:affected, test:smo</td>
+<td><code>blocked</code></td>
+<td><code>RT-2</code>, <code>BFQ-158</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
 <td><code>RT-5</code></td>
 <td>Cut 4 - chore/mime-exposure-review, the one to slow down on</td>
 <td><code>blocked</code></td>
@@ -2635,13 +2765,6 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
-<td><code>SEAM-REFRESH</code></td>
-<td>Refresh the seam chain once after 15.0.9, onto the base the release train leaves</td>
-<td><code>blocked</code></td>
-<td>&mdash;</td>
-</tr>
-<tr>
-<td style="text-align: right;">1</td>
 <td><code>T30-AUTH</code></td>
 <td>The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i</td>
 <td><code>ready-to-push</code></td>
@@ -2663,59 +2786,17 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
+<td><code>SEAM-REFRESH</code></td>
+<td>Refresh the seam chain once after 15.0.9, onto the base the release train leaves</td>
+<td><code>blocked</code></td>
+<td><code>RT-REBASE</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
 <td><code>T30-SCHEMA-CONFIG</code></td>
 <td>T3.0 part 2b - per-tenant configuration table, and where human identity lives</td>
 <td><code>not-started</code></td>
 <td><code>T30-RESEARCH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">2</td>
-<td><code>WC-STEP-PATCH</code></td>
-<td>Release 1 (patch): one write step for every v1, v3 and socket path, today's beha</td>
-<td><code>blocked</code></td>
-<td><code>SEAM-REFRESH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">2</td>
-<td><code>WRITE-CONTRACT</code></td>
-<td>One write step behind the storage interface: _id form, srv dates, soft delete, r</td>
-<td><code>blocked</code></td>
-<td><code>SEAM-REFRESH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">3</td>
-<td><code>BFQ-CAP02</code></td>
-<td>CAP-02 - no importer, and no Mongo to PostgreSQL loader</td>
-<td><code>not-started</code></td>
-<td><code>T30-SCHEMA-CONFIG</code>, <code>WRITE-CONTRACT</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">3</td>
-<td><code>ID-BATCH-RESULTS</code></td>
-<td>Release 2 (minor): per-item results in v1 batch replies; one bad item no longer</td>
-<td><code>blocked</code></td>
-<td><code>WC-STEP-PATCH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">3</td>
-<td><code>ID-FIRST-MATCH</code></td>
-<td>Release 2 (minor): identifier-first matching for entries, devicestatus and socke</td>
-<td><code>blocked</code></td>
-<td><code>WC-STEP-PATCH</code>, <code>ID-SIMPLE-MATCH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">3</td>
-<td><code>ID-V1-LOOKUP</code></td>
-<td>Release 2 (minor): v1 GET and DELETE by any identifier, without the default time</td>
-<td><code>blocked</code></td>
-<td><code>WC-STEP-PATCH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">3</td>
-<td><code>ID-VALIDATE</code></td>
-<td>Release 2 (minor): validate identifier on every collection; empty and null mean</td>
-<td><code>blocked</code></td>
-<td><code>WC-STEP-PATCH</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
@@ -2730,6 +2811,97 @@ Until then, the order below is the order of development, not of release.</p>
 <td>T3.2 remainder - platform.sql carries no config, secret or signing key</td>
 <td><code>blocked</code></td>
 <td><code>T30-SCHEMA-CONFIG</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td><code>WC-STEP-PATCH</code></td>
+<td>Release 1 (patch): one write step for every v1, v3 and socket path, today's beha</td>
+<td><code>blocked</code></td>
+<td><code>SEAM-REFRESH</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td><code>WRITE-CONTRACT</code></td>
+<td>One write step behind the storage interface: _id form, srv dates, soft delete, r</td>
+<td><code>blocked</code></td>
+<td><code>SEAM-REFRESH</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>BFQ-CAP02</code></td>
+<td>CAP-02 - no importer, and no Mongo to PostgreSQL loader</td>
+<td><code>not-started</code></td>
+<td><code>T30-SCHEMA-CONFIG</code>, <code>WRITE-CONTRACT</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>ID-ABSENT-DECISION</code></td>
+<td>Decide: a write that carries no identifier (and no _id) - keep the time-key fall</td>
+<td><code>needs-decision</code></td>
+<td><code>LOOP-ID-REPLY</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>ID-BATCH-RESULTS</code></td>
+<td>Release 2 (minor): per-item results in v1 batch replies; one bad item no longer</td>
+<td><code>blocked</code></td>
+<td><code>WC-STEP-PATCH</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>ID-CLIENT-OID-DECISION</code></td>
+<td>Decide: may a client set _id (an ObjectId it creates), and which field wins when</td>
+<td><code>needs-decision</code></td>
+<td><code>LOOP-ID-REPLY</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>ID-DELETE-REUSE-DECISION</code></td>
+<td>Decide: after a delete, what does a re-send of the same identifier (or _id) do -</td>
+<td><code>needs-decision</code></td>
+<td><code>LOOP-ID-REPLY</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>ID-FIRST-MATCH</code></td>
+<td>Release 2 (minor): identifier-first matching for entries, devicestatus and socke</td>
+<td><code>blocked</code></td>
+<td><code>WC-STEP-PATCH</code>, <code>ID-SIMPLE-MATCH</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>ID-FORMAT-DECISION</code></td>
+<td>Decide: the client identifier's format (opaque string with limits; UUID not requ</td>
+<td><code>needs-decision</code></td>
+<td><code>LOOP-ID-REPLY</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>ID-SCOPE-DECISION</code></td>
+<td>Decide: is identifier unique per collection, across collections, and per tenant</td>
+<td><code>needs-decision</code></td>
+<td><code>LOOP-ID-REPLY</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>ID-V1-LOOKUP</code></td>
+<td>Release 2 (minor): v1 GET and DELETE by any identifier, without the default time</td>
+<td><code>blocked</code></td>
+<td><code>WC-STEP-PATCH</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>ID-V3-IMMUTABLE-DECISION</code></td>
+<td>Decide: on an identifier match, may date, device or eventType change?</td>
+<td><code>needs-decision</code></td>
+<td><code>LOOP-ID-REPLY</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>ID-VALIDATE</code></td>
+<td>Release 2 (minor): validate identifier on every collection; empty and null mean</td>
+<td><code>blocked</code></td>
+<td><code>WC-STEP-PATCH</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">4</td>
@@ -2782,45 +2954,10 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">5</td>
-<td><code>ID-ABSENT-DECISION</code></td>
-<td>Decide: a write that carries no identifier (and no _id) - keep the time-key fall</td>
-<td><code>needs-decision</code></td>
-<td><code>LOOP-ID-REPLY</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">5</td>
-<td><code>ID-CLIENT-OID-DECISION</code></td>
-<td>Decide: may a client set _id (an ObjectId it creates), and which field wins when</td>
-<td><code>needs-decision</code></td>
-<td><code>LOOP-ID-REPLY</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">5</td>
-<td><code>ID-DELETE-REUSE-DECISION</code></td>
-<td>Decide: after a delete, what does a re-send of the same identifier (or _id) do -</td>
-<td><code>needs-decision</code></td>
-<td><code>LOOP-ID-REPLY</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">5</td>
-<td><code>ID-FORMAT-DECISION</code></td>
-<td>Decide: the client identifier's format (opaque string with limits; UUID not requ</td>
-<td><code>needs-decision</code></td>
-<td><code>LOOP-ID-REPLY</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">5</td>
-<td><code>ID-SCOPE-DECISION</code></td>
-<td>Decide: is identifier unique per collection, across collections, and per tenant</td>
-<td><code>needs-decision</code></td>
-<td><code>LOOP-ID-REPLY</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">5</td>
-<td><code>ID-V3-IMMUTABLE-DECISION</code></td>
-<td>Decide: on an identifier match, may date, device or eventType change?</td>
-<td><code>needs-decision</code></td>
-<td><code>LOOP-ID-REPLY</code></td>
+<td><code>ID-UNIQUE-INDEX</code></td>
+<td>Partial unique index on identifier, retry-as-update on duplicate key, start-up s</td>
+<td><code>blocked</code></td>
+<td><code>ID-FIRST-MATCH</code>, <code>ID-BATCH-RESULTS</code>, <code>ID-V3-IMMUTABLE-DECISION</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">6</td>
@@ -2828,13 +2965,6 @@ Until then, the order below is the order of development, not of release.</p>
 <td>The alarms-on gate itself - nothing here may be marked done by inference</td>
 <td><code>blocked</code></td>
 <td><code>T44</code>, <code>A7A-3</code>, <code>A7A-4</code>, <code>A7A-7</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">6</td>
-<td><code>ID-UNIQUE-INDEX</code></td>
-<td>Partial unique index on identifier, retry-as-update on duplicate key, start-up s</td>
-<td><code>blocked</code></td>
-<td><code>ID-FIRST-MATCH</code>, <code>ID-BATCH-RESULTS</code>, <code>ID-V3-IMMUTABLE-DECISION</code></td>
 </tr>
 </tbody>
 </table>

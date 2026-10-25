@@ -676,6 +676,8 @@
       
         
       
+        
+      
     
     
     
@@ -1084,6 +1086,72 @@
             
           </ul>
         </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../cgm-remote-monitor-16.0.0/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor-16.0.0/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
       
     </li>
   
@@ -2098,7 +2166,7 @@
 
 
 <h1 id="cgm-remote-monitor-1509--contents">cgm-remote-monitor 15.0.9 — contents<a class="headerlink" href="#cgm-remote-monitor-1509--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-21 at <code>b50f1c1fa</code>.</em></p>
+<p><em>Living document, last changed 2026-10-21 at <code>8426a764e</code>.</em></p>
 <p><strong>Status: released 2026-10-21 as <code>v15.0.9</code></strong> (<code>official/master</code> <code>c6a0d8ed</code>, the merge of #8598;
 tree <code>c53c2c7f</code>, the same as <code>dev</code> <code>4bca2ac2</code>'s). Contributor-facing; full technical depth intended.
 Identity re-measured 2026-10-21 at the tag; before that 2026-10-20 at <code>official/dev</code> <code>4bca2ac2</code> (merge of</p>
@@ -3213,7 +3281,7 @@ stood on <code>fade2299</code> (2026-10-08) follows for the record.</p>
    Wizard Preview units) are named there too.</li>
 <li><strong>The tag</strong>, by the maintainer.</li>
 </ol>
-<p>The <a href="release-notes.html">release notes</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b50f1c1fa96e9f0346152eb8274b4898a563d64a/releases/cgm-remote-monitor-15.0.9/tag-message.txt">tag message</a> are ready for the release of <code>4bca2ac2</code> (2026-10-21).</p>
+<p>The <a href="release-notes.html">release notes</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/dda680fe7d788048f5b0d89978b0dbe73711831d/releases/cgm-remote-monitor-15.0.9/tag-message.txt">tag message</a> are ready for the release of <code>4bca2ac2</code> (2026-10-21).</p>
 <p>The real-time soak is done by decision: on 2026-09-30 the maintainer decided that real sites
 running the candidate count as the 24 to 72 h real-time soak, and the lab's 72 h soak
 (<code>lab.sh soak --hours 72</code>) is not run. Recorded reports: as of 2026-09-29, one Loop, one Trio and
@@ -3253,10 +3321,23 @@ where Nightscout reaches it (<a href="#the-9-high-findings-on-fade2299">triage b
 moderate are the 2026-09-27 triage's chain — a deliberate pin whose advisories need elements the
 sanitizer does not allow (tested), the legacy <code>request</code> chain, loaded only when a legacy bridge is
 switched on (read from <code>lib/server/bootevent.js</code>), and the dev-dependency tooling — plus <code>moment</code>,
-held at 2.30.1 by decision, and the advisories published since. <strong>After the
-modernization pass (cut 4 onward, including cut 5 <code>b1bdaca0</code>) there are none:</strong> <code>npm audit</code> reports
-0 findings with dev dependencies included, and none of the 80 open Dependabot alerts matches a
-version in cut 5's lockfile. The work that gets there was planned in the open:</p>
+held at 2.30.1 by decision, and the advisories published since. <strong>On 2026-09-27, after the
+modernization pass (cut 4 onward, including cut 5 <code>b1bdaca0</code>) there were none:</strong> <code>npm audit</code>
+reported 0 findings with dev dependencies included, and none of the 80 open Dependabot alerts
+matched a version in cut 5's lockfile. <strong>Corrected 2026-10-21: that no longer holds.</strong> With the
+advisory data of 2026-10-21 (npm 11.12.1, <code>--package-lock-only</code>), cut 5 (#8605, <code>b1bdaca0</code>) has 21
+findings (9 high, 1 critical), and the published cut tips have <code>chore/retire-jsdom</code> <code>bce12ecc</code> 49
+(18 high, 1 critical: <code>proxy-addr</code>, already fixed on <code>dev</code>), <code>chore/build-runtime-separation</code>
+<code>b6e8c7cd</code> 41, <code>chore/compose-mongodb6</code> <code>ebb690cf</code> 41 and <code>chore/mime-exposure-review</code> <code>b80aa147</code> 30.
+None of cuts 1–4 or #8605 fixes <code>braces</code>, <code>node-forge</code>, <code>source-map-js</code>, <code>follow-redirects</code> or
+<code>compression</code>. The <code>sanitize-html</code> advisories GHSA-x3q4 and GHSA-cv27 need 2.18.0, which needs Node</p>
+<blockquote>
+<p>=22.12; no cut fixes them (cut 1 as rehearsed, <code>rh/cut1-retire-legacy</code> <code>c043fb2d</code>, keeps 2.17.5;
+cuts 2–4 and #8605 have 2.17.7). GHSA-374f, a new moderate, is untriaged. On the next cycle's <code>dev</code>
+<code>04d435eb</code> (2026-10-21 20:49Z): 27 findings, 13 high, 0 critical in the worktree (14 / 9 with
+<code>--omit=dev</code>); the same lockfile audited in a scratch directory gives 28 / 14, the extra high being
+<code>axios-cookiejar-support</code>, cause not found. The work that gets there was planned in the open:</p>
+</blockquote>
 <table>
 <thead>
 <tr>
@@ -3306,7 +3387,8 @@ already fixed on <code>dev</code> (below).</p>
 <p>Measured with <code>npm audit --package-lock-only</code> (npm 11.12.1), advisory data as of the date given:
 2026-09-27 for <code>v15.0.8</code>, <code>295f1177</code>, <code>7000eb18</code> and the cut branches; 2026-10-01 and 2026-10-02 for
 <code>50bc1084</code> and <code>a143d507</code> (the same lockfile as <code>25fc41d9</code>); 2026-10-07 for <code>43289dde</code> and 2026-10-08
-for <code>fade2299</code> (identical lockfile, identical counts). The counts
+for <code>fade2299</code> (identical lockfile, identical counts); 2026-10-21 for <code>4bca2ac2</code>, <code>04d435eb</code> and
+the published cut tips. The counts
 on <code>25fc41d9</code> and <code>43289dde</code> differ mostly because the advisory database grew between those dates;
 the lockfile moved only by <code>proxy-addr</code> (#8806), and not at all from <code>43289dde</code> to <code>fade2299</code> (#8807). Build tooling (webpack, its loaders, <code>browserslist</code>)
 is in <code>dependencies</code>, not <code>devDependencies</code>, because the bundle is built at install time
@@ -3436,12 +3518,68 @@ is in <code>dependencies</code>, not <code>devDependencies</code>, because the b
 <td style="text-align: right;">0</td>
 </tr>
 <tr>
-<td><code>rh/cut4</code> <code>135faa3b</code>, <code>rh/cut35</code> <code>cd93d8e8</code>, cut 5 <code>b1bdaca0</code></td>
+<td><code>rh/cut4</code> <code>135faa3b</code>, <code>rh/cut35</code> <code>cd93d8e8</code>, cut 5 <code>b1bdaca0</code> (2026-09-27)</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>dev</code> <code>04d435eb</code> (2026-10-21, the next cycle; worktree)</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td><code>dev</code> <code>04d435eb</code> <code>--omit=dev</code></td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td><code>chore/retire-jsdom</code> <code>bce12ecc</code> (2026-10-21)</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td><code>chore/build-runtime-separation</code> <code>b6e8c7cd</code> (2026-10-21)</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td><code>chore/compose-mongodb6</code> <code>ebb690cf</code> (2026-10-21)</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td><code>chore/mime-exposure-review</code> <code>b80aa147</code> (2026-10-21)</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>cut 5 <code>b1bdaca0</code> (#8605, 2026-10-21)</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
 </tr>
 </tbody>
 </table>

@@ -674,6 +674,8 @@
       
         
       
+        
+      
     
     
     
@@ -2243,6 +2245,8 @@
       
         
       
+        
+      
     
     
     
@@ -2403,6 +2407,8 @@
       
         
           
+        
+      
         
       
         
@@ -5277,7 +5283,7 @@ above, Node 22.23.2, MongoDB 7.0.43. <strong>[R]</strong> read: from source at t
 <hr />
 <h2 id="1-the-matrix-measured">1. The matrix, measured<a class="headerlink" href="#1-the-matrix-measured" title="Permanent link">&para;</a></h2>
 <h3 id="11-how-it-was-measured">1.1 How it was measured<a class="headerlink" href="#11-how-it-was-measured" title="Permanent link">&para;</a></h3>
-<p>The harness is <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b50f1c1fa96e9f0346152eb8274b4898a563d64a/tools/qc/write-contract-matrix.js"><code>tools/qc/write-contract-matrix.js</code></a>.
+<p>The harness is <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/dda680fe7d788048f5b0d89978b0dbe73711831d/tools/qc/write-contract-matrix.js"><code>tools/qc/write-contract-matrix.js</code></a>.
 Per execution plan rule 4 it exercises the shipping modules, not a copy: it boots the build in
 its own process from the worktree named by <code>WC_WORKTREE</code>, exactly as <code>lib/server/server.js</code> does
 (<code>bootevent</code>, <code>app</code>, an HTTP listener, <code>websocket</code>), with every module <code>require()</code>d by path from
@@ -5298,8 +5304,8 @@ socket forwards) and the cache itself.</p>
 <li><strong>Builds:</strong> detached worktrees <code>externals/work/crm-wc-spec</code> at <code>43289dde</code> and
   <code>externals/work/crm-wc-1508</code> at <code>92d08342</code>, each after <code>npm ci</code>; <code>git status --porcelain -- lib</code>
   empty on both (recorded in each result file's <code>dirty_lib</code>).</li>
-<li><strong>Results:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b50f1c1fa96e9f0346152eb8274b4898a563d64a/tools/qc/results/write-contract-matrix/dev-43289dde.json"><code>dev-43289dde.json</code></a>,
-  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b50f1c1fa96e9f0346152eb8274b4898a563d64a/tools/qc/results/write-contract-matrix/v15.0.8-92d08342.json"><code>v15.0.8-92d08342.json</code></a>.
+<li><strong>Results:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/dda680fe7d788048f5b0d89978b0dbe73711831d/tools/qc/results/write-contract-matrix/dev-43289dde.json"><code>dev-43289dde.json</code></a>,
+  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/dda680fe7d788048f5b0d89978b0dbe73711831d/tools/qc/results/write-contract-matrix/v15.0.8-92d08342.json"><code>v15.0.8-92d08342.json</code></a>.
   The tables below are generated from them with <code>--compact</code>, <code>--divergence</code> and the cross-path
   listing (§8).</li>
 <li><strong>Liveness:</strong> <code>GET /api/v1/status.json</code> answered 200 before and after every measured step; a
@@ -6217,9 +6223,9 @@ devicestatus no longer collides (it answers 200, BF-116).</p>
 <h3 id="17-non-vacuity">1.7 Non-vacuity<a class="headerlink" href="#17-non-vacuity" title="Permanent link">&para;</a></h3>
 <p>Each rule column was broken in one place and the matrix re-run on the identical setup; the clean
 run is the positive control, and the restored file must reproduce it.
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b50f1c1fa96e9f0346152eb8274b4898a563d64a/tools/qc/write-contract-ablate.sh"><code>tools/qc/write-contract-ablate.sh</code></a> runs all six on
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/dda680fe7d788048f5b0d89978b0dbe73711831d/tools/qc/write-contract-ablate.sh"><code>tools/qc/write-contract-ablate.sh</code></a> runs all six on
 a detached worktree of <code>43289dde</code>
-(<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b50f1c1fa96e9f0346152eb8274b4898a563d64a/tools/qc/results/write-contract-matrix/ablations-43289dde.txt">log</a>); every break
+(<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/dda680fe7d788048f5b0d89978b0dbe73711831d/tools/qc/results/write-contract-matrix/ablations-43289dde.txt">log</a>); every break
 changed exactly the cells listed and every revert matched the clean run.</p>
 <table>
 <thead>

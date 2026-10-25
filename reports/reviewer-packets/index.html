@@ -16,7 +16,7 @@
         <link rel="prev" href="../phase0-pr-bodies/v1-writes-v3-history.html">
       
       
-        <link rel="next" href="bfq-09-bf-socket-dedup-zero.html">
+        <link rel="next" href="bfq-152.html">
       
       
         
@@ -664,6 +664,8 @@
       
         
           
+        
+      
         
       
         
@@ -1624,6 +1626,14 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1685,14 +1695,70 @@
   
   
     <li class="md-nav__item">
-      <a href="bfq-09-bf-socket-dedup-zero.html" class="md-nav__link">
+      <a href="bfq-152.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Bfq 09 bf socket dedup zero
+    Bfq 152
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bfq-161-bf-entries-pattern-limit.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bfq 161 bf entries pattern limit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bfq-163-deps-16-0-0-security-refresh.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bfq 163 deps 16 0 0 security refresh
   
 
     
@@ -1741,14 +1807,70 @@
   
   
     <li class="md-nav__item">
-      <a href="bfq-172-javier-erro-8819.html" class="md-nav__link">
+      <a href="bfq-176-bf-axios-runtime-dependency.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Bfq 172 javier erro 8819
+    Bfq 176 bf axios runtime dependency
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bfq-72-bf-regex-limits.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bfq 72 bf regex limits
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bfq-95.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bfq 95
   
 
     
@@ -2717,7 +2839,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-21 at <code>59b35119d</code>.</em></p>
+<p><em>Living document, last changed 2026-10-25 at <code>d9d475733</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -2754,16 +2876,16 @@ repository.</p>
 <td>The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81)</td>
 </tr>
 <tr>
-<td><a href="bfq-09-bf-socket-dedup-zero.html"><code>BFQ-09</code></a></td>
-<td>#8797</td>
+<td><a href="bfq-176-bf-axios-runtime-dependency.html"><code>BFQ-176</code></a></td>
+<td>#8834</td>
 <td><code>in-flight-upstream</code></td>
-<td>BF-09 - socket dedup truthiness skips a falsy value</td>
+<td>BF-176 - axios is only a devDependency and lodash is undeclared, so a production install of dev (16.0.0 line, cut 1 merged) stops at boot when IMPORT_CONFIG is set</td>
 </tr>
 <tr>
-<td><a href="bfq-172-javier-erro-8819.html"><code>BFQ-172</code></a></td>
-<td>#8819</td>
+<td><a href="bfq-163-deps-16-0-0-security-refresh.html"><code>BFQ-163</code></a></td>
+<td>#8835</td>
 <td><code>in-flight-upstream</code></td>
-<td>BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819 proposed), a known issue of 15.0.9</td>
+<td>BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in 1.8.2</td>
 </tr>
 <tr>
 <td><code>ADV-XSS-META</code> (not published)</td>
@@ -2772,10 +2894,34 @@ repository.</p>
 <td>GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74)</td>
 </tr>
 <tr>
+<td><a href="bfq-152.html"><code>BFQ-152</code></a></td>
+<td>&mdash;</td>
+<td><code>needs-decision</code></td>
+<td>BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission</td>
+</tr>
+<tr>
+<td><a href="bfq-161-bf-entries-pattern-limit.html"><code>BFQ-161</code></a></td>
+<td>&mdash;</td>
+<td><code>in-flight-upstream</code></td>
+<td>BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes</td>
+</tr>
+<tr>
 <td><a href="bfq-164.html"><code>BFQ-164</code></a></td>
 <td>&mdash;</td>
 <td><code>needs-decision</code></td>
 <td>BF-164 - writes outside API v3 never reach the v3 storage socket</td>
+</tr>
+<tr>
+<td><a href="bfq-72-bf-regex-limits.html"><code>BFQ-72</code></a></td>
+<td>&mdash;</td>
+<td><code>in-flight-upstream</code></td>
+<td>BF-72 - an unauthenticated $regex can spend minutes of database CPU</td>
+</tr>
+<tr>
+<td><a href="bfq-95.html"><code>BFQ-95</code></a></td>
+<td>&mdash;</td>
+<td><code>needs-decision</code></td>
+<td>BF-95 - an uploader clock running ahead delays the stale-data alarm</td>
 </tr>
 <tr>
 <td><a href="dependabot-config.html"><code>DEPENDABOT-CONFIG</code></a></td>

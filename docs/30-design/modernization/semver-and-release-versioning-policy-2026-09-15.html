@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.html">
       
       
-        <link rel="prev" href="cut-rehearsal-on-15.0.9-rc-2026-09-23.html">
+        <link rel="prev" href="jsdom-harness-test-tiers-2026-10-21.html">
       
       
         <link rel="next" href="../platform/index.html">
@@ -664,6 +664,8 @@
       
         
           
+        
+      
         
       
         
@@ -2245,6 +2247,8 @@
       
         
       
+        
+      
     
     
     
@@ -2314,6 +2318,34 @@
     
   
     Cut rehearsal on the 15.0.9 candidate, 2026-09-23
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="jsdom-harness-test-tiers-2026-10-21.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The jsdom test harness after cut 1: test tiers and per-file disposition, 2026-10-21
   
 
     
@@ -3178,6 +3210,8 @@
       
         
           
+        
+      
         
       
         
@@ -5792,7 +5826,7 @@
 
 
 <h1 id="semver-and-release-versioning-policy--cgm-remote-monitor-and-nightscout-connect">Semver and release versioning policy — cgm-remote-monitor and nightscout-connect<a class="headerlink" href="#semver-and-release-versioning-policy--cgm-remote-monitor-and-nightscout-connect" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-21 at <code>59b35119d</code>.</em></p>
+<p><em>Living document, last changed 2026-10-25 at <code>d9d475733</code>.</em></p>
 <p><em>Contributor- and maintainer-facing. Full technical depth is intended. Operator-facing text
 derived from this document has its own rules — §5.6.</em></p>
 <p><strong>Status: living document.</strong> Three parts with different standing:</p>
@@ -5826,7 +5860,7 @@ is 498 commits and 82 first-parent merges.</p>
 (where the two disagree, this document is the later position);
 <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html">15.0.9 contents</a>;
 <a href="../remedial/nightscout-backfix-register.html">backfix register</a> (defect facts);
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b50f1c1fa96e9f0346152eb8274b4898a563d64a/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> (item state);
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/dda680fe7d788048f5b0d89978b0dbe73711831d/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> (item state);
 <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>
 (decisions D1–D17, cited here by number).</p>
 <hr />
@@ -6329,7 +6363,10 @@ size of the branch.</em> A dead URGENT alarm is a missing alarm, and restoring i
    <code>semver.satisfies('26.0.0', '^22.23.2 || ^24.20.0')</code>. That is a recurring maintenance
    obligation created by the notation, not by any incompatibility. The decided range
    <code>^22.12 || &gt;=24</code> (maintainer, 2026-09-21) is open-ended above 24, so it accepts Node 26; it
-   still excludes Node 23, and the cut 1 PR should name the reason.</li>
+   still excludes Node 23, and the cut 1 PR should name the reason. 2026-10-25: <code>dev</code> (16.0.0, cut 1
+   merged as #8828) declares <code>^22.23.4 || ^24.22.1 || &gt;=26.12.1</code> (AndyLow91's <code>6a146a4c</code>, "require Node
+   Brotli security patches"), a patch floor again, open-ended above 26.12.1; it also excludes Node 25 and
+   26.0-26.12.0. The Dockerfile pins <code>node:24.22.1-alpine</code> and CI tests the three exact floors.</li>
 <li><strong>The declared floor and the enforced floor must be the same thing.</strong> Today <code>engines</code> says
    <code>&gt;=20.x</code> and <code>bootevent.js</code> enforces <code>&gt;=16.x</code>. Cut 1 derives the check from <code>engines</code>, which
    is the right design: <strong><code>engines.node</code> is the single source of truth for the runtime floor, and
@@ -7597,8 +7634,10 @@ everything before it ships with it):</p>
 <ul>
 <li><strong>Cut 1 first and alone.</strong> It is the smallest production change in the stack (21 files,
   +91/−123 at 2026-09-21) and it delivers the real-browser test suite, which makes every later
-  step, and the D3 migration already in 15.0.9, verifiable in a browser. Its Node floor
-  <code>^22.12 || &gt;=24</code> is a dependency bound, not an application one: the suite passes on Node 22.12
+  step, and the D3 migration already in 15.0.9, verifiable in a browser. (Merged to <code>dev</code> on
+  2026-10-25 as #8828, with the floor raised to <code>^22.23.4 || ^24.22.1 || &gt;=26.12.1</code> for the Node
+  Brotli security patches.) Its Node floor as decided,
+  <code>^22.12 || &gt;=24</code>, is a dependency bound, not an application one: the suite passes on Node 22.12
   and later and on 20.20, and fails on 18 only with <code>ERR_REQUIRE_ESM</code> from <code>sanitize-html</code>. Node
   20 is left out of range because it reached end of life on 2026-04-30.</li>
 <li><strong>The legacy-bridge removal carries the data-availability risk</strong>, and it now travels on cut 1.

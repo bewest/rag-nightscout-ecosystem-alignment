@@ -1252,6 +1252,8 @@
       
         
       
+        
+      
     
     
     
@@ -2254,7 +2256,7 @@
 
 
 <h1 id="programme-status--cgm-remote-monitor">Programme status — cgm-remote-monitor<a class="headerlink" href="#programme-status--cgm-remote-monitor" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-21 at <code>b50f1c1fa</code>.</em></p>
+<p><em>Living document, last changed 2026-10-25 at <code>dda680fe7</code>.</em></p>
 <p><em>What this is: a record (contributor-facing; technical throughout). Read after the
 <a href="mission.html">mission</a>; leads to the <a href="ROADMAP.html">roadmap</a>. Prepared for the Nightscout project;
 proposed for Nightscout Foundation stewardship.
@@ -2286,15 +2288,15 @@ current and the prose is stale.</p>
 <tr>
 <td><strong>Remedial</strong></td>
 <td><code>phase0</code>, <code>register-open</code>, <code>docs-truth</code></td>
-<td style="text-align: right;">158</td>
+<td style="text-align: right;">161</td>
 <td style="text-align: right;">45</td>
-<td style="text-align: right;">8</td>
+<td style="text-align: right;">13</td>
 </tr>
 <tr>
 <td><strong>Modernization</strong></td>
 <td><code>release-train</code></td>
-<td style="text-align: right;">34</td>
-<td style="text-align: right;">5</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">8</td>
 <td style="text-align: right;">0</td>
 </tr>
 <tr>
@@ -2307,9 +2309,9 @@ current and the prose is stale.</p>
 <tr>
 <td></td>
 <td><strong>total</strong></td>
-<td style="text-align: right;"><strong>261</strong></td>
-<td style="text-align: right;"><strong>67</strong></td>
-<td style="text-align: right;"><strong>17</strong></td>
+<td style="text-align: right;"><strong>267</strong></td>
+<td style="text-align: right;"><strong>70</strong></td>
+<td style="text-align: right;"><strong>22</strong></td>
 </tr>
 </tbody>
 </table>
@@ -2452,7 +2454,7 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-09</code></td>
-<td><code>in-flight-upstream</code></td>
+<td><code>merged-upstream</code></td>
 <td>BF-09 - socket dedup truthiness skips a falsy value</td>
 </tr>
 <tr>
@@ -2612,7 +2614,7 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-152</code></td>
-<td><code>blocked</code></td>
+<td><code>needs-decision</code></td>
 <td>BF-152 - API v3 settings are admin-only through search and history, readable by identifier</td>
 </tr>
 <tr>
@@ -2622,12 +2624,12 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-156</code></td>
-<td><code>blocked</code></td>
+<td><code>in-progress</code></td>
 <td>BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the pro</td>
 </tr>
 <tr>
 <td><code>BFQ-157</code></td>
-<td><code>not-started</code></td>
+<td><code>merged-upstream</code></td>
 <td>BF-157 - a treatment's glucose bubble is placed as mg/dL when its units are spelled mmol/L</td>
 </tr>
 <tr>
@@ -2642,12 +2644,12 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-161</code></td>
-<td><code>not-started</code></td>
+<td><code>in-flight-upstream</code></td>
 <td>BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fi</td>
 </tr>
 <tr>
 <td><code>BFQ-163</code></td>
-<td><code>not-started</code></td>
+<td><code>in-flight-upstream</code></td>
 <td>BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in</td>
 </tr>
 <tr>
@@ -2682,18 +2684,23 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-172</code></td>
-<td><code>in-flight-upstream</code></td>
+<td><code>merged-upstream</code></td>
 <td>BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819</td>
 </tr>
 <tr>
 <td><code>BFQ-173</code></td>
-<td><code>blocked</code></td>
+<td><code>merged-upstream</code></td>
 <td>BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units, a k</td>
 </tr>
 <tr>
 <td><code>BFQ-174</code></td>
-<td><code>blocked</code></td>
+<td><code>merged-upstream</code></td>
 <td>BF-174 - the bolus calculator's profile picker is ignored; every value comes from the acti</td>
+</tr>
+<tr>
+<td><code>BFQ-175</code></td>
+<td><code>unsettled</code></td>
+<td>BF-175 - temp targets are converted from mmol/L only when units is exactly 'mmol' (candida</td>
 </tr>
 <tr>
 <td><code>BFQ-40</code></td>
@@ -2717,7 +2724,7 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-67</code></td>
-<td><code>blocked</code></td>
+<td><code>not-started</code></td>
 <td>BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work</td>
 </tr>
 <tr>
@@ -2732,7 +2739,7 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-72</code></td>
-<td><code>blocked</code></td>
+<td><code>in-flight-upstream</code></td>
 <td>BF-72 - an unauthenticated $regex can spend minutes of database CPU</td>
 </tr>
 <tr>
@@ -2757,12 +2764,12 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-93</code></td>
-<td><code>blocked</code></td>
+<td><code>not-started</code></td>
 <td>BF-93 - food changes never reach an open page</td>
 </tr>
 <tr>
 <td><code>BFQ-95</code></td>
-<td><code>blocked</code></td>
+<td><code>needs-decision</code></td>
 <td>BF-95 - an uploader clock running ahead delays the stale-data alarm</td>
 </tr>
 <tr>
@@ -2819,6 +2826,7 @@ cover more than one <code>BF-</code>:</p>
 <th><code>ready-to-push</code></th>
 <th><code>blocked</code></th>
 <th><code>in-flight-upstream</code></th>
+<th><code>merged-upstream</code></th>
 <th><code>released</code></th>
 <th><code>needs-decision</code></th>
 <th><code>done</code></th>
@@ -2837,6 +2845,7 @@ cover more than one <code>BF-</code>:</p>
 <td>1</td>
 <td></td>
 <td></td>
+<td></td>
 <td>17</td>
 <td></td>
 <td>1</td>
@@ -2847,35 +2856,37 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>release-train</code></td>
-<td>5</td>
+<td>8</td>
+<td>2</td>
+<td>4</td>
 <td></td>
-<td>5</td>
+<td>3</td>
 <td></td>
-<td>6</td>
-<td></td>
+<td>1</td>
 <td>15</td>
 <td></td>
 <td>1</td>
 <td></td>
 <td></td>
-<td>2</td>
-<td><strong>34</strong></td>
+<td>3</td>
+<td><strong>37</strong></td>
 </tr>
 <tr>
 <td><code>register-open</code></td>
 <td>35</td>
-<td>3</td>
-<td>1</td>
-<td>1</td>
-<td>13</td>
-<td>2</td>
-<td>55</td>
 <td>4</td>
+<td>1</td>
+<td>1</td>
+<td>5</td>
+<td>4</td>
+<td>5</td>
+<td>55</td>
+<td>6</td>
 <td></td>
-<td></td>
+<td>1</td>
 <td>3</td>
 <td></td>
-<td><strong>117</strong></td>
+<td><strong>120</strong></td>
 </tr>
 <tr>
 <td><code>tenancy</code></td>
@@ -2884,6 +2895,7 @@ cover more than one <code>BF-</code>:</p>
 <td></td>
 <td>1</td>
 <td>13</td>
+<td></td>
 <td></td>
 <td></td>
 <td>7</td>
@@ -2903,6 +2915,7 @@ cover more than one <code>BF-</code>:</p>
 <td></td>
 <td></td>
 <td></td>
+<td></td>
 <td>11</td>
 <td></td>
 <td></td>
@@ -2911,6 +2924,7 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>backfix2</code></td>
+<td></td>
 <td></td>
 <td></td>
 <td></td>
@@ -2929,6 +2943,7 @@ cover more than one <code>BF-</code>:</p>
 <td><code>platform</code></td>
 <td>9</td>
 <td>1</td>
+<td></td>
 <td></td>
 <td></td>
 <td></td>
@@ -2980,7 +2995,7 @@ each cut needs a reviewer other than its author before it reaches <code>dev</cod
 <tbody>
 <tr>
 <td>Maintainer</td>
-<td style="text-align: right;">226</td>
+<td style="text-align: right;">232</td>
 <td style="text-align: right;">87%</td>
 </tr>
 <tr>
@@ -3015,7 +3030,7 @@ each cut needs a reviewer other than its author before it reaches <code>dev</cod
 </tr>
 <tr>
 <td><strong>total</strong></td>
-<td style="text-align: right;"><strong>261</strong></td>
+<td style="text-align: right;"><strong>267</strong></td>
 <td style="text-align: right;"></td>
 </tr>
 </tbody>
