@@ -30,13 +30,11 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 20 items
+### Maintainer &mdash; 18 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BFQ-161` | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory  | &mdash; |
-| `BFQ-163` | `in-flight-upstream` | BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisor | #8835 |
-| `BFQ-176` | `in-flight-upstream` | BF-176 - axios is only a devDependency and lodash is undeclared, so a production | #8834 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-152` | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by  | &mdash; |
@@ -54,6 +52,12 @@ every item that was `merged-upstream` then is `released`.
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
 | `BFQ-175` | `unsettled` | BF-175 - temp targets are converted from mmol/L only when units is exactly 'mmol | &mdash; |
+
+### Maintainer + a second human &mdash; 1 item
+
+| id | claimed state | what it is | PR |
+|---|---|---|---|
+| `RT-2` | `in-flight-upstream` | Cut 2 - chore/build-runtime-separation | #8837 |
 
 ### SAFETY reviewer &mdash; 1 item
 
@@ -79,8 +83,7 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
-| **#8834** | `BFQ-176` | `bf/axios-runtime-dependency` | BF-176 - axios is only a devDependency and lodash is undecla | Maintainer |
-| **#8835** | `BFQ-163` | `deps/16.0.0-security-refresh` | BF-163 - compression 1.8.1 (every response) is inside a high | Maintainer |
+| **#8837** | `RT-2` | `chore/build-runtime-separation` | Cut 2 - chore/build-runtime-separation | Maintainer + a second human |
 
 <!-- END GENERATED: open-prs -->
 

@@ -32,16 +32,19 @@
  * package (lodash/escape -> lodash, @scope/pkg/x -> @scope/pkg). Each package
  * must be under dependencies: under devDependencies only, or absent, is BAD.
  *
- * THE ALLOWLIST, and why it is safe. lib/server/app.js loads
+ * THE ALLOWLIST, and why it is safe. lib/server/app.js loads webpack,
  * webpack-dev-middleware and webpack-hot-middleware only inside
  * `if (process.env.NODE_ENV === 'development') {` (the live-rebuild mode for
- * developers; guard at :334, requires at :343 and :353 on dev 04d435eb). They
- * are correctly devDependencies. Each is allowed ONLY in that file and ONLY on
- * a line inside a block opened by that guard; a require of either anywhere
- * else is BAD. The block is found by counting braces from the guard line,
+ * developers; guard at :334, requires at :343 and :353 on dev 04d435eb; on cut
+ * 2 ee94b148 the guard is at :333 and webpack is required at :340). The two
+ * middlewares are devDependencies everywhere; cut 2 (#8837) moves webpack to
+ * devDependencies too, where dev still lists it under dependencies. Each is
+ * allowed ONLY in that file and ONLY on a line inside a block opened by that
+ * guard; a require of any of the three anywhere else is BAD, whichever list
+ * declares it. The block is found by counting braces from the guard line,
  * which ignores braces inside strings and comments;
- * runtime-requires-declared-guard-control.sh checks that a require moved out
- * of the block goes red.
+ * runtime-requires-declared-control.sh checks that a webpack-hot-middleware or
+ * webpack require appended outside the block goes red.
  *
  *   RUNTIME_REQUIRES_REF=<ref>  node tools/queue/gates/runtime-requires-declared.js
  *   RUNTIME_REQUIRES_TREE=<dir> node tools/queue/gates/runtime-requires-declared.js
@@ -60,6 +63,7 @@ const REF = process.env.RUNTIME_REQUIRES_REF || 'official/dev';
 const label = TREE ? 'tree' : REF;
 
 const ALLOW = {
+  webpack: 'lib/server/app.js',
   'webpack-dev-middleware': 'lib/server/app.js',
   'webpack-hot-middleware': 'lib/server/app.js',
 };

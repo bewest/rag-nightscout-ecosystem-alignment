@@ -431,7 +431,7 @@ findings (9 high, 1 critical), and the published cut tips have `chore/retire-jsd
 None of cuts 1–4 or #8605 fixes `braces`, `node-forge`, `source-map-js`, `follow-redirects` or
 `compression`. The `sanitize-html` advisories GHSA-x3q4 and GHSA-cv27 need 2.18.0, which needs Node
 >=22.12; no cut fixes them (cut 1 as rehearsed, `rh/cut1-retire-legacy` `c043fb2d`, keeps 2.17.5;
-cuts 2–4 and #8605 have 2.17.7). GHSA-374f, a new moderate, is untriaged. On the next cycle's `dev`
+cuts 2–4 and #8605 have 2.17.7). GHSA-374f, a new moderate, is untriaged. **Corrected 2026-10-25:** GHSA-374f-7chj-9948 never applied to 15.0.9: its range is `>=2.17.7 <2.18.0`, and 15.0.9 locks 2.17.5 (the cut tips' 2.17.7 of that date was inside it). The `sanitize-html` 2.18.1 update in #8835 (merged to `dev` for 16.0.0) closes GHSA-x3q4, GHSA-cv27, GHSA-jxwj and GHSA-g8qq. On the next cycle's `dev`
 `04d435eb` (2026-10-21 20:49Z): 27 findings, 13 high, 0 critical in the worktree (14 / 9 with
 `--omit=dev`); the same lockfile audited in a scratch directory gives 28 / 14, the extra high being
 `axios-cookiejar-support`, cause not found. The work that gets there was planned in the open:

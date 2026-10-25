@@ -22,8 +22,7 @@ repository.
 | packet | PR | claimed state | what it is |
 |---|---|---|---|
 | [`ADV-CONFIG`](adv-config.md) | #8746 | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) |
-| [`BFQ-176`](bfq-176-bf-axios-runtime-dependency.md) | #8834 | `in-flight-upstream` | BF-176 - axios is only a devDependency and lodash is undeclared, so a production install of dev (16.0.0 line, cut 1 merged) stops at boot when IMPORT_CONFIG is set |
-| [`BFQ-163`](bfq-163-deps-16-0-0-security-refresh.md) | #8835 | `in-flight-upstream` | BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in 1.8.2 |
+| [`RT-2`](rt-2-chore-build-runtime-separation.md) | #8837 | `in-flight-upstream` | Cut 2 - chore/build-runtime-separation |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`BFQ-152`](bfq-152.md) | &mdash; | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission |
 | [`BFQ-161`](bfq-161-bf-entries-pattern-limit.md) | &mdash; | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes |

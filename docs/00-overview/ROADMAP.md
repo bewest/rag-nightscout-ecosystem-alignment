@@ -52,34 +52,34 @@ and the suggested order of the next merges, and the
 (`RT-REBASE`, `RT-1`); (2) backfixes that affect dosing or security; (3) other exposure fixes, only
 where no cut or modernization branch already covers them.
 
-What is left, as it stands on 2026-10-25 (`dev` `eb72a1d3`, `master` `c6a0d8ed`):
+What is left, as it stands on 2026-10-25, 19:51Z (`dev` `2bc298b9`, `master` `c6a0d8ed`):
 
-1. **Merged to `dev` on 2026-10-25, all by AndyLow91, none released:** #8831 (opt-in `THEME=modern`
+1. **Merged to `dev` on 2026-10-25, none released:** by AndyLow91, #8831 (opt-in `THEME=modern`
    dashboard), #8825 (`BFQ-173`), #8826 (`BFQ-174`, after #8825 as required), #8827 (`BFQ-157`), #8823
-   (the `BRIDGE_SERVER` mapping, also folded into cut 1; one copy of the code, the test block twice),
-   #8819 (`BFQ-172`, javier-erro), #8797 (`BFQ-09`), #8816, #8812, #8808 and #8828 (`RT-1`, cut 1).
-   183 commits and 12 first-parent commits ahead of `master`. CI on `eb72a1d3` passed in every cell and
-   published the `dev` Docker image (push run 40211895500). The staging PR #8824 (`dev` → `master`) is
-   open at `eb72a1d3`, mergeable, review required.
-2. **Known defects on `dev`**: BF-176, a production install stops at boot when `IMPORT_CONFIG` is set
-   (reproduced on `eb72a1d3`; it reached `dev` because #8828 merged before its fix; in the published
-   `dev` image, in no release); BF-177, a glucose distribution test from #8812 that fails outside UTC
-   (test only).
-3. **In flight.** Open PRs to `dev`, pushed by the maintainer on 2026-10-25: #8834, the BF-176 fix
-   (`bf/axios-runtime-dependency` `f3d73f43`, `BFQ-176`), and #8835, the dependency refresh
-   (`deps/16.0.0-security-refresh` `341b843a`: `compression`, `follow-redirects`, `source-map-js`;
-   `BFQ-163`). Not yet PRs: cut 2's catch-up merge of `dev` on `wip/cut2-onto-cut1-16.0.0` (`RT-2`);
-   `sanitize-html` 2.18 as its own PR (`BFQ-163`); BF-72 and BF-161 in the private forks of their draft advisories, no fork PR
-   opened yet, each owing a merge of `dev` (`BFQ-72`, `BFQ-161`).
-4. **Re-stated now that cut 1 is on `dev`:** `RT-2` is in progress; `ID-SIMPLE-MATCH`, `RT-D3-SUITE`,
-   `RT-JSDOM-REST` and `RT-CONNECT-TEARDOWN` can start on `dev` (`not-started`);
-   `RT-NODE-FLOOR-TESTED` records that on `dev` the Dockerfile pins `node:24.22.1-alpine` and CI tests
-   the exact floors, and its gates still read the cut tips.
-5. **Open decisions** are listed with their owners in
+   (the `BRIDGE_SERVER` mapping, also folded into cut 1), #8819 (`BFQ-172`, javier-erro), #8797
+   (`BFQ-09`), #8816, #8812, #8808 and #8828 (`RT-1`, cut 1); by bewest, #8834 (`BFQ-176`, `93f152bd`),
+   #8835 (`BFQ-163`: `compression`, `follow-redirects`, `source-map-js` and `sanitize-html` 2.18.1,
+   `a20469dc`) and #8838 (test and CI hygiene: `RT-CONNECT-TEARDOWN`, `BFQ-158`, `BFQ-177`,
+   `RT-D3-SUITE`, the edge CI matrix and MongoDB 5.0 through 8.0; `2bc298b9`). 204 commits and 15
+   first-parent commits ahead of `master`. CI on `2bc298b9` passed in every cell and published the `dev`
+   Docker image. The staging PR #8824 (`dev` → `master`) is open at `2bc298b9`, mergeable, review
+   required.
+2. **BF-176 on `dev`, closed:** `dev` had the `IMPORT_CONFIG` boot crash from `eb72a1d3` (16:29Z) to
+   `93f152bd` (17:44Z), and the `dev` Docker image published at 17:15Z carries it; the images published
+   since do not. No release carried it.
+3. **In flight.** Cut 2 is #8837 (`ee94b148`, `RT-2`), open; its CI failed the required check
+   *Run Tests (24, 6)* on `tests/env-runner.test.js`'s nyc child case under coverage, and the fix
+   `bd941200` and a merge of `dev` `2bc298b9` are not pushed yet. Peer session -b7's test tiers
+   (`RT-TEST-TIERS`, local) land after #8837 as one PR. BF-72 and BF-161 are in the private forks of their
+   draft advisories, no fork PR opened yet, each owing a merge of `dev` (`BFQ-72`, `BFQ-161`).
+4. **Not started:** `ID-SIMPLE-MATCH`, `RT-JSDOM-REST`, `RT-BUNDLE-THEME-SPLIT` (the page-bundle budget's
+   option B, for Andy Low) and `RT-BOOT-INDEX-AWAIT` (boot awaits its index creation).
+   `RT-NODE-FLOOR-TESTED` records the edge matrix on `dev`, and its gates still read the cut tips.
+5. **Open decisions and settings** are listed with their owners in
    [16.0.0 contents](../../releases/cgm-remote-monitor-16.0.0/contents.md#open-items-a-releaser-must-settle):
-   whether cut 2 ships in 16.0.0, `sanitize-html` 2.18's stored-output difference, the scope of BF-161's
-   draft advisory, BF-72's test inputs, BF-95, BF-152, `DEPENDABOT-CONFIG`, and the required MongoDB 4.4
-   check.
+   whether cut 2 ships in 16.0.0, the scope of BF-161's draft advisory, BF-72's test inputs, BF-95,
+   BF-152 and `DEPENDABOT-CONFIG`; and the maintainer's branch-protection changes for the edge matrix
+   (drop `Run Tests (22, 4.4)` on `master`, move the `(24, 6)` and `(22, 6)` requirements to edge cells).
 6. The version class of #8772, #8775 and #8780 stays recorded as open in
    [15.0.9 decisions](../../releases/cgm-remote-monitor-15.0.9/decisions.md).
 
@@ -141,18 +141,18 @@ harness cut 1 keeps is retired later under scope B (`RT-JSDOM-REST`, decided 202
 | 1 | `OID-STORAGE-HELPER` | One storage-level rule for writes by _id instead of six hand-written copies | `not-started` | &mdash; |
 | 1 | `OID-V3-EDIT-MERGE` | API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an  | `not-started` | &mdash; |
 | 1 | `OID-WS-EDIT-MERGE` | Websocket dbUpdate of a record stored twice by _id edits both copies and leaves  | `not-started` | &mdash; |
-| 1 | `RT-2` | Cut 2 - chore/build-runtime-separation | `in-progress` | &mdash; |
+| 1 | `RT-2` | Cut 2 - chore/build-runtime-separation | `in-flight-upstream` | &mdash; |
+| 1 | `RT-BOOT-INDEX-AWAIT` | Boot awaits its collection and index creation before it reports ready | `not-started` | &mdash; |
 | 1 | `RT-BOOTERROR` | BF-63 - the page that reports a boot error crashes on cut 4's boot errors | `gate-not-met` | &mdash; |
 | 1 | `RT-CONNECT-PIN-CUTS` | BF-65 - cuts 1-3 ship the leaking connector to upgraders first | `gate-not-met` | &mdash; |
-| 1 | `RT-CONNECT-TEARDOWN` | Remove the redundant connector teardown listener in bootevent.js once cut 1 is o | `not-started` | &mdash; |
-| 1 | `RT-D3-SUITE` | The treatment-drag clamps get a regression test in cut 1's real-browser suite | `not-started` | &mdash; |
 | 1 | `RT-JSDOM-REST` | Retire the whole-bundle jsdom harness that cut 1 keeps; secure-jsdom stays as th | `not-started` | &mdash; |
 | 1 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | &mdash; |
 | 1 | `RT-PR-8730` | #8730 - Crowdin translation updates, held out of 15.0.9 (BF-132) | `gate-not-met` | &mdash; |
 | 1 | `RT-REBASE` | Catch the cuts up with dev: cut 1 merged (#8828, 2026-10-25); cuts 2-5 are far b | `in-progress` | &mdash; |
 | 2 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then ret | `not-started` | `OID-PREVALENCE` |
 | 2 | `RT-3` | Cuts 3+5 combined - dependency release | `blocked` | `RT-2` |
-| 2 | `RT-TEST-TIERS` | Test tier map, tier check and inner-loop test selection (test:affected, test:smo | `blocked` | `RT-2`, `BFQ-158` |
+| 2 | `RT-BUNDLE-THEME-SPLIT` | Load the modern theme's client code only when it is chosen (page-bundle budget o | `not-started` | `RT-2` |
+| 2 | `RT-TEST-TIERS` | Test tier map, tier check and inner-loop test selection (test:affected, test:smo | `blocked` | `RT-2` |
 | 3 | `RT-5` | Cut 4 - chore/mime-exposure-review, the one to slow down on | `blocked` | `RT-3` |
 
 <!-- END GENERATED: road-release-train -->

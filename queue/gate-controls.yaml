@@ -1189,8 +1189,12 @@ controls:
       2026-10-21 (bce12ecc), whose engines ^22.23.2 || ^24.20.0 sets a
       patch floor inside the Dockerfile's floating node:22-alpine tag; the
       gate reports that pair BAD and exits 1 (measured 2026-10-21; 9
-      checked, 1 failing). The strong form: same instrument, a real tree
-      where the property is false.
+      checked, 1 failing; re-measured 2026-10-25 after the .nvmrc extractor
+      was changed to read 24.22.1 as one version instead of the majors 24, 22
+      and 1: still 9 checked, 1 failing, while official/chore/retire-jsdom,
+      official/dev 2bc298b9 and cut 2 ee94b148 are 9 checked, 0 failing). The
+      strong form: same instrument, a real tree where the property is
+      false.
 
   - gate: |-
       node tools/queue/gates/platform-sql-surface.js
@@ -2367,30 +2371,148 @@ controls:
       gate itself exits 0 against official/dev eb72a1d3.
 
   - gate: |-
-      RUNTIME_REQUIRES_REF=bf/axios-runtime-dependency node tools/queue/gates/runtime-requires-declared.js
+      RUNTIME_REQUIRES_REF=official/dev node tools/queue/gates/runtime-requires-declared.js
     cwd: .
     control: |-
       tools/queue/gates/runtime-requires-declared-control.sh
     control-kind: static
     proves: >
-      three known negatives, and the control exits non-zero only when the gate
-      refuses all three. (1) The released tag v15.0.9 (immutable, so it cannot go
-      stale when the fix merges): axios BAD (devDependencies only, required
-      at bin/testdatarunner.js:4 and lib/server/bootevent.js:140) and lodash
-      BAD (undeclared, lib/utils.js:92); 45 checked, 2 failing, exit 1
-      (measured 2026-10-22; official/dev 04d435eb and cut 1 806ff2f0 give the
-      same two). (1b) dev at eb72a1d3 (16.0.0 with cut 1 merged, named by
-      commit id so it cannot go stale): the same two, axios at
-      lib/server/bootevent.js:114; 41 checked, 2 failing (measured
-      2026-10-25). This is the tree where the production-install
-      IMPORT_CONFIG boot exits 1 with "Cannot find module 'axios'". (2) A
-      git-archive copy of the fix branch (merged with dev eb72a1d3 at
-      f3d73f43) with one require('webpack-hot-middleware') appended after the
-      end of lib/server/app.js, outside the NODE_ENV === 'development' block:
-      the allowlisted package is reported BAD at lib/server/app.js:395; 41
-      checked, 1 failing, exit 1. The unmutated branch passes (41 checked, 0
-      failing), so (2) is red for the mutation and not
-      for the mode. The strong form: the same instrument on real trees.
+      four known negatives, and the control exits non-zero only when the gate
+      refuses all four. (1) The released tag v15.0.9 (immutable): axios BAD
+      (devDependencies only, bin/testdatarunner.js:4 and
+      lib/server/bootevent.js:140) and lodash BAD (undeclared,
+      lib/utils.js:92); 45 checked, 2 failing. (1b) dev at eb72a1d3, by
+      commit id: the same two, axios at lib/server/bootevent.js:114; 41
+      checked, 2 failing; the tree where the production-install IMPORT_CONFIG
+      boot exits 1. (2) and (3) are git-archive copies of official/dev: the gate is
+      first run on the unmutated copy and must pass (otherwise
+      CONTROL-ERROR), then one require('webpack-hot-middleware') (2) or one
+      require('webpack') (3) is appended after the end of lib/server/app.js,
+      outside the NODE_ENV === 'development' block, and the allowlisted
+      package is reported BAD there. Measured 2026-10-25 on official/dev
+      2bc298b9 (41 checked, 1 failing each, at lib/server/app.js:395) and on
+      official/chore/build-runtime-separation ee94b148 (32 checked, 1 failing
+      each, at :372): the allowlist is bounded by the guard, not by the
+      package name, for webpack as for the middlewares. The strong form: the
+      same instrument on real trees.
+
+  - gate: |-
+      RUNTIME_REQUIRES_REF=official/chore/build-runtime-separation node tools/queue/gates/runtime-requires-declared.js
+    cwd: .
+    control: |-
+      tools/queue/gates/runtime-requires-declared-control.sh official/chore/build-runtime-separation
+    control-kind: static
+    proves: >
+      four known negatives, and the control exits non-zero only when the gate
+      refuses all four. (1) The released tag v15.0.9 (immutable): axios BAD
+      (devDependencies only, bin/testdatarunner.js:4 and
+      lib/server/bootevent.js:140) and lodash BAD (undeclared,
+      lib/utils.js:92); 45 checked, 2 failing. (1b) dev at eb72a1d3, by
+      commit id: the same two, axios at lib/server/bootevent.js:114; 41
+      checked, 2 failing; the tree where the production-install IMPORT_CONFIG
+      boot exits 1. (2) and (3) are git-archive copies of official/chore/build-runtime-separation: the gate is
+      first run on the unmutated copy and must pass (otherwise
+      CONTROL-ERROR), then one require('webpack-hot-middleware') (2) or one
+      require('webpack') (3) is appended after the end of lib/server/app.js,
+      outside the NODE_ENV === 'development' block, and the allowlisted
+      package is reported BAD there. Measured 2026-10-25 on official/dev
+      2bc298b9 (41 checked, 1 failing each, at lib/server/app.js:395) and on
+      official/chore/build-runtime-separation ee94b148 (32 checked, 1 failing
+      each, at :372): the allowlist is bounded by the guard, not by the
+      package name, for webpack as for the middlewares. The strong form: the
+      same instrument on real trees.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f3d73f43 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f3d73f43 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-25: official/master c6a0d8ed (15.0.9) does not contain
+      f3d73f43 (#8834's head), and the same command reports it not-an-ancestor (exit
+      1); the gate itself exits 0 against official/dev 2bc298b9.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 477d5200 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 477d5200 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-25: official/master c6a0d8ed (15.0.9) does not contain
+      477d5200 (#8835's head), and the same command reports it not-an-ancestor (exit
+      1); the gate itself exits 0 against official/dev 2bc298b9.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 38049fe6 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 38049fe6 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-25: official/master c6a0d8ed (15.0.9) does not contain
+      38049fe6 (#8838, RT-CONNECT-TEARDOWN), and the same command reports it not-an-ancestor (exit
+      1); the gate itself exits 0 against official/dev 2bc298b9.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor fb0e1217 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor fb0e1217 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-25: official/master c6a0d8ed (15.0.9) does not contain
+      fb0e1217 (#8838, BF-158), and the same command reports it not-an-ancestor (exit
+      1); the gate itself exits 0 against official/dev 2bc298b9.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 89d19b5b official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 89d19b5b official/master
+    control-kind: static
+    proves: >
+      run 2026-10-25: official/master c6a0d8ed (15.0.9) does not contain
+      89d19b5b (#8838, BF-177), and the same command reports it not-an-ancestor (exit
+      1); the gate itself exits 0 against official/dev 2bc298b9.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f7856a44 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f7856a44 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-25: official/master c6a0d8ed (15.0.9) does not contain
+      f7856a44 (#8838, RT-D3-SUITE), and the same command reports it not-an-ancestor (exit
+      1); the gate itself exits 0 against official/dev 2bc298b9.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev official/chore/build-runtime-separation >/dev/null
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev b6e8c7cd >/dev/null
+    control-kind: static
+    proves: >
+      the same trial merge with the published cut 2 b6e8c7cd, before its
+      catch-up merges of dev, which conflicts with dev (20 paths against
+      eb72a1d3; 21 against 2bc298b9, measured 2026-10-25), exits 1. b6e8c7cd
+      is a commit id, so the control cannot go stale when the branch moves.
+
+  - gate: |-
+      NODE_FLOOR_REF=official/chore/build-runtime-separation node tools/queue/gates/node-floor-consistency.js
+    cwd: .
+    control: |-
+      NODE_FLOOR_REF=bce12ecc node tools/queue/gates/node-floor-consistency.js
+    control-kind: static
+    proves: >
+      the identical assertions against cut 1 as published before 2026-10-21
+      (bce12ecc), whose engines ^22.23.2 || ^24.20.0 sets a patch floor inside
+      the Dockerfile's floating node:22-alpine tag; 9 checked, 1 failing, exit
+      1 (re-measured 2026-10-25 after the .nvmrc extractor was changed to read
+      a version as a version; official/dev 2bc298b9 and cut 2 ee94b148 are 9
+      checked, 0 failing).
 
   - gate: |-
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bbca2892 official/dev

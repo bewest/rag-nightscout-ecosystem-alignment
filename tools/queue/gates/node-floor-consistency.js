@@ -64,11 +64,24 @@ findings.push({
 // 2. Every file that also states a floor must agree with engines. These are the
 //    ones a revert would leave behind.
 const STATERS = [
-  { file: '.nvmrc', extract: (t) => [...t.matchAll(/(\d+)/g)].map((m) => Number(m[1])) },
+  // .nvmrc holds ONE version (24.22.1), or a bare major (24), or an alias such
+  // as lts/*. It used to be read with /(\d+)/g, which turned 24.22.1 into the
+  // three "majors" 24, 22 and 1 and reported major 1 as not permitted on every
+  // ref since 32489dc5 (dev and cut 2 alike, 2026-10-25). Read it as a version.
+  { file: '.nvmrc', extract: (t) => {
+    const v = t.trim().replace(/^v/, '');
+    const full = v.match(/^(\d+\.\d+\.\d+)$/);
+    if (full) return [full[1]];
+    const major = v.match(/^(\d+)(?:\.\d+)?$/);
+    return major ? [Number(major[1])] : [];
+  } },
   { file: 'bin/setup.sh', extract: (t) => [...t.matchAll(/setup_(\d+)\.x/g)].map((m) => Number(m[1])) },
   { file: 'azuredeploy.json', extract: (t) => [...t.matchAll(/WEBSITE_NODE_DEFAULT_VERSION[\s\S]{0,200}?~(\d+)/g)].map((m) => Number(m[1])) },
   { file: 'README.md', extract: (t) => [...t.matchAll(/NODE_DEFAULT_VERSION=~(\d+)/g)].map((m) => Number(m[1])) },
-  { file: 'Dockerfile', extract: (t) => [...t.matchAll(/^FROM\s+node:(\d+)/gm)].map((m) => Number(m[1])) },
+  // A pinned tag (node:24.22.1-alpine) is a version and is checked as one; a
+  // floating tag (node:22-alpine) is a major.
+  { file: 'Dockerfile', extract: (t) => [...t.matchAll(/^FROM\s+node:(\d+)(\.\d+\.\d+)?/gm)]
+    .map((m) => (m[2] ? m[1] + m[2] : Number(m[1]))) },
   // Scoped to lines that mention Node. An unscoped semver regex over a
   // markdown file matches every dependency version in it, which produced a
   // false BAD the first time this gate was run.
@@ -89,10 +102,13 @@ for (const stater of STATERS) {
     findings.push({ ok: true, text: `${stater.file}: states no Node major` });
     continue;
   }
-  const strays = stated.filter((v) => !majorPermitted(v));
+  // A full version must itself satisfy engines; a bare major must have some
+  // version engines permits.
+  const permitted = (v) => (typeof v === 'string' ? semver.satisfies(v, engines) : majorPermitted(v));
+  const strays = stated.filter((v) => !permitted(v));
   findings.push({
     ok: strays.length === 0,
-    text: `${stater.file}: states Node major(s) ${stated.join(', ')}`
+    text: `${stater.file}: states Node ${stated.join(', ')}`
         + (strays.length ? ` -- ${strays.join(', ')} not permitted by engines` : ''),
   });
 }

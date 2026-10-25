@@ -2117,13 +2117,16 @@ items:
     title: "BF-177 - a glucose distribution report test added by #8812 fails outside UTC (dev eb72a1d3)"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
-    base: official/dev@eb72a1d3
+    branch: chore/16.0.0-test-ci-hygiene
+    base: official/dev@a20469dc
     worktree: externals/cgm-remote-monitor-official
-    state: not-started
-    pr: []
+    state: merged-upstream
+    pr: [8838]
     ships_to_operators_today: false
     blast_radius: >
+      Fixed by 89d19b5b in #8838: the case's stand-in for the profile's
+      zone is a UTC profile, plus two cases that run the report with the
+      real lib/profilefunctions.js and a named zone. The defect was
       tests/glucosedistribution.test.js:116 on dev eb72a1d3, the case
       "includes the first selected interval when earlier hours are
       excluded", added by ba5f7f4b (AndyLow91, "test(reports): cover
@@ -2138,6 +2141,12 @@ items:
       (read-derived)
     register: [BF-177]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 89d19b5b official/dev
+        kind: static
+        describe: >
+          official/dev contains 89d19b5b (BF-177's test fix; #8838, merged 2026-10-25
+          19:42:01Z as 2bc298b9); red if dev is rewritten or the merge is
+          reverted out of history
       - no-gate: >
           Seen 2026-10-25 by the peer session preparing
           deps/16.0.0-security-refresh (Node 24.22.1, npm 11.19.1, MongoDB
@@ -2152,6 +2161,22 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - releases/cgm-remote-monitor-16.0.0/contents.md
     notes: >
+      2026-10-25: #8838 ("16.0.0 test and CI hygiene", chore/16.0.0-test-ci-hygiene,
+      head 039be646, 10 commits on dev a20469dc) merged into dev at
+      19:42:01Z as 2bc298b9 (gh pr view 8838). Merged to dev, not released.
+      89d19b5b makes the case's stand-in a UTC profile and adds two cases
+      that run the report with the real lib/profilefunctions.js and a named
+      profile zone (America/Los_Angeles 213.5, Pacific/Auckland 249.5). The
+      file passes, 8 cases, under TZ=UTC, America/Los_Angeles,
+      Pacific/Auckland and Asia/Kolkata; with the old stand-in the original
+      case fails in the three non-UTC zones, and with the report reading
+      the hour in UTC both new cases fail in every zone (the PR's runs).
+      America/Los_Angeles gives 213.5, the original failure's number, so
+      the report was right and the test was wrong: verified by running it,
+      which supersedes the read-derived claim below. Not covered: a
+      profile with no time zone, where the report filters on the browser's
+      zone, as before.
+
       Filed 2026-10-25 as BF-177 (register §1b) from the deps refresh's test
       runs (its branch fails the same case). Read: the test's stub
       applyTimezone returns moment(value) in the machine's zone, while the
@@ -2166,10 +2191,10 @@ items:
     title: The treatment-drag clamps get a regression test in cut 1's real-browser suite
     parcel: release-train
     repo: cgm-remote-monitor
-    branch: ""
-    base: official/dev@eb72a1d3
-    state: not-started
-    pr: []
+    branch: chore/16.0.0-test-ci-hygiene
+    base: official/dev@a20469dc
+    state: merged-upstream
+    pr: [8838]
     blast_radius: >
       A new test under tests/browser/ on cut 1 (playwright-core 1.63, Chromium,
       Firefox and WebKit in CI), ported from the alignment repo's
@@ -2182,25 +2207,39 @@ items:
     semver_reason: tests only
     register: []
     gates:
-      - run: node tools/queue/gates/d3-drag-clamp-covered.js
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f7856a44 official/dev
         kind: static
         describe: >
-          The coverage gap. With BOTH treatment-drag clamps deleted
-          (renderer.js:764 and 770-771) the suite stays at 24/24 - the handler
-          runs 25 times with only x in {20,400}, all strictly inside 0..900, so
-          the boundary is never reached (GT2). This gate re-runs that ablation
-          and FAILS while the clamps are uncovered.
+          official/dev contains f7856a44 (the two treatment-drag clamp cases; #8838, merged 2026-10-25
+          19:42:01Z as 2bc298b9); red if dev is rewritten or the merge is
+          reverted out of history
       - no-gate: >
-          The port itself is not gated yet. Done means a tests/browser/ test on
-          cut 1 that fails when both drag clamps are deleted, on all three
-          engines, with the axis-computed expected time and the dismissed-confirm
-          control from the probe. The candidate list of probes to port is in
-          tools/review/README.md.
-    blocks_on: [RT-1]
+          The break-it is a browser run, not a queue gate: with the three
+          clamp expressions in lib/client/renderer.js replaced by event.x and
+          event.y, both new cases in tests/browser/chart-interactions.test.js
+          fail in Chromium 153 and Firefox 155, and with the clamps in place
+          the file passes, 26 cases, in both (the PR's runs; WebKit does not
+          launch on that host, so CI's WebKit cell is its first run). The
+          older d3-drag-clamp-covered.js measured the jsdom suite
+          tests/dependency-d3.test.js, which still does not reach the
+          boundary; this item's definition of done was the browser test.
+    blocks_on: []
     evidence:
       - docs/60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
     notes: >
+      2026-10-25: #8838 ("16.0.0 test and CI hygiene", chore/16.0.0-test-ci-hygiene,
+      head 039be646, 10 commits on dev a20469dc) merged into dev at
+      19:42:01Z as 2bc298b9 (gh pr view 8838). Merged to dev, not released.
+      f7856a44 adds two cases to tests/browser/chart-interactions.test.js:
+      a drag past the right edge must send created_at equal to
+      xScale.invert(width), read from the axis at release, different from
+      the unclamped time, with the arrow ending at the edge; a drag past the
+      left and bottom edges lands in the Remove and Move insulin drop areas,
+      both confirms are dismissed, and nothing is sent. Browser suite 457
+      passing on Chromium 153 and Firefox 155 (the PR's run on its
+      pre-rebase tree 9f143ce5).
+
       2026-10-25: cut 1 is on dev (RT-1, #8828, eb72a1d3), so the port goes
       to dev as its own PR; not started. The gate stays red by design until
       the test exists.
@@ -3019,11 +3058,17 @@ items:
           on its own, and the main-suite tiers add up to the full run's 3382
           cases plus the 4 tests/fixtures/secure-jsdom.test.js cases no
           script ran before.
-    blocks_on: [RT-2, BFQ-158]
+    blocks_on: [RT-2]
     evidence:
       - releases/cgm-remote-monitor-16.0.0/contents.md
       - docs/30-design/modernization/jsdom-harness-test-tiers-2026-10-21.md
     notes: >
+      2026-10-25, later: in flight, local and unpushed (29ea17b6 plus
+      fe002d42). The test and CI hygiene PR merged as #8838 (dev 2bc298b9,
+      BFQ-158 merged-upstream), so this waits only on cut 2 (#8837, RT-2).
+      It lands after #8837 and #8838 as one PR and drops its own BF-158
+      change; #8838 carries the runtime-cache flush this branch found.
+
       2026-10-25: local commits 29ea17b6 and fe002d42 on
       test/tier-map-and-selection over dev eb72a1d3, not pushed. Lands on dev
       after cut 2 (RT-2, wip/cut2-onto-cut1-16.0.0) and the test and CI
@@ -3053,16 +3098,101 @@ items:
       by BF-158's leftover data; a clean re-run with the test database
       dropped before each mutant is in progress.
 
-  - id: RT-CONNECT-TEARDOWN
-    title: Remove the redundant connector teardown listener in bootevent.js once cut 1 is on dev
+  - id: RT-BUNDLE-THEME-SPLIT
+    title: "Load the modern theme's client code only when it is chosen (page-bundle budget option B)"
     parcel: release-train
     repo: cgm-remote-monitor
     branch: ""
-    base: official/dev@eb72a1d3
+    base: official/chore/build-runtime-separation@ee94b148
     worktree: externals/cgm-remote-monitor-official
     state: not-started
     pr: []
     blast_radius: >
+      Cut 2's page bundles: #8831's modern-theme modules
+      (lib/client/dashboard-theme.js, editor-navigation.js,
+      modern-layout.js, modern-chart.js, modern-chart-hover.js,
+      glucose-trace.js) move out of bundle.app.js into a bundle or chunk of
+      their own, loaded when THEME=modern or the saved browser theme selects
+      it. tests/page-bundle-budget.test.js admits the extra chunk, and
+      dashboard-theme.js switches layouts before the client binds plugins.
+    review: maintainer; owner Andy Low or the maintainer
+    operator_visible: >
+      Nothing changes in what you see. Pages that use the default theme
+      would download less code.
+    semver: patch
+    semver_reason: page packaging only; no setting, API or stored data changes
+    register: []
+    gates:
+      - no-gate: >
+          Not started. Gate to write: on the branch, bundle.app.js holds none
+          of the modern-theme modules (production source maps), the budget
+          test passes with app and total under ee94b148's allowances, and the
+          main page with THEME=modern still draws its trend in a real
+          browser.
+    blocks_on: [RT-2]
+    evidence:
+      - releases/cgm-remote-monitor-16.0.0/decisions.md
+    notes: >
+      Filed 2026-10-25 from the maintainer's page-bundle budget decision on
+      #8837: option A now (ee94b148 keeps app 349000 and total 417000 gzip
+      bytes; measured on b8ff91cb 341123 and 412296, against 334513 and
+      405305 on 62a9476f; the growth is #8831's modern theme, which every
+      page loads in bundle.app.js whichever theme is chosen), and option B
+      as this follow-up for Andy Low.
+
+  - id: RT-BOOT-INDEX-AWAIT
+    title: Boot awaits its collection and index creation before it reports ready
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@2bc298b9
+    worktree: externals/cgm-remote-monitor-official
+    state: not-started
+    pr: []
+    blast_radius: >
+      Product code: the boot stages that request collections and indexes
+      without awaiting them (lib/server/bootevent.js and the storage
+      setup), so the first write on an empty database does not wait behind
+      them. Not located line by line yet.
+    review: maintainer
+    operator_visible: >
+      On a brand-new, empty database, the first saves after Nightscout
+      starts can take several seconds while the database is still being
+      set up. Nothing is lost; this would make start-up finish that setup
+      first.
+    semver: patch
+    semver_reason: boot ordering; no API, setting or stored-data shape changes
+    register: []
+    gates:
+      - no-gate: >
+          Not started. Gate to write: with the database dropped before boot,
+          the first authSubject role insert after boot completes in
+          milliseconds rather than seconds, and tests/api3.search.test.js's
+          before hook passes under mocha's default timeout (cab8896f's 30 s
+          allowance reverted as the red control).
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/rc-16.0.0-integration-record.md
+    notes: >
+      Filed 2026-10-25 from #8838's cab8896f, which gave the API3 SEARCH
+      before hook a 30 s timeout. Measured there on MongoDB 7.0.43: on an
+      empty database the first role insert in authSubject took 4.8 to 7.2 s
+      behind the collections and indexes boot requests without awaiting
+      them; once they exist it takes about 2 ms; boot itself 0.2 to 0.4 s.
+      The test fix is merged (dev 2bc298b9); the product fix is this item.
+
+  - id: RT-CONNECT-TEARDOWN
+    title: Remove the redundant connector teardown listener in bootevent.js once cut 1 is on dev
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: chore/16.0.0-test-ci-hygiene
+    base: official/dev@a20469dc
+    worktree: externals/cgm-remote-monitor-official
+    state: merged-upstream
+    pr: [8838]
+    blast_radius: >
+      38049fe6 in #8838 removes the listener and adds
+      tests/connect-lifecycle.test.js. The listener was
       lib/server/bootevent.js on 806ff2f0, lines 390-395 (391-395 on dev
       eb72a1d3): the
       ctx.bus.once('teardown') listener that calls the connector's stop()
@@ -3075,16 +3205,33 @@ items:
     semver_reason: removes a duplicate shutdown call; no declared surface moves
     register: []
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 38049fe6 official/dev
+        kind: static
+        describe: >
+          official/dev contains 38049fe6 (the listener's removal; #8838, merged 2026-10-25
+          19:42:01Z as 2bc298b9); red if dev is rewritten or the merge is
+          reverted out of history
       - no-gate: >
-          Not started. Gate to write: lib/server/bootevent.js on the fix
-          branch registers no teardown listener for the connector, and a
-          booted server with CONNECT enabled still stops the connector exactly
-          once on teardown, with 806ff2f0's listener as the red control for the
-          first half.
-    blocks_on: [RT-1]
+          The behaviour is tests/connect-lifecycle.test.js in the product
+          suite, not a queue gate: with a stub connector boot registers no
+          teardown listener; with the real connector the only teardown and
+          tearDown listeners are its own, two teardown events and one
+          tearDown stop its actor exactly once, and none remain. With dev's
+          listener restored 4 of its 12 cases fail; with the connector's two
+          once registrations removed the real-connector case fails (the PR's
+          runs).
+    blocks_on: []
     evidence:
       - docs/00-overview/ROADMAP.md
     notes: >
+      2026-10-25: #8838 ("16.0.0 test and CI hygiene", chore/16.0.0-test-ci-hygiene,
+      head 039be646, 10 commits on dev a20469dc) merged into dev at
+      19:42:01Z as 2bc298b9 (gh pr view 8838). Merged to dev, not released.
+      38049fe6 removes setupConnect's ctx.bus.once('teardown', ...):
+      nightscout-connect 0.1.0 registers handle.stop with once on both
+      tearDown and teardown, and the handler is idempotent and removes its
+      own listeners, so the extra call was a no-op.
+
       2026-10-25: cut 1 is on dev (RT-1, eb72a1d3) with the listener at
       lib/server/bootevent.js:393 (ctx.bus.once('teardown', function
       stopConnect ...)), so the removal goes to dev as its own PR; not
@@ -3709,11 +3856,16 @@ items:
     parcel: release-train
     repo: cgm-remote-monitor
     branch: chore/build-runtime-separation
-    base: official/dev@eb72a1d3
+    base: official/dev@a20469dc
     worktree: externals/cgm-remote-monitor-official
-    state: in-progress
-    blast_radius: 159 commits, prod 60 files +923/-465 (GT2 reproduced §5's row
-      exactly). Page bundles, narrowed D3, event bus, boot sequence, Babel 8.
+    state: in-flight-upstream
+    pr: [8837]
+    blast_radius: >
+      #8837, head ee94b148: 185 commits ahead of dev a20469dc (11 behind dev
+      2bc298b9, the merge of #8838). Page bundles, narrowed D3, event bus,
+      boot sequence, Babel 8, build/runtime split (webpack and Babel become
+      devDependencies), express-minify removed. The published cut b6e8c7cd
+      (159 commits ahead of dev before cut 1) is kept unchanged.
     review: maintainer plus a human reviewer
     operator_visible: >
       A maintenance release that changes how the page's code is packaged and
@@ -3726,18 +3878,70 @@ items:
       bus are where a plugin would break.
     register: []
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/build-runtime-separation >/dev/null
+      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev official/chore/build-runtime-separation >/dev/null
         kind: static
-        describe: trial-merges into dev cleanly - FAILS as of 2026-09-24 (origin/dev 153e5658), see RT-REBASE
+        describe: >
+          #8837's branch trial-merges into official/dev cleanly (clean against
+          dev 2bc298b9 on 2026-10-25; the published cut b6e8c7cd had 20
+          conflicting paths against eb72a1d3)
+      - run: RUNTIME_REQUIRES_REF=official/chore/build-runtime-separation node tools/queue/gates/runtime-requires-declared.js
+        kind: static
+        describe: >
+          every package cut 2's server code loads is under dependencies;
+          webpack, now a devDependency, is required only inside
+          lib/server/app.js's NODE_ENV === 'development' block (:333, require
+          at :340). 32 checked, 0 failing on ee94b148
+      - run: NODE_FLOOR_REF=official/chore/build-runtime-separation node tools/queue/gates/node-floor-consistency.js
+        kind: static
+        describe: >
+          every file that states a Node version on cut 2 agrees with
+          engines.node ^22.23.4 || ^24.22.1 || >=26.12.1 (.nvmrc 24.22.1 read
+          as a version); 9 checked, 0 failing on ee94b148
       - no-gate: >
           The minor classification rests on no plugin ever being run against it.
           A plugin corpus does not exist here. Until one does, "minor" is a
           judgement and the queue says so rather than letting the field imply a
           measurement.
-    blocks_on: [RT-1]
+    blocks_on: []
     evidence:
       - docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md
+      - docs/30-design/remedial/rc-16.0.0-integration-record.md
     notes: >
+      2026-10-25, 19:22Z: #8837 ("Cut 2: page bundles and the build/runtime
+      split (16.0.0)") opened against dev, head ee94b148, OPEN (gh pr view
+      8837). official/chore/build-runtime-separation is a fast-forward of the
+      published b6e8c7cd: 26 first-parent commits on top of it, 185 commits
+      ahead of dev a20469dc. Merges of dev: 04a7968d (eb72a1d3, 9
+      conflicting paths), dd2e0cfd (93f152bd, #8834), 94242483 (a20469dc,
+      #8835). Follow-ups: 14ba4686 (lib/d3.mjs exports bisector, curveBasis
+      and curveMonotoneX, which #8831's modern chart uses; without them the
+      production main page with THEME=modern threw while drawing the
+      trend), 17a9d48a (page fixtures render templates with server
+      settings), 4354fac3 (service-worker assets test against cut 2's
+      worker), 1e9ea6f6 (modern theme test reads storage through cut 2's
+      adapter), ba32eca4 (lodash exactly 4.18.1), the CI edge commits
+      a7eb6942, bdb6c733 and b8ff91cb, and ee94b148 (the page-bundle
+      budget, option A). Tests on ee94b148 (Node 24.22.1, TZ=UTC, MongoDB
+      7.0.43): npm test 3691/4/0, Chromium 540/0, page-bundle budget 9/9. On
+      b8ff91cb (host zone America/Los_Angeles): Node 22.23.4, 24.22.1 and
+      26.12.1 each 3542/4/4 (the two budget cases, BF-177's test and the
+      API3 SEARCH hook timeout), Firefox 540/0. queryLeaves checked against
+      traverse on 50,000 generated and 20 edge queries: 0 differences. All
+      figures from the PR body (the preparing session's runs).
+
+      CI on ee94b148 (run 40225696687, attempts 1 and 2) failed the
+      required check Run Tests (24, 6) and Maintained MongoDB (26, 8.0.29):
+      "Native env runner process contract passes file values through nyc
+      into a Mocha child" exceeded its 10 s timeout (3690 passing, 1
+      failing). tests/env-runner.test.js's nyc child case instruments all
+      of lib/ (.nycrc all: true) under test-ci's outer nyc; local runs
+      without coverage did not see it. The fix, bd941200 (peer session:
+      --all=false on the inner nyc, plus docs/test-specs/env-runner.md), is
+      on wip/cut2-onto-cut1-16.0.0 and not pushed; cut 2 also merges dev
+      2bc298b9 (#8838) before its next push. git merge-tree of #8837 and
+      #8838 was clean before #8838 merged, and cut 2 is clean against dev
+      2bc298b9.
+
       2026-10-25: cut 1 merged (RT-1, #8828, dev eb72a1d3), so cut 2 is next
       on the train. A peer session is merging dev eb72a1d3 into cut 2 on the
       local branch wip/cut2-onto-cut1-16.0.0 (head pending; not pushed;
@@ -8392,20 +8596,28 @@ items:
     title: BF-158 - the count=0 tests assume an empty database
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
-    base: origin/dev@68262e86
+    branch: chore/16.0.0-test-ci-hygiene
+    base: official/dev@a20469dc
     worktree: externals/cgm-remote-monitor-official
-    state: not-started
+    state: merged-upstream
+    pr: [8838]
     ships_to_operators_today: false
     blast_radius: >
-      tests/api.count-parameter.test.js only; test code, nothing an operator
-      runs.
+      fb0e1217 in #8838: tests/api.count-parameter.test.js and
+      tests/websocket.shape-handling.test.js; test code, nothing an
+      operator runs.
     review: maintainer
     operator_visible: ""
     semver: n/a
     semver_reason: test only
     register: [BF-158]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor fb0e1217 official/dev
+        kind: static
+        describe: >
+          official/dev contains fb0e1217 (BF-158's isolation fix; #8838, merged 2026-10-25
+          19:42:01Z as 2bc298b9); red if dev is rewritten or the merge is
+          reverted out of history
       - no-gate: >
           Seen by session -d4's BF-127 agent: 6 failures on a reused database,
           passing on an empty one. The proof for the fix is to run the file twice
@@ -8415,6 +8627,23 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: #8838 ("16.0.0 test and CI hygiene", chore/16.0.0-test-ci-hygiene,
+      head 039be646, 10 commits on dev a20469dc) merged into dev at
+      19:42:01Z as 2bc298b9 (gh pr view 8838). Merged to dev, not released.
+      fb0e1217: tests/websocket.shape-handling.test.js removes what it
+      wrote in its after hook; the count=0 block clears its four collections
+      before seeding as well as after; and the clear emits a devicestatus
+      remove without changes on the bus, which flushes the runtime cache
+      (lib/server/cache.js dataChanged), because boot fills the cache from
+      whatever devicestatus held and deleteMany does not evict it (found by
+      peer session -b7 on test/tier-map-and-selection, reproduced before the
+      fix). Red before, green after: the two files twice on one database,
+      dev 71 then 63 passing / 8 failing, the branch 71 both times; full
+      suite twice on one database, dev 6 count=0 failures, the branch none;
+      with 10 devicestatus documents present at boot (MongoDB 8.0.29),
+      without the flush "devicestatus, served from the cache" fails on both
+      of two runs, with it 53 passing on both (the PR's runs).
+
       2026-10-21, seen again in the cut 1 runs (#8828): the same 6 count=0
       tests in tests/api.count-parameter.test.js fail on a reused database,
       because tests/websocket.shape-handling.test.js leaves records inside the count
@@ -13707,18 +13936,36 @@ items:
     repo: cgm-remote-monitor
     branch: deps/16.0.0-security-refresh
     base: official/dev@eb72a1d3
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8835]
     ships_to_operators_today: true
     blast_radius: >
-      package-lock.json only: compression 1.8.1 -> 1.8.2 (package.json's
-      ^1.7.4 already allows it; 1.8.2 adds destroy, already in the tree).
+      #8835, six commits: feb3944c compression 1.8.1 -> 1.8.2 (package.json
+      range ^1.7.4 -> ^1.8.2; 1.8.2 adds destroy, already in the tree),
+      ad458fa0 follow-redirects 1.16.0 -> 1.16.1 (the overrides pin),
+      341b843a source-map-js 1.2.1 -> 1.2.2, 0293d640 sanitize-html 2.17.5
+      -> 2.18.1 (pinned exactly, with htmlparser2 12, domhandler 6, domutils
+      4, domelementtype 3 and dom-serializer 3, all reached only through
+      sanitize-html), 1eb986ad tests/purifier.corpus.test.js (35 inputs, 38
+      cases) and the version comment in lib/server/purifier.js, and the dev
+      merge 477d5200 (93f152bd).
     review: maintainer
     operator_visible: ""
     semver: patch
-    semver_reason: a patch-level dependency update
+    semver_reason: >
+      dependency updates. One stored-text change from sanitize-html 2.18.1:
+      a malformed empty textarea whose end tag is written `</textarea/>`,
+      followed by an image with an event handler, is now stored as the
+      image tag without its handler (`<img src="x" />`) where 2.17.5 stored
+      the empty string; listed for the 16.0.0 release notes (contents.md)
     register: [BF-163]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 477d5200 official/dev
+        kind: static
+        describe: >
+          official/dev contains #8835's head 477d5200 (merged 2026-10-25
+          17:59:06Z as a20469dc); red if dev is rewritten or the merge is
+          reverted out of history
       - no-gate: >
           Read, not run: GHSA-vc2v-76pw-4v95 (compression < 1.8.2); app.js:235
           compresses every response. A gate would assert the locked version
@@ -13727,6 +13974,30 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: #8835 merged into dev at 17:59:06Z as a20469dc (head
+      477d5200; gh pr view 8835). It holds compression 1.8.2, follow-redirects
+      1.16.1 and source-map-js 1.2.2 (feb3944c, ad458fa0, 341b843a), plus
+      sanitize-html 2.18.1 (0293d640, the bump; 1eb986ad,
+      tests/purifier.corpus.test.js pinning the stored text of 35 inputs) and
+      the dev merge 477d5200 (93f152bd). sanitize-html was bundled into #8835
+      on the maintainer's direction (themed PRs), so deps/sanitize-html-2.18
+      did not become a PR of its own. The combined head 477d5200: npm test
+      3422 passing / 3 pending / 0 failing (Node 24.22.1, npm 11.19.1,
+      MongoDB 7.0.43, TZ=UTC; the PR's run). 2.18.1 closes GHSA-x3q4-9hxx-gx8m,
+      GHSA-cv27-6wvh-8x7j, GHSA-jxwj-j7wr-gfrw and GHSA-g8qq-57p8-ggw5
+      (npm audit before 17:27:34Z and after 17:30:04Z: 23 -> 22, and 16 ->
+      15 with --omit=dev; only the sanitize-html entry removed).
+      GHSA-374f-7chj-9948 never applied: its range is >=2.17.7 <2.18.0, and
+      dev locked 2.17.5. Stored text: 34 of the 35 corpus inputs are stored
+      identically; a malformed empty `<textarea></textarea/>` followed by an
+      image with an onerror handler is now stored as `<img src="x" />` (the
+      handler removed) where 2.17.5 stored the empty string. Against the
+      2.17.5 install the corpus test fails 2 of 38 (that case and its
+      purifyObject cross-check). The paragraphs below are the history
+      before the merge. dev's push CI on a20469dc failed in two Firefox browser
+      cells (legacy reports "should produce some html", a 30 s wait) and
+      skipped the Docker publish (run 40219064024).
+
       2026-10-25, 17:28Z: the maintainer pushed deps/16.0.0-security-refresh
       341b843a and opened #8835 ("Update compression, follow-redirects and
       source-map-js") against dev; open, checked with gh pr view 8835. The
@@ -13745,18 +14016,15 @@ items:
       npm audit, 2026-10-25 17:13Z: dev 23 findings (8 high, 1 critical),
       the branch 18 (3 high, 1 critical); with --omit=dev 16 -> 11. A
       reading a minute earlier gave 20 on dev, from the advisory service,
-      not the tree. sanitize-html stays at 2.17.5, pending a maintainer
-      decision: 2.17.6 and later need the htmlparser2 12, domhandler 6,
-      domutils 4, dom-serializer 3 and domelementtype 3 majors, and 1 of 35
-      purifier inputs is stored differently (a malformed textarea sequence is
-      stored as an img element with src x instead of the empty string; the
-      event handler is still stripped). The Node 20 reason for the pin in
-      lib/server/purifier.js:38 is stale under the 16.0.0 floor. The three
-      sanitize-html advisories the 2026-10-21 triage names stay open. All
-      figures are that session's; not re-run here. sanitize-html 2.18 is no longer
-      part of this branch: it goes to dev as its own PR for 16.0.0 from
-      deps/sanitize-html-2.18 (in flight in a peer session; the maintainer
-      asks for it to be integrated as quickly as possible).
+      not the tree. At 341b843a the branch left sanitize-html at 2.17.5:
+      2.17.6 and later need the htmlparser2 12, domhandler 6, domutils 4,
+      dom-serializer 3 and domelementtype 3 majors, and 1 of 35 purifier
+      inputs is stored differently (a malformed textarea sequence is stored
+      as an img element with src x instead of the empty string; the event
+      handler is still stripped). The Node 20 reason for the pin in
+      lib/server/purifier.js:38 is stale under the 16.0.0 floor. All figures
+      are that session's; not re-run here. 2.18.1 was then added to this
+      branch and merged with it (the paragraph at the top).
 
       2026-10-25: session -40's wip/15.0.10-lockfile-refresh (dbc4519f,
       compression, follow-redirects and source-map-js on dev 04d435eb) was
@@ -14313,7 +14581,7 @@ items:
     branch: bf/axios-runtime-dependency
     base: official/dev@eb72a1d3
     worktree: externals/work/crm-axios-fix
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8834]
     ships_to_operators_today: false
     blast_radius: >
@@ -14331,15 +14599,17 @@ items:
     review: maintainer
     operator_visible: >
       IMPORT_CONFIG is an optional setting that tells Nightscout to load extra
-      settings from a web address when it starts. In the planned 16.0.0
-      (not released; the development branch and its Docker image already
-      have it), a site that uses IMPORT_CONFIG and is installed
-      the usual production way (the official Docker image, Azure, or any
-      install that leaves out development packages) would stop during startup
-      with the message "Cannot find module 'axios'" and would not come up
-      until IMPORT_CONFIG is removed. Sites without IMPORT_CONFIG are not
-      affected. Nothing changes on 15.0.9 or earlier releases: they start
-      and apply the imported settings normally.
+      settings from a web address when it starts. For about an hour and a
+      quarter on 2026-10-25 the development branch (dev), and the dev Docker
+      image published from it at 17:15 UTC, had a defect: a site that uses
+      IMPORT_CONFIG and is installed the usual production way (the Docker
+      image, Azure, or any install that leaves out development packages)
+      stopped during startup with the message "Cannot find module 'axios'".
+      The fix was merged into dev at 17:44 UTC, and the dev image published
+      at 17:53 UTC has it. If you pulled the dev image in that window and
+      use IMPORT_CONFIG, pull it again. No release was affected: 15.0.9 and
+      earlier start and apply the imported settings normally, and the fix
+      is not in any release yet (merged into dev is not released).
     semver: patch
     semver_reason: >
       Packaging only: axios moves from devDependencies to dependencies at the
@@ -14349,16 +14619,23 @@ items:
       other packages, so the installed runtime set does not change.
     register: [BF-176]
     gates:
-      - run: RUNTIME_REQUIRES_REF=bf/axios-runtime-dependency node tools/queue/gates/runtime-requires-declared.js
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f3d73f43 official/dev
+        kind: static
+        describe: >
+          official/dev contains #8834's head f3d73f43 (merged 2026-10-25
+          17:44:48Z as 93f152bd); red if dev is rewritten or the merge is
+          reverted out of history
+      - run: RUNTIME_REQUIRES_REF=official/dev node tools/queue/gates/runtime-requires-declared.js
         kind: static
         describe: >
           every package that server code loads (server.js, bin/*.js and lib/
           except the browser-only lib/client, lib/report and
-          lib/report_plugins) is declared under dependencies on the fix
-          branch, with webpack-dev-middleware and webpack-hot-middleware
+          lib/report_plugins) is declared under dependencies on official/dev,
+          with webpack, webpack-dev-middleware and webpack-hot-middleware
           allowed only inside lib/server/app.js's NODE_ENV === 'development'
-          block; red on v15.0.9, official/dev 04d435eb and cut 1 806ff2f0
-          (axios only a devDependency, lodash undeclared)
+          block; red on v15.0.9, dev eb72a1d3 and cut 1 806ff2f0 (axios only
+          a devDependency, lodash undeclared). On dev 2bc298b9, 41 checked,
+          0 failing (2026-10-25)
       - no-gate: >
           The boot itself is not a queue gate: it needs npm ci --omit=dev,
           MongoDB and a local config server (minutes). Run by hand 2026-10-22
@@ -14370,6 +14647,21 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: #8834 merged into dev at 17:44:48Z as 93f152bd (head
+      f3d73f43; gh pr view 8834). dev no longer has the IMPORT_CONFIG boot
+      crash. The window on dev was eb72a1d3 (16:29:06Z, the merge of #8828)
+      to 93f152bd (17:44:48Z). dev's Docker image was published in that
+      window: push run 40211895500 on eb72a1d3 ran Publish to Docker Hub
+      at 17:14:58Z to 17:15:18Z, so the dev image published then carries the
+      crash. Push run 40217943528 on 93f152bd published the next dev image
+      at 17:53:06Z to 17:53:31Z. The push run on a20469dc (#8835) failed in
+      two Firefox browser cells and skipped publishing; the push run on
+      2bc298b9 (#8838, run 40227267487) passed every cell and published the
+      dev image at 19:48:15Z. Merged to dev,
+      not released. The gate now reads official/dev; webpack joined its
+      development-guard allowlist the same day for cut 2 (RT-2), and the
+      control gained a stray require('webpack') outside the guard.
+
       2026-10-25, 17:28Z: the maintainer pushed bf/axios-runtime-dependency
       f3d73f43 and opened #8834 ("axios and lodash are runtime
       dependencies (IMPORT_CONFIG boot crash on 16.0.0 dev)") against dev;

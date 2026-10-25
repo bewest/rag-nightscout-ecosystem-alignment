@@ -2,7 +2,7 @@
 
 **Status: in development. Nothing tagged or released.** 16.0.0 is the next release from `dev`
 (maintainer, 2026-10-21; queue `RT-VERSION`). Contributor-facing; full technical depth intended.
-Measured 2026-10-25 against `official/dev` `eb72a1d3` (the merge of #8828) and `official/master`
+Measured 2026-10-25 (to 19:51Z) against `official/dev` `2bc298b9` (the merge of #8838) and `official/master`
 `c6a0d8ed` (= `v15.0.9`, the shipping release), in `externals/cgm-remote-monitor-official` after
 `git fetch official`, with `gh pr view` and `gh run view` for PR and CI state.
 
@@ -23,29 +23,32 @@ for testers is [testing-notes.md](testing-notes.md) (not written yet).
 | Tag to be cut | `v16.0.0` and `16.0.0`, both forms, as for `15.0.7` to `15.0.9` |
 | Merged part | `official/master..official/dev` |
 | Base (shipping) | `c6a0d8ed` = `v15.0.9` (released 2026-10-21) |
-| `dev` head | `eb72a1d3` (merge of #8828, 2026-10-25 16:29:06Z, by AndyLow91), tree `9444a472` |
-| Commits on `dev` | 183 — `git rev-list --count official/master..official/dev` |
-| First-parent commits on `dev` | 12 — `git rev-list --first-parent --count official/master..official/dev`: 11 PR merges and the cycle's version bump `04d435eb` (`git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'` prints 1) |
-| Diff on `dev` | 187 files, +13205/−5425 — `git diff --shortstat official/master official/dev` |
+| `dev` head | `2bc298b9` (merge of #8838, 2026-10-25 19:42:01Z, by bewest), tree `2b9ee5c7` |
+| Commits on `dev` | 204 — `git rev-list --count official/master..official/dev` |
+| First-parent commits on `dev` | 15 — `git rev-list --first-parent --count official/master..official/dev`: 14 PR merges and the cycle's version bump `04d435eb` |
+| Diff on `dev` | 192 files, +13540/−5507 — `git diff --shortstat official/master official/dev` |
 | `package.json` version | `16.0.0` — `git show official/dev:package.json \| grep '"version"'` |
 | `engines.node` | `^22.23.4 \|\| ^24.22.1 \|\| >=26.12.1` (AndyLow91's `6a146a4c`, "require Node Brotli security patches"; supersedes the decided `^22.12 \|\| >=24`) |
 | Docker base image | `node:24.22.1-alpine` for builder and runtime (`32489dc5`) |
 | Connector pin | `nightscout-connect` exactly `0.1.0`, as in 15.0.9 |
-| Staging PR | #8824 (`dev` → `master`, "new dev branch post 15.0.9 release"): open, head `eb72a1d3`, mergeable, `reviewDecision` `REVIEW_REQUIRED`; 72 checks passed, 3 skipped — `gh pr view 8824`, `gh pr checks 8824` |
-| CI on `eb72a1d3` | `pull_request` run 40211897810 and `push` run 40211895500: every test and browser cell passed; the push run's *Publish to Docker Hub* passed, so `dev`'s image is published; CodeQL passed on both events — `gh run view <id> --json jobs` |
+| Supported MongoDB | 5.0 through 8.0 (`README.md` on `dev`, from #8838's `039be646`); 4.4 and earlier unsupported |
+| Staging PR | #8824 (`dev` → `master`, "new dev branch post 15.0.9 release"): open, head `2bc298b9`, mergeable, `reviewDecision` `REVIEW_REQUIRED`; 30 checks passed, 3 skipped — `gh pr view 8824`, `gh pr checks 8824` |
+| CI on `2bc298b9` | `push` run 40227267487 and `pull_request` run 40227271881 passed every cell of the edge matrix (below); the push run's *Publish to Docker Hub* passed at 19:48:15Z, so `dev`'s published image is `2bc298b9`'s; CodeQL passed on both events — `gh run view <id> --json jobs` |
+| CI on the merges before it | `eb72a1d3` push run 40211895500 published an image at 17:15:18Z (it carries BF-176); `93f152bd` push run 40217943528 published one at 17:53:31Z (BF-176 fixed); `a20469dc` push run 40219064024 failed *Browser tests* (24.22.1, firefox) and (26, firefox) and skipped publishing; the `pull_request` runs of `93f152bd` and `a20469dc` each failed one Firefox cell. Each Firefox failure is `tests/browser/legacy-reports.test.js` "should produce some html", `page.waitForFunction: Timeout 30000ms exceeded` with the report still loading (454 passing, 1 failing) |
 
 ## Provenance
 
 Every figure below is labelled. **reproduced**: something was executed and the output observed.
 **read-derived**: read from source, a PR body or CI metadata. Commit counts, SHAs, PR states, CI
 results and the conflict counts are reproduced with the commands shown. No test suite was run on
-`eb72a1d3` by this session; the runs reported on it are the dependency refresh session's and the
-BF-176 session's (see [In flight](#in-flight-for-this-release) and the integration record). No live site, vendor account or Docker image was run.
+`dev` by this session; the runs reported are the PR authors' and peer sessions', read from the PR
+bodies (see the integration record). No live site, vendor account or Docker image was run.
 
 ## What is merged so far
 
 Merge SHAs: `git log --first-parent --format='%h %ad %an %s' --date=iso official/master..official/dev`.
-Every merge below was made by AndyLow91 on 2026-10-25. Register ids refer to the
+Every merge below was made on 2026-10-25: the first eleven by AndyLow91, #8834, #8835 and #8838 by
+bewest. Register ids refer to the
 [backfix register](../../docs/30-design/remedial/nightscout-backfix-register.md).
 
 | PR | merged (UTC) | merge | head | author | register | queue | what |
@@ -61,6 +64,9 @@ Every merge below was made by AndyLow91 on 2026-10-25. Register ids refer to the
 | #8812 | 14:25:53 | `bb56989c` | `ba5f7f4b` | cpruijsen | — | — | off-by-one reading count in the glucose distribution report (issue 7659) |
 | #8808 | 15:00:27 | `1cae31e1` | `dbd2a7be` | awss1i | — | — | the Loopalyzer keeps BG readings on or close to a 5-minute mark |
 | #8828 | 16:29:06 | `eb72a1d3` | `12154df9` | bewest | BF-55, BF-58 | `RT-1` | cut 1: retire jsdom (option C), the enforced Node floor, removal of the legacy Dexcom Share and MiniMed CareLink bridges, version 16.0.0 |
+| #8834 | 17:44:48 | `93f152bd` | `f3d73f43` | bewest | BF-176 | `BFQ-176` | `axios` `^0.34.0` and `lodash` `4.18.1` are runtime dependencies: a production install with `IMPORT_CONFIG` boots again |
+| #8835 | 17:59:06 | `a20469dc` | `477d5200` | bewest | BF-163 | `BFQ-163` | `compression` 1.8.2, `follow-redirects` 1.16.1, `source-map-js` 1.2.2 (`feb3944c`, `ad458fa0`, `341b843a`) and `sanitize-html` 2.18.1 (`0293d640` the bump, `1eb986ad` `tests/purifier.corpus.test.js` pinning the stored text of 35 inputs), and a merge of `dev` `93f152bd` (`477d5200`) |
+| #8838 | 19:42:01 | `2bc298b9` | `039be646` | bewest | BF-158, BF-177 | `RT-CONNECT-TEARDOWN`, `BFQ-158`, `BFQ-177`, `RT-D3-SUITE` | test and CI hygiene, 10 commits (below) |
 
 Before merging, AndyLow91 merged `dev` into most branches and added commits of his own (read with
 `git log` and `git show`):
@@ -76,20 +82,33 @@ Before merging, AndyLow91 merged `dev` into most branches and added commits of h
   `24.22.1`), the `dev` catch-up merge `43eb6066`, `36fa3121` (keeps a Node 22 × MongoDB 4.4 test
   cell), `76c73056` and `13507b38` (CI) and `12154df9` (a bounded Firefox month-report test).
 
-None of these merged trees was re-run locally by this programme; each PR's own CI passed.
+#8838's ten commits, on `dev` `a20469dc`: `38049fe6` (the redundant connector teardown listener
+removed, `RT-CONNECT-TEARDOWN`), `fb0e1217` (BF-158: the count=0 block isolated from records other
+files leave, plus the runtime-cache flush found by peer session -b7), `89d19b5b` (BF-177: the test's
+time-zone stand-in is a UTC profile; the report is verified correct by running it), `879ab51e` (the
+duplicated `BRIDGE_SERVER mapping` block removed, 37 → 22 cases), `e45041c6` (stale Node floor text in
+`docs/test-specs`), `f7856a44` (`RT-D3-SUITE`: two treatment-drag clamp browser tests), `29e8a36b` (the
+CI edge matrix, 31 → 10 test and browser cells, about 81 runner-minutes less per run), `cab8896f` (the
+API3 SEARCH hook's timeout: on an empty database the first insert waits on boot's unawaited index
+creation; the product fix is `RT-BOOT-INDEX-AWAIT`), `aa7438ee` (Babel checked against the engines
+floors) and `039be646` (MongoDB 5.0 and 8.0 as the CI edges, and the docs).
+
+None of these merged trees was re-run locally by this programme. The merged trees' CI is in
+[Identity](#identity).
 
 ## Merge state
 
 - **#8823 merged twice, without duplicated code** (reproduced). It was folded into cut 1 as
   `42a2729e` and also merged on its own as `4c1a5f1a` before #8828. On `eb72a1d3`, `git grep
   bridgeServerToConnect official/dev` finds one definition, in `lib/server/bridge-connect-compat.js`,
-  and that file is byte-identical to `806ff2f0`'s (compared by hash). `tests/bridge-connect-compat.test.js`
-  carries the `describe('BRIDGE_SERVER mapping')` block twice (lines 127–182 and 184–239, identical),
-  so those cases run twice: a test-only clean-up.
-- **Cuts 2–5 against `eb72a1d3`** (reproduced; `git rev-list --left-right --count official/dev...<cut>`
-  and `git merge-tree --write-tree --name-only --no-messages official/dev <cut>`): cut 2 `b6e8c7cd` 459
-  behind / 159 ahead, 20 conflicting paths; cut 3 `ebb690cf` 459 / 222, 25; cut 4 `b80aa147` 459 / 301,
-  43; cut 5 `b1bdaca0` (#8605) 335 / 399, 42. Cut 2's catch-up is in progress (below).
+  and that file is byte-identical to `806ff2f0`'s (compared by hash). The test block that ran twice
+  was removed by #8838 (`879ab51e`); on `2bc298b9` `tests/bridge-connect-compat.test.js` has one
+  `describe('BRIDGE_SERVER mapping')`.
+- **Cuts 2–5 against `2bc298b9`** (reproduced; `git rev-list --left-right --count official/dev...<cut>`
+  and `git merge-tree --write-tree --name-only --no-messages official/dev <cut>`): cut 2
+  `official/chore/build-runtime-separation` `ee94b148` (#8837) 11 behind / 185 ahead, merges cleanly; the
+  published cut 2 `b6e8c7cd`, 21 conflicting paths; cut 3 `ebb690cf` 480 / 222, 26; cut 4 `b80aa147`
+  480 / 301, 44; cut 5 `b1bdaca0` (#8605) 356 / 399, 43.
 
 ## Version: 16.0.0, major
 
@@ -105,12 +124,11 @@ Decided by the maintainer on 2026-10-21 (`RT-VERSION` answered). Surfaces touche
 - [ ] S4 stored document shape
 - [x] S5 Node or MongoDB runtime floor, **major**: `lib/server/runtime-policy.js` reads `engines.node`
   and exits at boot outside `^22.23.4 || ^24.22.1 || >=26.12.1`, which stops Node 20, 21, 23 and 25,
-  and 22.0–22.23.3, 24.0–24.22.0 and 26.0–26.12.0. The test matrix on `dev` is Node 22.23.4, 22,
-  24.22.1, 24, 26.12.1 and 26 × MongoDB 5.0 and 6.0, plus one Node 22 × MongoDB 4.4 cell that
-  `36fa3121` keeps as "the existing required check until branch protection is updated separately";
-  browser tests run on the same six Node versions × Chromium, Firefox and WebKit (read from
-  `.github/workflows/main.yml`). MongoDB 4.4 was deprecated in 15.0.9; no server check that refuses it
-  was found
+  and 22.0–22.23.3, 24.0–24.22.0 and 26.0–26.12.0. The README states MongoDB 5.0 through 8.0 (#8838);
+  4.4 and earlier are unsupported, and no server check that refuses them was found. The test matrix on
+  `dev` (#8838, the edge policy) is Node 22.23.4 and 26 × MongoDB 5.0 and 8.0, plus the cells branch
+  protection requires, (24, 6), (22, 6) and (22, 4.4); browser tests run on Node 26 × Chromium, Firefox
+  and WebKit (read from `.github/workflows/main.yml`)
 - [x] S6 an ingestion path, **major**: the legacy Dexcom Share bridge and MiniMed CareLink
   (mmconnect) are removed; Dexcom Share data comes in through `nightscout-connect`
 - [ ] S7 alarms or notifications: #8816 changes how long a snooze lasts on a page that is not signed
@@ -125,18 +143,14 @@ Decided by the maintainer on 2026-10-21 (`RT-VERSION` answered). Surfaces touche
 
 ## In flight for this release
 
-Branch heads as of 2026-10-25. The maintainer opened #8834 and #8835 against `dev` at 17:28Z; the rest are not open as PRs to `dev`.
+Branch heads as of 2026-10-25, 19:51Z.
 
 | work | branch | head | state | queue |
 |---|---|---|---|---|
-| cut 2: page bundles and the build/runtime split | `wip/cut2-onto-cut1-16.0.0` (local), catching `chore/build-runtime-separation` up with `dev` `eb72a1d3` | pending (peer session) | in progress; `official/chore/build-runtime-separation` is still `b6e8c7cd` | `RT-2`, `RT-REBASE` |
-| BF-176 fix: `axios` and `lodash` declared as runtime dependencies | `bf/axios-runtime-dependency`, **#8834** to `dev` | `f3d73f43` (`43ed462a` plus a merge of `eb72a1d3`; 0 behind, 2 ahead, 3 files) | open PR | `BFQ-176` |
-| dependency refresh: `compression` 1.8.2, `follow-redirects` 1.16.1, `source-map-js` 1.2.2 | `deps/16.0.0-security-refresh`, **#8835** to `dev` | `341b843a` (0 behind `eb72a1d3`, 3 ahead, merges cleanly) | open PR | `BFQ-163` |
-| `sanitize-html` 2.18, its own PR to `dev` (maintainer: integrate as quickly as possible) | `deps/sanitize-html-2.18` (peer session) | pending | in progress | `BFQ-163` |
-| BF-72: a caller-supplied regular expression can hold the database for minutes | `bf/regex-limits`, in the private fork of its draft advisory | `1833ab00` on `dev` `04d435eb` | in the fork; no fork PR opened yet; owes a merge of `dev` `eb72a1d3` | `BFQ-72` |
-| BF-161: a deeply nested pattern on three query endpoints makes that request fail | `bf/entries-pattern-limit`, in the private fork of its draft advisory | `d2c4df9f` on `dev` `04d435eb` | in the fork; no fork PR opened yet; owes a merge of `dev` `eb72a1d3` | `BFQ-161` |
-| BF-158: the count=0 tests assume an empty database | none found locally or on `official` on 2026-10-25 | — | not started | `BFQ-158` |
-| test tier map, tier check and inner-loop selection (`test:affected`, `test:smoke`) | `test/tier-map-and-selection` (local, `externals/work/crm-devloop`) | `fe002d42` (on `dev` `eb72a1d3`; 2 commits) | not pushed; lands after cut 2 and the test and CI hygiene PR, rebased onto that `dev` | `RT-TEST-TIERS` |
+| cut 2: page bundles and the build/runtime split | `chore/build-runtime-separation`, **#8837** to `dev` (opened 19:22Z) | `ee94b148`; the fix `bd941200` and a merge of `dev` `2bc298b9` are on `wip/cut2-onto-cut1-16.0.0` (local, peer session), not pushed | open PR; its CI failed the required check (below) | `RT-2` |
+| test tier map, tier check and inner-loop selection (`test:affected`, `test:smoke`) | `test/tier-map-and-selection` (local, peer session -b7, `externals/work/crm-devloop`) | `29ea17b6` and `fe002d42` (on `dev` `eb72a1d3`) | not pushed; lands after #8837 as one PR, without its own BF-158 change (#8838 carries the fix, with this branch's runtime-cache flush) | `RT-TEST-TIERS` |
+| BF-72: a caller-supplied regular expression can hold the database for minutes | `bf/regex-limits`, in the private fork of its draft advisory | `1833ab00` on `dev` `04d435eb` | in the fork; no fork PR opened yet; owes a merge of `dev` | `BFQ-72` |
+| BF-161: a deeply nested pattern on three query endpoints makes that request fail | `bf/entries-pattern-limit`, in the private fork of its draft advisory | `d2c4df9f` on `dev` `04d435eb` | in the fork; no fork PR opened yet; owes a merge of `dev` | `BFQ-161` |
 
 BF-72's fix, by mechanism: a length cap on every pattern and a time limit on every query whose filter
 holds a regular expression, generated ones included; a refusal check for caller-written patterns
@@ -144,23 +158,49 @@ only behind `QUERY_REGEX_REFUSE_UNSAFE`, default off. BF-161's fix: a nesting-de
 before the pattern is parsed or expanded. Both keep the intended uses in the maintainer's public gist
 `dbe590ab` working, and each is published with the release that carries it.
 
-The dependency refresh, as its session reports it (read-derived here; not re-run): `feb3944c` moves
-`compression` to 1.8.2 (the `package.json` range raised to `^1.8.2`), `ad458fa0` pins
-`follow-redirects` 1.16.1 by override, `341b843a` moves `source-map-js` to 1.2.2, and only those three
-lockfile entries change. `npm test` is 3378 passing / 3 pending / 1 failing on both `dev` `eb72a1d3` and
-the branch, and the Chromium browser suite 455 passing on both (Node 24.22.1, npm 11.19.1, MongoDB
-7.0.43). `npm audit` at 2026-10-25 17:13Z: `dev` 23 findings (8 high, 1 critical), the branch 18 (3
-high, 1 critical); with `--omit=dev`, 16 and 11. A reading a minute earlier gave 20 on `dev`: a change
-in the advisory data, not in the tree. That branch leaves `sanitize-html` at 2.17.5; 2.18 is its own
-PR (row above, and open item 2).
+**Cut 2, #8837** (read from the PR body and `git log`; the runs are the preparing session's). The
+branch is a fast-forward of the published `b6e8c7cd`: 26 first-parent commits on top of it, 185
+commits ahead of `dev` `a20469dc`. It merges `dev` three times: `04a7968d` (`eb72a1d3`, 9 conflicting
+paths), `dd2e0cfd` (`93f152bd`, #8834) and `94242483` (`a20469dc`, #8835). The follow-ups are
+`14ba4686` (the narrowed D3 surface gains `bisector`, `curveBasis` and `curveMonotoneX`, which #8831's
+modern chart needs; without them the production main page with `THEME=modern` threw while drawing the
+trend), `17a9d48a`, `4354fac3`, `1e9ea6f6`, `ba32eca4`, the CI edge commits `a7eb6942`, `bdb6c733` and
+`b8ff91cb`, and `ee94b148`, the page-bundle budget (decided, option A). Tests on `ee94b148` (Node 24.22.1,
+`TZ=UTC`): `npm test` 3691 / 4 / 0, Chromium 540 / 0, budget 9 / 9. Earlier, on `b8ff91cb` (host zone
+America/Los_Angeles): Node 22.23.4, 24.22.1 and 26.12.1 each 3542 / 4 / 4 (the 4: the two budget
+cases, the BF-177 test and the API3 hook timeout, both fixed by #8838 since); Firefox 540 / 0.
+`queryLeaves` was verified against `traverse` on 50,000 generated and 20 edge queries: 0 differences.
+
+**#8837's CI** (reproduced from GitHub run metadata): run 40225696687 on `ee94b148`, attempts 1 and 2,
+failed the required check *Run Tests (24, 6)* and *Maintained MongoDB (26, 8.0.29)*, each 3690 passing,
+1 failing: `tests/env-runner.test.js` "Native env runner process contract passes file values through
+nyc into a Mocha child" exceeded its 10 s timeout. The case's inner nyc instruments all of `lib/`
+(`.nycrc` `all: true`) under `test-ci`'s outer nyc; the local runs, without coverage, did not see it.
+The fix is `bd941200` (peer session: `--all=false` on the inner nyc, plus
+`docs/test-specs/env-runner.md`), on `wip/cut2-onto-cut1-16.0.0`, not pushed; cut 2 also merges `dev`
+`2bc298b9` before its next push.
+
+**`sanitize-html` 2.18.1 (#8835)** (read from the PR body). The update was bundled into #8835 on the
+maintainer's direction (themed PRs). Against 2.17.5, `npm audit` listed four `sanitize-html` advisories
+and against 2.18.1 none: GHSA-x3q4-9hxx-gx8m, GHSA-cv27-6wvh-8x7j, GHSA-jxwj-j7wr-gfrw and
+GHSA-g8qq-57p8-ggw5 (totals 23 → 22, and 16 → 15 with `--omit=dev`, npm 11.19.1, 17:27:34Z and
+17:30:04Z). GHSA-374f-7chj-9948 never applied: its range is `>=2.17.7 <2.18.0`, and `dev` locked 2.17.5.
+2.18.1 brings the htmlparser2 12, domhandler 6, domutils 4, domelementtype 3 and dom-serializer 3
+majors, all reached only through `sanitize-html`; it declares `node >=22.12.0`, inside the 16.0.0
+floor. Of the 35 inputs in `tests/purifier.corpus.test.js`, 34 are stored identically; the one change
+is listed under [For the release notes](#for-the-release-notes). The combined head `477d5200` ran
+3422 / 3 / 0 (Node 24.22.1, MongoDB 7.0.43, `TZ=UTC`).
 
 ## Known defects on `dev` now
 
 | defect | what | exposure | queue |
 |---|---|---|---|
-| BF-176 | a production install (`npm ci --omit=dev`, the Dockerfile's commands) stops at boot with `Cannot find module 'axios'` (`bootevent.js:114`) when `IMPORT_CONFIG` is set; `lodash` is undeclared and supplied transitively | moved from cut 1 only to `dev` and the 16.0.0 line, because #8828 merged before the fix; **reproduced** on `eb72a1d3` by the BF-176 session (Node 24.22.1, npm 11.19.1, MongoDB 7.0.43; unset, both installs boot; full `npm ci` boots with the settings applied); `dev`'s Docker image is published; no release carries it | `BFQ-176` |
-| BF-177 | `tests/glucosedistribution.test.js:116`, "includes the first selected interval when earlier hours are excluded", added by `ba5f7f4b` (#8812's head commit), passes with `TZ=UTC` and fails with `TZ=America/Los_Angeles` ("expected '213.5' to be '117.5'"; deps refresh session's run); CI runs in UTC. The test's stand-in for the profile's time zone uses the machine's zone | test only: the report applies the profile's time zone as intended (read-derived, not run in a browser) | `BFQ-177` |
-| duplicated test block | the `BRIDGE_SERVER mapping` cases run twice (see Merge state) | none | — |
+| Firefox legacy-reports wait | `tests/browser/legacy-reports.test.js` "should produce some html" timed out at its fixed 30 s wait (`12154df9`) in one or two Firefox cells of the CI runs on `93f152bd` (`pull_request`) and `a20469dc` (both events); the push run on `a20469dc` therefore skipped the Docker publish. It passed on `2bc298b9`. Cut 2 replaces the fixed wait with a progress-aware one (fails after 15 s with no completed request, 60 s ceiling) | test only; no register entry filed | `RT-2` |
+
+**BF-176, the window.** `dev` carried the `IMPORT_CONFIG` boot crash from `eb72a1d3` (16:29:06Z, #8828)
+to `93f152bd` (17:44:48Z, #8834). `dev`'s Docker image was published in between, by push run
+40211895500 at 17:15:18Z, so a `dev` image pulled from then until the next publish (17:53:31Z, from
+`93f152bd`) stops at boot when `IMPORT_CONFIG` is set. No release carried it.
 
 #8831's PR body (read) also reports that `npm run test:dependencies` stops at an existing `npm ls`
 error about the `axios` override on `master`, and that nine COB, IAGE and SAGE tests fail in the
@@ -178,53 +218,80 @@ has none until then.
 
 ## Open items a releaser must settle
 
-As of `dev` `eb72a1d3` (2026-10-25). The decisions already made are in [decisions.md](decisions.md).
+As of `dev` `2bc298b9` (2026-10-25). The decisions already made are in [decisions.md](decisions.md).
 
 **Decisions open, with their owner:**
 
 1. **Whether cut 2 ships in 16.0.0 or as its own release** (maintainers). The versioning policy §8.3
-   leaves open whether the cuts ship separately or combined.
-2. **`sanitize-html` 2.18's stored-output difference** (maintainer, when its PR is open). The maintainer
-   asks for 2.18 to be integrated as quickly as possible, as its own PR (`deps/sanitize-html-2.18`, in
-   flight). Reported by the deps refresh session: 2.17.6 and later need the htmlparser2 12, domhandler 6,
-   domutils 4, dom-serializer 3 and domelementtype 3 majors, and 1 of 35 purifier inputs is stored
-   differently (a malformed `textarea` sequence is stored as an `img` element with `src="x"` instead of
-   the empty string; the event handler is still stripped). The Node 20 reason given for the pin at
-   `lib/server/purifier.js:38` no longer applies under the 16.0.0 floor. The three `sanitize-html`
-   advisories named in the 15.0.9 triage stay open until it merges.
-3. **The scope of BF-161's draft advisory** (maintainer): publish it now for BF-151 (released in 15.0.9)
+   leaves open whether the cuts ship separately or combined; #8837 targets `dev`, and its body says it
+   ships in 16.0.0.
+2. **The scope of BF-161's draft advisory** (maintainer): publish it now for BF-151 (released in 15.0.9)
    with BF-161 as a follow-up, or extend it to include BF-161 and publish it with the release that
    carries the fix. Packet: [bfq-161](../../reports/reviewer-packets/bfq-161-bf-entries-pattern-limit.md).
-4. **BF-72's test inputs** (the original author of the regex-limit commits): the tests' hostile inputs
+3. **BF-72's test inputs** (the original author of the regex-limit commits): the tests' hostile inputs
    are to be rebuilt in code before anything is published. Packet:
    [bfq-72](../../reports/reviewer-packets/bfq-72-bf-regex-limits.md).
-5. **BF-95** (maintainer): a notice for readings that arrive dated ahead of the server clock, or the
+4. **BF-95** (maintainer): a notice for readings that arrive dated ahead of the server clock, or the
    status quo. Packet: [bfq-95](../../reports/reviewer-packets/bfq-95.md).
-6. **BF-152** (maintainer, with the AndroidAPS developers): is API v3 `settings` meant to be readable
+5. **BF-152** (maintainer, with the AndroidAPS developers): is API v3 `settings` meant to be readable
    with a follower's read token, or admin-only? Packet: [bfq-152](../../reports/reviewer-packets/bfq-152.md).
-7. **Dependabot configuration** (maintainer): version updates targeting `dev`, dismissing alerts that
+6. **Dependabot configuration** (maintainer): version updates targeting `dev`, dismissing alerts that
    are fixed on `dev` or not reachable, or releasing more often. Packet:
    [dependabot-config](../../reports/reviewer-packets/dependabot-config.md).
-8. **Branch protection's required check** (maintainers): `36fa3121` keeps the Node 22 × MongoDB 4.4
-   cell only because it is a required check.
 
-**Suggested order of the next merges to `dev`** (a suggestion for the maintainers, not a decision):
+**Repository settings, for the maintainer** (from #8838's body; branch protection read 2026-10-25:
+`dev` requires `Run Tests (24, 6)`; `master` requires `Run Tests (22, 6)`, `Run Tests (22, 4.4)` and
+`Run Tests (24, 6)`; no rulesets). Nothing in a PR changes these:
 
-1. The BF-176 fix, #8834 (`BFQ-176`): `dev` and its published image carry the boot crash; packaging only.
-   Packet: [bfq-176](../../reports/reviewer-packets/bfq-176-bf-axios-runtime-dependency.md).
-2. The dependency refresh, #8835, and `sanitize-html` 2.18 (`BFQ-163`), before cut 2, whose catch-up then takes
-   the lockfile changes in one merge.
-3. Cut 2 (`RT-2`), once its catch-up merge of `dev` is pushed.
-4. The follow-ups cut 1 unblocked, each its own PR: `RT-CONNECT-TEARDOWN`, `RT-D3-SUITE`, `BFQ-158`,
-   `BFQ-177`, `RT-JSDOM-REST` (scope B), and `ID-SIMPLE-MATCH` with BF-169, which
-   touches `lib/server/entries.js`, a file cut 2 also changes, so after cut 2.
-5. BF-72 and BF-161 through their advisory forks, each after a merge of `dev`, published with the
+1. `master`: drop the required check `Run Tests (22, 4.4)`; MongoDB 4.4 is unsupported and the cell
+   exists only for this check. Then delete its `include` entry.
+2. `dev` and `master`: move the `Run Tests (24, 6)` and `Run Tests (22, 6)` requirements to edge cells
+   (for example `Run Tests (22.23.4, 8.0)` and `Run Tests (26, 8.0)`, and `(22.23.4, 5.0)` and
+   `(26, 5.0)` if the MongoDB floor should also gate merges), then delete those `include` entries.
+3. Optionally, require `Browser tests (26, chromium)`, `(26, firefox)` and `(26, webkit)`, whose names
+   are now stable.
+
+**Follow-ups filed 2026-10-25:** `RT-BUNDLE-THEME-SPLIT` (page-bundle budget option B: load the modern
+theme's code only when it is chosen; owner Andy Low or the maintainer; not started) and
+`RT-BOOT-INDEX-AWAIT` (boot awaits its collection and index creation, the cause of the API3 hook
+timeout; a product change; not started).
+
+**Merge order** (a suggestion for the maintainers, not a decision): #8837 and #8838 in either order (a
+`git merge-tree` of the two was clean); #8838 merged first. Then:
+
+1. Cut 2, #8837 (`RT-2`), once `bd941200` and its merge of `dev` `2bc298b9` are pushed and its CI passes.
+2. Peer session -b7's test tiers (`RT-TEST-TIERS`), rebased onto that `dev`, as one PR.
+3. The other follow-ups, each in a themed PR: `RT-JSDOM-REST` (scope B), `ID-SIMPLE-MATCH` with BF-169
+   (it touches `lib/server/entries.js`, which cut 2 also changes), `RT-BUNDLE-THEME-SPLIT` and
+   `RT-BOOT-INDEX-AWAIT`.
+4. BF-72 and BF-161 through their advisory forks, each after a merge of `dev`, published with the
    release that carries them.
 
 **Before the tag:** the call for testers ([testing-notes.md](testing-notes.md)), the tag message and the
-release notes, which must name the Node floor and the message the server prints when it refuses to
-start, the bridge removal and the known issues; a full run on the candidate in the integration record;
-the verification record capture; the reconciliation in [releases/README.md](../README.md).
+release notes (written last, from the list below), a full run on the candidate in the integration
+record, the verification record capture, the reconciliation in [releases/README.md](../README.md).
+
+## For the release notes
+
+A draft list of what the release notes must say; the notes themselves are written last, once the
+candidate is named.
+
+- The Node floor `^22.23.4 || ^24.22.1 || >=26.12.1`, and the message the server prints when it refuses
+  to start.
+- The legacy Dexcom Share and MiniMed CareLink bridges are removed; leftover bridge settings stop the
+  site with a page naming the replacements; Dexcom Share data comes in through `nightscout-connect`.
+- MongoDB 5.0 through 8.0 are supported; 4.4 and earlier are not.
+- The opt-in `THEME=modern` dashboard (#8831).
+- The Bolus Wizard Preview and Careportal Bolus Wizard unit fixes (BF-172, BF-173) and the profile
+  picker (BF-174); BF-09 (the socket's duplicate check keeps zero temps, cancels and zero amounts); #8816's snooze; #8812 and #8808's report figures.
+- One stored-text change from `sanitize-html` 2.18.1 (#8835): a malformed empty
+  `<textarea></textarea/>` followed by an image with an event handler is now stored as the image tag
+  without its handler (`<img src="x" />`), where 2.17.5 stored nothing (the empty string). The other 34
+  corpus inputs are stored identically.
+- If cut 2 ships in 16.0.0: page bundles, build and runtime separated (`npm ci` with development
+  dependencies, then prune), no late minification, `DEBUG_MINIFY` without effect, the load-failure
+  panel, and a third-party plugin that hooks into the page to be tested before upgrading.
+- The known issues at the tag.
 
 ## What a reviewer must verify before this is relied on
 
@@ -232,8 +299,8 @@ the verification record capture; the reconciliation in [releases/README.md](../R
    four unit combinations (BF-172, BF-173); the merged trees were not re-run here.
 2. Which advisory is the 1 critical in the 2026-10-25 `npm audit` on both `dev` and the refresh
    branch; this file does not name it.
-3. BF-177's reading that the glucose distribution report, not only its test, is right outside UTC
-   (read-derived).
+3. That the PR-body figures recorded here for #8835, #8837 and #8838 match a re-run; none was re-run
+   by this programme.
 
 ---
 
