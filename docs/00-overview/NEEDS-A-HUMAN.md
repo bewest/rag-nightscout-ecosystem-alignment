@@ -53,12 +53,6 @@ every item that was `merged-upstream` then is `released`.
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
 | `BFQ-175` | `unsettled` | BF-175 - temp targets are converted from mmol/L only when units is exactly 'mmol | &mdash; |
 
-### Maintainer + a second human &mdash; 1 item
-
-| id | claimed state | what it is | PR |
-|---|---|---|---|
-| `RT-2` | `in-flight-upstream` | Cut 2 - chore/build-runtime-separation | #8837 |
-
 ### SAFETY reviewer &mdash; 1 item
 
 | id | claimed state | what it is | PR |
@@ -83,7 +77,6 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
-| **#8837** | `RT-2` | `chore/build-runtime-separation` | Cut 2 - chore/build-runtime-separation | Maintainer + a second human |
 
 <!-- END GENERATED: open-prs -->
 

@@ -2,7 +2,7 @@
 
 **Status: in development. Nothing tagged or released.** 16.0.0 is the next release from `dev`
 (maintainer, 2026-10-21; queue `RT-VERSION`). Contributor-facing; full technical depth intended.
-Measured 2026-10-25 (to 19:51Z) against `official/dev` `2bc298b9` (the merge of #8838) and `official/master`
+Measured 2026-10-25 (to 23:49Z) against `official/dev` `b29f1bf7` (the merge of #8840) and `official/master`
 `c6a0d8ed` (= `v15.0.9`, the shipping release), in `externals/cgm-remote-monitor-official` after
 `git fetch official`, with `gh pr view` and `gh run view` for PR and CI state.
 
@@ -23,18 +23,19 @@ for testers is [testing-notes.md](testing-notes.md) (not written yet).
 | Tag to be cut | `v16.0.0` and `16.0.0`, both forms, as for `15.0.7` to `15.0.9` |
 | Merged part | `official/master..official/dev` |
 | Base (shipping) | `c6a0d8ed` = `v15.0.9` (released 2026-10-21) |
-| `dev` head | `2bc298b9` (merge of #8838, 2026-10-25 19:42:01Z, by bewest), tree `2b9ee5c7` |
-| Commits on `dev` | 204 — `git rev-list --count official/master..official/dev` |
-| First-parent commits on `dev` | 15 — `git rev-list --first-parent --count official/master..official/dev`: 14 PR merges and the cycle's version bump `04d435eb` |
-| Diff on `dev` | 192 files, +13540/−5507 — `git diff --shortstat official/master official/dev` |
+| `dev` head | `b29f1bf7` (merge of #8840, 2026-10-25 22:41:24Z, by AndyLow91), tree `b6486a8d` |
+| Commits on `dev` | 415 — `git rev-list --count official/master..official/dev` |
+| First-parent commits on `dev` | 20 — `git rev-list --first-parent --count official/master..official/dev`: 19 PR merges and the cycle's version bump `04d435eb` |
+| Diff on `dev` | 369 files, +38473/−9028 — `git diff --shortstat official/master official/dev` |
 | `package.json` version | `16.0.0` — `git show official/dev:package.json \| grep '"version"'` |
 | `engines.node` | `^22.23.4 \|\| ^24.22.1 \|\| >=26.12.1` (AndyLow91's `6a146a4c`, "require Node Brotli security patches"; supersedes the decided `^22.12 \|\| >=24`) |
-| Docker base image | `node:24.22.1-alpine` for builder and runtime (`32489dc5`) |
-| Connector pin | `nightscout-connect` exactly `0.1.0`, as in 15.0.9 |
+| Docker base image | `node:24.22.1-alpine` for builder and runtime (`32489dc5`); since #8836 the runtime stage deletes the image's global `npm` and `npx` (`Dockerfile` on `dev`) |
+| Connector pin | `nightscout-connect` exactly `0.1.0`, as in 15.0.9 (`package.json` on `dev`; the `connector-pin-exposure` gate, run 2026-10-25 after the fetch, reads `official/dev` and `official/chore/build-runtime-separation` ok at v0.1.0) |
 | Supported MongoDB | 5.0 through 8.0 (`README.md` on `dev`, from #8838's `039be646`); 4.4 and earlier unsupported |
-| Staging PR | #8824 (`dev` → `master`, "new dev branch post 15.0.9 release"): open, head `2bc298b9`, mergeable, `reviewDecision` `REVIEW_REQUIRED`; 30 checks passed, 3 skipped — `gh pr view 8824`, `gh pr checks 8824` |
-| CI on `2bc298b9` | `push` run 40227267487 and `pull_request` run 40227271881 passed every cell of the edge matrix (below); the push run's *Publish to Docker Hub* passed at 19:48:15Z, so `dev`'s published image is `2bc298b9`'s; CodeQL passed on both events — `gh run view <id> --json jobs` |
-| CI on the merges before it | `eb72a1d3` push run 40211895500 published an image at 17:15:18Z (it carries BF-176); `93f152bd` push run 40217943528 published one at 17:53:31Z (BF-176 fixed); `a20469dc` push run 40219064024 failed *Browser tests* (24.22.1, firefox) and (26, firefox) and skipped publishing; the `pull_request` runs of `93f152bd` and `a20469dc` each failed one Firefox cell. Each Firefox failure is `tests/browser/legacy-reports.test.js` "should produce some html", `page.waitForFunction: Timeout 30000ms exceeded` with the report still loading (454 passing, 1 failing) |
+| Staging PR | #8824 (`dev` → `master`, "new dev branch post 15.0.9 release"): open, head `b29f1bf7`, `mergeable` `MERGEABLE`, `mergeStateStatus` `BLOCKED`, `reviewDecision` `REVIEW_REQUIRED`; 40 checks passed, 3 skipped — `gh pr view 8824`, `gh pr checks 8824`. `master`'s branch protection still requires `Run Tests (22, 4.4)` (`gh api .../branches/master/protection/required_status_checks`), which no workflow on `dev` emits since #8833: no check of that name is on #8824's head |
+| CI on `b29f1bf7` | `push` run 40241375688 (20 jobs: 19 passed, the unused *Validate Docker image* skipped) and `pull_request` run 40241381245 (18 passed, *Build Docker image* and *Publish* skipped, as on every `pull_request` run) passed every test, browser, maintained-MongoDB, replica-set and npm 12 job; the push run's *Publish to Docker Hub* passed at 22:47:04Z, so `dev`'s published image is `b29f1bf7`'s; CodeQL passed on both events (runs 40241375762, 40241381258) — `gh run view <id> --json jobs` |
+| CI on the 2026-10-25 evening merges | every `push` and `pull_request` run on `5de8505d`, `fd3792e5`, `eb44a9c2` and `78524be4` passed on attempt 1, and each push run published an image: `5de8505d` run 40228940119 at 20:10:00Z, `fd3792e5` run 40229498194 at 20:17:31Z, `eb44a9c2` run 40235686217 at 21:37:57Z, `78524be4` run 40237888969 at 22:02:54Z — `gh run list --commit <sha>`, `gh run view <id> --json jobs` |
+| CI on the earlier merges | `eb72a1d3` push run 40211895500 published an image at 17:15:18Z (it carries BF-176); `93f152bd` push run 40217943528 published one at 17:53:31Z (BF-176 fixed); `a20469dc` push run 40219064024 failed *Browser tests* (24.22.1, firefox) and (26, firefox) and skipped publishing; the `pull_request` runs of `93f152bd` and `a20469dc` each failed one Firefox cell. Each Firefox failure is `tests/browser/legacy-reports.test.js` "should produce some html", `page.waitForFunction: Timeout 30000ms exceeded` with the report still loading (454 passing, 1 failing) |
 
 ## Provenance
 
@@ -47,8 +48,8 @@ bodies (see the integration record). No live site, vendor account or Docker imag
 ## What is merged so far
 
 Merge SHAs: `git log --first-parent --format='%h %ad %an %s' --date=iso official/master..official/dev`.
-Every merge below was made on 2026-10-25: the first eleven by AndyLow91, #8834, #8835 and #8838 by
-bewest. Register ids refer to the
+Every merge below was made on 2026-10-25: the first eleven and the last five by AndyLow91, #8834,
+#8835 and #8838 by bewest. Register ids refer to the
 [backfix register](../../docs/30-design/remedial/nightscout-backfix-register.md).
 
 | PR | merged (UTC) | merge | head | author | register | queue | what |
@@ -67,6 +68,11 @@ bewest. Register ids refer to the
 | #8834 | 17:44:48 | `93f152bd` | `f3d73f43` | bewest | BF-176 | `BFQ-176` | `axios` `^0.34.0` and `lodash` `4.18.1` are runtime dependencies: a production install with `IMPORT_CONFIG` boots again |
 | #8835 | 17:59:06 | `a20469dc` | `477d5200` | bewest | BF-163 | `BFQ-163` | `compression` 1.8.2, `follow-redirects` 1.16.1, `source-map-js` 1.2.2 (`feb3944c`, `ad458fa0`, `341b843a`) and `sanitize-html` 2.18.1 (`0293d640` the bump, `1eb986ad` `tests/purifier.corpus.test.js` pinning the stored text of 35 inputs), and a merge of `dev` `93f152bd` (`477d5200`) |
 | #8838 | 19:42:01 | `2bc298b9` | `039be646` | bewest | BF-158, BF-177 | `RT-CONNECT-TEARDOWN`, `BFQ-158`, `BFQ-177`, `RT-D3-SUITE` | test and CI hygiene, 10 commits (below) |
+| #8836 | 20:03:15 | `5de8505d` | `df2f37ab` | AndyLow91 | — | — | "Fix middleware DoS, harden credentials and streamline CI": `body-parser` 1.20.9, the status request's credentials move from the URL to headers, credential redaction in logs, `Referrer-Policy` and `Cache-Control` changes, dependency floors, CI action pins, no `npm` in the runtime image (24 files, +753/−99; below) |
+| #8833 | 20:10:15 | `fd3792e5` | `9ac9d534` | AndyLow91 | — | — | "ci: remove temporary Node 22 / MongoDB 4.4 check": the `Run Tests (22, 4.4)` matrix entry and its docs (5 files, +14/−18) |
+| #8837 | 21:28:47 | `eb44a9c2` | `af7ba73a` | bewest | — | `RT-2`, `RT-CONNECT-PIN-CUTS` | cut 2: page bundles and the build/runtime split (204 files, +22567/−3291; below) |
+| #8839 | 21:57:16 | `78524be4` | `ad8a73e2` | bewest | — | `RT-TEST-TIERS` | the test tier map, its check and inner-loop selection (`test:affected`, `test:smoke`) (15 files, +1001/−11; below) |
+| #8840 | 22:41:24 | `b29f1bf7` | `5be6f217` | mixa2010 | — | — | the Loopalyzer keeps 288 five-minute bins on 23- and 25-hour days (issue 8156) (4 files, +565/−69; below) |
 
 Before merging, AndyLow91 merged `dev` into most branches and added commits of his own (read with
 `git log` and `git show`):
@@ -93,6 +99,73 @@ API3 SEARCH hook's timeout: on an empty database the first insert waits on boot'
 creation; the product fix is `RT-BOOT-INDEX-AWAIT`), `aa7438ee` (Babel checked against the engines
 floors) and `039be646` (MongoDB 5.0 and 8.0 as the CI edges, and the docs).
 
+**#8836** (read from the PR body and `git show`; the runs are AndyLow91's). Six commits
+(`git log 2bc298b9..df2f37ab`): `e0872924` (dependency and credential findings), two merges of `dev` (`f09cb431`, `15a84907`),
+`be806a57` (privacy for GET authentication), `78aacc15` (CI) and the merge `df2f37ab` ("Merge dev CI
+hygiene while preserving the 14-job matrix"). What it changes, by mechanism:
+
+- `body-parser` `^1.20.6` → `^1.20.9` (lock 1.20.6 → 1.20.9): the PR body states that a malformed
+  compressed request body can terminate the server, and adds child-process regression probes for it
+  and for `compression` 1.8.2 (on `dev` since #8835). **15.0.9 locks `body-parser` 1.20.6 and
+  `compression` 1.8.1** (`git show official/master:package-lock.json`), the versions these replace.
+- The page's first status request no longer carries the API secret hash or token in its URL: it sends
+  them as `api-secret` and `Authorization` headers (`lib/client/index.js`), and `lib/api/status.js`
+  reads them there. Query-string credentials are still accepted for existing clients. **15.0.9's
+  `lib/client/index.js:58` appends the credential to the status URL.**
+- Logs and responses: credential-bearing request URLs and error details are redacted
+  (`lib/server/log-privacy.js`, new), CSP reports are sanitised before logging, `Referrer-Policy:
+  no-referrer` is set whether or not CSP is on, `Cache-Control: no-store` is set on status responses
+  and before redirects and authorization (`lib/middleware/credential-cache.js`), and setup-mode errors
+  use the production error handler.
+- Dependency floors: `dompurify` 3.4.17, `moment` 2.31.0, `fast-uri` 3.1.9, `ip-address` 10.7.5,
+  `serialize-javascript` 7.1.4, `csv-parse` 7.0.3 (development), nyc's nested `uuid` (lock versions on
+  `dev`, reproduced). The PR body reports `npm audit` affected-package entries 23 (full) and 16
+  (`--omit=dev`) before and two after, both in the one chain with no patched release:
+  `@parse/node-apn` → `node-forge` 1.4.0, GHSA-86w9-cpqp-85rv; the body says no remotely reachable path
+  was established and keeps APNs as it is (read-derived; not re-run).
+- CI: the 20 mutable action references pinned to commit SHAs; superseded `pull_request` runs cancelled;
+  publishing waits for every test job; a manual extended mode that never publishes. The runtime Docker
+  stage deletes `npm` and `npx`.
+- Tests on the PR head (read from the body): Node 24.22.1 against MongoDB 6.0.27, 3474 passing, 3
+  skipped, 0 failing, with coverage; 51 focused privacy and header cases on Node 22.23.4 and 24.22.1.
+
+**#8833** removes only the `Run Tests (22, 4.4)` matrix entry and updates `CONTRIBUTING.md`,
+`README.md`, `docs/runtime-upgrade.md` and `docs/test-specs/browser-tests.md` (`daee0c9e`, merge
+`9ac9d534`). Its body states that `dev` requires only `Run Tests (24, 6)`, and that `master` still
+requires `Run Tests (22, 4.4)`, which an administrator must remove before the next release PR into
+`master` (read; the protection read above agrees).
+
+**#8837, cut 2, as merged.** After `ee94b148`: AndyLow91's merge of `dev` `fd3792e5` (`2efd78ac`,
+"Merge dev security and CI updates into Cut 2"; conflicts in `.github/workflows/main.yml`,
+`lib/server/app.js`, `package.json` and `package-lock.json` per the body), `62b1509d` (the env-runner nyc
+fix: `--all=false` on the inner nyc and `docs/test-specs/env-runner.md`; author Ben West, the same
+patch as the peer session's `bd941200` by `git patch-id`) and AndyLow91's `af7ba73a` ("fix: preserve
+Maker delivery across recipient failures": Maker keys are sent in parallel and one key's error no
+longer stops the other keys or the later events; each request has a 10 s deadline; the log line names
+the event instead of the request URL, which carries the Maker key; 5 files). **15.0.9 logs that URL**
+(`lib/plugins/maker.js:111` on `official/master`). Whether `af7ba73a` also closes BF-137 (several
+Maker keys: out of order, a failed key not retried) was not checked; `BFQ-137` is unchanged. Tests on
+the merged branch (read from the body): Node 24.22.1, MongoDB 8.0.29, 3730 passing, 4 skipped, 0
+failing, with coverage; `test:core` 316; Chromium page-startup and credential-bootstrap selection 49
+passing; the pruned runtime with `IMPORT_CONFIG` passes. CI on the PR head `af7ba73a`: run 40231697337,
+attempt 1, passed. `lib/server/query.js` on `dev` now walks queries with `queryLeaves`
+(`lib/utils/query-leaves.js`); `traverse` is no longer in `package.json` (reproduced with `git grep`).
+
+**#8839** (read from the body): `tests/tiers.json` places 317 test files in eight tiers (unit 97,
+dom 17, dependency 20, core 26, harness 7, integration 123, stress 1, browser 26). AndyLow91 merged
+`dev` `eb44a9c2` into it (`90e2cfde`, "Merge dev and align test tiers with Cut 2") and added `ad8a73e2`
+(invalid tier or file selections exit non-zero before any test starts). The tier check and the harness
+tier run in the main backend CI jobs. `npm test` and `test-ci` are unchanged.
+
+**#8840** (read from the body; issue 8156). On a 23- or 25-hour day the Loopalyzer built 276 or 300
+five-minute bins instead of 288, so every series was rejected and the charts were blank; ranges that
+included such a day dropped that day's series. The fix anchors the axis on a 24-hour local day and
+bounds per-day slots to 288 (`lib/report_plugins/loopalyzer.js`, `docs/test-specs/loopalyzer-dst.md`,
+two test files). Commits: HeartCoreDev's `63ad23be`, AndyLow91's merge of `dev` `a383f0f9` and his
+`5be6f217` ("align DST curves with local clock markers"). The body reports 13 of 13 slot tests failing
+before the change and 20 of 20 passing after (`TZ=Europe/Berlin`). The PR head's run 40240553524 needed
+a maintainer approval on attempt 1 (`action_required`, a fork PR) and passed on attempt 2.
+
 None of these merged trees was re-run locally by this programme. The merged trees' CI is in
 [Identity](#identity).
 
@@ -104,11 +177,15 @@ None of these merged trees was re-run locally by this programme. The merged tree
   and that file is byte-identical to `806ff2f0`'s (compared by hash). The test block that ran twice
   was removed by #8838 (`879ab51e`); on `2bc298b9` `tests/bridge-connect-compat.test.js` has one
   `describe('BRIDGE_SERVER mapping')`.
-- **Cuts 2–5 against `2bc298b9`** (reproduced; `git rev-list --left-right --count official/dev...<cut>`
-  and `git merge-tree --write-tree --name-only --no-messages official/dev <cut>`): cut 2
-  `official/chore/build-runtime-separation` `ee94b148` (#8837) 11 behind / 185 ahead, merges cleanly; the
-  published cut 2 `b6e8c7cd`, 21 conflicting paths; cut 3 `ebb690cf` 480 / 222, 26; cut 4 `b80aa147`
-  480 / 301, 44; cut 5 `b1bdaca0` (#8605) 356 / 399, 43.
+- **Cut 2 is merged** (#8837, `eb44a9c2`): `git merge-base --is-ancestor af7ba73a official/dev` exits 0,
+  and `official/chore/build-runtime-separation` `af7ba73a` is 13 behind / 0 ahead of `dev` `b29f1bf7`.
+- **Cuts 3–5 against `b29f1bf7`** (reproduced 2026-10-25 after the fetch; `git rev-list --left-right
+  --count official/dev...<cut>` and `git merge-tree --write-tree --name-only --no-messages official/dev
+  <cut>`): cut 3 `official/chore/compose-mongodb6` `ebb690cf` 532 behind / 63 ahead, 10 conflicting
+  paths; cut 4 `official/chore/mime-exposure-review` `b80aa147` 532 / 142, 35; cut 5
+  `official/chore/nightscout-modernization` `b1bdaca0` (#8605, open) 408 / 240, 47. The "ahead" counts
+  fell from 222, 301 and 399 against `2bc298b9` because cut 2's commits, which cuts 3–5 descend from,
+  are now on `dev`.
 
 ## Version: 16.0.0, major
 
@@ -117,38 +194,46 @@ Decided by the maintainer on 2026-10-21 (`RT-VERSION` answered). Surfaces touche
 
 - [x] S1 the realtime socket contract: #8797 stores records the socket used to drop as copies (a
   correction)
-- [ ] S2 plugin interface, boot sequence or client bundle: #8831 adds an opt-in theme; no plugin
-  interface change was found
+- [x] S2 plugin interface, boot sequence or client bundle: cut 2 (#8837) splits the client into page
+  bundles and replaces the boot sequence and the client event bus with native code (a third-party
+  plugin that hooks into the page is to be tested before upgrading; no plugin was run against it);
+  #8831 adds an opt-in theme
 - [x] S3 environment-variable surface: `THEME=modern` (#8831, a new value); leftover legacy bridge
-  settings stop the site with a page naming the replacements (cut 1)
+  settings stop the site with a page naming the replacements (cut 1); `DEBUG_MINIFY` no longer has an
+  effect (cut 2)
 - [ ] S4 stored document shape
 - [x] S5 Node or MongoDB runtime floor, **major**: `lib/server/runtime-policy.js` reads `engines.node`
   and exits at boot outside `^22.23.4 || ^24.22.1 || >=26.12.1`, which stops Node 20, 21, 23 and 25,
   and 22.0–22.23.3, 24.0–24.22.0 and 26.0–26.12.0. The README states MongoDB 5.0 through 8.0 (#8838);
   4.4 and earlier are unsupported, and no server check that refuses them was found. The test matrix on
-  `dev` (#8838, the edge policy) is Node 22.23.4 and 26 × MongoDB 5.0 and 8.0, plus the cells branch
-  protection requires, (24, 6), (22, 6) and (22, 4.4); browser tests run on Node 26 × Chromium, Firefox
-  and WebKit (read from `.github/workflows/main.yml`)
+  `dev` `b29f1bf7` (read from the job names of push run 40241375688) is Node 22.23.4 and 26 × MongoDB
+  5.0 and 8.0, plus (24, 6) and (22, 6); the (22, 4.4) cell was removed by #8833. Cut 2 adds
+  maintained-MongoDB jobs (Node 22.23.4 and 26 × 8.0.29) and replica-set jobs (Node 22.23.4 and 26 ×
+  5.0.32 and 8.0.29); browser tests run on Node 26 × Chromium, Firefox and WebKit
 - [x] S6 an ingestion path, **major**: the legacy Dexcom Share bridge and MiniMed CareLink
   (mmconnect) are removed; Dexcom Share data comes in through `nightscout-connect`
 - [ ] S7 alarms or notifications: #8816 changes how long a snooze lasts on a page that is not signed
-  in (a correction)
+  in, and cut 2's `af7ba73a` changes how IFTTT Maker events are sent to several keys (corrections)
 - [x] S8 the version string: `16.0.0`
 - [x] S9 what the client computes and shows a person: BF-172, BF-173 and BF-174 change the Bolus Wizard
   Preview and the Careportal Bolus Wizard where the profile and display units differ, or where a
-  profile other than the active one is chosen; #8812 and #8808 change report figures
+  profile other than the active one is chosen; #8812, #8808 and #8840 change report figures
+
+Not on the list, and recorded for the release notes: #8836 changes response headers
+(`Referrer-Policy`, `Cache-Control`), where the page sends its credentials, and removes `npm` from the
+runtime Docker image.
 
 **Classification:** MAJOR, because of S5 and S6 (cut 1). **Directory name says:** 16.0.0.
 **Settled?** Yes, by the maintainer, 2026-10-21.
 
 ## In flight for this release
 
-Branch heads as of 2026-10-25, 19:51Z.
+Branch heads as of 2026-10-25, 23:49Z. Cut 2 (#8837) and the test tiers (#8839) merged on 2026-10-25
+([What is merged so far](#what-is-merged-so-far)).
 
 | work | branch | head | state | queue |
 |---|---|---|---|---|
-| cut 2: page bundles and the build/runtime split | `chore/build-runtime-separation`, **#8837** to `dev` (opened 19:22Z) | `ee94b148`; the fix `bd941200` and a merge of `dev` `2bc298b9` are on `wip/cut2-onto-cut1-16.0.0` (local, peer session), not pushed | open PR; its CI failed the required check (below) | `RT-2` |
-| test tier map, tier check and inner-loop selection (`test:affected`, `test:smoke`) | `test/tier-map-and-selection`, **#8839** (draft) to `dev` | `21620995` (`dev` `a20469dc` merged in) | open draft; lands after #8837 (cut 2) and #8838 (test and CI hygiene), rebased onto that `dev` | `RT-TEST-TIERS` |
+| cuts 3–5: catch-up onto `dev` | `wip/cut3-onto-16.0.0` and the like (local, peer session) | — | in progress, not pushed; the published heads and their distance from `dev` are in [Merge state](#merge-state) | `RT-REBASE`, `RT-3`, `RT-5` |
 | BF-72: a caller-supplied regular expression can hold the database for minutes | `bf/regex-limits`, in the private fork of its draft advisory | `1833ab00` on `dev` `04d435eb` | in the fork; no fork PR opened yet; owes a merge of `dev` | `BFQ-72` |
 | BF-161: a deeply nested pattern on three query endpoints makes that request fail | `bf/entries-pattern-limit`, in the private fork of its draft advisory | `d2c4df9f` on `dev` `04d435eb` | in the fork; no fork PR opened yet; owes a merge of `dev` | `BFQ-161` |
 
@@ -158,7 +243,8 @@ only behind `QUERY_REGEX_REFUSE_UNSAFE`, default off. BF-161's fix: a nesting-de
 before the pattern is parsed or expanded. Both keep the intended uses in the maintainer's public gist
 `dbe590ab` working, and each is published with the release that carries it.
 
-**Cut 2, #8837** (read from the PR body and `git log`; the runs are the preparing session's). The
+**Cut 2, #8837, before its last push** (read from the PR body and `git log`; the runs are the preparing
+session's; kept as the record of `ee94b148`; the merged head is in [What is merged so far](#what-is-merged-so-far)). The
 branch is a fast-forward of the published `b6e8c7cd`: 26 first-parent commits on top of it, 185
 commits ahead of `dev` `a20469dc`. It merges `dev` three times: `04a7968d` (`eb72a1d3`, 9 conflicting
 paths), `dd2e0cfd` (`93f152bd`, #8834) and `94242483` (`a20469dc`, #8835). The follow-ups are
@@ -176,9 +262,9 @@ failed the required check *Run Tests (24, 6)* and *Maintained MongoDB (26, 8.0.2
 1 failing: `tests/env-runner.test.js` "Native env runner process contract passes file values through
 nyc into a Mocha child" exceeded its 10 s timeout. The case's inner nyc instruments all of `lib/`
 (`.nycrc` `all: true`) under `test-ci`'s outer nyc; the local runs, without coverage, did not see it.
-The fix is `bd941200` (peer session: `--all=false` on the inner nyc, plus
-`docs/test-specs/env-runner.md`), on `wip/cut2-onto-cut1-16.0.0`, not pushed; cut 2 also merges `dev`
-`2bc298b9` before its next push.
+The fix reached the branch as `62b1509d` (the same patch as the peer
+session's `bd941200`), after AndyLow91's merge of `dev` `fd3792e5` (`2efd78ac`); run 40231697337 on the
+merged head `af7ba73a` passed.
 
 **`sanitize-html` 2.18.1 (#8835)** (read from the PR body). The update was bundled into #8835 on the
 maintainer's direction (themed PRs). Against 2.17.5, `npm audit` listed four `sanitize-html` advisories
@@ -195,7 +281,7 @@ is listed under [For the release notes](#for-the-release-notes). The combined he
 
 | defect | what | exposure | queue |
 |---|---|---|---|
-| Firefox legacy-reports wait | `tests/browser/legacy-reports.test.js` "should produce some html" timed out at its fixed 30 s wait (`12154df9`) in one or two Firefox cells of the CI runs on `93f152bd` (`pull_request`) and `a20469dc` (both events); the push run on `a20469dc` therefore skipped the Docker publish. It passed on `2bc298b9`. Cut 2 replaces the fixed wait with a progress-aware one (fails after 15 s with no completed request, 60 s ceiling) | test only; no register entry filed | `RT-2` |
+| Firefox legacy-reports wait | `tests/browser/legacy-reports.test.js` "should produce some html" timed out at its fixed 30 s wait (`12154df9`) in one or two Firefox cells of the CI runs on `93f152bd` (`pull_request`) and `a20469dc` (both events), so the push run on `a20469dc` skipped the Docker publish; and once more on #8836's head `df2f37ab` (run 40228187718 attempt 1, *Browser tests (26, firefox)*, 463 passing, 1 failing; attempt 2 passed). Since cut 2 merged (`eb44a9c2`), `dev`'s test uses the progress-aware wait (fails after 15 s with no completed request, 60 s ceiling; `tests/browser/legacy-reports.test.js:136-144`), and *Browser tests (26, firefox)* passed in every push and `pull_request` run on `5de8505d`, `fd3792e5`, `eb44a9c2`, `78524be4` and `b29f1bf7` (one run each, so not yet evidence that the flake is gone) | test only; no register entry filed | `RT-2` (merged) |
 
 **BF-176, the window.** `dev` carried the `IMPORT_CONFIG` boot crash from `eb72a1d3` (16:29:06Z, #8828)
 to `93f152bd` (17:44:48Z, #8834). `dev`'s Docker image was published in between, by push run
@@ -218,13 +304,12 @@ has none until then.
 
 ## Open items a releaser must settle
 
-As of `dev` `2bc298b9` (2026-10-25). The decisions already made are in [decisions.md](decisions.md).
+As of `dev` `b29f1bf7` (2026-10-25). The decisions already made are in [decisions.md](decisions.md).
 
 **Decisions open, with their owner:**
 
-1. **Whether cut 2 ships in 16.0.0 or as its own release** (maintainers). The versioning policy §8.3
-   leaves open whether the cuts ship separately or combined; #8837 targets `dev`, and its body says it
-   ships in 16.0.0.
+1. **Whether cuts 3–5 ship in 16.0.0 or later** (maintainers). Cut 2 merged into `dev` (#8837), so it
+   ships in 16.0.0 unless reverted; the versioning policy §8.3 leaves the later cuts' grouping open.
 2. **The scope of BF-161's draft advisory** (maintainer): publish it now for BF-151 (released in 15.0.9)
    with BF-161 as a follow-up, or extend it to include BF-161 and publish it with the release that
    carries the fix. Packet: [bfq-161](../../reports/reviewer-packets/bfq-161-bf-entries-pattern-limit.md).
@@ -239,12 +324,12 @@ As of `dev` `2bc298b9` (2026-10-25). The decisions already made are in [decision
    are fixed on `dev` or not reachable, or releasing more often. Packet:
    [dependabot-config](../../reports/reviewer-packets/dependabot-config.md).
 
-**Repository settings, for the maintainer** (from #8838's body; branch protection read 2026-10-25:
-`dev` requires `Run Tests (24, 6)`; `master` requires `Run Tests (22, 6)`, `Run Tests (22, 4.4)` and
-`Run Tests (24, 6)`; no rulesets). Nothing in a PR changes these:
+**Repository settings, for the maintainer** (from #8838's and #8833's bodies; branch protection read
+2026-10-25, after the 22:41Z merge: `dev` requires `Run Tests (24, 6)`; `master` requires `Run Tests (22, 6)`,
+`Run Tests (22, 4.4)` and `Run Tests (24, 6)`). Nothing in a PR changes these:
 
-1. `master`: drop the required check `Run Tests (22, 4.4)`; MongoDB 4.4 is unsupported and the cell
-   exists only for this check. Then delete its `include` entry.
+1. `master`: drop the required check `Run Tests (22, 4.4)`. #8833 deleted its `include` entry, so no
+   run emits it, and the staging PR #8824 cannot meet `master`'s protection until it is dropped.
 2. `dev` and `master`: move the `Run Tests (24, 6)` and `Run Tests (22, 6)` requirements to edge cells
    (for example `Run Tests (22.23.4, 8.0)` and `Run Tests (26, 8.0)`, and `(22.23.4, 5.0)` and
    `(26, 5.0)` if the MongoDB floor should also gate merges), then delete those `include` entries.
@@ -256,12 +341,11 @@ theme's code only when it is chosen; owner Andy Low or the maintainer; not start
 `RT-BOOT-INDEX-AWAIT` (boot awaits its collection and index creation, the cause of the API3 hook
 timeout; a product change; not started).
 
-**Merge order** (a suggestion for the maintainers, not a decision): #8837 and #8838 in either order (a
-`git merge-tree` of the two was clean); #8838 merged first. Then:
+**Merge order** (a suggestion for the maintainers, not a decision): #8838, #8837 (cut 2) and #8839 (the
+test tiers) merged on 2026-10-25, in that order with #8836 and #8833 between them. Then:
 
-1. Cut 2, #8837 (`RT-2`), once `bd941200` and its merge of `dev` `2bc298b9` are pushed and its CI passes.
-2. Peer session -b7's test tiers (`RT-TEST-TIERS`), rebased onto that `dev`, as one PR.
-3. The other follow-ups, each in a themed PR: `RT-JSDOM-REST` (scope B), `ID-SIMPLE-MATCH` with BF-169
+1. Cuts 3–5 (`RT-REBASE`, `RT-3`, `RT-5`), after their catch-up merges of `dev`.
+2. The other follow-ups, each in a themed PR: `RT-JSDOM-REST` (scope B), `ID-SIMPLE-MATCH` with BF-169
    (it touches `lib/server/entries.js`, which cut 2 also changes), `RT-BUNDLE-THEME-SPLIT` and
    `RT-BOOT-INDEX-AWAIT`.
 4. BF-72 and BF-161 through their advisory forks, each after a merge of `dev`, published with the
@@ -288,9 +372,17 @@ candidate is named.
   `<textarea></textarea/>` followed by an image with an event handler is now stored as the image tag
   without its handler (`<img src="x" />`), where 2.17.5 stored nothing (the empty string). The other 34
   corpus inputs are stored identically.
-- If cut 2 ships in 16.0.0: page bundles, build and runtime separated (`npm ci` with development
+- Cut 2 (merged): page bundles, build and runtime separated (`npm ci` with development
   dependencies, then prune), no late minification, `DEBUG_MINIFY` without effect, the load-failure
   panel, and a third-party plugin that hooks into the page to be tested before upgrading.
+- #8836: the page sends its credentials in headers instead of the status URL (query credentials still
+  work for other clients); `body-parser` 1.20.9; `Referrer-Policy: no-referrer` and `Cache-Control:
+  no-store` where described above; the runtime Docker image has no `npm` or `npx`; the one remaining
+  `npm audit` chain (`@parse/node-apn` → `node-forge`), with what it measures.
+- #8833: MongoDB 4.4 is no longer tested at all.
+- Cut 2's IFTTT Maker change (`af7ba73a`): every key and every event is attempted when one fails; the log
+  names the event, not the key.
+- #8840: the Loopalyzer on and across daylight-saving days.
 - The known issues at the tag.
 
 ## What a reviewer must verify before this is relied on
@@ -299,8 +391,10 @@ candidate is named.
    four unit combinations (BF-172, BF-173); the merged trees were not re-run here.
 2. Which advisory is the 1 critical in the 2026-10-25 `npm audit` on both `dev` and the refresh
    branch; this file does not name it.
-3. That the PR-body figures recorded here for #8835, #8837 and #8838 match a re-run; none was re-run
-   by this programme.
+3. That the PR-body figures recorded here for #8835, #8836, #8837, #8838, #8839 and #8840 match a
+   re-run; none was re-run by this programme.
+4. Whether #8836's `body-parser` and status-URL changes, and cut 2's Maker log line, need a notice for
+   15.0.9 operators: 15.0.9 has the same code or versions (above). Recorded here by mechanism only.
 
 ---
 

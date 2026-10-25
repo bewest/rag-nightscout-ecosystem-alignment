@@ -25,9 +25,9 @@ current and the prose is stale.
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
 | **Remedial** | `phase0`, `register-open`, `docs-truth` | 161 | 43 | 11 |
-| **Modernization** | `release-train` | 39 | 8 | 1 |
+| **Modernization** | `release-train` | 39 | 8 | 0 |
 | **Multitenant** | `tenancy`, `platform` | 67 | 17 | 9 |
-| | **total** | **269** | **68** | **21** |
+| | **total** | **269** | **68** | **20** |
 
 <!-- END GENERATED: horizons -->
 
@@ -201,7 +201,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `released` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  |  | 17 |  | 1 |  |  |  | **22** |
-| `release-train` | 8 | 1 | 4 |  | 3 | 1 | 3 | 15 |  | 1 |  |  | 3 | **39** |
+| `release-train` | 8 | 1 | 4 |  | 2 |  | 5 | 15 |  | 1 |  |  | 3 | **39** |
 | `register-open` | 33 | 4 | 1 | 1 | 5 | 2 | 9 | 55 | 6 |  | 1 | 3 |  | **120** |
 | `tenancy` | 8 | 1 |  | 1 | 13 |  |  |  | 7 | 3 | 1 |  |  | **34** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  |  | 11 |  |  |  | **19** |
