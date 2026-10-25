@@ -2373,18 +2373,23 @@ controls:
       tools/queue/gates/runtime-requires-declared-control.sh
     control-kind: static
     proves: >
-      two known negatives, and the control exits non-zero only when the gate
-      refuses both. (1) The released tag v15.0.9 (immutable, so it cannot go
+      three known negatives, and the control exits non-zero only when the gate
+      refuses all three. (1) The released tag v15.0.9 (immutable, so it cannot go
       stale when the fix merges): axios BAD (devDependencies only, required
       at bin/testdatarunner.js:4 and lib/server/bootevent.js:140) and lodash
       BAD (undeclared, lib/utils.js:92); 45 checked, 2 failing, exit 1
       (measured 2026-10-22; official/dev 04d435eb and cut 1 806ff2f0 give the
-      same two). (2) A git-archive copy of the fix branch with one
-      require('webpack-hot-middleware') appended after the end of
-      lib/server/app.js, outside the NODE_ENV === 'development' block: the
-      allowlisted package is reported BAD at lib/server/app.js:395; 45
-      checked, 1 failing, exit 1. The unmutated copy passes in the same tree
-      mode (45 checked, 0 failing), so (2) is red for the mutation and not
+      same two). (1b) dev at eb72a1d3 (16.0.0 with cut 1 merged, named by
+      commit id so it cannot go stale): the same two, axios at
+      lib/server/bootevent.js:114; 41 checked, 2 failing (measured
+      2026-10-25). This is the tree where the production-install
+      IMPORT_CONFIG boot exits 1 with "Cannot find module 'axios'". (2) A
+      git-archive copy of the fix branch (merged with dev eb72a1d3 at
+      f3d73f43) with one require('webpack-hot-middleware') appended after the
+      end of lib/server/app.js, outside the NODE_ENV === 'development' block:
+      the allowlisted package is reported BAD at lib/server/app.js:395; 41
+      checked, 1 failing, exit 1. The unmutated branch passes (41 checked, 0
+      failing), so (2) is red for the mutation and not
       for the mode. The strong form: the same instrument on real trees.
 
   - gate: |-
