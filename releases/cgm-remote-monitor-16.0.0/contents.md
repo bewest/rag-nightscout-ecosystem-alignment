@@ -136,7 +136,7 @@ Branch heads as of 2026-10-25. The maintainer opened #8834 and #8835 against `de
 | BF-72: a caller-supplied regular expression can hold the database for minutes | `bf/regex-limits`, in the private fork of its draft advisory | `1833ab00` on `dev` `04d435eb` | in the fork; no fork PR opened yet; owes a merge of `dev` `eb72a1d3` | `BFQ-72` |
 | BF-161: a deeply nested pattern on three query endpoints makes that request fail | `bf/entries-pattern-limit`, in the private fork of its draft advisory | `d2c4df9f` on `dev` `04d435eb` | in the fork; no fork PR opened yet; owes a merge of `dev` `eb72a1d3` | `BFQ-161` |
 | BF-158: the count=0 tests assume an empty database | none found locally or on `official` on 2026-10-25 | — | not started | `BFQ-158` |
-| test tier map, tier check and inner-loop selection (`test:affected`, `test:smoke`) | `test/tier-map-and-selection` (local, `externals/work/crm-devloop`) | `fe002d42` (on `dev` `eb72a1d3`; 2 commits) | not pushed; lands after cut 2 and the test and CI hygiene PR, rebased onto that `dev` | `RT-TEST-TIERS` |
+| test tier map, tier check and inner-loop selection (`test:affected`, `test:smoke`) | `test/tier-map-and-selection`, **#8839** (draft) to `dev` | `21620995` (`dev` `a20469dc` merged in) | open draft; lands after #8837 (cut 2) and #8838 (test and CI hygiene), rebased onto that `dev` | `RT-TEST-TIERS` |
 
 BF-72's fix, by mechanism: a length cap on every pattern and a time limit on every query whose filter
 holds a regular expression, generated ones included; a refusal check for caller-written patterns
