@@ -148,7 +148,7 @@ Branch heads as of 2026-10-25, 19:51Z.
 | work | branch | head | state | queue |
 |---|---|---|---|---|
 | cut 2: page bundles and the build/runtime split | `chore/build-runtime-separation`, **#8837** to `dev` (opened 19:22Z) | `ee94b148`; the fix `bd941200` and a merge of `dev` `2bc298b9` are on `wip/cut2-onto-cut1-16.0.0` (local, peer session), not pushed | open PR; its CI failed the required check (below) | `RT-2` |
-| test tier map, tier check and inner-loop selection (`test:affected`, `test:smoke`) | `test/tier-map-and-selection` (local, peer session -b7, `externals/work/crm-devloop`) | `29ea17b6` and `fe002d42` (on `dev` `eb72a1d3`) | not pushed; lands after #8837 as one PR, without its own BF-158 change (#8838 carries the fix, with this branch's runtime-cache flush) | `RT-TEST-TIERS` |
+| test tier map, tier check and inner-loop selection (`test:affected`, `test:smoke`) | `test/tier-map-and-selection`, **#8839** (draft) to `dev` | `21620995` (`dev` `a20469dc` merged in) | open draft; lands after #8837 (cut 2) and #8838 (test and CI hygiene), rebased onto that `dev` | `RT-TEST-TIERS` |
 | BF-72: a caller-supplied regular expression can hold the database for minutes | `bf/regex-limits`, in the private fork of its draft advisory | `1833ab00` on `dev` `04d435eb` | in the fork; no fork PR opened yet; owes a merge of `dev` | `BFQ-72` |
 | BF-161: a deeply nested pattern on three query endpoints makes that request fail | `bf/entries-pattern-limit`, in the private fork of its draft advisory | `d2c4df9f` on `dev` `04d435eb` | in the fork; no fork PR opened yet; owes a merge of `dev` | `BFQ-161` |
 
