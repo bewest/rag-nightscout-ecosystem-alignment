@@ -127,7 +127,7 @@ Select **Show on the map** on a card to see which items it holds up.
 
 ## 8. Sources
 
-- cgm-remote-monitor dev `47723cda`; draft #8854 `880b7369` and its `docs/architecture/data-contracts.md`.
+- cgm-remote-monitor dev `47723cda`; draft #8854 `880b7369` and its data-contracts document.
 - [Storage seam interface](../tenancy/nightscout-storage-seam-interface-2026-09-14.md), [write-contract spec](../tenancy/write-contract-spec-2026-10-07.md), [execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).
 - [Registration specification](spec/registration.md), [identity specification](spec/identity.md), [records specification](spec/records.md).
 - Nocturne `970031f6`. Tenant scope is an `ITenantScoped` marker with row-level security. It keeps a sync key (tenant, data source, sync identifier) and a single record-changed seam proposed in its issue #2130. Its API v3 serves `identifier` equal to `_id` (issue #1932).
