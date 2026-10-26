@@ -132,8 +132,8 @@ pages:
     api:
       status: draft-pr
       note: >-
-        cgm-remote-monitor's own API v1 document, corrected for 16.0.0 on branch
-        docs/16.0.0-swagger-accuracy (dev c08cbe03 plus documentation changes). The copy on dev today
+        cgm-remote-monitor's own API v1 document, corrected for 16.0.0 in pull request #8858
+        (branch docs/16.0.0-swagger-accuracy: dev c08cbe03 plus documentation changes). The copy on dev today
         fails the OpenAPI linter and omits endpoints; when the correction merges, this page is
         re-rendered from dev and marked current.
       see: specs/openapi/upstream/cgm-remote-monitor/README.md
@@ -145,8 +145,8 @@ pages:
     api:
       status: draft-pr
       note: >-
-        cgm-remote-monitor's own API v3 document, corrected for 16.0.0 on branch
-        docs/16.0.0-swagger-accuracy (dev c08cbe03 plus documentation changes). The copy on dev today
+        cgm-remote-monitor's own API v3 document, corrected for 16.0.0 in pull request #8858
+        (branch docs/16.0.0-swagger-accuracy: dev c08cbe03 plus documentation changes). The copy on dev today
         fails the OpenAPI linter and omits endpoints; when the correction merges, this page is
         re-rendered from dev and marked current.
       see: specs/openapi/upstream/cgm-remote-monitor/README.md
