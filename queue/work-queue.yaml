@@ -3204,7 +3204,7 @@ items:
     branch: ci/edge-diagonal-matrix
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-matrix
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8843]
     blast_radius: >
       CI, test scripts and tests only. .github/workflows/main.yml: Run Tests
@@ -3231,8 +3231,15 @@ items:
     semver_reason: CI and test infrastructure; no product code changes
     register: []
     gates:
+      - describe: >
+          official/dev contains #8843's head 7fd2415e (merged 2026-10-26 as
+          720e60de); red if dev is rewritten or the merge is reverted out of
+          history
+        kind: static
+        run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7fd2415e official/dev
       - no-gate: >
-          To write when the PR opens: on the branch,
+          Not written: the branch gate below was to be written when the PR
+          opened, and the PR merged first. Its text, kept as the record: on the branch,
           TEST_SHUFFLE_SEED=40226791404 node scripts/test-tiers.js run
           integration,stress against an empty MongoDB exits 0, with the
           branch's test fixes reverted as the red control (35 failing on
@@ -3243,6 +3250,12 @@ items:
     evidence:
       - releases/cgm-remote-monitor-16.0.0/decisions.md
     notes: >
+      2026-10-26, 05:20:27Z: merged. bewest merged #8843 into dev as
+      720e60de (head 7fd2415e; gh pr view 8843). Besides the diagonal, it
+      fixed the browser tier running no tests in CI since #8839 (e767ce4e),
+      BF-192's reports heap ceiling (0a33b7c7, 6.8 MB) and a WebKit fixture
+      (7fd2415e). The cuts take it at their next merge of dev (RT-REBASE).
+
       2026-10-25, night: pushed by the maintainer; #8843 head 7fd2415e, every
       CI lane passes including Tests pass: Tests without a database (22.23.4,
       26); Run Tests (22.23.4, 8.0), (26, 5.0), (24, 6), (22, 6); Maintained
