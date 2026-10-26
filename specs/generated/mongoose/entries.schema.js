@@ -44,7 +44,7 @@ const EntriesSchema = new Schema({
   sysTime: { type: String },  // 100% of documents, 11 sites; universal
   trend: { type: Number },  // 72% of documents, 10 sites; core
   trendRate: { type: Number },  // 46% of documents, 10 sites; core
-  type: { type: String, enum: ["cal", "mbg", "sgv"], required: true },  // 100% of documents, 11 sites; universal
+  type: { type: String, required: true },  // 100% of documents, 11 sites; universal
   unfiltered: { type: Number },  // 13% of documents, 2 sites; vendor
   units: { type: String, enum: ["mg", "mg/dL", "mg/dl", "mmol", "mmol/L"] },
   utcOffset: { type: Number },  // 100% of documents, 11 sites; universal

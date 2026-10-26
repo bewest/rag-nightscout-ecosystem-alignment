@@ -53,8 +53,21 @@ info:
     - `units`: enum widened to the union of the three inconsistent
       declarations across our own specs and the values in live data
 
+    ### 2026-10-26 — open vocabulary
+
+    - `type` (`EntryType`): no longer a closed enum. cgm-remote-monitor
+      accepts any string, and observation cannot close an enum (evidence
+      §3.4); `sgv`, `mbg` and `cal` are kept as `examples`.
+
     Fields carry `x-aid-evidence` pointing at the census record that
     justifies them. Re-derive with `make schema`.
+
+    ## Not in this file
+
+    `EntryExtended` (`sourceCalibration`, `sensorId`, `transmitterId`, and a
+    copy of `trendRate`, which `Entry` declares) was a 2026 proposal; none of
+    its other fields appears in the 2026-04 corpus. It moved to
+    `aid-alignment-extensions.yaml` on 2026-10-26.
     
   contact:
     name: AID Alignment Workspace
@@ -159,12 +172,17 @@ components:
   schemas:
     EntryType:
       type: string
-      enum: [sgv, mbg, cal]
       description: |
         Entry classification:
         - `sgv`: Sensor Glucose Value (CGM reading)
         - `mbg`: Meter Blood Glucose (fingerstick)
         - `cal`: Calibration record
+
+        Open: these are the known values, not a closed list. Nightscout stores
+        any string here: API v1 refuses only a `type` that is not a string
+        (cgm-remote-monitor `lib/server/entries.js`) and API v3 does not check
+        it. A reader must accept a value it does not know.
+      examples: [sgv, mbg, cal]
       x-aid-source: externals/cgm-remote-monitor/lib/api3/swagger.yaml
 
     Direction:
@@ -435,44 +453,3 @@ components:
           type: boolean
           default: false
           description: Lock document permanently (HTTP 422 on modify attempts)
-
-    # Extension schemas for 2026 alignment
-    EntryExtended:
-      allOf:
-        - $ref: '#/components/schemas/Entry'
-        - type: object
-          properties:
-            sourceCalibration:
-              type: string
-              description: |
-                2026 Extension: Calibration algorithm used.
-                Addresses GAP-CGM-001 (calibration provenance not tracked).
-              enum:
-                - native
-                - xdrip_native
-                - xdrip_oop
-                - libre_oop
-                - g6_native
-              x-aid-2026: true
-              x-aid-gap: GAP-CGM-001
-            sensorId:
-              type: string
-              description: |
-                2026 Extension: Unique sensor session identifier.
-                Enables grouping readings by sensor session.
-              x-aid-2026: true
-              x-aid-gap: GAP-CGM-002
-            transmitterId:
-              type: string
-              description: |
-                2026 Extension: CGM transmitter identifier.
-                For Dexcom G6/G7, Libre with transmitter.
-              x-aid-2026: true
-              x-aid-gap: GAP-CGM-003
-            trendRate:
-              type: number
-              description: |
-                2026 Extension: Numeric rate of change (mg/dL/min).
-                More precise than direction string.
-              x-aid-2026: true
-              x-aid-gap: GAP-ENTRY-003

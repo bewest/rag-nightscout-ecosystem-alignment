@@ -233,6 +233,33 @@ def test_profile_store_flattens_to_map_notation():
     assert "store.{}.basal[].value" in flat
 
 
+# cgm-remote-monitor stores any string in these two fields (dev 7ad3a67f:
+# lib/server/entries.js and validateDedupFields in lib/server/treatments.js
+# check only that the value is a string), so the de facto specs declare them
+# open; the known values are documentation (`examples`), never an enum.
+# Observation cannot close an enum: typed-schema evidence §3.4.
+OPEN_VOCABULARIES = [("entries", "type", "EntryType"),
+                     ("treatments", "eventType", "EventType")]
+
+
+@pytest.mark.parametrize("collection,path,schema", OPEN_VOCABULARIES)
+def test_open_vocabulary_is_not_a_closed_enum(collection, path, schema):
+    spec, _, flat = specload.load(corpus.repo_root(), collection)
+    assert flat[path]["types"] == ["string"]
+    assert flat[path]["enum"] is None, f"{collection}.{path} is declared closed"
+    assert spec.schemas[schema].get("examples"), "known values were dropped"
+
+
+@pytest.mark.parametrize("collection,path,schema", OPEN_VOCABULARIES)
+def test_open_vocabulary_is_open_in_every_generated_schema(collection, path, schema):
+    generated = corpus.repo_root() / "specs" / "jsonschema" / "generated"
+    files = sorted(generated.glob(f"{collection}.*.schema.json"))
+    assert len(files) == 8
+    for f in files:
+        field = json.loads(f.read_text())["properties"][path]
+        assert "enum" not in field, f"{f.name}: {path} is closed"
+
+
 def test_reconcile_reports_a_type_conflict():
     cen = {
         "documents": 10, "sites": ["a"],

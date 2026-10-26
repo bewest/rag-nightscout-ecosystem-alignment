@@ -62,8 +62,21 @@ info:
     - added `amount`, `userEnteredAt`, `userLastModifiedAt`,
       `insulinNeedsScaleFactor`, `correctionRange`
 
+    ### 2026-10-26 — open vocabulary
+
+    - `eventType` (`EventType`): no longer a closed enum. cgm-remote-monitor
+      accepts any string, and observation cannot close an enum (evidence
+      §3.4); the known values are kept as `examples` and listed in the
+      description.
+
     Fields carry `x-aid-evidence` pointing at the census record that
     justifies them. Re-derive with `make schema`.
+
+    ## Not in this file
+
+    `Override.supersedes` was a 2026 proposal; it appears in no document of
+    the 2026-04 corpus. It moved to `aid-alignment-extensions.yaml`
+    (`OverrideLifecycle.supersedes`) on 2026-10-26.
 
   contact:
     name: AID Alignment Workspace
@@ -153,7 +166,30 @@ components:
       description: |
         Treatment classification. This is the primary discriminator for treatment types.
         Note: The same `eventType` may have different semantics across controllers.
-      enum:
+
+        Open: the values below are the known ones, not a closed list.
+        Nightscout stores any string here: API v1 refuses only an `eventType`
+        that is not a string (cgm-remote-monitor `lib/server/treatments.js`,
+        `validateDedupFields`), API v3 only makes it immutable on update
+        (`lib/api3/generic/update/validate.js:71`), and `WRITE_VALIDATION`
+        checks the targets of a `Temporary Target` without restricting the
+        vocabulary. A reader must accept a value it does not know
+        (QUIRK-TREATMENTS-005).
+
+        Known values:
+        - insulin: `Meal Bolus`, `Correction Bolus`, `Snack Bolus`,
+          `Combo Bolus`, `Bolus Wizard`
+        - carbs: `Carb Correction`
+        - basal, targets and profiles: `Temp Basal`, `Temporary Target`,
+          `Profile Switch`, `Temporary Override`
+        - device and notes: `Site Change`, `Sensor Start`, `Sensor Change`,
+          `Insulin Change`, `Pump Battery Change`, `BG Check`,
+          `Announcement`, `Note`, `Question`, `Exercise`, `OpenAPS Offline`,
+          `Suspend Pump`, `Resume Pump`
+        - AAPS-specific: `SMB`, `Target Range`, `NS Carbs`
+        - observed in live data, previously undeclared: `Bolus`, `Carbs`
+        - legacy: `Prime`, `<none>`
+      examples:
         # Insulin events
         - Meal Bolus
         - Correction Bolus
@@ -594,13 +630,6 @@ components:
                 Loop: overallInsulinNeedsScaleFactor
                 AAPS: Uses profile percentage instead
                 Trio: Uses oref1 profile percentage
-            supersedes:
-              type: string
-              description: |
-                2026 Extension: ID of override this supersedes.
-                Addresses GAP-001 (override supersession tracking).
-              x-aid-2026: true
-              x-aid-gap: GAP-001
 
     # SMB-specific identification helper
     SMBIdentification:

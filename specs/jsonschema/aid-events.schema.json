@@ -204,7 +204,7 @@
             "status": { "$ref": "#/$defs/eventStatus" },
             "supersedes": {
               "$ref": "#/$defs/eventId",
-              "description": "2026 Extension: ID of override this one supersedes (GAP-001)"
+              "description": "2026 Extension: ID of override this one supersedes (GAP-001); proposed in aid-alignment-extensions.yaml OverrideLifecycle.supersedes, replaced by state-intent S3 and A7"
             },
             "superseded_by": {
               "$ref": "#/$defs/eventId",

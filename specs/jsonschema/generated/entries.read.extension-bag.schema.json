@@ -180,8 +180,7 @@
    "description": "Entry classification:",
    "x-sensitivity": "descriptive",
    "x-data-category": "vocabulary",
-   "enum": [
-    "cal",
+   "x-observed-values": [
     "mbg",
     "sgv"
    ]
