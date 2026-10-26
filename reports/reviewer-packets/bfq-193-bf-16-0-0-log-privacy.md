@@ -86,27 +86,31 @@ without it.
 
 ## Notes carried on the item
 
-2026-10-26, after #8854 merged (dev 7ad3a67f): session -66 merged dev 7ad3a67f
-into bf/16.0.0-log-privacy locally as 6b6ad320, no conflicts, not pushed (the
-PR head is still 8ae43eb4; the push is the maintainer's). On 6b6ad320: npm
-test 4436 passing, 0 failing, 3 pending; test:all 4764 passing, 0 failing, 3
-pending. The log lines #8854 adds are console.error(err) on storage errors
-(the follow-up below: error objects may contain documents) and the validation
-line, which names rules and fields only. #8856 and #8859 merge with each other
-cleanly. 2026-10-26, later: draft PR #8856 to dev (bf/16.0.0-log-privacy, head
-8ae43eb4), opened by the maintainer. 2026-10-26, later (maintainer): BF-193
-stays its own PR, separate from the 16.0.0 re-send and merge bundle.
-2026-10-26: decided by the maintainer (session -66): debug-gated payload
-logging through one gate, the existing DEBUG_LOGGING (env.debug.logging), no
-new setting, using recordForLog in lib/server/log-privacy.js. The summary
-(operation, collection, client, ref, eventType or item count) is always
-logged; the payload only with debug on; refusal lines are bounded (8192
-characters) and redacted. Built as bf/16.0.0-log-privacy 8ae43eb4, one commit
-on dev 47723cda, not pushed. Not a pre-tag requirement for 16.0.0 (maintainer,
-2026-10-26). Release note: set DEBUG_LOGGING=true to see the records clients
-send; debug logs then contain health data. Follow-up, read-derived and
-unverified, not filed as an id: storage error lines that log whole MongoDB
-error objects (lib/server/treatments.js:173, 284 and 452,
+2026-10-26, later: the maintainer pushed 6b6ad320; it is PR #8856's head (gh
+pr view, mergeable). Hosted CI on 6b6ad320: 16 checks passed, 0 failed, 2
+skipped (Build Docker image and Publish to Docker Hub, which run on push to
+dev only), including the browser tests on Node 26 in Chromium, Firefox and
+WebKit. 2026-10-26, after #8854 merged (dev 7ad3a67f): session -66 merged dev
+7ad3a67f into bf/16.0.0-log-privacy locally as 6b6ad320, no conflicts, not
+pushed (the PR head is still 8ae43eb4; the push is the maintainer's). On
+6b6ad320: npm test 4436 passing, 0 failing, 3 pending; test:all 4764 passing,
+0 failing, 3 pending. The log lines #8854 adds are console.error(err) on
+storage errors (the follow-up below: error objects may contain documents) and
+the validation line, which names rules and fields only. #8856 and #8859 merge
+with each other cleanly. 2026-10-26, later: draft PR #8856 to dev
+(bf/16.0.0-log-privacy, head 8ae43eb4), opened by the maintainer. 2026-10-26,
+later (maintainer): BF-193 stays its own PR, separate from the 16.0.0 re-send
+and merge bundle. 2026-10-26: decided by the maintainer (session -66): debug-
+gated payload logging through one gate, the existing DEBUG_LOGGING
+(env.debug.logging), no new setting, using recordForLog in lib/server/log-
+privacy.js. The summary (operation, collection, client, ref, eventType or item
+count) is always logged; the payload only with debug on; refusal lines are
+bounded (8192 characters) and redacted. Built as bf/16.0.0-log-privacy
+8ae43eb4, one commit on dev 47723cda, not pushed. Not a pre-tag requirement
+for 16.0.0 (maintainer, 2026-10-26). Release note: set DEBUG_LOGGING=true to
+see the records clients send; debug logs then contain health data. Follow-up,
+read-derived and unverified, not filed as an id: storage error lines that log
+whole MongoDB error objects (lib/server/treatments.js:173, 284 and 452,
 lib/server/entries.js:208 on dev 47723cda) may include the document that
 failed to write; the branch does not cover them. Filed 2026-10-26 from a read-
 only compatibility audit of dev 47723cda; the socket's counterpart of BF-186,

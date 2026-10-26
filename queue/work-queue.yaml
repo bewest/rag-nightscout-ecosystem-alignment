@@ -4713,6 +4713,12 @@ items:
       - tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md
       - docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
     notes: >
+      2026-10-26, later: the maintainer pushed 5c6ceabb; it is PR #8859's
+      head (gh pr view, mergeable). Hosted CI on 5c6ceabb: 16 checks
+      passed, 0 failed, 2 skipped (Build Docker image and Publish to Docker
+      Hub, which run on push to dev only), including the browser tests on
+      Node 26 in Chromium, Firefox and WebKit.
+
       2026-10-26, after #8854 merged (dev 7ad3a67f): session -66 merged dev
       7ad3a67f into bf/16.0.0-null-removes locally as 5c6ceabb, not pushed
       (the PR head is still fc170a4c; the push is the maintainer's). The
@@ -16742,6 +16748,12 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-26, later: the maintainer pushed 6b6ad320; it is PR #8856's
+      head (gh pr view, mergeable). Hosted CI on 6b6ad320: 16 checks
+      passed, 0 failed, 2 skipped (Build Docker image and Publish to Docker
+      Hub, which run on push to dev only), including the browser tests on
+      Node 26 in Chromium, Firefox and WebKit.
+
       2026-10-26, after #8854 merged (dev 7ad3a67f): session -66 merged dev
       7ad3a67f into bf/16.0.0-log-privacy locally as 6b6ad320, no conflicts,
       not pushed (the PR head is still 8ae43eb4; the push is the
@@ -16869,6 +16881,12 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-26, later: the maintainer pushed 5c6ceabb; it is PR #8859's
+      head (gh pr view, mergeable). Hosted CI on 5c6ceabb: 16 checks
+      passed, 0 failed, 2 skipped (Build Docker image and Publish to Docker
+      Hub, which run on push to dev only), including the browser tests on
+      Node 26 in Chromium, Firefox and WebKit.
+
       2026-10-26, after #8854 merged (dev 7ad3a67f): session -66 merged dev
       7ad3a67f into bf/16.0.0-null-removes locally as 5c6ceabb, not pushed
       (the PR head is still fc170a4c; the push is the maintainer's). The

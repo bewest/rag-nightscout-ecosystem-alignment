@@ -88,22 +88,26 @@ This item's commit 8d0f9a22 (built as feat/v1-identifier-match) is on the PR
 
 ## Notes carried on the item
 
-2026-10-26, after #8854 merged (dev 7ad3a67f): session -66 merged dev 7ad3a67f
-into bf/16.0.0-null-removes locally as 5c6ceabb, not pushed (the PR head is
-still fc170a4c; the push is the maintainer's). The resolution: both requires
-kept in lib/api3/generic/patch/operation.js; #8854's cross-path entries resend
-cells in tests/api.crud-by-id.matrix.test.js updated (the v1 resend expects
-200, the _id-collision branch removed; only v3 to socket still duplicates). On
-5c6ceabb: npm test 4521 passing, 0 failing, 3 pending; test:all 4849 passing,
-0 failing, 3 pending. Red control: dev's matrix file on the merged tree gives
-413 passing, 9 failing (the 4 cross-path cells and 5 v3 devicestatus resend
-rows); with the updated file 422 passing, 0 failing. #8854's boundary
-validates the effective result of $set and $unset (lib/storage/write-
-step.js:35, lib/server/write-validation.js:143), so a null that removes a
-field goes through reject-mode validation. 2026-10-26, later: ships inside
-draft PR #8859 to dev (bf/16.0.0-null-removes, head fc170a4c), opened by the
-maintainer, with Q1b (913d0895), BF-195 (1bdce62c), a merge of 8d0f9a22
-(cf2a2a67: entries find their stored match first, then merge) and the
+2026-10-26, later: the maintainer pushed 5c6ceabb; it is PR #8859's head (gh
+pr view, mergeable). Hosted CI on 5c6ceabb: 16 checks passed, 0 failed, 2
+skipped (Build Docker image and Publish to Docker Hub, which run on push to
+dev only), including the browser tests on Node 26 in Chromium, Firefox and
+WebKit. 2026-10-26, after #8854 merged (dev 7ad3a67f): session -66 merged dev
+7ad3a67f into bf/16.0.0-null-removes locally as 5c6ceabb, not pushed (the PR
+head is still fc170a4c; the push is the maintainer's). The resolution: both
+requires kept in lib/api3/generic/patch/operation.js; #8854's cross-path
+entries resend cells in tests/api.crud-by-id.matrix.test.js updated (the v1
+resend expects 200, the _id-collision branch removed; only v3 to socket still
+duplicates). On 5c6ceabb: npm test 4521 passing, 0 failing, 3 pending;
+test:all 4849 passing, 0 failing, 3 pending. Red control: dev's matrix file on
+the merged tree gives 413 passing, 9 failing (the 4 cross-path cells and 5 v3
+devicestatus resend rows); with the updated file 422 passing, 0 failing.
+#8854's boundary validates the effective result of $set and $unset
+(lib/storage/write-step.js:35, lib/server/write-validation.js:143), so a null
+that removes a field goes through reject-mode validation. 2026-10-26, later:
+ships inside draft PR #8859 to dev (bf/16.0.0-null-removes, head fc170a4c),
+opened by the maintainer, with Q1b (913d0895), BF-195 (1bdce62c), a merge of
+8d0f9a22 (cf2a2a67: entries find their stored match first, then merge) and the
 devicestatus rule (b) as fc170a4c (a re-send with a stored identifier writes
 nothing and the reply carries the stored _id, v1 and v3;
 lib/api3/generic/create/acknowledge.js). dev is still 47723cda. Measured by
