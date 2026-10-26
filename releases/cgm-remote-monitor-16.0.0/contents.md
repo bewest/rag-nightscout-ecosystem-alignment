@@ -5,7 +5,9 @@
 Measured 2026-10-26 (to 19:10Z) against `official/dev` `47723cda` (the merge of #8605, cut 5) and
 `official/master` `c6a0d8ed` (= `v15.0.9`, the shipping release), in
 `externals/cgm-remote-monitor-official` after `git fetch official`, with `gh pr view`, `gh run view` and
-`gh api` for PR, CI and branch-protection state.
+`gh api` for PR, CI and branch-protection state. Updated at 22:13Z for `dev` `7ad3a67f` (#8854 `c08cbe03`,
+then #8084): the Identity rows for `dev`, the merge list, #8854 and the in-flight rows; the other figures
+are still those of `47723cda`.
 
 > Complements the generated changelog. The changelog is authoritative for *what merged*; this file
 > records what the release is made of so far, how each figure was measured, and what is unsettled.
@@ -24,18 +26,19 @@ for testers is [testing-notes.md](testing-notes.md) (not written yet).
 | Tag to be cut | `v16.0.0` and `16.0.0`, both forms, as for `15.0.7` to `15.0.9` |
 | Merged part | `official/master..official/dev` |
 | Base (shipping) | `c6a0d8ed` = `v15.0.9` (released 2026-10-21) |
-| `dev` head | `47723cda` (merge of #8605, cut 5, 2026-10-26 17:32:44Z, by AndyLow91), tree `200a1c00` |
-| Commits on `dev` | 857 — `git rev-list --count official/master..official/dev` (484 without merges, `--no-merges`) |
-| First-parent commits on `dev` | 35 — `git rev-list --first-parent --count official/master..official/dev`: 34 PR merges and the cycle's version bump `04d435eb` |
-| Diff on `dev` | 745 files, +123438/−15023 — `git diff --shortstat official/master official/dev` |
-| Merged on 2026-10-26 | 15 PRs, from `b29f1bf7` to `47723cda`: 460 files, +79273/−3101 — `git diff --shortstat b29f1bf7 official/dev`; the eleven after `207a8352`: `git rev-list --first-parent --count 207a8352..official/dev` = 11 |
+| `dev` head | `7ad3a67f` (merge of #8084, 2026-10-26 22:13:18Z, by AndyLow91), tree `8469654e`; before it `c08cbe03` (#8854, 21:20:34Z) and `47723cda` (#8605, cut 5, 17:32:44Z, tree `200a1c00`) |
+| Commits on `dev` | 882 — `git rev-list --count official/master..official/dev` (506 without merges, `--no-merges`); 857 at `47723cda` |
+| First-parent commits on `dev` | 37 — `git rev-list --first-parent --count official/master..official/dev`: 36 PR merges and the cycle's version bump `04d435eb` |
+| Diff on `dev` | 847 files, +126813/−15088 — `git diff --shortstat official/master official/dev`; 745 files, +123438/−15023 at `47723cda` |
+| Merged on 2026-10-26 | 17 PRs, from `b29f1bf7` to `7ad3a67f`: 611 files, +86276/−3996 — `git diff --shortstat b29f1bf7 official/dev`; the thirteen after `207a8352`: `git rev-list --first-parent --count 207a8352..official/dev` = 13 |
 | `package.json` version | `16.0.0` — `git show official/dev:package.json \| grep '"version"'` |
 | `engines.node` | `^22.23.4 \|\| ^24.22.1 \|\| >=26.12.1` (AndyLow91's `6a146a4c`, "require Node Brotli security patches"; supersedes the decided `^22.12 \|\| >=24`) |
 | Docker base image | `node:24.22.1-alpine` for builder and runtime (`32489dc5`); the runtime stage deletes the image's global `npm` and `npx` (`Dockerfile` on `dev`) |
 | Connector pin | `nightscout-connect` exactly `0.1.0`, as in 15.0.9 (`git show official/dev:package.json`) |
 | MongoDB | driver `mongodb` `^7.6.0` (cut 3); the README states 5.0 through 8.0 as supported and 4.4 and earlier as unsupported (`README.md:157-158` on `dev`); driver 7 starts on 4.4 and refuses 3.6, 4.0 and 4.2, which get the boot error page (BF-182; decisions). Docker Compose starts `mongo:6.0.27` (`docker-compose.yml:12`; 15.0.9: `mongo:5.0.32`) |
 | Web framework | `express` `^5.2.1`, `helmet` `^8.3.0` (cut 5; `package.json` on `dev`); 15.0.9 locks `express` 4.22.2 |
-| Staging PR | #8824 (`dev` → `master`, "new dev branch post 15.0.9 release"): open, head `47723cda`, `mergeable` `MERGEABLE`, `mergeStateStatus` `BLOCKED`, `reviewDecision` `REVIEW_REQUIRED`; every check reported on the head passed except the jobs skipped by design (*Publish to Docker Hub* and *Build Docker image* on the `pull_request` run, *Validate Docker image* on the push run) — `gh pr view 8824`, `gh pr checks 8824`. `master`'s branch protection requires `Run Tests (22, 6)`, `Run Tests (22, 4.4)` and `Run Tests (24, 6)` (`gh api repos/nightscout/cgm-remote-monitor/branches/master/protection`, read 2026-10-26); no workflow on `dev` emits `Run Tests (22, 4.4)` since #8833, so #8824 cannot meet `master`'s required checks until that setting changes, and it also needs one approving review |
+| Staging PR | #8824 (`dev` → `master`, "new dev branch post 15.0.9 release"): open, head `7ad3a67f` (`BLOCKED`, `REVIEW_REQUIRED`, read after 22:13Z); at `47723cda`: `mergeable` `MERGEABLE`, `mergeStateStatus` `BLOCKED`, `reviewDecision` `REVIEW_REQUIRED`; every check reported on the head passed except the jobs skipped by design (*Publish to Docker Hub* and *Build Docker image* on the `pull_request` run, *Validate Docker image* on the push run) — `gh pr view 8824`, `gh pr checks 8824`. `master`'s branch protection requires `Run Tests (22, 6)`, `Run Tests (22, 4.4)` and `Run Tests (24, 6)` (`gh api repos/nightscout/cgm-remote-monitor/branches/master/protection`, read 2026-10-26); no workflow on `dev` emits `Run Tests (22, 4.4)` since #8833, so #8824 cannot meet `master`'s required checks until that setting changes, and it also needs one approving review |
+| CI on `7ad3a67f` | `push` run 40410737772 passed every job and published (*Validate Docker image* skipped by design); `pull_request` run 40410745675 and CodeQL (40410737784, 40410745580) passed; on `c08cbe03`, push 40403541566 and `pull_request` 40403553936 passed — `gh run list --commit`, `gh run view <id> --json jobs` |
 | CI on `47723cda` | `push` run 40369632641 (16 jobs: 15 passed, *Validate Docker image* skipped) published `dev`'s image at 17:42:36Z (`nightscout/cgm-remote-monitor:latest_dev` and `dev_47723cda…`; Docker Hub reports `latest_dev` updated 17:42:32Z); `pull_request` run 40369639616 passed; CodeQL passed on both events (40369632350, 40369639665) — `gh run view <id> --json jobs`; the 2026-10-26 merges' runs are R14 in the [integration record](../../docs/30-design/remedial/rc-16.0.0-integration-record.md) |
 | CI on the 2026-10-25 merges | every `push` and `pull_request` run on `5de8505d`, `fd3792e5`, `eb44a9c2`, `78524be4` and `b29f1bf7` passed on attempt 1 and each push run published an image (integration record R13); `eb72a1d3` and `93f152bd` published, `a20469dc` failed Firefox and skipped publishing (R6, R9, R10) |
 
@@ -51,7 +54,7 @@ bodies (see the integration record). No live site, vendor account or Docker imag
 
 Merge SHAs: `git log --first-parent --format='%h %ad %an %s' --date=iso official/master..official/dev`;
 merge times are `gh pr view <n> --json mergedAt`. The first nineteen merges below were made on
-2026-10-25 (#8834, #8835 and #8838 by bewest, the others by AndyLow91), the last fifteen on 2026-10-26
+2026-10-25 (#8834, #8835 and #8838 by bewest, the others by AndyLow91), the last seventeen on 2026-10-26
 (#8843, #8848 and #8850 by bewest, the others by AndyLow91). Register ids refer to the
 [backfix register](../../docs/30-design/remedial/nightscout-backfix-register.md).
 
@@ -91,6 +94,8 @@ merge times are `gh pr view <n> --json mergedAt`. The first nineteen merges belo
 | #8730 | 10-26 15:31:40 | `89b7ebdd` | `2b32fe67` | sulkaharo | BF-132 | `RT-PR-8730` | Crowdin translations (33 files, +111/−12); it keeps `dev`'s corrected strings |
 | #8555 | 10-26 16:12:41 | `09d0def8` | `371c4642` | samuelpert | — | — | opt-in `SHOW_SECONDS` dashboard clock seconds, a browser setting and an environment variable (13 files, +153/−7); closes issue 8048 |
 | #8605 | 10-26 17:32:44 | `47723cda` | `a77cb146` | AndyLow91 | — | `RT-3` | cut 5: Express 5, Helmet 8, Axios 1, EJS 6, entities 8, `mime-types` 3, Swagger UI 5, APNs 8, a native Pushover client, a maintained notification cache, Flot 4 (204 files, +59400/−1515) |
+| #8854 | 10-26 21:20:34 | `c08cbe03` | `246313e4` | AndyLow91 | — | `ARCH-8854` | shared persistence and stored-data contracts: the persistence boundary `lib/storage/write-step.js`, socket Temporary Target validation under `reject`, the opt-in `Nightscout-Data-Warnings` header (46 files, +2340/−100; below) |
+| #8084 | 10-26 22:13:18 | `7ad3a67f` | `27886bab` | gardenrobot | — | — | Google Fonts replaced by fonts served from the site; the Content-Security-Policy drops the Google font hosts (92 files, +1093/−23); not examined further |
 
 Before merging, AndyLow91 merged `dev` into most branches and added commits of his own (read with
 `git log` and `git show`):
@@ -223,8 +228,24 @@ authors'):
   acknowledgement and cancellation, alarm de-duplication over its real window, APNs delivery to a phone,
   production hosting, upgrade and rollback, and physical-device accessibility as maintainer-owned
   acceptance work.
+- **#8854**: eleven commits by AndyLow91 over `dev` `47723cda`, from `880b7369` to `246313e4`, merged
+  after the four outcome-B points ([decisions](decisions.md)), which he agreed to on the PR at 20:32Z. By
+  mechanism: the six v1 and internal collection modules, the legacy socket and API v3 go through the
+  persistence boundary (`lib/storage/write-step.js`, a wrapper over the driver collection that keeps
+  existing replies and validates the effective result of `$set` and `$unset`); it emits a data-free
+  `storage-write-committed` event marked internal and unstable, with no consumer; the opt-in Temporary Target
+  rules also apply to the socket's add, update and unset, and under `reject` the socket answers a refused
+  item with a `refused` slot in input order, as API v1 does; a non-mutating stored-data inspection
+  (`lib/storage/read-contract.js`) can add a `Nightscout-Data-Warnings` header to API v3 reads, off unless
+  `API_V3_DATA_WARNINGS=true` and called experimental; a read-only diagnostic command
+  (`scripts/diagnose-data.js`) and a write-boundary check (`scripts/check-write-boundary.js`); guards for
+  malformed cache values, authorization identities and history timestamps; Mocha runs that find zero tests
+  fail (`--fail-zero`). Not asked for: `246313e4` adds a `failed` slot on socket treatment arrays under
+  `reject` for an item whose write cannot be confirmed (open item 11). The merged tree's client replay is
+  R16 in the integration record: 0 differences from `47723cda` in 201 cells.
 
-None of these merged trees was re-run locally by this programme. The merged trees' CI is in
+None of these merged trees was re-run locally by this programme, except the client replay on `7ad3a67f`
+(R16). The merged trees' CI is in
 [Identity](#identity) and the integration record (R13, R14).
 
 ## Merge state
@@ -251,7 +272,9 @@ marked *owed* has a candidate change whose classification is not recorded yet:
   copies; #8845 makes API v3 refuse a client body `_id` with 400 (BF-170), answers a v1 re-send with its
   stored `_id` (BF-165) and merges a profile re-sent with its `_id` instead of answering 500 (BF-166);
   #8852 answers malformed API v1 profile uploads with 400 and caps them at 10,000 records; #8841 adds
-  `refused` slots to v1 batch replies under `WRITE_VALIDATION=reject`; cut 5 moves the routes to
+  `refused` slots to v1 batch replies under `WRITE_VALIDATION=reject`, and #8854 the same slots, and a
+  `failed` slot, to socket replies under `reject`, and the opt-in `Nightscout-Data-Warnings` header on API v3
+  reads; cut 5 moves the routes to
   Express 5 (the query parser keeps `allowPrototypes: true` and sets `arrayLimit: 1000` and
   `parameterLimit: 1000`, `lib/middleware/configure-request.js:8-9`; read-derived: Express 4's extended
   parser used `qs`'s default `arrayLimit` of 20)
@@ -295,33 +318,17 @@ runtime Docker image.
 
 ## In flight for this release
 
-Read 2026-10-26, 19:10Z. Every cut is merged ([Merge state](#merge-state)).
+Read 2026-10-26, 19:10Z; #8854, #8856 and #8859 updated at 22:13Z. Every cut is merged
+([Merge state](#merge-state)); #8854 is merged ([What is merged so far](#what-is-merged-so-far)).
 
 | work | branch | head | state | queue |
 |---|---|---|---|---|
-| shared persistence and stored-data contracts | `wip/architecture-data-contracts`, **draft #8854** (AndyLow91, base `dev`) | `880b7369`, one commit on `dev` `47723cda` | open draft, mergeable; every check on its head passed. Decided 2026-10-26: in 16.0.0 after four alignment conditions (outcome B, [decisions](decisions.md)) | `ARCH-8854`, `WRITE-CONTRACT`, `MOD-WRITE-VALIDATION-READ` (related) |
 | Crowdin translations | `crowdin_incoming`, **#8855** (sulkaharo) | — | opened 2026-10-26 18:52Z; not examined | — |
 | BF-72: a caller-supplied regular expression can hold the database for minutes | `bf/regex-limits`, in the private fork of its draft advisory | `1833ab00` on `dev` `04d435eb` | in the fork; no fork PR opened yet; owes a merge of `dev` | `BFQ-72` |
 | BF-161: a deeply nested pattern on three query endpoints makes that request fail | `bf/entries-pattern-limit`, in the private fork of its draft advisory | `d2c4df9f` on `dev` `04d435eb` | in the fork; no fork PR opened yet; owes a merge of `dev` | `BFQ-161` |
 | BF-191: a stored treatment can stop the server process, and keeps doing so after a restart | private, through the maintainer's advisory process | — | open in the register | `BFQ-191` |
-| BF-193: write paths log whole records | `bf/16.0.0-log-privacy`, **draft #8856** (the maintainer, base `dev`) | `8ae43eb4`, one commit on `dev` `47723cda` | draft PR opened 2026-10-26 | `BFQ-193` |
-| the re-send and merge contract: `ID-SIMPLE-MATCH`, Q1b (a `null` in an update removes the field), BF-195 (a stale profile pushed over the socket after a re-send) and the devicestatus `identifier` rule, one PR | `bf/16.0.0-null-removes` (local) | `cf2a2a67` on `dev` `47723cda`: Q1b `913d0895`, BF-195 `1bdce62c`, `ID-SIMPLE-MATCH` `8d0f9a22` merged (read from `git log`) | in progress; the devicestatus `identifier` rule is not yet on it (`8d0f9a22` replaces a stored status's fields; v3 still replaces) | `ID-SIMPLE-MATCH`, `WRITE-CONTRACT`, `BFQ-195` |
-
-**#8854** (read from its body and `git diff --stat official/dev...refs/triage/pr-8854`, 31 files,
-+934/−45; the runs are the author's). Its body targets the
-[architecture review](../../docs/30-design/modernization/cgm-remote-monitor-architecture-review-2026-10-25.md)
-and says it is a foundation, not the complete proposed write-intent service, and not merge-ready. By
-mechanism: the six v1 and internal collection modules, the legacy socket and API v3 go through a
-shared write step (`lib/storage/write-step.js`, new, a wrapper over the driver collection that keeps
-existing replies and emits a data-free `storage-write-committed` event with no consumer yet); the
-opt-in Temporary Target rules also apply to the socket's add, update and unset; a non-mutating stored
-data inspection (`lib/storage/read-contract.js`, new) adds a `Nightscout-Data-Warnings` header to API v3
-responses; a read-only diagnostic command (`scripts/diagnose-data.js`) and a write-boundary check
-(`scripts/check-write-boundary.js`); guards for malformed cache values, authorization identities and
-history timestamps; a future `srvModified` is reported, not rewound; Mocha runs that find zero tests
-fail (`--fail-zero`). The body reports, against `dev` `47723cda`: the 336 original CRUD-matrix results
-match a fresh baseline exactly, integration 2,233 passing / 1 pending, unit 1,441, Chromium 650; and five
-sensor-age assertions failing in Europe/London around the October DST change on unchanged `dev`.
+| BF-193: write paths log whole records | `bf/16.0.0-log-privacy`, **draft #8856** (the maintainer, base `dev`) | `8ae43eb4`, one commit on `dev` `47723cda` | draft PR opened 2026-10-26. `dev` `7ad3a67f` merged in locally as `6b6ad320` (session -66, no conflicts, not pushed): `npm test` 4436 passing, 0 failing, 3 pending; `test:all` 4764 passing, 0 failing, 3 pending | `BFQ-193` |
+| the re-send and merge contract: `ID-SIMPLE-MATCH`, Q1b (a `null` in an update removes the field), BF-195 (a stale profile pushed over the socket after a re-send) and the devicestatus `identifier` rule, one PR | `bf/16.0.0-null-removes`, **draft #8859** (the maintainer, base `dev`) | `fc170a4c`, five commits on `dev` `47723cda`: `ID-SIMPLE-MATCH` `8d0f9a22`, Q1b `913d0895`, BF-195 `1bdce62c`, merge `cf2a2a67`, the devicestatus `identifier` rule `fc170a4c` (read from `git log`) | draft PR opened 2026-10-26; the devicestatus `identifier` rule is on it (v1 and v3: a re-send with a stored `identifier` writes nothing and the reply carries the stored `_id`); `npm test` 4375 passing, 0 failing, 3 pending and `test:all` 4703 passing, 0 failing, 3 pending (re-run on `fc170a4c` 2026-10-26; the first run had 1 environmental `ENOSPC` failure); with #8854 one import-line conflict and a 3-line matrix expectation change for whichever merges second. #8854 merged first: `dev` `7ad3a67f` merged in locally as `5c6ceabb` (session -66, not pushed; both requires kept, #8854's cross-path resend cells updated): `npm test` 4521 passing, 0 failing, 3 pending; `test:all` 4849 passing, 0 failing, 3 pending (integration record R16) | `ID-SIMPLE-MATCH`, `WRITE-CONTRACT`, `BFQ-195` |
 
 BF-72's fix, by mechanism: a length cap on every pattern and a time limit on every query whose filter
 holds a regular expression, generated ones included; a refusal check for caller-written patterns
@@ -479,7 +486,7 @@ has none until then.
 
 ## Open items a releaser must settle
 
-As of `dev` `47723cda` (2026-10-26). The decisions already made are in [decisions.md](decisions.md).
+As of `dev` `47723cda` (2026-10-26), with item 11 from `7ad3a67f`. The decisions already made are in [decisions.md](decisions.md).
 Whether cuts 3–5 ship in 16.0.0 is answered: all three are merged into `dev`, so they ship in 16.0.0
 unless reverted.
 
@@ -524,6 +531,12 @@ BF-193 is not a pre-tag requirement; its fix shape is decided (debug-gated paylo
     `WRITE_VALIDATION` runs, so a v1 temp target sent in mmol/L is stored with mmol/L numbers and no
     units and reads as mg/dL, in every mode, on 15.0.9 and `dev` (reproduced, integration record R15):
     keep the units, convert, or refuse. Queue `BFQ-194`.
+11. **#8854's `failed` slot** (maintainer): under `reject`, a socket treatment array answers an item whose
+    write cannot be confirmed (a lookup, similar-record match or insert error, such as a duplicate key) with a
+    slot without `_id` carrying `failed: {status: 500, message: "Treatment write could not be confirmed"}`,
+    where `47723cda` left the item out of the reply (`lib/server/websocket.js:557-563` on `7ad3a67f`;
+    read, not measured). API v1 has no equivalent. List it in the 16.0.0 client notes as it is, or agree it
+    alongside `refused` (and whether API v1 should match). Queue `ARCH-8854-FAILED`.
 
 **Found by R15 (reproduced; no register entry):**
 
@@ -590,6 +603,11 @@ candidate is named.
 - The opt-in `THEME=modern` dashboard (#8831) and the opt-in `SHOW_SECONDS` clock (#8555).
 - The opt-in `WRITE_VALIDATION` for Temporary Targets (#8841), what `log` and `reject` do, that most
   uploaders lose a refused record without showing an error, and that an unrecognised value means `off`.
+- #8854 under `WRITE_VALIDATION=reject`: the realtime socket checks Temporary Targets too and answers a
+  refused one with a `refused` slot in input order, without `_id`, storing the rest of the batch (15.0.9 and
+  `47723cda` stored them all); a treatment whose write cannot be confirmed is answered with a `failed` slot
+  (open item 11). The `Nightscout-Data-Warnings` header on API v3 reads is experimental and off unless
+  `API_V3_DATA_WARNINGS=true`. Nothing changes with `WRITE_VALIDATION` off.
 - The opt-in `API3_SETTINGS_STRICT_READ_ENABLED` (#8845, BF-152 step 1), and that an AndroidAPS 4.0
   follower using a read-only token it was not given by AndroidAPS is refused when it is on.
 - Record identity (#8845): API v3 refuses a client body `_id` with 400 (BF-170); API v3 PATCH, PUT and

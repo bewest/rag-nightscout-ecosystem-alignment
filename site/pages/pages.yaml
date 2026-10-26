@@ -40,7 +40,7 @@ pages:
   nightscout-next-gen-platform.html:
     kind: living
     sources: [docs/30-design/platform/next-gen-platform-plan.md, docs/30-design/platform/next-gen-platform-plan.json]
-    source_commit: 17345a279
+    source_commit: af10d773a
     render: tools/site/render_nextgen.py
   api-aid-commands-2025.html:
     kind: living
@@ -127,26 +127,38 @@ pages:
   api-cgm-remote-monitor-v1.html:
     kind: living
     sources: [specs/openapi/upstream/cgm-remote-monitor/api-v1.yaml]
-    source_commit: f5413f2e6
+    source_commit: c0a47cf6f
     render: tools/site/render_apis.py
     api:
       status: draft-pr
       note: >-
         cgm-remote-monitor's own API v1 document, corrected for 16.0.0 in pull request #8858
-        (branch docs/16.0.0-swagger-accuracy: dev c08cbe03 plus documentation changes). The copy on dev today
+        (branch docs/16.0.0-swagger-accuracy: dev 7ad3a67f plus documentation changes). The copy on dev today
         fails the OpenAPI linter and omits endpoints; when the correction merges, this page is
         re-rendered from dev and marked current.
       see: specs/openapi/upstream/cgm-remote-monitor/README.md
   api-cgm-remote-monitor-v3.html:
     kind: living
     sources: [specs/openapi/upstream/cgm-remote-monitor/api-v3.yaml]
-    source_commit: f5413f2e6
+    source_commit: c0a47cf6f
     render: tools/site/render_apis.py
     api:
       status: draft-pr
       note: >-
         cgm-remote-monitor's own API v3 document, corrected for 16.0.0 in pull request #8858
-        (branch docs/16.0.0-swagger-accuracy: dev c08cbe03 plus documentation changes). The copy on dev today
+        (branch docs/16.0.0-swagger-accuracy: dev 7ad3a67f plus documentation changes). The copy on dev today
         fails the OpenAPI linter and omits endpoints; when the correction merges, this page is
         re-rendered from dev and marked current.
       see: specs/openapi/upstream/cgm-remote-monitor/README.md
+  api-nightscout-v4-proposed.html:
+    kind: living
+    sources: [specs/openapi/proposed/nightscout-v4.yaml]
+    source_commit: 037ceb416
+    render: tools/site/render_apis.py
+    api:
+      status: proposed
+      note: >-
+        The API v4 surface the platform specifications define: discovery, controller registration and
+        instances, commands and proposals, and statistics reads. Each operation names its listener and
+        whether it is served in pull request #8857, specified only, or still open.
+      see: docs/30-design/platform/v4-surface-and-nocturne-2026-10-26.md

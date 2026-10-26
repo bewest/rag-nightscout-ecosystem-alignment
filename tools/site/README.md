@@ -187,6 +187,9 @@ the reader needs before trusting the page, and optionally `see:`, a tracked
   banner at the top;
 - loads the Redoc runtime (2.4.0) from jsDelivr with its integrity hash, and no
   Google fonts.
+- adds a **Schemas** group naming every schema in `components.schemas`, built
+  into a temporary copy beside the source (Redoc otherwise draws a schema only
+  where an operation refers to it, so a schemas-only file showed nothing).
 
 The build fails when an API page's banner does not carry the status in
 `pages.yaml`. To render: `tools/site/.venv/bin/python tools/site/render_apis.py

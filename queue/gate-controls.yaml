@@ -2734,3 +2734,15 @@ controls:
       run 2026-10-26 (BFQ-193): official/dev 47723cda does not contain the
       unpushed fix 8ae43eb4, and the same command exits 1; the gate exits 0
       on the branch.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 246313e4 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 246313e4 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26 (ARCH-8854): official/master c6a0d8ed (15.0.9) does not
+      contain #8854's head 246313e4, and the same command reports it
+      not-an-ancestor (exit 1); the gate itself exits 0 against official/dev
+      7ad3a67f.

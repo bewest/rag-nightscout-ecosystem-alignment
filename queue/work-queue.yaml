@@ -3323,10 +3323,19 @@ items:
       - releases/cgm-remote-monitor-16.0.0/contents.md
       - releases/cgm-remote-monitor-16.0.0/decisions.md
     notes: >
+      2026-10-26, later: #8854 merged (ARCH-8854, c08cbe03; dev now
+      7ad3a67f). The outcome-B condition, the client replay re-run on the
+      merged tree, is done: integration record R16, 0 differences from dev
+      47723cda in 201 cells across WRITE_VALIDATION off, log and reject. One
+      open decision came out of it, the socket's failed slot
+      (ARCH-8854-FAILED). This item's blast_radius figures are still those
+      measured on 47723cda.
+
       2026-10-26, later (maintainer, session -66): BF-193's logging question
       is decided (debug-gated payload logging through DEBUG_LOGGING; BFQ-193,
       draft PR #8856), still not a pre-tag requirement. Q1b is decided for
-      16.0.0 (WRITE-CONTRACT, BFQ-195). Branch protection: master requires
+      16.0.0 (WRITE-CONTRACT, BFQ-195; with ID-SIMPLE-MATCH in draft PR
+      #8859, head fc170a4c). Branch protection: master requires
       only Tests pass and one approving review, decided, the settings change
       owed by the maintainer (contents.md, Repository settings).
 
@@ -4649,13 +4658,15 @@ items:
     title: "API v1 entries and devicestatus match on identifier like treatments (the simple contract)"
     parcel: release-train
     repo: cgm-remote-monitor
-    branch: feat/v1-identifier-match
+    branch: bf/16.0.0-null-removes
     base: official/dev@47723cda
     worktree: externals/work/crm-idmatch
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8859]
     blast_radius: >
-      Small and standalone, one PR to dev with BF-169 (BFQ-169).
+      Built as feat/v1-identifier-match 8d0f9a22; ships inside draft PR #8859
+      (bf/16.0.0-null-removes), the 16.0.0 re-send and merge PR. First
+      scoped as one PR to dev with BF-169 (BFQ-169).
       lib/server/entries.js upsertQueryFor (301-319 at fade2299): match
       identifier first, as treatments do, then sysTime+type. lib/server/devicestatus.js
       create (92-172 at fade2299; insertMany unordered after #8758's
@@ -4677,11 +4688,16 @@ items:
       (RT-VERSION, RT-COUNT-COMPAT), so it cannot go into 15.0.9.
     register: []
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda feat/v1-identifier-match
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda bf/16.0.0-null-removes
         kind: static
         describe: >
-          The branch contains dev 47723cda (cut 5 merged). Red if the branch is
-          rebased off dev or deleted.
+          The PR #8859 branch contains dev 47723cda (cut 5 merged). Red if the
+          branch is rebased off dev or deleted.
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8d0f9a22 bf/16.0.0-null-removes
+        kind: static
+        describe: >
+          This item's commit 8d0f9a22 (built as feat/v1-identifier-match) is
+          on the PR #8859 branch. Red if the branch is rewritten without it.
       - no-gate: >
           Behaviour is measured outside the queue. tools/lab/v3-identifier-immutable's
           "v1 entries: same identifier, date +60 s" cell, run 2026-10-26: stored n=2
@@ -4697,6 +4713,48 @@ items:
       - tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md
       - docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
     notes: >
+      2026-10-26, after #8854 merged (dev 7ad3a67f): session -66 merged dev
+      7ad3a67f into bf/16.0.0-null-removes locally as 5c6ceabb, not pushed
+      (the PR head is still fc170a4c; the push is the maintainer's). The
+      resolution: both requires kept in lib/api3/generic/patch/operation.js;
+      #8854's cross-path entries resend cells in
+      tests/api.crud-by-id.matrix.test.js updated (the v1 resend expects
+      200, the _id-collision branch removed; only v3 to socket still
+      duplicates). On 5c6ceabb: npm test 4521 passing, 0 failing, 3 pending;
+      test:all 4849 passing, 0 failing, 3 pending. Red control: dev's matrix
+      file on the merged tree gives 413 passing, 9 failing (the 4 cross-path
+      cells and 5 v3 devicestatus resend rows); with the updated file 422
+      passing, 0 failing. #8854's boundary validates the effective result of
+      $set and $unset (lib/storage/write-step.js:35,
+      lib/server/write-validation.js:143), so a null that removes a field
+      goes through reject-mode validation.
+
+      2026-10-26, later: ships inside draft PR #8859 to dev
+      (bf/16.0.0-null-removes, head fc170a4c), opened by the maintainer, with
+      Q1b (913d0895), BF-195 (1bdce62c), a merge of 8d0f9a22 (cf2a2a67:
+      entries find their stored match first, then merge) and the devicestatus
+      rule (b) as fc170a4c (a re-send with a stored identifier writes nothing
+      and the reply carries the stored _id, v1 and v3;
+      lib/api3/generic/create/acknowledge.js). dev is still 47723cda.
+      Measured by session -66: npm test 4375 passing, 0 failing, 3 pending
+      and test:all 4703 passing, 0 failing, 3 pending (re-run on fc170a4c
+      2026-10-26, Node 22.23.4, MongoDB 5.0; the first run, before push, had
+      1 environmental failure, development-watch ENOSPC on the host's
+      file-watcher limit). With the
+      code reverted 6 of 10 new v1 tests and 5 of 8 new v3 tests fail,
+      controls pass; the devicestatus re-send probe leaves 1 record where dev
+      stored 2, 3, then 4. Two existing expectations changed deliberately
+      (api.crud-by-id matrix v3 devicestatus re-send row;
+      api3.empty-identifier-edit). Trial merge with #8854: one textual
+      conflict (an import line in lib/api3/generic/patch/operation.js, keep
+      both requires) and 4 of #8854's cross-path matrix cells need a 3-line
+      expectation change, applied by whichever PR merges second; with it all
+      405 matrix tests pass. Merges cleanly with #8856. Points for review in
+      the PR body: v3's created_at+device devicestatus fallback still
+      replaces; a deleted status re-sent with its identifier stays deleted;
+      two simultaneous first sends with the same new identifier can both be
+      stored (no unique index).
+
       2026-10-26, later (maintainer, via session -66): (a) D-ID-FALLBACK
       decided: for 16.0.0 a v1 entries re-send whose identifier matches
       nothing still matches on sysTime+type, as today (TEST-ENTRY-UUID-003);
@@ -6401,7 +6459,10 @@ items:
       PATCH); never on v1 or v3 PUT or on any create; applied after v1
       prepareData; dbUpdateUnset kept. It ships ahead of the step, on
       bf/16.0.0-null-removes (in progress) with BF-195's fix (BFQ-195).
-      Spec section 6.1 and section 2.2's set/unset maps updated.
+      Spec section 6.1 and section 2.2's set/unset maps updated. 2026-10-26,
+      later: Q1b (913d0895, lib/server/merge-patch.js) is in draft PR #8859
+      to dev (bf/16.0.0-null-removes, head fc170a4c), opened by the
+      maintainer; this step itself is not built.
 
       Maintainer decisions 2026-10-12 (spec section 6): Q1 merge on match,
       every collection and path; Q1b a field sent as null is removed (JSON
@@ -6477,40 +6538,92 @@ items:
       without, the Q1 adoption case).
 
   - id: ARCH-8854
-    title: "#8854 - shared write boundary, read contract and CI gates; into 16.0.0 after four alignment conditions (outcome B)"
+    title: "#8854 - shared write boundary, read contract and CI gates; merged to dev 2026-10-26 for 16.0.0 (outcome B, four conditions met)"
     parcel: release-train
     repo: cgm-remote-monitor
     branch: wip/architecture-data-contracts
     base: official/dev@47723cda
     worktree: externals/cgm-remote-monitor-official
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8854]
     blast_radius: >
-      Draft #8854 at 880b7369 (31 files, +934/-45): lib/storage/write-step.js
-      (every v1/internal module, the four socket write handlers and API v3
-      write through one boundary), lib/storage/read-contract.js and the
-      Nightscout-Data-Warnings header on API v3 reads, scripts/check-write-boundary.js
-      (AST gate over eight adapter files), scripts/diagnose-data.js, cache,
+      Merged 2026-10-26 21:20Z as c08cbe03 from head 246313e4 (46 files,
+      +2340/-100, git diff --shortstat 47723cda c08cbe03). The persistence
+      boundary lib/storage/write-step.js (every v1/internal module, the four
+      socket write handlers and API v3 write through it), lib/storage/read-contract.js
+      and the Nightscout-Data-Warnings header on API v3 reads (off by default,
+      API_V3_DATA_WARNINGS), scripts/check-write-boundary.js (AST gate over
+      the adapter files), scripts/diagnose-data.js, cache,
       authorization-subject and history-cursor guards, --fail-zero on mocha,
-      tests/api.crud-by-id.matrix.test.js (336 cells equal to dev).
-    review: maintainer - authored by the co-maintainer; decided 2026-10-26 (outcome B)
+      tests/api.crud-by-id.matrix.test.js.
+    review: maintainer - authored by the co-maintainer; decided 2026-10-26 (outcome B); merged by AndyLow91 2026-10-26
     operator_visible: >
       Nothing changes for apps by default. With WRITE_VALIDATION=reject, the
-      socket checks Temporary Targets too; how it answers a refused one is
-      condition 1 below.
+      realtime socket checks Temporary Targets too and answers a refused one
+      in its reply instead of storing it; an app that does not read that
+      reply loses the record without an error. Merged into the development
+      branch is not released: nothing changes for a running site until
+      16.0.0 is released and installed.
     semver: n/a
-    semver_reason: inside the 16.0.0 major; client-visible parts are conditions 1 and 2
+    semver_reason: >
+      inside the 16.0.0 major; the client-visible parts are the socket's
+      refused and failed slots under WRITE_VALIDATION=reject and the opt-in
+      Nightscout-Data-Warnings header
     register: []
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 246313e4 official/dev
+        kind: static
+        describe: >
+          official/dev contains #8854's head 246313e4 (merged 2026-10-26 as
+          c08cbe03); red if dev is rewritten or the merge is reverted out of
+          history
       - no-gate: >
-          Upstream draft, not merged. The conditions are judged on the PR.
-          After the merge, the 67-shape client replay (session -66's run on
-          47723cda) is re-run on the merged tree and compared row by row.
+          The client replay on the merged tree, the outcome-B condition, is
+          measured outside the queue (it boots servers against MongoDB):
+          integration record R16, dev 7ad3a67f, 67 cells in each
+          WRITE_VALIDATION mode, 0 differences from dev 47723cda; control:
+          off against reject on 7ad3a67f shows #8841's 6 expected
+          differences.
     blocks_on: []
     evidence:
       - docs/30-design/modernization/pr-8854-alignment-2026-10-26.md
+      - docs/30-design/remedial/rc-16.0.0-integration-record.md
       - docs/30-design/platform/next-gen-platform-plan.md
     notes: >
+      2026-10-26, merged: #8854 merged to dev by AndyLow91 at 21:20Z as
+      c08cbe03 (head 246313e4); dev is now 7ad3a67f (#8084, the local fonts,
+      merged after it; its only lib/ change is the Content-Security-Policy
+      font sources in lib/server/app.js, no write path). AndyLow91 agreed to
+      the four outcome-B points at 20:32Z (PR comment 6426645180); his last
+      comment (6427448237) calls the client replay on the merged tree
+      important before release. The four points, judged on 7ad3a67f by
+      session -66: (1) under reject the socket answers per item - met,
+      measured (lib/server/websocket.js:549-553 and :615-645, the slot shape
+      lib/server/write-validation.js:200-210); (2) Nightscout-Data-Warnings
+      off by default - met, measured (lib/server/env.js:132,
+      API_V3_DATA_WARNINGS; README.md:275 and
+      cgm-remote-monitor's data-contracts.md (lines 17 and 72) call it experimental
+      pending agreement with v1's Warning: 299); (3) storage-write-committed
+      internal and unstable - met, read (lib/storage/write-step.js:54-56,
+      "INTERNAL AND UNSTABLE"; data-contracts.md:47-51); (4) the #8854 layer
+      is named the persistence boundary (lib/storage/write-step.js), and its
+      docs give the future write(intent) layer a separate name such as
+      write-intent.js - met, read. The replay re-run on the merged tree is
+      done: integration record R16 (0 differences from 47723cda in 201
+      cells; the socket probe shows the refusal slots).
+
+      Not asked for, read and not measured (no fault injection): 246313e4
+      adds a client-visible failed member. On socket treatment arrays under
+      reject, an item whose write cannot be confirmed (a lookup error, a
+      similar-record match error, an insert error such as a duplicate key;
+      websocket.js:557-563, :634-644, :721-723, :784-785, :804-807) is
+      answered with a slot without _id carrying failed: {status: 500,
+      message: "Treatment write could not be confirmed"}, where before such
+      an item dropped out of the reply. API v1 has no equivalent. A
+      client-sent failed field is deleted on refusal slots, overwritten on
+      unconfirmed slots and passed through on stored records. Open for the
+      maintainer: ARCH-8854-FAILED.
+
       Decided 2026-10-26 by the maintainer, relayed via session -66: outcome B,
       in 16.0.0 and aligned first. The four conditions: (1) under reject the
       socket answers per item as D2 does for API v1, or socket validation
@@ -6520,14 +6633,57 @@ items:
       repository's write(intent) layer gets its own name. D (split the PR) was
       considered. WC-STEP-PATCH now builds on this boundary instead of the
       September seam chain.
+
+  - id: ARCH-8854-FAILED
+    title: "Decide: the socket's failed slot that #8854 adds under WRITE_VALIDATION=reject - ship as is, or agree it alongside refused (and on API v1?)"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@7ad3a67f
+    state: needs-decision
+    pr: []
+    blast_radius: >
+      lib/server/websocket.js on dev 7ad3a67f (:557-563 unconfirmedTreatmentWrite,
+      :634-644, :721-723, :784-785, :804-807): socket treatment array replies
+      under WRITE_VALIDATION=reject. API v1's batch reply (#8841's refused
+      slots) has no failed member.
+    review: maintainer, and the AndroidAPS, Loop and Trio developers on the reply shape
+    operator_visible: >
+      Nothing changes unless WRITE_VALIDATION=reject is set. With it, when
+      Nightscout cannot confirm that a treatment sent over the realtime
+      socket was saved, the reply now says so for that item instead of
+      leaving it out. Whether apps are told about this shape in the release
+      notes as it is, or it is first agreed with app developers, is open.
+    semver: n/a
+    semver_reason: inside the 16.0.0 major; a decision about a reply member already on dev
+    register: []
+    gates:
+      - no-gate: >
+          A decision item. The behaviour is read from 246313e4 and not
+          measured: the client replay and the socket probe (integration record
+          R16) inject no storage faults. A gate, once decided, would force an
+          insert error on a socket treatment array under reject and assert the
+          slot shape; control: dev 47723cda, where the item drops out of the
+          reply.
+    blocks_on: [ARCH-8854]
+    evidence:
+      - docs/30-design/remedial/rc-16.0.0-integration-record.md
+      - releases/cgm-remote-monitor-16.0.0/decisions.md
+    notes: >
+      Filed 2026-10-26 from session -66's review of the merged #8854
+      (ARCH-8854's notes). Options: (a) list failed in the 16.0.0 client
+      notes as it is; (b) agree it alongside refused before the tag, and
+      decide whether API v1's batch reply should carry the same member. Not
+      asked for in the four outcome-B points.
+
   - id: WC-STEP-PATCH
     title: "Release 1 (patch): one write step for every v1, v3 and socket path, today's behaviour pinned; BF-165's _id in every reply"
     parcel: tenancy
     repo: cgm-remote-monitor
     branch: ""
-    base: seam/t1-2-storage-interface@81a1f6ce
+    base: official/dev@7ad3a67f
     worktree: externals/work/crm-seam
-    state: blocked
+    state: not-started
     pr: []
     blast_radius: >
       As WRITE-CONTRACT: lib/storage gains the write step (spec section 2.3,
@@ -6550,7 +6706,7 @@ items:
     register: [BF-165]
     gates:
       - no-gate: >
-          Not started; waits on SEAM-REFRESH like WRITE-CONTRACT. Its gate is
+          Not started; its blocker ARCH-8854 is merged (dev c08cbe03). Its gate is
           spec G1: tools/qc/write-contract-matrix.js run through every path
           with every cell equal to the pinned dev matrix except BF-165's two
           cells (treatments v1/inproc resend-identity gain _id); control:
@@ -6562,6 +6718,13 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/qc/write-contract-matrix.js
     notes: >
+      2026-10-26, later: ARCH-8854 is merged (#8854, dev c08cbe03, head
+      246313e4; dev now 7ad3a67f), so this item can start on dev, building
+      on the persistence boundary lib/storage/write-step.js; its write(intent)
+      layer takes a separate name such as write-intent.js, as #8854's
+      data-contracts.md (its architecture docs) says. State moves from blocked to
+      not-started. The September chain stays reference only.
+
       2026-10-26: blocks on ARCH-8854 instead of SEAM-REFRESH. The maintainer
       leans to building the seam on #8854's write boundary (next-gen plan
       D-SEAM), and #8854 is decided into 16.0.0 (outcome B); its condition 4
@@ -15071,6 +15234,8 @@ items:
       removes the field; it ships in 16.0.0 on bf/16.0.0-null-removes (in
       progress), which changes tests/api.profiles.resend.test.js:218, the test
       that pins dev's stored null. Until then dev stores null as null.
+      2026-10-26, later: that branch is draft PR #8859 to dev (head
+      fc170a4c), opened by the maintainer.
 
       2026-10-26, 11:34:16Z: merged. AndyLow91 merged #8845
       (bf/16.0.0-record-identity, head 50219945) into dev as 900abf7a (gh pr
@@ -16577,6 +16742,16 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-26, after #8854 merged (dev 7ad3a67f): session -66 merged dev
+      7ad3a67f into bf/16.0.0-log-privacy locally as 6b6ad320, no conflicts,
+      not pushed (the PR head is still 8ae43eb4; the push is the
+      maintainer's). On 6b6ad320: npm test 4436 passing, 0 failing, 3
+      pending; test:all 4764 passing, 0 failing, 3 pending. The log lines
+      #8854 adds are console.error(err) on storage errors (the follow-up
+      below: error objects may contain documents) and the validation line,
+      which names rules and fields only. #8856 and #8859 merge with each
+      other cleanly.
+
       2026-10-26, later: draft PR #8856 to dev (bf/16.0.0-log-privacy, head
       8ae43eb4), opened by the maintainer.
 
@@ -16651,8 +16826,8 @@ items:
     branch: bf/16.0.0-null-removes
     base: official/dev@47723cda
     worktree: externals/work/crm-q1b-fix
-    state: in-progress
-    pr: []
+    state: in-flight-upstream
+    pr: [8859]
     ships_to_operators_today: true
     blast_radius: >
       lib/server/profile.js: the ctx.bus.emit('data-received') at :171 on dev
@@ -16668,17 +16843,57 @@ items:
     semver_reason: a race fixed; what is stored and replied does not change
     register: [BF-195]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda bf/16.0.0-null-removes
+        kind: static
+        describe: >
+          The PR #8859 branch contains dev 47723cda. Red if the branch is
+          rebased off dev or deleted.
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1bdce62c bf/16.0.0-null-removes
+        kind: static
+        describe: >
+          The fix commit 1bdce62c is on the PR #8859 branch. Red if the branch
+          is rewritten without it.
       - no-gate: >
           Reproduced 2026-10-26 by the Q1b study, 2 of 2 runs on dev 47723cda
           and on lab/q1b-null-removes 63c33a0e: a socket client receives the
           earlier profile in dataUpdate after a profile re-send. A queue gate
           would re-send a profile in-process with a socket listener and
           assert the pushed profile is the merged one; control: dev 47723cda
-          fails it. Written with the fix on bf/16.0.0-null-removes.
+          fails it. The fix's test is in draft PR #8859 (bf/16.0.0-null-removes,
+          head fc170a4c); behaviour is measured outside the queue (the suite
+          needs MongoDB): on fc170a4c, measured by session -66, npm test 4375
+          passing, 0 failing, 3 pending and test:all 4703 passing, 0 failing,
+          3 pending (re-run 2026-10-26; the first run had 1 environmental
+          failure, development-watch ENOSPC on the file-watcher limit).
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-26, after #8854 merged (dev 7ad3a67f): session -66 merged dev
+      7ad3a67f into bf/16.0.0-null-removes locally as 5c6ceabb, not pushed
+      (the PR head is still fc170a4c; the push is the maintainer's). The
+      resolution: both requires kept in lib/api3/generic/patch/operation.js;
+      #8854's cross-path entries resend cells in
+      tests/api.crud-by-id.matrix.test.js updated (the v1 resend expects
+      200, the _id-collision branch removed; only v3 to socket still
+      duplicates). On 5c6ceabb: npm test 4521 passing, 0 failing, 3 pending;
+      test:all 4849 passing, 0 failing, 3 pending. Red control: dev's matrix
+      file on the merged tree gives 413 passing, 9 failing (the 4 cross-path
+      cells and 5 v3 devicestatus resend rows); with the updated file 422
+      passing, 0 failing. #8854's boundary validates the effective result of
+      $set and $unset (lib/storage/write-step.js:35,
+      lib/server/write-validation.js:143), so a null that removes a field
+      goes through reject-mode validation.
+
+      2026-10-26, later: in draft PR #8859 to dev (bf/16.0.0-null-removes,
+      head fc170a4c), opened by the maintainer, as 1bdce62c ("Announce a
+      profile write after it finishes, not when it starts"), with Q1b
+      913d0895, ID-SIMPLE-MATCH (merge cf2a2a67) and the devicestatus rule
+      fc170a4c. Measured by session -66: npm test 4375 passing, 0 failing,
+      3 pending and test:all 4703 / 0 / 3 (re-run 2026-10-26; the first run
+      had 1 environmental ENOSPC failure). Merges cleanly with #8856; with #8854 one import-line
+      conflict and a 3-line matrix expectation change (ID-SIMPLE-MATCH).
+
       2026-10-26, later: lands in the one 16.0.0 re-send and merge PR on
       bf/16.0.0-null-removes (Q1b head 1bdce62c; bundle in progress; at
       cf2a2a67 the branch carries 913d0895 for Q1b, 1bdce62c for BF-195 and
@@ -16824,6 +17039,12 @@ items:
     evidence:
       - docs/60-research/modernization/write-validation-design-2026-10-25.md
     notes: >
+      2026-10-26, later: #8854 merged (c08cbe03) with the
+      Nightscout-Data-Warnings header off by default (API_V3_DATA_WARNINGS,
+      lib/server/env.js:132 on 7ad3a67f) and called experimental pending
+      agreement with v1's Warning: 299. The decision this item waits on is
+      unchanged.
+
       2026-10-26: MOD-WRITE-VALIDATION merged (#8841, e09bca3b). Draft #8854
       adds a read-side inspection in a different shape:
       lib/storage/read-contract.js and a Nightscout-Data-Warnings header on

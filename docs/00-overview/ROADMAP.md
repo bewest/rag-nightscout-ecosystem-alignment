@@ -128,8 +128,8 @@ harness cut 1 keeps is retired later under scope B (`RT-JSDOM-REST`, decided 202
 
 | wave | id | what | claimed state | waits on |
 |---:|---|---|---|---|
-| 1 | `ARCH-8854` | #8854 - shared write boundary, read contract and CI gates; into 16.0.0 after fou | `in-flight-upstream` | &mdash; |
-| 1 | `ID-SIMPLE-MATCH` | API v1 entries and devicestatus match on identifier like treatments (the simple  | `ready-to-push` | &mdash; |
+| 1 | `ARCH-8854-FAILED` | Decide: the socket's failed slot that #8854 adds under WRITE_VALIDATION=reject - | `needs-decision` | &mdash; |
+| 1 | `ID-SIMPLE-MATCH` | API v1 entries and devicestatus match on identifier like treatments (the simple  | `in-flight-upstream` | &mdash; |
 | 1 | `MOD-UNITS-CANONICAL` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), an | `needs-decision` | &mdash; |
 | 1 | `MOD-WRITE-VALIDATION-READ` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | `needs-decision` | &mdash; |
 | 1 | `OID-STORAGE-HELPER` | One storage-level rule for writes by _id instead of six hand-written copies | `not-started` | &mdash; |
@@ -184,23 +184,23 @@ Until then, the order below is the order of development, not of release.
 | 1 | `T30-AUTH` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | `ready-to-push` | &mdash; |
 | 1 | `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | &mdash; |
 | 1 | `T43` | T4.3 - ns-realtime, LISTEN per served tenant | `not-started` | &mdash; |
+| 1 | `WC-STEP-PATCH` | Release 1 (patch): one write step for every v1, v3 and socket path, today's beha | `not-started` | &mdash; |
 | 2 | `ID-ABSENT-DECISION` | Decide: a write that carries no identifier (and no _id) - keep the time-key fall | `needs-decision` | `LOOP-ID-REPLY` |
+| 2 | `ID-BATCH-RESULTS` | Release 2 (minor): per-item results in v1 batch replies; one bad item no longer  | `blocked` | `WC-STEP-PATCH` |
 | 2 | `ID-CLIENT-OID-DECISION` | Decide: may a client set _id (an ObjectId it creates) over API v1? (API v3 decid | `needs-decision` | `LOOP-ID-REPLY` |
 | 2 | `ID-DELETE-REUSE-DECISION` | Decide: after a delete, what does a re-send of the same identifier (or _id) do - | `needs-decision` | `LOOP-ID-REPLY` |
+| 2 | `ID-FIRST-MATCH` | Release 2 (minor): identifier-first matching for entries, devicestatus and socke | `blocked` | `WC-STEP-PATCH`, `ID-SIMPLE-MATCH` |
 | 2 | `ID-FORMAT-DECISION` | Decide: the client identifier's format (opaque string with limits; UUID not requ | `needs-decision` | `LOOP-ID-REPLY` |
 | 2 | `ID-SCOPE-DECISION` | Decide: is identifier unique per collection, across collections, and per tenant  | `needs-decision` | `LOOP-ID-REPLY` |
+| 2 | `ID-V1-LOOKUP` | Release 2 (minor): v1 GET and DELETE by any identifier, without the default time | `blocked` | `WC-STEP-PATCH` |
 | 2 | `ID-V3-IMMUTABLE-DECISION` | Decide: on an identifier match, may date, device or eventType change? | `needs-decision` | `LOOP-ID-REPLY` |
+| 2 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection; empty and null mean  | `blocked` | `WC-STEP-PATCH` |
 | 2 | `T30-SCHEMA-CONFIG` | T3.0 part 2b - per-tenant configuration table, and where human identity lives | `not-started` | `T30-RESEARCH` |
-| 2 | `WC-STEP-PATCH` | Release 1 (patch): one write step for every v1, v3 and socket path, today's beha | `blocked` | `ARCH-8854` |
 | 2 | `WRITE-CONTRACT` | One write step behind the storage interface: _id form, srv dates, soft delete, r | `blocked` | `SEAM-REFRESH` |
 | 3 | `BFQ-CAP02` | CAP-02 - no importer, and no Mongo to PostgreSQL loader | `not-started` | `T30-SCHEMA-CONFIG`, `WRITE-CONTRACT` |
-| 3 | `ID-BATCH-RESULTS` | Release 2 (minor): per-item results in v1 batch replies; one bad item no longer  | `blocked` | `WC-STEP-PATCH` |
-| 3 | `ID-FIRST-MATCH` | Release 2 (minor): identifier-first matching for entries, devicestatus and socke | `blocked` | `WC-STEP-PATCH`, `ID-SIMPLE-MATCH` |
-| 3 | `ID-V1-LOOKUP` | Release 2 (minor): v1 GET and DELETE by any identifier, without the default time | `blocked` | `WC-STEP-PATCH` |
-| 3 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection; empty and null mean  | `blocked` | `WC-STEP-PATCH` |
+| 3 | `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up s | `blocked` | `ID-FIRST-MATCH`, `ID-BATCH-RESULTS`, `ID-V3-IMMUTABLE-DECISION` |
 | 3 | `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `not-started` | `T30-SCHEMA-CONFIG` |
 | 3 | `T32-REM` | T3.2 remainder - platform.sql carries no config, secret or signing key | `blocked` | `T30-SCHEMA-CONFIG` |
-| 4 | `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up s | `blocked` | `ID-FIRST-MATCH`, `ID-BATCH-RESULTS`, `ID-V3-IMMUTABLE-DECISION` |
 | 4 | `T30-TENANT-ADMIN` | cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside n | `not-started` | `T30-WIRING` |
 | 4 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | `T30-WIRING` |
 | 4 | `T33-REM` | T3.3 remainder - the shared enclave, and language/levels per tenant | `blocked` | `T30-WIRING` |
