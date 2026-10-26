@@ -31,3 +31,8 @@ pages:
   clinical-decision-support-synthetic-demo-2026-10-16.html:
     kind: snapshot
     as_of: 2026-10-16
+  nightscout-next-gen-platform.html:
+    kind: living
+    sources: [docs/30-design/platform/next-gen-platform-plan.md, docs/30-design/platform/next-gen-platform-plan.json]
+    source_commit: 5f10b6c09
+    render: tools/site/render_nextgen.py
