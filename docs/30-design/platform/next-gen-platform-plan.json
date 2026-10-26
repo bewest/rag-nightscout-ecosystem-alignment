@@ -262,10 +262,10 @@
    "id": "ID-SIMPLE-MATCH",
    "track": "identity",
    "phase": "now",
-   "state": "ready",
+   "state": "progress",
    "short": "v1 identifier match",
-   "title": "API v1 entries and devicestatus match a re-sent record on identifier, as v1 treatments already do",
-   "ref": "feat/v1-identifier-match (8d0f9a22)",
+   "title": "API v1 entries and devicestatus match a re-sent record on identifier, as v1 treatments already do; ships in the 16.0.0 re-send and merge contract PR with the null-removes rule and BF-195",
+   "ref": "feat/v1-identifier-match (8d0f9a22), joining bf/16.0.0-null-removes",
    "where": "lib/server/entries.js, lib/server/devicestatus.js",
    "check": "lab cell: same identifier twice stored n=2 on dev, n=1 on the branch; 18 cases with red controls",
    "depends": [
@@ -350,10 +350,10 @@
    "id": "REG-S0",
    "track": "registration",
    "phase": "now",
-   "state": "ready",
+   "state": "done",
    "short": "Catalogue, read-only",
-   "title": "GET /.well-known/nightscout/sync and /.well-known/nightscout/controllers serving the shipped catalogue, behind a flag that is off by default",
-   "ref": "feat/registration-catalogue (6d17aedc)",
+   "title": "GET /.well-known/nightscout/sync and /.well-known/nightscout/controllers serving the shipped catalogue, behind CONTROLLER_REGISTRATION, off by default; built, part of the single-tenant registration PR",
+   "ref": "feat/registration-catalogue (6d17aedc, local)",
    "spec": [
     {
      "label": "registration §4",
@@ -369,7 +369,7 @@
    "id": "REG-S1",
    "track": "registration",
    "phase": "now",
-   "state": "planned",
+   "state": "done",
    "short": "Submit and store",
    "title": "The product resource: submit, etag, retire; MongoDB collections; single mode with API_SECRET or a subject's token",
    "spec": [
@@ -378,16 +378,17 @@
      "href": "spec/registration.md#5-the-product-resource"
     }
    ],
-   "check": "the negotiation conformance cases run against a booted server",
+   "check": "25 of 32 cases pass, 6 mapped, 1 not applicable; each hub check removed in turn turns its cases red; matrix 0 cells changed, flag off and on",
    "depends": [
     "REG-S0"
-   ]
+   ],
+   "ref": "feat/registration-catalogue (67071573, local)"
   },
   {
    "id": "REG-S2",
    "track": "registration",
    "phase": "now",
-   "state": "planned",
+   "state": "decision",
    "short": "Instances and leases",
    "title": "Content-addressed definitions and leased instances; channels, roles and provenance",
    "spec": [
@@ -405,9 +406,9 @@
    "id": "REG-S5",
    "track": "registration",
    "phase": "now",
-   "state": "planned",
+   "state": "progress",
    "short": "Owner actions",
-   "title": "The owner's actions on a single-tenant site with API_SECRET: retire, block, release, transfer, pin versions, list instances",
+   "title": "The owner's actions on a single-tenant site with API_SECRET: retire, block, release, transfer and free-namespaces built; pins, transfer-role and the instance listing wait for S2",
    "spec": [
     {
      "label": "registration §15",
@@ -418,7 +419,8 @@
    "depends": [
     "REG-S1",
     "REG-S2"
-   ]
+   ],
+   "ref": "feat/registration-catalogue (6c67ddfc, local): product half"
   },
   {
    "id": "REG-S3",
@@ -558,6 +560,33 @@
   }
  ],
  "decisions": [
+  {
+   "id": "D-REG-EXCL",
+   "short": "How one holder per role is enforced",
+   "owner": "maintainer",
+   "question": "Registration S2 grants each (channel, role) to one live device instance. Two instance documents can each be granted it under a per-instance conditional update, so racing claimants are not stopped. Which storage mechanism holds the invariant on MongoDB (and later PostgreSQL)?",
+   "holds": [
+    "REG-S2"
+   ],
+   "options": [
+    {
+     "label": "A holder document per (scope, channel, role)",
+     "recommended": true,
+     "gains": "one document decides each grant; claim, renewal, expiry, block, retire and rebind each become one conditional write on it; maps to a primary key on PostgreSQL",
+     "risks": "a second collection whose holders must be voided when a product is blocked or retired or rebound"
+    },
+    {
+     "label": "A partial unique index on live instances",
+     "gains": "no extra collection",
+     "risks": "lease expiry is time-based, which an index filter cannot express; an expired holder blocks the role until something sweeps it"
+    },
+    {
+     "label": "A per-product lock document around each grant",
+     "gains": "simple to reason about",
+     "risks": "serialises every instance write of a product; a lost lock needs its own expiry"
+    }
+   ]
+  },
   {
    "id": "D-SEAM",
    "short": "How the seam reaches dev",

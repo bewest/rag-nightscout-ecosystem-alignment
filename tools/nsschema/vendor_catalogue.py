@@ -11,7 +11,10 @@ Writes, into <crm>/lib/registration/catalogue/:
   <id>.json             one well-known registration, `document` is the YAML as JSON
   shared-slots.json     the shared slot list
   mappings.json         catalogue mappings (registration spec section 16, rule Q2)
-  hub-capabilities.schema.json   the capability document schema (tests only)
+and into <crm>/lib/registration/schemas/:
+  hub-capabilities.schema.json, controller-state-model.schema.json (the grammar),
+  controller-settings.schema.json (typeRef targets), controller-instance.schema.json,
+  controller-state-model-strict.schema.json (the grammar closed, for rule G1)
 
 Every file records where it came from: the source path and the last alignment
 commit that touched it (`git log -1 -- <path>`), so regenerating at a later
@@ -116,14 +119,36 @@ def generate(repo):
                               "applies_to: declarations, by " + GENERATOR + ". Do not edit; regenerate.",
                               "vendoredFrom": sources, "mappings": mappings}
 
-    rel = "specs/sync/hub-capabilities.schema.json"
+    for name in SCHEMAS:
+        rel = "specs/sync/" + name
+        with open(os.path.join(repo, rel), encoding="utf-8") as fh:
+            schema = json.load(fh)
+        files["../schemas/" + name] = _with_comment(schema, rel, _source(repo, rel))
+
+    # The grammar with every object closed (tools/nsschema/sync_model.py
+    # strict_schema): the view a v1 reader uses to find members it does not
+    # know (registration rule G1). Generated here so the hub keeps no copy of
+    # the closing rule.
+    rel = "specs/sync/controller-state-model.schema.json"
+    sys.path.insert(0, repo)
+    from tools.nsschema import sync_model
     with open(os.path.join(repo, rel), encoding="utf-8") as fh:
-        schema = json.load(fh)
+        strict = sync_model.strict_schema(json.load(fh))
+    strict["$id"] = strict["$id"].replace(".json", "-strict.json")
     src = _source(repo, rel)
-    schema = dict([("$comment", _comment(rel) + " Source commit " + src["commit"] + ".")]
-                  + list(schema.items()))
-    files["hub-capabilities.schema.json"] = schema
+    src["transform"] = "tools/nsschema/sync_model.py strict_schema"
+    files["../schemas/controller-state-model-strict.schema.json"] = _with_comment(strict, rel, src)
     return {name: _dump(obj) for name, obj in files.items()}
+
+
+SCHEMAS = ["hub-capabilities.schema.json", "controller-state-model.schema.json",
+           "controller-settings.schema.json", "controller-instance.schema.json"]
+
+
+def _with_comment(schema, rel, src):
+    head = [("$comment", _comment(rel) + " Source commit " + src["commit"] + "."
+             + (" Transformed by " + src["transform"] + "." if "transform" in src else ""))]
+    return dict(head + [(k, v) for k, v in schema.items() if k != "$comment"])
 
 
 def main():
@@ -136,7 +161,9 @@ def main():
     files = generate(args.alignment)
     if args.check:
         bad = []
-        present = {os.path.basename(p) for p in glob.glob(os.path.join(out, "*.json"))}
+        present = {os.path.relpath(p, out) for p in glob.glob(os.path.join(out, "*.json"))
+                   + glob.glob(os.path.join(out, "../schemas/*.json"))}
+        present = {("../schemas/" + os.path.basename(p)) if p.startswith("..") else p for p in present}
         for name, text in sorted(files.items()):
             path = os.path.join(out, name)
             if not os.path.exists(path):
@@ -152,6 +179,7 @@ def main():
         print("vendored catalogue: " + ("DIFFERS" if bad else "matches") + " (" + str(len(files)) + " files)")
         sys.exit(1 if bad else 0)
     os.makedirs(out, exist_ok=True)
+    os.makedirs(os.path.join(out, "../schemas"), exist_ok=True)
     for name, text in sorted(files.items()):
         with open(os.path.join(out, name), "w", encoding="utf-8") as fh:
             fh.write(text)
