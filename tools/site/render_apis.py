@@ -16,6 +16,11 @@ refuses to render on any lint error (warnings are printed), then builds the
 page with `redocly build-docs` and tools/site/redoc-template.hbs: a status
 banner naming the source file and the commit that last changed it, and the
 Redoc runtime from jsDelivr at the pinned version with its integrity hash.
+Redoc draws a schema only where an operation refers to it, so the page is
+built from a copy of the source with a "Schemas" group that names every
+schema in `components.schemas` (Redoc's SchemaDefinition); a file of schemas
+with no operations would otherwise render as its description alone. The
+source file is not changed, and lint runs on it, not on the copy.
 
     tools/site/.venv/bin/python tools/site/render_apis.py            # all pages
     tools/site/.venv/bin/python tools/site/render_apis.py NAME.html  # one page
@@ -28,9 +33,11 @@ that file.
 """
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 import yaml
@@ -61,6 +68,29 @@ def git(*args: str) -> str:
 
 def npx(*args: str) -> subprocess.CompletedProcess:
     return subprocess.run(["npx", "-y", REDOCLY_CLI, *args], cwd=REPO, capture_output=True, text=True)
+
+
+def with_schema_section(doc: dict) -> dict:
+    """The document plus one tag per component schema, grouped under "Schemas"."""
+    schemas = list(((doc.get("components") or {}).get("schemas") or {}))
+    if not schemas or "x-tagGroups" in doc:
+        return doc
+    op_tags = []
+    for item in (doc.get("paths") or {}).values():
+        for op in (item or {}).values():
+            for t in (op.get("tags") or []) if isinstance(op, dict) else []:
+                if t not in op_tags:
+                    op_tags.append(t)
+    # every operation tag must be in a group, or Redoc hides its operations
+    declared = [t["name"] for t in doc.get("tags") or []]
+    declared += [t for t in op_tags if t not in declared]
+    doc = dict(doc)
+    doc["tags"] = list(doc.get("tags") or []) + [
+        {"name": f"schema-{n}", "x-displayName": n,
+         "description": f'<SchemaDefinition schemaRef="#/components/schemas/{n}" />'} for n in schemas]
+    groups = [{"name": "Operations", "tags": declared}] if declared else []
+    doc["x-tagGroups"] = groups + [{"name": "Schemas", "tags": [f"schema-{n}" for n in schemas]}]
+    return doc
 
 
 def render(name: str, entry: dict) -> str:
@@ -100,9 +130,17 @@ def render(name: str, entry: dict) -> str:
         "seeUrl": "../../" + see[:-3] + ".html" if see else "",
         "seeLabel": see or "",
     }
-    args = ["build-docs", src, "-o", str(out), "-t", str(TEMPLATE), "--disableGoogleFont"]
-    args += [f"--templateOptions.{k}={v}" for k, v in opts.items() if v]
-    built = npx(*args)
+    # beside the source, so its relative $refs to sibling files resolve; removed afterwards
+    with tempfile.TemporaryDirectory(dir=(REPO / src).parent, prefix=".render-") as tmp:
+        spec = Path(tmp).parent / (Path(tmp).name + ".json")
+        spec.write_text(json.dumps(with_schema_section(yaml.safe_load((REPO / src).read_text(encoding="utf-8"))),
+                                   default=str), encoding="utf-8")
+        args = ["build-docs", str(spec), "-o", str(out), "-t", str(TEMPLATE), "--disableGoogleFont"]
+        args += [f"--templateOptions.{k}={v}" for k, v in opts.items() if v]
+        try:
+            built = npx(*args)
+        finally:
+            spec.unlink(missing_ok=True)
     if built.returncode != 0:
         raise SystemExit(f"{name}: build-docs failed:\n{built.stdout}\n{built.stderr}")
 
