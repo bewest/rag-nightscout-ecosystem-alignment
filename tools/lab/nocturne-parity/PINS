@@ -1,0 +1,7 @@
+# The two commits this lab measures. run.sh refuses to run against trees at any other commit.
+# cgm-remote-monitor: pull request #8858 head (branch docs/16.0.0-swagger-accuracy) = dev c08cbe03 + accurate API documents
+CRM_COMMIT=d46ef808995cee266b034d6ca5a99da49c7a21df
+CRM_REF=pull/8858/head
+# Nocturne: main on 2026-10-26
+NOC_COMMIT=89dcaf1dd0c4dc7e35104a9cb557ccba2b097d1c
+NOC_REF=main
