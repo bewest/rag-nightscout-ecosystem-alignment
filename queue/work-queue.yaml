@@ -15667,6 +15667,7 @@ items:
     evidence:
       - docs/60-research/modernization/write-validation-design-2026-10-25.md
       - docs/60-research/remedial/upload-refusal-client-behaviour-2026-10-25.md
+      - docs/30-design/modernization/write-path-checks-alignment-2026-10-25.md
     notes: >
       Filed 2026-10-25 by session f4 from the v3-validation lane. Draft: local
       branch feat/api3-domain-validation a2e5fe49 (e8125d89, 6e842c07,
@@ -15682,6 +15683,10 @@ items:
       the person can see (clients that read refused, or a Nightscout-side
       notice), not on a date. ready-to-push means the gates pass and the next
       step is a human push of a draft PR.
+      How this check and the existing write-path checks converge on the
+      write step's refused outcome: the maintainer note
+      docs/30-design/modernization/write-path-checks-alignment-2026-10-25.md
+      (2026-10-25).
 
   - id: MOD-WRITE-VALIDATION-READ
     title: "Flag stored records that break a write-validation rule on API v3 reads (read-side flag, R1/R2)"

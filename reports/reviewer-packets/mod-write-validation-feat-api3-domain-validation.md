@@ -90,6 +90,7 @@ containing "cannot be modified by the client" fails it.
 
 - [`docs/60-research/modernization/write-validation-design-2026-10-25.md`](../../docs/60-research/modernization/write-validation-design-2026-10-25.md)
 - [`docs/60-research/remedial/upload-refusal-client-behaviour-2026-10-25.md`](../../docs/60-research/remedial/upload-refusal-client-behaviour-2026-10-25.md)
+- [`docs/30-design/modernization/write-path-checks-alignment-2026-10-25.md`](../../docs/30-design/modernization/write-path-checks-alignment-2026-10-25.md)
 
 ## Notes carried on the item
 
@@ -105,7 +106,10 @@ conversion constant, MOD-UNITS-CANONICAL), D6 (thresholds 30 mmol/L and 20
 mg/dL). Making reject the default is blocked on a refusal the person can see
 (clients that read refused, or a Nightscout-side notice), not on a date.
 ready-to-push means the gates pass and the next step is a human push of a
-draft PR.
+draft PR. How this check and the existing write-path checks converge on the
+write step's refused outcome: the maintainer note
+docs/30-design/modernization/write-path-checks-alignment-2026-10-25.md
+(2026-10-25).
 
 ---
 
