@@ -25,6 +25,8 @@ repository.
 | [`BFQ-ENV`](bfq-env-bf-16-0-0-boot-resilience.md) | #8849 | `needs-decision` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies |
 | [`ARCH-8854`](arch-8854-wip-architecture-data-contracts.md) | #8854 | `in-flight-upstream` | #8854 - shared write boundary, read contract and CI gates; into 16.0.0 after four alignment conditions (outcome B) |
 | [`BFQ-193`](bfq-193-bf-16-0-0-log-privacy.md) | #8856 | `in-flight-upstream` | BF-193 - the realtime socket and other write paths log every record written through them |
+| [`BFQ-195`](bfq-195-bf-16-0-0-null-removes.md) | #8859 | `in-flight-upstream` | BF-195 - a stale profile is pushed over the socket after a profile re-send |
+| [`ID-SIMPLE-MATCH`](id-simple-match-bf-16-0-0-null-removes.md) | #8859 | `in-flight-upstream` | API v1 entries and devicestatus match on identifier like treatments (the simple contract) |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`BFQ-161`](bfq-161-bf-entries-pattern-limit.md) | &mdash; | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes |
 | [`BFQ-194`](bfq-194.md) | &mdash; | `needs-decision` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL |
@@ -36,7 +38,6 @@ repository.
 | [`ID-DELETE-REUSE-DECISION`](id-delete-reuse-decision.md) | &mdash; | `needs-decision` | Decide: after a delete, what does a re-send of the same identifier (or _id) do - resurrect, refuse, or create new? |
 | [`ID-FORMAT-DECISION`](id-format-decision.md) | &mdash; | `needs-decision` | Decide: the client identifier's format (opaque string with limits; UUID not required) |
 | [`ID-SCOPE-DECISION`](id-scope-decision.md) | &mdash; | `needs-decision` | Decide: is identifier unique per collection, across collections, and per tenant under TENANCY_MODE=multi? |
-| [`ID-SIMPLE-MATCH`](id-simple-match-feat-v1-identifier-match.md) | &mdash; | `ready-to-push` | API v1 entries and devicestatus match on identifier like treatments (the simple contract) |
 | [`ID-V3-IMMUTABLE-DECISION`](id-v3-immutable-decision.md) | &mdash; | `needs-decision` | Decide: on an identifier match, may date, device or eventType change? |
 | [`MOD-UNITS-CANONICAL`](mod-units-canonical.md) | &mdash; | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), and the conversion constant |
 | [`MOD-WRITE-VALIDATION-READ`](mod-write-validation-read.md) | &mdash; | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-side flag, R1/R2) |
