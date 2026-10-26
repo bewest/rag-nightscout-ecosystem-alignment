@@ -354,7 +354,7 @@
    "state": "review",
    "short": "Catalogue, read-only",
    "title": "GET /.well-known/nightscout/sync and /.well-known/nightscout/controllers serving the shipped catalogue, behind CONTROLLER_REGISTRATION, off by default; built, part of the single-tenant registration PR",
-   "ref": "#8857 (draft, 6c67ddfc)",
+   "ref": "#8857 (draft, 3be98536)",
    "spec": [
     {
      "label": "registration §4",
@@ -384,14 +384,14 @@
    "depends": [
     "REG-S0"
    ],
-   "ref": "#8857 (draft, 6c67ddfc)",
+   "ref": "#8857 (draft, 3be98536)",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8857"
   },
   {
    "id": "REG-S2",
    "track": "registration",
    "phase": "now",
-   "state": "ready",
+   "state": "review",
    "short": "Instances and leases",
    "title": "Content-addressed definitions and leased instances; channels, roles and provenance",
    "spec": [
@@ -404,14 +404,14 @@
    "depends": [
     "REG-S1"
    ],
-   "ref": "feat/registration-catalogue 3be98536 for #8857: one holder document per (scope, channel, role); conformance 35 passed, 88 mapped, 0 failed",
+   "ref": "#8857 (draft, 3be98536): one holder document per (scope, channel, role); conformance 35 passed, 88 mapped, 0 failed",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8857"
   },
   {
    "id": "REG-S5",
    "track": "registration",
    "phase": "now",
-   "state": "ready",
+   "state": "review",
    "short": "Owner actions",
    "title": "The owner's actions on a single-tenant site with API_SECRET: retire, block, release, transfer, free-namespaces, pins, transfer-role and the instance listing",
    "spec": [
@@ -425,7 +425,7 @@
     "REG-S1",
     "REG-S2"
    ],
-   "ref": "#8857: product half at 6c67ddfc; instance half ready at 3be98536",
+   "ref": "#8857 (draft, 3be98536): product and instance halves",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8857"
   },
   {
