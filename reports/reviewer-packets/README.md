@@ -25,6 +25,7 @@ repository.
 | [`RT-2`](rt-2-chore-build-runtime-separation.md) | #8837 | `in-flight-upstream` | Cut 2 - chore/build-runtime-separation |
 | [`BFQ-185`](bfq-185-ci-edge-diagonal-matrix.md) | #8843 | `in-flight-upstream` | BF-185 - the stress test tier leaves devicestatus documents that break api3.search in a later run |
 | [`BFQ-192`](bfq-192.md) | #8843 | `in-flight-upstream` | BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression) |
+| [`RT-CI-DIAGONAL`](rt-ci-diagonal-ci-edge-diagonal-matrix.md) | #8843 | `in-flight-upstream` | CI runs the Node x MongoDB diagonal, the no-database tiers on their own, a Tests pass check and seeded test-file order |
 | [`BFQ-179`](bfq-179-chore-compose-mongodb6.md) | #8844 | `in-flight-upstream` | BF-179 - postinstall runs webpack, now a devDependency, so a production install of dev fails (dev b29f1bf7, cut 2) |
 | [`BFQ-182`](bfq-182-chore-compose-mongodb6.md) | #8844 | `in-flight-upstream` | BF-182 - on cut 3 (driver 7), boot against MongoDB 4.2 or older retries forever with no HTTP server |
 | [`BFQ-145`](bfq-145-bf-16-0-0-record-identity.md) | #8845 | `in-flight-upstream` | BF-145 - API v3 PATCH and PUT by the shown id miss a record whose identifier is null, "" or 0 |
