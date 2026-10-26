@@ -2714,6 +2714,26 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2952,6 +2972,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="site/pages">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#api-reference-pages-redoc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API reference pages (Redoc)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2983,7 +3020,7 @@
 
 
 <h1 id="static-site-mkdocs-material">Static site (MkDocs Material)<a class="headerlink" href="#static-site-mkdocs-material" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>689d69cb9</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>1dbb0c08d</code>.</em></p>
 <p><em>Contributor-facing.</em> Builds a browsable copy of this repository's
 documentation. It is deployed only by the maintainer, from a local build, on the
 <code>gh-pages</code> branch (see <a href="#publishing">Publishing</a>). Every page carries
@@ -3137,6 +3174,26 @@ for private drafts. Every page needs an entry in <code>site/pages/pages.yaml</co
   <code>tools/site/.venv/bin/python tools/site/render_programme.py</code>), check it, and
   move <code>source_commit</code> to the commit that last changed the source.</li>
 </ul>
+<h3 id="api-reference-pages-redoc">API reference pages (Redoc)<a class="headerlink" href="#api-reference-pages-redoc" title="Permanent link">&para;</a></h3>
+<p>An OpenAPI file is published as a living page rendered by
+<code>tools/site/render_apis.py</code> with Redoc. Its <code>pages.yaml</code> entry has exactly one
+source (the OpenAPI file) and an <code>api:</code> block: a <code>status</code> (<code>current</code>,
+<code>de-facto</code>, <code>proposed</code>, <code>draft-pr</code> or <code>superseded</code>), a one-sentence <code>note</code>
+the reader needs before trusting the page, and optionally <code>see:</code>, a tracked
+<code>.md</code> page (such as the design that replaces the file) the banner links to. The script:</p>
+<ul>
+<li>refuses to render a source with uncommitted changes, or one that fails
+  <code>redocly lint</code> (Redocly CLI 1.34.0, recommended rules; warnings are printed);</li>
+<li>builds the page with <code>tools/site/redoc-template.hbs</code>, which puts the status,
+  the note, and a link to the source at the commit that last changed it in a
+  banner at the top;</li>
+<li>loads the Redoc runtime (2.4.0) from jsDelivr with its integrity hash, and no
+  Google fonts.</li>
+</ul>
+<p>The build fails when an API page's banner does not carry the status in
+<code>pages.yaml</code>. To render: <code>tools/site/.venv/bin/python tools/site/render_apis.py
+[NAME.html]</code> (needs node/npx; network on first run), then move <code>source_commit</code>
+to the commit it prints.</p>
 <h2 id="publishing">Publishing<a class="headerlink" href="#publishing" title="Permanent link">&para;</a></h2>
 <p><code>make site-publish</code> refuses unless the working tree is clean, <code>HEAD</code> is on a
 remote branch (<code>git branch -r --contains HEAD</code>), <code>SITE_PSEUDONYM_KEY</code> is set

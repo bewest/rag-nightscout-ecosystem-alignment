@@ -1512,6 +1512,26 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1911,6 +1931,8 @@
       
         
       
+        
+      
     
     
     
@@ -2016,6 +2038,66 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="upstream/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    upstream/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
     </li>
   
 
@@ -2399,6 +2481,45 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#current-api-beside-these-specs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current API beside these specs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#site-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Site status
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Site status">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#open-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Open questions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#coverage-matrix" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2423,6 +2544,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lint-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lint status
+      
+    </span>
+  </a>
   
 </li>
       
@@ -2683,13 +2815,13 @@
 
 
 <h1 id="openapi-specifications---coverage-and-methodology">OpenAPI Specifications - Coverage and Methodology<a class="headerlink" href="#openapi-specifications---coverage-and-methodology" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-02-01 at <code>d756224d3</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>b1a81b301</code>.</em></p>
 <p><strong>Status:</strong> In Progress<br />
 <strong>Date:</strong> 2026-01-17<br />
 <strong>Version:</strong> 0.1.0</p>
 <hr />
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>This directory contains OpenAPI 3.0 specifications documenting the de facto data exchange standards for Automated Insulin Delivery (AID) systems circa 2025, along with alignment extensions proposed for 2026.</p>
+<p>This directory contains OpenAPI specifications (3.0.3 and 3.1.0; see <a href="#lint-status">Lint status</a>) documenting the de facto data exchange standards for Automated Insulin Delivery (AID) systems circa 2025, along with alignment extensions proposed for 2026.</p>
 <h3 id="design-principles">Design Principles<a class="headerlink" href="#design-principles" title="Permanent link">&para;</a></h3>
 <ol>
 <li><strong>Two-Layer Approach</strong></li>
@@ -2713,6 +2845,91 @@
 <li>Highlights deduplication and sync identity differences</li>
 </ol>
 <hr />
+<h2 id="current-api-beside-these-specs">Current API beside these specs<a class="headerlink" href="#current-api-beside-these-specs" title="Permanent link">&para;</a></h2>
+<p>cgm-remote-monitor's own API documents, copied with their provenance into
+<a href="upstream/cgm-remote-monitor/index.html"><code>upstream/cgm-remote-monitor/</code></a>, are rendered next to
+the pages below: <a href="../../site/pages/api-cgm-remote-monitor-v1.html">API v1</a> and
+<a href="../../site/pages/api-cgm-remote-monitor-v3.html">API v3</a>. Today they come from the 16.0.0
+correction in <a href="https://github.com/nightscout/cgm-remote-monitor/pull/8858">#8858</a>, not yet merged; their banners say so.</p>
+<h2 id="site-status">Site status<a class="headerlink" href="#site-status" title="Permanent link">&para;</a></h2>
+<p>The label each spec carries on the static site (recommended 2026-10-26; the site manifest is authoritative). Comparison sources: cgm-remote-monitor <code>dev</code> 47723cda, <code>docs/30-design/platform/spec/</code>, Nocturne <code>main</code> 36d5ef4a2.</p>
+<table>
+<thead>
+<tr>
+<th>Spec File</th>
+<th>Site status</th>
+<th>Page</th>
+<th>Basis</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>aid-entries-2025.yaml</code></td>
+<td>de facto 2025</td>
+<td><a href="../../site/pages/api-aid-entries-2025.html">rendered</a></td>
+<td>Stored document shape reconciled against the 2026-04 corpus; the declared operation follows API v3 on <code>dev</code> 47723cda (envelope, <code>limit</code>, authentication), though not every v3 parameter is declared. Input to <code>tools/nsschema</code>.</td>
+</tr>
+<tr>
+<td><code>aid-treatments-2025.yaml</code></td>
+<td>de facto 2025</td>
+<td><a href="../../site/pages/api-aid-treatments-2025.html">rendered</a></td>
+<td>As entries.</td>
+</tr>
+<tr>
+<td><code>aid-devicestatus-2025.yaml</code></td>
+<td>de facto 2025</td>
+<td><a href="../../site/pages/api-aid-devicestatus-2025.html">rendered</a></td>
+<td>As entries.</td>
+</tr>
+<tr>
+<td><code>aid-profile-2025.yaml</code></td>
+<td>de facto 2025</td>
+<td><a href="../../site/pages/api-aid-profile-2025.html">rendered</a></td>
+<td>As entries.</td>
+</tr>
+<tr>
+<td><code>aid-commands-2025.yaml</code></td>
+<td>superseded</td>
+<td><a href="../../site/pages/api-aid-commands-2025.html">rendered</a></td>
+<td>Describes PR #7791 (open, not on <code>dev</code>); replaced by <code>spec/commands.md</code>.</td>
+</tr>
+<tr>
+<td><code>aid-insulin-2025.yaml</code></td>
+<td>proposed</td>
+<td><a href="../../site/pages/api-aid-insulin-2025.html">rendered</a></td>
+<td>Describes PR #8261 (open, not on <code>dev</code>) plus fields of this repo's own.</td>
+</tr>
+<tr>
+<td><code>aid-heartrate-2025.yaml</code></td>
+<td>superseded</td>
+<td><a href="../../site/pages/api-aid-heartrate-2025.html">rendered</a></td>
+<td>Describes PR #8083 (open, not on <code>dev</code>); the measured recommendation is the shipping <code>activity</code> collection (<code>docs/30-design/platform/nightscout-devicestatus-profile-fidelity-2026-09-10.md</code>).</td>
+</tr>
+<tr>
+<td><code>aid-alignment-extensions.yaml</code></td>
+<td>superseded</td>
+<td><a href="../../site/pages/api-aid-alignment-extensions.html">rendered</a></td>
+<td>Its schemas are replaced by the identity, registration and state-intent specs in <code>docs/30-design/platform/spec/</code>, which are proposed.</td>
+</tr>
+<tr>
+<td><code>aid-statespan-2025.yaml</code></td>
+<td>historical</td>
+<td>not rendered</td>
+<td>Hypothetical V3 extension; no state-span code on <code>dev</code>. Not rendered.</td>
+</tr>
+<tr>
+<td><code>nocturne-v4-extension.yaml</code></td>
+<td>historical</td>
+<td>not rendered</td>
+<td>Four of its six paths no longer exist in Nocturne <code>main</code> 36d5ef4a2; Nocturne publishes its own OpenAPI description.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="open-questions">Open questions<a class="headerlink" href="#open-questions" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Extension sub-schemas in the de facto specs.</strong> <code>EntryExtended</code> (entries), <code>ProfileExtended</code> (profile) and <code>Override.supersedes</code> (treatments) are 2026 extensions that the current platform specs do not adopt (state-intent S1-S12 and S3/A7, records R5). Whether they move to a superseded file is open.</li>
+<li><strong>Closed enums.</strong> <code>eventType</code> (treatments) and <code>type</code> (entries) are closed enums; the typed-schema evidence (<code>docs/30-design/platform/nightscout-typed-schema-evidence-2026-09-10.md</code> §3.4) says observed values cannot close an enum. Whether they stay closed is open.</li>
+</ul>
 <h2 id="coverage-matrix">Coverage Matrix<a class="headerlink" href="#coverage-matrix" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -2726,49 +2943,49 @@
 </thead>
 <tbody>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2d2ae37f19f963d39797fed599569c93ff95d7b8/specs/openapi/aid-entries-2025.yaml"><code>aid-entries-2025.yaml</code></a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5a6de2a8e23303f23c487c9a1781464db3dc450c/specs/openapi/aid-entries-2025.yaml"><code>aid-entries-2025.yaml</code></a></td>
 <td>entries</td>
 <td>✅ Complete</td>
 <td>✅ Covered</td>
 <td>GAP-ENTRY-001 through GAP-ENTRY-005, GAP-CGM-001 through GAP-CGM-006</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2d2ae37f19f963d39797fed599569c93ff95d7b8/specs/openapi/aid-treatments-2025.yaml"><code>aid-treatments-2025.yaml</code></a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5a6de2a8e23303f23c487c9a1781464db3dc450c/specs/openapi/aid-treatments-2025.yaml"><code>aid-treatments-2025.yaml</code></a></td>
 <td>treatments</td>
 <td>✅ Complete</td>
 <td>✅ Covered</td>
 <td>GAP-TREAT-001 through GAP-TREAT-007, GAP-003</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2d2ae37f19f963d39797fed599569c93ff95d7b8/specs/openapi/aid-devicestatus-2025.yaml"><code>aid-devicestatus-2025.yaml</code></a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5a6de2a8e23303f23c487c9a1781464db3dc450c/specs/openapi/aid-devicestatus-2025.yaml"><code>aid-devicestatus-2025.yaml</code></a></td>
 <td>devicestatus</td>
 <td>✅ Complete</td>
 <td>✅ Covered</td>
 <td>GAP-DS-001 through GAP-DS-004, GAP-SYNC-002, GAP-SYNC-005</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2d2ae37f19f963d39797fed599569c93ff95d7b8/specs/openapi/aid-profile-2025.yaml"><code>aid-profile-2025.yaml</code></a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5a6de2a8e23303f23c487c9a1781464db3dc450c/specs/openapi/aid-profile-2025.yaml"><code>aid-profile-2025.yaml</code></a></td>
 <td>profile</td>
 <td>✅ Complete</td>
 <td>✅ Covered</td>
 <td>GAP-002, GAP-INS-001 through GAP-INS-004</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2d2ae37f19f963d39797fed599569c93ff95d7b8/specs/openapi/aid-statespan-2025.yaml"><code>aid-statespan-2025.yaml</code></a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5a6de2a8e23303f23c487c9a1781464db3dc450c/specs/openapi/aid-statespan-2025.yaml"><code>aid-statespan-2025.yaml</code></a></td>
 <td>state-spans</td>
 <td>✅ Complete</td>
 <td>Reference only</td>
 <td>GAP-V4-001, GAP-V4-002, GAP-SYNC-037</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2d2ae37f19f963d39797fed599569c93ff95d7b8/specs/openapi/aid-alignment-extensions.yaml"><code>aid-alignment-extensions.yaml</code></a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5a6de2a8e23303f23c487c9a1781464db3dc450c/specs/openapi/aid-alignment-extensions.yaml"><code>aid-alignment-extensions.yaml</code></a></td>
 <td>All</td>
 <td>N/A</td>
 <td>✅ Complete</td>
 <td>All gaps mapped to extensions</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2d2ae37f19f963d39797fed599569c93ff95d7b8/specs/openapi/nocturne-v4-extension.yaml"><code>nocturne-v4-extension.yaml</code></a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5a6de2a8e23303f23c487c9a1781464db3dc450c/specs/openapi/nocturne-v4-extension.yaml"><code>nocturne-v4-extension.yaml</code></a></td>
 <td>V4</td>
 <td>✅ Complete</td>
 <td>N/A (Nocturne-specific)</td>
@@ -2776,6 +2993,7 @@
 </tr>
 </tbody>
 </table>
+<p>Not in this matrix: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5a6de2a8e23303f23c487c9a1781464db3dc450c/specs/openapi/aid-commands-2025.yaml"><code>aid-commands-2025.yaml</code></a>, <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5a6de2a8e23303f23c487c9a1781464db3dc450c/specs/openapi/aid-insulin-2025.yaml"><code>aid-insulin-2025.yaml</code></a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5a6de2a8e23303f23c487c9a1781464db3dc450c/specs/openapi/aid-heartrate-2025.yaml"><code>aid-heartrate-2025.yaml</code></a>. Each describes an unmerged cgm-remote-monitor pull request (#7791, #8261 and #8083 respectively, all open on 2026-10-26); none of their routes exists on cgm-remote-monitor <code>dev</code> 47723cda.</p>
 <h3 id="gap-coverage-summary">Gap Coverage Summary<a class="headerlink" href="#gap-coverage-summary" title="Permanent link">&para;</a></h3>
 <p>The alignment extensions address the following gap categories:</p>
 <table>
@@ -2845,6 +3063,82 @@
 </tbody>
 </table>
 <hr />
+<h2 id="lint-status">Lint status<a class="headerlink" href="#lint-status" title="Permanent link">&para;</a></h2>
+<p>Measured 2026-10-26 with <code>make openapi-lint</code> (<code>@redocly/cli</code> 1.34.0, recommended rules, config in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5a6de2a8e23303f23c487c9a1781464db3dc450c/redocly.yaml"><code>redocly.yaml</code></a>):</p>
+<table>
+<thead>
+<tr>
+<th>Spec File</th>
+<th>OpenAPI</th>
+<th>Errors</th>
+<th>Warnings</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>aid-alignment-extensions.yaml</code></td>
+<td>3.1.0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>aid-commands-2025.yaml</code></td>
+<td>3.0.3</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>aid-devicestatus-2025.yaml</code></td>
+<td>3.0.3</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>aid-entries-2025.yaml</code></td>
+<td>3.1.0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>aid-heartrate-2025.yaml</code></td>
+<td>3.0.3</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>aid-insulin-2025.yaml</code></td>
+<td>3.0.3</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>aid-profile-2025.yaml</code></td>
+<td>3.1.0</td>
+<td>0</td>
+<td>1 (<code>no-unused-components</code>: <code>ProfileSwitch</code>)</td>
+</tr>
+<tr>
+<td><code>aid-statespan-2025.yaml</code></td>
+<td>3.0.3</td>
+<td>0 (7 <code>security-defined</code> ignored)</td>
+<td>7 (<code>no-unused-components</code> 5, <code>operation-4xx-response</code> 2)</td>
+</tr>
+<tr>
+<td><code>aid-treatments-2025.yaml</code></td>
+<td>3.1.0</td>
+<td>0</td>
+<td>1 (<code>no-unused-components</code>: <code>SMBIdentification</code>)</td>
+</tr>
+<tr>
+<td><code>nocturne-v4-extension.yaml</code></td>
+<td>3.0.3</td>
+<td>0</td>
+<td>6 (<code>operation-4xx-response</code> 5, <code>no-server-example.com</code> 1)</td>
+</tr>
+</tbody>
+</table>
+<p>The four 3.1.0 files use type arrays (<code>type: [number, "null"]</code>), <code>const</code> or a schema-level <code>examples</code> list, which are 3.1 keywords. The seven <code>security-defined</code> errors in <code>aid-statespan-2025.yaml</code> are listed in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5a6de2a8e23303f23c487c9a1781464db3dc450c/.redocly.lint-ignore.yaml"><code>.redocly.lint-ignore.yaml</code></a>: the file is historical and declares no authentication, and none is invented for it.</p>
+<p>CI (<code>.github/workflows/ci.yml</code>, job "Specs and fixtures") runs <code>tools/validate_json.py</code>, which checks only that <code>openapi</code>, <code>info</code> and <code>paths</code> exist and that each path starts with <code>/</code>, and then <code>make openapi-lint</code>, which fails the job on any lint error.</p>
 <h2 id="methodology">Methodology<a class="headerlink" href="#methodology" title="Permanent link">&para;</a></h2>
 <h3 id="source-authority-hierarchy">Source Authority Hierarchy<a class="headerlink" href="#source-authority-hierarchy" title="Permanent link">&para;</a></h3>
 <ol>
@@ -2861,7 +3155,7 @@
 - <code>x-aid-2026</code>: Alignment extension notes (when applicable)</p>
 <h3 id="validation-strategy">Validation Strategy<a class="headerlink" href="#validation-strategy" title="Permanent link">&para;</a></h3>
 <p>Specs are validated against:
-1. JSON Schema draft 2020-12 compatibility
+1. The OpenAPI specification and Redocly's recommended rules (<code>make openapi-lint</code>; see <a href="#lint-status">Lint status</a>)
 2. Existing test fixtures in <code>specs/fixtures/</code>
 3. Real-world data from controller uploads</p>
 <hr />
@@ -2935,8 +3229,8 @@
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>npx<span class="w"> </span>@redocly/cli<span class="w"> </span>preview-docs<span class="w"> </span>specs/openapi/aid-entries-2025.yaml
 </code></pre></div>
 <h3 id="validating-specs">Validating Specs<a class="headerlink" href="#validating-specs" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Validate OpenAPI syntax</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>npx<span class="w"> </span>@redocly/cli<span class="w"> </span>lint<span class="w"> </span>specs/openapi/*.yaml
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Validate OpenAPI syntax (pinned @redocly/cli, config in redocly.yaml)</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>make<span class="w"> </span>openapi-lint
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Check against fixtures</span>
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>python<span class="w"> </span>tools/validate_fixtures.py<span class="w"> </span>--schema<span class="w"> </span>specs/openapi/

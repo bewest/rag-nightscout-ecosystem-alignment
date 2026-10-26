@@ -5573,6 +5573,26 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -5809,7 +5829,7 @@
 
 
 <h1 id="l0-identity-how-records-definitions-instances-and-subjects-are-named">L0 Identity: how records, definitions, instances and subjects are named<a class="headerlink" href="#l0-identity-how-records-definitions-instances-and-subjects-are-named" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>4fcb76f23</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>38fb13008</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at 2026-10-26 (cgm-remote-monitor <code>dev</code>
 <code>47723cda</code>). Layer L0 of the <a href="../index.html">platform index</a>; terms are in the
 <a href="glossary.html">glossary</a>. Status: specified, not implemented; §6, today's behaviour, is evidenced.
@@ -5838,7 +5858,7 @@ ids; none of them redefines one.</p>
 </tr>
 <tr>
 <td>I2</td>
-<td><strong><code>_id</code> is 24 hex on every legacy surface.</strong> API v1 and v3 serve a 24-hex <code>_id</code> that the hub assigns, on MongoDB and PostgreSQL alike. <strong>On API v1</strong>, a client <code>_id</code> that is 24 hex, in either case, or <code>{"$oid": …}</code>, is kept as that ObjectId in lower case, and a client <code>_id</code> that is any other string is never stored as <code>_id</code>; it is handled by the quirks registry (I9). <strong>On API v3</strong>, a client-supplied <code>_id</code> in the body of a create, <code>PUT</code> or <code>PATCH</code> is refused with HTTP 400, whatever its form, and no quirk applies: a v3 client names its records by <code>identifier</code> (maintainer, 2026-10-25; BF-170). A hub's own newer APIs may use other ids.</td>
+<td><strong><code>_id</code> is 24 hex on every legacy surface.</strong> The hub assigns a 24-hex <code>_id</code>, on MongoDB and PostgreSQL alike; API v1 serves it, and API v3 reads do not return it (§6). <strong>On API v1</strong>, a client <code>_id</code> that is 24 hex, in either case, or <code>{"$oid": …}</code>, is kept as that ObjectId in lower case, and a client <code>_id</code> that is any other string is never stored as <code>_id</code>; it is handled by the quirks registry (I9). <strong>On API v3</strong>, a client-supplied <code>_id</code> in the body of a create, <code>PUT</code> or <code>PATCH</code> is refused with HTTP 400, whatever its form, and no quirk applies: a v3 client names its records by <code>identifier</code> (maintainer, 2026-10-25; BF-170). A hub's own newer APIs may use other ids.</td>
 </tr>
 <tr>
 <td>I3</td>
