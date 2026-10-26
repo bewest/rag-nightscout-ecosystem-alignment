@@ -5927,7 +5927,7 @@
 
 
 <h1 id="l5-authority-who-may-register-write-own-a-site-receive-a-command-and-act-for-someone-else">L5 Authority: who may register, write, own a site, receive a command, and act for someone else<a class="headerlink" href="#l5-authority-who-may-register-write-own-a-site-receive-a-command-and-act-for-someone-else" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>127f69e16</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>789446fd4</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>1b69c295</code> (2026-10-18). Layer L5 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. Decisions:
 <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">D7 and D13–D17</a>
@@ -5935,7 +5935,7 @@ the <a href="../index.html">platform index</a>; terms are in the <a href="glossa
 <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">D18 and D19</a>
 and the maintainer's decisions of 2026-10-14 to 2026-10-18 recorded with them. Queue:
 <code>SPEC-AUTHORITY</code>.</em></p>
-<p><em>Specification 8 of 8 in the <a href="../index.html#reading-order">reading order</a>; last, because it authorises what the others define. Expect rules AU1–AU5, binding and credential kinds, the owner's actions, namespaces, command destinations, delegation requirements DR1–DR7, what is recorded for audit, and the conformance cases.</em></p>
+<p><em>Specification 8 of 8 in the <a href="../index.html#reading-order">reading order</a>; last, because it authorises what the others define. Expect rules AU1–AU6, binding and credential kinds, the owner's actions, namespaces, command destinations, delegation requirements DR1–DR7, what is recorded for audit, and the conformance cases.</em></p>
 <p>Who may register a controller's definitions, write under them, act as a site's owner, receive a
 command, and act for someone else. The hub routes and records; it never decides whether a change
 to therapy is safe, and it never doses (D18). Status: §2–§6 are decided or
@@ -6005,6 +6005,11 @@ specified; §7 states delegation's requirements, and its design is open.</p>
 <td>AU5</td>
 <td><strong>Permissions today.</strong> Writes are per collection (<code>api:&lt;collection&gt;:&lt;action&gt;</code>); reading is one bit: <code>readable</code> is <code>*:*:read</code>, every collection, every field, all time.</td>
 <td>shipping (cgm-remote-monitor <code>lib/authorization/storage.js:235</code> at <code>dev</code> <code>fade2299</code>, read)</td>
+</tr>
+<tr>
+<td>AU6</td>
+<td><strong>Registration is per tenant.</strong> Registering a controller's products, definitions and instances is a per-tenant API: it affects only that tenant's site and data, and is never a platform or operator action (<code>ns-admin</code> serves none of it). The controller's requests and commands are on the data listener; the owner's listing and the owner's actions are the tenant owner's, on <code>ns-tenant-admin</code> under <code>TENANCY_MODE=multi</code> and on the one listener with <code>API_SECRET</code> under <code>single</code> (AU2).</td>
+<td>maintainer, 2026-10-26</td>
 </tr>
 </tbody>
 </table>

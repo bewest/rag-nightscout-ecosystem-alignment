@@ -5739,12 +5739,19 @@
 
 
 <h1 id="statistics-api-proposal-for-nightscout">Statistics API Proposal for Nightscout<a class="headerlink" href="#statistics-api-proposal-for-nightscout" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-09-16 at <code>1a10007b4</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>595e4f392</code>.</em></p>
 <blockquote>
 <p><strong>Version</strong>: 1.1
 <strong>Date</strong>: 2026-01-29 (initial); 2026-05-11 (status revision)
 <strong>Status</strong>: <strong>Required precondition for cgm-remote-monitor Track 3 (UI Discovery)</strong>
 <strong>Related</strong>: PR#8366 (2025 reports), nightscout-reporter integration, <code>cgm-remote-monitor/docs/proposals/testing-modernization-proposal.md</code> v1.2 §L9</p>
+<p><strong>Superseded in part, 2026-10-26.</strong> The maintainer decided that statistics are served on API v4
+under <code>/api/v4/statistics/</code>, matching Nocturne's <code>StatisticsController</code> (paths, parameters,
+response shapes, time-zone and minimum-data rules, read scopes) for hub compatibility, rather than
+the <code>/api/v3/stats/*</code> paths below. See
+<a href="../30-design/platform/v4-surface-and-nocturne-2026-10-26.html#64-statistics">API v4 and Nocturne §6.4</a>
+and <code>specs/openapi/proposed/nightscout-v4.yaml</code>. The requirements and parity-test plan below are
+kept as written.</p>
 </blockquote>
 <h2 id="2026-05-status-bump">2026-05 Status Bump<a class="headerlink" href="#2026-05-status-bump" title="Permanent link">&para;</a></h2>
 <p>This proposal was originally drafted as a forward-looking enhancement.

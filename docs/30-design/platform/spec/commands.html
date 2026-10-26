@@ -5961,7 +5961,7 @@
 
 
 <h1 id="l3-and-l5-commands-how-a-request-or-a-proposal-reaches-a-controller-and-how-its-outcome-comes-back">L3 and L5 Commands: how a request or a proposal reaches a controller, and how its outcome comes back<a class="headerlink" href="#l3-and-l5-commands-how-a-request-or-a-proposal-reaches-a-controller-and-how-its-outcome-comes-back" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>baa67a88f</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>789446fd4</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>9736bd65</code> (2026-10-18). Layers L3
 and L5 of the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. Decisions:
 <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">D18 and D19</a>
@@ -6501,7 +6501,9 @@ the bold ones are final. A report may skip <code>acknowledged</code> (CM9).</p>
 </table>
 <p>The capability's <code>commands.href</code> is <code>/api/v4/commands</code>, <code>commands.fetch</code> the URI template
 <code>/api/v4/instances/{instanceId}/commands</code>, and <code>commands.proposals</code> <code>/api/v4/proposals</code>; a hub may
-serve them elsewhere and says so there.</p>
+serve them elsewhere and says so there. Since 2026-10-26 (maintainer) the instance resource itself is
+<code>/api/v4/instances/{instanceId}</code> (<a href="registration.html#7-definitions">registration §7</a>, amendment), so
+the fetch is a sub-resource of the instance it serves.</p>
 <p><strong>Send</strong> (<code>POST /api/v4/commands</code>) and <strong>approve</strong> (<code>POST …/approve</code>):</p>
 <table>
 <thead>

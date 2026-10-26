@@ -5759,7 +5759,7 @@
 
 
 <h1 id="bringing-a-controller-onto-a-hub-register-it-hold-a-lease-receive-commands-and-report-outcomes">Bringing a controller onto a hub: register it, hold a lease, receive commands and report outcomes<a class="headerlink" href="#bringing-a-controller-onto-a-hub-register-it-hold-a-lease-receive-commands-and-report-outcomes" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>baa67a88f</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>789446fd4</code>.</em></p>
 <p><em>Contributor-facing. Living guide, current at <code>main</code> <code>127f69e1</code> (2026-10-18). Uses the <a href="../index.html">platform specifications</a>; terms are in the <a href="../spec/glossary.html">glossary</a>. Status: the specifications are proposed and not implemented; until <code>HUB-REG-CRM</code> is, each step is checked against its conformance case, not run against a hub.</em></p>
 <p>This guide is for a developer bringing an automated insulin delivery controller, or a controller
 app, onto a Nightscout hub that implements the platform specifications. It follows one fictional
@@ -6219,7 +6219,7 @@ so it contends with any other product's instance on that slot; its extension's c
 </tr>
 <tr>
 <td>2</td>
-<td><code>PUT …/instances/&lt;instanceId&gt;</code> with <code>If-None-Match: *</code>, naming a stored <code>definitionId</code>, each role as <code>{channel, role, provenance}</code>, and labels</td>
+<td><code>PUT /api/v4/instances/&lt;instanceId&gt;</code> with <code>If-None-Match: *</code>, naming your product (<code>product: {vendor, product}</code>) and a stored <code>definitionId</code>, each role as <code>{channel, role, provenance}</code>, and labels</td>
 <td>201 with <code>leaseExpiresAt</code> and a result per role; 422 <code>unknown-definition</code> for a definition the product does not store</td>
 <td>registration §8, registration §9</td>
 <td><code>instances/instance-create.yaml</code>, <code>instances/instance-unknown-definition.yaml</code></td>

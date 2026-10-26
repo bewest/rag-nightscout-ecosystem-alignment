@@ -5438,7 +5438,7 @@
 
 
 <h1 id="implementing-registration-in-cgm-remote-monitor-where-each-slice-goes-in-what-order-and-how-it-is-checked">Implementing registration in cgm-remote-monitor: where each slice goes, in what order, and how it is checked<a class="headerlink" href="#implementing-registration-in-cgm-remote-monitor-where-each-slice-goes-in-what-order-and-how-it-is-checked" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>9ea0af8cd</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>789446fd4</code>.</em></p>
 <p><em>Contributor-facing. Living guide, current at <code>main</code> <code>f1119d4c</code> (2026-10-26) and cgm-remote-monitor <code>official/dev</code> <code>47723cda</code> (the merge of #8605). Uses the <a href="../index.html">platform specifications</a>; terms are in the <a href="../spec/glossary.html">glossary</a>. Status: the specifications are proposed and not implemented; this guide plans <code>HUB-REG-CRM</code> and its backlog. Every module path that is not on <code>dev</code> is marked proposed, and every route and permission name is a proposal, as the specifications say.</em></p>
 <p>This guide is the hub-side companion of <a href="new-controller.html">bring a new controller onto a hub</a> and
 <a href="add-a-setting.html">add a setting in your next release</a>. Those tell a controller author what to send.
@@ -5821,7 +5821,8 @@ only, a store gets its collection from <code>collectionFor</code> (<code>lib/sto
 (<code>lib/api3/storage/pgCollection/index.js:318</code>). <code>HUB-REG-CRM-SEAM</code> carries both points.</p>
 <h3 id="43-s2-definitions-instances-and-leases">4.3 S2: definitions, instances and leases<a class="headerlink" href="#43-s2-definitions-instances-and-leases" title="Permanent link">&para;</a></h3>
 <p><strong>What.</strong> <code>PUT …/definitions/&lt;definitionId&gt;</code> (immutable, <code>If-None-Match: *</code> only), <code>PUT</code> and
-<code>DELETE …/instances/&lt;instanceId&gt;</code>, per-role results, exclusivity among live <code>device</code> instances,
+<code>DELETE /api/v4/instances/&lt;instanceId&gt;</code> (the flat path, maintainer 2026-10-26; #8857 serves it under
+the product today), per-role results, exclusivity among live <code>device</code> instances,
 labels, leases (<a href="../spec/registration.html#7-definitions">registration §7–§10</a>). The capability
 document gains <code>instances</code>. "One element at one version has one meaning" uses the meaning table in
 §7; <code>negotiate.version_conflicts</code> and <code>negotiate.meaning</code> are the reference.</p>

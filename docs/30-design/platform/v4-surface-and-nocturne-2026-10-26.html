@@ -3308,6 +3308,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#0-decided-2026-10-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Decided, 2026-10-26
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#1-the-answer-in-brief" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3359,6 +3370,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="5. Registration and instances on v4">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-are-registrations-and-instances-redundant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Are registrations and instances redundant?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -5479,6 +5507,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#0-decided-2026-10-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Decided, 2026-10-26
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#1-the-answer-in-brief" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5530,6 +5569,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="5. Registration and instances on v4">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-are-registrations-and-instances-redundant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Are registrations and instances redundant?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -5616,11 +5672,12 @@
 <p class="admonition-title">Record</p>
 <p>Record as of 2026-10-26. A point-in-time document; it is not kept up to date.</p>
 </div>
-<p><em>Contributor-facing. Snapshot, 2026-10-26: alignment <code>main</code> <code>6e6223f26</code> (specifications),
+<p><em>Contributor-facing. Snapshot, 2026-10-26: alignment <code>main</code> <code>6e6223f26</code> (specifications; amended
+the same day for the maintainer's decisions in §0),
 cgm-remote-monitor draft PR #8857 at <code>3be98536</code>, Nocturne <code>main</code> <code>89dcaf1dd</code>. Every Nocturne
 statement below was read from source at <code>89dcaf1dd</code> and nothing was run against it (read-derived).
 The proposed surface is described in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a31885f184f4c950535f790f156fc4d96d9bc4e0/specs/openapi/proposed/nightscout-v4.yaml"><code>specs/openapi/proposed/nightscout-v4.yaml</code></a>;
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/312a24a614d9f27772462ca4765447c6bf859e12/specs/openapi/proposed/nightscout-v4.yaml"><code>specs/openapi/proposed/nightscout-v4.yaml</code></a>;
 the current API in <a href="../../../specs/openapi/upstream/cgm-remote-monitor/index.html"><code>specs/openapi/upstream/cgm-remote-monitor/</code></a>.
 Nocturne paths are relative to <code>src/API/Nocturne.API/</code> unless they begin with <code>Core.</code> (under
 <code>src/Core/Nocturne.</code>) or <code>tests/</code>. Nothing here has been sent to either project.</em></p>
@@ -5631,14 +5688,48 @@ the same day: Nocturne's v4 surface is to be split, and parts of it will sit on 
 listeners. This page therefore treats Nocturne's surface as material to partition, group by group,
 and states for each group which listener it belongs on in our specifications and whether it is a
 candidate for a shared contract.</p>
+<h2 id="0-decided-2026-10-26">0. Decided, 2026-10-26<a class="headerlink" href="#0-decided-2026-10-26" title="Permanent link">&para;</a></h2>
+<p>The maintainer decided four points the same day; the sections below are amended for them.</p>
+<table>
+<thead>
+<tr>
+<th>point</th>
+<th>decision</th>
+<th>where it is applied</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>statistics</td>
+<td>served on v4 under <code>statistics</code> (<code>/api/v4/statistics/...</code>), matching Nocturne <code>89dcaf1dd</code>'s <code>StatisticsController</code> for hub compatibility: its paths, parameters, response shapes, tenant time-zone bucketing, the under-ten-readings rule and its read scopes. The design stays open for discussion: what a shared contract fixes and what it leaves to each hub, and whether the compute-over-a-posted-body actions join later</td>
+<td>operations 32–41; <code>specs/openapi/proposed/statistics-v4.schema.json</code>; §6.4; dated notes on the two older texts</td>
+</tr>
+<tr>
+<td>registration scope</td>
+<td>registration of products, definitions and instances is a per-tenant API that affects only that tenant's site and data, never a platform or operator action; the owner's listing and actions are tenant-scoped (tenant-admin under <code>multi</code>, the one listener under <code>single</code>); controller actions and commands are on the data listener</td>
+<td><a href="spec/authority.html#2-principals-and-credentials">authority AU6</a>; registration's opening note</td>
+</tr>
+<tr>
+<td>instance paths</td>
+<td>one flat root: <code>/api/v4/instances/{instanceId}</code> is the instance resource, its command fetch <code>/api/v4/instances/{instanceId}/commands</code>, and the owner's listing <code>GET /api/v4/instances</code>; creating an instance names the product in the body</td>
+<td><a href="spec/registration.html#7-definitions">registration §7</a> amendment; commands §7.1; the instance schema's <code>product</code>; operations 8–10; §5.1</td>
+</tr>
+<tr>
+<td><code>softwareId</code></td>
+<td>proposed in the registration's <code>metadata</code>, in Nocturne's RFC 7591 <code>software_id</code> form, for compatibility; its rules stay open for discussion</td>
+<td><code>controller-state-model.schema.json</code>; <a href="spec/registration.html#51-identity-and-methods">registration §5.1</a>; §5</td>
+</tr>
+</tbody>
+</table>
 <h2 id="1-the-answer-in-brief">1. The answer in brief<a class="headerlink" href="#1-the-answer-in-brief" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Registration and instances on v4: yes, already.</strong> The specifications put the product,
   definition and instance resources under the capability document's <code>submit.href</code>, and #8857 serves
   it at <code>/api/v4/registrations</code> (<code>lib/registration/index.js:25</code>); the command paths of commands §7.1
-  are under <code>/api/v4/</code> too. Discovery stays at <code>/.well-known/nightscout/</code> (RFC 8615). What is not
-  settled is the path the owner's actions take on <code>ns-tenant-admin</code> (§5, decisions 1–3).</li>
-<li><strong>Split by listener.</strong> Of the 37 proposed operations, 26 are on the data listener, 10 on the
+  are under <code>/api/v4/</code> too, and instances have their own flat root (§0). Registration is per tenant
+  (AU6). Discovery stays at <code>/.well-known/nightscout/</code> (RFC 8615). What is not settled is the path
+  the owner's actions take on <code>ns-tenant-admin</code> (§7, decisions 1–2).</li>
+<li><strong>Split by listener.</strong> Of the 41 proposed operations, 30 are on the data listener, 10 on the
   tenant-owner listener, and one (retire) on both, by caller. None is on the operator listener:
   the operator's plane (tenant lifecycle, export) is not a v4 surface in our design (D7). Nocturne
   serves all three audiences from one API and divides them by scope and role (§4).</li>
@@ -5649,13 +5740,13 @@ candidate for a shared contract.</p>
   second, after the identity decisions. Everything else in Nocturne's v4 stays hub-specific (§6).</li>
 </ul>
 <h2 id="2-the-proposed-v4-surface-operation-by-operation">2. The proposed v4 surface, operation by operation<a class="headerlink" href="#2-the-proposed-v4-surface-operation-by-operation" title="Permanent link">&para;</a></h2>
-<p>From <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a31885f184f4c950535f790f156fc4d96d9bc4e0/specs/openapi/proposed/nightscout-v4.yaml"><code>nightscout-v4.yaml</code></a>. Listener names
+<p>From <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/312a24a614d9f27772462ca4765447c6bf859e12/specs/openapi/proposed/nightscout-v4.yaml"><code>nightscout-v4.yaml</code></a>. Listener names
 follow <a href="spec/authority.html#2-principals-and-credentials">authority AU2</a> (D16): <code>data</code> is <code>ns-api</code>
 (devices, clients, viewers); <code>tenant-admin</code> is <code>ns-tenant-admin</code>, the owner's second bound socket
 inside <code>ns-api</code>. Under <code>TENANCY_MODE=single</code> there is one listener and <code>API_SECRET</code> acts as the
 owner. Status: <code>in-pr-8857</code> is served by #8857 at <code>3be98536</code> behind <code>CONTROLLER_REGISTRATION</code> (off
-by default); <code>specified</code> has rules and conformance cases and no hub serves it; <code>open</code> is written
-elsewhere in this repository with its placement undecided.</p>
+by default); <code>specified</code> has rules and conformance cases, or a decision of the maintainer, and
+cgm-remote-monitor does not serve it.</p>
 <table>
 <thead>
 <tr>
@@ -5726,27 +5817,27 @@ elsewhere in this repository with its placement undecided.</p>
 </tr>
 <tr>
 <td>8</td>
-<td><code>PUT /api/v4/registrations/{vendor}/{product}/instances/{instanceId}</code></td>
+<td><code>PUT /api/v4/instances/{instanceId}</code></td>
 <td>data</td>
 <td>api:registrations:create; the instance's binding to renew</td>
-<td>in-pr-8857</td>
-<td>registration §8, registration §9, registration §10, authority §3, authority §6, identity §2</td>
+<td>specified</td>
+<td>registration §7, registration §8, registration §9, registration §10, authority §3, authority §6, identity §2</td>
 </tr>
 <tr>
 <td>9</td>
-<td><code>DELETE /api/v4/registrations/{vendor}/{product}/instances/{instanceId}</code></td>
+<td><code>DELETE /api/v4/instances/{instanceId}</code></td>
 <td>data</td>
 <td>api:registrations:delete and the instance's binding</td>
-<td>in-pr-8857</td>
+<td>specified</td>
 <td>registration §7, registration §8</td>
 </tr>
 <tr>
 <td>10</td>
-<td><code>GET /api/v4/registrations/instances</code></td>
+<td><code>GET /api/v4/instances</code></td>
 <td>tenant-admin</td>
 <td>the tenant owner</td>
-<td>in-pr-8857</td>
-<td>authority §4, authority §8, registration §8, registration §9</td>
+<td>specified</td>
+<td>authority §4, authority §8, AU6, registration §8, registration §9</td>
 </tr>
 <tr>
 <td>11</td>
@@ -5918,51 +6009,83 @@ elsewhere in this repository with its placement undecided.</p>
 </tr>
 <tr>
 <td>32</td>
-<td><code>GET /api/v4/statistics/daily</code></td>
+<td><code>GET /api/v4/statistics/range-analytics</code></td>
 <td>data</td>
-<td>read</td>
-<td>open</td>
-<td>REQ-STATS-001</td>
+<td>reports.read</td>
+<td>specified</td>
+<td>maintainer 2026-10-26; Nocturne <code>StatisticsController.cs:464</code></td>
 </tr>
 <tr>
 <td>33</td>
-<td><code>GET /api/v4/statistics/daily/{date}</code></td>
+<td><code>GET /api/v4/statistics/weekday-averages</code></td>
 <td>data</td>
-<td>read</td>
-<td>open</td>
-<td>REQ-STATS-001</td>
+<td>reports.read</td>
+<td>specified</td>
+<td>maintainer 2026-10-26; Nocturne <code>StatisticsController.cs:532</code></td>
 </tr>
 <tr>
 <td>34</td>
-<td><code>GET /api/v4/statistics/summary</code></td>
+<td><code>GET /api/v4/statistics/hourly-patterns</code></td>
 <td>data</td>
-<td>read</td>
-<td>open</td>
-<td>REQ-STATS-002</td>
+<td>reports.read</td>
+<td>specified</td>
+<td>maintainer 2026-10-26; Nocturne <code>StatisticsController.cs:567</code></td>
 </tr>
 <tr>
 <td>35</td>
-<td><code>GET /api/v4/statistics/hourly</code></td>
+<td><code>GET /api/v4/statistics/periods</code></td>
 <td>data</td>
-<td>read</td>
-<td>open</td>
-<td>REQ-STATS-003</td>
+<td>glucose.read or reports.read</td>
+<td>specified</td>
+<td>maintainer 2026-10-26; Nocturne <code>StatisticsController.cs:806</code></td>
 </tr>
 <tr>
 <td>36</td>
-<td><code>GET /api/v4/statistics/treatments</code></td>
+<td><code>GET /api/v4/statistics/daily-basal-bolus-ratios</code></td>
 <td>data</td>
-<td>read</td>
-<td>open</td>
-<td>REQ-STATS-004</td>
+<td>reports.read</td>
+<td>specified</td>
+<td>maintainer 2026-10-26; Nocturne <code>StatisticsController.cs:940</code></td>
 </tr>
 <tr>
 <td>37</td>
-<td><code>GET /api/v4/statistics/current</code></td>
+<td><code>GET /api/v4/statistics/punch-card</code></td>
 <td>data</td>
-<td>read</td>
-<td>open</td>
-<td>REQ-STATS-005</td>
+<td>glucose.read or reports.read</td>
+<td>specified</td>
+<td>maintainer 2026-10-26; Nocturne <code>StatisticsController.cs:988</code></td>
+</tr>
+<tr>
+<td>38</td>
+<td><code>GET /api/v4/statistics/insulin-delivery-stats</code></td>
+<td>data</td>
+<td>reports.read</td>
+<td>specified</td>
+<td>maintainer 2026-10-26; Nocturne <code>StatisticsController.cs:1039</code></td>
+</tr>
+<tr>
+<td>39</td>
+<td><code>GET /api/v4/statistics/basal-analysis</code></td>
+<td>data</td>
+<td>reports.read</td>
+<td>specified</td>
+<td>maintainer 2026-10-26; Nocturne <code>StatisticsController.cs:1081</code></td>
+</tr>
+<tr>
+<td>40</td>
+<td><code>GET /api/v4/statistics/hourly-insulin-delivery</code></td>
+<td>data</td>
+<td>reports.read</td>
+<td>specified</td>
+<td>maintainer 2026-10-26; Nocturne <code>StatisticsController.cs:1127</code></td>
+</tr>
+<tr>
+<td>41</td>
+<td><code>GET /api/v4/statistics/aid-system-metrics</code></td>
+<td>data</td>
+<td>reports.read</td>
+<td>specified</td>
+<td>maintainer 2026-10-26; Nocturne <code>StatisticsController.cs:1188</code></td>
 </tr>
 </tbody>
 </table>
@@ -5979,34 +6102,30 @@ elsewhere in this repository with its placement undecided.</p>
 <tbody>
 <tr>
 <td>in-pr-8857</td>
-<td>8</td>
-<td>10</td>
+<td>6</td>
+<td>9</td>
 <td>1</td>
-<td>19</td>
+<td>16</td>
 </tr>
 <tr>
 <td>specified</td>
-<td>12</td>
+<td>24</td>
+<td>1</td>
 <td>0</td>
-<td>0</td>
-<td>12</td>
-</tr>
-<tr>
-<td>open</td>
-<td>6</td>
-<td>0</td>
-<td>0</td>
-<td>6</td>
+<td>25</td>
 </tr>
 <tr>
 <td>total</td>
-<td>26</td>
+<td>30</td>
 <td>10</td>
 <td>1</td>
-<td>37</td>
+<td>41</td>
 </tr>
 </tbody>
 </table>
+<p>Three operations #8857 serves moved to <code>specified</code> with the flat instance root: #8857 serves them
+at <code>PUT</code> and <code>DELETE /api/v4/registrations/{vendor}/{product}/instances/{instanceId}</code> and
+<code>GET /api/v4/registrations/instances</code> (<code>lib/registration/products.js:283</code>, <code>:289</code>, <code>:295</code>).</p>
 <p><strong>Notes on the table.</strong></p>
 <ul>
 <li>The commands specification names no listener for its paths. They are placed on the data
@@ -6014,11 +6133,11 @@ elsewhere in this repository with its placement undecided.</p>
 <li>Operations 1–3 are unauthenticated and carry no tenant data: the capability document is the
   same on every tenant host (registration §4).</li>
 <li>Operation 11 is #8857's form of the owner's retire; the specifications give it as <code>DELETE</code> on
-  the product resource (operation 6). Operation 10's path is #8857's; authority §4 names the
-  listing without a path.</li>
-<li>Operations 32–37 are from the <a href="../../sdqctl-proposals/statistics-api-proposal.html">statistics API proposal</a>
-  (REQ-STATS-001 to 005), which writes them at <code>/api/v3/stats/*</code>. §6.4 gives the evidence for
-  placing them under v4.</li>
+  the product resource (operation 6). Operation 10's path follows the flat instance root (§0).</li>
+<li>Operations 32–41 are Nocturne's ten statistics reads over stored data, by the maintainer's
+  decision (§0, §6.4). Their response shapes are in
+  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/312a24a614d9f27772462ca4765447c6bf859e12/specs/openapi/proposed/statistics-v4.schema.json"><code>statistics-v4.schema.json</code></a>, read from
+  Nocturne's models.</li>
 </ul>
 <p><strong>Defined without a path, so not in the OpenAPI file.</strong> These are open:</p>
 <table>
@@ -6037,7 +6156,7 @@ elsewhere in this repository with its placement undecided.</p>
 </tr>
 <tr>
 <td>reading a definition or an instance</td>
-<td>registration §7, §8 define <code>PUT</code> and <code>DELETE</code> only</td>
+<td>registration §7, §8 define <code>PUT</code> and <code>DELETE</code> only (and the owner's listing)</td>
 <td>whether <code>GET</code> exists for either</td>
 </tr>
 <tr>
@@ -6126,8 +6245,8 @@ different shape</strong>; <strong>Nocturne only</strong>; and the two groups tha
 <td>G6 statistics</td>
 <td><code>StatisticsController</code> (<code>/api/v4/statistics/*</code>, 30 operations)</td>
 <td>30</td>
-<td>same concept, different shape</td>
-<td>the statistics API proposal (operations 32–37); §6.4</td>
+<td>same concept, same shape (by decision, 2026-10-26)</td>
+<td>operations 32–41 follow its ten reads over stored data; §6.4</td>
 </tr>
 <tr>
 <td>G7 other analytics</td>
@@ -6229,8 +6348,9 @@ different shape</strong>; <strong>Nocturne only</strong>; and the two groups tha
 </tr>
 </tbody>
 </table>
-<p>Mapping counts over Nocturne's 18 groups: same concept and same shape 1 (G3, 182 operations); same
-concept and different shape 10 (G1, G4, G5, G6, G9, G10, G11, G13, G14, G15; 347 operations);
+<p>Mapping counts over Nocturne's 18 groups: same concept and same shape 2 (G3, and G6 by the
+statistics decision; 212 operations); same concept and different shape 9 (G1, G4, G5, G9, G10,
+G11, G13, G14, G15; 317 operations);
 Nocturne only 7 (G2, G7, G8, G12, G16, G17, G18; 183 operations). Ours only: 2 groups (28
 operations).</p>
 <p><strong>One more shared mechanism, not an endpoint.</strong> Our projected views for older readers
@@ -6297,10 +6417,13 @@ the maintainer's decisions of 2026-10-14 to 2026-10-17
 (<a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">execution plan §2.6</a>);
 the owner's actions on <code>ns-tenant-admin</code> and <code>API_SECRET</code> as owner on <code>single</code> (AU2, decided
 2026-10-14 and 2026-10-16). The product resource is <code>&lt;submit.href&gt;/&lt;vendor&gt;/&lt;product&gt;</code>; the
-capability document says where <code>submit.href</code> is.</p>
+capability document says where <code>submit.href</code> is. On 2026-10-26 the maintainer decided that
+registration is per tenant and never an operator action (AU6), and that instances have one flat
+root, <code>/api/v4/instances/{instanceId}</code> (registration §7 amendment).</p>
 <p><strong>What #8857 serves at <code>3be98536</code>.</strong> The capability document, the catalogue and each well-known
 registration (<code>lib/registration/index.js:136-157</code>); the product resource, definitions and instances
-under <code>/api/v4/registrations</code> (<code>lib/registration/products.js:266-289</code>); the owner's actions as
+under <code>/api/v4/registrations</code> (<code>lib/registration/products.js:266-289</code>), instances nested under the
+product (<code>:283</code>, <code>:289</code>), which the flat-root decision changes (§5.1); the owner's actions as
 <code>POST …/&lt;action&gt;</code> (<code>:307-333</code>) with <code>retire</code> among them (<code>negotiate.js:742</code>); the owner's listing at
 <code>GET /api/v4/registrations/instances</code> (<code>products.js:295</code>). The owner is recognised only as
 <code>API_SECRET</code> (<code>products.js:313</code>), since no <code>ns-tenant-admin</code> exists. Its capability document
@@ -6317,12 +6440,114 @@ the server.</p>
 <p><strong>Whether they compose.</strong> They answer different questions and do not overlap: Nocturne's
 registration says who is writing and with what scopes; ours says what the writes mean and which
 copy wrote them. <a href="PROPOSAL-controller-descriptions-2026-09-11.html#22-two-halves-who-a-controller-is-and-what-its-data-means">PROPOSAL-controller-descriptions §2.2</a>
-proposes joining them on the reverse-DNS <code>software_id</code>. The grammar has not adopted it:
-<code>controller-state-model.schema.json</code> <code>metadata</code> has <code>vendor</code>, <code>product</code>, <code>algorithmFamily</code>,
-<code>versionRange</code>, <code>source</code> and <code>tier</code>, and no <code>softwareId</code>. Composed, a Nocturne client registered as
+proposes joining them on the reverse-DNS <code>software_id</code>. On 2026-10-26 the maintainer decided to
+propose it in Nocturne's form for compatibility: <code>metadata.softwareId</code> is now in
+<code>controller-state-model.schema.json</code>, marked proposed, optional, compared exactly as Nocturne's
+directory lookup compares it (<code>KnownOAuthClients.cs:214-215</code>), and not part of the registration's
+identity (<a href="spec/registration.html#51-identity-and-methods">registration §5.1</a>). Nocturne's
+registration request carries it as <code>software_id</code> with no format check
+(<code>Models/OAuth/ClientRegistrationRequest.cs:41-44</code>). Composed, a Nocturne client registered as
 <code>org.loopkit.loop</code> would submit a registration whose <code>metadata</code> names the same id, and a hub could
 read both halves from one key. On our side the binding is to the subject (AU4), which under
-Nocturne's model would be the OAuth client's subject.</p>
+Nocturne's model would be the OAuth client's subject. Open for discussion: whether two products
+may share one <code>softwareId</code>, and whether a hub checks it against the credential's registered client.</p>
+<h3 id="51-are-registrations-and-instances-redundant">5.1 Are registrations and instances redundant?<a class="headerlink" href="#51-are-registrations-and-instances-redundant" title="Permanent link">&para;</a></h3>
+<p>The maintainer asked whether registrations and instances are redundant, or whether one is for the
+kind and the other for the running copy, and if redundant whether one should go. They are not
+redundant (<a href="spec/registration.html#7-definitions">registration §7–§8</a>, D19):</p>
+<table>
+<thead>
+<tr>
+<th>resource</th>
+<th>says</th>
+<th>identity</th>
+<th>lifetime</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>product registration, with its immutable definitions</td>
+<td>what a controller's data means: the kind, per vendor and product, per release</td>
+<td><code>(vendor, product)</code>; each definition by the hash of its content</td>
+<td>as long as the controller publishes it; definitions are never changed</td>
+</tr>
+<tr>
+<td>instance</td>
+<td>which running copy is connected: its definition, its roles on channels (source of record, command sink), its labels</td>
+<td>a random UUID v4 the copy generates once</td>
+<td>a lease the copy renews; a lapsed instance holds no roles</td>
+</tr>
+</tbody>
+</table>
+<p>Several instances run one definition (a phone and a lab rig, or the old and the new phone during a
+migration), and one instance is the destination of commands for a channel. Removing either loses
+something: without the product there is nothing to say what the writes mean; without instances
+there is no way to tell two copies apart or to route a command to one.</p>
+<p>The wrinkle was two path roots for one instance. Options considered:</p>
+<table>
+<thead>
+<tr>
+<th>option</th>
+<th>form</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a) keep both roots</td>
+<td><code>/api/v4/registrations/{vendor}/{product}/instances/{id}</code>, fetch at <code>/api/v4/instances/{id}/commands</code></td>
+<td><code>commands.fetch</code> is a URI template in the capability document, so clients do not hard-code it; #8857 serves the nested form</td>
+</tr>
+<tr>
+<td>(b) nest the fetch under the product</td>
+<td><code>…/{vendor}/{product}/instances/{id}/commands</code></td>
+<td>every fetch would carry the vendor and product, which the fetch rules (CM18, CM26) never use</td>
+</tr>
+<tr>
+<td>(c) one flat root</td>
+<td><code>/api/v4/instances/{id}</code> and <code>/api/v4/instances/{id}/commands</code></td>
+<td>an instance id is a random UUID v4 (identity §2), so it names one copy without its product; the copy keeps one path for its life</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Decided, maintainer 2026-10-26: (c).</strong> Creating an instance names the product in the body
+(<code>product: {vendor, product}</code> in <code>controller-instance.schema.json</code>), not by a create on the product
+resource that answers with a flat <code>Location</code>. The evidence for the body: the instance id is chosen by
+the controller and the create is a <code>PUT</code> to it (registration §8), so create, renew and release use
+one path with no redirect; the order of checks already reads the product's registration, binding,
+block and retirement for every <code>PUT</code>, and the stored instance and the owner's listing already carry
+<code>vendor</code> and <code>product</code> (<code>registration-submit.schema.json</code> <code>storedInstance.identity</code>,
+<code>instanceSummary</code>); and the conformance cases model an instance request with its <code>identity</code>
+separately from the path, so none changes. A renewal naming another product is 422
+<code>invalid-instance</code>. Nocturne has no instance resource; the nearest, its client devices, is flat:
+<code>/api/v4/client-devices/{id}</code> (<code>ClientDevicesController.cs:21</code>, <code>:127</code>, <code>:150</code>).</p>
+<p><strong>The follow-up for #8857.</strong> Its routes at <code>3be98536</code> that change:</p>
+<table>
+<thead>
+<tr>
+<th>#8857 today</th>
+<th>after the decision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PUT /api/v4/registrations/:vendor/:product/instances/:instanceId</code> (<code>lib/registration/products.js:283</code>)</td>
+<td><code>PUT /api/v4/instances/:instanceId</code>, product from the body's <code>product</code></td>
+</tr>
+<tr>
+<td><code>DELETE /api/v4/registrations/:vendor/:product/instances/:instanceId</code> (<code>:289</code>)</td>
+<td><code>DELETE /api/v4/instances/:instanceId</code></td>
+</tr>
+<tr>
+<td><code>GET /api/v4/registrations/instances</code> (<code>:295</code>)</td>
+<td><code>GET /api/v4/instances</code> (the owner's listing)</td>
+</tr>
+<tr>
+<td><code>lib/registration/schemas/controller-instance.schema.json</code> (vendored)</td>
+<td>refreshed from <code>specs/sync/controller-instance.schema.json</code>, which gains <code>product</code></td>
+</tr>
+</tbody>
+</table>
 <h2 id="6-the-proposed-split-and-what-to-propose-to-nocturne-first">6. The proposed split, and what to propose to Nocturne first<a class="headerlink" href="#6-the-proposed-split-and-what-to-propose-to-nocturne-first" title="Permanent link">&para;</a></h2>
 <h3 id="61-group-listener-shared-or-hub-specific">6.1 Group, listener, shared or hub-specific<a class="headerlink" href="#61-group-listener-shared-or-hub-specific" title="Permanent link">&para;</a></h3>
 <table>
@@ -6351,13 +6576,13 @@ Nocturne's model would be the OAuth client's subject.</p>
 <td>registration: product, definitions, instances (operations 4–9)</td>
 <td>data</td>
 <td><strong>shared</strong></td>
-<td>specified with 186 conformance cases; the controller is a device on its native credential (authority §5)</td>
+<td>specified with 186 conformance cases; the controller is a device on its native credential (authority §5); per tenant (AU6)</td>
 </tr>
 <tr>
 <td>registration: the owner's actions and listing (operations 10–19, and 6 for the owner)</td>
 <td>tenant-admin; <code>API_SECRET</code> on <code>single</code></td>
 <td><strong>shared as rules, hub-specific as listener</strong></td>
-<td>§4: the refusal to device and app credentials is common ground, the mechanism is not</td>
+<td>§4: the refusal to device and app credentials is common ground, the mechanism is not; tenant-scoped, never operator (AU6)</td>
 </tr>
 <tr>
 <td>commands and proposals (operations 20–31)</td>
@@ -6369,13 +6594,13 @@ Nocturne's model would be the OAuth client's subject.</p>
 <td>G6 statistics, reads over stored data</td>
 <td>data, read</td>
 <td><strong>shared</strong></td>
-<td>maintainer, 2026-10-26: the statistics API proposals are likely to be accepted, which also separates statistics from the reports UI code; §6.4</td>
+<td>decided, maintainer 2026-10-26: match Nocturne's reads; also separates statistics from the reports UI code; §6.4</td>
 </tr>
 <tr>
-<td>G6 statistics, compute over a posted body</td>
+<td>G6 statistics, compute over a posted body, and the stateless calculators</td>
 <td>data</td>
-<td>hub-specific</td>
-<td>a compute service over caller data, with its own cost bounds (§6.4)</td>
+<td>hub-specific for now</td>
+<td>open for discussion whether they join later (§6.4)</td>
 </tr>
 <tr>
 <td>G3 typed records</td>
@@ -6436,7 +6661,8 @@ Nocturne's model would be the OAuth client's subject.</p>
    fallback rule; the owner's actions as rules with the refusal stated per credential (§4).</li>
 <li><strong>Commands</strong>: the command record, the outstanding list, fetch and report, cancel, and the
    proposal in front of a command.</li>
-<li><strong>Statistics</strong>: reads over stored data, with a time-zone rule and a minimum-data rule (§6.4).</li>
+<li><strong>Statistics</strong>: Nocturne's ten reads over stored data, with its time-zone and minimum-data rules
+   and read scopes (decided, §6.4).</li>
 </ol>
 <p>Second wave, after the decisions they depend on: typed record paths (G3) and state spans (G4).</p>
 <h3 id="63-credit">6.3 Credit<a class="headerlink" href="#63-credit" title="Permanent link">&para;</a></h3>
@@ -6448,26 +6674,37 @@ selectors, the declared-versus-observed split and the resource-with-etag style a
 Kubernetes (<a href="PROPOSAL-controller-descriptions-2026-09-11.html#4-what-the-proposal-is-and-what-it-takes-from-kubernetes">PROPOSAL-controller-descriptions §4</a>);
 the operator plane secured by unreachability is ORY's public and admin port split (D7).</p>
 <h3 id="64-statistics">6.4 Statistics<a class="headerlink" href="#64-statistics" title="Permanent link">&para;</a></h3>
-<p><strong>Our two documents disagree.</strong> The statistics API proposal (REQ-STATS-001 to 005) writes
-<code>/api/v3/stats/{daily,daily/{date},summary,hourly,treatments,current}</code>; the reporting needs
-analysis (GAP-REPORT-001, <a href="../../10-domain/reporting-needs-analysis.html"><code>reporting-needs-analysis.md:203-212</code></a>)
-lists <code>/api/v3/statistics/{tir,daily,a1c,agp}</code> and says it comes from the proposal. The proposal
-also specifies an MCP resource provider on top (REQ-STATS-005;
-<a href="../../00-overview/ECOSYSTEM-PROGRAMME.html">ECOSYSTEM-PROGRAMME</a> "Statistics and agents").</p>
-<p><strong>v3 or v4.</strong> The recommendation is v4, <code>/api/v4/statistics/</code>, as the OpenAPI file places it:</p>
-<ul>
-<li>API v3 is a per-collection contract: its description is <code>/{collection}</code>, <code>/{collection}/{identifier}</code>
-  and <code>/history</code> with <code>version</code>, <code>status</code> and <code>lastModified</code> beside them
-  (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a31885f184f4c950535f790f156fc4d96d9bc4e0/specs/openapi/upstream/cgm-remote-monitor/api-v3.yaml">api-v3.yaml</a>), and cgm-remote-monitor
-  mounts routes per enabled collection (<code>lib/api3/generic/collection.js:42-57</code>, collections listed
-  at <code>lib/api3/index.js:66</code>). A documented client reading <code>/{collection}/{identifier}</code> would take
-  <code>/api/v3/stats/daily</code> for a record of a collection called <code>stats</code>.</li>
-<li>Statistics are computed reads, like the other non-collection resources the specifications put
-  under v4.</li>
-<li>Nocturne serves statistics at <code>/api/v4/statistics/</code> (<code>Controllers/V4/Analytics/StatisticsController.cs</code>, route <code>api/v4/[controller]</code>).</li>
-<li>Against: v3 already has non-collection routes (<code>/status</code>, <code>/version</code>, <code>/lastModified</code>), so v3
-  could host them; the choice is open (decision 6).</li>
-</ul>
+<p><strong>Decided, maintainer 2026-10-26.</strong> Statistics are on v4 under <code>statistics</code>, matching Nocturne
+<code>89dcaf1dd</code>'s <code>StatisticsController</code> for hub compatibility: its paths, parameters, response shapes,
+time-zone bucketing, the under-ten-readings rule and its read scopes. The OpenAPI file has its ten
+<code>GET</code> reads over stored data (operations 32–41, anchored per operation to
+<code>Controllers/V4/Analytics/StatisticsController.cs</code>), with response shapes read from Nocturne's
+models into <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/312a24a614d9f27772462ca4765447c6bf859e12/specs/openapi/proposed/statistics-v4.schema.json"><code>statistics-v4.schema.json</code></a>
+(83 types; read-derived from property declarations, nested types not checked by hand). Not
+included: its 15 <code>POST</code> actions that compute over a posted body, and its five stateless calculators
+(<code>gmi/{meanGlucose}</code>, <code>estimated-a1c/{averageGlucose}</code>, <code>clinical-targets/{population}</code>, and the two
+unit conversions).</p>
+<p><strong>Its read rule.</strong> Each read is admitted on <code>reports.read</code>; <code>periods</code> and <code>punch-card</code> on
+<code>glucose.read</code> or <code>reports.read</code>, and a response that merges categories is narrowed to the
+caller's: insulin and carb aggregates need <code>reports.read</code> or <code>treatments.read</code>
+(<code>Authorization/AnalyticsReadScopeGuards.cs:314-331</code>). Public share links hold <code>reports.read</code>.
+cgm-remote-monitor has no such scopes: reading is one bit, <code>readable</code> (AU5), so how these map onto
+its permissions is part of the open design.</p>
+<p><strong>Open for discussion</strong> (maintainer, 2026-10-26): what a shared contract should fix and what it
+leaves to each hub (for example the population default, the canonical-stream choice across CGMs,
+caching), and whether the compute-over-a-posted-body actions join later.</p>
+<p><strong>The two older texts.</strong> The statistics API proposal (REQ-STATS-001 to 005) wrote
+<code>/api/v3/stats/{daily,daily/{date},summary,hourly,treatments,current}</code>, and the reporting needs
+analysis (GAP-REPORT-001) <code>/api/v3/statistics/{tir,daily,a1c,agp}</code>. Both now carry a dated note
+pointing at this decision and are otherwise unchanged. The proposal's MCP resource provider
+(REQ-STATS-005; <a href="../../00-overview/ECOSYSTEM-PROGRAMME.html">ECOSYSTEM-PROGRAMME</a> "Statistics and
+agents") would sit on top of the v4 reads.</p>
+<p><strong>Why v4 rather than v3</strong>, the evidence before the decision: API v3 is a per-collection contract
+(<code>/{collection}</code>, <code>/{collection}/{identifier}</code>, <code>/history</code>, with <code>version</code>, <code>status</code> and
+<code>lastModified</code> beside them, <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/312a24a614d9f27772462ca4765447c6bf859e12/specs/openapi/upstream/cgm-remote-monitor/api-v3.yaml">api-v3.yaml</a>),
+mounted per enabled collection (<code>lib/api3/generic/collection.js:42-57</code>, <code>lib/api3/index.js:66</code>), so
+a documented client would read <code>/api/v3/stats/daily</code> as a record of a collection <code>stats</code>; and
+Nocturne already serves statistics under v4.</p>
 <p><strong>Why a server API now.</strong> cgm-remote-monitor's reports compute in the browser: the report client
 fetches raw entries and treatments over API v1 (<code>lib/report/reportclient.js:343</code>, <code>:380</code>, <code>:417</code>,
 <code>:697</code>) and 14 plugin files of 6,169 lines compute from them, for example the A1c estimates and
@@ -6476,7 +6713,7 @@ using the statistics helpers in <code>lib/report/statistics.js</code> that six p
 <h1 id="8857s-3be98536-the-proposals-2026-05-status-records-that-testsreportstestjs-was-retired">8857's <code>3be98536</code>). The proposal's 2026-05 status records that <code>tests/reports.test.js</code> was retired<a class="headerlink" href="#8857s-3be98536-the-proposals-2026-05-status-records-that-testsreportstestjs-was-retired" title="Permanent link">&para;</a></h1>
 <p>on the assumption that statistics move to a server API, and asks for a parity test against the
 plugin math.</p>
-<p><strong>What a shared contract must settle that the proposal does not.</strong> Read from Nocturne's tests:</p>
+<p><strong>The rules the decision adopts, and how the older proposal compared.</strong> Read from Nocturne's tests:</p>
 <table>
 <thead>
 <tr>
@@ -6519,7 +6756,8 @@ plugin math.</p>
 </tbody>
 </table>
 <h2 id="7-open-decisions-for-the-maintainer">7. Open decisions for the maintainer<a class="headerlink" href="#7-open-decisions-for-the-maintainer" title="Permanent link">&para;</a></h2>
-<p>Each is a placement or a rule the evidence above does not settle.</p>
+<p>Each is a placement or a rule the evidence above does not settle. Rows 3, 4, 6 and 7 were decided
+on 2026-10-26 and keep their numbers; what remains open in them is stated.</p>
 <table>
 <thead>
 <tr>
@@ -6541,13 +6779,13 @@ plugin math.</p>
 </tr>
 <tr>
 <td>3</td>
-<td><strong>The owner's listing path.</strong></td>
-<td>authority §4 gives none; #8857 uses <code>GET /api/v4/registrations/instances</code>.</td>
+<td><strong>The owner's listing path.</strong> <em>Decided, maintainer 2026-10-26:</em> <code>GET /api/v4/instances</code>, tenant-scoped (AU6), on tenant-admin under <code>multi</code> and the one listener under <code>single</code>.</td>
+<td>registration is per tenant (AU6); the flat instance root (§5.1). #8857 serves <code>GET /api/v4/registrations/instances</code>.</td>
 </tr>
 <tr>
 <td>4</td>
-<td><strong>One root for instance paths.</strong></td>
-<td>the instance is <code>/api/v4/registrations/{vendor}/{product}/instances/{instanceId}</code>; its command fetch is <code>/api/v4/instances/{instanceId}/commands</code> (commands §7.1). The capability document carries both, so it works either way.</td>
+<td><strong>One root for instance paths.</strong> <em>Decided, maintainer 2026-10-26: one flat root,</em> <code>/api/v4/instances/{instanceId}</code>, the product named in the body.</td>
+<td>§5.1, with the #8857 follow-up.</td>
 </tr>
 <tr>
 <td>5</td>
@@ -6556,13 +6794,13 @@ plugin math.</p>
 </tr>
 <tr>
 <td>6</td>
-<td><strong>Statistics: v4 or v3; <code>stats</code> or <code>statistics</code>; <code>GET</code> over stored data only; the time-zone and minimum-data rules; the read credential.</strong></td>
+<td><strong>Statistics.</strong> <em>Decided, maintainer 2026-10-26:</em> v4, <code>statistics</code>, matching Nocturne's reads. Open for discussion: what the shared contract fixes and what each hub keeps; whether compute over a posted body joins later; how <code>reports.read</code> maps onto cgm-remote-monitor's permissions.</td>
 <td>§6.4.</td>
 </tr>
 <tr>
 <td>7</td>
-<td><strong>Add <code>softwareId</code> to registration <code>metadata</code>.</strong></td>
-<td>PROPOSAL-controller-descriptions §2.2; the grammar does not have it (§5).</td>
+<td><strong><code>softwareId</code> in registration <code>metadata</code>.</strong> <em>Decided, maintainer 2026-10-26:</em> proposed, in Nocturne's <code>software_id</code> form. Open for discussion: whether two products may share one; whether a hub checks it against the credential's registered client.</td>
+<td>§5; registration §5.1, §18.</td>
 </tr>
 <tr>
 <td>8</td>

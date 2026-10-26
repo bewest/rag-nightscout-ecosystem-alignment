@@ -6247,7 +6247,7 @@
 
 
 <h1 id="l2-registration-how-a-controller-declares-what-its-data-means-and-how-a-hub-accepts-it">L2 Registration: how a controller declares what its data means, and how a hub accepts it<a class="headerlink" href="#l2-registration-how-a-controller-declares-what-its-data-means-and-how-a-hub-accepts-it" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>baa67a88f</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>789446fd4</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>8d2b93ed</code> (2026-10-18). Layer L2 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>; ids are defined in
 the <a href="identity.html">identity specification</a>. Status: specified, not implemented; the first hub implementation is <code>HUB-REG-CRM</code>.
@@ -6264,7 +6264,9 @@ today's document shapes. Several running copies of a controller can share a site
 overwriting one another. The hub records what each copy reports; it never decides dosing.</p>
 <p>Paths and permission names on this page are proposals. Every request below is on the data listener
 (<code>ns-api</code>, or <code>single</code>) unless it says the owner's listener (<code>ns-tenant-admin</code>, or <code>API_SECRET</code> on
-<code>single</code>).</p>
+<code>single</code>). Registration is per tenant: it affects only that tenant's site and data
+and is never an operator action (<a href="authority.html#2-principals-and-credentials">authority AU6</a>,
+maintainer, 2026-10-26).</p>
 <h2 id="1-files">1. Files<a class="headerlink" href="#1-files" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -6462,7 +6464,14 @@ release, never on a timer, on a lease renewal or because a request was refused.<
 <h2 id="5-the-product-resource">5. The product resource<a class="headerlink" href="#5-the-product-resource" title="Permanent link">&para;</a></h2>
 <h3 id="51-identity-and-methods">5.1 Identity and methods<a class="headerlink" href="#51-identity-and-methods" title="Permanent link">&para;</a></h3>
 <p>A registration's identity within a tenant is <code>(metadata.vendor, metadata.product)</code>.
-<code>versionRange</code> is an attribute: a new release updates the same registration. The product resource
+<code>versionRange</code> is an attribute: a new release updates the same registration.
+<code>metadata.softwareId</code> is proposed as a further attribute (maintainer, 2026-10-26): the reverse-DNS
+id of the software in the same form as the RFC 7591 <code>software_id</code> Nocturne's client registration
+and known-app directory use (<code>org.loopkit.loop</code>), compared exactly, so a hub can join who wrote a
+record with what it means on one key
+(<a href="../PROPOSAL-controller-descriptions-2026-09-11.html#22-two-halves-who-a-controller-is-and-what-its-data-means">controller descriptions §2.2</a>).
+It is optional and not part of the identity. Whether two products may share one, and whether a hub
+checks it against the credential's registered client, are open (§18). The product resource
 is <code>&lt;submit.href&gt;/&lt;vendor&gt;/&lt;product&gt;</code>, each segment percent-encoded.</p>
 <table>
 <thead>
@@ -6709,23 +6718,40 @@ and builds of one product coexist; instances (§8) say which copy is connected.<
 <td><code>If-None-Match: *</code> only</td>
 </tr>
 <tr>
-<td><code>&lt;…&gt;/&lt;product&gt;/instances/&lt;instanceId&gt;</code></td>
+<td><code>/api/v4/instances/&lt;instanceId&gt;</code></td>
 <td><code>PUT</code></td>
 <td>any credential with <code>api:registrations:create</code></td>
-<td>create, renew or change an instance</td>
+<td>create, renew or change an instance; the body names the product</td>
 <td>as §5</td>
 </tr>
 <tr>
-<td><code>&lt;…&gt;/&lt;product&gt;/instances/&lt;instanceId&gt;</code></td>
+<td><code>/api/v4/instances/&lt;instanceId&gt;</code></td>
 <td><code>DELETE</code></td>
 <td>the credential the instance is bound to, with <code>api:registrations:delete</code></td>
 <td>release the instance and all its roles</td>
 <td><code>If-Match</code></td>
 </tr>
+<tr>
+<td><code>/api/v4/instances</code></td>
+<td><code>GET</code></td>
+<td>the owner</td>
+<td>the owner's listing (<a href="authority.html#4-the-owners-actions">authority §4</a>)</td>
+<td>none</td>
+</tr>
 </tbody>
 </table>
-<p>A hub that advertises <code>instances</code> serves the two added resources; one that does not serves
+<p>A hub that advertises <code>instances</code> serves the added resources; one that does not serves
 neither, and §5 applies unchanged.</p>
+<p><strong>Amendment, maintainer 2026-10-26: one flat root for instances.</strong> The instance resource is
+<code>/api/v4/instances/&lt;instanceId&gt;</code>, beside its command fetch <code>/api/v4/instances/&lt;instanceId&gt;/commands</code>
+(<a href="commands.html#71-discovery-and-paths-proposed">commands CM32</a>), so one running copy has one path
+root. Before this amendment it was <code>&lt;submit.href&gt;/&lt;vendor&gt;/&lt;product&gt;/instances/&lt;instanceId&gt;</code>.
+Definitions stay under the product, because a definition belongs to one product. The instance
+body names its product (<code>product: {vendor, product}</code>, <code>controller-instance.schema.json</code>); the order
+of checks below reads the product from it, and a renewal naming a product other than the stored
+instance's is 422 <code>invalid-instance</code>. The instance is looked up within the request's tenant, as
+every tenant resource is (CM6). The id is a random UUID v4 (identity §2), so a copy keeps one
+path for its life. cgm-remote-monitor's draft #8857 serves the earlier nested path.</p>
 <p><strong>Identity.</strong> The definition id is defined in <a href="identity.html#2-contract-ids">identity §2</a>. A product
 <code>PUT</code>'s accepted or partial response names the <code>definitionId</code> the hub computed. Every definition
 the hub accepts is stored content-addressed: the product's current registration, every
@@ -7063,6 +7089,8 @@ by any controller author:</p>
   mapping that erases its evidence makes <code>historical</code> depend on Q3 records; a <code>proposed</code> entry never
   fails the check; declaration entries are measured only by hub records.</li>
 <li><strong>Identity:</strong> two choices are listed in <a href="identity.html#5-open-decisions">identity §5</a>.</li>
+<li><strong><code>metadata.softwareId</code> (§5.1, proposed 2026-10-26):</strong> whether two products may share one;
+  whether a hub checks it against the credential's registered OAuth client where the hub has one.</li>
 </ul>
 <p>Open: the contract per tenancy mode (<code>SPEC-REG-MODES</code>), the mechanics of registration
 state across a site's move into a tenant, whose binding rule <a href="authority.html#3-binding-and-credential-kind">authority §3</a> states (<code>SPEC-REG-MIGRATE</code>). The command API is proposed in the <a href="commands.html">commands specification</a>.</p>
