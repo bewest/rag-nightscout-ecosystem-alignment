@@ -2187,6 +2187,59 @@ items:
       (UNVERIFIED): local-time readings or a fixed-zone stub, and the file
       run under two TZ values.
 
+  - id: BFQ-178
+    title: "BF-178 - the legacy reports browser test hangs in hosted CI, almost always Firefox (dev 2bc298b9)"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: test/browser-request-stage-trace
+    base: official/dev@2bc298b9
+    worktree: externals/cgm-remote-monitor-official
+    state: in-progress
+    pr: []
+    ships_to_operators_today: false
+    blast_radius: >
+      Tests and a test spec only, 1 commit (99627097, not pushed):
+      tests/browser/fixture.js (withPage records each unfinished request's
+      last stage and route/browser request errors, returns them as
+      traffic(), and aborts a request whose route handler throws instead of
+      leaving it pending), tests/browser/legacy-reports.test.js (server
+      requests without a finished response; all three added to a completion
+      timeout's message), docs/test-specs/browser-tests.md. No product code.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: test only
+    register: [BF-178]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official cat-file -e 99627097^{commit}
+        kind: static
+        describe: >
+          the instrumentation commit exists in the shared clone; red if the
+          local branch is lost before it is pushed or rebased (a rebase
+          changes the id, and this gate must then name the new one)
+      - no-gate: >
+          The defect itself has no local instrument: 51 local Firefox runs on
+          dev 2bc298b9 (single, six in parallel, keep-alive 1-7 s, three full
+          suites) did not fail. The measure is the hosted rate - the legacy
+          reports case failed in 11 of 150 Firefox, 1 of 147 WebKit and 0 of
+          148 Chromium browser jobs in the 109 completed CI runs from
+          2026-10-19 to 2026-10-25. A gate would count that from the Actions
+          API over a window after a fix lands.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      2026-10-25: cause not found. Ruled out by running: slowness (the
+      third refresh takes 255-472 ms when it passes and hangs past 30 s
+      when it fails), the browser HTTP cache and a server keep-alive race.
+      The instrumentation's red control is a planted unanswered fixture
+      response, reported as a route.fetch timeout at the routed stage with
+      the server response unfinished (4 of 5 planted runs exactly so; one
+      reported several NS_ERROR_FAILURE requests instead, not explained).
+      Firefox and Chromium full browser suites pass, 457 each; WebKit not
+      run locally (host libraries missing). Lands in a test-themed PR (the
+      test tier PR #8839 or the next hygiene PR), not alone. Next step after
+      it lands: read the trace from the next hosted failure.
   - id: RT-D3-SUITE
     title: The treatment-drag clamps get a regression test in cut 1's real-browser suite
     parcel: release-train

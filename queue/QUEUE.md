@@ -31,18 +31,18 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 286 |
-| runnable gates | 345 |
-| explicit `no-gate:` markers | 307 |
+| items | 287 |
+| runnable gates | 346 |
+| explicit `no-gate:` markers | 308 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 307 of the 652 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 308 of the 654 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 61 | RT-JSDOM-REST, RT-BUNDLE-THEME-SPLIT, ID-SIMPLE-MATCH, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
-| `in-progress` | 16 | RT-REBASE, RT-BOOT-INDEX-AWAIT, ID-CONVENTIONS, BFQ-46, BFQ-ENV, BFQ-92, BFQ-93, BFQ-156, BFQ-159, BFQ-160, BFQ-180, BFQ-183, BFQ-190, BFQ-191, OID-LAB, LOOP-ID-REPLY |
+| `in-progress` | 17 | BFQ-178, RT-REBASE, RT-BOOT-INDEX-AWAIT, ID-CONVENTIONS, BFQ-46, BFQ-ENV, BFQ-92, BFQ-93, BFQ-156, BFQ-159, BFQ-160, BFQ-180, BFQ-183, BFQ-190, BFQ-191, OID-LAB, LOOP-ID-REPLY |
 | `gate-not-met` | 6 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, MOD-WRITE-VALIDATION, WS-LAB |
 | `blocked` | 19 | RT-TEST-TIERS, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, WC-STEP-PATCH, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
@@ -2454,7 +2454,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 134 items
+`parcel: register-open` &mdash; 135 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2464,6 +2464,7 @@ distinction is the only thing that makes the register mean anything - widening
 |---|---|---|---|---|---|
 | `BFQ-91` | BF-91 - connector capture mode cannot find trace-axios for two sources | `released` | `fix/trace-axios-path` | patch | 2 run + 1 no-gate |
 | `BFQ-177` | BF-177 - a glucose distribution report test added by #8812 fails outside UTC (dev eb72a1d3) | `merged-upstream` | `chore/16.0.0-test-ci-hygiene` | n/a | 1 run + 1 no-gate |
+| `BFQ-178` | BF-178 - the legacy reports browser test hangs in hosted CI, almost always Firefox (dev 2bc298b9) | `in-progress` | `test/browser-request-stage-trace` | n/a | 1 run + 1 no-gate |
 | `BFQ-09` | BF-09 - socket dedup truthiness skips a falsy value | `merged-upstream` | `bf/socket-dedup-zero` | patch | 2 run + 2 no-gate |
 | `BFQ-10` | BF-10 - mongod fatal-asserts at Docker's default nofile=1024 | `released` | `-` | patch | 1 run + 1 no-gate |
 | `BFQ-04` | BF-04 - the v1 operator allowlist - superseded by P0-K | `released` | `bf/operators` | minor | 0 run + 1 no-gate |
@@ -2663,6 +2664,38 @@ distinction is the only thing that makes the register mean anything - widening
 - `releases/cgm-remote-monitor-16.0.0/contents.md`
 
 **Notes.** 2026-10-25: #8838 ("16.0.0 test and CI hygiene", chore/16.0.0-test-ci-hygiene, head 039be646, 10 commits on dev a20469dc) merged into dev at 19:42:01Z as 2bc298b9 (gh pr view 8838). Merged to dev, not released. 89d19b5b makes the case's stand-in a UTC profile and adds two cases that run the report with the real lib/profilefunctions.js and a named profile zone (America/Los_Angeles 213.5, Pacific/Auckland 249.5). The file passes, 8 cases, under TZ=UTC, America/Los_Angeles, Pacific/Auckland and Asia/Kolkata; with the old stand-in the original case fails in the three non-UTC zones, and with the report reading the hour in UTC both new cases fail in every zone (the PR's runs). America/Los_Angeles gives 213.5, the original failure's number, so the report was right and the test was wrong: verified by running it, which supersedes the read-derived claim below. Not covered: a profile with no time zone, where the report filters on the browser's zone, as before. Filed 2026-10-25 as BF-177 (register §1b) from the deps refresh's test runs (its branch fails the same case). Read: the test's stub applyTimezone returns moment(value) in the machine's zone, while the readings start at 00:00Z, so the selected hour 1 holds different readings in each zone; the report applies the profile's zone (lib/profilefunctions.js applyTimezone) and is not wrong in a non-UTC zone, read-derived and not run in a browser. The fix is test-only (UNVERIFIED): local-time readings or a fixed-zone stub, and the file run under two TZ values.
+
+### `BFQ-178` &mdash; BF-178 - the legacy reports browser test hangs in hosted CI, almost always Firefox (dev 2bc298b9)
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `cgm-remote-monitor` |
+| branch | `test/browser-request-stage-trace` |
+| base | `official/dev@2bc298b9` |
+| worktree | `externals/cgm-remote-monitor-official` |
+| semver | `n/a` |
+| review | maintainer |
+| ships to operators today | no (pre-release) |
+| register | `BF-178` |
+
+**Blast radius.** Tests and a test spec only, 1 commit (99627097, not pushed): tests/browser/fixture.js (withPage records each unfinished request's last stage and route/browser request errors, returns them as traffic(), and aborts a request whose route handler throws instead of leaving it pending), tests/browser/legacy-reports.test.js (server requests without a finished response; all three added to a completion timeout's message), docs/test- specs/browser-tests.md. No product code.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** test only
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official cat-file -e 99627097^{commit}`
+  - the instrumentation commit exists in the shared clone; red if the local branch is lost before it is pushed or rebased (a rebase changes the id, and this gate must then name the new one)
+- **NO GATE** &mdash; The defect itself has no local instrument: 51 local Firefox runs on dev 2bc298b9 (single, six in parallel, keep-alive 1-7 s, three full suites) did not fail. The measure is the hosted rate - the legacy reports case failed in 11 of 150 Firefox, 1 of 147 WebKit and 0 of 148 Chromium browser jobs in the 109 completed CI runs from 2026-10-19 to 2026-10-25. A gate would count that from the Actions API over a window after a fix lands.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** 2026-10-25: cause not found. Ruled out by running: slowness (the third refresh takes 255-472 ms when it passes and hangs past 30 s when it fails), the browser HTTP cache and a server keep-alive race. The instrumentation's red control is a planted unanswered fixture response, reported as a route.fetch timeout at the routed stage with the server response unfinished (4 of 5 planted runs exactly so; one reported several NS_ERROR_FAILURE requests instead, not explained). Firefox and Chromium full browser suites pass, 457 each; WebKit not run locally (host libraries missing). Lands in a test-themed PR (the test tier PR #8839 or the next hygiene PR), not alone. Next step after it lands: read the trace from the next hosted failure.
 
 ### `BFQ-09` &mdash; BF-09 - socket dedup truthiness skips a falsy value
 
