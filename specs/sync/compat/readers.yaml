@@ -453,8 +453,12 @@
   layers:
     L0:
       verdict: opt-in
-      today: v1 by-id routes accept 24-hex and 32-hex (UUID v7 without dashes) ids, and look up by GUID,
-        then by exact `LegacyId`, then by GUID prefix.
+      today: Measured at 89dcaf1dd (tools/lab/nocturne-parity) - serves a 24-hex `_id` on v1 and v3 and
+        sets v3 `identifier` equal to it, replacing a client-sent `identifier` (a read by the client's
+        identifier answers 404); a v3 re-send is answered 200 with `isDeduplication` for entries and 201
+        without it for treatments, devicestatus and profile, and a treatment re-send is stored once.
+        Read at 42275c81 - v1 by-id routes accept 24-hex and 32-hex (UUID v7 without dashes) ids, and
+        look up by GUID, then by exact `LegacyId`, then by GUID prefix.
       newer: It would serve a 24-hex `_id` on v1 and none in v3 reads, keep a client 24-hex `_id` in lower case on v1
         and refuse a client `_id` on v3 with 400 (I2), answer each write with both ids and `matchedBy` (I4), and match a re-send on `identifier`, then
         `_id`, then the natural key (I5).
