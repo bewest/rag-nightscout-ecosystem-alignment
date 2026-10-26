@@ -31,22 +31,22 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 284 |
+| items | 285 |
 | runnable gates | 345 |
-| explicit `no-gate:` markers | 305 |
+| explicit `no-gate:` markers | 306 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 305 of the 650 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 306 of the 651 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 61 | RT-JSDOM-REST, RT-BUNDLE-THEME-SPLIT, ID-SIMPLE-MATCH, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
-| `in-progress` | 25 | RT-REBASE, RT-BOOT-INDEX-AWAIT, ID-CONVENTIONS, BFQ-46, BFQ-ENV, BFQ-92, BFQ-93, BFQ-145, BFQ-152, BFQ-156, BFQ-159, BFQ-160, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-186, BFQ-190, OID-LAB, LOOP-ID-REPLY |
+| `in-progress` | 24 | RT-REBASE, RT-BOOT-INDEX-AWAIT, ID-CONVENTIONS, BFQ-46, BFQ-ENV, BFQ-92, BFQ-93, BFQ-145, BFQ-152, BFQ-156, BFQ-159, BFQ-160, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-180, BFQ-183, BFQ-186, BFQ-190, BFQ-191, OID-LAB, LOOP-ID-REPLY |
 | `gate-not-met` | 6 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, MOD-WRITE-VALIDATION, WS-LAB |
 | `blocked` | 18 | RT-TEST-TIERS, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, WC-STEP-PATCH, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154 |
-| `in-flight-upstream` | 4 | RT-2, BFQ-72, BFQ-161, BFQ-185 |
+| `in-flight-upstream` | 6 | RT-2, BFQ-72, BFQ-161, BFQ-179, BFQ-182, BFQ-185 |
 | `merged-upstream` | 13 | BFQ-177, RT-D3-SUITE, RT-CONNECT-TEARDOWN, RT-1, BFQ-09, BFQ-158, BFQ-137, BFQ-157, BFQ-163, BFQ-172, BFQ-173, BFQ-174, BFQ-176 |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 14 | T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
@@ -136,6 +136,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-187** BF-187 - an entries pattern segment over the braces parser's input limit answers 500, not 400
 - **BFQ-188** BF-188 - with no client bundle the server exits at boot with an unexplained module error
 - **BFQ-190** BF-190 - an alarm on a page without a current reading cannot be silenced from the page
+- **BFQ-191** BF-191 - a stored treatment can stop the server process, and keeps doing so after a restart (mechanism only)
 - **RT-PR-8815** #8815 - a bearer token whose subject was deleted is refused instead of stopping the server (awss1i; BF-171, fixes #8225), merged for 15.0.9
 - **BFQ-134** BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 - **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
@@ -2452,7 +2453,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 132 items
+`parcel: register-open` &mdash; 133 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2563,10 +2564,10 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-174` | BF-174 - the bolus calculator's profile picker is ignored; every value comes from the active profile, a known issue of 15.0.9 | `merged-upstream` | `bf/profile-spec-honoured` | patch | 1 run + 1 no-gate |
 | `BFQ-175` | BF-175 - temp targets are converted from mmol/L only when units is exactly 'mmol' (candidate) | `closed` | `-` | n/a | 0 run + 1 no-gate |
 | `BFQ-176` | BF-176 - axios is only a devDependency and lodash is undeclared, so a production install of dev (16.0.0 line, cut 1 merged) stops at boot when IMPORT_CONFIG is set | `merged-upstream` | `bf/axios-runtime-dependency` | patch | 2 run + 1 no-gate |
-| `BFQ-179` | BF-179 - postinstall runs webpack, now a devDependency, so a production install of dev fails (dev b29f1bf7, cut 2) | `in-progress` | `bf/179-omit-dev-install` | patch | 0 run + 1 no-gate |
+| `BFQ-179` | BF-179 - postinstall runs webpack, now a devDependency, so a production install of dev fails (dev b29f1bf7, cut 2) | `in-flight-upstream` | `chore/compose-mongodb6` | patch | 0 run + 1 no-gate |
 | `BFQ-180` | BF-180 - a careportal temp target on an mmol/L site is converted to mg/dL twice when the hidden BG field holds a value | `in-progress` | `bf/16.0.0-client-alarms` | patch | 0 run + 1 no-gate |
 | `BFQ-181` | BF-181 - one future srvModified pins the shared write clock ahead, across restarts | `not-started` | `-` | patch | 0 run + 1 no-gate |
-| `BFQ-182` | BF-182 - on cut 3 (driver 7), boot against MongoDB 4.2 or older retries forever with no HTTP server | `in-progress` | `wip/cut3-onto-16.0.0` | major | 1 run + 1 no-gate |
+| `BFQ-182` | BF-182 - on cut 3 (driver 7), boot against MongoDB 4.2 or older retries forever with no HTTP server | `in-flight-upstream` | `chore/compose-mongodb6` | major | 1 run + 1 no-gate |
 | `BFQ-183` | BF-183 - the API v3 storage socket logs the supplied credential on a failed authorization | `in-progress` | `bf/183-storage-socket-log-redaction` | patch | 0 run + 1 no-gate |
 | `BFQ-184` | BF-184 - API v3 /status apiPermissions reports only wildcard permissions | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-185` | BF-185 - the stress test tier leaves devicestatus documents that break api3.search in a later run | `in-flight-upstream` | `ci/edge-diagonal-matrix` | n/a | 0 run + 1 no-gate |
@@ -2575,6 +2576,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-188` | BF-188 - with no client bundle the server exits at boot with an unexplained module error | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-189` | BF-189 - tests/security.test.js (API_SECRET) fails depending on file order | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `BFQ-190` | BF-190 - an alarm on a page without a current reading cannot be silenced from the page | `in-progress` | `bf/16.0.0-client-alarms` | patch | 1 run + 1 no-gate |
+| `BFQ-191` | BF-191 - a stored treatment can stop the server process, and keeps doing so after a restart (mechanism only) | `in-progress` | `-` | n/a | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `released` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -5967,9 +5969,9 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
-| branch | `bf/179-omit-dev-install` |
+| branch | `chore/compose-mongodb6` |
 | base | `official/dev@b29f1bf7` |
 | worktree | `externals/work/crm-bf179` |
 | semver | `patch` |
@@ -5991,7 +5993,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-25: fixed as 1cf70838 on local bf/179-omit-dev-install (one commit on dev b29f1bf7, not pushed); to be cherry-picked onto cut 3 by session -f8. postinstall runs bin/postinstall.js: build when the tools are installed, keep an existing bundle with a warning when they are not, otherwise exit 1 naming npm ci --include=dev then npm prune --omit=dev --ignore-scripts. Measured (lane): npm ci --omit=dev exits 1 with that message; npm ci builds the 16 bundle files byte-identical to dev's; docker build gives the same bundle. Decisions for the maintainer: keep-prebuilt vs always fail, and the 16.0.0 release-note line. The boot error with no bundle at all is BF-188. Filed 2026-10-25 by session f4 (register §1b, kind b: a defect in a release-train cut). Cut 2 (#8837) moved webpack to devDependencies; postinstall still runs it. Reach of the first-party Dockerfile and bin/azure-deploy.sh is read (they run npm ci --include=dev, then npm prune --omit=dev --ignore-scripts). Fix direction, UNVERIFIED: guard postinstall, or ship the prebuilt bundle.
+**Notes.** 2026-10-25: cherry-picked onto cut 3 as 200c1361 and in PR #8844 to dev (session -f8's cut 3, chore/compose-mongodb6, head 200c1361). 2026-10-25: fixed as 1cf70838 on local bf/179-omit-dev-install (one commit on dev b29f1bf7, not pushed); to be cherry-picked onto cut 3 by session -f8. postinstall runs bin/postinstall.js: build when the tools are installed, keep an existing bundle with a warning when they are not, otherwise exit 1 naming npm ci --include=dev then npm prune --omit=dev --ignore-scripts. Measured (lane): npm ci --omit=dev exits 1 with that message; npm ci builds the 16 bundle files byte-identical to dev's; docker build gives the same bundle. Decisions for the maintainer: keep-prebuilt vs always fail, and the 16.0.0 release-note line. The boot error with no bundle at all is BF-188. Filed 2026-10-25 by session f4 (register §1b, kind b: a defect in a release-train cut). Cut 2 (#8837) moved webpack to devDependencies; postinstall still runs it. Reach of the first-party Dockerfile and bin/azure-deploy.sh is read (they run npm ci --include=dev, then npm prune --omit=dev --ignore-scripts). Fix direction, UNVERIFIED: guard postinstall, or ship the prebuilt bundle.
 
 ### `BFQ-180` &mdash; BF-180 - a careportal temp target on an mmol/L site is converted to mg/dL twice when the hidden BG field holds a value
 
@@ -6057,9 +6059,9 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
-| branch | `wip/cut3-onto-16.0.0` |
+| branch | `chore/compose-mongodb6` |
 | base | `official/chore/compose-mongodb6@ebb690cf` |
 | worktree | `externals/cgm-remote-monitor-official` |
 | semver | `major` |
@@ -6084,7 +6086,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/60-research/modernization/mongodb-server-compat-matrix-2026-10-25.md`
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-25: the driver x server matrix is done (docs/60-research/modernization/mongodb-server-compat-matrix-2026-10-25.md): driver 7.7.0 refuses 3.6.23, 4.0.28 and 4.2.24; 4.4.24 to 8.0.34 boot and pass integration 2013/0/1; with the fix (7b636ce6 on wip/cut3-onto-16.0.0, the rebased form of 99fa8b1e) refused servers get the boot error page (HTTP 500 at 32 to 50 s, process alive, no retry). Decision (maintainer): driver 7 in 16.0.0, MongoDB 4.4 or newer required to start. Filed 2026-10-25 by session f4 from the defaults-calendar lane (C3-2; register §1b, kind b). The maintainer asked for confirmation that compatibility with MongoDB 3.6 to 4.4 holds; a driver x server matrix is running, and the entry claims only 4.2.24 and 4.4.24. -f8's cut 3 agent is adding a fatal boot-error path (99fa8b1e on wip/cut3-onto-16.0.0, local, not pushed, not checked by session f4).
+**Notes.** 2026-10-25: fix 8f238fc5 in PR #8844 to dev (session -f8's cut 3, chore/compose-mongodb6, head 200c1361). 2026-10-25: the driver x server matrix is done (docs/60-research/modernization/mongodb-server-compat- matrix-2026-10-25.md): driver 7.7.0 refuses 3.6.23, 4.0.28 and 4.2.24; 4.4.24 to 8.0.34 boot and pass integration 2013/0/1; with the fix (7b636ce6 on wip/cut3-onto-16.0.0, the rebased form of 99fa8b1e) refused servers get the boot error page (HTTP 500 at 32 to 50 s, process alive, no retry). Decision (maintainer): driver 7 in 16.0.0, MongoDB 4.4 or newer required to start. Filed 2026-10-25 by session f4 from the defaults-calendar lane (C3-2; register §1b, kind b). The maintainer asked for confirmation that compatibility with MongoDB 3.6 to 4.4 holds; a driver x server matrix is running, and the entry claims only 4.2.24 and 4.4.24. -f8's cut 3 agent is adding a fatal boot-error path (99fa8b1e on wip/cut3-onto-16.0.0, local, not pushed, not checked by session f4).
 
 ### `BFQ-183` &mdash; BF-183 - the API v3 storage socket logs the supplied credential on a failed authorization
 
@@ -6329,6 +6331,36 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** Filed 2026-10-25 by session f4 from the alarms lane. On v15.0.9 probably reachable on a page whose latest reading is more than 15 minutes old (read, not run).
+
+### `BFQ-191` &mdash; BF-191 - a stored treatment can stop the server process, and keeps doing so after a restart (mechanism only)
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@b29f1bf7` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | SECURITY, through the maintainer's private advisory process. Disclosure-sensitive: mechanism only in any tracked file, as for BF-72. |
+| ships to operators today | **yes** |
+| register | `BF-191` |
+
+**Blast radius.** Not described here while the defect is live on the shipping release.
+
+**What an operator sees.** DRAFT - DO NOT PUBLISH AHEAD OF THE ADVISORY. A treatment stored with an unexpected field type can stop Nightscout, and it keeps doing so after a restart until the record is removed. Writing such a record needs a credential that can write treatments, so keep your API secret and tokens private. A fix is planned for 16.0.0.
+
+**Why `n/a`.** not graded while private; the fix shape is held with the advisory
+
+**Gates.**
+
+- **NO GATE** &mdash; private until the advisory is published
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-10-25 by session f4 from its AndroidAPS-safety lane; reproduced on dev b29f1bf7 and v15.0.9 c6a0d8ed. Availability, high (persistent), needs a credential with treatment write access. Fix in preparation on a local branch, to ship in 16.0.0 (maintainer decision 2026-10-25), via the maintainer's private advisory process.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 

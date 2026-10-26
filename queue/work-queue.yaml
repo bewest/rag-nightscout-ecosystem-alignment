@@ -14966,11 +14966,11 @@ items:
     title: "BF-179 - postinstall runs webpack, now a devDependency, so a production install of dev fails (dev b29f1bf7, cut 2)"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: bf/179-omit-dev-install
+    branch: chore/compose-mongodb6
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-bf179
-    state: in-progress
-    pr: []
+    state: in-flight-upstream
+    pr: [8844]
     ships_to_operators_today: false
     blast_radius: >
       package.json scripts.postinstall (:47 on dev b29f1bf7), and possibly
@@ -15000,6 +15000,9 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: cherry-picked onto cut 3 as 200c1361 and in PR #8844 to dev
+      (session -f8's cut 3, chore/compose-mongodb6, head 200c1361).
+
       2026-10-25: fixed as 1cf70838 on local bf/179-omit-dev-install (one
       commit on dev b29f1bf7, not pushed); to be cherry-picked onto cut 3 by
       session -f8. postinstall runs bin/postinstall.js: build when the tools
@@ -15123,11 +15126,11 @@ items:
     title: "BF-182 - on cut 3 (driver 7), boot against MongoDB 4.2 or older retries forever with no HTTP server"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: wip/cut3-onto-16.0.0
+    branch: chore/compose-mongodb6
     base: official/chore/compose-mongodb6@ebb690cf
     worktree: externals/cgm-remote-monitor-official
-    state: in-progress
-    pr: []
+    state: in-flight-upstream
+    pr: [8844]
     ships_to_operators_today: false
     blast_radius: >
       lib/storage/mongo-storage.js isRetryableConnectionError (:48 on
@@ -15166,6 +15169,9 @@ items:
       - docs/60-research/modernization/mongodb-server-compat-matrix-2026-10-25.md
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: fix 8f238fc5 in PR #8844 to dev (session -f8's cut 3,
+      chore/compose-mongodb6, head 200c1361).
+
       2026-10-25: the driver x server matrix is done
       (docs/60-research/modernization/mongodb-server-compat-matrix-2026-10-25.md):
       driver 7.7.0 refuses 3.6.23, 4.0.28 and 4.2.24; 4.4.24 to 8.0.34 boot
@@ -15491,6 +15497,42 @@ items:
       Filed 2026-10-25 by session f4 from the alarms lane. On v15.0.9 probably
       reachable on a page whose latest reading is more than 15 minutes old
       (read, not run).
+
+  - id: BFQ-191
+    title: "BF-191 - a stored treatment can stop the server process, and keeps doing so after a restart (mechanism only)"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@b29f1bf7
+    state: in-progress
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      Not described here while the defect is live on the shipping release.
+    review: >
+      SECURITY, through the maintainer's private advisory process.
+      Disclosure-sensitive: mechanism only in any tracked file, as for BF-72.
+    operator_visible: >
+      DRAFT - DO NOT PUBLISH AHEAD OF THE ADVISORY. A treatment stored with an
+      unexpected field type can stop Nightscout, and it keeps doing so after a
+      restart until the record is removed. Writing such a record needs a
+      credential that can write treatments, so keep your API secret and tokens
+      private. A fix is planned for 16.0.0.
+    semver: n/a
+    semver_reason: >
+      not graded while private; the fix shape is held with the advisory
+    register: [BF-191]
+    gates:
+      - no-gate: private until the advisory is published
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-10-25 by session f4 from its AndroidAPS-safety lane;
+      reproduced on dev b29f1bf7 and v15.0.9 c6a0d8ed. Availability, high
+      (persistent), needs a credential with treatment write access. Fix in
+      preparation on a local branch, to ship in 16.0.0 (maintainer decision
+      2026-10-25), via the maintainer's private advisory process.
 
   - id: MOD-WRITE-VALIDATION
     title: "WRITE_VALIDATION=off|log|reject: opt-in domain validation of Temporary Target writes on API v1 and v3 (draft)"

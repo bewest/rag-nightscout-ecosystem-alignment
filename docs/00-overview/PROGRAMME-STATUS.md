@@ -24,10 +24,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 173 | 37 | 10 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 174 | 37 | 12 |
 | **Modernization** | `release-train` | 42 | 7 | 4 |
 | **Multitenant** | `tenancy`, `platform` | 67 | 17 | 9 |
-| | **total** | **284** | **61** | **23** |
+| | **total** | **285** | **61** | **25** |
 
 <!-- END GENERATED: horizons -->
 
@@ -173,6 +173,7 @@ cover more than one `BF-`:
 | `BFQ-187` | `not-started` | BF-187 - an entries pattern segment over the braces parser's input limit answers 500, not  |
 | `BFQ-188` | `not-started` | BF-188 - with no client bundle the server exits at boot with an unexplained module error |
 | `BFQ-190` | `in-progress` | BF-190 - an alarm on a page without a current reading cannot be silenced from the page |
+| `BFQ-191` | `in-progress` | BF-191 - a stored treatment can stop the server process, and keeps doing so after a restar |
 | `BFQ-40` | `released` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `in-progress` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `released` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -209,7 +210,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 7 | 2 | 4 | 1 | 3 | 1 | 3 | 15 | 2 | 1 |  |  | 3 | **42** |
-| `register-open` | 27 | 21 | 1 | 1 | 2 | 3 | 10 | 58 | 5 |  |  | 4 |  | **132** |
+| `register-open` | 27 | 20 | 1 | 1 | 2 | 5 | 10 | 58 | 5 |  |  | 4 |  | **133** |
 | `tenancy` | 8 | 1 |  | 1 | 13 |  |  |  | 7 | 3 | 1 |  |  | **34** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  |  | 11 |  |  |  | **19** |
 | `backfix2` |  |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
@@ -249,14 +250,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 249 | 88% |
-| SECURITY reviewer | 16 | 6% |
+| Maintainer | 249 | 87% |
+| SECURITY reviewer | 17 | 6% |
 | Maintainer + a second human | 7 | 2% |
 | SAFETY reviewer | 6 | 2% |
 | Whoever edits it next | 3 | 1% |
 | Unassigned | 2 | 1% |
 | Upstream reviewers | 1 | 0% |
-| **total** | **284** | |
+| **total** | **285** | |
 
 <!-- END GENERATED: reviewer-load -->
 

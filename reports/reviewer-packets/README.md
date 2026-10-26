@@ -24,6 +24,8 @@ repository.
 | [`ADV-CONFIG`](adv-config.md) | #8746 | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) |
 | [`RT-2`](rt-2-chore-build-runtime-separation.md) | #8837 | `in-flight-upstream` | Cut 2 - chore/build-runtime-separation |
 | [`BFQ-185`](bfq-185-ci-edge-diagonal-matrix.md) | #8843 | `in-flight-upstream` | BF-185 - the stress test tier leaves devicestatus documents that break api3.search in a later run |
+| [`BFQ-179`](bfq-179-chore-compose-mongodb6.md) | #8844 | `in-flight-upstream` | BF-179 - postinstall runs webpack, now a devDependency, so a production install of dev fails (dev b29f1bf7, cut 2) |
+| [`BFQ-182`](bfq-182-chore-compose-mongodb6.md) | #8844 | `in-flight-upstream` | BF-182 - on cut 3 (driver 7), boot against MongoDB 4.2 or older retries forever with no HTTP server |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`BFQ-161`](bfq-161-bf-entries-pattern-limit.md) | &mdash; | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes |
 | [`BFQ-164`](bfq-164.md) | &mdash; | `needs-decision` | BF-164 - writes outside API v3 never reach the v3 storage socket |
