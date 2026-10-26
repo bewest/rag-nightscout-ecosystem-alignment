@@ -1,0 +1,2625 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://nightscout.dev/schemas/proposed/statistics-v4.json",
+ "title": "Statistics v4 response shapes (Nocturne-compatible)",
+ "description": "Maintainer, 2026-10-26: Nightscout's v4 statistics reads match Nocturne's StatisticsController for hub compatibility. These are the response shapes of its ten GET reads over stored data, read from the C# models of Nocturne `main` 89dcaf1dd (src/Core/Nocturne.Core.Models/StatisticsModels.cs, PunchCardModels.cs and the types they use) by a parser of public property declarations, with ASP.NET Core's default JSON naming (camelCase) and enums serialised as integers unless the type carries JsonStringEnumConverter. Read-derived: nothing was run, and nested types were not checked by hand. Each $defs entry names its source file and line. Members not listed are ignored (G1).",
+ "$defs": {
+  "A1cDisplayValue": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/A1cDisplayValue.cs:5",
+   "properties": {
+    "percent": {
+     "type": "number"
+    },
+    "mmolMol": {
+     "type": "number"
+    }
+   }
+  },
+  "A1cTargetState": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/A1cDisplayValue.cs:25",
+   "properties": {
+    "percent": {
+     "type": "boolean"
+    },
+    "mmolMol": {
+     "type": "boolean"
+    }
+   }
+  },
+  "AidAlgorithm": {
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/V4/AidAlgorithm.cs:18; serialised by name",
+   "type": "string",
+   "enum": [
+    "OpenAps",
+    "AndroidAps",
+    "Loop",
+    "Trio",
+    "IAPS",
+    "ControlIQ",
+    "CamAPSFX",
+    "Omnipod5Algorithm",
+    "MedtronicSmartGuard",
+    "None",
+    "Unknown"
+   ]
+  },
+  "AidSegmentMetrics": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:2243",
+   "properties": {
+    "aidActivePercent": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "pumpUsePercent": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "loopCycleCount": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "enactedCount": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "closedLoopCount": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    }
+   }
+  },
+  "AidSystemMetrics": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:2183",
+   "properties": {
+    "cgmDeviceNames": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "pumpDeviceNames": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "pumpUsePercent": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "aidActivePercent": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "cgmActivePercent": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "targetLow": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "targetHigh": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "siteChangeCount": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "segments": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/AidTimeSegment"
+     }
+    },
+    "timeZoneUnavailableReason": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/TimeZoneUnavailableReason"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    }
+   }
+  },
+  "AidTimeSegment": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:2225",
+   "properties": {
+    "algorithm": {
+     "$ref": "#/$defs/AidAlgorithm"
+    },
+    "startDate": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "endDate": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "durationHours": {
+     "type": "number"
+    },
+    "metrics": {
+     "$ref": "#/$defs/AidSegmentMetrics"
+    }
+   }
+  },
+  "AnalysisTime": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:779",
+   "properties": {
+    "start": {
+     "type": "integer"
+    },
+    "end": {
+     "type": "integer"
+    },
+    "timeOfAnalysis": {
+     "type": "integer"
+    }
+   }
+  },
+  "AverageDailyEpisodes": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:483",
+   "properties": {
+    "veryLow": {
+     "type": "number"
+    },
+    "low": {
+     "type": "number"
+    },
+    "high": {
+     "type": "number"
+    },
+    "veryHigh": {
+     "type": "number"
+    },
+    "aboveRange": {
+     "type": "number"
+    },
+    "belowRange": {
+     "type": "number"
+    }
+   }
+  },
+  "AverageDailyMinutes": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:421",
+   "properties": {
+    "target": {
+     "type": "number"
+    },
+    "low": {
+     "type": "number"
+    },
+    "high": {
+     "type": "number"
+    }
+   }
+  },
+  "AveragedStats": {
+   "allOf": [
+    {
+     "$ref": "#/$defs/BasicGlucoseStats"
+    },
+    {
+     "type": "object",
+     "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:870",
+     "properties": {
+      "hour": {
+       "type": "integer"
+      },
+      "dayCount": {
+       "type": "integer"
+      },
+      "timeInRange": {
+       "$ref": "#/$defs/ExtendedTimeInRangePercentages"
+      }
+     }
+    }
+   ]
+  },
+  "BasalAnalysisResponse": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1989",
+   "properties": {
+    "stats": {
+     "$ref": "#/$defs/BasalStats"
+    },
+    "tempBasalInfo": {
+     "$ref": "#/$defs/TempBasalInfo"
+    },
+    "hourlyPercentiles": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/HourlyBasalPercentileData"
+     }
+    },
+    "windowDays": {
+     "type": "integer"
+    },
+    "startDate": {
+     "type": "string"
+    },
+    "endDate": {
+     "type": "string"
+    },
+    "timeZoneUnavailableReason": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/TimeZoneUnavailableReason"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    }
+   }
+  },
+  "BasalStats": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1964",
+   "properties": {
+    "count": {
+     "type": "integer"
+    },
+    "avgRate": {
+     "type": "number"
+    },
+    "minRate": {
+     "type": "number"
+    },
+    "maxRate": {
+     "type": "number"
+    },
+    "totalDelivered": {
+     "type": "number"
+    }
+   }
+  },
+  "BasicGlucoseStats": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:7",
+   "properties": {
+    "count": {
+     "type": "integer"
+    },
+    "mean": {
+     "type": "number"
+    },
+    "median": {
+     "type": "number"
+    },
+    "min": {
+     "type": "number"
+    },
+    "max": {
+     "type": "number"
+    },
+    "standardDeviation": {
+     "type": "number"
+    },
+    "percentiles": {
+     "$ref": "#/$defs/GlucosePercentiles"
+    }
+   }
+  },
+  "Bolus": {
+   "allOf": [
+    {
+     "$ref": "#/$defs/V4RecordBase"
+    },
+    {
+     "type": "object",
+     "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/V4/Bolus.cs:29",
+     "properties": {
+      "insulin": {
+       "type": "number"
+      },
+      "programmed": {
+       "anyOf": [
+        {
+         "type": "number"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "delivered": {
+       "anyOf": [
+        {
+         "type": "number"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "bolusType": {
+       "anyOf": [
+        {
+         "$ref": "#/$defs/BolusType"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "automatic": {
+       "type": "boolean"
+      },
+      "kind": {
+       "$ref": "#/$defs/BolusKind"
+      },
+      "duration": {
+       "anyOf": [
+        {
+         "type": "number"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "syncIdentifier": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "insulinType": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "insulinContext": {
+       "anyOf": [
+        {
+         "$ref": "#/$defs/TreatmentInsulinContext"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "unabsorbed": {
+       "anyOf": [
+        {
+         "type": "number"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "deviceId": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "uuid"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "patientDeviceId": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "uuid"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "pumpRecordId": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "bolusCalculationId": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "uuid"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "apsSnapshotId": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "uuid"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  "BolusKind": {
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/V4/BolusKind.cs:17; serialised by name",
+   "type": "string",
+   "enum": [
+    "Manual",
+    "Algorithm"
+   ]
+  },
+  "BolusType": {
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/V4/BolusType.cs:10; serialised by name",
+   "type": "string",
+   "enum": [
+    "Normal",
+    "Square",
+    "Dual"
+   ]
+  },
+  "ClinicalAssessmentLevel": {
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsEnums.cs:42; serialised by name",
+   "type": "string",
+   "enum": [
+    "Excellent",
+    "Good",
+    "NeedsAttention",
+    "NeedsSignificantImprovement",
+    "InsufficientData"
+   ]
+  },
+  "ClinicalTargetAssessment": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1393",
+   "properties": {
+    "population": {
+     "$ref": "#/$defs/DiabetesPopulation"
+    },
+    "targets": {
+     "$ref": "#/$defs/ClinicalTargets"
+    },
+    "tIRAssessment": {
+     "$ref": "#/$defs/TargetAssessment"
+    },
+    "tBRAssessment": {
+     "$ref": "#/$defs/TargetAssessment"
+    },
+    "veryLowAssessment": {
+     "$ref": "#/$defs/TargetAssessment"
+    },
+    "tARAssessment": {
+     "$ref": "#/$defs/TargetAssessment"
+    },
+    "veryHighAssessment": {
+     "$ref": "#/$defs/TargetAssessment"
+    },
+    "cVAssessment": {
+     "$ref": "#/$defs/TargetAssessment"
+    },
+    "targetsMet": {
+     "type": "integer"
+    },
+    "totalTargets": {
+     "type": "integer"
+    },
+    "targetsAssessed": {
+     "type": "integer"
+    },
+    "overallAssessment": {
+     "$ref": "#/$defs/ClinicalAssessmentLevel"
+    },
+    "actionableInsights": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/LocalizedInsight"
+     }
+    },
+    "priorityAreas": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/LocalizedInsight"
+     }
+    },
+    "strengths": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/LocalizedInsight"
+     }
+    }
+   }
+  },
+  "ClinicalTargets": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1120",
+   "properties": {
+    "targetTIR": {
+     "type": "number"
+    },
+    "maxTBR": {
+     "type": "number"
+    },
+    "maxTBRVeryLow": {
+     "type": "number"
+    },
+    "maxTAR": {
+     "type": "number"
+    },
+    "maxTARVeryHigh": {
+     "type": "number"
+    },
+    "targetCV": {
+     "type": "number"
+    },
+    "targetLow": {
+     "type": "number"
+    },
+    "targetHigh": {
+     "type": "number"
+    }
+   }
+  },
+  "ContributingDevice": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1559",
+   "properties": {
+    "patientDeviceId": {
+     "anyOf": [
+      {
+       "type": "string",
+       "format": "uuid"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "name": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "readingCount": {
+     "type": "integer"
+    }
+   }
+  },
+  "DailyBasalBolusRatioData": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1813",
+   "properties": {
+    "date": {
+     "type": "string"
+    },
+    "displayDate": {
+     "type": "string"
+    },
+    "basal": {
+     "type": "number"
+    },
+    "bolus": {
+     "type": "number"
+    },
+    "manualBolus": {
+     "type": "number"
+    },
+    "automaticBolus": {
+     "type": "number"
+    },
+    "total": {
+     "type": "number"
+    },
+    "basalPercent": {
+     "type": "number"
+    },
+    "bolusPercent": {
+     "type": "number"
+    },
+    "carbs": {
+     "type": "number"
+    }
+   }
+  },
+  "DailyBasalBolusRatioResponse": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1866",
+   "properties": {
+    "dailyData": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/DailyBasalBolusRatioData"
+     }
+    },
+    "averageBasalPercent": {
+     "type": "number"
+    },
+    "averageBolusPercent": {
+     "type": "number"
+    },
+    "averageTdd": {
+     "type": "number"
+    },
+    "daysWithData": {
+     "type": "integer"
+    },
+    "timeZoneUnavailableReason": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/TimeZoneUnavailableReason"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    }
+   }
+  },
+  "DataGap": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:724",
+   "properties": {
+    "start": {
+     "type": "integer"
+    },
+    "end": {
+     "type": "integer"
+    },
+    "duration": {
+     "type": "number"
+    }
+   }
+  },
+  "DataQuality": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:678",
+   "properties": {
+    "totalReadings": {
+     "type": "integer"
+    },
+    "missingReadings": {
+     "type": "integer"
+    },
+    "dataCompleteness": {
+     "type": "number"
+    },
+    "cgmActivePercent": {
+     "type": "number"
+    },
+    "gapAnalysis": {
+     "$ref": "#/$defs/GapAnalysis"
+    },
+    "noiseLevel": {
+     "type": "number"
+    },
+    "calibrationEvents": {
+     "type": "integer"
+    },
+    "sensorWarmups": {
+     "type": "integer"
+    }
+   }
+  },
+  "DataSufficiencyAssessment": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1438",
+   "properties": {
+    "isSufficient": {
+     "type": "boolean"
+    },
+    "totalDays": {
+     "type": "integer"
+    },
+    "daysWithData": {
+     "type": "integer"
+    },
+    "expectedReadings": {
+     "type": "integer"
+    },
+    "actualReadings": {
+     "type": "integer"
+    },
+    "completenessPercentage": {
+     "type": "number"
+    },
+    "minimumRequiredCompleteness": {
+     "type": "number"
+    },
+    "averageReadingsPerDay": {
+     "type": "number"
+    },
+    "longestGapHours": {
+     "type": "number"
+    },
+    "status": {
+     "$ref": "#/$defs/DataSufficiencyStatus"
+    },
+    "warningMessage": {
+     "type": "string"
+    },
+    "recommendation": {
+     "type": "string"
+    },
+    "timeZoneUnavailableReason": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/TimeZoneUnavailableReason"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    }
+   }
+  },
+  "DataSufficiencyStatus": {
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsEnums.cs:92; serialised by name",
+   "type": "string",
+   "enum": [
+    "Sufficient",
+    "InsufficientCoverage",
+    "LargeGaps"
+   ]
+  },
+  "DiabetesPopulation": {
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1096; serialised as an integer (no string converter on the type); names in order: Type1Adult, Type2Adult, Type1Pediatric, Elderly, Pregnancy, PregnancyType1",
+   "type": "integer"
+  },
+  "ExtendedGlucoseAnalytics": {
+   "allOf": [
+    {
+     "$ref": "#/$defs/GlucoseAnalytics"
+    },
+    {
+     "type": "object",
+     "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1478",
+     "properties": {
+      "gMI": {
+       "$ref": "#/$defs/GlucoseManagementIndicator"
+      },
+      "gRI": {
+       "$ref": "#/$defs/GlycemicRiskIndex"
+      },
+      "clinicalAssessment": {
+       "$ref": "#/$defs/ClinicalTargetAssessment"
+      },
+      "dataSufficiency": {
+       "$ref": "#/$defs/DataSufficiencyAssessment"
+      },
+      "treatmentSummary": {
+       "anyOf": [
+        {
+         "$ref": "#/$defs/TreatmentSummary"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  "ExtendedTimeInRangePercentages": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:332",
+   "properties": {
+    "veryLow": {
+     "type": "number"
+    },
+    "low": {
+     "type": "number"
+    },
+    "tightTarget": {
+     "type": "number"
+    },
+    "aboveTightTarget": {
+     "type": "number"
+    },
+    "high": {
+     "type": "number"
+    },
+    "veryHigh": {
+     "type": "number"
+    }
+   }
+  },
+  "FoodTotals": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:578",
+   "properties": {
+    "carbs": {
+     "type": "number"
+    },
+    "protein": {
+     "type": "number"
+    },
+    "fat": {
+     "type": "number"
+    }
+   }
+  },
+  "GRIZone": {
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1278; serialised as an integer (no string converter on the type); names in order: A, B, C, D, E",
+   "type": "integer"
+  },
+  "GapAnalysis": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:709",
+   "properties": {
+    "gaps": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/DataGap"
+     }
+    },
+    "longestGap": {
+     "type": "number"
+    },
+    "averageGap": {
+     "type": "number"
+    }
+   }
+  },
+  "GlucoseAnalytics": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:742",
+   "properties": {
+    "basicStats": {
+     "$ref": "#/$defs/BasicGlucoseStats"
+    },
+    "timeInRange": {
+     "$ref": "#/$defs/TimeInRangeMetrics"
+    },
+    "glycemicVariability": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/GlycemicVariability"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "dataQuality": {
+     "$ref": "#/$defs/DataQuality"
+    },
+    "reliability": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/StatisticReliability"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "time": {
+     "$ref": "#/$defs/AnalysisTime"
+    },
+    "clinicalAssessment": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/ClinicalTargetAssessment"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "timeZoneUnavailableReason": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/TimeZoneUnavailableReason"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    }
+   }
+  },
+  "GlucoseManagementIndicator": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1219",
+   "properties": {
+    "value": {
+     "type": "number"
+    },
+    "meanGlucose": {
+     "type": "number"
+    },
+    "interpretation": {
+     "$ref": "#/$defs/GlucoseManagementIndicatorLevel"
+    },
+    "reliability": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/StatisticReliability"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    }
+   }
+  },
+  "GlucoseManagementIndicatorLevel": {
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsEnums.cs:69; serialised by name",
+   "type": "string",
+   "enum": [
+    "NonDiabetic",
+    "Prediabetes",
+    "WellControlled",
+    "ModerateControl",
+    "SuboptimalControl",
+    "PoorControl"
+   ]
+  },
+  "GlucosePercentiles": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:45",
+   "properties": {
+    "p5": {
+     "type": "number"
+    },
+    "p10": {
+     "type": "number"
+    },
+    "p25": {
+     "type": "number"
+    },
+    "p50": {
+     "type": "number"
+    },
+    "p75": {
+     "type": "number"
+    },
+    "p90": {
+     "type": "number"
+    },
+    "p95": {
+     "type": "number"
+    }
+   }
+  },
+  "GlycemicRiskIndex": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1258",
+   "properties": {
+    "score": {
+     "type": "number"
+    },
+    "hypoglycemiaComponent": {
+     "type": "number"
+    },
+    "hyperglycemiaComponent": {
+     "type": "number"
+    },
+    "zone": {
+     "$ref": "#/$defs/GRIZone"
+    },
+    "interpretation": {
+     "$ref": "#/$defs/GlycomicRiskInterpretation"
+    }
+   }
+  },
+  "GlycemicThresholds": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:179",
+   "properties": {
+    "veryLow": {
+     "type": "number"
+    },
+    "low": {
+     "type": "number"
+    },
+    "targetBottom": {
+     "type": "number"
+    },
+    "targetTop": {
+     "type": "number"
+    },
+    "tightTargetBottom": {
+     "type": "number"
+    },
+    "tightTargetTop": {
+     "type": "number"
+    },
+    "high": {
+     "type": "number"
+    },
+    "veryHigh": {
+     "type": "number"
+    }
+   }
+  },
+  "GlycemicVariability": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:83",
+   "properties": {
+    "coefficientOfVariation": {
+     "type": "number"
+    },
+    "standardDeviation": {
+     "type": "number"
+    },
+    "meanAmplitudeGlycemicExcursions": {
+     "type": "number"
+    },
+    "continuousOverlappingNetGlycemicAction": {
+     "type": "number"
+    },
+    "averageDailyRiskRange": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "timeZoneUnavailableReason": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/TimeZoneUnavailableReason"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "labilityIndex": {
+     "type": "number"
+    },
+    "jIndex": {
+     "type": "number"
+    },
+    "highBloodGlucoseIndex": {
+     "type": "number"
+    },
+    "lowBloodGlucoseIndex": {
+     "type": "number"
+    },
+    "glycemicVariabilityIndex": {
+     "type": "number"
+    },
+    "patientGlycemicStatus": {
+     "type": "number"
+    },
+    "estimatedA1c": {
+     "type": "number"
+    },
+    "estimatedA1cDisplay": {
+     "$ref": "#/$defs/A1cDisplayValue"
+    },
+    "a1cTarget": {
+     "$ref": "#/$defs/A1cDisplayValue"
+    },
+    "estimatedA1cMeetsTarget": {
+     "$ref": "#/$defs/A1cTargetState"
+    },
+    "coefficientOfVariationTarget": {
+     "type": "number"
+    },
+    "coefficientOfVariationStatus": {
+     "$ref": "#/$defs/GlycemicVariabilityStatus"
+    },
+    "gmi": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/GlucoseManagementIndicator"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "meanTotalDailyChange": {
+     "type": "number"
+    },
+    "timeInFluctuation": {
+     "type": "number"
+    }
+   }
+  },
+  "GlycemicVariabilityStatus": {
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/GlycemicVariabilityStatus.cs:10; serialised by name",
+   "type": "string",
+   "enum": [
+    "Stable",
+    "Moderate",
+    "Variable"
+   ]
+  },
+  "GlycomicRiskInterpretation": {
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsEnums.cs:12; serialised by name",
+   "type": "string",
+   "enum": [
+    "Excellent",
+    "Good",
+    "Moderate",
+    "Suboptimal",
+    "Poor",
+    "Unknown"
+   ]
+  },
+  "HourlyBasalPercentileData": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1898",
+   "properties": {
+    "hour": {
+     "type": "integer"
+    },
+    "p10": {
+     "type": "number"
+    },
+    "p25": {
+     "type": "number"
+    },
+    "median": {
+     "type": "number"
+    },
+    "p75": {
+     "type": "number"
+    },
+    "p90": {
+     "type": "number"
+    },
+    "count": {
+     "type": "integer"
+    }
+   }
+  },
+  "HourlyClockBasis": {
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:961; serialised by name",
+   "type": "string",
+   "enum": [
+    "TenantTimeZone",
+    "ReadingOffsets"
+   ]
+  },
+  "HourlyComparison": {
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:936; serialised by name",
+   "type": "string",
+   "enum": [
+    "NoReadings",
+    "TooLittleData",
+    "CloseTogether",
+    "Ranked"
+   ]
+  },
+  "HourlyExcursion": {
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:892; serialised by name",
+   "type": "string",
+   "enum": [
+    "None",
+    "Below",
+    "Above",
+    "Mixed"
+   ]
+  },
+  "HourlyInsulinDeliveryPoint": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:2024",
+   "properties": {
+    "hour": {
+     "type": "integer"
+    },
+    "scheduledBasal": {
+     "type": "number"
+    },
+    "tempBasal": {
+     "type": "number"
+    },
+    "basal": {
+     "type": "number"
+    },
+    "manualBolus": {
+     "type": "number"
+    },
+    "automaticBolus": {
+     "type": "number"
+    },
+    "total": {
+     "type": "number"
+    },
+    "count": {
+     "type": "integer"
+    },
+    "profileBasalRate": {
+     "type": "number"
+    }
+   }
+  },
+  "HourlyInsulinDeliveryResponse": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:2113",
+   "properties": {
+    "hours": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/HourlyInsulinDeliveryPoint"
+     }
+    },
+    "totalDeliveryPeriods": {
+     "$ref": "#/$defs/InsulinDeliveryPeriodBreakdown"
+    },
+    "basalPeriods": {
+     "$ref": "#/$defs/InsulinDeliveryPeriodBreakdown"
+    },
+    "daysWithData": {
+     "type": "integer"
+    },
+    "startDate": {
+     "type": "string"
+    },
+    "endDate": {
+     "type": "string"
+    },
+    "timeZoneUnavailableReason": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/TimeZoneUnavailableReason"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    }
+   }
+  },
+  "HourlyPattern": {
+   "allOf": [
+    {
+     "$ref": "#/$defs/AveragedStats"
+    },
+    {
+     "type": "object",
+     "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:911",
+     "properties": {
+      "inRange": {
+       "type": "number"
+      },
+      "belowRange": {
+       "type": "number"
+      },
+      "aboveRange": {
+       "type": "number"
+      },
+      "mainExcursion": {
+       "$ref": "#/$defs/HourlyExcursion"
+      },
+      "isRanked": {
+       "type": "boolean"
+      }
+     }
+    }
+   ]
+  },
+  "HourlyPatterns": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:996",
+   "properties": {
+    "comparison": {
+     "$ref": "#/$defs/HourlyComparison"
+    },
+    "hours": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/HourlyPattern"
+     }
+    },
+    "bestHours": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/HourlyPattern"
+     }
+    },
+    "worstHours": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/HourlyPattern"
+     }
+    },
+    "mostBelowRangeHours": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/HourlyPattern"
+     }
+    },
+    "rankedHourCount": {
+     "type": "integer"
+    },
+    "minimumDaysToRank": {
+     "type": "integer"
+    },
+    "minimumReadingsToRank": {
+     "type": "integer"
+    },
+    "minimumSpreadToRank": {
+     "type": "number"
+    },
+    "minimumLowDaysToList": {
+     "type": "integer"
+    },
+    "thresholds": {
+     "$ref": "#/$defs/GlycemicThresholds"
+    },
+    "clockBasis": {
+     "$ref": "#/$defs/HourlyClockBasis"
+    },
+    "timeZone": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "timeZoneUnavailableReason": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/TimeZoneUnavailableReason"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    }
+   }
+  },
+  "InsightKey": {
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsEnums.cs:115; serialised by name",
+   "type": "string",
+   "enum": [
+    "TimeInRangeExcellent",
+    "NoSevereHypoglycemia",
+    "VariabilityControlled",
+    "AllTargetsMet",
+    "ReduceSevereHypoglycemia",
+    "ReduceHypoglycemia",
+    "IncreaseTIR",
+    "ReduceSevereHyperglycemia",
+    "ReduceVariability",
+    "TimeVeryLow",
+    "TimeBelowRange",
+    "TimeInRange",
+    "TimeVeryHigh",
+    "Variability",
+    "AllTargetsAchieved"
+   ]
+  },
+  "InsulinDeliveryPeriodBreakdown": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:2095",
+   "properties": {
+    "morning": {
+     "$ref": "#/$defs/InsulinDeliveryPeriodTotal"
+    },
+    "afternoon": {
+     "$ref": "#/$defs/InsulinDeliveryPeriodTotal"
+    },
+    "eveningNight": {
+     "$ref": "#/$defs/InsulinDeliveryPeriodTotal"
+    },
+    "dailyTotal": {
+     "type": "number"
+    }
+   }
+  },
+  "InsulinDeliveryPeriodTotal": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:2079",
+   "properties": {
+    "units": {
+     "type": "number"
+    },
+    "percent": {
+     "type": "number"
+    }
+   }
+  },
+  "InsulinDeliveryStatistics": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1629",
+   "properties": {
+    "totalBolus": {
+     "type": "number"
+    },
+    "manualBolus": {
+     "type": "number"
+    },
+    "automaticBolus": {
+     "type": "number"
+    },
+    "totalBasal": {
+     "type": "number"
+    },
+    "scheduledBasal": {
+     "type": "number"
+    },
+    "additionalBasal": {
+     "type": "number"
+    },
+    "totalInsulin": {
+     "type": "number"
+    },
+    "totalCarbs": {
+     "type": "number"
+    },
+    "carbsPerDay": {
+     "type": "number"
+    },
+    "manualBolusCount": {
+     "type": "integer"
+    },
+    "basalCount": {
+     "type": "integer"
+    },
+    "insulinEventCount": {
+     "type": "integer"
+    },
+    "basalPercent": {
+     "type": "number"
+    },
+    "bolusPercent": {
+     "type": "number"
+    },
+    "tdd": {
+     "type": "number"
+    },
+    "manualBolusPerDay": {
+     "type": "number"
+    },
+    "automaticBolusPerDay": {
+     "type": "number"
+    },
+    "totalBasalPerDay": {
+     "type": "number"
+    },
+    "avgBolus": {
+     "type": "number"
+    },
+    "mealBoluses": {
+     "type": "integer"
+    },
+    "correctionBoluses": {
+     "type": "integer"
+    },
+    "icRatio": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "unpairedCarbs": {
+     "type": "number"
+    },
+    "bolusesPerDay": {
+     "type": "number"
+    },
+    "windowDays": {
+     "type": "integer"
+    },
+    "startDate": {
+     "type": "string"
+    },
+    "endDate": {
+     "type": "string"
+    },
+    "carbCount": {
+     "type": "integer"
+    },
+    "carbBolusCount": {
+     "type": "integer"
+    },
+    "automaticBolusCount": {
+     "type": "integer"
+    },
+    "basalInjectionInsulin": {
+     "type": "number"
+    },
+    "basalInjectionCount": {
+     "type": "integer"
+    },
+    "manualBoluses": {
+     "anyOf": [
+      {
+       "type": "array",
+       "items": {
+        "$ref": "#/$defs/Bolus"
+       }
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "reliability": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/StatisticReliability"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    }
+   }
+  },
+  "InsulinTotals": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:600",
+   "properties": {
+    "bolus": {
+     "type": "number"
+    }
+   }
+  },
+  "LocalizedInsight": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1384",
+   "properties": {
+    "key": {
+     "$ref": "#/$defs/InsightKey"
+    },
+    "context": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "number"
+     }
+    }
+   }
+  },
+  "MultiPeriodStatistics": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:800",
+   "properties": {
+    "lastDay": {
+     "$ref": "#/$defs/PeriodStatistics"
+    },
+    "last3Days": {
+     "$ref": "#/$defs/PeriodStatistics"
+    },
+    "lastWeek": {
+     "$ref": "#/$defs/PeriodStatistics"
+    },
+    "lastMonth": {
+     "$ref": "#/$defs/PeriodStatistics"
+    },
+    "last90Days": {
+     "$ref": "#/$defs/PeriodStatistics"
+    },
+    "lastUpdated": {
+     "type": "string",
+     "format": "date-time"
+    }
+   }
+  },
+  "PeriodMetrics": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1299",
+   "properties": {
+    "periodName": {
+     "type": "string"
+    },
+    "readingCount": {
+     "type": "integer"
+    },
+    "mean": {
+     "type": "number"
+    },
+    "median": {
+     "type": "number"
+    },
+    "standardDeviation": {
+     "type": "number"
+    },
+    "timeInRange": {
+     "type": "number"
+    },
+    "min": {
+     "type": "number"
+    },
+    "max": {
+     "type": "number"
+    }
+   }
+  },
+  "PeriodStatistics": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:833",
+   "properties": {
+    "periodDays": {
+     "type": "integer"
+    },
+    "startDate": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "endDate": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "analytics": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/GlucoseAnalytics"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "treatmentSummary": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/TreatmentSummary"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "insulinDelivery": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/InsulinDeliveryStatistics"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "hasSufficientData": {
+     "type": "boolean"
+    },
+    "gmi": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/GlucoseManagementIndicator"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "reliability": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/StatisticReliability"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "entryCount": {
+     "type": "integer"
+    },
+    "treatmentCount": {
+     "type": "integer"
+    }
+   }
+  },
+  "PersonalRangeTimeInRange": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1537",
+   "properties": {
+    "belowRangePercent": {
+     "type": "number"
+    },
+    "inRangePercent": {
+     "type": "number"
+    },
+    "aboveRangePercent": {
+     "type": "number"
+    },
+    "entries": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/TargetRangeEntry"
+     }
+    }
+   }
+  },
+  "PunchCardDateRange": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/PunchCardModels.cs:100",
+   "properties": {
+    "from": {
+     "type": "string"
+    },
+    "to": {
+     "type": "string"
+    }
+   }
+  },
+  "PunchCardDay": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/PunchCardModels.cs:6",
+   "properties": {
+    "date": {
+     "type": "string"
+    },
+    "timestamp": {
+     "type": "integer"
+    },
+    "totalReadings": {
+     "type": "integer"
+    },
+    "inRangeCount": {
+     "type": "integer"
+    },
+    "veryLowCount": {
+     "type": "integer"
+    },
+    "lowCount": {
+     "type": "integer"
+    },
+    "highCount": {
+     "type": "integer"
+    },
+    "veryHighCount": {
+     "type": "integer"
+    },
+    "inRangePercent": {
+     "type": "number"
+    },
+    "veryLowPercent": {
+     "type": "number"
+    },
+    "lowPercent": {
+     "type": "number"
+    },
+    "highPercent": {
+     "type": "number"
+    },
+    "veryHighPercent": {
+     "type": "number"
+    },
+    "averageGlucose": {
+     "type": "number"
+    },
+    "totalCarbs": {
+     "type": "number"
+    },
+    "totalInsulin": {
+     "type": "number"
+    },
+    "totalBolus": {
+     "type": "number"
+    },
+    "totalBasal": {
+     "type": "number"
+    },
+    "carbToInsulinRatio": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "entries": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/PunchCardEntry"
+     }
+    }
+   }
+  },
+  "PunchCardEntry": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/PunchCardModels.cs:51",
+   "properties": {
+    "mills": {
+     "type": "integer"
+    },
+    "mgdl": {
+     "type": "number"
+    }
+   }
+  },
+  "PunchCardMonth": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/PunchCardModels.cs:83",
+   "properties": {
+    "year": {
+     "type": "integer"
+    },
+    "month": {
+     "type": "integer"
+    },
+    "monthName": {
+     "type": "string"
+    },
+    "days": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/PunchCardDay"
+     }
+    },
+    "maxCarbs": {
+     "type": "number"
+    },
+    "maxInsulin": {
+     "type": "number"
+    },
+    "maxCarbInsulinDiff": {
+     "type": "number"
+    },
+    "totalReadings": {
+     "type": "integer"
+    },
+    "summary": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/PunchCardMonthSummary"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    }
+   }
+  },
+  "PunchCardMonthSummary": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/PunchCardModels.cs:58",
+   "properties": {
+    "dayCount": {
+     "type": "integer"
+    },
+    "totalReadings": {
+     "type": "integer"
+    },
+    "inRangePercent": {
+     "type": "number"
+    },
+    "veryLowPercent": {
+     "type": "number"
+    },
+    "lowPercent": {
+     "type": "number"
+    },
+    "highPercent": {
+     "type": "number"
+    },
+    "veryHighPercent": {
+     "type": "number"
+    },
+    "avgGlucose": {
+     "type": "number"
+    },
+    "tdd": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "avgDailyCarbs": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    }
+   }
+  },
+  "PunchCardResponse": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/PunchCardModels.cs:110",
+   "properties": {
+    "months": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/PunchCardMonth"
+     }
+    },
+    "dateRange": {
+     "$ref": "#/$defs/PunchCardDateRange"
+    },
+    "globalMaxCarbs": {
+     "type": "number"
+    },
+    "globalMaxInsulin": {
+     "type": "number"
+    },
+    "globalMaxCarbInsulinDiff": {
+     "type": "number"
+    },
+    "timeZoneUnavailableReason": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/TimeZoneUnavailableReason"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    }
+   }
+  },
+  "ReportAnalysisResult": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1500",
+   "properties": {
+    "analysis": {
+     "$ref": "#/$defs/ExtendedGlucoseAnalytics"
+    },
+    "averagedStats": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/AveragedStats"
+     }
+    },
+    "hourlyBandThresholds": {
+     "$ref": "#/$defs/GlycemicThresholds"
+    },
+    "contributingDevices": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/ContributingDevice"
+     }
+    },
+    "personalRange": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/PersonalRangeTimeInRange"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "timeZoneUnavailableReason": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/TimeZoneUnavailableReason"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    }
+   }
+  },
+  "StatisticReliability": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1330",
+   "properties": {
+    "meetsReliabilityCriteria": {
+     "type": "boolean"
+    },
+    "daysOfData": {
+     "type": "integer"
+    },
+    "recommendedMinimumDays": {
+     "type": "integer"
+    },
+    "readingCount": {
+     "type": "integer"
+    }
+   }
+  },
+  "TargetAssessment": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1360",
+   "properties": {
+    "metricName": {
+     "type": "string"
+    },
+    "currentValue": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "targetValue": {
+     "type": "number"
+    },
+    "isMaximumTarget": {
+     "type": "boolean"
+    },
+    "status": {
+     "$ref": "#/$defs/TargetStatus"
+    },
+    "differenceFromTarget": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "progressPercentage": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    }
+   }
+  },
+  "TargetRangeEntry": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/V4/TargetRangeEntry.cs:6",
+   "properties": {
+    "time": {
+     "type": "string"
+    },
+    "low": {
+     "type": "number"
+    },
+    "high": {
+     "type": "number"
+    },
+    "timeAsSeconds": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "veryLow": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "tightLow": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "tightHigh": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "veryHigh": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    }
+   }
+  },
+  "TargetStatus": {
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1345; serialised as an integer (no string converter on the type); names in order: Met, Close, NotMet, NotAssessed",
+   "type": "integer"
+  },
+  "TempBasalInfo": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1936",
+   "properties": {
+    "total": {
+     "type": "integer"
+    },
+    "perDay": {
+     "type": "number"
+    },
+    "highTemps": {
+     "type": "integer"
+    },
+    "lowTemps": {
+     "type": "integer"
+    },
+    "zeroTemps": {
+     "type": "integer"
+    }
+   }
+  },
+  "TimeInRangeDetailedStats": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:259",
+   "properties": {
+    "low": {
+     "$ref": "#/$defs/PeriodMetrics"
+    },
+    "target": {
+     "$ref": "#/$defs/PeriodMetrics"
+    },
+    "high": {
+     "$ref": "#/$defs/PeriodMetrics"
+    }
+   }
+  },
+  "TimeInRangeDurations": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:371",
+   "properties": {
+    "veryLow": {
+     "type": "number"
+    },
+    "low": {
+     "type": "number"
+    },
+    "target": {
+     "type": "number"
+    },
+    "tightTarget": {
+     "type": "number"
+    },
+    "high": {
+     "type": "number"
+    },
+    "veryHigh": {
+     "type": "number"
+    },
+    "aboveRange": {
+     "type": "number"
+    },
+    "belowRange": {
+     "type": "number"
+    }
+   }
+  },
+  "TimeInRangeEpisodes": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:455",
+   "properties": {
+    "veryLow": {
+     "type": "integer"
+    },
+    "low": {
+     "type": "integer"
+    },
+    "high": {
+     "type": "integer"
+    },
+    "veryHigh": {
+     "type": "integer"
+    },
+    "aboveRange": {
+     "type": "integer"
+    },
+    "belowRange": {
+     "type": "integer"
+    }
+   }
+  },
+  "TimeInRangeMetrics": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:223",
+   "properties": {
+    "thresholds": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/GlycemicThresholds"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "percentages": {
+     "$ref": "#/$defs/TimeInRangePercentages"
+    },
+    "durations": {
+     "$ref": "#/$defs/TimeInRangeDurations"
+    },
+    "episodes": {
+     "$ref": "#/$defs/TimeInRangeEpisodes"
+    },
+    "rangeStats": {
+     "$ref": "#/$defs/TimeInRangeDetailedStats"
+    },
+    "averageDailyMinutes": {
+     "$ref": "#/$defs/AverageDailyMinutes"
+    },
+    "averageDailyEpisodes": {
+     "$ref": "#/$defs/AverageDailyEpisodes"
+    }
+   }
+  },
+  "TimeInRangePercentages": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:284",
+   "properties": {
+    "veryLow": {
+     "type": "number"
+    },
+    "low": {
+     "type": "number"
+    },
+    "target": {
+     "type": "number"
+    },
+    "tightTarget": {
+     "type": "number"
+    },
+    "high": {
+     "type": "number"
+    },
+    "veryHigh": {
+     "type": "number"
+    },
+    "belowRange": {
+     "type": "number"
+    },
+    "aboveRange": {
+     "type": "number"
+    }
+   }
+  },
+  "TimeZoneUnavailableReason": {
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:978; serialised by name",
+   "type": "string",
+   "enum": [
+    "NotConfigured",
+    "Unrecognised",
+    "Share",
+    "LookupFailed"
+   ]
+  },
+  "TreatmentInsulinContext": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/V4/TreatmentInsulinContext.cs:13",
+   "properties": {
+    "patientInsulinId": {
+     "type": "string",
+     "format": "uuid"
+    },
+    "insulinName": {
+     "type": "string"
+    },
+    "dia": {
+     "type": "number"
+    },
+    "peak": {
+     "type": "integer"
+    },
+    "curve": {
+     "type": "string"
+    },
+    "concentration": {
+     "type": "integer"
+    }
+   }
+  },
+  "TreatmentSummary": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:525",
+   "properties": {
+    "totals": {
+     "$ref": "#/$defs/TreatmentTotals"
+    },
+    "treatmentCount": {
+     "type": "integer"
+    },
+    "bolusCount": {
+     "type": "integer"
+    },
+    "carbEntryCount": {
+     "type": "integer"
+    },
+    "carbToInsulinRatio": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "averagePerBolus": {
+     "type": "number"
+    },
+    "averageCarbsPerEntry": {
+     "type": "number"
+    },
+    "dailyBoluses": {
+     "type": "number"
+    },
+    "dailyCarbs": {
+     "type": "number"
+    }
+   }
+  },
+  "TreatmentTotals": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:571",
+   "properties": {
+    "food": {
+     "$ref": "#/$defs/FoodTotals"
+    },
+    "insulin": {
+     "$ref": "#/$defs/InsulinTotals"
+    }
+   }
+  },
+  "V4RecordBase": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/V4/V4RecordBase.cs:15",
+   "properties": {
+    "id": {
+     "type": "string",
+     "format": "uuid"
+    },
+    "mills": {
+     "type": "integer"
+    },
+    "utcOffset": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "device": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "app": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "dataSource": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "correlationId": {
+     "anyOf": [
+      {
+       "type": "string",
+       "format": "uuid"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "legacyId": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "createdAt": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "modifiedAt": {
+     "type": "string",
+     "format": "date-time"
+    },
+    "additionalProperties": {
+     "anyOf": [
+      {
+       "type": "object",
+       "additionalProperties": {
+        "anyOf": [
+         {},
+         {
+          "type": "null"
+         }
+        ]
+       }
+      },
+      {
+       "type": "null"
+      }
+     ]
+    }
+   }
+  },
+  "WeekdayAveragesResponse": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1084",
+   "properties": {
+    "slots": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/WeekdayGlucoseSlot"
+     }
+    },
+    "timeZoneUnavailableReason": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/TimeZoneUnavailableReason"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    }
+   }
+  },
+  "WeekdayGlucoseSlot": {
+   "type": "object",
+   "description": "Nocturne 89dcaf1dd src/Core/Nocturne.Core.Models/StatisticsModels.cs:1069",
+   "properties": {
+    "minuteOfDay": {
+     "type": "integer"
+    },
+    "mean": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "number"
+     }
+    }
+   }
+  }
+ }
+}

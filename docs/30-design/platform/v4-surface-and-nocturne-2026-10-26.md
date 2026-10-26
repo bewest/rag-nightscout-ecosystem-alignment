@@ -1,6 +1,7 @@
 # API v4: which parts to share with Nocturne, and which listener serves each
 
-*Contributor-facing. Snapshot, 2026-10-26: alignment `main` `6e6223f26` (specifications),
+*Contributor-facing. Snapshot, 2026-10-26: alignment `main` `6e6223f26` (specifications; amended
+the same day for the maintainer's decisions in §0),
 cgm-remote-monitor draft PR #8857 at `3be98536`, Nocturne `main` `89dcaf1dd`. Every Nocturne
 statement below was read from source at `89dcaf1dd` and nothing was run against it (read-derived).
 The proposed surface is described in
@@ -17,14 +18,26 @@ listeners. This page therefore treats Nocturne's surface as material to partitio
 and states for each group which listener it belongs on in our specifications and whether it is a
 candidate for a shared contract.
 
+## 0. Decided, 2026-10-26
+
+The maintainer decided four points the same day; the sections below are amended for them.
+
+| point | decision | where it is applied |
+|---|---|---|
+| statistics | served on v4 under `statistics` (`/api/v4/statistics/...`), matching Nocturne `89dcaf1dd`'s `StatisticsController` for hub compatibility: its paths, parameters, response shapes, tenant time-zone bucketing, the under-ten-readings rule and its read scopes. The design stays open for discussion: what a shared contract fixes and what it leaves to each hub, and whether the compute-over-a-posted-body actions join later | operations 32–41; `specs/openapi/proposed/statistics-v4.schema.json`; §6.4; dated notes on the two older texts |
+| registration scope | registration of products, definitions and instances is a per-tenant API that affects only that tenant's site and data, never a platform or operator action; the owner's listing and actions are tenant-scoped (tenant-admin under `multi`, the one listener under `single`); controller actions and commands are on the data listener | [authority AU6](spec/authority.md#2-principals-and-credentials); registration's opening note |
+| instance paths | one flat root: `/api/v4/instances/{instanceId}` is the instance resource, its command fetch `/api/v4/instances/{instanceId}/commands`, and the owner's listing `GET /api/v4/instances`; creating an instance names the product in the body | [registration §7](spec/registration.md#7-definitions) amendment; commands §7.1; the instance schema's `product`; operations 8–10; §5.1 |
+| `softwareId` | proposed in the registration's `metadata`, in Nocturne's RFC 7591 `software_id` form, for compatibility; its rules stay open for discussion | `controller-state-model.schema.json`; [registration §5.1](spec/registration.md#51-identity-and-methods); §5 |
+
 ## 1. The answer in brief
 
 - **Registration and instances on v4: yes, already.** The specifications put the product,
   definition and instance resources under the capability document's `submit.href`, and #8857 serves
   it at `/api/v4/registrations` (`lib/registration/index.js:25`); the command paths of commands §7.1
-  are under `/api/v4/` too. Discovery stays at `/.well-known/nightscout/` (RFC 8615). What is not
-  settled is the path the owner's actions take on `ns-tenant-admin` (§5, decisions 1–3).
-- **Split by listener.** Of the 37 proposed operations, 26 are on the data listener, 10 on the
+  are under `/api/v4/` too, and instances have their own flat root (§0). Registration is per tenant
+  (AU6). Discovery stays at `/.well-known/nightscout/` (RFC 8615). What is not settled is the path
+  the owner's actions take on `ns-tenant-admin` (§7, decisions 1–2).
+- **Split by listener.** Of the 41 proposed operations, 30 are on the data listener, 10 on the
   tenant-owner listener, and one (retire) on both, by caller. None is on the operator listener:
   the operator's plane (tenant lifecycle, export) is not a v4 surface in our design (D7). Nocturne
   serves all three audiences from one API and divides them by scope and role (§4).
@@ -41,8 +54,8 @@ follow [authority AU2](spec/authority.md#2-principals-and-credentials) (D16): `d
 (devices, clients, viewers); `tenant-admin` is `ns-tenant-admin`, the owner's second bound socket
 inside `ns-api`. Under `TENANCY_MODE=single` there is one listener and `API_SECRET` acts as the
 owner. Status: `in-pr-8857` is served by #8857 at `3be98536` behind `CONTROLLER_REGISTRATION` (off
-by default); `specified` has rules and conformance cases and no hub serves it; `open` is written
-elsewhere in this repository with its placement undecided.
+by default); `specified` has rules and conformance cases, or a decision of the maintainer, and
+cgm-remote-monitor does not serve it.
 
 | # | operation | listener | credential | status | rules |
 |---|---|---|---|---|---|
@@ -53,9 +66,9 @@ elsewhere in this repository with its placement undecided.
 | 5 | `GET /api/v4/registrations/{vendor}/{product}` | data | api:registrations:create | in-pr-8857 | registration §5.1, registration §5.4 |
 | 6 | `DELETE /api/v4/registrations/{vendor}/{product}` | data and tenant-admin | api:registrations:delete and the binding (controller); the owner (tenant-admin) | in-pr-8857 | registration §5.1, registration §5.5, authority §4 |
 | 7 | `PUT /api/v4/registrations/{vendor}/{product}/definitions/{definitionId}` | data | api:registrations:create and the product's binding | in-pr-8857 | registration §7, identity §2, D19 |
-| 8 | `PUT /api/v4/registrations/{vendor}/{product}/instances/{instanceId}` | data | api:registrations:create; the instance's binding to renew | in-pr-8857 | registration §8, registration §9, registration §10, authority §3, authority §6, identity §2 |
-| 9 | `DELETE /api/v4/registrations/{vendor}/{product}/instances/{instanceId}` | data | api:registrations:delete and the instance's binding | in-pr-8857 | registration §7, registration §8 |
-| 10 | `GET /api/v4/registrations/instances` | tenant-admin | the tenant owner | in-pr-8857 | authority §4, authority §8, registration §8, registration §9 |
+| 8 | `PUT /api/v4/instances/{instanceId}` | data | api:registrations:create; the instance's binding to renew | specified | registration §7, registration §8, registration §9, registration §10, authority §3, authority §6, identity §2 |
+| 9 | `DELETE /api/v4/instances/{instanceId}` | data | api:registrations:delete and the instance's binding | specified | registration §7, registration §8 |
+| 10 | `GET /api/v4/instances` | tenant-admin | the tenant owner | specified | authority §4, authority §8, AU6, registration §8, registration §9 |
 | 11 | `POST /api/v4/registrations/{vendor}/{product}/retire` | tenant-admin | the tenant owner | in-pr-8857 | authority §4, registration §5.5 |
 | 12 | `POST /api/v4/registrations/{vendor}/{product}/block` | tenant-admin | the tenant owner | in-pr-8857 | authority §4, registration §5.1, registration §5.2 |
 | 13 | `POST /api/v4/registrations/{vendor}/{product}/unblock` | tenant-admin | the tenant owner | in-pr-8857 | authority §4 |
@@ -77,19 +90,26 @@ elsewhere in this repository with its placement undecided.
 | 29 | `POST /api/v4/proposals/{proposalId}/reject` | data | api:commands:create | specified | CM14, CM32 |
 | 30 | `POST /api/v4/proposals/{proposalId}/withdraw` | data | the proposer, or the subject acting for the person | specified | CM14, CM32 |
 | 31 | `POST /api/v4/proposals/{proposalId}/evaluations` | data | as reading the proposal | specified | CM16, CM11, CM32 |
-| 32 | `GET /api/v4/statistics/daily` | data | read | open | REQ-STATS-001 |
-| 33 | `GET /api/v4/statistics/daily/{date}` | data | read | open | REQ-STATS-001 |
-| 34 | `GET /api/v4/statistics/summary` | data | read | open | REQ-STATS-002 |
-| 35 | `GET /api/v4/statistics/hourly` | data | read | open | REQ-STATS-003 |
-| 36 | `GET /api/v4/statistics/treatments` | data | read | open | REQ-STATS-004 |
-| 37 | `GET /api/v4/statistics/current` | data | read | open | REQ-STATS-005 |
+| 32 | `GET /api/v4/statistics/range-analytics` | data | reports.read | specified | maintainer 2026-10-26; Nocturne `StatisticsController.cs:464` |
+| 33 | `GET /api/v4/statistics/weekday-averages` | data | reports.read | specified | maintainer 2026-10-26; Nocturne `StatisticsController.cs:532` |
+| 34 | `GET /api/v4/statistics/hourly-patterns` | data | reports.read | specified | maintainer 2026-10-26; Nocturne `StatisticsController.cs:567` |
+| 35 | `GET /api/v4/statistics/periods` | data | glucose.read or reports.read | specified | maintainer 2026-10-26; Nocturne `StatisticsController.cs:806` |
+| 36 | `GET /api/v4/statistics/daily-basal-bolus-ratios` | data | reports.read | specified | maintainer 2026-10-26; Nocturne `StatisticsController.cs:940` |
+| 37 | `GET /api/v4/statistics/punch-card` | data | glucose.read or reports.read | specified | maintainer 2026-10-26; Nocturne `StatisticsController.cs:988` |
+| 38 | `GET /api/v4/statistics/insulin-delivery-stats` | data | reports.read | specified | maintainer 2026-10-26; Nocturne `StatisticsController.cs:1039` |
+| 39 | `GET /api/v4/statistics/basal-analysis` | data | reports.read | specified | maintainer 2026-10-26; Nocturne `StatisticsController.cs:1081` |
+| 40 | `GET /api/v4/statistics/hourly-insulin-delivery` | data | reports.read | specified | maintainer 2026-10-26; Nocturne `StatisticsController.cs:1127` |
+| 41 | `GET /api/v4/statistics/aid-system-metrics` | data | reports.read | specified | maintainer 2026-10-26; Nocturne `StatisticsController.cs:1188` |
 
 | status | data | tenant-admin | both | total |
 |---|---|---|---|---|
-| in-pr-8857 | 8 | 10 | 1 | 19 |
-| specified | 12 | 0 | 0 | 12 |
-| open | 6 | 0 | 0 | 6 |
-| total | 26 | 10 | 1 | 37 |
+| in-pr-8857 | 6 | 9 | 1 | 16 |
+| specified | 24 | 1 | 0 | 25 |
+| total | 30 | 10 | 1 | 41 |
+
+Three operations #8857 serves moved to `specified` with the flat instance root: #8857 serves them
+at `PUT` and `DELETE /api/v4/registrations/{vendor}/{product}/instances/{instanceId}` and
+`GET /api/v4/registrations/instances` (`lib/registration/products.js:283`, `:289`, `:295`).
 
 **Notes on the table.**
 
@@ -98,18 +118,18 @@ elsewhere in this repository with its placement undecided.
 - Operations 1–3 are unauthenticated and carry no tenant data: the capability document is the
   same on every tenant host (registration §4).
 - Operation 11 is #8857's form of the owner's retire; the specifications give it as `DELETE` on
-  the product resource (operation 6). Operation 10's path is #8857's; authority §4 names the
-  listing without a path.
-- Operations 32–37 are from the [statistics API proposal](../../sdqctl-proposals/statistics-api-proposal.md)
-  (REQ-STATS-001 to 005), which writes them at `/api/v3/stats/*`. §6.4 gives the evidence for
-  placing them under v4.
+  the product resource (operation 6). Operation 10's path follows the flat instance root (§0).
+- Operations 32–41 are Nocturne's ten statistics reads over stored data, by the maintainer's
+  decision (§0, §6.4). Their response shapes are in
+  [`statistics-v4.schema.json`](../../../specs/openapi/proposed/statistics-v4.schema.json), read from
+  Nocturne's models.
 
 **Defined without a path, so not in the OpenAPI file.** These are open:
 
 | what | where it is defined | what is missing |
 |---|---|---|
 | typed record writes and reads | [registration §11](spec/registration.md#11-typed-writes-and-attribution) (an instance id on every typed write, "proposed as a request header"), [records](spec/records.md) R1–R9 | paths, the header's name, read and query forms |
-| reading a definition or an instance | registration §7, §8 define `PUT` and `DELETE` only | whether `GET` exists for either |
+| reading a definition or an instance | registration §7, §8 define `PUT` and `DELETE` only (and the owner's listing) | whether `GET` exists for either |
 | plan operations | [plans](spec/plans.md) PN1–PN18: propose a plan, approve in parts, report occurrences, skip, end, read the mirror | every path |
 | marking the subject who acts for the person | [commands CM14, CM25](spec/commands.md#6-proposals-and-approvals-proposed) | who sets it, on which listener |
 | the tenant-owner configuration surface | [tenant-owner surface §F.1](../tenancy/tenant-owner-config-surface-2026-09-15.md#f1-the-line): settings, plugin config, thresholds, subjects and roles, credential rotation, own export | every path; specified as a schema, not built |
@@ -135,7 +155,7 @@ different shape**; **Nocturne only**; and the two groups that are **ours only**.
 | G3 typed records | `SensorGlucose`, `BGCheck`, `MeterGlucose`, `Calibration`, `Bolus`, `TempBasal`, `BasalInjection`, `Nutrition`, `Note`, `BolusCalculation`, `ApsSnapshot`, `PumpSnapshot`, `UploaderSnapshot`, `DeviceEvent`, health series, `Sleep`, `Battery`, `DeviceAge`, `Reservoir*`, `Foods`, `MealMatching` and others (24 controllers) | 182 | same concept, same shape | [records](spec/records.md) §3: its 16 primitives are Nocturne's V4 classes; our specifications give no paths (§2) |
 | G4 state spans | `StateSpansController` (`/api/v4/state-spans`, `:37`) | 10 | same concept, different shape | [state and intent](spec/state-intent.md): measured differences in §6.2 (a cancel becomes a span of its own; units of applied durations), and Nocturne's `POST` reaches no controller (§7) |
 | G5 profiles and therapy settings | `ProfileController`, `ProfileActivationsController`, `TimezoneTimelineController` (`/api/v4/profile`) | 38 | same concept, different shape | records R5: a controller-published, effective-dated `ControllerSettings` snapshot, where Nocturne's profile is held and edited at the hub |
-| G6 statistics | `StatisticsController` (`/api/v4/statistics/*`, 30 operations) | 30 | same concept, different shape | the statistics API proposal (operations 32–37); §6.4 |
+| G6 statistics | `StatisticsController` (`/api/v4/statistics/*`, 30 operations) | 30 | same concept, same shape (by decision, 2026-10-26) | operations 32–41 follow its ten reads over stored data; §6.4 |
 | G7 other analytics | `Analytics`, `Actogram`, `CgmComparison`, `ChartData`, `Correlation`, `CurrentTherapyState`, `DataOverview`, `LoopAnalysis`, `Prediction`, `Retrospective`, `SensorIntegrity`, `Summary`, `TreatmentLog`, `SleepReport` | 36 | Nocturne only | none |
 | G8 alerts and notifications | `Alerts`, `AlertRules`, `AlertCustomSounds`, `AlertInvites`, `AlertReplay`, `DndWindows`, `Notifications`, `TenantAlertSettings`, `Trackers*` | 58 | Nocturne only | none in the specifications |
 | G9 client devices | `ClientDevicesController` (`/api/v4/client-devices`) | 6 | same concept, different shape | instances (registration §8): both are a running app install that registers itself under a client-chosen id and refreshes on start (`ClientDevicesController.cs:42-53`, "idempotent upsert keyed on the install id"); Nocturne's is an alert actuation target (`:14-17`), ours a data source and command sink. Its `GET …/{id}/active-intents` "reconcile snapshot" (`:162-175`) and our fetch that returns a command until it is reported (CM26) answer the same reconnect question |
@@ -151,8 +171,9 @@ different shape**; **Nocturne only**; and the two groups that are **ours only**.
 | ours: registration | — | — | ours only | operations 4–19. Nocturne's knowledge of each controller is compiled in (`IAidDetectionStrategy` and the V4 decomposers, [PROPOSAL-controller-descriptions §2.2](PROPOSAL-controller-descriptions-2026-09-11.md#22-two-halves-who-a-controller-is-and-what-its-data-means)) |
 | ours: commands and proposals | — | — | ours only | operations 20–31. Nocturne's remote path is the legacy Loop notification (`ILoopService`, "1:1 legacy JavaScript compatibility", `Core.Contracts/Devices/ILoopService.cs:6`); `[RemoteCommand]` on its controllers is a client code-generation annotation (package `OpenApiRemoteCodegen.Attributes`), not a therapy command |
 
-Mapping counts over Nocturne's 18 groups: same concept and same shape 1 (G3, 182 operations); same
-concept and different shape 10 (G1, G4, G5, G6, G9, G10, G11, G13, G14, G15; 347 operations);
+Mapping counts over Nocturne's 18 groups: same concept and same shape 2 (G3, and G6 by the
+statistics decision; 212 operations); same concept and different shape 9 (G1, G4, G5, G9, G10,
+G11, G13, G14, G15; 317 operations);
 Nocturne only 7 (G2, G7, G8, G12, G16, G17, G18; 183 operations). Ours only: 2 groups (28
 operations).
 
@@ -202,11 +223,14 @@ the maintainer's decisions of 2026-10-14 to 2026-10-17
 ([execution plan §2.6](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#261-d18--two-tier-controller-registration));
 the owner's actions on `ns-tenant-admin` and `API_SECRET` as owner on `single` (AU2, decided
 2026-10-14 and 2026-10-16). The product resource is `<submit.href>/<vendor>/<product>`; the
-capability document says where `submit.href` is.
+capability document says where `submit.href` is. On 2026-10-26 the maintainer decided that
+registration is per tenant and never an operator action (AU6), and that instances have one flat
+root, `/api/v4/instances/{instanceId}` (registration §7 amendment).
 
 **What #8857 serves at `3be98536`.** The capability document, the catalogue and each well-known
 registration (`lib/registration/index.js:136-157`); the product resource, definitions and instances
-under `/api/v4/registrations` (`lib/registration/products.js:266-289`); the owner's actions as
+under `/api/v4/registrations` (`lib/registration/products.js:266-289`), instances nested under the
+product (`:283`, `:289`), which the flat-root decision changes (§5.1); the owner's actions as
 `POST …/<action>` (`:307-333`) with `retire` among them (`negotiate.js:742`); the owner's listing at
 `GET /api/v4/registrations/instances` (`products.js:295`). The owner is recognised only as
 `API_SECRET` (`products.js:313`), since no `ns-tenant-admin` exists. Its capability document
@@ -225,12 +249,62 @@ the server.
 **Whether they compose.** They answer different questions and do not overlap: Nocturne's
 registration says who is writing and with what scopes; ours says what the writes mean and which
 copy wrote them. [PROPOSAL-controller-descriptions §2.2](PROPOSAL-controller-descriptions-2026-09-11.md#22-two-halves-who-a-controller-is-and-what-its-data-means)
-proposes joining them on the reverse-DNS `software_id`. The grammar has not adopted it:
-`controller-state-model.schema.json` `metadata` has `vendor`, `product`, `algorithmFamily`,
-`versionRange`, `source` and `tier`, and no `softwareId`. Composed, a Nocturne client registered as
+proposes joining them on the reverse-DNS `software_id`. On 2026-10-26 the maintainer decided to
+propose it in Nocturne's form for compatibility: `metadata.softwareId` is now in
+`controller-state-model.schema.json`, marked proposed, optional, compared exactly as Nocturne's
+directory lookup compares it (`KnownOAuthClients.cs:214-215`), and not part of the registration's
+identity ([registration §5.1](spec/registration.md#51-identity-and-methods)). Nocturne's
+registration request carries it as `software_id` with no format check
+(`Models/OAuth/ClientRegistrationRequest.cs:41-44`). Composed, a Nocturne client registered as
 `org.loopkit.loop` would submit a registration whose `metadata` names the same id, and a hub could
 read both halves from one key. On our side the binding is to the subject (AU4), which under
-Nocturne's model would be the OAuth client's subject.
+Nocturne's model would be the OAuth client's subject. Open for discussion: whether two products
+may share one `softwareId`, and whether a hub checks it against the credential's registered client.
+
+### 5.1 Are registrations and instances redundant?
+
+The maintainer asked whether registrations and instances are redundant, or whether one is for the
+kind and the other for the running copy, and if redundant whether one should go. They are not
+redundant ([registration §7–§8](spec/registration.md#7-definitions), D19):
+
+| resource | says | identity | lifetime |
+|---|---|---|---|
+| product registration, with its immutable definitions | what a controller's data means: the kind, per vendor and product, per release | `(vendor, product)`; each definition by the hash of its content | as long as the controller publishes it; definitions are never changed |
+| instance | which running copy is connected: its definition, its roles on channels (source of record, command sink), its labels | a random UUID v4 the copy generates once | a lease the copy renews; a lapsed instance holds no roles |
+
+Several instances run one definition (a phone and a lab rig, or the old and the new phone during a
+migration), and one instance is the destination of commands for a channel. Removing either loses
+something: without the product there is nothing to say what the writes mean; without instances
+there is no way to tell two copies apart or to route a command to one.
+
+The wrinkle was two path roots for one instance. Options considered:
+
+| option | form | evidence |
+|---|---|---|
+| (a) keep both roots | `/api/v4/registrations/{vendor}/{product}/instances/{id}`, fetch at `/api/v4/instances/{id}/commands` | `commands.fetch` is a URI template in the capability document, so clients do not hard-code it; #8857 serves the nested form |
+| (b) nest the fetch under the product | `…/{vendor}/{product}/instances/{id}/commands` | every fetch would carry the vendor and product, which the fetch rules (CM18, CM26) never use |
+| (c) one flat root | `/api/v4/instances/{id}` and `/api/v4/instances/{id}/commands` | an instance id is a random UUID v4 (identity §2), so it names one copy without its product; the copy keeps one path for its life |
+
+**Decided, maintainer 2026-10-26: (c).** Creating an instance names the product in the body
+(`product: {vendor, product}` in `controller-instance.schema.json`), not by a create on the product
+resource that answers with a flat `Location`. The evidence for the body: the instance id is chosen by
+the controller and the create is a `PUT` to it (registration §8), so create, renew and release use
+one path with no redirect; the order of checks already reads the product's registration, binding,
+block and retirement for every `PUT`, and the stored instance and the owner's listing already carry
+`vendor` and `product` (`registration-submit.schema.json` `storedInstance.identity`,
+`instanceSummary`); and the conformance cases model an instance request with its `identity`
+separately from the path, so none changes. A renewal naming another product is 422
+`invalid-instance`. Nocturne has no instance resource; the nearest, its client devices, is flat:
+`/api/v4/client-devices/{id}` (`ClientDevicesController.cs:21`, `:127`, `:150`).
+
+**The follow-up for #8857.** Its routes at `3be98536` that change:
+
+| #8857 today | after the decision |
+|---|---|
+| `PUT /api/v4/registrations/:vendor/:product/instances/:instanceId` (`lib/registration/products.js:283`) | `PUT /api/v4/instances/:instanceId`, product from the body's `product` |
+| `DELETE /api/v4/registrations/:vendor/:product/instances/:instanceId` (`:289`) | `DELETE /api/v4/instances/:instanceId` |
+| `GET /api/v4/registrations/instances` (`:295`) | `GET /api/v4/instances` (the owner's listing) |
+| `lib/registration/schemas/controller-instance.schema.json` (vendored) | refreshed from `specs/sync/controller-instance.schema.json`, which gains `product` |
 
 ## 6. The proposed split, and what to propose to Nocturne first
 
@@ -240,11 +314,11 @@ Nocturne's model would be the OAuth client's subject.
 |---|---|---|---|
 | discovery (ours, operations 1–3) | data, unauthenticated | **shared** | about the software, not a person; same on every tenant (registration §4); cheap to serve beside Nocturne's own well-known documents |
 | G1 Nocturne's OAuth metadata | data, unauthenticated | hub-specific | describes an authorization server our design defers (AU1, D17) |
-| registration: product, definitions, instances (operations 4–9) | data | **shared** | specified with 186 conformance cases; the controller is a device on its native credential (authority §5) |
-| registration: the owner's actions and listing (operations 10–19, and 6 for the owner) | tenant-admin; `API_SECRET` on `single` | **shared as rules, hub-specific as listener** | §4: the refusal to device and app credentials is common ground, the mechanism is not |
+| registration: product, definitions, instances (operations 4–9) | data | **shared** | specified with 186 conformance cases; the controller is a device on its native credential (authority §5); per tenant (AU6) |
+| registration: the owner's actions and listing (operations 10–19, and 6 for the owner) | tenant-admin; `API_SECRET` on `single` | **shared as rules, hub-specific as listener** | §4: the refusal to device and app credentials is common ground, the mechanism is not; tenant-scoped, never operator (AU6) |
 | commands and proposals (operations 20–31) | data | **shared** | specified (CM1–CM32); neither hub has a command record today (commands §8) |
-| G6 statistics, reads over stored data | data, read | **shared** | maintainer, 2026-10-26: the statistics API proposals are likely to be accepted, which also separates statistics from the reports UI code; §6.4 |
-| G6 statistics, compute over a posted body | data | hub-specific | a compute service over caller data, with its own cost bounds (§6.4) |
+| G6 statistics, reads over stored data | data, read | **shared** | decided, maintainer 2026-10-26: match Nocturne's reads; also separates statistics from the reports UI code; §6.4 |
+| G6 statistics, compute over a posted body, and the stateless calculators | data | hub-specific for now | open for discussion whether they join later (§6.4) |
 | G3 typed records | data | **shared, second** | records §3 is Nocturne's model; paths and the instance header wait on the identity decisions (§7) |
 | G4 state spans | data | **shared, second** | the semantics differ on measured cases (state and intent §6.2); agree the rules first |
 | G9 client devices | data | hub-specific | an alert target, not a data source; instances may later carry such a role as `{value: other}` (registration §9), not proposed here |
@@ -263,7 +337,8 @@ Nocturne's model would be the OAuth client's subject.
    fallback rule; the owner's actions as rules with the refusal stated per credential (§4).
 3. **Commands**: the command record, the outstanding list, fetch and report, cancel, and the
    proposal in front of a command.
-4. **Statistics**: reads over stored data, with a time-zone rule and a minimum-data rule (§6.4).
+4. **Statistics**: Nocturne's ten reads over stored data, with its time-zone and minimum-data rules
+   and read scopes (decided, §6.4).
 
 Second wave, after the decisions they depend on: typed record paths (G3) and state spans (G4).
 
@@ -279,26 +354,41 @@ the operator plane secured by unreachability is ORY's public and admin port spli
 
 ### 6.4 Statistics
 
-**Our two documents disagree.** The statistics API proposal (REQ-STATS-001 to 005) writes
-`/api/v3/stats/{daily,daily/{date},summary,hourly,treatments,current}`; the reporting needs
-analysis (GAP-REPORT-001, [`reporting-needs-analysis.md:203-212`](../../10-domain/reporting-needs-analysis.md))
-lists `/api/v3/statistics/{tir,daily,a1c,agp}` and says it comes from the proposal. The proposal
-also specifies an MCP resource provider on top (REQ-STATS-005;
-[ECOSYSTEM-PROGRAMME](../../00-overview/ECOSYSTEM-PROGRAMME.md) "Statistics and agents").
+**Decided, maintainer 2026-10-26.** Statistics are on v4 under `statistics`, matching Nocturne
+`89dcaf1dd`'s `StatisticsController` for hub compatibility: its paths, parameters, response shapes,
+time-zone bucketing, the under-ten-readings rule and its read scopes. The OpenAPI file has its ten
+`GET` reads over stored data (operations 32–41, anchored per operation to
+`Controllers/V4/Analytics/StatisticsController.cs`), with response shapes read from Nocturne's
+models into [`statistics-v4.schema.json`](../../../specs/openapi/proposed/statistics-v4.schema.json)
+(83 types; read-derived from property declarations, nested types not checked by hand). Not
+included: its 15 `POST` actions that compute over a posted body, and its five stateless calculators
+(`gmi/{meanGlucose}`, `estimated-a1c/{averageGlucose}`, `clinical-targets/{population}`, and the two
+unit conversions).
 
-**v3 or v4.** The recommendation is v4, `/api/v4/statistics/`, as the OpenAPI file places it:
+**Its read rule.** Each read is admitted on `reports.read`; `periods` and `punch-card` on
+`glucose.read` or `reports.read`, and a response that merges categories is narrowed to the
+caller's: insulin and carb aggregates need `reports.read` or `treatments.read`
+(`Authorization/AnalyticsReadScopeGuards.cs:314-331`). Public share links hold `reports.read`.
+cgm-remote-monitor has no such scopes: reading is one bit, `readable` (AU5), so how these map onto
+its permissions is part of the open design.
 
-- API v3 is a per-collection contract: its description is `/{collection}`, `/{collection}/{identifier}`
-  and `/history` with `version`, `status` and `lastModified` beside them
-  ([api-v3.yaml](../../../specs/openapi/upstream/cgm-remote-monitor/api-v3.yaml)), and cgm-remote-monitor
-  mounts routes per enabled collection (`lib/api3/generic/collection.js:42-57`, collections listed
-  at `lib/api3/index.js:66`). A documented client reading `/{collection}/{identifier}` would take
-  `/api/v3/stats/daily` for a record of a collection called `stats`.
-- Statistics are computed reads, like the other non-collection resources the specifications put
-  under v4.
-- Nocturne serves statistics at `/api/v4/statistics/` (`Controllers/V4/Analytics/StatisticsController.cs`, route `api/v4/[controller]`).
-- Against: v3 already has non-collection routes (`/status`, `/version`, `/lastModified`), so v3
-  could host them; the choice is open (decision 6).
+**Open for discussion** (maintainer, 2026-10-26): what a shared contract should fix and what it
+leaves to each hub (for example the population default, the canonical-stream choice across CGMs,
+caching), and whether the compute-over-a-posted-body actions join later.
+
+**The two older texts.** The statistics API proposal (REQ-STATS-001 to 005) wrote
+`/api/v3/stats/{daily,daily/{date},summary,hourly,treatments,current}`, and the reporting needs
+analysis (GAP-REPORT-001) `/api/v3/statistics/{tir,daily,a1c,agp}`. Both now carry a dated note
+pointing at this decision and are otherwise unchanged. The proposal's MCP resource provider
+(REQ-STATS-005; [ECOSYSTEM-PROGRAMME](../../00-overview/ECOSYSTEM-PROGRAMME.md) "Statistics and
+agents") would sit on top of the v4 reads.
+
+**Why v4 rather than v3**, the evidence before the decision: API v3 is a per-collection contract
+(`/{collection}`, `/{collection}/{identifier}`, `/history`, with `version`, `status` and
+`lastModified` beside them, [api-v3.yaml](../../../specs/openapi/upstream/cgm-remote-monitor/api-v3.yaml)),
+mounted per enabled collection (`lib/api3/generic/collection.js:42-57`, `lib/api3/index.js:66`), so
+a documented client would read `/api/v3/stats/daily` as a record of a collection `stats`; and
+Nocturne already serves statistics under v4.
 
 **Why a server API now.** cgm-remote-monitor's reports compute in the browser: the report client
 fetches raw entries and treatments over API v1 (`lib/report/reportclient.js:343`, `:380`, `:417`,
@@ -309,7 +399,7 @@ using the statistics helpers in `lib/report/statistics.js` that six plugins impo
 on the assumption that statistics move to a server API, and asks for a parity test against the
 plugin math.
 
-**What a shared contract must settle that the proposal does not.** Read from Nocturne's tests:
+**The rules the decision adopts, and how the older proposal compared.** Read from Nocturne's tests:
 
 | question | statistics API proposal | Nocturne at `89dcaf1dd` |
 |---|---|---|
@@ -322,17 +412,18 @@ plugin math.
 
 ## 7. Open decisions for the maintainer
 
-Each is a placement or a rule the evidence above does not settle.
+Each is a placement or a rule the evidence above does not settle. Rows 3, 4, 6 and 7 were decided
+on 2026-10-26 and keep their numbers; what remains open in them is stated.
 
 | # | decision | evidence |
 |---|---|---|
 | 1 | **The owner's action paths on `ns-tenant-admin`.** The same path as on `single`, served on the other socket, or a separate admin prefix. | `registration-submit.schema.json` `request` says "`POST <admin registrations path>/<vendor>/<product>/<action>`"; the [hub-implementer guide §4.6](guides/hub-implementer.md#46-s5-the-owners-actions-on-single) and #8857 put them under the same router as the controller's (`/api/v4/registrations`). This is a mismatch between two of our texts. |
 | 2 | **The owner's retire: `DELETE` or `POST …/retire`.** | registration §5.1 and the schema's `request` say `DELETE`; #8857 serves `POST …/retire` (`negotiate.js:742`). On `single`, one `API_SECRET` holder may be both the bound controller and the owner, so `DELETE` alone cannot tell which is acting. |
-| 3 | **The owner's listing path.** | authority §4 gives none; #8857 uses `GET /api/v4/registrations/instances`. |
-| 4 | **One root for instance paths.** | the instance is `/api/v4/registrations/{vendor}/{product}/instances/{instanceId}`; its command fetch is `/api/v4/instances/{instanceId}/commands` (commands §7.1). The capability document carries both, so it works either way. |
+| 3 | **The owner's listing path.** *Decided, maintainer 2026-10-26:* `GET /api/v4/instances`, tenant-scoped (AU6), on tenant-admin under `multi` and the one listener under `single`. | registration is per tenant (AU6); the flat instance root (§5.1). #8857 serves `GET /api/v4/registrations/instances`. |
+| 4 | **One root for instance paths.** *Decided, maintainer 2026-10-26: one flat root,* `/api/v4/instances/{instanceId}`, the product named in the body. | §5.1, with the #8857 follow-up. |
 | 5 | **State the commands listener, and who marks the subject acting for the person.** | commands §7.1 names no listener; CM14 and CM25 rely on a mark no specification places. |
-| 6 | **Statistics: v4 or v3; `stats` or `statistics`; `GET` over stored data only; the time-zone and minimum-data rules; the read credential.** | §6.4. |
-| 7 | **Add `softwareId` to registration `metadata`.** | PROPOSAL-controller-descriptions §2.2; the grammar does not have it (§5). |
+| 6 | **Statistics.** *Decided, maintainer 2026-10-26:* v4, `statistics`, matching Nocturne's reads. Open for discussion: what the shared contract fixes and what each hub keeps; whether compute over a posted body joins later; how `reports.read` maps onto cgm-remote-monitor's permissions. | §6.4. |
+| 7 | **`softwareId` in registration `metadata`.** *Decided, maintainer 2026-10-26:* proposed, in Nocturne's `software_id` form. Open for discussion: whether two products may share one; whether a hub checks it against the credential's registered client. | §5; registration §5.1, §18. |
 | 8 | **State the owner boundary per credential in the shared contract**, so a one-listener hub can conform. | §4. |
 | 9 | **The data-source listing: data listener or owner's listener.** | Nocturne serves its data sources to `devices.read` on the data API (`ServicesController.cs:101-112`); our listing of instances, bindings and overlaps is the owner's (authority §4). |
 | 10 | **Operator actions on a tenant member's credentials.** | Nocturne's operator can list and remove a member's passkeys and OIDC identities and issue login and recovery codes (`TenantController.cs:186-310`); tenant-owner surface §F.1 lists create, list, suspend, activate, delete and export for the operator. |
