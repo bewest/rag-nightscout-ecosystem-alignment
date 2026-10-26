@@ -188,6 +188,8 @@ paths:
                     type: integer
                     format: int64
                     description: Timestamp of most recent modification
+        '401':
+          $ref: '#/components/responses/Unauthorized'
       security:
         - api_secret: []
         - jwt: ['heartrate:read']
