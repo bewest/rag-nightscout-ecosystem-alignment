@@ -4712,9 +4712,11 @@ items:
       rule (b) as fc170a4c (a re-send with a stored identifier writes nothing
       and the reply carries the stored _id, v1 and v3;
       lib/api3/generic/create/acknowledge.js). dev is still 47723cda.
-      Measured by session -66 before push: npm test 4374 passing, 3 failing,
-      1 pending, test:all 4702 / 3 / 1, the failures environmental
-      (development-watch ENOSPC, the host's file-watcher limit). With the
+      Measured by session -66: npm test 4375 passing, 0 failing, 3 pending
+      and test:all 4703 passing, 0 failing, 3 pending (re-run on fc170a4c
+      2026-10-26, Node 22.23.4, MongoDB 5.0; the first run, before push, had
+      1 environmental failure, development-watch ENOSPC on the host's
+      file-watcher limit). With the
       code reverted 6 of 10 new v1 tests and 5 of 8 new v3 tests fail,
       controls pass; the devicestatus re-send probe leaves 1 record where dev
       stored 2, 3, then 4. Two existing expectations changed deliberately
@@ -16108,6 +16110,50 @@ items:
       lib/api3/alarmSocket.js are redacted on dev; cut 4 changes them in
       alarmSocket.js only. Mechanism only in the public repository.
 
+  - id: BFQ-196
+    title: "BF-196 to BF-199 - API v1 error paths and the README's read window, found by PR #8858's route audit"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@c08cbe03
+    state: not-started
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/api/notifications-api.js (install sendJSONStatus on the router),
+      lib/api/entries/index.js echo_query (check the storage name),
+      lib/api/profile, food and activity delete-by-id callbacks (answer the
+      storage error), and one README sentence. Server-side and documentation
+      only; one themed PR.
+    review: maintainer
+    operator_visible: >
+      Small corrections to how Nightscout's older API (v1) answers some
+      mistakes: an app without permission to acknowledge an alarm is told
+      "unauthorized" instead of getting a server error, a mistyped debug
+      address gets "not found", and deleting a profile, food or activity
+      record reports a database failure instead of reporting success. The
+      README's description of how many days a read covers is corrected from
+      two to four. Nothing that works today changes.
+    semver: patch
+    semver_reason: error answers become accurate status codes; no successful response changes shape
+    register: [BF-196, BF-197, BF-198, BF-199]
+    gates:
+      - no-gate: >
+          Reproduced 2026-10-26 on the PR #8858 branch d46ef808 by its route
+          audit (325 requests per run, held outside the repository):
+          notifications/ack without a credential -> 500, echo/notastore ->
+          500, the echo query's $gte at now - 345600000 ms. BF-198 is read.
+          A test per route would assert 401, 404 and a non-200 on a storage
+          fault; control: c08cbe03 fails each.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-10-26 by session -b7 from the route audit behind PR #8858
+      (API documents for 16.0.0), which documents each behaviour as it is.
+      All four read on v15.0.9 c6a0d8ed. Bundle into one PR, or add to an
+      open API v1 fixes PR of the same theme.
+
   - id: BFQ-184
     title: "BF-184 - API v3 /status apiPermissions reports only wildcard permissions"
     parcel: register-open
@@ -16679,10 +16725,10 @@ items:
           assert the pushed profile is the merged one; control: dev 47723cda
           fails it. The fix's test is in draft PR #8859 (bf/16.0.0-null-removes,
           head fc170a4c); behaviour is measured outside the queue (the suite
-          needs MongoDB): on fc170a4c, measured by session -66, npm test 4374
-          passing, 3 failing, 1 pending and test:all 4702 / 3 / 1, the failures
-          environmental (development-watch ENOSPC, the host's file-watcher
-          limit).
+          needs MongoDB): on fc170a4c, measured by session -66, npm test 4375
+          passing, 0 failing, 3 pending and test:all 4703 passing, 0 failing,
+          3 pending (re-run 2026-10-26; the first run had 1 environmental
+          failure, development-watch ENOSPC on the file-watcher limit).
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
@@ -16691,9 +16737,9 @@ items:
       head fc170a4c), opened by the maintainer, as 1bdce62c ("Announce a
       profile write after it finishes, not when it starts"), with Q1b
       913d0895, ID-SIMPLE-MATCH (merge cf2a2a67) and the devicestatus rule
-      fc170a4c. Measured by session -66 before push: npm test 4374 / 3 / 1
-      and test:all 4702 / 3 / 1, the failures environmental (ENOSPC file
-      watchers). Merges cleanly with #8856; with #8854 one import-line
+      fc170a4c. Measured by session -66: npm test 4375 passing, 0 failing,
+      3 pending and test:all 4703 / 0 / 3 (re-run 2026-10-26; the first run
+      had 1 environmental ENOSPC failure). Merges cleanly with #8856; with #8854 one import-line
       conflict and a 3-line matrix expectation change (ID-SIMPLE-MATCH).
 
       2026-10-26, later: lands in the one 16.0.0 re-send and merge PR on

@@ -69,9 +69,10 @@ rewritten without it.
   is the merged one; control: dev 47723cda fails it. The fix's test is in
   draft PR #8859 (bf/16.0.0-null-removes, head fc170a4c); behaviour is
   measured outside the queue (the suite needs MongoDB): on fc170a4c,
-  measured by session -66, npm test 4374 passing, 3 failing, 1 pending and
-  test:all 4702 / 3 / 1, the failures environmental (development-watch
-  ENOSPC, the host's file-watcher limit).
+  measured by session -66, npm test 4375 passing, 0 failing, 3 pending and
+  test:all 4703 passing, 0 failing, 3 pending (re-run 2026-10-26; the first
+  run had 1 environmental failure, development-watch ENOSPC on the file-
+  watcher limit).
 
 ## Evidence
 
@@ -82,20 +83,20 @@ rewritten without it.
 2026-10-26, later: in draft PR #8859 to dev (bf/16.0.0-null-removes, head
 fc170a4c), opened by the maintainer, as 1bdce62c ("Announce a profile write
 after it finishes, not when it starts"), with Q1b 913d0895, ID-SIMPLE-MATCH
-(merge cf2a2a67) and the devicestatus rule fc170a4c. Measured by session -66
-before push: npm test 4374 / 3 / 1 and test:all 4702 / 3 / 1, the failures
-environmental (ENOSPC file watchers). Merges cleanly with #8856; with #8854
-one import-line conflict and a 3-line matrix expectation change (ID-SIMPLE-
-MATCH). 2026-10-26, later: lands in the one 16.0.0 re-send and merge PR on
-bf/16.0.0-null-removes (Q1b head 1bdce62c; bundle in progress; at cf2a2a67 the
-branch carries 913d0895 for Q1b, 1bdce62c for BF-195 and a merge of 8d0f9a22,
-read from git log, not measured here) with Q1b, ID-SIMPLE-MATCH and the
-devicestatus identifier re-send rule (maintainer, 2026-10-26). 2026-10-26: id
-allocated by session -66 and filed from the Q1b study. Fix direction,
-unverified: emit data-received once the write has completed. To land with Q1b
-(a null in an update removes the field, decided by the maintainer 2026-10-26,
-for 16.0.0) on bf/16.0.0-null-removes, in progress (the branch is at dev
-47723cda).
+(merge cf2a2a67) and the devicestatus rule fc170a4c. Measured by session -66:
+npm test 4375 passing, 0 failing, 3 pending and test:all 4703 / 0 / 3 (re-run
+2026-10-26; the first run had 1 environmental ENOSPC failure). Merges cleanly
+with #8856; with #8854 one import-line conflict and a 3-line matrix
+expectation change (ID-SIMPLE-MATCH). 2026-10-26, later: lands in the one
+16.0.0 re-send and merge PR on bf/16.0.0-null-removes (Q1b head 1bdce62c;
+bundle in progress; at cf2a2a67 the branch carries 913d0895 for Q1b, 1bdce62c
+for BF-195 and a merge of 8d0f9a22, read from git log, not measured here) with
+Q1b, ID-SIMPLE-MATCH and the devicestatus identifier re-send rule (maintainer,
+2026-10-26). 2026-10-26: id allocated by session -66 and filed from the Q1b
+study. Fix direction, unverified: emit data-received once the write has
+completed. To land with Q1b (a null in an update removes the field, decided by
+the maintainer 2026-10-26, for 16.0.0) on bf/16.0.0-null-removes, in progress
+(the branch is at dev 47723cda).
 
 ---
 

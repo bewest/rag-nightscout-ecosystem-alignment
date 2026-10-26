@@ -94,22 +94,23 @@ head fc170a4c), opened by the maintainer, with Q1b (913d0895), BF-195
 first, then merge) and the devicestatus rule (b) as fc170a4c (a re-send with a
 stored identifier writes nothing and the reply carries the stored _id, v1 and
 v3; lib/api3/generic/create/acknowledge.js). dev is still 47723cda. Measured
-by session -66 before push: npm test 4374 passing, 3 failing, 1 pending,
-test:all 4702 / 3 / 1, the failures environmental (development-watch ENOSPC,
-the host's file-watcher limit). With the code reverted 6 of 10 new v1 tests
-and 5 of 8 new v3 tests fail, controls pass; the devicestatus re-send probe
-leaves 1 record where dev stored 2, 3, then 4. Two existing expectations
-changed deliberately (api.crud-by-id matrix v3 devicestatus re-send row;
-api3.empty-identifier-edit). Trial merge with #8854: one textual conflict (an
-import line in lib/api3/generic/patch/operation.js, keep both requires) and 4
-of #8854's cross-path matrix cells need a 3-line expectation change, applied
-by whichever PR merges second; with it all 405 matrix tests pass. Merges
-cleanly with #8856. Points for review in the PR body: v3's created_at+device
-devicestatus fallback still replaces; a deleted status re-sent with its
-identifier stays deleted; two simultaneous first sends with the same new
-identifier can both be stored (no unique index). 2026-10-26, later
-(maintainer, via session -66): (a) D-ID-FALLBACK decided: for 16.0.0 a v1
-entries re-send whose identifier matches nothing still matches on
+by session -66: npm test 4375 passing, 0 failing, 3 pending and test:all 4703
+passing, 0 failing, 3 pending (re-run on fc170a4c 2026-10-26, Node 22.23.4,
+MongoDB 5.0; the first run, before push, had 1 environmental failure,
+development-watch ENOSPC on the host's file-watcher limit). With the code
+reverted 6 of 10 new v1 tests and 5 of 8 new v3 tests fail, controls pass; the
+devicestatus re-send probe leaves 1 record where dev stored 2, 3, then 4. Two
+existing expectations changed deliberately (api.crud-by-id matrix v3
+devicestatus re-send row; api3.empty-identifier-edit). Trial merge with #8854:
+one textual conflict (an import line in lib/api3/generic/patch/operation.js,
+keep both requires) and 4 of #8854's cross-path matrix cells need a 3-line
+expectation change, applied by whichever PR merges second; with it all 405
+matrix tests pass. Merges cleanly with #8856. Points for review in the PR
+body: v3's created_at+device devicestatus fallback still replaces; a deleted
+status re-sent with its identifier stays deleted; two simultaneous first sends
+with the same new identifier can both be stored (no unique index). 2026-10-26,
+later (maintainer, via session -66): (a) D-ID-FALLBACK decided: for 16.0.0 a
+v1 entries re-send whose identifier matches nothing still matches on
 sysTime+type, as today (TEST-ENTRY-UUID-003); treatments never fall back; to
 be revisited once identifiers are common. (b) A devicestatus re-send whose
 identifier is already stored writes nothing (no merge, no new record, no
