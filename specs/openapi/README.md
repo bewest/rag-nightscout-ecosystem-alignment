@@ -34,7 +34,7 @@ cgm-remote-monitor's own API documents, copied with their provenance into
 [`upstream/cgm-remote-monitor/`](upstream/cgm-remote-monitor/README.md), are rendered next to
 the pages below: [API v1](../../site/pages/api-cgm-remote-monitor-v1.html) and
 [API v3](../../site/pages/api-cgm-remote-monitor-v3.html). Today they come from the 16.0.0
-correction branch, not yet merged; their banners say so.
+correction in [#8858](https://github.com/nightscout/cgm-remote-monitor/pull/8858), not yet merged; their banners say so.
 
 ## Site status
 
