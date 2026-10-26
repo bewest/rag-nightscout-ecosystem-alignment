@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: site serve site-check site-clean site-venv site-publish queue queue-status queue-validate queue-fidelity queue-check bootstrap refresh status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions verify-images sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json validate-telemetry workflow cli venv sdqctl-verify sdqctl-verify-parallel sdqctl-gen sdqctl-analysis sdqctl-cycle sdqctl-cycle-multi conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0 cgmencode-tests ns2parquet-tests terrarium terrarium-info terrarium-tiny terrarium-tiny-smoke mlflow-ui mlflow-server
+.PHONY: site serve site-check site-clean site-venv site-publish queue queue-status queue-validate queue-fidelity queue-check bootstrap refresh status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions verify-images sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json validate-telemetry openapi-lint workflow cli venv sdqctl-verify sdqctl-verify-parallel sdqctl-gen sdqctl-analysis sdqctl-cycle sdqctl-cycle-multi conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0 cgmencode-tests ns2parquet-tests terrarium terrarium-info terrarium-tiny terrarium-tiny-smoke mlflow-ui mlflow-server
 
 # Default target
 help:
@@ -359,6 +359,14 @@ validate-json:
 validate-telemetry:
 	@echo "Validating Nightscout telemetry schema fixtures..."
 	@python3 tools/validate_telemetry_schema.py
+
+# Lint specs/openapi/*.yaml against the OpenAPI specification and Redocly's
+# recommended rules (config: redocly.yaml). validate-json only checks that
+# the top-level keys exist. Needs Node; npx fetches the pinned CLI.
+REDOCLY_CLI ?= npx -y @redocly/cli@1.34.0
+OPENAPI_SPECS ?= $(wildcard specs/openapi/*.yaml)
+openapi-lint:
+	@$(REDOCLY_CLI) lint --format=summary $(OPENAPI_SPECS)
 
 # Run automated workflows
 workflow:
