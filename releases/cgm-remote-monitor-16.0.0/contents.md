@@ -303,6 +303,17 @@ test fail; with `TRUST_PROXY` unset, 15.0.9's address resolution (BF-88).
 | 4 | `99b6f68b` (#8847) | BF-183 (storage socket stops logging subscription credentials) | `npm test` 3887 / 0 / 4 on 5.0.33 and 8.0.34, and on 8.0.34 in America/Los_Angeles, at `32a3c0ac`; 3921 / 0 / 4 on 5.0.33 at `99b6f68b`; Chromium 591 / 1 (BF-192); `TRUST_PROXY` unset behind a TLS proxy answers 200, and 307-to-itself with cut 4's original default |
 | 5 | `506cc41b` (#8605) | — | `npm test` 4045 / 0 / 3 on MongoDB 5.0.33 and 8.0.34, and on 8.0.34 in America/Los_Angeles; Chromium 638 / 1 (BF-192) and Firefox 639 / 0; reverting BF-70's refusal, the operator allowlist, Express 5 query preservation, a Pushover status check or the notification cache's expiry each fails its test; `TRUST_PROXY` unset behind a TLS proxy answers 200, 307-to-itself with the old default |
 
+**2026-10-26: `dev` merged up again** after #8843 (CI diagonal), #8848 (Docker publish) and #8850
+(test order isolation): cut 3 `76b19fb0`, cut 4 `8bf6c9b2`, cut 5 `98d2f9a0`, each a fast-forward of its
+published head. Only `.github/workflows/main.yml` conflicted (cuts 4 and 5: `dev`'s split jobs, cut 4's
+lint step in the no-database job, cut 5's connector step and database-upgrade rehearsal kept, the
+replica-set job dropped) and `docs/runtime-upgrade.md` (cut 5). The new CI lanes reproduced locally on
+each cut (Node 24.22.1): the no-database tiers in America/Los_Angeles and shuffled, integration and
+stress on MongoDB 5.0.33 in America/Los_Angeles and on 8.0.34 shuffled (seed 40226791404), Chromium and
+Firefox: cut 3 2014 + 18 integration, 580 browser; cut 4 2031 + 18, 592; cut 5 2038 + 18, 639; all
+passing after #8850. The shuffled lane found four order-dependent tests already on `dev`, fixed there by
+#8848 and #8850, not by the cuts.
+
 Found by the merges and fixed on the branches: bson 7 `ObjectId`s carry own fields, so cut 2's query
 walker walked into them (cut 3, `5aa1e749`); `git` merged `dev`'s alarm-socket body into cut 4's
 handler signature, so every access-token alarm subscription would have thrown (cut 4, in the merge
