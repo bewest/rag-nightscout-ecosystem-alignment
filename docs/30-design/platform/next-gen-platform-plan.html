@@ -5604,7 +5604,7 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>723ed9230</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>97a40f06e</code>.</em></p>
 <p><em>Contributor-facing. Living plan, current at cgm-remote-monitor dev <code>47723cda</code> (2026-10-26) and <a href="https://github.com/nightscout/cgm-remote-monitor/pull/8854">#8854</a> at <code>fa22d573</code>. Status: proposed; the decisions in §6 are open.</em></p>
 <p>The interactive version, with the dependency map, is the site page <a href="../../../site/pages/nightscout-next-gen-platform.html">nightscout-next-gen-platform.html</a>.</p>
 <p>This plan covers the work that follows the 16.0.0 modernization:</p>
@@ -5871,13 +5871,13 @@
 <tbody>
 <tr>
 <td>REG-S0</td>
-<td>capability document and catalogue, read-only, flag off by default</td>
+<td>capability document and catalogue, read-only, flag off by default (built)</td>
 <td>specs</td>
 <td>schema validation; flag off is byte-identical to dev</td>
 </tr>
 <tr>
 <td>REG-S1</td>
-<td>submit, etag, retire; MongoDB store; single mode</td>
+<td>submit, etag, retire; MongoDB store; single mode (built: 25 of 32 cases pass, 6 mapped, 1 not applicable)</td>
 <td>REG-S0</td>
 <td>negotiation conformance cases against a booted server</td>
 </tr>
@@ -5913,7 +5913,7 @@
 </tr>
 </tbody>
 </table>
-<p>Slices S0, S1, S2 and S5 need no storage work and go straight to dev; S5 comes before S3 because only S3 waits on the write step. The <a href="guides/hub-implementer.html">hub implementer's guide</a> maps each slice to modules on dev. The <a href="guides/new-controller.html">controller guide</a> is the same flow from the controller author's side.</p>
+<p>Slices S0, S1, S2 and S5 need no storage work and go to dev together as one single-tenant registration PR; S5 comes before S3 because only S3 waits on the write step. S0, S1 and the product half of S5 are built on <code>feat/registration-catalogue</code> (<code>6c67ddfc</code>, local). Of the 186 cases, 28 pass, 16 are mapped and 0 fail; the rest wait for later slices. S2 waits on decision D-REG-EXCL. The <a href="guides/hub-implementer.html">hub implementer's guide</a> maps each slice to modules on dev. The <a href="guides/new-controller.html">controller guide</a> is the same flow from the controller author's side.</p>
 <h3 id="54-tenancy">5.4 Tenancy<a class="headerlink" href="#54-tenancy" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -5960,7 +5960,7 @@
 
 <h2 id="7-how-the-work-moves">7. How the work moves<a class="headerlink" href="#7-how-the-work-moves" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Pull requests.</strong> Each slice is one PR to dev, or a child PR to an integration branch when a track has several slices in flight, the way #8605 carried 109 children. Dev is merged into the branch, not rebased. A PR's merge records that the merged tree matches the reviewed tree.</li>
+<li><strong>Pull requests.</strong> Sized by milestone, not by slice: one single-tenant registration PR (S0, S1, S2, S5); one 16.0.0 re-send and merge contract PR (identifier matching, the null-removes rule, BF-195, the devicestatus answer); the storage slices grouped into few PRs after #8854. A track with many pieces in flight uses an integration branch with child PRs, the way #8605 carried 109 children. Dev is merged into the branch, not rebased. A PR's merge records that the merged tree matches the reviewed tree.</li>
 <li><strong>What pins behaviour.</strong> #8854's CRUD matrix and this repository's write-contract matrix. A slice that changes no behaviour changes no cell. A slice that changes behaviour lists the cells it changes and why.</li>
 <li><strong>Red controls.</strong> Every new test is shown failing against the code it guards before the change, with the original symptom.</li>
 <li><strong>Conformance.</strong> The registration and identity cases in <code>specs/sync/conformance/</code> run against a booted server by a harness in this repository (D12), reported case by case as passed, mapped or not applicable.</li>
