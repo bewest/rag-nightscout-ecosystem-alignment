@@ -24,10 +24,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 175 | 37 | 21 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 175 | 37 | 20 |
 | **Modernization** | `release-train` | 42 | 7 | 4 |
 | **Multitenant** | `tenancy`, `platform` | 67 | 17 | 9 |
-| | **total** | **286** | **61** | **34** |
+| | **total** | **286** | **61** | **33** |
 
 <!-- END GENERATED: horizons -->
 
@@ -156,7 +156,7 @@ cover more than one `BF-`:
 | `BFQ-160` | `in-progress` | BF-160 - the clock designer's link target is written with curly quotes |
 | `BFQ-161` | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fi |
 | `BFQ-163` | `merged-upstream` | BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in |
-| `BFQ-164` | `needs-decision` | BF-164 - writes outside API v3 never reach the v3 storage socket |
+| `BFQ-164` | `blocked` | BF-164 - writes outside API v3 never reach the v3 storage socket |
 | `BFQ-165` | `in-flight-upstream` | BF-165 - a treatment re-send matched by its fallback key is answered without _id |
 | `BFQ-166` | `in-flight-upstream` | BF-166 - a profile re-sent with its own _id answers 500 |
 | `BFQ-168` | `released` | BF-168 - the context chart's window sometimes cannot be dragged back to now |
@@ -210,7 +210,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 7 | 2 | 4 | 1 | 3 | 1 | 3 | 15 | 2 | 1 |  |  | 3 | **42** |
-| `register-open` | 27 | 12 | 1 | 1 | 2 | 13 | 10 | 58 | 6 |  |  | 4 |  | **134** |
+| `register-open` | 27 | 12 | 1 | 1 | 3 | 14 | 10 | 58 | 4 |  |  | 4 |  | **134** |
 | `tenancy` | 8 | 1 |  | 1 | 13 |  |  |  | 7 | 3 | 1 |  |  | **34** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  |  | 11 |  |  |  | **19** |
 | `backfix2` |  |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |

@@ -14215,14 +14215,16 @@ items:
     repo: cgm-remote-monitor
     branch: ""
     base: official/dev@43289dde
-    state: needs-decision
+    state: blocked
     pr: []
     ships_to_operators_today: true
     blast_radius: >
       lib/api3/storageSocket.js and the shared data-update path, or the write
       step WRITE-CONTRACT proposes; every v1, socket and in-process write
       would start emitting storage-socket events.
-    review: maintainer
+    review: >
+      maintainer: decided 2026-10-25 (plan C); the filter and path-naming
+      details are still open for decision.
     operator_visible: ""
     semver: minor
     semver_reason: clients subscribed to the storage socket start receiving events they did not before
@@ -14234,12 +14236,26 @@ items:
           run does. A gate would run the matrix's wire column and fail on any
           non-v3 write cell with wire none; the control is the same run on
           43289dde, which must fail.
-    blocks_on: []
+    blocks_on: [MOD-WRITE-VALIDATION]
     evidence:
       - docs/60-research/remedial/aaps-websocket-delivery-lab-2026-10-25.md
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
     notes: >
+      2026-10-25, later (maintainer decision, "plan C"): /storage stays
+      v3-only for now. Records from the other write paths will be announced
+      on it only after write checks (log mode, MOD-WRITE-VALIDATION) cover
+      every write path, including the socket, and then only records that
+      pass the type checks; no unfiltered broadcast. State blocked on that
+      coverage; the filter and path-naming details stay open for decision.
+      Evidence (session f4's AndroidAPS-side safety research, mechanism
+      level): records from the other paths already reach AndroidAPS through
+      catch-up history; some of them cannot be decoded by AndroidAPS; and a
+      pushed frame that AndroidAPS 3.4.2.6 cannot decode is expected to end
+      the app process (read-derived, not run). A note to the AndroidAPS
+      developers is drafted, split into a public issue and a private report;
+      not yet sent.
+
       2026-10-25: lab written up in
       docs/60-research/remedial/aaps-websocket-delivery-lab-2026-10-25.md,
       with the lab itself in tools/lab/aaps-ws-delivery/.
@@ -15553,6 +15569,10 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25, later: the fix also refuses such values on write for the
+      second record kind, and tolerates on read a related field that working
+      sites may hold (maintainer decision).
+
       2026-10-25: a second record kind of the same class was found and is
       covered by the same fix; the fix is prepared on a local branch
       (private) and API v1's refusal of such a record will answer 400 with
@@ -15565,44 +15585,53 @@ items:
       2026-10-25), via the maintainer's private advisory process.
 
   - id: BFQ-192
-    title: "BF-192 - the populated reports page exceeds its retained-heap budget in the browser test on dev 428b20b7"
+    title: "BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression)"
     parcel: register-open
     repo: cgm-remote-monitor
     branch: ""
     base: official/dev@428b20b7
-    state: needs-decision
-    pr: []
+    state: in-flight-upstream
+    pr: [8843]
     ships_to_operators_today: false
     blast_radius: >
-      Either tests/browser/page-populated.test.js (the 4850000-byte reports
-      budget) or the reports page's retained heap after #8542 (reports-agp),
-      by the maintainer's decision.
-    review: >
-      maintainer: raise the reports page's retained-heap budget, or slim the
-      page.
+      tests/browser/page-populated.test.js (waits for the first report; the
+      reports retained-heap ceiling) and docs/test-specs/page-bundles.md; no
+      product code.
+    review: "maintainer (folded into #8843)"
     operator_visible: ""
     semver: n/a
-    semver_reason: a test budget or the page's memory use; no API or setting change
+    semver_reason: a test wait and a test ceiling; no API, page or setting change
     register: [BF-192]
     gates:
       - no-gate: >
-          Measured 2026-10-25: tests/browser/page-populated.test.js
-          "initializes populated reports and bounds retained V8 heap" fails
-          with "reports: retained heap ~6.19 MB exceeds 4850000". Session f4's
-          lanes, fresh worktrees, Node 22.23.4: 6192136 and 6189568 bytes.
-          Session -f8, three runs each, Node 24.22.1, Chromium, TZ=UTC:
-          b29f1bf7 ~4.45 MB (control, green), 428b20b7 ~6.20 MB, cut 3
-          12d1f645 ~5.94 MB, cut 4 99b6f68b likewise. The browser tier needs
-          Chromium and MongoDB, so not a queue gate.
+          The browser tier needs Chromium and MongoDB, so not a queue gate.
+          Measured 2026-10-25 by session -b7: retained heap after load 4.43 MB
+          before #8542 against 6.19 MB after; after one Show 9.24 MB before
+          against 7.18 MB after; after five Shows 9.93 MB before against
+          7.46 MB after. New reports ceiling 6,800,000 bytes = 1.097 x the
+          maximum of 7 samples (6,181,516 to 6,197,116), recorded in
+          docs/test-specs/page-bundles.md.
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
-      Filed 2026-10-25 by session f4 (register section 1b). Blocked on the
-      maintainer's decision (raise the budget or slim the page). Likely
-      introduced by #8542 (reports-agp), the only merge between b29f1bf7 and
-      428b20b7 (not bisected). Browser CI ran zero tests from #8839 until the
-      runner fix e767ce4e in #8843, which is why dev's CI did not show it.
+      2026-10-25, corrected by session -b7: NOT a product regression. Since
+      #8542 the reports page draws its first report (AGP plus seven daily
+      charts, 576 readings) as soon as the profile loads, so the populated
+      test measured a drawn report, not an empty form; after Shows the page
+      now retains less than before. Fix in #8843 (local commit 0a33b7c7,
+      pending push by the maintainer, who folded it into #8843): the test
+      waits for the first report (an svg under #pluginchartplaceholders and
+      an empty #info), and the reports ceiling goes 4,850,000 to 6,800,000.
+      Open note: both revisions grow slowly with repeated Shows (about 170
+      KB per run before, about 70 KB per run after).
+
+      Filed 2026-10-25 by session f4 (register section 1b) as a budget
+      failure on dev 428b20b7 (session f4's lanes, Node 22.23.4: 6192136 and
+      6189568 bytes; session -f8, Node 24.22.1: b29f1bf7 ~4.45 MB, 428b20b7
+      ~6.20 MB, cut 3 12d1f645 ~5.94 MB, cut 4 99b6f68b likewise). Browser CI
+      ran zero tests from #8839 until the runner fix e767ce4e in #8843, which
+      is why dev's CI did not show it.
 
   - id: MOD-WRITE-VALIDATION
     title: "WRITE_VALIDATION=off|log|reject: opt-in domain validation of Temporary Target writes on API v1 and v3 (draft)"

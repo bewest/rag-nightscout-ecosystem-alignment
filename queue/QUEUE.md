@@ -45,11 +45,11 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-progress` | 16 | RT-REBASE, RT-BOOT-INDEX-AWAIT, ID-CONVENTIONS, BFQ-46, BFQ-ENV, BFQ-92, BFQ-93, BFQ-156, BFQ-159, BFQ-160, BFQ-180, BFQ-183, BFQ-190, BFQ-191, OID-LAB, LOOP-ID-REPLY |
 | `gate-not-met` | 6 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, MOD-WRITE-VALIDATION, WS-LAB |
-| `blocked` | 18 | RT-TEST-TIERS, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, WC-STEP-PATCH, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154 |
-| `in-flight-upstream` | 14 | RT-2, BFQ-72, BFQ-145, BFQ-152, BFQ-161, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-179, BFQ-182, BFQ-185, BFQ-186 |
+| `blocked` | 19 | RT-TEST-TIERS, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, WC-STEP-PATCH, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
+| `in-flight-upstream` | 15 | RT-2, BFQ-72, BFQ-145, BFQ-152, BFQ-161, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-179, BFQ-182, BFQ-185, BFQ-186, BFQ-192 |
 | `merged-upstream` | 13 | BFQ-177, RT-D3-SUITE, RT-CONNECT-TEARDOWN, RT-1, BFQ-09, BFQ-158, BFQ-137, BFQ-157, BFQ-163, BFQ-172, BFQ-173, BFQ-174, BFQ-176 |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
-| `needs-decision` | 15 | T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164, BFQ-192, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
+| `needs-decision` | 13 | T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
 | `done` | 39 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 4 | BFQ-71, BFQ-41, BFQ-175, BFQ-141 |
@@ -2553,7 +2553,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-161` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes | `in-flight-upstream` | `bf/entries-pattern-limit` | patch | 1 run + 1 no-gate |
 | `BFQ-162` | BF-162 - an explicit TRUST_PROXY address list reaches proxy-addr 2.0.7, inside a critical advisory fixed in 2.0.8 | `released` | `bf/proxy-addr-2.0.8` | patch | 0 run + 1 no-gate |
 | `BFQ-163` | BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in 1.8.2 | `merged-upstream` | `deps/16.0.0-security-refresh` | patch | 1 run + 1 no-gate |
-| `BFQ-164` | BF-164 - writes outside API v3 never reach the v3 storage socket | `needs-decision` | `-` | minor | 0 run + 1 no-gate |
+| `BFQ-164` | BF-164 - writes outside API v3 never reach the v3 storage socket | `blocked` | `-` | minor | 0 run + 1 no-gate |
 | `BFQ-165` | BF-165 - a treatment re-send matched by its fallback key is answered without _id | `in-flight-upstream` | `bf/16.0.0-record-identity` | patch | 0 run + 1 no-gate |
 | `BFQ-166` | BF-166 - a profile re-sent with its own _id answers 500 | `in-flight-upstream` | `bf/16.0.0-record-identity` | patch | 0 run + 1 no-gate |
 | `BFQ-167` | BF-167 - devicestatus remove()'s filter is not pinned by any test | `in-flight-upstream` | `bf/16.0.0-record-identity` | n/a | 0 run + 1 no-gate |
@@ -2578,7 +2578,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-189` | BF-189 - tests/security.test.js (API_SECRET) fails depending on file order | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `BFQ-190` | BF-190 - an alarm on a page without a current reading cannot be silenced from the page | `in-progress` | `bf/16.0.0-client-alarms` | patch | 1 run + 1 no-gate |
 | `BFQ-191` | BF-191 - a stored treatment can stop the server process, and keeps doing so after a restart (mechanism only) | `in-progress` | `-` | n/a | 0 run + 1 no-gate |
-| `BFQ-192` | BF-192 - the populated reports page exceeds its retained-heap budget in the browser test on dev 428b20b7 | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
+| `BFQ-192` | BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression) | `in-flight-upstream` | `-` | n/a | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `released` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -5586,15 +5586,16 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `needs-decision` |
+| state (claimed) | `blocked` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `official/dev@43289dde` |
 | worktree | `-` |
 | semver | `minor` |
-| review | maintainer |
+| review | maintainer: decided 2026-10-25 (plan C); the filter and path-naming details are still open for decision. |
 | ships to operators today | **yes** |
 | register | `BF-164` |
+| blocks on | `MOD-WRITE-VALIDATION` |
 
 **Blast radius.** lib/api3/storageSocket.js and the shared data-update path, or the write step WRITE-CONTRACT proposes; every v1, socket and in-process write would start emitting storage-socket events.
 
@@ -5612,7 +5613,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
 
-**Notes.** 2026-10-25: lab written up in docs/60-research/remedial/aaps-websocket- delivery-lab-2026-10-25.md, with the lab itself in tools/lab/aaps-ws- delivery/. 2026-10-25 (maintainer decision): a lab run plus one combined note to the AndroidAPS developers (with BF-152); no code change yet. Stays needs- decision. Lab, 2026-10-25 (dev b29f1bf7, two real servers, nightscout-connect 0.1.0, MongoDB 8.0.34; a client following AndroidAPS's websocket mode as read): with the socket up, v1 (careportal), main-socket dbAdd and connector writes were never received in 45 s; on reconnect they arrived through catch-up history, unless a v3 write in the same collection landed first, because a pushed frame sets AndroidAPS's history cursor to its srvModified (ws/NsFrameHandler.kt:105-111), and the earlier non-v3 record is then delivered only by a full sync. AndroidAPS does not poll while connected. The v3 control arrived in 0.01-0.05 s. The 2026-10-12 reading "changes when AndroidAPS sees a v1 record, not whether" is contradicted for websocket-mode AndroidAPS; reach re-graded: careportal, v1 and connector records can be missed. The note to the AndroidAPS developers is drafted, not sent. Filed 2026-10-07 from the WRITE-CONTRACT write matrix. Present on 15.0.8 too. Overlaps BF-122's mechanism paragraph, whose fix covered history only. Either a narrow fix on dev ahead of WRITE-CONTRACT or item 5 of WRITE-CONTRACT; not decided. AndroidAPS NSClientV3's reliance on the socket is read, not run. Reclassified 2026-10-12 (maintainer): a behaviour question, not a fix. The AndroidAPS authors indicate the v3-only emission may be intended (v3 validates what it accepts). Next: a lab run timing when AndroidAPS NSClientV3 in websocket mode receives a v1-written carb, and one question to the AndroidAPS authors on whether broadcasting non-v3 writes would help or harm. No dev fix until both are in.
+**Notes.** 2026-10-25, later (maintainer decision, "plan C"): /storage stays v3-only for now. Records from the other write paths will be announced on it only after write checks (log mode, MOD-WRITE-VALIDATION) cover every write path, including the socket, and then only records that pass the type checks; no unfiltered broadcast. State blocked on that coverage; the filter and path- naming details stay open for decision. Evidence (session f4's AndroidAPS-side safety research, mechanism level): records from the other paths already reach AndroidAPS through catch-up history; some of them cannot be decoded by AndroidAPS; and a pushed frame that AndroidAPS 3.4.2.6 cannot decode is expected to end the app process (read-derived, not run). A note to the AndroidAPS developers is drafted, split into a public issue and a private report; not yet sent. 2026-10-25: lab written up in docs/60-research/remedial/aaps-websocket-delivery-lab-2026-10-25.md, with the lab itself in tools/lab/aaps-ws-delivery/. 2026-10-25 (maintainer decision): a lab run plus one combined note to the AndroidAPS developers (with BF-152); no code change yet. Stays needs-decision. Lab, 2026-10-25 (dev b29f1bf7, two real servers, nightscout-connect 0.1.0, MongoDB 8.0.34; a client following AndroidAPS's websocket mode as read): with the socket up, v1 (careportal), main-socket dbAdd and connector writes were never received in 45 s; on reconnect they arrived through catch-up history, unless a v3 write in the same collection landed first, because a pushed frame sets AndroidAPS's history cursor to its srvModified (ws/NsFrameHandler.kt:105-111), and the earlier non-v3 record is then delivered only by a full sync. AndroidAPS does not poll while connected. The v3 control arrived in 0.01-0.05 s. The 2026-10-12 reading "changes when AndroidAPS sees a v1 record, not whether" is contradicted for websocket-mode AndroidAPS; reach re-graded: careportal, v1 and connector records can be missed. The note to the AndroidAPS developers is drafted, not sent. Filed 2026-10-07 from the WRITE-CONTRACT write matrix. Present on 15.0.8 too. Overlaps BF-122's mechanism paragraph, whose fix covered history only. Either a narrow fix on dev ahead of WRITE-CONTRACT or item 5 of WRITE- CONTRACT; not decided. AndroidAPS NSClientV3's reliance on the socket is read, not run. Reclassified 2026-10-12 (maintainer): a behaviour question, not a fix. The AndroidAPS authors indicate the v3-only emission may be intended (v3 validates what it accepts). Next: a lab run timing when AndroidAPS NSClientV3 in websocket mode receives a v1-written carb, and one question to the AndroidAPS authors on whether broadcasting non-v3 writes would help or harm. No dev fix until both are in.
 
 ### `BFQ-165` &mdash; BF-165 - a treatment re-send matched by its fallback key is answered without _id
 
@@ -6362,37 +6363,37 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-25: a second record kind of the same class was found and is covered by the same fix; the fix is prepared on a local branch (private) and API v1's refusal of such a record will answer 400 with its message instead of 500 (maintainer decision 2026-10-25). Filed 2026-10-25 by session f4 from its AndroidAPS-safety lane; reproduced on dev b29f1bf7 and v15.0.9 c6a0d8ed. Availability, high (persistent), needs a credential with treatment write access. Fix in preparation on a local branch, to ship in 16.0.0 (maintainer decision 2026-10-25), via the maintainer's private advisory process.
+**Notes.** 2026-10-25, later: the fix also refuses such values on write for the second record kind, and tolerates on read a related field that working sites may hold (maintainer decision). 2026-10-25: a second record kind of the same class was found and is covered by the same fix; the fix is prepared on a local branch (private) and API v1's refusal of such a record will answer 400 with its message instead of 500 (maintainer decision 2026-10-25). Filed 2026-10-25 by session f4 from its AndroidAPS-safety lane; reproduced on dev b29f1bf7 and v15.0.9 c6a0d8ed. Availability, high (persistent), needs a credential with treatment write access. Fix in preparation on a local branch, to ship in 16.0.0 (maintainer decision 2026-10-25), via the maintainer's private advisory process.
 
-### `BFQ-192` &mdash; BF-192 - the populated reports page exceeds its retained-heap budget in the browser test on dev 428b20b7
+### `BFQ-192` &mdash; BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression)
 
 | | |
 |---|---|
-| state (claimed) | `needs-decision` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `official/dev@428b20b7` |
 | worktree | `-` |
 | semver | `n/a` |
-| review | maintainer: raise the reports page's retained-heap budget, or slim the page. |
+| review | maintainer (folded into #8843) |
 | ships to operators today | no (pre-release) |
 | register | `BF-192` |
 
-**Blast radius.** Either tests/browser/page-populated.test.js (the 4850000-byte reports budget) or the reports page's retained heap after #8542 (reports-agp), by the maintainer's decision.
+**Blast radius.** tests/browser/page-populated.test.js (waits for the first report; the reports retained-heap ceiling) and docs/test-specs/page-bundles.md; no product code.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
-**Why `n/a`.** a test budget or the page's memory use; no API or setting change
+**Why `n/a`.** a test wait and a test ceiling; no API, page or setting change
 
 **Gates.**
 
-- **NO GATE** &mdash; Measured 2026-10-25: tests/browser/page-populated.test.js "initializes populated reports and bounds retained V8 heap" fails with "reports: retained heap ~6.19 MB exceeds 4850000". Session f4's lanes, fresh worktrees, Node 22.23.4: 6192136 and 6189568 bytes. Session -f8, three runs each, Node 24.22.1, Chromium, TZ=UTC: b29f1bf7 ~4.45 MB (control, green), 428b20b7 ~6.20 MB, cut 3 12d1f645 ~5.94 MB, cut 4 99b6f68b likewise. The browser tier needs Chromium and MongoDB, so not a queue gate.
+- **NO GATE** &mdash; The browser tier needs Chromium and MongoDB, so not a queue gate. Measured 2026-10-25 by session -b7: retained heap after load 4.43 MB before #8542 against 6.19 MB after; after one Show 9.24 MB before against 7.18 MB after; after five Shows 9.93 MB before against 7.46 MB after. New reports ceiling 6,800,000 bytes = 1.097 x the maximum of 7 samples (6,181,516 to 6,197,116), recorded in docs/test-specs/page-bundles.md.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Filed 2026-10-25 by session f4 (register section 1b). Blocked on the maintainer's decision (raise the budget or slim the page). Likely introduced by #8542 (reports-agp), the only merge between b29f1bf7 and 428b20b7 (not bisected). Browser CI ran zero tests from #8839 until the runner fix e767ce4e in #8843, which is why dev's CI did not show it.
+**Notes.** 2026-10-25, corrected by session -b7: NOT a product regression. Since #8542 the reports page draws its first report (AGP plus seven daily charts, 576 readings) as soon as the profile loads, so the populated test measured a drawn report, not an empty form; after Shows the page now retains less than before. Fix in #8843 (local commit 0a33b7c7, pending push by the maintainer, who folded it into #8843): the test waits for the first report (an svg under #pluginchartplaceholders and an empty #info), and the reports ceiling goes 4,850,000 to 6,800,000. Open note: both revisions grow slowly with repeated Shows (about 170 KB per run before, about 70 KB per run after). Filed 2026-10-25 by session f4 (register section 1b) as a budget failure on dev 428b20b7 (session f4's lanes, Node 22.23.4: 6192136 and 6189568 bytes; session -f8, Node 24.22.1: b29f1bf7 ~4.45 MB, 428b20b7 ~6.20 MB, cut 3 12d1f645 ~5.94 MB, cut 4 99b6f68b likewise). Browser CI ran zero tests from #8839 until the runner fix e767ce4e in #8843, which is why dev's CI did not show it.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 

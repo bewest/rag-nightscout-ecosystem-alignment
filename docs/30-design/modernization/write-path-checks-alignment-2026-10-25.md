@@ -116,4 +116,4 @@ the refusal produces, and whether a relaying writer re-sends the value.
 | read-side flag | flag stored records that break a rule on API v3 reads (R1), report them (R2) | `MOD-WRITE-VALIDATION-READ` |
 | units canonicalisation | N1 (spelling) or N2 (mg/dL plus original), and the conversion constant | `MOD-UNITS-CANONICAL` |
 | socket coverage | opt-in validation on the socket's add and update paths (design note §3.1 lists it as the next step) | `MOD-WRITE-VALIDATION` |
-| filtered `/storage` broadcast | plan C for BF-164 (2026-10-25), a filtered broadcast of non-v3 writes, depends on the checks covering every write path | `BFQ-164` |
+| filtered `/storage` broadcast | BF-164 plan C, decided 2026-10-25: filtered broadcast after checks cover every path; filter and path-naming details open; `/storage` stays v3-only until then, and afterwards only records that pass the type checks are announced | `BFQ-164` |
