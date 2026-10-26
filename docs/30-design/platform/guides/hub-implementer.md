@@ -238,7 +238,8 @@ only, a store gets its collection from `collectionFor` (`lib/storage/collection-
 ### 4.3 S2: definitions, instances and leases
 
 **What.** `PUT …/definitions/<definitionId>` (immutable, `If-None-Match: *` only), `PUT` and
-`DELETE …/instances/<instanceId>`, per-role results, exclusivity among live `device` instances,
+`DELETE /api/v4/instances/<instanceId>` (the flat path, maintainer 2026-10-26; #8857 serves it under
+the product today), per-role results, exclusivity among live `device` instances,
 labels, leases ([registration §7–§10](../spec/registration.md#7-definitions)). The capability
 document gains `instances`. "One element at one version has one meaning" uses the meaning table in
 §7; `negotiate.version_conflicts` and `negotiate.meaning` are the reference.

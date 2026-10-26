@@ -5,6 +5,14 @@
 > **Status**: **Required precondition for cgm-remote-monitor Track 3 (UI Discovery)**
 > **Related**: PR#8366 (2025 reports), nightscout-reporter integration, `cgm-remote-monitor/docs/proposals/testing-modernization-proposal.md` v1.2 §L9
 
+> **Superseded in part, 2026-10-26.** The maintainer decided that statistics are served on API v4
+> under `/api/v4/statistics/`, matching Nocturne's `StatisticsController` (paths, parameters,
+> response shapes, time-zone and minimum-data rules, read scopes) for hub compatibility, rather than
+> the `/api/v3/stats/*` paths below. See
+> [API v4 and Nocturne §6.4](../30-design/platform/v4-surface-and-nocturne-2026-10-26.md#64-statistics)
+> and `specs/openapi/proposed/nightscout-v4.yaml`. The requirements and parity-test plan below are
+> kept as written.
+
 ## 2026-05 Status Bump
 
 This proposal was originally drafted as a forward-looking enhancement.

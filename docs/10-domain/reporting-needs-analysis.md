@@ -202,6 +202,10 @@ double tirHigh = entries.where((e) => e.gluc > highLimit).length / total * 100;
 
 ### Server-Side Statistics (from statistics-api-proposal.md)
 
+*Note, 2026-10-26: the paths below are superseded. The maintainer decided on `/api/v4/statistics/`,
+matching Nocturne's StatisticsController; see
+[API v4 and Nocturne §6.4](../30-design/platform/v4-surface-and-nocturne-2026-10-26.md#64-statistics).*
+
 Proposed endpoints that would unify reporting:
 
 | Endpoint | Purpose |

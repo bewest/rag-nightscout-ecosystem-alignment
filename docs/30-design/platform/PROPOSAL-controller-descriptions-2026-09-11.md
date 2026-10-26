@@ -173,6 +173,8 @@ metadata:
   softwareId: org.loopkit.loop   # proposed; the same reverse-DNS id as the known-app directory
 ```
 
+*Note, 2026-10-26: `metadata.softwareId` is now in the grammar as proposed (maintainer, 2026-10-26), in Nocturne's `software_id` form for compatibility: `specs/sync/controller-state-model.schema.json` and [registration §5.1](spec/registration.md#51-identity-and-methods).*
+
 Then one identifier connects both:
 
 | step | registration half | description half |

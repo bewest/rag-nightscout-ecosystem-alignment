@@ -52,7 +52,7 @@ reader brings, and each has its own rules, conformance cases and gate.
 | [commands](spec/commands.md) | how does a request or a proposal reach a controller, and how does its outcome come back? | L3, L5 | CM1–CM32 | written | `SPEC-REG-COMMANDS` |
 | [plans](spec/plans.md) | how is a plan proposed, approved in parts, held by the controller and mirrored by the hub? | L3, L5 | PN1–PN18 | written | `SPEC-PLANS` |
 | [sync-transport](spec/sync-transport.md) | how are writes matched, ordered and delivered over REST and the socket, and at what cost? | L4 | T1–T15 | written | `SPEC-SYNC-TRANSPORT` |
-| [authority](spec/authority.md) | who may register, write, own, route or act for someone else? | L5 | AU1–AU5, DR1–DR7 | written | `SPEC-AUTHORITY` |
+| [authority](spec/authority.md) | who may register, write, own, route or act for someone else? | L5 | AU1–AU6, DR1–DR7 | written | `SPEC-AUTHORITY` |
 
 **Why these boundaries.** Each boundary falls where the reader, the rate of change or the review
 differs:
@@ -175,7 +175,7 @@ their data and hold a route to change them. Why the cut follows the teams is rea
 
 | | |
 |---|---|
-| **Spec** | [spec/authority.md](spec/authority.md): principals and credentials (AU1–AU5), the binding and credential kind, the owner's actions, the authorisation of registrations and namespaces, who may receive a command, delegation as requirements DR1–DR7 with what is decided around it, what is recorded for audit, 70 cases |
+| **Spec** | [spec/authority.md](spec/authority.md): principals and credentials (AU1–AU6), the binding and credential kind, the owner's actions, the authorisation of registrations and namespaces, who may receive a command, delegation as requirements DR1–DR7 with what is decided around it, what is recorded for audit, 70 cases |
 | **Evidence** | [agent trust boundaries](agent-trust-boundaries-2026-10-18.md) (develop, interpret and act; a proposal lifecycle, proposed and not specified); [configuration and delegation §5](../tenancy/nightscout-configuration-and-delegation-2026-09-10.md#5-new-data-and-delegation-between-agents) (what a delegation design must provide); [control-plane reconciliation](../tenancy/nightscout-control-plane-reconciliation-2026-09-11.md); [authority model](../../10-domain/authority-model.md) |
 | **Decisions** | [D13–D17](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions) (credential root, listeners, auth plane; D17 row 2 open) |
 | **Open** | the choices in [commands §9](spec/commands.md#9-open); delegation (authority §7); D17 row 2; the owner choices in authority §9 |

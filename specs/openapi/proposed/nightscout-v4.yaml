@@ -16,8 +16,8 @@ info:
     Every operation carries three extensions, also written at the top of its description:
 
     - `x-status`: `in-pr-8857` (served by #8857 at `3be98536`), `specified` (rules and
-      conformance cases, no hub serves it), or `open` (defined elsewhere in this repository, with
-      its path or placement undecided).
+      conformance cases, or decided by the maintainer, and not served by cgm-remote-monitor), or
+      `open` (defined elsewhere in this repository, with its path or placement undecided).
     - `x-spec-rules`: the rule and section ids the operation implements.
     - `x-listener`: the listener that serves it, from authority AU2 (decision D16): `data` is
       `ns-api` (devices, clients, viewers), `tenant-admin` is `ns-tenant-admin` (the tenant owner,
@@ -29,9 +29,9 @@ info:
     Schemas in `specs/sync/`, referenced rather than copied; the command and proposal bodies have
     no JSON Schema file yet and are written here from the member tables of commands §7.1.
 
-    The statistics operations come from the statistics API proposal, not the platform
-    specifications; they are `open` because the proposal writes them under `/api/v3/stats/` and the
-    v4 placement is a recommendation, not a decision.
+    The statistics operations follow the maintainer's decision of 2026-10-26 to match Nocturne's
+    StatisticsController at `89dcaf1dd`; their response shapes are read from Nocturne's models into
+    `statistics-v4.schema.json`.
 
     Operations the specifications describe without a path (typed record writes and reads, the
     plan operations, the owner's view of who acts for the person, the tenant-owner configuration
@@ -83,10 +83,12 @@ tags:
       A proposal and its approval in front of a command (commands §6).
   - name: Statistics
     description: >-
-      Computed reads over stored glucose and treatment records, from the statistics API proposal
-      (`docs/sdqctl-proposals/statistics-api-proposal.md`, REQ-STATS-001 to 004), which writes
-      them at `/api/v3/stats/*`. Placed here under `/api/v4/statistics/` as the comparison page
-      recommends; the placement, the segment name and the time-zone rule are open.
+      Reads over stored glucose and treatment records. Maintainer, 2026-10-26: on v4 under
+      `statistics`, matching Nocturne `89dcaf1dd`'s StatisticsController for hub compatibility
+      (paths, parameters, response shapes, the tenant time-zone rule, the under-ten-readings rule and
+      its read scopes). Response shapes are in `statistics-v4.schema.json`. What a shared contract
+      should fix and what it leaves to each hub, and whether Nocturne's compute-over-a-posted-body
+      actions join later, are open for discussion.
 paths:
   /.well-known/nightscout/sync:
     get:
@@ -322,27 +324,30 @@ paths:
           $ref: '#/components/responses/Registration'
         '428':
           $ref: '#/components/responses/Registration'
-  /api/v4/registrations/{vendor}/{product}/instances/{instanceId}:
+  /api/v4/instances/{instanceId}:
     parameters:
-      - $ref: '#/components/parameters/vendor'
-      - $ref: '#/components/parameters/product'
       - $ref: '#/components/parameters/instanceId'
     put:
       tags: [Definitions and instances]
       operationId: putInstance
       summary: Create, renew or change an instance
       description: |
-        **Status:** in PR #8857 (`lib/registration/products.js:283`). **Listener:** data.
+        **Status:** specified. The flat path is the maintainer's decision of 2026-10-26
+        (registration §7, amendment); #8857 serves this operation today at the nested
+        `PUT /api/v4/registrations/{vendor}/{product}/instances/{instanceId}`
+        (`lib/registration/products.js:283`), a follow-up for that PR. **Listener:** data.
         **Credential:** any credential with `api:registrations:create`; an existing instance's
-        binding to renew. **Rules:** registration §8–§10, §11; authority §3, §6; identity §2.
+        binding to renew. **Rules:** registration §7–§10, §11; authority §3, §6; identity §2.
 
-        The body names a stored definition, roles `{channel, role, provenance}` and labels. Each
+        The body names the product (`product: {vendor, product}`), a stored definition of it, roles `{channel, role, provenance}` and labels. Each
         create or renewal sets `leaseExpiresAt` (capability `instances.leaseSeconds`). A role is
         refused per role (`role-held`, `unknown-channel`, `not-a-command-channel`,
         `not-registration-owner` for a `device` command sink, …), never the instance. The owner
-        never writes an instance.
-      x-status: in-pr-8857
-      x-spec-rules: [registration §8, registration §9, registration §10, authority §3, authority §6, identity §2]
+        never writes an instance. The instance is looked up within the request's tenant, as every
+        tenant resource is (CM6). A renewal naming a product other than the stored instance's is
+        422 `invalid-instance` (registration §7 amendment).
+      x-status: specified
+      x-spec-rules: [registration §7, registration §8, registration §9, registration §10, authority §3, authority §6, identity §2]
       x-listener: [data]
       x-credential: api:registrations:create; the instance's binding to renew
       parameters:
@@ -376,12 +381,13 @@ paths:
       operationId: deleteInstance
       summary: Release an instance and all its roles
       description: |
-        **Status:** in PR #8857 (`lib/registration/products.js:289`). **Listener:** data.
-        **Credential:** the credential the instance is bound to, with `api:registrations:delete`.
-        **Rules:** registration §7, §8.
+        **Status:** specified at the flat path (maintainer, 2026-10-26); #8857 serves it at the
+        nested `DELETE /api/v4/registrations/{vendor}/{product}/instances/{instanceId}`
+        (`lib/registration/products.js:289`). **Listener:** data. **Credential:** the credential
+        the instance is bound to, with `api:registrations:delete`. **Rules:** registration §7, §8.
 
         `If-Match` the instance's etag. Records it wrote keep its id.
-      x-status: in-pr-8857
+      x-status: specified
       x-spec-rules: [registration §7, registration §8]
       x-listener: [data]
       x-credential: api:registrations:delete and the instance's binding
@@ -398,21 +404,22 @@ paths:
           $ref: '#/components/responses/Instance'
         '428':
           $ref: '#/components/responses/Instance'
-  /api/v4/registrations/instances:
+  /api/v4/instances:
     get:
       tags: [Owner actions]
       operationId: listInstances
       summary: The owner's listing of instances, overlaps and registrations
       description: |
-        **Status:** in PR #8857 at this path (`lib/registration/products.js:295`); authority §4
-        names the listing and gives no path. **Listener:** tenant-admin; on `single`,
-        `API_SECRET`. **Rules:** authority §4, §8; registration §8, §9.
+        **Status:** specified at the flat instances root (maintainer, 2026-10-26); #8857 serves
+        it at `GET /api/v4/registrations/instances` (`lib/registration/products.js:295`).
+        **Listener:** tenant-admin under `multi`; on `single`, the one listener with
+        `API_SECRET` (authority AU6). **Rules:** authority §4, §8, AU6; registration §8, §9.
 
         Every instance with its roles, labels and liveness; the overlaps (channel, role, claimant,
         holder); `registrations` with `boundTo`, `credentialKind` and `bindingEvent`;
         `slotNameObservations`; observed aliases only with `includeWithheld=true`.
-      x-status: in-pr-8857
-      x-spec-rules: [authority §4, authority §8, registration §8, registration §9]
+      x-status: specified
+      x-spec-rules: [authority §4, authority §8, AU6, registration §8, registration §9]
       x-listener: [tenant-admin]
       x-single: one listener with `API_SECRET`
       x-credential: the tenant owner
@@ -1171,200 +1178,419 @@ paths:
           $ref: '#/components/responses/Refusal'
         '404':
           $ref: '#/components/responses/Refusal'
-  /api/v4/statistics/daily:
+  /api/v4/statistics/range-analytics:
     get:
       tags: [Statistics]
-      operationId: getDailyStatistics
-      summary: Per-day glucose statistics
+      operationId: getRangeAnalytics
+      summary: Extended glucose analytics for a date range
       description: |
-        **Status:** open: REQ-STATS-001 of the statistics API proposal defines it at
-        `/api/v3/stats/daily`; no platform specification and no
-        conformance case covers it. **Listener:** data. **Credential:** read.
+        **Status:** specified by decision (maintainer, 2026-10-26: match Nocturne for hub
+        compatibility); served by Nocturne at `89dcaf1dd` (`src/API/Nocturne.API/Controllers/V4/Analytics/StatisticsController.cs:464`), not by
+        cgm-remote-monitor. **Listener:** data. **Credential:** `reports.read` (Nocturne's scope rule).
 
-        Per day: entry count, gaps and coverage; mean, median, min, max, SD, CV; percentiles; time in five ranges; A1c and GMI estimates.
-      x-status: open
+        Extended analytics (time in range, GMI, GRI, variability, clinical assessment), time-of-day averaged statistics, the contributing devices and time in the personal target range. Computed over the canonical glucose stream unless one device is named (`StatisticsController.cs:486-490`). Days and hours are bucketed on the tenant's time zone; without one, the figures that depend on a local day are withheld and `timeZoneUnavailableReason` says why. Client cache 60 s.
+      x-status: specified
+      x-spec-rules: [maintainer 2026-10-26 statistics, Nocturne 89dcaf1dd StatisticsController.cs:464]
       x-listener: [data]
-      x-credential: read (`readable` today, AU5; Nocturne's equivalent is `reports.read`)
-      x-spec-rules: [REQ-STATS-001]
+      x-credential: reports.read
       parameters:
-        - $ref: '#/components/parameters/statsFrom'
-        - $ref: '#/components/parameters/statsTo'
-        - $ref: '#/components/parameters/statsUnits'
-        - $ref: '#/components/parameters/statsTargetLow'
-        - $ref: '#/components/parameters/statsTargetHigh'
+        - name: startDate
+          in: query
+          required: true
+          description: Start of the window (inclusive, UTC).
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          required: true
+          description: End of the window (exclusive, UTC).
+          schema:
+            type: string
+            format: date-time
+        - name: population
+          in: query
+          required: false
+          description: Population for the clinical target assessment; default `Type1Adult`. Bound by name or number.
+          schema:
+            $ref: 'statistics-v4.schema.json#/$defs/DiabetesPopulation'
+        - name: patientDeviceId
+          in: query
+          required: false
+          description: Restrict glucose to one patient device instead of the canonical stream across devices; boluses and carbs are not filtered.
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
-          description: The statistics.
+          description: As Nocturne's `ReportAnalysisResult`.
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DailyStatistics'
+                $ref: 'statistics-v4.schema.json#/$defs/ReportAnalysisResult'
+        '400':
+          $ref: '#/components/responses/Refusal'
         '403':
           $ref: '#/components/responses/Refusal'
-  /api/v4/statistics/daily/{date}:
+  /api/v4/statistics/weekday-averages:
     get:
       tags: [Statistics]
-      operationId: getDayStatistics
-      summary: One day's glucose statistics
+      operationId: getWeekdayAverages
+      summary: Mean glucose per weekday per five-minute slot
       description: |
-        **Status:** open: REQ-STATS-001 of the statistics API proposal defines it at
-        `/api/v3/stats/daily/{date}`; no platform specification and no
-        conformance case covers it. **Listener:** data. **Credential:** read.
+        **Status:** specified by decision (maintainer, 2026-10-26: match Nocturne for hub
+        compatibility); served by Nocturne at `89dcaf1dd` (`src/API/Nocturne.API/Controllers/V4/Analytics/StatisticsController.cs:532`), not by
+        cgm-remote-monitor. **Listener:** data. **Credential:** `reports.read` (Nocturne's scope rule).
 
-        As the daily array, for one day.
-      x-status: open
+        Bucketed on the tenant's local clock; without a zone, no slots and the reason. Client cache 60 s.
+      x-status: specified
+      x-spec-rules: [maintainer 2026-10-26 statistics, Nocturne 89dcaf1dd StatisticsController.cs:532]
       x-listener: [data]
-      x-credential: read (`readable` today, AU5; Nocturne's equivalent is `reports.read`)
-      x-spec-rules: [REQ-STATS-001]
+      x-credential: reports.read
       parameters:
-        - name: date
-          in: path
+        - name: startDate
+          in: query
           required: true
-          description: The day; which time zone bounds it is open.
+          description: Start of the window (inclusive, UTC).
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          required: true
+          description: End of the window (exclusive, UTC).
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: As Nocturne's `WeekdayAveragesResponse`.
+          content:
+            application/json:
+              schema:
+                $ref: 'statistics-v4.schema.json#/$defs/WeekdayAveragesResponse'
+        '400':
+          $ref: '#/components/responses/Refusal'
+        '403':
+          $ref: '#/components/responses/Refusal'
+  /api/v4/statistics/hourly-patterns:
+    get:
+      tags: [Statistics]
+      operationId: getHourlyPatterns
+      summary: Best and worst hours of the day
+      description: |
+        **Status:** specified by decision (maintainer, 2026-10-26: match Nocturne for hub
+        compatibility); served by Nocturne at `89dcaf1dd` (`src/API/Nocturne.API/Controllers/V4/Analytics/StatisticsController.cs:567`), not by
+        cgm-remote-monitor. **Listener:** data. **Credential:** `reports.read` (Nocturne's scope rule).
+
+        Days and hours are bucketed on the tenant's time zone; without one, the figures that depend on a local day are withheld and `timeZoneUnavailableReason` says why. Client cache 60 s.
+      x-status: specified
+      x-spec-rules: [maintainer 2026-10-26 statistics, Nocturne 89dcaf1dd StatisticsController.cs:567]
+      x-listener: [data]
+      x-credential: reports.read
+      parameters:
+        - name: startDate
+          in: query
+          required: true
+          description: Start of the window (inclusive, UTC).
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          required: true
+          description: End of the window (exclusive, UTC).
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: As Nocturne's `HourlyPatterns`.
+          content:
+            application/json:
+              schema:
+                $ref: 'statistics-v4.schema.json#/$defs/HourlyPatterns'
+        '400':
+          $ref: '#/components/responses/Refusal'
+        '403':
+          $ref: '#/components/responses/Refusal'
+  /api/v4/statistics/periods:
+    get:
+      tags: [Statistics]
+      operationId: getMultiPeriodStatistics
+      summary: Statistics for the last 1, 3, 7, 30 and 90 days
+      description: |
+        **Status:** specified by decision (maintainer, 2026-10-26: match Nocturne for hub
+        compatibility); served by Nocturne at `89dcaf1dd` (`src/API/Nocturne.API/Controllers/V4/Analytics/StatisticsController.cs:806`), not by
+        cgm-remote-monitor. **Listener:** data. **Credential:** `glucose.read` or `reports.read` (Nocturne's scope rule).
+
+        Glucose analytics, treatment summary and insulin delivery per period; a period with fewer than ten readings carries no figures (`tests/Unit/Nocturne.API.Tests/Controllers/V4/Analytics/StatisticsControllerAggregationTests.cs:75`). Cached five minutes at the hub; each response is narrowed to the caller's categories (insulin and carb aggregates need `reports.read` or `treatments.read`; `Authorization/AnalyticsReadScopeGuards.cs:314-331`).
+      x-status: specified
+      x-spec-rules: [maintainer 2026-10-26 statistics, Nocturne 89dcaf1dd StatisticsController.cs:806]
+      x-listener: [data]
+      x-credential: glucose.read or reports.read
+      responses:
+        '200':
+          description: As Nocturne's `MultiPeriodStatistics`.
+          content:
+            application/json:
+              schema:
+                $ref: 'statistics-v4.schema.json#/$defs/MultiPeriodStatistics'
+        '400':
+          $ref: '#/components/responses/Refusal'
+        '403':
+          $ref: '#/components/responses/Refusal'
+  /api/v4/statistics/daily-basal-bolus-ratios:
+    get:
+      tags: [Statistics]
+      operationId: getDailyBasalBolusRatios
+      summary: Daily basal and bolus ratios with carbs
+      description: |
+        **Status:** specified by decision (maintainer, 2026-10-26: match Nocturne for hub
+        compatibility); served by Nocturne at `89dcaf1dd` (`src/API/Nocturne.API/Controllers/V4/Analytics/StatisticsController.cs:940`), not by
+        cgm-remote-monitor. **Listener:** data. **Credential:** `reports.read` (Nocturne's scope rule).
+
+        Grouped by the tenant's local day; without a zone, no days and the reason.
+      x-status: specified
+      x-spec-rules: [maintainer 2026-10-26 statistics, Nocturne 89dcaf1dd StatisticsController.cs:940]
+      x-listener: [data]
+      x-credential: reports.read
+      parameters:
+        - name: startDate
+          in: query
+          required: true
+          description: Start of the window (inclusive, UTC).
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          required: true
+          description: End of the window (exclusive, UTC).
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: As Nocturne's `DailyBasalBolusRatioResponse`.
+          content:
+            application/json:
+              schema:
+                $ref: 'statistics-v4.schema.json#/$defs/DailyBasalBolusRatioResponse'
+        '400':
+          $ref: '#/components/responses/Refusal'
+        '403':
+          $ref: '#/components/responses/Refusal'
+  /api/v4/statistics/punch-card:
+    get:
+      tags: [Statistics]
+      operationId: getPunchCardData
+      summary: Month-by-day punch-card statistics
+      description: |
+        **Status:** specified by decision (maintainer, 2026-10-26: match Nocturne for hub
+        compatibility); served by Nocturne at `89dcaf1dd` (`src/API/Nocturne.API/Controllers/V4/Analytics/StatisticsController.cs:988`), not by
+        cgm-remote-monitor. **Listener:** data. **Credential:** `glucose.read` or `reports.read` (Nocturne's scope rule).
+
+        Months split at the tenant's local midnight; without a zone, nothing is read and the reason is given. Without `reports.read` or `treatments.read`, every insulin and carb figure is zero.
+      x-status: specified
+      x-spec-rules: [maintainer 2026-10-26 statistics, Nocturne 89dcaf1dd StatisticsController.cs:988]
+      x-listener: [data]
+      x-credential: glucose.read or reports.read
+      parameters:
+        - name: startDate
+          in: query
+          required: true
+          description: Inclusive start calendar date in the tenant's time zone.
           schema:
             type: string
             format: date
-        - $ref: '#/components/parameters/statsFrom'
-        - $ref: '#/components/parameters/statsTo'
-        - $ref: '#/components/parameters/statsUnits'
-        - $ref: '#/components/parameters/statsTargetLow'
-        - $ref: '#/components/parameters/statsTargetHigh'
-      responses:
-        '200':
-          description: The statistics.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DailyStatistics'
-        '403':
-          $ref: '#/components/responses/Refusal'
-  /api/v4/statistics/summary:
-    get:
-      tags: [Statistics]
-      operationId: getSummaryStatistics
-      summary: Period summary statistics
-      description: |
-        **Status:** open: REQ-STATS-002 of the statistics API proposal defines it at
-        `/api/v3/stats/summary`; no platform specification and no
-        conformance case covers it. **Listener:** data. **Credential:** read.
-
-        Aggregated over the range: glucose, GVI and PGS, range percentages, A1c and GMI estimates, variability.
-      x-status: open
-      x-listener: [data]
-      x-credential: read (`readable` today, AU5; Nocturne's equivalent is `reports.read`)
-      x-spec-rules: [REQ-STATS-002]
-      parameters:
-        - name: period
+        - name: endDate
           in: query
-          required: false
-          description: Aggregation period.
+          required: true
+          description: Inclusive end calendar date in the tenant's time zone.
           schema:
             type: string
-            enum: [day, week, month]
-        - $ref: '#/components/parameters/statsFrom'
-        - $ref: '#/components/parameters/statsTo'
-        - $ref: '#/components/parameters/statsUnits'
-        - $ref: '#/components/parameters/statsTargetLow'
-        - $ref: '#/components/parameters/statsTargetHigh'
+            format: date
       responses:
         '200':
-          description: The statistics.
+          description: As Nocturne's `PunchCardResponse`.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PeriodSummary'
+                $ref: 'statistics-v4.schema.json#/$defs/PunchCardResponse'
+        '400':
+          $ref: '#/components/responses/Refusal'
         '403':
           $ref: '#/components/responses/Refusal'
-  /api/v4/statistics/hourly:
+  /api/v4/statistics/insulin-delivery-stats:
     get:
       tags: [Statistics]
-      operationId: getHourlyStatistics
-      summary: Hourly glucose distribution
+      operationId: getInsulinDeliveryStatistics
+      summary: Insulin delivery statistics for a date range
       description: |
-        **Status:** open: REQ-STATS-003 of the statistics API proposal defines it at
-        `/api/v3/stats/hourly`; no platform specification and no
-        conformance case covers it. **Listener:** data. **Credential:** read.
+        **Status:** specified by decision (maintainer, 2026-10-26: match Nocturne for hub
+        compatibility); served by Nocturne at `89dcaf1dd` (`src/API/Nocturne.API/Controllers/V4/Analytics/StatisticsController.cs:1039`), not by
+        cgm-remote-monitor. **Listener:** data. **Credential:** `reports.read` (Nocturne's scope rule).
 
-        Per hour of the day: count, mean and percentiles, for percentile and AGP charts without fetching every entry.
-      x-status: open
+        Totals and breakdowns of basal and bolus delivery.
+      x-status: specified
+      x-spec-rules: [maintainer 2026-10-26 statistics, Nocturne 89dcaf1dd StatisticsController.cs:1039]
       x-listener: [data]
-      x-credential: read (`readable` today, AU5; Nocturne's equivalent is `reports.read`)
-      x-spec-rules: [REQ-STATS-003]
+      x-credential: reports.read
       parameters:
-        - $ref: '#/components/parameters/statsFrom'
-        - $ref: '#/components/parameters/statsTo'
-        - $ref: '#/components/parameters/statsUnits'
-        - $ref: '#/components/parameters/statsTargetLow'
-        - $ref: '#/components/parameters/statsTargetHigh'
+        - name: startDate
+          in: query
+          required: true
+          description: Start of the window (inclusive, UTC).
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          required: true
+          description: End of the window (exclusive, UTC).
+          schema:
+            type: string
+            format: date-time
+        - name: includeBoluses
+          in: query
+          required: false
+          description: Include the individual manual boluses (needs `treatments.read`).
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
-          description: The statistics.
+          description: As Nocturne's `InsulinDeliveryStatistics`.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HourlyDistribution'
+                $ref: 'statistics-v4.schema.json#/$defs/InsulinDeliveryStatistics'
+        '400':
+          $ref: '#/components/responses/Refusal'
         '403':
           $ref: '#/components/responses/Refusal'
-  /api/v4/statistics/treatments:
+  /api/v4/statistics/basal-analysis:
     get:
       tags: [Statistics]
-      operationId: getTreatmentStatistics
-      summary: Insulin and carbohydrate summaries
+      operationId: getBasalAnalysis
+      summary: Basal analysis for a date range
       description: |
-        **Status:** open: REQ-STATS-004 of the statistics API proposal defines it at
-        `/api/v3/stats/treatments`; no platform specification and no
-        conformance case covers it. **Listener:** data. **Credential:** read.
+        **Status:** specified by decision (maintainer, 2026-10-26: match Nocturne for hub
+        compatibility); served by Nocturne at `89dcaf1dd` (`src/API/Nocturne.API/Controllers/V4/Analytics/StatisticsController.cs:1081`), not by
+        cgm-remote-monitor. **Listener:** data. **Credential:** `reports.read` (Nocturne's scope rule).
 
-        Daily insulin totals (basal, bolus, SMB, correction, carb bolus), carbohydrate totals, and ratios.
-      x-status: open
+        Basal statistics and hourly basal percentiles.
+      x-status: specified
+      x-spec-rules: [maintainer 2026-10-26 statistics, Nocturne 89dcaf1dd StatisticsController.cs:1081]
       x-listener: [data]
-      x-credential: read (`readable` today, AU5; Nocturne's equivalent is `reports.read`)
-      x-spec-rules: [REQ-STATS-004]
+      x-credential: reports.read
       parameters:
-        - $ref: '#/components/parameters/statsFrom'
-        - $ref: '#/components/parameters/statsTo'
-        - $ref: '#/components/parameters/statsUnits'
-        - $ref: '#/components/parameters/statsTargetLow'
-        - $ref: '#/components/parameters/statsTargetHigh'
+        - name: startDate
+          in: query
+          required: true
+          description: Start of the window (inclusive, UTC).
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          required: true
+          description: End of the window (exclusive, UTC).
+          schema:
+            type: string
+            format: date-time
       responses:
         '200':
-          description: The statistics.
+          description: As Nocturne's `BasalAnalysisResponse`.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TreatmentSummary'
+                $ref: 'statistics-v4.schema.json#/$defs/BasalAnalysisResponse'
+        '400':
+          $ref: '#/components/responses/Refusal'
         '403':
           $ref: '#/components/responses/Refusal'
-  /api/v4/statistics/current:
+  /api/v4/statistics/hourly-insulin-delivery:
     get:
       tags: [Statistics]
-      operationId: getCurrentStatistics
-      summary: Current glucose and recent statistics
+      operationId: getHourlyInsulinDelivery
+      summary: Average insulin delivered per hour of day
       description: |
-        **Status:** open: REQ-STATS-005 of the statistics API proposal defines it at
-        `/api/v3/stats/current`; no platform specification and no
-        conformance case covers it. **Listener:** data. **Credential:** read.
+        **Status:** specified by decision (maintainer, 2026-10-26: match Nocturne for hub
+        compatibility); served by Nocturne at `89dcaf1dd` (`src/API/Nocturne.API/Controllers/V4/Analytics/StatisticsController.cs:1127`), not by
+        cgm-remote-monitor. **Listener:** data. **Credential:** `reports.read` (Nocturne's scope rule).
 
-        Listed in the proposal's endpoint table and as the `nightscout://stats/current` MCP resource; the proposal gives no response schema.
-      x-status: open
+        Split by scheduled basal, temp adjustments and boluses, from pump-confirmed delivery records.
+      x-status: specified
+      x-spec-rules: [maintainer 2026-10-26 statistics, Nocturne 89dcaf1dd StatisticsController.cs:1127]
       x-listener: [data]
-      x-credential: read (`readable` today, AU5; Nocturne's equivalent is `reports.read`)
-      x-spec-rules: [REQ-STATS-005]
+      x-credential: reports.read
       parameters:
-        - $ref: '#/components/parameters/statsFrom'
-        - $ref: '#/components/parameters/statsTo'
-        - $ref: '#/components/parameters/statsUnits'
-        - $ref: '#/components/parameters/statsTargetLow'
-        - $ref: '#/components/parameters/statsTargetHigh'
+        - name: startDate
+          in: query
+          required: true
+          description: Start of the window (inclusive, UTC).
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          required: true
+          description: End of the window (exclusive, UTC).
+          schema:
+            type: string
+            format: date-time
       responses:
         '200':
-          description: The statistics.
+          description: As Nocturne's `HourlyInsulinDeliveryResponse`.
           content:
             application/json:
               schema:
-                type: object
+                $ref: 'statistics-v4.schema.json#/$defs/HourlyInsulinDeliveryResponse'
+        '400':
+          $ref: '#/components/responses/Refusal'
+        '403':
+          $ref: '#/components/responses/Refusal'
+  /api/v4/statistics/aid-system-metrics:
+    get:
+      tags: [Statistics]
+      operationId: getAidSystemMetrics
+      summary: AID system metrics for a date range
+      description: |
+        **Status:** specified by decision (maintainer, 2026-10-26: match Nocturne for hub
+        compatibility); served by Nocturne at `89dcaf1dd` (`src/API/Nocturne.API/Controllers/V4/Analytics/StatisticsController.cs:1188`), not by
+        cgm-remote-monitor. **Listener:** data. **Credential:** `reports.read` (Nocturne's scope rule).
+
+        Loop-on time, site-change counts, CGM active percent and per-algorithm segments, each narrowed to the caller's categories.
+      x-status: specified
+      x-spec-rules: [maintainer 2026-10-26 statistics, Nocturne 89dcaf1dd StatisticsController.cs:1188]
+      x-listener: [data]
+      x-credential: reports.read
+      parameters:
+        - name: startDate
+          in: query
+          required: true
+          description: Inclusive start (UTC).
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          required: true
+          description: Inclusive end (UTC).
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: As Nocturne's `AidSystemMetrics`.
+          content:
+            application/json:
+              schema:
+                $ref: 'statistics-v4.schema.json#/$defs/AidSystemMetrics'
+        '400':
+          $ref: '#/components/responses/Refusal'
         '403':
           $ref: '#/components/responses/Refusal'
 security:
@@ -1394,44 +1620,6 @@ components:
         The tenant owner's credential on `ns-tenant-admin`. Its form is not specified: native
         today, Ory Kratos if D17 row 2 lands (adopted in principle, gated).
   parameters:
-    statsFrom:
-      name: from
-      in: query
-      required: false
-      description: Start (ISO 8601); default 14 days ago (statistics API proposal).
-      schema:
-        type: string
-        format: date-time
-    statsTo:
-      name: to
-      in: query
-      required: false
-      description: End (ISO 8601); default now.
-      schema:
-        type: string
-        format: date-time
-    statsUnits:
-      name: units
-      in: query
-      required: false
-      description: Glucose units; default from the profile.
-      schema:
-        type: string
-        enum: [mg/dL, mmol/L]
-    statsTargetLow:
-      name: targetLow
-      in: query
-      required: false
-      description: Low threshold; default from the profile.
-      schema:
-        type: number
-    statsTargetHigh:
-      name: targetHigh
-      in: query
-      required: false
-      description: High threshold; default from the profile.
-      schema:
-        type: number
     vendor:
       name: vendor
       in: path
@@ -1546,121 +1734,6 @@ components:
           schema:
             $ref: '#/components/schemas/Refusal'
   schemas:
-    DailyStatistics:
-      type: object
-      description: REQ-STATS-001, from the proposal's example.
-      properties:
-        date:
-          type: string
-          format: date
-        entries:
-          type: object
-          properties:
-            count: {type: integer}
-            gaps: {type: integer}
-            coverage: {type: number}
-        glucose:
-          $ref: '#/components/schemas/GlucoseSummary'
-        percentiles:
-          $ref: '#/components/schemas/Percentiles'
-        ranges:
-          type: object
-          additionalProperties:
-            type: object
-            properties:
-              count: {type: integer}
-              percent: {type: number}
-              threshold: {type: number}
-              low: {type: number}
-              high: {type: number}
-        estimates:
-          $ref: '#/components/schemas/Estimates'
-    GlucoseSummary:
-      type: object
-      properties:
-        mean: {type: number}
-        median: {type: number}
-        min: {type: number}
-        max: {type: number}
-        stdDev: {type: number}
-        cv: {type: number}
-        gvi: {type: number}
-        pgs: {type: number}
-    Percentiles:
-      type: object
-      properties:
-        p10: {type: number}
-        p25: {type: number}
-        p50: {type: number}
-        p75: {type: number}
-        p90: {type: number}
-    Estimates:
-      type: object
-      properties:
-        a1c_dcct: {type: number}
-        a1c_ifcc: {type: number}
-        gmi: {type: number}
-    Period:
-      type: object
-      properties:
-        from: {type: string, format: date}
-        to: {type: string, format: date}
-        days: {type: integer}
-    PeriodSummary:
-      type: object
-      description: REQ-STATS-002, from the proposal's example.
-      properties:
-        period:
-          $ref: '#/components/schemas/Period'
-        glucose:
-          $ref: '#/components/schemas/GlucoseSummary'
-        ranges:
-          type: object
-          additionalProperties:
-            type: number
-        estimates:
-          $ref: '#/components/schemas/Estimates'
-        variability:
-          type: object
-          properties:
-            meanDailyChange: {type: number}
-            meanHourlyChange: {type: number}
-            fluctuationRate5: {type: number}
-            fluctuationRate10: {type: number}
-    HourlyDistribution:
-      type: object
-      description: REQ-STATS-003, from the proposal's example.
-      properties:
-        period:
-          $ref: '#/components/schemas/Period'
-        hours:
-          type: array
-          items:
-            type: object
-            properties:
-              hour: {type: integer, minimum: 0, maximum: 23}
-              count: {type: integer}
-              mean: {type: number}
-              percentiles:
-                $ref: '#/components/schemas/Percentiles'
-    TreatmentSummary:
-      type: object
-      description: REQ-STATS-004, from the proposal's example.
-      properties:
-        period:
-          $ref: '#/components/schemas/Period'
-        insulin:
-          type: object
-          additionalProperties:
-            type: number
-        carbs:
-          type: object
-          additionalProperties:
-            type: number
-        ratios:
-          type: object
-          additionalProperties:
-            type: number
     WellKnownCatalogue:
       type: object
       description: As #8857 serves it (`lib/registration/index.js:113-121`).

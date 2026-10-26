@@ -260,7 +260,9 @@ sequenceDiagram
 
 The capability's `commands.href` is `/api/v4/commands`, `commands.fetch` the URI template
 `/api/v4/instances/{instanceId}/commands`, and `commands.proposals` `/api/v4/proposals`; a hub may
-serve them elsewhere and says so there.
+serve them elsewhere and says so there. Since 2026-10-26 (maintainer) the instance resource itself is
+`/api/v4/instances/{instanceId}` ([registration §7](registration.md#7-definitions), amendment), so
+the fetch is a sub-resource of the instance it serves.
 
 **Send** (`POST /api/v4/commands`) and **approve** (`POST …/approve`):
 

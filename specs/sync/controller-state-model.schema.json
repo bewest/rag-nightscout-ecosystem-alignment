@@ -31,6 +31,10 @@
     "product": {
      "type": "string"
     },
+    "softwareId": {
+     "type": "string",
+     "description": "Proposed (maintainer, 2026-10-26; PROPOSAL-controller-descriptions §2.2): the reverse-DNS identifier of the software, the same value and form as the RFC 7591 `software_id` that Nocturne's dynamic client registration and known-app directory use (for example `org.loopkit.loop`, `org.nightscout.trio`; Nocturne `main` 89dcaf1dd src/Core/Nocturne.Core.Models/Authorization/KnownOAuthClients.cs), so a hub can join who wrote a record with what it means on one key. The stable, build-independent id: a build-specific bundle id maps to it, as Nocturne's directory does for Trio. Compared exactly, as Nocturne's directory lookup does (KnownOAuthClients.cs:214-215). Optional; an attribute, not part of the registration's identity, which stays (vendor, product). Whether two products may share one, and whether a hub checks it against the credential's registered client, are open."
+    },
     "algorithmFamily": {
      "enum": [
       "oref0",

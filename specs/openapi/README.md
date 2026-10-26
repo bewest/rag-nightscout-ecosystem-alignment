@@ -55,7 +55,7 @@ The label each spec carries on the static site (recommended 2026-10-26; the site
 | `aid-alignment-extensions.yaml` | superseded | [rendered](../../site/pages/api-aid-alignment-extensions.html) | Its schemas are replaced by the identity, registration and state-intent specs in `docs/30-design/platform/spec/`, which are proposed. |
 | `aid-statespan-2025.yaml` | historical | not rendered | Hypothetical V3 extension; no state-span code on `dev`. Not rendered. |
 | `nocturne-v4-extension.yaml` | historical | not rendered | Four of its six paths no longer exist in Nocturne `main` 36d5ef4a2; Nocturne publishes its own OpenAPI description. |
-| `proposed/nightscout-v4.yaml` | proposed | [rendered](../../site/pages/api-nightscout-v4-proposed.html) | The v4 surface the platform specifications define (`docs/30-design/platform/spec/` at `6e6223f26`): 19 operations served by cgm-remote-monitor draft PR #8857 at `3be98536`, 12 specified and not served, 6 statistics reads open; each operation states its listener. Compared with Nocturne `main` `89dcaf1dd` in `docs/30-design/platform/v4-surface-and-nocturne-2026-10-26.md`. |
+| `proposed/nightscout-v4.yaml` | proposed | [rendered](../../site/pages/api-nightscout-v4-proposed.html) | The v4 surface the platform specifications define (`docs/30-design/platform/spec/` at `6e6223f26`): 16 operations served by cgm-remote-monitor draft PR #8857 at `3be98536` and 25 specified and not served there, including Nocturne's ten statistics reads (maintainer, 2026-10-26), whose response shapes are in `proposed/statistics-v4.schema.json`; each operation states its listener. Compared with Nocturne `main` `89dcaf1dd` in `docs/30-design/platform/v4-surface-and-nocturne-2026-10-26.md`. |
 
 ### Open questions
 
