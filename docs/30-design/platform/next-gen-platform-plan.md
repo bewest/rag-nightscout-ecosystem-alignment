@@ -1,6 +1,6 @@
 # Next-gen platform: one write path, four tracks
 
-*Contributor-facing. Living plan, current at cgm-remote-monitor dev `47723cda` (2026-10-26) and [#8854](https://github.com/nightscout/cgm-remote-monitor/pull/8854) at `fa22d573`. Status: proposed; the decisions in §6 are open.*
+*Contributor-facing. Living plan, current at cgm-remote-monitor dev `47723cda` (2026-10-26) and [#8854](https://github.com/nightscout/cgm-remote-monitor/pull/8854) at `fa22d573`; #8854 merged to dev 2026-10-26 as `c08cbe03`, and ST-FILTER is being built on dev `7ad3a67f`. Status: proposed; the decisions in §6 are open.*
 
 The interactive version, with the dependency map, is the site page [nightscout-next-gen-platform.html](../../../site/pages/nightscout-next-gen-platform.html).
 
@@ -70,7 +70,7 @@ The replay trial measured both paths on dev `47723cda`. Branches: `seam/replay-2
 
 | item | builds | needs | check |
 |---|---|---|---|
-| PR-8854 | the boundary, read contract, data diagnostics, `--fail-zero`; into 16.0.0 after the four conditions of outcome B | dev | 336-cell matrix equal to dev; AST gate with bypass controls |
+| PR-8854 | the boundary, read contract, data diagnostics, `--fail-zero`; merged to dev 2026-10-26 (`c08cbe03`) for 16.0.0 | dev | 336-cell matrix equal to dev; AST gate with bypass controls |
 | QC-MATRIX-TT | Temporary Target records in reject mode added to the write-contract matrix | PR-8854 | off and reject differ only in the new cells |
 | ST-FILTER | slice 1: filter tree and interface methods under the API v3 adapter, composed with the boundary | PR-8854 | both matrices unchanged; the mingo differential |
 | ST-READS | slice 2: v1 reads through the interface | ST-FILTER | api.* suites; a new end-to-end `$type`/`$exists` test |
@@ -132,7 +132,7 @@ Decided 2026-10-26: #8854 lands in 16.0.0 after four alignment conditions (outco
 
 ## 7. How the work moves
 
-- **Pull requests.** Sized by milestone, not by slice: one single-tenant registration PR (S0, S1, S2, S5); one 16.0.0 re-send and merge contract PR (identifier matching, the null-removes rule, BF-195, the devicestatus answer); the storage slices grouped into few PRs after #8854. A track with many pieces in flight uses an integration branch with child PRs, the way #8605 carried 109 children. Dev is merged into the branch, not rebased. A PR's merge records that the merged tree matches the reviewed tree.
+- **Pull requests.** Sized by milestone, not by slice: one single-tenant registration PR (S0, S1, S2, S5); one 16.0.0 re-send and merge contract PR (identifier matching, the null-removes rule, BF-195, the devicestatus answer); the storage slices grouped into few PRs after #8854, the first being ST-FILTER with ST-READS (decided 2026-10-26). A track with many pieces in flight uses an integration branch with child PRs, the way #8605 carried 109 children. Dev is merged into the branch, not rebased. A PR's merge records that the merged tree matches the reviewed tree.
 - **What pins behaviour.** #8854's CRUD matrix and this repository's write-contract matrix. A slice that changes no behaviour changes no cell. A slice that changes behaviour lists the cells it changes and why.
 - **Red controls.** Every new test is shown failing against the code it guards before the change, with the original symptom.
 - **Conformance.** The registration and identity cases in `specs/sync/conformance/` run against a booted server by a harness in this repository (D12), reported case by case as passed, mapped or not applicable.

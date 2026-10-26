@@ -109,10 +109,10 @@
    "id": "PR-8854",
    "track": "storage",
    "phase": "now",
-   "state": "review",
+   "state": "done",
    "short": "Shared write boundary",
    "title": "Every v1/internal module, the socket and API v3 write through lib/storage/write-step.js; read contract and data diagnostics; zero-test runs fail. Decided 2026-10-26: lands in 16.0.0 after four alignment conditions (outcome B)",
-   "ref": "#8854 (37cdde50, out of draft; measured at fa22d573)",
+   "ref": "#8854 (merged to dev 2026-10-26 as c08cbe03 from head 246313e4)",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8854",
    "where": "lib/storage/write-step.js, lib/storage/validated-update.js, lib/storage/read-contract.js, scripts/check-write-boundary.js",
    "check": "0 of 336 write-contract cells changed (re-measured at fa22d573); its own 430 tests and boundary gate",
@@ -156,14 +156,15 @@
    "id": "ST-FILTER",
    "track": "storage",
    "phase": "boundary",
-   "state": "planned",
+   "state": "progress",
    "short": "Filter tree and interface",
    "title": "Slice 1: the backend-neutral filter tree and storage interface methods under the API v3 collection adapter, composed with #8854's boundary; no call site changes",
    "where": "lib/storage/filter.js, lib/api3/storage/mongoCollection/ (from old chain 4f753ab9, b0709c2c, 68ffbd66, c40d37f7, ef89bdb8, c1218d50, d75c1154, plus the type and nottype nodes)",
    "check": "both write-contract matrices unchanged; the mingo differential; #8854's gates",
    "depends": [
     "PR-8854"
-   ]
+   ],
+   "ref": "feat/storage-filter (local, from dev 7ad3a67f)"
   },
   {
    "id": "ST-READS",
