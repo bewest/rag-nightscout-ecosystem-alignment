@@ -30,10 +30,11 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 20 items
+### Maintainer &mdash; 21 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
+| `ARCH-8854` | `in-flight-upstream` | #8854 - shared write boundary, read contract and CI gates; into 16.0.0 after fou | #8854 |
 | `BFQ-161` | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory  | &mdash; |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
@@ -79,6 +80,7 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
+| **#8854** | `ARCH-8854` | `wip/architecture-data-contracts` | #8854 - shared write boundary, read contract and CI gates; i | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 

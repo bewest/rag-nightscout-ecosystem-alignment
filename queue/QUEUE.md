@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 293 |
+| items | 294 |
 | runnable gates | 367 |
-| explicit `no-gate:` markers | 322 |
+| explicit `no-gate:` markers | 323 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 322 of the 689 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 323 of the 690 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -46,7 +46,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `gate-not-met` | 5 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR |
 | `ready-to-push` | 4 | P0-C-REMEDIATE, ID-SIMPLE-MATCH, T30-AUTH, WS-LAB |
 | `blocked` | 17 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, WC-STEP-PATCH, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
-| `in-flight-upstream` | 2 | BFQ-72, BFQ-161 |
+| `in-flight-upstream` | 3 | ARCH-8854, BFQ-72, BFQ-161 |
 | `merged-upstream` | 43 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, BFQ-09, BFQ-46, BFQ-92, BFQ-93, BFQ-158, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-192, MOD-WRITE-VALIDATION |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 15 | T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-194, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
@@ -1036,7 +1036,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 ## Modernization release train
 
-`parcel: release-train` &mdash; 46 items
+`parcel: release-train` &mdash; 47 items
 
 The adopted order (maintainer, 2026-09-15): 15.0.9, then cut 1, then cut 2,
 then cuts 3+5 combined, then a deprecation release, then cut 4. The premise of
@@ -1071,6 +1071,7 @@ that costs.
 | `RT-4` | Deprecation release - folded into 15.0.9's release notes (maintainer, 2026-09-23) | `released` | `-` | minor | 1 run + 1 no-gate |
 | `RT-5` | Cut 4 - chore/mime-exposure-review, the one to slow down on | `merged-upstream` | `chore/mime-exposure-review` | major | 2 run + 3 no-gate |
 | `ID-SIMPLE-MATCH` | API v1 entries and devicestatus match on identifier like treatments (the simple contract) | `ready-to-push` | `feat/v1-identifier-match` | minor | 1 run + 1 no-gate |
+| `ARCH-8854` | #8854 - shared write boundary, read contract and CI gates; into 16.0.0 after four alignment conditions (outcome B) | `in-flight-upstream` | `wip/architecture-data-contracts` | n/a | 0 run + 1 no-gate |
 | `RT-CONNECT-PIN-CUTS` | BF-65 - cuts 1-3 ship the leaking connector to upgraders first | `gate-not-met` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6` | patch | 1 run + 1 no-gate |
 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | `chore/compose-mongodb6, chore/mime-exposure-review, chore/nightscout-modernization` | n/a | 2 run + 2 no-gate |
 | `RT-BOOTERROR` | BF-63 - the page that reports a boot error crashes on cut 4's boot errors | `gate-not-met` | `-` | patch | 3 run + 1 no-gate |
@@ -1921,6 +1922,35 @@ that costs.
 - `docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md`
 
 **Notes.** 2026-10-26: built as feat/v1-identifier-match 8d0f9a22 (one commit over dev 47723cda; lib/server/entries.js +84/-8, lib/server/devicestatus.js +97, two test files), not pushed. A re-sent identifier updates the stored record; an identifier miss still falls back to sysTime+type for entries (status quo, TEST-ENTRY-UUID-003 pins it), unlike v1 treatments, which never fall back; that choice is the maintainer's (next-gen plan decision D-ID-FALLBACK). identifier decides over a conflicting _id. upsertQueryFor is at entries.js:308 on 47723cda. Draft PR body and push commands are in the lane report. 2026-10-25: RT-1 merged (#8828, dev eb72a1d3), so this item is no longer blocked and can go to dev. Neither lib/server/entries.js nor lib/server/devicestatus.js changed between fade2299 and eb72a1d3 (git diff --name-only fade2299 official/dev -- both files prints nothing), so the line numbers above still hold. Cut 2 changes entries.js, so landing before cut 2's catch-up adds to that merge (RT-2). 2026-10-21, later: cut 1's catch-up merge is done (RT-REBASE's cut 1 part; 806ff2f0 contains dev 04d435eb), so blocks_on moves from RT-REBASE to RT-1: this lands on dev after #8828 merges, which is the maintainer's 2026-10-17 order. Cut 1 still touches neither lib/server/entries.js nor lib/server/devicestatus.js (`git diff --name-only official/dev official/chore/retire-jsdom` on 806ff2f0 lists neither). 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Still waits on cut 1's catch-up merge (RT-REBASE, in progress). Decided by the maintainer 2026-10-17: not in 15.0.9; lands on dev after cut 1's rebase, with BFQ-169. 15.0.9 is dev as it stands at fade2299 (releases/cgm-remote- monitor-15.0.9/contents.md), and any merge to dev moves the head off the candidate whose re-approval RT-0 owes. blocks_on names RT-REBASE because no separate item marks cut 1's catch-up merge done; only cut 1's part is needed (RT-1 blocks on the same two). Why after the rebase: RT-REBASE records that each further merge to dev raises the cuts' catch-up cost. Cuts 2-5 already change both files this item touches: `git diff --name-only $(git merge-base fade2299 <cut>) <cut> -- lib/server/entries.js lib/server/devicestatus.js` lists entries.js on cut 2 and both files on cuts 3, 4 and 5 (measured 2026-10-17); cut 1 touches neither. Landing after the catch-up merge keeps this change out of that merge's conflicts. The tenancy item ID-FIRST-MATCH absorbs this rule into the write step once WC-STEP-PATCH exists (it blocks on this item). Background: the simple contract in the Loop reply (LOOP-ID-REPLY) - _id an ObjectId or absent; identifier when _id is absent; the time key when neither.
+
+### `ARCH-8854` &mdash; #8854 - shared write boundary, read contract and CI gates; into 16.0.0 after four alignment conditions (outcome B)
+
+| | |
+|---|---|
+| state (claimed) | `in-flight-upstream` |
+| repo | `cgm-remote-monitor` |
+| branch | `wip/architecture-data-contracts` |
+| base | `official/dev@47723cda` |
+| worktree | `externals/cgm-remote-monitor-official` |
+| semver | `n/a` |
+| review | maintainer - authored by the co-maintainer; decided 2026-10-26 (outcome B) |
+
+**Blast radius.** Draft #8854 at 880b7369 (31 files, +934/-45): lib/storage/write-step.js (every v1/internal module, the four socket write handlers and API v3 write through one boundary), lib/storage/read-contract.js and the Nightscout-Data-Warnings header on API v3 reads, scripts/check-write-boundary.js (AST gate over eight adapter files), scripts/diagnose-data.js, cache, authorization-subject and history-cursor guards, --fail-zero on mocha, tests/api.crud-by- id.matrix.test.js (336 cells equal to dev).
+
+**What an operator sees.** Nothing changes for apps by default. With WRITE_VALIDATION=reject, the socket checks Temporary Targets too; how it answers a refused one is condition 1 below.
+
+**Why `n/a`.** inside the 16.0.0 major; client-visible parts are conditions 1 and 2
+
+**Gates.**
+
+- **NO GATE** &mdash; Upstream draft, not merged. The conditions are judged on the PR. After the merge, the 67-shape client replay (session -66's run on 47723cda) is re-run on the merged tree and compared row by row.
+
+**Evidence.**
+
+- `docs/30-design/modernization/pr-8854-alignment-2026-10-26.md`
+- `docs/30-design/platform/next-gen-platform-plan.md`
+
+**Notes.** Decided 2026-10-26 by the maintainer, relayed via session -66: outcome B, in 16.0.0 and aligned first. The four conditions: (1) under reject the socket answers per item as D2 does for API v1, or socket validation waits for that decision; (2) Nightscout-Data-Warnings off by default or held back until settled against #8841's Warning: 299; (3) storage-write-committed marked internal and unstable; (4) this repository's write(intent) layer gets its own name. D (split the PR) was considered. WC-STEP-PATCH now builds on this boundary instead of the September seam chain.
 
 ### `RT-CONNECT-PIN-CUTS` &mdash; BF-65 - cuts 1-3 ship the leaking connector to upgraders first
 
@@ -7849,7 +7879,7 @@ alarm-readiness items, and the seam branch refresh.
 | semver | `patch` |
 | review | maintainer, plus a second human - every write path moves |
 | register | `BF-165` |
-| blocks on | `SEAM-REFRESH` |
+| blocks on | `ARCH-8854` |
 
 **Blast radius.** As WRITE-CONTRACT: lib/storage gains the write step (spec section 2.3, lib/storage/write-step.js inside collectionFor); the v1 server modules (lib/server/{entries, treatments, devicestatus, profile, food, activity}.js), the API v3 generic operations over lib/api3/storage and lib/server/websocket.js route through it. No stored result changes except BF-165: lib/server/treatments.js's fallback-key re-send reply and data-update document carry the stored _id.
 
@@ -7867,7 +7897,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/qc/write-contract-matrix.js`
 
-**Notes.** WRITE-CONTRACT has no sub-items: it is one item covering both releases of spec Q6 (a). This item is its first release, split out so the identifier items can block on it; WRITE-CONTRACT stays the umbrella and is not duplicated. BFQ-165 (BF-165) can still land on dev first as a narrow fix; if it does, this item keeps it pinned rather than re-making it. BFQ-169 (the v3 swagger text about identifier) is documentation only and independent; it is linked because the identifier items below make the corrected text a promise.
+**Notes.** 2026-10-26: blocks on ARCH-8854 instead of SEAM-REFRESH. The maintainer leans to building the seam on #8854's write boundary (next-gen plan D-SEAM), and #8854 is decided into 16.0.0 (outcome B); its condition 4 gives this item's write(intent) layer its own name, layered on the boundary. The September chain is reference for the filter AST and bulkUpsert modes. WRITE-CONTRACT has no sub-items: it is one item covering both releases of spec Q6 (a). This item is its first release, split out so the identifier items can block on it; WRITE- CONTRACT stays the umbrella and is not duplicated. BFQ-165 (BF-165) can still land on dev first as a narrow fix; if it does, this item keeps it pinned rather than re-making it. BFQ-169 (the v3 swagger text about identifier) is documentation only and independent; it is linked because the identifier items below make the corrected text a promise.
 
 ### `ID-FIRST-MATCH` &mdash; Release 2 (minor): identifier-first matching for entries, devicestatus and socket dbAdd, with the Q1 adoption rule
 

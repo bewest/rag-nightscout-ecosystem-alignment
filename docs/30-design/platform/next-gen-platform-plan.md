@@ -64,7 +64,7 @@ The September chain stays useful as reference. Its filter AST (`4f753ab9`), `fro
 
 | item | builds | needs | check |
 |---|---|---|---|
-| PR-8854 | the boundary, read contract, data diagnostics, `--fail-zero` | dev | 336-cell matrix equal to dev; AST gate with bypass controls |
+| PR-8854 | the boundary, read contract, data diagnostics, `--fail-zero`; into 16.0.0 after the four conditions of outcome B | dev | 336-cell matrix equal to dev; AST gate with bypass controls |
 | ST-MATCH | identifier, fallback-key and server-date matching moved into the step | PR-8854 | no matrix cell changes |
 | ST-EVENT | the commit event's granularity and contents | PR-8854, D-EVENT | each stored record named once per write |
 | ST-CONTEXT | write origin (live or backfill) in the step's context | PR-8854 | AST gate refuses an adapter without an origin |
@@ -112,7 +112,9 @@ The decisions D1–D20 are in the [execution plan](../tenancy/nightscout-multite
 
 ## 6. Open decisions
 
-Select **Show on the map** on a card to see which items it holds up. The #8854 decision has its own [brief](../modernization/pr-8854-alignment-2026-10-26.md).
+Select **Show on the map** on a card to see which items it holds up.
+
+Decided 2026-10-26: #8854 lands in 16.0.0 after four alignment conditions (outcome B in its [brief](../modernization/pr-8854-alignment-2026-10-26.md)): a per-item socket reply or no socket validation yet, the data-warnings header off or held, the commit event marked internal and unstable, and a separate name for the intent layer.
 
 <!-- chart: decisions -->
 

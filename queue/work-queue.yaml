@@ -6523,6 +6523,50 @@ items:
       at L) and 1 on the same natural key (one with identifier, one
       without, the Q1 adoption case).
 
+  - id: ARCH-8854
+    title: "#8854 - shared write boundary, read contract and CI gates; into 16.0.0 after four alignment conditions (outcome B)"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: wip/architecture-data-contracts
+    base: official/dev@47723cda
+    worktree: externals/cgm-remote-monitor-official
+    state: in-flight-upstream
+    pr: [8854]
+    blast_radius: >
+      Draft #8854 at 880b7369 (31 files, +934/-45): lib/storage/write-step.js
+      (every v1/internal module, the four socket write handlers and API v3
+      write through one boundary), lib/storage/read-contract.js and the
+      Nightscout-Data-Warnings header on API v3 reads, scripts/check-write-boundary.js
+      (AST gate over eight adapter files), scripts/diagnose-data.js, cache,
+      authorization-subject and history-cursor guards, --fail-zero on mocha,
+      tests/api.crud-by-id.matrix.test.js (336 cells equal to dev).
+    review: maintainer - authored by the co-maintainer; decided 2026-10-26 (outcome B)
+    operator_visible: >
+      Nothing changes for apps by default. With WRITE_VALIDATION=reject, the
+      socket checks Temporary Targets too; how it answers a refused one is
+      condition 1 below.
+    semver: n/a
+    semver_reason: inside the 16.0.0 major; client-visible parts are conditions 1 and 2
+    register: []
+    gates:
+      - no-gate: >
+          Upstream draft, not merged. The conditions are judged on the PR.
+          After the merge, the 67-shape client replay (session -66's run on
+          47723cda) is re-run on the merged tree and compared row by row.
+    blocks_on: []
+    evidence:
+      - docs/30-design/modernization/pr-8854-alignment-2026-10-26.md
+      - docs/30-design/platform/next-gen-platform-plan.md
+    notes: >
+      Decided 2026-10-26 by the maintainer, relayed via session -66: outcome B,
+      in 16.0.0 and aligned first. The four conditions: (1) under reject the
+      socket answers per item as D2 does for API v1, or socket validation
+      waits for that decision; (2) Nightscout-Data-Warnings off by default or
+      held back until settled against #8841's Warning: 299; (3)
+      storage-write-committed marked internal and unstable; (4) this
+      repository's write(intent) layer gets its own name. D (split the PR) was
+      considered. WC-STEP-PATCH now builds on this boundary instead of the
+      September seam chain.
   - id: WC-STEP-PATCH
     title: "Release 1 (patch): one write step for every v1, v3 and socket path, today's behaviour pinned; BF-165's _id in every reply"
     parcel: tenancy
@@ -6559,12 +6603,19 @@ items:
           cells (treatments v1/inproc resend-identity gain _id); control:
           each of the spec's six one-line ablations turns its predicted cells
           red.
-    blocks_on: [SEAM-REFRESH]
+    blocks_on: [ARCH-8854]
     evidence:
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/qc/write-contract-matrix.js
     notes: >
+      2026-10-26: blocks on ARCH-8854 instead of SEAM-REFRESH. The maintainer
+      leans to building the seam on #8854's write boundary (next-gen plan
+      D-SEAM), and #8854 is decided into 16.0.0 (outcome B); its condition 4
+      gives this item's write(intent) layer its own name, layered on the
+      boundary. The September chain is reference for the filter AST and
+      bulkUpsert modes.
+
       WRITE-CONTRACT has no sub-items: it is one item covering both releases
       of spec Q6 (a). This item is its first release, split out so the
       identifier items can block on it; WRITE-CONTRACT stays the umbrella
