@@ -86,21 +86,22 @@ without it.
 
 ## Notes carried on the item
 
-2026-10-26: decided by the maintainer (session -66): debug-gated payload
-logging through one gate, the existing DEBUG_LOGGING (env.debug.logging), no
-new setting, using recordForLog in lib/server/log-privacy.js. The summary
-(operation, collection, client, ref, eventType or item count) is always
-logged; the payload only with debug on; refusal lines are bounded (8192
-characters) and redacted. Built as bf/16.0.0-log-privacy 8ae43eb4, one commit
-on dev 47723cda, not pushed. Not a pre-tag requirement for 16.0.0 (maintainer,
-2026-10-26). Release note: set DEBUG_LOGGING=true to see the records clients
-send; debug logs then contain health data. Follow-up, read-derived and
-unverified, not filed as an id: storage error lines that log whole MongoDB
-error objects (lib/server/treatments.js:173, 284 and 452,
-lib/server/entries.js:208 on dev 47723cda) may include the document that
-failed to write; the branch does not cover them. Filed 2026-10-26 from a read-
-only compatibility audit of dev 47723cda; the socket's counterpart of BF-186,
-which #8845 fixed for API v3.
+2026-10-26, later (maintainer): BF-193 stays its own PR, separate from the
+16.0.0 re-send and merge bundle. 2026-10-26: decided by the maintainer
+(session -66): debug-gated payload logging through one gate, the existing
+DEBUG_LOGGING (env.debug.logging), no new setting, using recordForLog in
+lib/server/log-privacy.js. The summary (operation, collection, client, ref,
+eventType or item count) is always logged; the payload only with debug on;
+refusal lines are bounded (8192 characters) and redacted. Built as
+bf/16.0.0-log-privacy 8ae43eb4, one commit on dev 47723cda, not pushed. Not a
+pre-tag requirement for 16.0.0 (maintainer, 2026-10-26). Release note: set
+DEBUG_LOGGING=true to see the records clients send; debug logs then contain
+health data. Follow-up, read-derived and unverified, not filed as an id:
+storage error lines that log whole MongoDB error objects
+(lib/server/treatments.js:173, 284 and 452, lib/server/entries.js:208 on dev
+47723cda) may include the document that failed to write; the branch does not
+cover them. Filed 2026-10-26 from a read-only compatibility audit of dev
+47723cda; the socket's counterpart of BF-186, which #8845 fixed for API v3.
 
 ---
 

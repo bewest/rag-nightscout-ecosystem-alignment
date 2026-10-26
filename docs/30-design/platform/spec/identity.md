@@ -25,7 +25,7 @@ ids; none of them redefines one.
 | I3 | **An assigned `_id`'s time is the receipt time.** The first four bytes of an ObjectId the hub assigns are when the hub received the write, not the record's own time. Readers take a record's time from `created_at` or `date`. |
 | I4 | **Every write reply returns both ids.** Per item: `identifier` (null when the client sent none and the path assigns none), `_id`, and `matchedBy`: `identifier`, `_id`, or null for a new record. On v1 and v3 this is the write step's `WriteResult.items[]`; on a typed write it is `write.ids`. A duplicate is never answered with a 5xx, an error to the callback or an empty acknowledgement. |
 | I5 | **A re-send matches on `identifier` first**, then on `_id`, then on the collection's natural key (§3). A matched re-send stores no second copy and is answered with the stored ids, so a client needs no cache of server ids. |
-| I6 | **One identifier names one record** per collection, for as long as the record is stored, and is compared exactly: case-sensitive, with no trimming or normalisation. |
+| I6 | **One identifier names one record** per collection, for as long as the record is stored, and is compared exactly: case-sensitive, with no trimming or normalisation. For devicestatus, a re-send whose `identifier` is already stored writes nothing (no merge, no new record, no `srvModified` change) and is answered with the stored `_id`, on API v1 and v3 alike (maintainer, 2026-10-26; §3). |
 | I7 | **A typed re-send matches across instances of one product.** A typed write matches a stored typed record of the same `(vendor, product)` with the same `identifier`, whichever instance sent it. The dual-write link (§2) is the exception: it is scoped by instance. |
 | I8 | **Projected documents have both ids.** When a hub serves a typed record to older readers as a projected document, it assigns an ObjectId at the typed write and stores it with the record, so every read of that projection carries the same `_id`. The projection's `identifier` is the typed record's id. A write aimed at either id of a projected document is refused `projected-read-only`. |
 | I9 | **Today's `_id` handling is a recorded quirk.** A non-ObjectId string `_id` on a treatment or entry is moved to `identifier` when `UUID_HANDLING` is on (the default) and the client sent no `identifier`, and dropped otherwise (QUIRK-TREATMENTS-006, QUIRK-ENTRIES-004). The hub records the move on the reply and the stored record as `quirksApplied` (`moved-to-identifier` or `dropped`). |
@@ -63,7 +63,7 @@ first that resolves wins.
 |---|---|---|
 | treatments | `identifier`, `_id`, client identity, `created_at` + `eventType` | merge |
 | entries | `identifier`, `_id`, `date` + `type` | merge |
-| devicestatus | `identifier`, `_id`, `NSCLIENT_ID`, `created_at` + `device` for an identical body only | an identical body is unchanged; a differing body is a new record |
+| devicestatus | `identifier`, `_id`, `NSCLIENT_ID`, `created_at` + `device` for an identical body only | an `identifier` match is unchanged whatever the body: nothing is written, no `srvModified` changes, and the reply carries the stored `_id`; on the other keys an identical body is unchanged and a differing body is a new record |
 | profile | `identifier`, `_id`, `NSCLIENT_ID`, `created_at` | merge |
 | food | `identifier`, `_id` | merge |
 | activity | `_id` | merge |
@@ -77,6 +77,10 @@ first that resolves wins.
   a `null` as sent. On API v1 it runs after `prepareData`, so a field that `prepareData` removes or
   rewrites never reaches it. The socket's `dbUpdateUnset` stays as the explicit removal of named
   fields (maintainer, 2026-10-26; write contract Q1b; ships in 16.0.0).
+- Because the merge is recursive, a profile re-send whose `store` leaves out a named profile keeps
+  that stored profile; removing it takes `store: {"<name>": null}` or a replace (`PUT`, which the
+  profile editor uses). The same nested merge applies to an API v3 `PATCH` and a socket
+  `dbUpdate` (maintainer, 2026-10-26, accepted with this consequence).
 - *Client identity* is `treatment-fallback-key`'s client ids, with its rule that a write without
   identity matches only a stored record without identity.
 - The devicestatus natural key matches identical retries only, because Loop writes distinct
@@ -141,6 +145,10 @@ Read-derived unless marked, at `official/dev` `fade2299` except where another re
   client-supplied `_id` with 400 (`lib/api3/shared/operationTools.js:197-203`, read), as I2 states.
   On `v15.0.9` a 24-hex body `_id` is stored as a string (BF-170, reproduced). v3 reads do not
   return `_id` (`lib/api3/storage/mongoCollection/utils.js:10-16`, read).
+- **A devicestatus re-send with a stored `identifier`** (`dev` `47723cda`): API v1 stores a second
+  record (no identifier match) and API v3 replaces the stored record and moves its `srvModified`
+  (reproduced, the devicestatus study of 2026-10-26). I6's rule is built for 16.0.0 with
+  `ID-SIMPLE-MATCH` on branch `bf/16.0.0-null-removes`.
 - **A `null` in an update** (`dev` `47723cda`): a merge on match stores a field sent as `null` as
   `null` (`$set`), on every path, and `tests/api.profiles.resend.test.js:218` pins that. §3's
   removal is built for 16.0.0 on branch `bf/16.0.0-null-removes` (in progress), with BF-195's fix.

@@ -70,197 +70,6 @@
 
 controls:
   - gate: |-
-      T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && python3 -m tools.nsschema.emit.coercion_emit --bundle "$T/emitted.json" >/dev/null && diff -q "$T/emitted.json" externals/work/crm-bf-coercion/lib/server/query-coercion.json
-    cwd: .
-    control: |-
-      T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && python3 -m tools.nsschema.emit.coercion_emit --bundle "$T/emitted.json" >/dev/null && python3 -c "import json,sys; d=json.load(open(sys.argv[1])); c=d['collections']['entries']; c[sorted(c)[0]]='string'; json.dump(d,open(sys.argv[2],'w'),indent=1,sort_keys=True)" "$T/emitted.json" "$T/corrupt.json" && diff -q "$T/emitted.json" "$T/corrupt.json"
-    positive-control: |-
-      T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && python3 -m tools.nsschema.emit.coercion_emit --bundle "$T/emitted.json" >/dev/null && cp "$T/emitted.json" "$T/same.json" && diff -q "$T/emitted.json" "$T/same.json"
-    control-kind: static
-    proves: >
-      one field's declared type is flipped to `string` in a copy of the
-      freshly emitted bundle and the comparison notices. The gate this
-      replaced, `coercion_emit --drift`, ends in `return 0`
-      unconditionally and exited 0 while printing 157 disagreements.
-
-  - gate: |-
-      TEST=api.alexa npm run test-single
-    cwd: externals/work/crm-bf-alarms
-    control-exempt: >
-      No standing control: it depends on a MongoDB listener that is not
-      persistent on this machine. crm-bf-alarms/my.test.env names mongod on
-      port 27034 (crm-bf-food, crm-bf-merge and crm-bf-parms share 27033).
-      With nothing listening, the ablation still exits non-zero - because the
-      test times out in its before-all hook reaching MongoDB, not because the
-      code was reverted - so vacuity.py would report NON-VACUOUS for the wrong
-      reason, and a control that is non-zero for the wrong reason reads as
-      proof. With a mongod on 27034 (one was started 2026-09-16 with a scratch
-      dbpath; it does not survive a reboot) the control is:
-      tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official
-      bf/alarms origin/dev externals/work/crm-bf-alarms api.alexa
-
-  - gate: |-
-      TEST=api.count-parameter npm run test-single
-    cwd: externals/work/crm-bf-reads
-    control-cwd: .
-    control: |-
-      tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/reads origin/dev externals/work/crm-bf-reads api.count-parameter
-    control-kind: slow
-    proves: >
-      the same test file against a throwaway worktree of bf/reads with
-      the shipping code put back to origin/dev — measured non-zero. Rule
-      6: the control creates and removes its own worktree under $TMPDIR
-      and never writes into externals/work/crm-bf-reads, which it reads
-      node_modules and my.test.env from.
-
-  - gate: |-
-      TEST=api.count-where npm run test-single
-    cwd: externals/work/crm-bf-reads
-    control-cwd: .
-    control: |-
-      tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/reads origin/dev externals/work/crm-bf-reads api.count-where
-    control-kind: slow
-    proves: >
-      the same test file against a throwaway worktree of bf/reads with
-      the shipping code put back to origin/dev — measured non-zero. Rule
-      6: the control creates and removes its own worktree under $TMPDIR
-      and never writes into externals/work/crm-bf-reads, which it reads
-      node_modules and my.test.env from.
-
-  - gate: |-
-      TEST=api.food.quickpicks npm run test-single
-    cwd: externals/work/crm-bf-food
-    control-cwd: .
-    control: |-
-      tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/food origin/dev externals/work/crm-bf-food api.food.quickpicks
-    control-kind: slow
-    proves: >
-      the same test file against a throwaway worktree of bf/food with
-      the shipping code put back to origin/dev — measured 2026-09-15: 1
-      passing / 2 failing. Rule 6: the control creates and removes its
-      own worktree under $TMPDIR and never writes into
-      externals/work/crm-bf-food, which it reads node_modules and
-      my.test.env from.
-
-  - gate: |-
-      TEST=api.googlehome npm run test-single
-    cwd: externals/work/crm-bf-alarms
-    control-exempt: >
-      No standing control: it depends on a MongoDB listener that is not
-      persistent on this machine. crm-bf-alarms/my.test.env names mongod on
-      port 27034 (crm-bf-food, crm-bf-merge and crm-bf-parms share 27033).
-      With nothing listening, the ablation still exits non-zero - because the
-      test times out in its before-all hook reaching MongoDB, not because the
-      code was reverted - so vacuity.py would report NON-VACUOUS for the wrong
-      reason, and a control that is non-zero for the wrong reason reads as
-      proof. With a mongod on 27034 (one was started 2026-09-16 with a scratch
-      dbpath; it does not survive a reboot) the control is:
-      tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official
-      bf/alarms origin/dev externals/work/crm-bf-alarms api.googlehome
-
-  - gate: |-
-      TEST=api3.fields npm run test-single
-    cwd: externals/work/crm-bf-reads
-    control-cwd: .
-    control: |-
-      tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/reads origin/dev externals/work/crm-bf-reads api3.fields
-    control-kind: slow
-    proves: >
-      the same test file against a throwaway worktree of bf/reads with
-      the shipping code put back to origin/dev — measured non-zero. Rule
-      6: the control creates and removes its own worktree under $TMPDIR
-      and never writes into externals/work/crm-bf-reads, which it reads
-      node_modules and my.test.env from.
-
-  - gate: |-
-      TEST=api3.limit npm run test-single
-    cwd: externals/work/crm-bf-reads
-    control-cwd: .
-    control: |-
-      tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/reads origin/dev externals/work/crm-bf-reads api3.limit
-    control-kind: slow
-    proves: >
-      the same test file against a throwaway worktree of bf/reads with
-      the shipping code put back to origin/dev — measured non-zero. Rule
-      6: the control creates and removes its own worktree under $TMPDIR
-      and never writes into externals/work/crm-bf-reads, which it reads
-      node_modules and my.test.env from.
-
-  - gate: |-
-      TEST=api3.paging npm run test-single
-    cwd: externals/work/crm-bf-reads
-    control-cwd: .
-    control: |-
-      tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/reads origin/dev externals/work/crm-bf-reads api3.paging
-    control-kind: slow
-    proves: >
-      the same test file against a throwaway worktree of bf/reads with
-      the shipping code put back to origin/dev — measured non-zero. Rule
-      6: the control creates and removes its own worktree under $TMPDIR
-      and never writes into externals/work/crm-bf-reads, which it reads
-      node_modules and my.test.env from.
-
-  - gate: |-
-      TEST=authdelay npm run test-single
-    cwd: externals/work/crm-bf-auth
-    control-cwd: .
-    control: |-
-      tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/auth origin/dev externals/work/crm-bf-auth authdelay
-    control-kind: slow
-    proves: >
-      the same test file against a throwaway worktree of bf/auth with
-      the shipping code put back to origin/dev — measured 2026-09-15: 2
-      passing / 9 failing. Rule 6: the control creates and removes its
-      own worktree under $TMPDIR and never writes into
-      externals/work/crm-bf-auth, which it reads node_modules and
-      my.test.env from.
-
-  - gate: |-
-      TEST=authsubjects npm run test-single
-    cwd: externals/work/crm-bf-auth
-    control-cwd: .
-    control: |-
-      tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/auth origin/dev externals/work/crm-bf-auth authsubjects
-    control-kind: slow
-    proves: >
-      the same test file against a throwaway worktree of bf/auth with
-      the shipping code put back to origin/dev — measured 2026-09-15: 1
-      passing / 7 failing. Rule 6: the control creates and removes its
-      own worktree under $TMPDIR and never writes into
-      externals/work/crm-bf-auth, which it reads node_modules and
-      my.test.env from.
-
-  - gate: |-
-      TEST=boluscalc.quickpick npm run test-single
-    cwd: externals/work/crm-bf-food
-    control-cwd: .
-    control: |-
-      tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/food origin/dev externals/work/crm-bf-food --files=lib/client/boluscalc.js boluscalc.quickpick
-    control-kind: slow
-    proves: >
-      the same test file against a throwaway worktree of bf/food with
-      the shipping code put back to origin/dev — measured 2026-09-15
-      with --files=lib/client/boluscalc.js: 6 passing / 5 failing. Rule
-      6: the control creates and removes its own worktree under $TMPDIR
-      and never writes into externals/work/crm-bf-food, which it reads
-      node_modules and my.test.env from.
-
-  - gate: |-
-      TEST=browser-utils.queryparms npm run test-single
-    cwd: externals/work/crm-bf-parms
-    control-cwd: .
-    control: |-
-      tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/parms origin/dev externals/work/crm-bf-parms browser-utils.queryparms
-    control-kind: slow
-    proves: >
-      the same test file against a throwaway worktree of bf/parms with
-      the shipping code put back to origin/dev — measured 2026-09-15: 1
-      passing / 5 failing. Rule 6: the control creates and removes its
-      own worktree under $TMPDIR and never writes into
-      externals/work/crm-bf-parms, which it reads node_modules and
-      my.test.env from.
-
-  - gate: |-
       TEST=dependency-d3 npm run test-single
     cwd: externals/cgm-remote-monitor-official
     control-exempt: >
@@ -270,82 +79,6 @@ controls:
       2026-09-22), so it is not silently green, and RT-D3's companion
       instrument (d3-drag-clamp-covered.js) carries its own internal
       CONTROL finding and is the non-vacuous measurement for this item.
-
-  - gate: |-
-      TEST=insulinage npm run test-single
-    cwd: externals/work/crm-bf-alarms
-    control-cwd: .
-    control: |-
-      tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/alarms origin/dev externals/work/crm-bf-alarms insulinage
-    control-kind: slow
-    proves: >
-      the same test file against a throwaway worktree of bf/alarms with
-      the shipping code put back to origin/dev — measured 2026-09-15: 3
-      passing / 2 failing. Rule 6: the control creates and removes its
-      own worktree under $TMPDIR and never writes into
-      externals/work/crm-bf-alarms, which it reads node_modules and
-      my.test.env from.
-
-  - gate: |-
-      TEST=language npm run test-single
-    cwd: externals/work/crm-bf-parms
-    control-cwd: .
-    control: |-
-      tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/parms origin/dev externals/work/crm-bf-parms language
-    control-kind: slow
-    proves: >
-      the same test file against a throwaway worktree of bf/parms with
-      the shipping code put back to origin/dev — measured 2026-09-15: 16
-      passing / 1 failing. Rule 6: the control creates and removes its
-      own worktree under $TMPDIR and never writes into
-      externals/work/crm-bf-parms, which it reads node_modules and
-      my.test.env from.
-
-  - gate: |-
-      TEST=plugins npm run test-single
-    cwd: externals/work/crm-bf-alarms
-    control-cwd: .
-    control: |-
-      tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/alarms origin/dev externals/work/crm-bf-alarms plugins
-    control-kind: slow
-    proves: >
-      the same test file against a throwaway worktree of bf/alarms with
-      the shipping code put back to origin/dev — measured 2026-09-15: 5
-      passing / 8 failing. Rule 6: the control creates and removes its
-      own worktree under $TMPDIR and never writes into
-      externals/work/crm-bf-alarms, which it reads node_modules and
-      my.test.env from.
-
-  - gate: |-
-      TEST=query npm run test-single
-    cwd: externals/work/crm-bf-coercion
-    control-cwd: .
-    control: |-
-      tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/coercion origin/dev externals/work/crm-bf-coercion --files=lib/server/query.js query
-    control-kind: slow
-    proves: >
-      the same test file against a throwaway worktree of bf/coercion
-      with the shipping code put back to origin/dev — measured
-      2026-09-15 with --files=lib/server/query.js: 24 passing / 4
-      failing on assertions. Rule 6: the control creates and removes its
-      own worktree under $TMPDIR and never writes into
-      externals/work/crm-bf-coercion, which it reads node_modules and
-      my.test.env from.
-
-  - gate: |-
-      TEST=receiveddata.merge npm run test-single
-    cwd: externals/work/crm-bf-merge
-    control-cwd: .
-    control: |-
-      tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/merge origin/dev externals/work/crm-bf-merge receiveddata.merge
-    control-kind: slow
-    proves: >
-      the same test file against a throwaway worktree of bf/merge with
-      the shipping code put back to origin/dev — measured 2026-09-15: 10
-      passing / 2 failing. Rule 6: the control creates and removes its
-      own worktree under $TMPDIR and never writes into
-      externals/work/crm-bf-merge, which it reads node_modules and
-      my.test.env from.
 
   - gate: |-
       bash -c 's=$(git -C externals/cgm-remote-monitor-official show origin/dev:lib/api/alexa/index.js); echo "$s" | grep -q "switch (req.body.request.type)" || exit 1; echo "$s" | grep -q "default:"'
@@ -894,21 +627,6 @@ controls:
       v0.0.13 is a strict ancestor of release/v0.0.14, so the reversed
       question must be answered no (exit 1, measured). A command that
       said yes both ways would not be reading ancestry at all.
-
-  - gate: |-
-      grep -nE "console\\.log\\('Loading',[[:space:]]*opts\\)" lib/authorization/storage.js && exit 1 || exit 0
-    cwd: externals/work/crm-bf-auth
-    control: |-
-      T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && printf '%s\n' " console.log('Loading',opts);" > "$T/f.js" && grep -nE "console\.log\('Loading',[[:space:]]*opts\)" "$T/f.js" && exit 1 || exit 0
-    positive-control: |-
-      T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && printf '%s\n' " console.log('Reloading auth data');" > "$T/f.js" && grep -nE "console\.log\('Loading',[[:space:]]*opts\)" "$T/f.js" && exit 1 || exit 0
-    control-kind: static
-    proves: >
-      The negative fixture is the no-space spelling, which is what the
-      code actually contains (the P0-C vacuity case in this file's
-      header). It makes the gate red, and the positive fixture makes it
-      green, so the gate discriminates the two states it is supposed to
-      distinguish.
 
   - gate: |-
       grep -q '234d47c85510a77f07b3be0d2c026dd0272715d6' package-lock.json
@@ -1499,21 +1217,6 @@ controls:
       one. This is a weak control and the audit says so: it proves the
       instrument works, not that the file it names is the right file. An
       existence gate can never be stronger than that.
-
-  - gate: |-
-      test -f externals/work/crm-bf-alarms/node_modules/.cache/_ns_cache/public/js/bundle.app.js
-    cwd: .
-    control: |-
-      test -f externals/work/crm-bf-alarms/node_modules/.cache/_ns_cache/public/js/bundle.app.js.absent
-    positive-control: |-
-      test -f externals/work/crm-bf-reads/node_modules/.cache/_ns_cache/public/js/bundle.app.js
-    control-kind: static
-    proves: >
-      the positive control is the SAME path under crm-bf-reads, where
-      the bundle is present - so the gate is shown to go green on a real
-      bundle at a real path, not merely on a file that happens to exist.
-      crm-bf-alarms and crm-bf-connect-pin are the only two worktrees
-      missing it (E3 checked all 15).
 
   - gate: |-
       test -f externals/work/crm-seam/bin/evaluator.js
@@ -2900,3 +2603,134 @@ controls:
       run 2026-10-26: the same check against refs/triage/pr-8730 (f99c0e54,
       #8730's 2025-09 head, whose zh_TW ml is 克) exits 1; the gate exits 0
       against official/dev 47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7a5561f4 official/master
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7a5561f4 v15.0.8
+    control-kind: static
+    proves: >
+      run 2026-10-26 (P0-A): v15.0.8 (92d08342) does not contain #8739's merge, and the
+      same command reports it not-an-ancestor (exit 1); the gate itself
+      exits 0 against official/master c6a0d8ed (15.0.9).
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ce82f0cd official/master
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ce82f0cd v15.0.8
+    control-kind: static
+    proves: >
+      run 2026-10-26 (P0-C): v15.0.8 (92d08342) does not contain bf/auth's content commit, and the
+      same command reports it not-an-ancestor (exit 1); the gate itself
+      exits 0 against official/master c6a0d8ed (15.0.9).
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 435419ce official/master
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 435419ce v15.0.8
+    control-kind: static
+    proves: >
+      run 2026-10-26 (P0-J): v15.0.8 (92d08342) does not contain bf/throttle's content commit, and the
+      same command reports it not-an-ancestor (exit 1); the gate itself
+      exits 0 against official/master c6a0d8ed (15.0.9).
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b7234753 official/master
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b7234753 v15.0.8
+    control-kind: static
+    proves: >
+      run 2026-10-26 (P0-D): v15.0.8 (92d08342) does not contain P0-D's fix commit, and the
+      same command reports it not-an-ancestor (exit 1); the gate itself
+      exits 0 against official/master c6a0d8ed (15.0.9).
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2ecfeb53 official/master
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2ecfeb53 v15.0.8
+    control-kind: static
+    proves: >
+      run 2026-10-26 (P0-E): v15.0.8 (92d08342) does not contain P0-E's fix commit, and the
+      same command reports it not-an-ancestor (exit 1); the gate itself
+      exits 0 against official/master c6a0d8ed (15.0.9).
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 73495331 official/master
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 73495331 v15.0.8
+    control-kind: static
+    proves: >
+      run 2026-10-26 (P0-G): v15.0.8 (92d08342) does not contain P0-G's fix commit, and the
+      same command reports it not-an-ancestor (exit 1); the gate itself
+      exits 0 against official/master c6a0d8ed (15.0.9).
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b06c6faf official/master
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b06c6faf v15.0.8
+    control-kind: static
+    proves: >
+      run 2026-10-26 (P0-H): v15.0.8 (92d08342) does not contain P0-H's fix commit, and the
+      same command reports it not-an-ancestor (exit 1); the gate itself
+      exits 0 against official/master c6a0d8ed (15.0.9).
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor eb0bc918 official/master
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor eb0bc918 v15.0.8
+    control-kind: static
+    proves: >
+      run 2026-10-26 (P0-I): v15.0.8 (92d08342) does not contain P0-I's fix commit, and the
+      same command reports it not-an-ancestor (exit 1); the gate itself
+      exits 0 against official/master c6a0d8ed (15.0.9).
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1a36f023 official/master
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1a36f023 v15.0.8
+    control-kind: static
+    proves: >
+      run 2026-10-26 (P0-K): v15.0.8 (92d08342) does not contain #8743's merge, and the
+      same command reports it not-an-ancestor (exit 1); the gate itself
+      exits 0 against official/master c6a0d8ed (15.0.9).
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 153e5658 official/master
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 153e5658 v15.0.8
+    control-kind: static
+    proves: >
+      run 2026-10-26 (P0-LOCK): v15.0.8 (92d08342) does not contain #8762's merge, and the
+      same command reports it not-an-ancestor (exit 1); the gate itself
+      exits 0 against official/master c6a0d8ed (15.0.9).
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda bf/16.0.0-log-privacy
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda v15.0.9
+    control-kind: static
+    proves: >
+      run 2026-10-26 (BFQ-193): v15.0.9 does not contain dev 47723cda, and the
+      same command exits 1; the gate exits 0 on bf/16.0.0-log-privacy 8ae43eb4.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae43eb4 bf/16.0.0-log-privacy
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae43eb4 official/dev
+    control-kind: static
+    proves: >
+      run 2026-10-26 (BFQ-193): official/dev 47723cda does not contain the
+      unpushed fix 8ae43eb4, and the same command exits 1; the gate exits 0
+      on the branch.

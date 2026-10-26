@@ -124,6 +124,8 @@ Select **Show on the map** on a card to see which items it holds up.
 
 Decided 2026-10-26: an explicit null removes a field on merge-on-match, API v3 PATCH and the socket's `dbUpdate` (RFC 7386; [write contract §6.1](../tenancy/write-contract-spec-2026-10-07.md#61-decided-2026-10-12)), never on PUT or create, and devicestatus never merges; in 16.0.0, in one shared merge helper.
 
+Decided 2026-10-26 (D-ID-FALLBACK): for 16.0.0 a v1 entries re-send whose identifier matches nothing still matches on `sysTime`+`type`, as today (TEST-ENTRY-UUID-003); treatments never fall back; revisited once identifiers are common. A devicestatus re-send whose identifier is stored writes nothing and is answered with the stored `_id`, on v1 and v3.
+
 Decided 2026-10-26: #8854 lands in 16.0.0 after four alignment conditions (outcome B in its [brief](../modernization/pr-8854-alignment-2026-10-26.md)): a per-item socket reply or no socket validation yet, the data-warnings header off or held, the commit event marked internal and unstable, and a separate name for the intent layer.
 
 <!-- chart: decisions -->

@@ -658,28 +658,6 @@
    ]
   },
   {
-   "id": "D-ID-FALLBACK",
-   "short": "After an identifier miss",
-   "owner": "maintainer",
-   "question": "When a v1 entry's identifier is not yet stored, does it still match a stored reading at the same time and type (as dev does today, pinned by TEST-ENTRY-UUID-003), or only ever match on identifier, as v1 treatments do?",
-   "holds": [
-    "ID-SIMPLE-MATCH"
-   ],
-   "options": [
-    {
-     "label": "Keep the time-key fallback (as built)",
-     "recommended": true,
-     "gains": "no change for readings whose app ids change; TEST-ENTRY-UUID-003 stays green",
-     "risks": "a new identifier at a stored time takes over that reading, as today"
-    },
-    {
-     "label": "Identifier only, like treatments",
-     "gains": "one rule for entries and treatments",
-     "risks": "two readings stored at one time when an app's ids change; an existing test changes"
-    }
-   ]
-  },
-  {
    "id": "D-REG-FLAG",
    "short": "Registration flag and catalogue home",
    "owner": "maintainer",

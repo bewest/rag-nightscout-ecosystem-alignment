@@ -189,35 +189,17 @@ items:
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/alarms >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
-      - run: TEST=insulinage npm run test-single
-        cwd: externals/work/crm-bf-alarms
-        kind: unit
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7a5561f4 official/master
+        kind: static
         describe: >
-          BF-28, measured. 5 passing. Ablated: with lib/plugins/insulinage.js put
-          back to origin/dev the same file gives 3 passing / 2 failing.
-          Database-free: re-run with the mongo URL pointed at a dead port, still
-          5 passing.
-      - run: TEST=plugins npm run test-single
-        cwd: externals/work/crm-bf-alarms
-        kind: unit
-        describe: >
-          BF-29, measured. 13 passing. Ablated: with lib/plugins/index.js put back
-          to origin/dev the same file gives 5 passing / 8 failing. Database-free.
-      - run: TEST=api.alexa npm run test-single
-        cwd: externals/work/crm-bf-alarms
-        kind: integration
-        describe: >
-          BF-31, the branch's own test for the locale removal. 4 passing, measured
-          2026-09-16. Needs a mongod on port 27034 (named by crm-bf-alarms'
-          my.test.env). Ablated: lib/api/alexa/index.js restored to origin/dev
-          gives 3 passing / 1 failing.
-      - run: TEST=api.googlehome npm run test-single
-        cwd: externals/work/crm-bf-alarms
-        kind: integration
-        describe: >
-          BF-31's sibling. 2 passing, measured 2026-09-16 on the same mongod.
-          Ablated: lib/api/googlehome/index.js restored to origin/dev gives
-          1 passing / 1 failing.
+          official/master (the released 15.0.9 and later) contains 7a5561f4 (#8739's merge).
+          Red if master is rewritten without it.
+      - no-gate: >
+          The branch-level test gates that ran in externals/work/crm-bf-alarms were
+          retired on 2026-10-26: that worktree was removed after the fix was
+          released in 15.0.9. Every test file those gates named is on
+          official/master (checked 2026-10-26), so the released tree's suite
+          carries them; the containment gate above replaces the gates.
       - no-gate: >
           `npm run test:unit` is not a gate here because it asserts less than it
           looks like. It resolves to a 44-file brace list, it needs MongoDB
@@ -226,13 +208,6 @@ items:
           the four files this branch adds - are in neither local script. CI's
           `test-ci` runs all 159 files and does cover them; a gate that mirrors
           the local script is weaker than CI, not equal to it.
-      - run: test -f externals/work/crm-bf-alarms/node_modules/.cache/_ns_cache/public/js/bundle.app.js
-        kind: static
-        describe: >
-          The worktree has its client bundle. Without it the suite shows an extra
-          test failure that looks like a defect and is not. This tests a LOCAL
-          build product, not the branch: it goes red in any fresh worktree or
-          after `npm ci`, and `npm run bundle` in that worktree clears it.
       - no-gate: >
           Nothing exercises the ENABLE warning through a booted plugin registry.
           GT4 had to hand-reconstruct the plugin-name list to test it, and a
@@ -439,23 +414,17 @@ items:
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/auth >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
-      - run: grep -nE "console\\.log\\('Loading',[[:space:]]*opts\\)" lib/authorization/storage.js && exit 1 || exit 0
-        cwd: externals/work/crm-bf-auth
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ce82f0cd official/master
         kind: static
         describe: >
-          Regression guard for BF-05's sibling: a per-request debug print of
-          request-derived values, `console.log('Loading',opts)` in storage.js. The
-          pattern is whitespace-tolerant on purpose - the code has no space after
-          the comma, and a pattern requiring one never matches, which makes the
-          gate pass on a false property. Do not narrow it. Green because commit
-          56ed29d2 removed the line from bf/auth (maintainer's choice,
-          2026-09-16), not because the pattern was weakened.
-      - run: TEST=authsubjects npm run test-single
-        cwd: externals/work/crm-bf-auth
-        kind: integration
-        describe: >
-          BF-17. Not in either local script. 8 passing with MongoDB; 1 passing /
-          7 failing with the fix ablated.
+          official/master (the released 15.0.9 and later) contains ce82f0cd (bf/auth's content commit, shipped through #8754).
+          Red if master is rewritten without it.
+      - no-gate: >
+          The branch-level test gates that ran in externals/work/crm-bf-auth were
+          retired on 2026-10-26: that worktree was removed after the fix was
+          released in 15.0.9. Every test file those gates named is on
+          official/master (checked 2026-10-26), so the released tree's suite
+          carries them; the containment gate above replaces the gates.
       - no-gate: >
           `npm run test:unit` is not evidence for this branch: its 44-file brace
           list contains neither of the two test files bf/auth adds, so the suite
@@ -591,22 +560,17 @@ items:
           it. A tracking gate against the obvious regression - re-adding that
           module re-creates the four-file conflict with #8605, and it would look
           like a harmless improvement to anyone who had not measured it.
-      - run: TEST=authdelay npm run test-single
-        cwd: externals/work/crm-bf-throttle
-        kind: integration
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 435419ce official/master
+        kind: static
         describe: >
-          The branch's own test, 11 passing, measured 2026-09-16 and again at
-          a0823c4f on 2026-09-21. Needs MongoDB - this worktree names 27031. It is
-          in neither local brace list, so a green `npm run test:unit` is no
-          evidence for any of this. Ablated: lib/authorization/delaylist.js and
-          lib/authorization/index.js restored to origin/dev give 3 passing /
-          8 failing. It includes the test that PINS THE REMAINING WEAKNESS -
-          `does NOT yet throttle a guess that varies both the secret and the
-          address` - which asserts the gap rather than pretending it is closed,
-          and which should be INVERTED into a positive assertion when the
-          TRUST_PROXY boundary lands. A red here can be mongod having died
-          (BF-10) rather than the branch; check the server before reading it as a
-          regression.
+          official/master (the released 15.0.9 and later) contains 435419ce (bf/throttle's content commit, shipped through #8754).
+          Red if master is rewritten without it.
+      - no-gate: >
+          The branch-level test gates that ran in externals/work/crm-bf-throttle were
+          retired on 2026-10-26: that worktree was removed after the fix was
+          released in 15.0.9. Every test file those gates named is on
+          official/master (checked 2026-10-26), so the released tree's suite
+          carries them; the containment gate above replaces the gates.
       - no-gate: >
           Nothing measures the boot warning's words. init() logs that the
           throttle is keyed on an address the caller may control, and that
@@ -813,39 +777,17 @@ items:
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/coercion >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
-      - run: TEST=query.operands npm run test-single
-        cwd: externals/work/crm-bf-coercion
-        kind: unit
-        describe: >
-          BF-40's own test, 12 cases, on the second commit. In neither local
-          brace list (GT1), so a green `npm run test:unit` is not evidence for
-          it. Ablated three ways with each break confirmed to land: removing the
-          call fails 6, mapping "" to false fails exactly the test pinning that
-          decision, adding $regex to the reader map fails exactly the $regex
-          test.
-      - run: TEST=query npm run test-single
-        cwd: externals/work/crm-bf-coercion
-        kind: unit
-        describe: >
-          29 passing, database-free (measured against a dead mongo port).
-          Ablated behaviourally: reverting ONLY lib/server/query.js and keeping
-          the new table gives 24 passing / 4 failing on assertions ("expected
-          '1.5' to be 1.5"). (Running the file against pristine dev fails at
-          module resolution, which is not a behavioural control.)
-      - run: >
-          T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT &&
-          python3 -m tools.nsschema.emit.coercion_emit --bundle "$T/emitted.json" >/dev/null &&
-          diff -q "$T/emitted.json"
-          externals/work/crm-bf-coercion/lib/server/query-coercion.json
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b7234753 official/master
         kind: static
         describe: >
-          The coercion table vendored into the branch is byte-identical to what
-          the emitter produces today, so the branch is not shipping a stale
-          generated file ("emit, then check the emission"). `coercion_emit
-          --drift` is not usable as a gate: it returns 0 unconditionally (it
-          exited 0 while printing "DRIFT vs the shipping walkers: 157
-          disagreements") and compares against a hardcoded transcription of
-          origin/dev's walkers, so it says nothing about bf/coercion.
+          official/master (the released 15.0.9 and later) contains b7234753 (the fix commit merged by #8737).
+          Red if master is rewritten without it.
+      - no-gate: >
+          The branch-level test gates that ran in externals/work/crm-bf-coercion were
+          retired on 2026-10-26: that worktree was removed after the fix was
+          released in 15.0.9. Every test file those gates named is on
+          official/master (checked 2026-10-26), so the released tree's suite
+          carries them; the containment gate above replaces the gates.
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b72347538ba29f965c531bdd47f81dc52d895a13 origin/dev
         kind: static
         describe: >
@@ -952,29 +894,17 @@ items:
           identical assertions against dev materialised from the object database
           and gives 4 failing. (A branch-has-a-commit check is not a substitute:
           it passes for origin/dev, origin/master and bf/alarms too.)
-      - run: TEST=api.count-parameter npm run test-single
-        cwd: externals/work/crm-bf-reads
-        kind: integration
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2ecfeb53 official/master
+        kind: static
         describe: >
-          BF-13/BF-33, 13 passing. Needs MongoDB: pointed at a dead port it goes
-          to 0 passing / 1 failing, timing out in the before-all hook. It is fast
-          only because a mongod is listening on crm-bf-reads' port 27032.
-      - run: TEST=api.count-where npm run test-single
-        cwd: externals/work/crm-bf-reads
-        kind: integration
-        describe: BF-01, 5 passing. Needs MongoDB.
-      - run: TEST=api3.fields npm run test-single
-        cwd: externals/work/crm-bf-reads
-        kind: integration
-        describe: BF-15, 6 passing. Needs MongoDB (5 of 6 survive without it).
-      - run: TEST=api3.limit npm run test-single
-        cwd: externals/work/crm-bf-reads
-        kind: integration
-        describe: BF-33, 8 passing. Needs MongoDB.
-      - run: TEST=api3.paging npm run test-single
-        cwd: externals/work/crm-bf-reads
-        kind: integration
-        describe: BF-14, 3 passing. Needs MongoDB.
+          official/master (the released 15.0.9 and later) contains 2ecfeb53 (the fix commit merged by #8738).
+          Red if master is rewritten without it.
+      - no-gate: >
+          The branch-level test gates that ran in externals/work/crm-bf-reads were
+          retired on 2026-10-26: that worktree was removed after the fix was
+          released in 15.0.9. Every test file those gates named is on
+          official/master (checked 2026-10-26), so the released tree's suite
+          carries them; the containment gate above replaces the gates.
       - no-gate: >
           `npm run test:unit` is not a gate here: not one of the five test files
           this branch adds is in its 44-file brace list - all five are
@@ -1198,18 +1128,17 @@ items:
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/food >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
-      - run: TEST=boluscalc.quickpick npm run test-single
-        cwd: externals/work/crm-bf-food
-        kind: unit
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 73495331 official/master
+        kind: static
         describe: >
-          BF-35's own test, 11 cases. The file is in NEITHER the test:unit nor
-          the test:integration brace list (GT1), so a green `npm run test:unit`
-          on this branch is not evidence that BF-35's fix works; it is named
-          explicitly here for that reason.
-      - run: TEST=api.food.quickpicks npm run test-single
-        cwd: externals/work/crm-bf-food
-        kind: integration
-        describe: BF-16 over the real HTTP path; needs MongoDB
+          official/master (the released 15.0.9 and later) contains 73495331 (the fix commit merged by #8735).
+          Red if master is rewritten without it.
+      - no-gate: >
+          The branch-level test gates that ran in externals/work/crm-bf-food were
+          retired on 2026-10-26: that worktree was removed after the fix was
+          released in 15.0.9. Every test file those gates named is on
+          official/master (checked 2026-10-26), so the released tree's suite
+          carries them; the containment gate above replaces the gates.
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 73495331e68c4cda3a63e8c047387bdf404b89b0 origin/dev
         kind: static
         describe: >
@@ -1288,12 +1217,17 @@ items:
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/merge >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
-      - run: TEST=receiveddata.merge npm run test-single
-        cwd: externals/work/crm-bf-merge
-        kind: unit
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b06c6faf official/master
+        kind: static
         describe: >
-          in NEITHER local brace list (GT1). Named here so the gate actually
-          runs the file that proves the fix.
+          official/master (the released 15.0.9 and later) contains b06c6faf (the fix commit merged by #8734).
+          Red if master is rewritten without it.
+      - no-gate: >
+          The branch-level test gates that ran in externals/work/crm-bf-merge were
+          retired on 2026-10-26: that worktree was removed after the fix was
+          released in 15.0.9. Every test file those gates named is on
+          official/master (checked 2026-10-26), so the released tree's suite
+          carries them; the containment gate above replaces the gates.
       - no-gate: >
           `dataUpdate` still has no try/catch, so the NEXT throw from anywhere in
           the merge path has the same effect. This branch fixes one throw, not
@@ -1369,16 +1303,17 @@ items:
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/parms >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
-      - run: TEST=browser-utils.queryparms npm run test-single
-        cwd: externals/work/crm-bf-parms
-        kind: unit
-        describe: BF-37 and BF-39; in NEITHER local brace list (GT1)
-      - run: TEST=language npm run test-single
-        cwd: externals/work/crm-bf-parms
-        kind: unit
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor eb0bc918 official/master
+        kind: static
         describe: >
-          BF-38. Non-vacuous by GT1's control - 1 failing when the fix is
-          removed from pristine dev code.
+          official/master (the released 15.0.9 and later) contains eb0bc918 (the fix commit merged by #8736).
+          Red if master is rewritten without it.
+      - no-gate: >
+          The branch-level test gates that ran in externals/work/crm-bf-parms were
+          retired on 2026-10-26: that worktree was removed after the fix was
+          released in 15.0.9. Every test file those gates named is on
+          official/master (checked 2026-10-26), so the released tree's suite
+          carries them; the containment gate above replaces the gates.
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor eb0bc918036a7802a0b88156e9722f45fd9107f3 origin/dev
         kind: static
         describe: >
@@ -1489,40 +1424,17 @@ items:
           Containment: this tip is an ancestor of origin/dev, so the fix (PR
           #8743, merged 2026-09-18) is in dev and cannot silently leave it. An
           upstream revert or force-push turns it red.
-      - run: TEST=mongo-query-javascript npm run test-single
-        cwd: externals/work/crm-bf-operators
-        kind: unit
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1a36f023 official/master
+        kind: static
         describe: >
-          BF-04, the JavaScript half. 23 passing, 49 ms, no database. ABLATED
-          on the dev merge - commenting out the create() call gives 7 failing,
-          confirmed applied by grep before the run. The allowlist also refuses
-          $where, as an unlisted operator with the generic message, so the 7
-          are the cases asserting the SPECIFIC JavaScript wording: this guard
-          is mostly about the message, not the refusal.
-      - run: TEST=api-v1-operator-allowlist npm run test-single
-        cwd: externals/work/crm-bf-operators
-        kind: unit
-        describe: >
-          BF-04, the allowlist. 63 passing + 16 pending without a database; the
-          16 are the end-to-end section, which is the only place the ALLOWED
-          operators are proved to still SELECT rather than merely to pass the
-          guard. ABLATED two ways, both confirmed applied by grep - removing the
-          create() call gives 14 failing, making refuse() return instead of
-          throwing gives 35.
-      - run: TEST=api-v1-count-pipeline npm run test-single
-        cwd: externals/work/crm-bf-operators
-        kind: unit
-        describe: >
-          BF-70. 8 passing, 30 ms, no database. ABLATED - restoring the two
-          lines the commit changes gives 3 failing.
-      - run: TEST=api-v1-operator-allowlist npm run test-single
-        cwd: externals/work/crm-bf-operators
-        kind: integration
-        describe: >
-          the same file with CUSTOMCONNSTR_mongo set - 79 passing, mongod 7.0 on
-          port 27018, measured on the dev merge 9745cae2. This is the run that
-          matters: without a database the end-to-end section skips and the
-          suite proves only that refusals refuse.
+          official/master (the released 15.0.9 and later) contains 1a36f023 (#8743's merge).
+          Red if master is rewritten without it.
+      - no-gate: >
+          The branch-level test gates that ran in externals/work/crm-bf-operators were
+          retired on 2026-10-26: that worktree was removed after the fix was
+          released in 15.0.9. Every test file those gates named is on
+          official/master (checked 2026-10-26), so the released tree's suite
+          carries them; the containment gate above replaces the gates.
       - no-gate: >
           The strongest control this branch has is not runnable from here. The
           BF-70 reproduction extracts a seeded value over unauthenticated HTTP
@@ -1907,13 +1819,17 @@ items:
         kind: static
         describe: >
           the lockfile resolves nightscout-connect 0.1.0 from the npm registry.
-      - run: npm ci --dry-run --ignore-scripts
-        cwd: externals/work/crm-connect-pin-0.1.0-exact
-        kind: network
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 153e5658 official/master
+        kind: static
         describe: >
-          npm ci resolves against the registry. --ignore-scripts because the
-          dry run still runs postinstall (a webpack bundle), which fails in a
-          worktree with no node_modules and says nothing about the lockfile.
+          official/master (the released 15.0.9 and later) contains 153e5658 (#8762's merge).
+          Red if master is rewritten without it.
+      - no-gate: >
+          The branch-level test gates that ran in externals/work/crm-connect-pin-0.1.0-exact were
+          retired on 2026-10-26: that worktree was removed after the fix was
+          released in 15.0.9. Every test file those gates named is on
+          official/master (checked 2026-10-26), so the released tree's suite
+          carries them; the containment gate above replaces the gates.
     blocks_on: [P0-PIN, P0-TAG]
     evidence:
       - docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md
@@ -4743,7 +4659,9 @@ items:
       lib/server/entries.js upsertQueryFor (301-319 at fade2299): match
       identifier first, as treatments do, then sysTime+type. lib/server/devicestatus.js
       create (92-172 at fade2299; insertMany unordered after #8758's
-      withoutStoredIds at 57-90): a status carrying identifier is upserted on it,
+      withoutStoredIds at 57-90): a status whose identifier is already stored
+      writes nothing and is answered with the stored _id (decided 2026-10-26;
+      8d0f9a22 replaces the stored status's fields, so the bundle changes it),
       the rest are inserted as today. Tests for both. No change to treatments,
       API v3 or the websocket.
     review: maintainer - re-send behaviour clients see changes
@@ -4779,6 +4697,21 @@ items:
       - tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md
       - docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
     notes: >
+      2026-10-26, later (maintainer, via session -66): (a) D-ID-FALLBACK
+      decided: for 16.0.0 a v1 entries re-send whose identifier matches
+      nothing still matches on sysTime+type, as today (TEST-ENTRY-UUID-003);
+      treatments never fall back; to be revisited once identifiers are
+      common. (b) A devicestatus re-send whose identifier is already stored
+      writes nothing (no merge, no new record, no srvModified change) and the
+      reply carries the stored _id, on API v1 and v3; v3, which today
+      replaces and moves srvModified, is aligned in the same PR. (c) This
+      item ships in one 16.0.0 re-send and merge PR with Q1b, BF-195 and (b),
+      on bf/16.0.0-null-removes (Q1b head 1bdce62c; bundle in progress).
+      Evidence for (b): the devicestatus study of 2026-10-26, reproduced on
+      dev 47723cda and 8d0f9a22; client survey read-derived: no client sends
+      an identifier on any devicestatus path (Loop's remote overrides travel
+      as treatments and push notifications).
+
       2026-10-26: carries the API v1 half of ID-CLIENT-OID-DECISION (the Loop
       reply's simple contract: whether a client may create its own ObjectId
       as _id over v1); the API v3 half is decided (BF-170, identity I2).
@@ -16600,6 +16533,9 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-26, later (maintainer): BF-193 stays its own PR, separate from
+      the 16.0.0 re-send and merge bundle.
+
       2026-10-26: decided by the maintainer (session -66): debug-gated
       payload logging through one gate, the existing DEBUG_LOGGING
       (env.debug.logging), no new setting, using recordForLog in
@@ -16696,6 +16632,13 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-26, later: lands in the one 16.0.0 re-send and merge PR on
+      bf/16.0.0-null-removes (Q1b head 1bdce62c; bundle in progress; at
+      cf2a2a67 the branch carries 913d0895 for Q1b, 1bdce62c for BF-195 and
+      a merge of 8d0f9a22, read from git log, not measured here) with
+      Q1b, ID-SIMPLE-MATCH and the devicestatus identifier re-send rule
+      (maintainer, 2026-10-26).
+
       2026-10-26: id allocated by session -66 and filed from the Q1b study.
       Fix direction, unverified: emit data-received once the write has
       completed. To land with Q1b (a null in an update removes the field,

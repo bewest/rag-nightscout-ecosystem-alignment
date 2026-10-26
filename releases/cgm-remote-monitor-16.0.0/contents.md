@@ -305,7 +305,7 @@ Read 2026-10-26, 19:10Z. Every cut is merged ([Merge state](#merge-state)).
 | BF-161: a deeply nested pattern on three query endpoints makes that request fail | `bf/entries-pattern-limit`, in the private fork of its draft advisory | `d2c4df9f` on `dev` `04d435eb` | in the fork; no fork PR opened yet; owes a merge of `dev` | `BFQ-161` |
 | BF-191: a stored treatment can stop the server process, and keeps doing so after a restart | private, through the maintainer's advisory process | — | open in the register | `BFQ-191` |
 | BF-193: write paths log whole records | `bf/16.0.0-log-privacy` (local) | `8ae43eb4`, one commit on `dev` `47723cda` | ready to push, not pushed | `BFQ-193` |
-| Q1b (a `null` in an update removes the field) with BF-195 (a stale profile pushed over the socket after a re-send) | `bf/16.0.0-null-removes` (local) | at `dev` `47723cda` | in progress | `WRITE-CONTRACT`, `BFQ-195` |
+| the re-send and merge contract: `ID-SIMPLE-MATCH`, Q1b (a `null` in an update removes the field), BF-195 (a stale profile pushed over the socket after a re-send) and the devicestatus `identifier` rule, one PR | `bf/16.0.0-null-removes` (local) | `cf2a2a67` on `dev` `47723cda`: Q1b `913d0895`, BF-195 `1bdce62c`, `ID-SIMPLE-MATCH` `8d0f9a22` merged (read from `git log`) | in progress; the devicestatus `identifier` rule is not yet on it (`8d0f9a22` replaces a stored status's fields; v3 still replaces) | `ID-SIMPLE-MATCH`, `WRITE-CONTRACT`, `BFQ-195` |
 
 **#8854** (read from its body and `git diff --stat official/dev...refs/triage/pr-8854`, 31 files,
 +934/−45; the runs are the author's). Its body targets the
@@ -598,7 +598,13 @@ candidate is named.
 - A `null` in an update removes the field (write contract Q1b, decided 2026-10-26; with BF-195's fix): what
   is stored changes for a re-send that matches a stored treatment, entry, profile, food or activity record, for
   an API v3 `PATCH` and for a socket `dbUpdate`, where 15.0.9 stores the `null`. A create and a replace (v1 or v3
-  `PUT`) still store a `null` as sent. Arrays are replaced whole.
+  `PUT`) still store a `null` as sent. Arrays are replaced whole. The merge is nested: a profile re-sent with
+  part of its `store` keeps the named profiles it leaves out; to remove one, send `store: {"<name>": null}` or
+  replace the profile with `PUT` (as the profile editor does).
+- A device status re-sent with an `identifier` that is already stored is not stored again and does not change
+  the stored record (no new `srvModified`); the reply carries the stored `_id`, on API v1 and v3. API v1
+  entries and device status match a re-send on `identifier`, as treatments do; an entry whose `identifier`
+  matches nothing still matches on its time and type.
 - Quieter server logs (BF-193): each write is logged as a summary, not the record. Set `DEBUG_LOGGING=true` to
   see the records clients send; debug logs then contain health data. Log lines change text.
 - API v1 profile uploads (#8852): malformed entries and binary bodies answer 400, and a batch is capped at
