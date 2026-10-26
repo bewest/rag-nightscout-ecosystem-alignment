@@ -34,5 +34,5 @@ pages:
   nightscout-next-gen-platform.html:
     kind: living
     sources: [docs/30-design/platform/next-gen-platform-plan.md, docs/30-design/platform/next-gen-platform-plan.json]
-    source_commit: 723ed9230
+    source_commit: 97a40f06e
     render: tools/site/render_nextgen.py
