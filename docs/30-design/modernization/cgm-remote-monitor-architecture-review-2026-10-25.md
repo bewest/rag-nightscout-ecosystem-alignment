@@ -143,7 +143,7 @@ needed beyond Q-B to Q-E.
 | 3 | Decide Q-A; if (b), cut `write(intent)` on `dev` with today's matrix pinned and G1/G2 as gates | Q-A | maintainer, second reviewer |
 | 4 | Write the read contract for Q-C: reader entry points that must not throw on a stored record, and R1's flag shape | Q-C | maintainer |
 | 5 | Ship `ID-SIMPLE-MATCH` and push `MOD-WRITE-VALIDATION` (default `off`; operators may try `log`) | Q-E, Q-B | maintainer |
-| 6 | One cross-project note to the controller authors (table below), drafted by session f4 | Q-B to Q-E | controller authors |
+| 6 | One cross-project note to the controller authors (table below): [drafted 2026-10-25](../platform/upstream-asks-controller-authors/README.md), not yet sent | Q-B to Q-E | controller authors |
 
 | question | AndroidAPS | Loop (NightscoutKit) | Trio | xDrip+ / xDrip4iOS |
 |---|---|---|---|---|
