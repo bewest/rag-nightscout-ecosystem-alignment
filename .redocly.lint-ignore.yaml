@@ -1,0 +1,16 @@
+# Redocly lint ignore file (read by `make openapi-lint`; see redocly.yaml).
+# Every entry says why it is ignored rather than fixed.
+specs/openapi/aid-statespan-2025.yaml:
+  # The file is a historical, hypothetical V3 extension that was never
+  # implemented (no state-span code on cgm-remote-monitor dev 47723cda) and
+  # is not rendered on the site. It declares no authentication, and choosing
+  # one would invent an auth model for an API that does not exist; decided
+  # 2026-10-26 to ignore these seven instead.
+  security-defined:
+    - '#/paths/~1state-spans~1status/get'
+    - '#/paths/~1state-spans/get'
+    - '#/paths/~1state-spans/post'
+    - '#/paths/~1state-spans~1active/get'
+    - '#/paths/~1state-spans~1{identifier}/get'
+    - '#/paths/~1state-spans~1{identifier}/put'
+    - '#/paths/~1state-spans~1{identifier}/delete'

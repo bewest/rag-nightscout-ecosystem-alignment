@@ -60,6 +60,7 @@
     "sensitivity_why": "name is on the redaction denylist",
     "tier": "universal",
     "tier_reason": "all 11 sites, 100.0% of documents",
+    "description": "Storage key Nightscout assigns. API v3 does not return it and\nrefuses a request body that carries it (400). See \"API versions\"\nabove.",
     "evidence": {
      "docs_present": 202,
      "doc_frequency": 1.0,
@@ -165,7 +166,8 @@
     "placement": "core",
     "sensitivity": "identifying",
     "data_category": "identity",
-    "sensitivity_why": "name is on the redaction denylist"
+    "sensitivity_why": "name is on the redaction denylist",
+    "description": "The record's sync identity, assigned by the client and the same on\nevery retry; it need not be a UUID. When a client sends none, API\nv3 computes one; a document stored without one is read back through\nAPI v3 with its `_id` string as `identifier`. Immutable once stored.\nSee \"API versions\" above."
    },
    "isValid": {
     "path": "isValid",
@@ -1321,7 +1323,7 @@
         "sensitivity_why": "numeric or boolean measurement",
         "tier": "universal",
         "tier_reason": "all 11 sites, 100.0% of documents",
-        "description": "Duration of Insulin Action in HOURS.\nMinimum 5 hours enforced by all AID systems for exponential model.",
+        "description": "Duration of Insulin Action in HOURS, as written to the profile\ndocument. The 2-10 bounds below describe stored values; each\ncontroller applies its own limits to its own DIA setting, and the\nvalue in a Nightscout profile is not necessarily the value a\ncontroller doses with.\n- oref0 (d219baf9) takes DIA from pump settings\n  (`insulin_action_curve`, lib/profile/index.js:117-122), raises a\n  value below 3 h to 3 h (lib/iob/total.js:23-27), and a value\n  below 5 h to 5 h for the exponential curves `rapid-acting` and\n  `ultra-rapid` (lib/iob/total.js:59-63).\n- Trio (0b29cd534) carries the same JavaScript\n  (trio-oref/lib/iob/total.js:21-25, 57-61). Its Swift profile\n  generator refuses a DIA below 5 h\n  (APS/OpenAPSSwift/Profile/ProfileGenerator.swift:124-129) and its\n  Swift IOB calculation raises one below 5 h to 5 h\n  (APS/OpenAPSSwift/Iob/IobCalculation.swift:151-156). It uploads\n  its own pump-settings DIA in the profile\n  (Services/Network/Nightscout/NightscoutManager.swift:822).\n- AAPS (7e1d537d49) marks a profile invalid when DIA is outside\n  5-9 h, or 5-10 h for the pregnant age type\n  (core/interfaces/.../utils/HardLimits.kt:36-42,\n  core/objects/.../profile/ProfileSealed.kt:191-196).\n- Loop (LoopKit d9f14373) has no DIA setting: the duration is\n  fixed by the selected exponential insulin model, 6 h, or 5 h for\n  Afrezza (LoopKit/Insulin/ExponentialInsulinModelPreset.swift:21-34).\n  It uploads a fixed `dia` of 6 h in the profile (NightscoutService\n  2cef489, NightscoutServiceKit/Extensions/StoredSettings.swift:83).",
         "evidence": {
          "docs_present": 202,
          "doc_frequency": 1.0,

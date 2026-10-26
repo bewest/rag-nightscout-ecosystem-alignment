@@ -8,7 +8,7 @@
 
 ## Overview
 
-This directory contains OpenAPI 3.0 specifications documenting the de facto data exchange standards for Automated Insulin Delivery (AID) systems circa 2025, along with alignment extensions proposed for 2026.
+This directory contains OpenAPI specifications (3.0.3 and 3.1.0; see [Lint status](#lint-status)) documenting the de facto data exchange standards for Automated Insulin Delivery (AID) systems circa 2025, along with alignment extensions proposed for 2026.
 
 ### Design Principles
 
@@ -28,6 +28,28 @@ This directory contains OpenAPI 3.0 specifications documenting the de facto data
 
 ---
 
+## Site status
+
+The label each spec carries on the static site (recommended 2026-10-26; the site manifest is authoritative). Comparison sources: cgm-remote-monitor `dev` 47723cda, `docs/30-design/platform/spec/`, Nocturne `main` 36d5ef4a2.
+
+| Spec File | Site status | Basis |
+|-----------|-------------|-------|
+| `aid-entries-2025.yaml` | de facto 2025 | Stored document shape reconciled against the 2026-04 corpus; the declared operation follows API v3 on `dev` 47723cda (envelope, `limit`, authentication), though not every v3 parameter is declared. Input to `tools/nsschema`. |
+| `aid-treatments-2025.yaml` | de facto 2025 | As entries. |
+| `aid-devicestatus-2025.yaml` | de facto 2025 | As entries. |
+| `aid-profile-2025.yaml` | de facto 2025 | As entries. |
+| `aid-commands-2025.yaml` | superseded | Describes PR #7791 (open, not on `dev`); replaced by `spec/commands.md`. |
+| `aid-insulin-2025.yaml` | proposed | Describes PR #8261 (open, not on `dev`) plus fields of this repo's own. |
+| `aid-heartrate-2025.yaml` | superseded | Describes PR #8083 (open, not on `dev`); the measured recommendation is the shipping `activity` collection (`docs/30-design/platform/nightscout-devicestatus-profile-fidelity-2026-09-10.md`). |
+| `aid-alignment-extensions.yaml` | superseded | Its schemas are replaced by the identity, registration and state-intent specs in `docs/30-design/platform/spec/`, which are proposed. |
+| `aid-statespan-2025.yaml` | historical | Hypothetical V3 extension; no state-span code on `dev`. Not rendered. |
+| `nocturne-v4-extension.yaml` | historical | Four of its six paths no longer exist in Nocturne `main` 36d5ef4a2; Nocturne publishes its own OpenAPI description. |
+
+### Open questions
+
+- **Extension sub-schemas in the de facto specs.** `EntryExtended` (entries), `ProfileExtended` (profile) and `Override.supersedes` (treatments) are 2026 extensions that the current platform specs do not adopt (state-intent S1-S12 and S3/A7, records R5). Whether they move to a superseded file is open.
+- **Closed enums.** `eventType` (treatments) and `type` (entries) are closed enums; the typed-schema evidence (`docs/30-design/platform/nightscout-typed-schema-evidence-2026-09-10.md` §3.4) says observed values cannot close an enum. Whether they stay closed is open.
+
 ## Coverage Matrix
 
 | Spec File | Collection | 2025 Status | 2026 Extensions | Related Gaps |
@@ -39,6 +61,8 @@ This directory contains OpenAPI 3.0 specifications documenting the de facto data
 | [`aid-statespan-2025.yaml`](./aid-statespan-2025.yaml) | state-spans | ✅ Complete | Reference only | GAP-V4-001, GAP-V4-002, GAP-SYNC-037 |
 | [`aid-alignment-extensions.yaml`](./aid-alignment-extensions.yaml) | All | N/A | ✅ Complete | All gaps mapped to extensions |
 | [`nocturne-v4-extension.yaml`](./nocturne-v4-extension.yaml) | V4 | ✅ Complete | N/A (Nocturne-specific) | GAP-V4-001, GAP-NOCTURNE-001 |
+
+Not in this matrix: [`aid-commands-2025.yaml`](./aid-commands-2025.yaml), [`aid-insulin-2025.yaml`](./aid-insulin-2025.yaml) and [`aid-heartrate-2025.yaml`](./aid-heartrate-2025.yaml). Each describes an unmerged cgm-remote-monitor pull request (#7791, #8261 and #8083 respectively, all open on 2026-10-26); none of their routes exists on cgm-remote-monitor `dev` 47723cda.
 
 ### Gap Coverage Summary
 
@@ -60,6 +84,27 @@ The alignment extensions address the following gap categories:
 
 ---
 
+## Lint status
+
+Measured 2026-10-26 with `make openapi-lint` (`@redocly/cli` 1.34.0, recommended rules, config in [`redocly.yaml`](../../redocly.yaml)):
+
+| Spec File | OpenAPI | Errors | Warnings |
+|-----------|---------|--------|----------|
+| `aid-alignment-extensions.yaml` | 3.1.0 | 0 | 0 |
+| `aid-commands-2025.yaml` | 3.0.3 | 0 | 0 |
+| `aid-devicestatus-2025.yaml` | 3.0.3 | 0 | 0 |
+| `aid-entries-2025.yaml` | 3.1.0 | 0 | 0 |
+| `aid-heartrate-2025.yaml` | 3.0.3 | 0 | 0 |
+| `aid-insulin-2025.yaml` | 3.0.3 | 0 | 0 |
+| `aid-profile-2025.yaml` | 3.1.0 | 0 | 1 (`no-unused-components`: `ProfileSwitch`) |
+| `aid-statespan-2025.yaml` | 3.0.3 | 0 (7 `security-defined` ignored) | 7 (`no-unused-components` 5, `operation-4xx-response` 2) |
+| `aid-treatments-2025.yaml` | 3.1.0 | 0 | 1 (`no-unused-components`: `SMBIdentification`) |
+| `nocturne-v4-extension.yaml` | 3.0.3 | 0 | 6 (`operation-4xx-response` 5, `no-server-example.com` 1) |
+
+The four 3.1.0 files use type arrays (`type: [number, "null"]`), `const` or a schema-level `examples` list, which are 3.1 keywords. The seven `security-defined` errors in `aid-statespan-2025.yaml` are listed in [`.redocly.lint-ignore.yaml`](../../.redocly.lint-ignore.yaml): the file is historical and declares no authentication, and none is invented for it.
+
+CI (`.github/workflows/ci.yml`, job "Specs and fixtures") runs `tools/validate_json.py`, which checks only that `openapi`, `info` and `paths` exist and that each path starts with `/`, and then `make openapi-lint`, which fails the job on any lint error.
+
 ## Methodology
 
 ### Source Authority Hierarchy
@@ -80,7 +125,7 @@ Each field includes:
 ### Validation Strategy
 
 Specs are validated against:
-1. JSON Schema draft 2020-12 compatibility
+1. The OpenAPI specification and Redocly's recommended rules (`make openapi-lint`; see [Lint status](#lint-status))
 2. Existing test fixtures in `specs/fixtures/`
 3. Real-world data from controller uploads
 
@@ -166,8 +211,8 @@ npx @redocly/cli preview-docs specs/openapi/aid-entries-2025.yaml
 
 ### Validating Specs
 ```bash
-# Validate OpenAPI syntax
-npx @redocly/cli lint specs/openapi/*.yaml
+# Validate OpenAPI syntax (pinned @redocly/cli, config in redocly.yaml)
+make openapi-lint
 
 # Check against fixtures
 python tools/validate_fixtures.py --schema specs/openapi/

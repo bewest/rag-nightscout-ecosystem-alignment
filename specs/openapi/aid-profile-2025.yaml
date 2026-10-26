@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: AID Profile Collection - De Facto 2025
   version: 2025.2.0
@@ -6,6 +6,31 @@ info:
     OpenAPI specification for the Nightscout `profile` collection documenting
     the de facto standard as implemented across AID systems circa 2025.
     
+    ## API versions
+
+    The operations declared here are Nightscout API v3 as shipped on
+    cgm-remote-monitor dev 47723cda (`lib/api3/swagger.yaml`). The document
+    schema describes the stored `profile` document, which clients write through
+    API v1 or API v3: Loop (NightscoutKit `NightscoutClient.swift:13-17`) and
+    Trio (`NightscoutAPI.swift:14-18`, 0b29cd534) use API v1; AAPS uses API
+    v3 (`core/nssdk/.../networking/NightscoutApi.kt`). The `x-aid-controllers`
+    notes describe what each controller writes, through whichever API it
+    uses; they are not API v3 behaviour.
+
+    In API v3:
+    - a successful response is wrapped as `{status, result}`
+      (`lib/api3/shared/renderer.js:117-122`);
+    - `identifier` is the record's sync identity, assigned by the client;
+      when none is sent the server computes one
+      (`lib/api3/shared/operationTools.js:209-216`), and a document stored
+      without one is read back with its `_id` string as `identifier`
+      (`lib/api3/storage/mongoCollection/utils.js:10-16`);
+    - `_id` is the storage key Nightscout assigns: API v3 does not return it
+      (`utils.js:10-16`) and refuses a create or update body that carries it
+      with 400 (`operationTools.js:197-203`, called from
+      `generic/create/operation.js:35` and `generic/update/operation.js:32`).
+      API v1 keeps its own `_id` handling.
+
     ## Current Limitations
     - No distinction between prescribed, desired, and effective profiles
     - AAPS ProfileSwitch semantics differ from Loop overrides (GAP-002)
@@ -45,9 +70,15 @@ info:
     name: AID Alignment Workspace
   license:
     name: AGPL-3.0
+    url: https://www.gnu.org/licenses/agpl-3.0.html
 
 servers:
   - url: /api/v3
+
+# The scheme Nightscout API v3 declares for every operation
+# (cgm-remote-monitor lib/api3/swagger.yaml, securitySchemes.jwtoken).
+security:
+  - jwtoken: []
 
 paths:
   /profile:
@@ -61,11 +92,33 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ProfileDocument'
+                type: object
+                description: API v3 response envelope (lib/api3/shared/renderer.js:117-122)
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProfileDocument'
+        '401':
+          description: |
+            Missing or bad access token or JWT (cgm-remote-monitor
+            lib/api3/const.json, MSG.HTTP_401_*).
 
 components:
+  securitySchemes:
+    jwtoken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT obtained from /api/v2/authorization/request/{accessToken},
+        sent as `Authorization: Bearer <jwt>`. Mirrors
+        cgm-remote-monitor lib/api3/swagger.yaml. API v3 skips this
+        check when the server sets API3_SECURITY_ENABLE=false.
+
   schemas:
     ProfileDocument:
       type: object
@@ -78,8 +131,18 @@ components:
       properties:
         _id:
           type: string
+          description: |
+            Storage key Nightscout assigns. API v3 does not return it and
+            refuses a request body that carries it (400). See "API versions"
+            above.
         identifier:
           type: string
+          description: |
+            The record's sync identity, assigned by the client and the same on
+            every retry; it need not be a UUID. When a client sends none, API
+            v3 computes one; a document stored without one is read back through
+            API v3 with its `_id` string as `identifier`. Immutable once stored.
+            See "API versions" above.
         created_at:
           type: string
           format: date-time
@@ -158,8 +221,33 @@ components:
         dia:
           type: number
           description: |
-            Duration of Insulin Action in HOURS.
-            Minimum 5 hours enforced by all AID systems for exponential model.
+            Duration of Insulin Action in HOURS, as written to the profile
+            document. The 2-10 bounds below describe stored values; each
+            controller applies its own limits to its own DIA setting, and the
+            value in a Nightscout profile is not necessarily the value a
+            controller doses with.
+            - oref0 (d219baf9) takes DIA from pump settings
+              (`insulin_action_curve`, lib/profile/index.js:117-122), raises a
+              value below 3 h to 3 h (lib/iob/total.js:23-27), and a value
+              below 5 h to 5 h for the exponential curves `rapid-acting` and
+              `ultra-rapid` (lib/iob/total.js:59-63).
+            - Trio (0b29cd534) carries the same JavaScript
+              (trio-oref/lib/iob/total.js:21-25, 57-61). Its Swift profile
+              generator refuses a DIA below 5 h
+              (APS/OpenAPSSwift/Profile/ProfileGenerator.swift:124-129) and its
+              Swift IOB calculation raises one below 5 h to 5 h
+              (APS/OpenAPSSwift/Iob/IobCalculation.swift:151-156). It uploads
+              its own pump-settings DIA in the profile
+              (Services/Network/Nightscout/NightscoutManager.swift:822).
+            - AAPS (7e1d537d49) marks a profile invalid when DIA is outside
+              5-9 h, or 5-10 h for the pregnant age type
+              (core/interfaces/.../utils/HardLimits.kt:36-42,
+              core/objects/.../profile/ProfileSealed.kt:191-196).
+            - Loop (LoopKit d9f14373) has no DIA setting: the duration is
+              fixed by the selected exponential insulin model, 6 h, or 5 h for
+              Afrezza (LoopKit/Insulin/ExponentialInsulinModelPreset.swift:21-34).
+              It uploads a fixed `dia` of 6 h in the profile (NightscoutService
+              2cef489, NightscoutServiceKit/Extensions/StoredSettings.swift:83).
           minimum: 2
           maximum: 10
           x-aid-controllers:

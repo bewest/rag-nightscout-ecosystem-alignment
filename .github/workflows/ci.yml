@@ -6,6 +6,7 @@ name: CI
 #   pip install pyyaml==6.0.3 jsonschema==4.26.0
 #   python tools/validate_json.py
 #   python tools/validate_telemetry_schema.py
+#   make openapi-lint            # Node 22; fetches @redocly/cli 1.34.0
 
 on:
   push:
@@ -52,3 +53,14 @@ jobs:
 
       - name: Telemetry schema fixtures (valid pass, invalid fail)
         run: python tools/validate_telemetry_schema.py
+
+      # validate_json.py above checks only that the top-level keys exist.
+      # This lints every spec against the OpenAPI specification and Redocly's
+      # recommended rules (config: redocly.yaml, .redocly.lint-ignore.yaml);
+      # the CLI version is pinned in the Makefile (REDOCLY_CLI).
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: OpenAPI lint (make openapi-lint)
+        run: make openapi-lint

@@ -1,0 +1,14 @@
+# Redocly CLI configuration for specs/openapi/ (lint: `make openapi-lint`).
+# The built-in recommended ruleset applies to every document; per-API
+# entries below tune a rule only where the document's shape makes it
+# inapplicable. Each tuning says why.
+extends:
+  - recommended
+
+apis:
+  aid-alignment-extensions:
+    root: specs/openapi/aid-alignment-extensions.yaml
+    rules:
+      # Components-only document: paths is {} and other specs $ref its
+      # schemas. With no operations there is no server to declare.
+      no-empty-servers: off
