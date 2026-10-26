@@ -234,7 +234,7 @@ Branch heads as of 2026-10-26, 05:00Z (cut rows); 2026-10-25, 23:49Z (others). C
 | work | branch | head | state | queue |
 |---|---|---|---|---|
 | cut 3: MongoDB driver 7, maintained jQuery UI widgets, native help tooltips, Compose `mongo:6.0.27`; BF-179 and BF-182 folded in | `chore/compose-mongodb6`, **#8844** to `dev` | `12d1f645` (dev `428b20b7` merged in) | open; pushed 2026-10-25/26; see [Modernization cuts: handoff](#modernization-cuts-handoff) | `RT-REBASE` |
-| cut 4: trusted proxies through one module, `mime-types`, moment-timezone 0.6, csv, semver 7, ESLint 10, webpack 5.110; BF-183 folded in | `chore/mime-exposure-review`, draft PR stacked on cut 3 (to open) | `99b6f68b` local on `wip/cut4-onto-16.0.0`; published head `b80aa147` | prepared, not pushed | `RT-5` |
+| cut 4: trusted proxies through one module, `mime-types`, moment-timezone 0.6, csv, semver 7, ESLint 10, webpack 5.110; BF-183 folded in | `chore/mime-exposure-review`, **#8847** (draft, based on `chore/compose-mongodb6`) | `99b6f68b` | open draft; pushed 2026-10-26 | `RT-5` |
 | cut 5: Express 5, Helmet 8, Pushover native client, notification caches, APNs 8, EJS 6, axios 1, Flot 4, Swagger UI 5 | `chore/nightscout-modernization`, **#8605** (AndyLow91) | catch-up in progress on local `wip/cut5-onto-16.0.0`; published head `b1bdaca0` | in progress | `RT-3` |
 | BF-72: a caller-supplied regular expression can hold the database for minutes | `bf/regex-limits`, in the private fork of its draft advisory | `1833ab00` on `dev` `04d435eb` | in the fork; no fork PR opened yet; owes a merge of `dev` | `BFQ-72` |
 | BF-161: a deeply nested pattern on three query endpoints makes that request fail | `bf/entries-pattern-limit`, in the private fork of its draft advisory | `d2c4df9f` on `dev` `04d435eb` | in the fork; no fork PR opened yet; owes a merge of `dev` | `BFQ-161` |
@@ -287,7 +287,7 @@ work can be shared. Cut 1 (#8828) and cut 2 (#8837) are merged.
 **Method** (decided 2026-10-12, `RT-PROPAGATION`): `dev` is merged up the stack, `dev` → cut 3 → cut 4
 → cut 5; nothing is rebased, so each push fast-forwards the published branch. Each cut is resolved
 against the one below it, so `dev`'s fixes reach cut 4 and cut 5 through cut 3's resolutions. PRs are
-stacked: cut 3 to `dev` (#8844), cut 4 as a draft based on `chore/compose-mongodb6`, and #8605's base
+stacked: cut 3 to `dev` (#8844), cut 4 as draft #8847 based on `chore/compose-mongodb6`, and #8605's base
 is AndyLow91's call (suggested: `chore/mime-exposure-review`, so its diff shows only cut 5). When a
 base branch is merged and deleted, GitHub retargets the PR above it.
 
@@ -300,7 +300,7 @@ test fail; with `TRUST_PROXY` unset, 15.0.9's address resolution (BF-88).
 | cut | head | fixes folded in | verified (reproduced, Node 24.22.1, `TZ=UTC` unless noted) |
 |---|---|---|---|
 | 3 | `12d1f645` (#8844) | BF-182 (boot error page when driver 7 refuses the server), BF-179 (production-only install explains itself) | `npm test` 3838 / 0 / 4 on MongoDB 5.0.33, 7.0.43 and 8.0.34 at `8f238fc5`; 3877 / 0 / 4 on 8.0.34 at `12d1f645`; Chromium 579 / 1 and Firefox 580 / 0 at `12d1f645` (the 1: BF-192, from `dev`); MongoDB 4.2.24 gets the boot error page, 4.4.24 connects |
-| 4 | `99b6f68b` (local) | BF-183 (storage socket stops logging subscription credentials) | `npm test` 3887 / 0 / 4 on 5.0.33 and 8.0.34, and on 8.0.34 in America/Los_Angeles, at `32a3c0ac`; 3921 / 0 / 4 on 5.0.33 at `99b6f68b`; Chromium 591 / 1 (BF-192); `TRUST_PROXY` unset behind a TLS proxy answers 200, and 307-to-itself with cut 4's original default |
+| 4 | `99b6f68b` (#8847) | BF-183 (storage socket stops logging subscription credentials) | `npm test` 3887 / 0 / 4 on 5.0.33 and 8.0.34, and on 8.0.34 in America/Los_Angeles, at `32a3c0ac`; 3921 / 0 / 4 on 5.0.33 at `99b6f68b`; Chromium 591 / 1 (BF-192); `TRUST_PROXY` unset behind a TLS proxy answers 200, and 307-to-itself with cut 4's original default |
 | 5 | in progress | — | — |
 
 Found by the merges and fixed on the branches: bson 7 `ObjectId`s carry own fields, so cut 2's query
