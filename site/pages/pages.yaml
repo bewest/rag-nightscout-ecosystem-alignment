@@ -57,7 +57,7 @@ pages:
   api-aid-entries-2025.html:
     kind: living
     sources: [specs/openapi/aid-entries-2025.yaml]
-    source_commit: 703e20d4c
+    source_commit: b7874a1ab
     render: tools/site/render_apis.py
     api:
       status: de-facto
@@ -67,7 +67,7 @@ pages:
   api-aid-treatments-2025.html:
     kind: living
     sources: [specs/openapi/aid-treatments-2025.yaml]
-    source_commit: 703e20d4c
+    source_commit: b7874a1ab
     render: tools/site/render_apis.py
     api:
       status: de-facto
@@ -87,7 +87,7 @@ pages:
   api-aid-profile-2025.html:
     kind: living
     sources: [specs/openapi/aid-profile-2025.yaml]
-    source_commit: 47fb35de4
+    source_commit: 513410108
     render: tools/site/render_apis.py
     api:
       status: de-facto
@@ -117,7 +117,7 @@ pages:
   api-aid-alignment-extensions.html:
     kind: living
     sources: [specs/openapi/aid-alignment-extensions.yaml]
-    source_commit: 870f56625
+    source_commit: 513410108
     render: tools/site/render_apis.py
     api:
       status: superseded
