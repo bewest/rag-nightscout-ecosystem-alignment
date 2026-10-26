@@ -14,6 +14,8 @@ step, the re-send outcomes and the change event in the
 [backfix register](../remedial/nightscout-backfix-register.md).
 How the checks that refuse a write converge on the step's `refused` outcome (2026-10-25 addendum):
 [write-path checks alignment](../modernization/write-path-checks-alignment-2026-10-25.md).
+The register entries this step and its neighbours address, by pattern, with decision questions
+(2026-10-25): [architecture review](../modernization/cgm-remote-monitor-architecture-review-2026-10-25.md).
 
 Every claim carries one of two marks. **[M]** measured: by the commands in §1.1 and §8, on the refs
 above, Node 22.23.2, MongoDB 7.0.43. **[R]** read: from source at the ref named, not run.
