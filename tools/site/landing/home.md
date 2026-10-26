@@ -41,6 +41,9 @@ under **More**.
 - [How 15.0.9 was made](site/pages/cgm-remote-monitor-15.0.9-colophon.html): the
   release cycle's figures, with charts of merges, defects found and closed,
   test runs and the regressions caught before release.
+- [API reference](specs/openapi/README.md): cgm-remote-monitor's API v1 and v3
+  documents beside this repository's OpenAPI specs, each rendered page labelled
+  current, de facto, proposed, unmerged or superseded.
 
 ## Record or Living
 
