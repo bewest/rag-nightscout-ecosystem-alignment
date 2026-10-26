@@ -2245,7 +2245,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>4a36e1d20</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>65040d552</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -2999,15 +2999,15 @@ runtime Docker image.</p>
 <tr>
 <td>BF-193: write paths log whole records</td>
 <td><code>bf/16.0.0-log-privacy</code>, <strong>draft #8856</strong> (the maintainer, base <code>dev</code>)</td>
-<td><code>8ae43eb4</code>, one commit on <code>dev</code> <code>47723cda</code></td>
-<td>draft PR opened 2026-10-26. <code>dev</code> <code>7ad3a67f</code> merged in locally as <code>6b6ad320</code> (session -66, no conflicts, not pushed): <code>npm test</code> 4436 passing, 0 failing, 3 pending; <code>test:all</code> 4764 passing, 0 failing, 3 pending</td>
+<td><code>6b6ad320</code>: one commit (<code>8ae43eb4</code>) and a merge of <code>dev</code> <code>7ad3a67f</code></td>
+<td>draft PR opened 2026-10-26. <code>dev</code> <code>7ad3a67f</code> merged in as <code>6b6ad320</code> (session -66, no conflicts; pushed by the maintainer 2026-10-26, hosted CI 16 passed, 0 failed, 2 skipped): <code>npm test</code> 4436 passing, 0 failing, 3 pending; <code>test:all</code> 4764 passing, 0 failing, 3 pending</td>
 <td><code>BFQ-193</code></td>
 </tr>
 <tr>
 <td>the re-send and merge contract: <code>ID-SIMPLE-MATCH</code>, Q1b (a <code>null</code> in an update removes the field), BF-195 (a stale profile pushed over the socket after a re-send) and the devicestatus <code>identifier</code> rule, one PR</td>
 <td><code>bf/16.0.0-null-removes</code>, <strong>draft #8859</strong> (the maintainer, base <code>dev</code>)</td>
-<td><code>fc170a4c</code>, five commits on <code>dev</code> <code>47723cda</code>: <code>ID-SIMPLE-MATCH</code> <code>8d0f9a22</code>, Q1b <code>913d0895</code>, BF-195 <code>1bdce62c</code>, merge <code>cf2a2a67</code>, the devicestatus <code>identifier</code> rule <code>fc170a4c</code> (read from <code>git log</code>)</td>
-<td>draft PR opened 2026-10-26; the devicestatus <code>identifier</code> rule is on it (v1 and v3: a re-send with a stored <code>identifier</code> writes nothing and the reply carries the stored <code>_id</code>); <code>npm test</code> 4375 passing, 0 failing, 3 pending and <code>test:all</code> 4703 passing, 0 failing, 3 pending (re-run on <code>fc170a4c</code> 2026-10-26; the first run had 1 environmental <code>ENOSPC</code> failure); with #8854 one import-line conflict and a 3-line matrix expectation change for whichever merges second. #8854 merged first: <code>dev</code> <code>7ad3a67f</code> merged in locally as <code>5c6ceabb</code> (session -66, not pushed; both requires kept, #8854's cross-path resend cells updated): <code>npm test</code> 4521 passing, 0 failing, 3 pending; <code>test:all</code> 4849 passing, 0 failing, 3 pending (integration record R16)</td>
+<td><code>5c6ceabb</code>: five commits on <code>dev</code> <code>47723cda</code> and a merge of <code>dev</code> <code>7ad3a67f</code>: <code>ID-SIMPLE-MATCH</code> <code>8d0f9a22</code>, Q1b <code>913d0895</code>, BF-195 <code>1bdce62c</code>, merge <code>cf2a2a67</code>, the devicestatus <code>identifier</code> rule <code>fc170a4c</code> (read from <code>git log</code>)</td>
+<td>draft PR opened 2026-10-26; the devicestatus <code>identifier</code> rule is on it (v1 and v3: a re-send with a stored <code>identifier</code> writes nothing and the reply carries the stored <code>_id</code>); <code>npm test</code> 4375 passing, 0 failing, 3 pending and <code>test:all</code> 4703 passing, 0 failing, 3 pending (re-run on <code>fc170a4c</code> 2026-10-26; the first run had 1 environmental <code>ENOSPC</code> failure); with #8854 one import-line conflict and a 3-line matrix expectation change for whichever merges second. #8854 merged first: <code>dev</code> <code>7ad3a67f</code> merged in as <code>5c6ceabb</code> (session -66; pushed by the maintainer 2026-10-26, hosted CI 16 passed, 0 failed, 2 skipped; both requires kept, #8854's cross-path resend cells updated): <code>npm test</code> 4521 passing, 0 failing, 3 pending; <code>test:all</code> 4849 passing, 0 failing, 3 pending (integration record R16)</td>
 <td><code>ID-SIMPLE-MATCH</code>, <code>WRITE-CONTRACT</code>, <code>BFQ-195</code></td>
 </tr>
 </tbody>

@@ -4623,7 +4623,7 @@
 
 
 <h1 id="1600-integration-record">16.0.0 integration record<a class="headerlink" href="#1600-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>4a36e1d20</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>65040d552</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 16.0.0 candidate is assembled and
 tested, in the form of the <a href="rc-15.0.9-integration-record.html">15.0.9 integration record</a>. Item state is
 in <code>queue/work-queue.yaml</code>; defect facts are in the <a href="nightscout-backfix-register.html">backfix register</a>;
@@ -5534,15 +5534,15 @@ is unchanged; Node 22.23.4, MongoDB 5.0):</p>
 </thead>
 <tbody>
 <tr>
-<td>#8859 (<code>bf/16.0.0-null-removes</code>, head <code>fc170a4c</code>)</td>
-<td><code>5c6ceabb</code></td>
+<td>#8859 (<code>bf/16.0.0-null-removes</code>, head <code>fc170a4c</code> at the run)</td>
+<td><code>5c6ceabb</code>, pushed later as the PR head; hosted CI 16 passed, 0 failed, 2 skipped</td>
 <td>4521 passing, 0 failing, 3 pending</td>
 <td>4849 passing, 0 failing, 3 pending</td>
 <td>both requires kept in <code>lib/api3/generic/patch/operation.js</code>; #8854's cross-path resend cells in <code>tests/api.crud-by-id.matrix.test.js</code> updated (v1 resend expects 200; only v3 to socket still duplicates). Red control: <code>dev</code>'s matrix file on the merged tree, 413 passing, 9 failing (the 4 cross-path cells and 5 v3 devicestatus resend rows); updated, 422 passing, 0 failing</td>
 </tr>
 <tr>
-<td>#8856 (<code>bf/16.0.0-log-privacy</code>, head <code>8ae43eb4</code>)</td>
-<td><code>6b6ad320</code>, no conflicts</td>
+<td>#8856 (<code>bf/16.0.0-log-privacy</code>, head <code>8ae43eb4</code> at the run)</td>
+<td><code>6b6ad320</code>, no conflicts, pushed later as the PR head; hosted CI 16 passed, 0 failed, 2 skipped</td>
 <td>4436 passing, 0 failing, 3 pending</td>
 <td>4764 passing, 0 failing, 3 pending</td>
 <td>#8854's new log lines: <code>console.error(err)</code> on storage errors (the BF-193 follow-up: an error object may contain the document) and the validation line, which names rules and fields only</td>
