@@ -299,11 +299,13 @@ Read 2026-10-26, 19:10Z. Every cut is merged ([Merge state](#merge-state)).
 
 | work | branch | head | state | queue |
 |---|---|---|---|---|
-| shared persistence and stored-data contracts | `wip/architecture-data-contracts`, **draft #8854** (AndyLow91, base `dev`) | `880b7369`, one commit on `dev` `47723cda` | open draft, mergeable; every check on its head passed | `WRITE-CONTRACT`, `MOD-WRITE-VALIDATION-READ` (related) |
+| shared persistence and stored-data contracts | `wip/architecture-data-contracts`, **draft #8854** (AndyLow91, base `dev`) | `880b7369`, one commit on `dev` `47723cda` | open draft, mergeable; every check on its head passed. Decided 2026-10-26: in 16.0.0 after four alignment conditions (outcome B, [decisions](decisions.md)) | `ARCH-8854`, `WRITE-CONTRACT`, `MOD-WRITE-VALIDATION-READ` (related) |
 | Crowdin translations | `crowdin_incoming`, **#8855** (sulkaharo) | — | opened 2026-10-26 18:52Z; not examined | — |
 | BF-72: a caller-supplied regular expression can hold the database for minutes | `bf/regex-limits`, in the private fork of its draft advisory | `1833ab00` on `dev` `04d435eb` | in the fork; no fork PR opened yet; owes a merge of `dev` | `BFQ-72` |
 | BF-161: a deeply nested pattern on three query endpoints makes that request fail | `bf/entries-pattern-limit`, in the private fork of its draft advisory | `d2c4df9f` on `dev` `04d435eb` | in the fork; no fork PR opened yet; owes a merge of `dev` | `BFQ-161` |
 | BF-191: a stored treatment can stop the server process, and keeps doing so after a restart | private, through the maintainer's advisory process | — | open in the register | `BFQ-191` |
+| BF-193: write paths log whole records | `bf/16.0.0-log-privacy` (local) | `8ae43eb4`, one commit on `dev` `47723cda` | ready to push, not pushed | `BFQ-193` |
+| Q1b (a `null` in an update removes the field) with BF-195 (a stale profile pushed over the socket after a re-send) | `bf/16.0.0-null-removes` (local) | at `dev` `47723cda` | in progress | `WRITE-CONTRACT`, `BFQ-195` |
 
 **#8854** (read from its body and `git diff --stat official/dev...refs/triage/pr-8854`, 31 files,
 +934/−45; the runs are the author's). Its body targets the
@@ -484,8 +486,8 @@ unless reverted.
 **Required before the tag** (maintainer, 2026-10-26, session -66; queue `RT-16-RELEASE`): (a) a live
 Pushover and APNs delivery check (`RT-16-LIVE-ALARMS`); (b) a real-rig soak on `dev` (`RT-16-RIG-SOAK`);
 (c) the BF-72 and BF-161 fork fixes merged and published with 16.0.0 (`BFQ-72`, `BFQ-161`). None is met.
-BF-193 is not a pre-tag requirement; the maintainer asked whether the socket's payload logging is needed
-for debugging, and that question is open.
+BF-193 is not a pre-tag requirement; its fix shape is decided (debug-gated payload logging through
+`DEBUG_LOGGING`, [decisions](decisions.md)) and is ready to push as `bf/16.0.0-log-privacy` `8ae43eb4`.
 
 **Decisions open, with their owner:**
 
@@ -501,31 +503,24 @@ for debugging, and that question is open.
 4. **Dependabot configuration** (maintainer): version updates targeting `dev`, dismissing alerts that
    are fixed on `dev` or not reachable, or releasing more often. Packet:
    [dependabot-config](../../reports/reviewer-packets/dependabot-config.md).
-5. **Write contract Q1b** (maintainer): the spec (`docs/30-design/platform/spec/identity.md:68`; write
-   contract §6, Q1b "to be confirmed by measurement") says a field sent as `null` under merge is removed
-   (JSON Merge Patch), while #8845 stores it as `null` (its body: Q1b "is not confirmed and is not
-   implemented"). The two disagree until Q1b is confirmed or the spec changes.
-6. **#8854 against the architecture review's Q-A and Q-G** (maintainer, with AndyLow91): the draft
-   builds a shared write step on `dev` now; whether that is Q-A's "pull the single write step forward"
-   and how it sequences against the release train (Q-G) is not recorded.
-7. **BF-49's alias and dead settings keys** (maintainer; #8849's open items, `BFQ-ENV`): whether
+5. **BF-49's alias and dead settings keys** (maintainer; #8849's open items, `BFQ-ENV`): whether
    `SECURE_HSTS_HEADER_INCLUDE_SUBDOMAINS` becomes an alias, and what to do with the five settings keys
    nothing reads.
-8. **#8842's open items** (maintainer): on a page with a reading, a non-glucose alarm is still gated by
+6. **#8842's open items** (maintainer): on a page with a reading, a non-glucose alarm is still gated by
    the high or low setting on the reading's side; and the reviewers' confirmation of stale-data and
    CGM-error alarms on a page showing `---`.
-9. **#8841's open items** (maintainer): a refusal the person can see under `reject`, normalising `units`
+7. **#8841's open items** (maintainer): a refusal the person can see under `reject`, normalising `units`
    beyond temp targets, the plausibility thresholds (30 mmol/L, 20 mg/dL); and `WRITE_VALIDATION` set to
    any value other than `log` or `reject` reads as `off` with no message (`parseMode`,
    `lib/server/write-validation.js:42-46` on `dev`), so a misspelt `reject` turns checking off silently.
-10. **The query-string array limit under Express 5** (maintainer): cut 5 sets `arrayLimit: 1000`
+8. **The query-string array limit under Express 5** (maintainer): cut 5 sets `arrayLimit: 1000`
     (`lib/middleware/configure-request.js:8-9`), where 15.0.9's Express 4 parser used `qs`'s default of
     20 (read-derived); no decision on the value is recorded.
-11. **A recorded waiver for the MongoDB 3.6–4.2 drop** (maintainer): the versioning policy §5.4 sets
+9. **A recorded waiver for the MongoDB 3.6–4.2 drop** (maintainer): the versioning policy §5.4 sets
     2 releases and 180 days for a runtime floor that can stop data arriving; MongoDB 4.4 was deprecated
     in 15.0.9, and 3.6, 4.0 and 4.2 stop serving with 16.0.0 (driver 7, decided 2026-10-25). The
     decision is recorded; a waiver of §5.4's window, with its reason for the release notes, is not.
-12. **BF-194** (maintainer): API v1 removes `units` from a treatment with no glucose value before
+10. **BF-194** (maintainer): API v1 removes `units` from a treatment with no glucose value before
     `WRITE_VALIDATION` runs, so a v1 temp target sent in mmol/L is stored with mmol/L numbers and no
     units and reads as mg/dL, in every mode, on 15.0.9 and `dev` (reproduced, integration record R15):
     keep the units, convert, or refuse. Queue `BFQ-194`.
@@ -548,9 +543,10 @@ repos/nightscout/cgm-remote-monitor/branches/<branch>/protection`: `dev` require
 review; `enforce_admins` is off on both). No workflow on `dev` emits `Run Tests (22, 4.4)`, so the
 staging PR #8824 cannot meet `master`'s protection as it stands.
 
-**Proposed, not decided:** `master` and `dev` require only the *Tests pass* check (job `tests-pass`,
-`.github/workflows/main.yml:317` on `dev`, `if: always()`, needing every test job and the pull-request Docker validation), plus one approving
-review on `master`. Caveat: *Tests pass* accepts `skipped` as well as `success` from every job it needs
+**Decided, settings change owed** (maintainer, 2026-10-26, relayed via session -66; applied by the
+maintainer): `master` requires only the *Tests pass* check (job `tests-pass`, `.github/workflows/main.yml:317`
+on `dev`, `if: always()`, needing every test job and the pull-request Docker validation) and one
+approving review. The decision as relayed names `master`; `dev`'s required check is not part of it. Caveat: *Tests pass* accepts `skipped` as well as `success` from every job it needs
 (`main.yml:327-337`), so a test job skipped in full would still let it pass.
 
 **Follow-ups filed 2026-10-25:** `RT-BUNDLE-THEME-SPLIT` (page-bundle budget option B: load the modern
@@ -590,7 +586,7 @@ candidate is named.
   Dockerfile and `azure-deploy.sh` install dev dependencies and are not affected.
 - Docker Compose starts `mongo:6.0.27` instead of `mongo:5.0.32` (cut 3): for an existing Compose
   deployment this is a database major-version upgrade (`docs/runtime-upgrade.md`).
-- Express 5 and Helmet 8 (cut 5), and the query-string array limit (above, open item 10).
+- Express 5 and Helmet 8 (cut 5), and the query-string array limit (above, open item 8).
 - The opt-in `THEME=modern` dashboard (#8831) and the opt-in `SHOW_SECONDS` clock (#8555).
 - The opt-in `WRITE_VALIDATION` for Temporary Targets (#8841), what `log` and `reject` do, that most
   uploaders lose a refused record without showing an error, and that an unrecognised value means `off`.
@@ -599,6 +595,12 @@ candidate is named.
 - Record identity (#8845): API v3 refuses a client body `_id` with 400 (BF-170); API v3 PATCH, PUT and
   POST reach a record with an empty stored identifier (BF-145); a v1 re-send is answered with the stored
   `_id` (BF-165); a profile re-sent with its `_id` is merged instead of failing (BF-166).
+- A `null` in an update removes the field (write contract Q1b, decided 2026-10-26; with BF-195's fix): what
+  is stored changes for a re-send that matches a stored treatment, entry, profile, food or activity record, for
+  an API v3 `PATCH` and for a socket `dbUpdate`, where 15.0.9 stores the `null`. A create and a replace (v1 or v3
+  `PUT`) still store a `null` as sent. Arrays are replaced whole.
+- Quieter server logs (BF-193): each write is logged as a summary, not the record. Set `DEBUG_LOGGING=true` to
+  see the records clients send; debug logs then contain health data. Log lines change text.
 - API v1 profile uploads (#8852): malformed entries and binary bodies answer 400, and a batch is capped at
   10,000 records, as on the other bounded v1 upload routes.
 - BF-92 (#8842): a page showing `---` now presents device and other non-glucose alarms (a MINOR change

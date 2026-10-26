@@ -88,7 +88,7 @@
     L1:
       verdict: unchanged
       today: "Writes simulated entries, treatments (temp basals with explicit `carbs: null` and `insulin: null`), devicestatus, notes and activity; deletes devicestatus by `find[created_at][$lte]`."
-      newer: "Stored as today (R1). A write that matches a stored record merges, and an explicit `null` it carries removes that field (T2)."
+      newer: "Stored as today (R1). Its `carbs: null` and `insulin: null` are removed by API v1's `prepareData` before any merge, and a `null` on a create is stored as sent, so the `null` rule of a merge changes nothing it writes (T2)."
       rules: [R1, T2]
       anchors: ["cgmsim-lib@c09f9c0 src/upload.ts:231-270", "cgmsim-lib@c09f9c0 src/delete.ts:24-37"]
     L2:

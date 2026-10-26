@@ -26,12 +26,13 @@ repository.
 | [`ARCH-8854`](arch-8854-wip-architecture-data-contracts.md) | #8854 | `in-flight-upstream` | #8854 - shared write boundary, read contract and CI gates; into 16.0.0 after four alignment conditions (outcome B) |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`BFQ-161`](bfq-161-bf-entries-pattern-limit.md) | &mdash; | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes |
+| [`BFQ-193`](bfq-193-bf-16-0-0-log-privacy.md) | &mdash; | `ready-to-push` | BF-193 - the realtime socket and other write paths log every record written through them |
 | [`BFQ-194`](bfq-194.md) | &mdash; | `needs-decision` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL |
 | [`BFQ-72`](bfq-72-bf-regex-limits.md) | &mdash; | `in-flight-upstream` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | [`BFQ-95`](bfq-95.md) | &mdash; | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
 | [`DEPENDABOT-CONFIG`](dependabot-config.md) | &mdash; | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev |
 | [`ID-ABSENT-DECISION`](id-absent-decision.md) | &mdash; | `needs-decision` | Decide: a write that carries no identifier (and no _id) - keep the time-key fallback, deprecate it, or require identifier? |
-| [`ID-CLIENT-OID-DECISION`](id-client-oid-decision.md) | &mdash; | `needs-decision` | Decide: may a client set _id (an ObjectId it creates), and which field wins when identifier and _id match different records? |
+| [`ID-CLIENT-OID-DECISION`](id-client-oid-decision.md) | &mdash; | `needs-decision` | Decide: may a client set _id (an ObjectId it creates) over API v1? (API v3 decided: refused, BF-170) |
 | [`ID-DELETE-REUSE-DECISION`](id-delete-reuse-decision.md) | &mdash; | `needs-decision` | Decide: after a delete, what does a re-send of the same identifier (or _id) do - resurrect, refuse, or create new? |
 | [`ID-FORMAT-DECISION`](id-format-decision.md) | &mdash; | `needs-decision` | Decide: the client identifier's format (opaque string with limits; UUID not required) |
 | [`ID-SCOPE-DECISION`](id-scope-decision.md) | &mdash; | `needs-decision` | Decide: is identifier unique per collection, across collections, and per tenant under TENANCY_MODE=multi? |

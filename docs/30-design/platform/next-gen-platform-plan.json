@@ -278,7 +278,7 @@
    "phase": "now",
    "state": "planned",
    "short": "Identity spec after #8845",
-   "title": "Amend identity I2 and §6 for API v3's refusal of a client _id (BF-170), and add a case for the mandatory identifier on registered instances",
+   "title": "A conformance case for the mandatory identifier on registered instances; identity I2 and §6 state API v3's refusal of a client _id (BF-170) as of 2026-10-26",
    "spec": [
     {
      "label": "identity spec",

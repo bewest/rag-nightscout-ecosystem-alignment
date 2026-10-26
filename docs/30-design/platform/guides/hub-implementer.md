@@ -495,12 +495,12 @@ check is the cause.
 
 Measured at `47723cda` (and `65ce54b9` for item 6); each is reported to the specification's owner rather than worked around.
 
-1. **API v3 and `_id`.** [Identity I2](../spec/identity.md#1-rules) says API v1 and v3 serve a 24-hex
-   `_id` and keep a client's 24-hex `_id` as that ObjectId. Since #8845, API v3 refuses a body `_id`
-   with 400 (`lib/api3/shared/operationTools.js:197-203`) and its reads drop `_id`
-   (`lib/api3/storage/mongoCollection/utils.js:10-16`, applied by `find.js:19-24`). So I8's "every
-   read of that projection carries the same `_id`" holds on API v1 only. Identity §6 is read at
-   `fade2299`, before #8845.
+1. **API v3 reads and `_id`.** [Identity I2](../spec/identity.md#1-rules) says API v1 and v3 serve a
+   24-hex `_id`, and that API v3 refuses a client `_id` with 400, as `dev` does since #8845
+   (`lib/api3/shared/operationTools.js:197-203`). API v3's reads drop `_id`
+   (`lib/api3/storage/mongoCollection/utils.js:10-16`, applied by `find.js:19-24`), so on `dev` I2's
+   "v3 serves a 24-hex `_id`" and I8's "every read of that projection carries the same `_id`" hold on
+   API v1 only.
 2. **A typed write with no `identifier`.** The decision that `identifier` is mandatory for
    registered instances has no case, and `instances.write` accepts a typed write that carries no
    record id (`tools/nsschema/instances.py:1009`). None of the five `instances/typed-write-*.yaml`

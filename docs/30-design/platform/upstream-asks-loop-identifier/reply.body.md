@@ -11,8 +11,9 @@ Code references are to cgm-remote-monitor `15.0.8` (`92d08342`) and `dev` at `fa
 ## The contract, in three rules
 
 1. **`_id` is a MongoDB ObjectId (24 hex characters) or absent.** A client that keeps a local
-   cache may create its own ObjectId and send it over API v1. (API v3 stores a body `_id` as sent, so
-   a 24-hex value becomes a string there; measured 2026-10-18, [record identity reference](https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/10-domain/record-identity-reference.html).) ObjectIds are designed to be made by clients
+   cache may create its own ObjectId and send it over API v1. (Over API v3, send `identifier` instead: from
+   16.0.0 API v3 refuses a body `_id` with HTTP 400, and 15.0.9 and earlier store it as sent, so a
+   24-hex value becomes a string there; measured 2026-10-18, [record identity reference](https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/10-domain/record-identity-reference.html).) ObjectIds are designed to be made by clients
    without coordination (a timestamp, a random part and a counter). Other values in `_id` are not
    valid. For compatibility, `UUID_HANDLING` (on by default) moves any string `_id` that is not 24
    hex characters to `identifier` on treatments and entries, and the server assigns the ObjectId.

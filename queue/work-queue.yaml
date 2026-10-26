@@ -3407,6 +3407,13 @@ items:
       - releases/cgm-remote-monitor-16.0.0/contents.md
       - releases/cgm-remote-monitor-16.0.0/decisions.md
     notes: >
+      2026-10-26, later (maintainer, session -66): BF-193's logging question
+      is decided (debug-gated payload logging through DEBUG_LOGGING; BFQ-193
+      ready to push), still not a pre-tag requirement. Q1b is decided for
+      16.0.0 (WRITE-CONTRACT, BFQ-195). Branch protection: master requires
+      only Tests pass and one approving review, decided, the settings change
+      owed by the maintainer (contents.md, Repository settings).
+
       Filed 2026-10-26 from the maintainer's pre-tag requirements (session
       -66, 2026-10-26): before the tag, (a) a live Pushover and APNs delivery
       check (RT-16-LIVE-ALARMS), (b) a real-rig soak on dev (RT-16-RIG-SOAK),
@@ -4772,6 +4779,10 @@ items:
       - tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md
       - docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
     notes: >
+      2026-10-26: carries the API v1 half of ID-CLIENT-OID-DECISION (the Loop
+      reply's simple contract: whether a client may create its own ObjectId
+      as _id over v1); the API v3 half is decided (BF-170, identity I2).
+
       2026-10-26: built as feat/v1-identifier-match 8d0f9a22 (one commit over dev
       47723cda; lib/server/entries.js +84/-8, lib/server/devicestatus.js +97, two
       test files), not pushed. A re-sent identifier updates the stored record; an
@@ -6450,6 +6461,15 @@ items:
       created_at+device collisions first. Found BF-164, BF-165 and BF-166.
       Still blocked on SEAM-REFRESH.
 
+      2026-10-26 (maintainer, session -66): Q1b decided for 16.0.0. A null in
+      an update removes the field (RFC 7386, recursive, arrays replaced
+      whole) on a merge on match for treatments, entries, profile, food and
+      activity, on API v3 PATCH and on the socket's dbUpdate (aligned with
+      PATCH); never on v1 or v3 PUT or on any create; applied after v1
+      prepareData; dbUpdateUnset kept. It ships ahead of the step, on
+      bf/16.0.0-null-removes (in progress) with BF-195's fix (BFQ-195).
+      Spec section 6.1 and section 2.2's set/unset maps updated.
+
       Maintainer decisions 2026-10-12 (spec section 6): Q1 merge on match,
       every collection and path; Q1b a field sent as null is removed (JSON
       Merge Patch), to be confirmed by a corpus and client-code measurement of
@@ -6810,7 +6830,7 @@ items:
       the templates.
 
   - id: ID-CLIENT-OID-DECISION
-    title: "Decide: may a client set _id (an ObjectId it creates), and which field wins when identifier and _id match different records?"
+    title: "Decide: may a client set _id (an ObjectId it creates) over API v1? (API v3 decided: refused, BF-170)"
     parcel: tenancy
     repo: cgm-remote-monitor
     branch: ""
@@ -6839,7 +6859,16 @@ items:
       - docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: >
-      2026-10-26: the API v3 half is settled in dev: #8845 (900abf7a) refuses
+      2026-10-26: identity rule I2 is amended (docs/30-design/platform/spec/identity.md):
+      on API v3 a client-supplied _id is refused with 400, with no quirk
+      (maintainer, 2026-10-25, BF-170, merged in #8845); on API v1 the I9
+      quirk stays. The tie-break (2) was decided on 2026-10-18 (identifier
+      decides). What is left is question (1) for API v1 only: whether the
+      Loop reply's simple contract recommends a client-created ObjectId as
+      _id over v1. That half stays with ID-SIMPLE-MATCH and waits on Loop's
+      answer (LOOP-ID-REPLY).
+
+      2026-10-26, earlier: the API v3 half is settled in dev: #8845 (900abf7a) refuses
       any body _id on API v3 create, PUT and PATCH with 400 (BF-170, BFQ-170).
       API v1 keeps its legacy _id handling as a version-scoped quirk (#8845's
       body). The v1 question is unchanged.
@@ -15105,6 +15134,11 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
     notes: >
+      2026-10-26: Q1b is decided (maintainer): on a merge on match a null
+      removes the field; it ships in 16.0.0 on bf/16.0.0-null-removes (in
+      progress), which changes tests/api.profiles.resend.test.js:218, the test
+      that pins dev's stored null. Until then dev stores null as null.
+
       2026-10-26, 11:34:16Z: merged. AndyLow91 merged #8845
       (bf/16.0.0-record-identity, head 50219945) into dev as 900abf7a (gh pr
       view 8845); 25 files, +1314/-107 against its first parent. AndyLow91
@@ -16510,49 +16544,81 @@ items:
       is why dev's CI did not show it.
 
   - id: BFQ-193
-    title: "BF-193 - the realtime socket logs every record written through it"
+    title: "BF-193 - the realtime socket and other write paths log every record written through them"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
+    branch: bf/16.0.0-log-privacy
     base: official/dev@47723cda
-    state: not-started
+    worktree: externals/work/crm-bf193
+    state: ready-to-push
     pr: []
     ships_to_operators_today: true
     blast_radius: >
-      lib/server/websocket.js: the console.log of the whole data argument at
-      the top of the dbUpdate (:368), dbUpdateUnset (:440), dbAdd (:508) and
-      dbRemove (:827) handlers on dev 47723cda (:816 for dbRemove on v15.0.9).
-      Server-side log content only.
+      Log content only. New helper recordForLog in lib/server/log-privacy.js
+      (with debugLogging(env), credentialSpellings and redactText shared with
+      errorForLog). Call sites: lib/server/websocket.js (the dbUpdate,
+      dbUpdateUnset, dbAdd and dbRemove entry lines, the two Got results
+      lines and nine refusal lines in checkConditions; the per-write line
+      moves after the request is accepted), lib/api/treatments/index.js (v1
+      POST, line 146, and PUT), lib/api/profile/index.js,
+      lib/api/activity/index.js, lib/server/profile.js,
+      lib/data/treatmenttocurve.js, lib/profilefunctions.js and the
+      treatmentnotify and loop plugins (through sbx.debugLogging). README's
+      DEBUG_LOGGING entry. No new setting.
     review: maintainer
     operator_visible: >
-      When an app writes to Nightscout over its realtime connection (the
-      socket), the server writes the whole record, including glucose values,
-      insulin and carbohydrate amounts and notes, into its log. Anyone who
-      can read your hosting logs can see it. Keep access to your hosting logs
-      limited.
+      Nightscout's server log no longer contains the records apps send it
+      (glucose values, insulin and carbohydrate amounts, notes). Each write
+      is logged as a short summary instead. To see the records while
+      troubleshooting, set DEBUG_LOGGING=true and restart; debug logs then
+      contain health data, so turn it off again afterwards and keep access
+      to your hosting logs limited. Anything that reads the old log lines
+      sees a new format.
     semver: patch
-    semver_reason: log content only
+    semver_reason: log content and log line text only; no API, stored data or setting change
     register: [BF-193]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda bf/16.0.0-log-privacy
+        kind: static
+        describe: >
+          The fix branch contains dev 47723cda. Red if the branch is rebased
+          off dev or deleted.
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae43eb4 bf/16.0.0-log-privacy
+        kind: static
+        describe: >
+          The fix commit 8ae43eb4 is on the branch. Red if the branch is
+          rewritten without it.
       - no-gate: >
-          Read, not run, on dev 47723cda and v15.0.9 c6a0d8ed (a read-only
-          compatibility audit, 2026-10-26). A unit gate would emit dbAdd,
-          dbUpdate, dbUpdateUnset and dbRemove through the socket handler with
-          a record carrying a marker value and assert the marker is absent from
-          captured console output; control: dev 47723cda fails it.
+          Behaviour is measured outside the queue (the suite needs MongoDB).
+          2026-10-26 on 8ae43eb4, Node 22.23.4: npm test 4289 passing, 1
+          failing, 3 pending, the failure environmental
+          (tests/development-watch.test.js, ENOSPC on file watchers); npm run
+          test:all 4617 / 1 / 3, the same failure. The new test fails 6 of 7
+          cases with the source reverted. Trial merge with #8854 fa22d573
+          clean.
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
-      2026-10-26 (maintainer, session -66): not a pre-tag requirement for
-      16.0.0. The maintainer asked whether the socket's payload logging is
-      needed for debugging; that question is open, so the fix shape is not
-      settled.
+      2026-10-26: decided by the maintainer (session -66): debug-gated
+      payload logging through one gate, the existing DEBUG_LOGGING
+      (env.debug.logging), no new setting, using recordForLog in
+      lib/server/log-privacy.js. The summary (operation, collection, client,
+      ref, eventType or item count) is always logged; the payload only with
+      debug on; refusal lines are bounded (8192 characters) and redacted.
+      Built as bf/16.0.0-log-privacy 8ae43eb4, one commit on dev 47723cda,
+      not pushed. Not a pre-tag requirement for 16.0.0 (maintainer,
+      2026-10-26). Release note: set DEBUG_LOGGING=true to see the records
+      clients send; debug logs then contain health data.
+
+      Follow-up, read-derived and unverified, not filed as an id: storage
+      error lines that log whole MongoDB error objects
+      (lib/server/treatments.js:173, 284 and 452, lib/server/entries.js:208
+      on dev 47723cda) may include the document that failed to write; the
+      branch does not cover them.
 
       Filed 2026-10-26 from a read-only compatibility audit of dev 47723cda;
-      the socket's counterpart of BF-186, which #8845 fixed for API v3. Fix
-      direction, unverified: log the collection and the record count, not the
-      record.
+      the socket's counterpart of BF-186, which #8845 fixed for API v3.
 
   - id: BFQ-194
     title: "BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL"
@@ -16594,6 +16660,47 @@ items:
       record with targets when no glucose is given, convert to mg/dL, or
       refuse under WRITE_VALIDATION=reject. Related to BF-180 (the careportal
       path through the same lines, merged in #8842) and MOD-UNITS-CANONICAL.
+
+  - id: BFQ-195
+    title: "BF-195 - a stale profile is pushed over the socket after a profile re-send"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/16.0.0-null-removes
+    base: official/dev@47723cda
+    worktree: externals/work/crm-q1b-fix
+    state: in-progress
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/server/profile.js: the ctx.bus.emit('data-received') at :171 on dev
+      47723cda (:90 on v15.0.9), which runs before the merge write of a
+      re-sent profile finishes. The socket's dataUpdate and the data reload
+      it drives. Lands with the Q1b change on the same branch.
+    review: maintainer
+    operator_visible: >
+      After an app sends a profile again, a Nightscout page or follower app
+      that is connected at that moment can briefly show the profile as it was
+      before, until the next data update. The saved profile is correct.
+    semver: patch
+    semver_reason: a race fixed; what is stored and replied does not change
+    register: [BF-195]
+    gates:
+      - no-gate: >
+          Reproduced 2026-10-26 by the Q1b study, 2 of 2 runs on dev 47723cda
+          and on lab/q1b-null-removes 63c33a0e: a socket client receives the
+          earlier profile in dataUpdate after a profile re-send. A queue gate
+          would re-send a profile in-process with a socket listener and
+          assert the pushed profile is the merged one; control: dev 47723cda
+          fails it. Written with the fix on bf/16.0.0-null-removes.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      2026-10-26: id allocated by session -66 and filed from the Q1b study.
+      Fix direction, unverified: emit data-received once the write has
+      completed. To land with Q1b (a null in an update removes the field,
+      decided by the maintainer 2026-10-26, for 16.0.0) on
+      bf/16.0.0-null-removes, in progress (the branch is at dev 47723cda).
 
   - id: MOD-WRITE-VALIDATION
     title: "WRITE_VALIDATION=off|log|reject: opt-in domain validation of Temporary Target writes on API v1 and v3 (draft)"

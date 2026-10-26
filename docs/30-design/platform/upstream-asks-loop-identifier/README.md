@@ -20,7 +20,7 @@ What the reply proposes, and what Nightscout supports today except where the rep
 otherwise:
 
 1. `_id` is a MongoDB ObjectId (24 hex) or absent. A client may create its own ObjectId and send
-   it. Other values are not valid; `UUID_HANDLING` (default on) moves any non-24-hex string `_id` to
+   it over API v1; API v3 refuses a client `_id` with 400 from 16.0.0 (BF-170, identity I2). Other values are not valid; `UUID_HANDLING` (default on) moves any non-24-hex string `_id` to
    `identifier` on treatments and entries, as a compatibility rule.
 2. If `_id` is absent, the client sends `identifier`, an opaque string compared exactly,
    not necessarily a UUID: the record's semantic identity (this reading, this pump event, this

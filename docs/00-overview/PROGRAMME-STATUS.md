@@ -24,10 +24,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 178 | 38 | 10 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 179 | 37 | 11 |
 | **Modernization** | `release-train` | 47 | 8 | 4 |
 | **Multitenant** | `tenancy`, `platform` | 67 | 16 | 9 |
-| | **total** | **294** | **62** | **23** |
+| | **total** | **295** | **61** | **24** |
 
 <!-- END GENERATED: horizons -->
 
@@ -174,8 +174,9 @@ cover more than one `BF-`:
 | `BFQ-188` | `not-started` | BF-188 - with no client bundle the server exits at boot with an unexplained module error |
 | `BFQ-190` | `merged-upstream` | BF-190 - an alarm on a page without a current reading cannot be silenced from the page |
 | `BFQ-191` | `in-progress` | BF-191 - a stored treatment can stop the server process, and keeps doing so after a restar |
-| `BFQ-193` | `not-started` | BF-193 - the realtime socket logs every record written through it |
+| `BFQ-193` | `ready-to-push` | BF-193 - the realtime socket and other write paths log every record written through them |
 | `BFQ-194` | `needs-decision` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets  |
+| `BFQ-195` | `in-progress` | BF-195 - a stale profile is pushed over the socket after a profile re-send |
 | `BFQ-40` | `released` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `merged-upstream` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `released` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -212,7 +213,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 8 |  | 3 | 1 | 1 | 1 | 12 | 15 | 2 | 1 |  |  | 3 | **47** |
-| `register-open` | 28 | 3 | 1 | 1 | 3 | 2 | 31 | 58 | 6 |  |  | 4 |  | **137** |
+| `register-open` | 27 | 4 | 1 | 2 | 3 | 2 | 31 | 58 | 6 |  |  | 4 |  | **138** |
 | `tenancy` | 8 | 1 |  | 1 | 13 |  |  |  | 7 | 3 | 1 |  |  | **34** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  |  | 11 |  |  |  | **19** |
 | `backfix2` |  |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
@@ -252,14 +253,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 257 | 87% |
+| Maintainer | 258 | 87% |
 | SECURITY reviewer | 17 | 6% |
 | Maintainer + a second human | 8 | 3% |
 | SAFETY reviewer | 6 | 2% |
 | Whoever edits it next | 3 | 1% |
 | Unassigned | 2 | 1% |
 | Upstream reviewers | 1 | 0% |
-| **total** | **294** | |
+| **total** | **295** | |
 
 <!-- END GENERATED: reviewer-load -->
 

@@ -185,7 +185,7 @@ Until then, the order below is the order of development, not of release.
 | 1 | `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | &mdash; |
 | 1 | `T43` | T4.3 - ns-realtime, LISTEN per served tenant | `not-started` | &mdash; |
 | 2 | `ID-ABSENT-DECISION` | Decide: a write that carries no identifier (and no _id) - keep the time-key fall | `needs-decision` | `LOOP-ID-REPLY` |
-| 2 | `ID-CLIENT-OID-DECISION` | Decide: may a client set _id (an ObjectId it creates), and which field wins when | `needs-decision` | `LOOP-ID-REPLY` |
+| 2 | `ID-CLIENT-OID-DECISION` | Decide: may a client set _id (an ObjectId it creates) over API v1? (API v3 decid | `needs-decision` | `LOOP-ID-REPLY` |
 | 2 | `ID-DELETE-REUSE-DECISION` | Decide: after a delete, what does a re-send of the same identifier (or _id) do - | `needs-decision` | `LOOP-ID-REPLY` |
 | 2 | `ID-FORMAT-DECISION` | Decide: the client identifier's format (opaque string with limits; UUID not requ | `needs-decision` | `LOOP-ID-REPLY` |
 | 2 | `ID-SCOPE-DECISION` | Decide: is identifier unique per collection, across collections, and per tenant  | `needs-decision` | `LOOP-ID-REPLY` |

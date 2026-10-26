@@ -85,7 +85,7 @@ The replay trial measured both paths on dev `47723cda`. Branches: `seam/replay-2
 | item | builds | needs | check |
 |---|---|---|---|
 | ID-SIMPLE-MATCH | v1 entries and devicestatus match on `identifier`, as treatments do | #8845 | one record after two sends; red control on dev |
-| SPEC-ID-AMEND | identity I2 and §6 amended for API v3's refusal of a client `_id` (BF-170); a conformance case for the mandatory identifier on registered instances | #8845 | `tools/nsschema` cases |
+| SPEC-ID-AMEND | a conformance case for the mandatory identifier on registered instances; identity I2 and §6 state API v3's refusal of a client `_id` (BF-170) | #8845 | `tools/nsschema` cases |
 | ID-FIRST-MATCH | identifier-first on every collection and path | ID-SIMPLE-MATCH, WC-STEP-PATCH, D-LOOP-ID | write-contract matrix |
 | ID-BATCH | per-item results in v1 batch replies | WC-STEP-PATCH | one bad item no longer refuses the batch |
 | ID-UNIQUE-INDEX | partial unique index on `identifier` | the two above | 0 duplicates measured across the 12-site corpus (ID-DUP-MEASURE) |
@@ -122,7 +122,7 @@ The decisions D1–D20 are in the [execution plan](../tenancy/nightscout-multite
 
 Select **Show on the map** on a card to see which items it holds up.
 
-Decided 2026-10-26: an explicit null removes a field on merge-on-match and API v3 PATCH (RFC 7386), never on PUT or create, and devicestatus never merges; in 16.0.0, in one shared merge helper.
+Decided 2026-10-26: an explicit null removes a field on merge-on-match, API v3 PATCH and the socket's `dbUpdate` (RFC 7386; [write contract §6.1](../tenancy/write-contract-spec-2026-10-07.md#61-decided-2026-10-12)), never on PUT or create, and devicestatus never merges; in 16.0.0, in one shared merge helper.
 
 Decided 2026-10-26: #8854 lands in 16.0.0 after four alignment conditions (outcome B in its [brief](../modernization/pr-8854-alignment-2026-10-26.md)): a per-item socket reply or no socket validation yet, the data-warnings header off or held, the commit event marked internal and unstable, and a separate name for the intent layer.
 

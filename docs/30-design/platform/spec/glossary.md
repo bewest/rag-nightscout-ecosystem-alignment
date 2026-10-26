@@ -189,7 +189,8 @@ one change event. [WC §2](../../tenancy/write-contract-spec-2026-10-07.md#2-the
 
 **Re-send rule.** A re-send that matches a stored record stores no second copy and is answered with
 the stored ids. A differing re-send merges into the match (JSON Merge Patch: a `null` removes the
-field); an explicit update replaces. An identical re-send is rewritten on API v1, v3 and in-process
+field, as on an API v3 `PATCH` and a socket `dbUpdate`; a create or a replace stores a `null` as
+sent); an explicit update replaces. An identical re-send is rewritten on API v1, v3 and in-process
 and answered unchanged on the socket and for devicestatus (decided 2026-10-12, [WC §6.1](../../tenancy/write-contract-spec-2026-10-07.md#61-decided-2026-10-12)). Match order: [identity §3](identity.md#3-match-order-per-collection).
 
 **Etag, precondition.** `sha256:` over the canonical JSON of a resource's content, state and

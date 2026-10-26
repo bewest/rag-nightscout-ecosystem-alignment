@@ -1,10 +1,13 @@
 # L0 Identity: how records, definitions, instances and subjects are named
 
-*Contributor-facing. Living specification, current at `main` `5a9a49cc` (2026-10-18). Layer L0 of
-the [platform index](../README.md); terms are in the [glossary](glossary.md). Status:
-specified, not implemented; §6, today's behaviour, is evidenced. Decisions:
-[D20](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16)
-and the [write contract's §6.1](../../tenancy/write-contract-spec-2026-10-07.md#61-decided-2026-10-12).
+*Contributor-facing. Living specification, current at 2026-10-26 (cgm-remote-monitor `dev`
+`47723cda`). Layer L0 of the [platform index](../README.md); terms are in the
+[glossary](glossary.md). Status: specified, not implemented; §6, today's behaviour, is evidenced.
+Decisions:
+[D20](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16),
+the [write contract's §6.1](../../tenancy/write-contract-spec-2026-10-07.md#61-decided-2026-10-12)
+and the [16.0.0 decisions](../../../../releases/cgm-remote-monitor-16.0.0/decisions.md) (I2 on API
+v3, BF-170; the null rule of §3, Q1b).
 Queue: `SPEC-ID`.*
 
 *Specification 1 of 8 in the [reading order](../README.md#reading-order); every other specification uses these ids. Expect rules I1–I9, the contract ids, the match order per collection, the `identifier` format, today's behaviour in cgm-remote-monitor, and the conformance cases.*
@@ -18,7 +21,7 @@ ids; none of them redefines one.
 | # | rule |
 |---|---|
 | I1 | **Two ids, two jobs.** `identifier` is the sync identity the client assigns: stable across retries and across the devices that write the same record. `_id` is the storage key the hub assigns. In the typed API, `identifier` is the controller's record id. |
-| I2 | **`_id` is 24 hex on every legacy surface.** API v1 and v3 serve a 24-hex `_id` that the hub assigns, on MongoDB and PostgreSQL alike. A client `_id` that is 24 hex, in either case, or `{"$oid": …}`, is kept as that ObjectId in lower case. A client `_id` that is any other string is never stored as `_id`; it is handled by the quirks registry (I9). A hub's own newer APIs may use other ids. |
+| I2 | **`_id` is 24 hex on every legacy surface.** API v1 and v3 serve a 24-hex `_id` that the hub assigns, on MongoDB and PostgreSQL alike. **On API v1**, a client `_id` that is 24 hex, in either case, or `{"$oid": …}`, is kept as that ObjectId in lower case, and a client `_id` that is any other string is never stored as `_id`; it is handled by the quirks registry (I9). **On API v3**, a client-supplied `_id` in the body of a create, `PUT` or `PATCH` is refused with HTTP 400, whatever its form, and no quirk applies: a v3 client names its records by `identifier` (maintainer, 2026-10-25; BF-170). A hub's own newer APIs may use other ids. |
 | I3 | **An assigned `_id`'s time is the receipt time.** The first four bytes of an ObjectId the hub assigns are when the hub received the write, not the record's own time. Readers take a record's time from `created_at` or `date`. |
 | I4 | **Every write reply returns both ids.** Per item: `identifier` (null when the client sent none and the path assigns none), `_id`, and `matchedBy`: `identifier`, `_id`, or null for a new record. On v1 and v3 this is the write step's `WriteResult.items[]`; on a typed write it is `write.ids`. A duplicate is never answered with a 5xx, an error to the callback or an empty acknowledgement. |
 | I5 | **A re-send matches on `identifier` first**, then on `_id`, then on the collection's natural key (§3). A matched re-send stores no second copy and is answered with the stored ids, so a client needs no cache of server ids. |
@@ -65,8 +68,15 @@ first that resolves wins.
 | food | `identifier`, `_id` | merge |
 | activity | `_id` | merge |
 
-- *Merge* follows JSON Merge Patch (RFC 7386): a field sent as `null` is removed. An explicit
-  update (v1 `PUT`, v3 `PUT`) replaces.
+- *Merge* follows JSON Merge Patch (RFC 7386): a field sent as `null` is removed from the stored
+  record. The rule is recursive (a `null` inside a nested object removes that nested field) and
+  an array is replaced whole, never merged element by element. It applies to a merge on match (a
+  re-send that matches a stored record, in the collections above whose outcome is merge), to an
+  API v3 `PATCH`, and to the socket's `dbUpdate`, which follows `PATCH`. It never applies to a
+  replace (v1 `PUT`, v3 `PUT`), which stores the document as sent, or to any create, which stores
+  a `null` as sent. On API v1 it runs after `prepareData`, so a field that `prepareData` removes or
+  rewrites never reaches it. The socket's `dbUpdateUnset` stays as the explicit removal of named
+  fields (maintainer, 2026-10-26; write contract Q1b; ships in 16.0.0).
 - *Client identity* is `treatment-fallback-key`'s client ids, with its rule that a write without
   identity matches only a stored record without identity.
 - The devicestatus natural key matches identical retries only, because Loop writes distinct
@@ -105,7 +115,7 @@ uses today's v1 by-`_id` routes needs a UUID (§6).
 | item | question | where the rules above stand |
 |---|---|---|
 | `ID-FORMAT-DECISION` | adopt C1–C7? | opaque values, URL syntax and the source and app schemes are decided (maintainer, 2026-10-18); C1–C7 are proposed; I6 holds either way |
-| `ID-CLIENT-OID-DECISION` | may a client create its own ObjectId as `_id`; when `identifier` and `_id` match different records, which wins? | I2 keeps a client 24-hex `_id`. The [Loop reply's simple contract](../upstream-asks-loop-identifier/README.md#the-simple-contract) proposes that `_id` wins, which differs from I5's identifier-first order and from v1 treatments today |
+| `ID-CLIENT-OID-DECISION` | may a client create its own ObjectId as `_id` over API v1? | the API v3 half is decided: I2 refuses a client `_id` on v3 (maintainer, 2026-10-25, BF-170). When `identifier` and `_id` match different records, `identifier` decides (maintainer, 2026-10-18), as I5 orders it. Open: whether the v1 half of the [Loop reply's simple contract](../upstream-asks-loop-identifier/README.md#the-simple-contract) (a client-created ObjectId as `_id`) is recommended, which waits on Loop's answer and is carried by `ID-SIMPLE-MATCH` |
 | `ID-V3-IMMUTABLE-DECISION` | on an `identifier` match, may `date`, `device` or `eventType` change? | API v3 refuses it (400, reproduced by `LOOP-ID-V3-IMMUTABLE`); v1 does not |
 | `ID-ABSENT-DECISION` | a write with no `identifier`: keep the time-key fallback, deprecate it, or require `identifier`? | decided (maintainer, 2026-10-18): `identifier` becomes mandatory at a future version boundary and for registered controller instances; until then legacy paths keep the time-key fallback. Open: which version, and how a hub recognises a registered instance's write. Today v1 entries and treatments fall back to a time key, API v3 to its fallback fields; v1 device status has no key; two distinct doses with one `created_at` and `eventType` and no identifier are merged by §3 (UCA-SYNC-STORE-007) |
 | `ID-DELETE-REUSE-DECISION` | after a delete, does a re-send of the same `identifier` resurrect, get refused, or create new? §3 stores it again today; a resurrected dose is UCA-SYNC-STORE-003 in the [control-loop analysis](control-loops.md) | API v3 resurrects a soft-deleted record on POST (measured 2026-10-18, [record identity reference](../../../10-domain/record-identity-reference.md)) |
@@ -127,6 +137,13 @@ Read-derived unless marked, at `official/dev` `fade2299` except where another re
 - **API v3** keeps a client `identifier`. When none is sent it computes a UUID v5 over the device,
   date and, for treatments, `eventType` (`lib/api3/shared/operationTools.js:6`, `:106`). It
   refuses a re-send whose `date`, `device` or `eventType` differs (400, reproduced).
+- **API v3 and a body `_id`** (`dev` `47723cda`, since #8845): create, `PUT` and `PATCH` refuse a
+  client-supplied `_id` with 400 (`lib/api3/shared/operationTools.js:197-203`, read), as I2 states.
+  On `v15.0.9` a 24-hex body `_id` is stored as a string (BF-170, reproduced). v3 reads do not
+  return `_id` (`lib/api3/storage/mongoCollection/utils.js:10-16`, read).
+- **A `null` in an update** (`dev` `47723cda`): a merge on match stores a field sent as `null` as
+  `null` (`$set`), on every path, and `tests/api.profiles.resend.test.js:218` pins that. §3's
+  removal is built for 16.0.0 on branch `bf/16.0.0-null-removes` (in progress), with BF-195's fix.
 - **`UUID_HANDLING`** (default on) moves a non-24-hex string `_id` to `identifier` on treatments and
   entries, as I9 describes (`lib/server/treatments.js:394-411`, `lib/server/entries.js:267-284` at
   official `a8888f0d`).
@@ -168,6 +185,6 @@ are not a hub.
 | `instances/dual-write-linked` | §2 dual-write link |
 | `instances/dual-write-not-linked-across-instances` | §2 dual-write link |
 
-Not covered by a case: I7 across two instances (`typed-write-resend-same-ids` re-sends from one
+Not covered by a case: I2's API v3 refusal (the carrier cases do not name an API version); I7 across two instances (`typed-write-resend-same-ids` re-sends from one
 instance); §3's per-collection keys, which the write contract's gates measure against
 cgm-remote-monitor rather than a reference function; and §4's format, until it is decided.

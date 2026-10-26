@@ -30,7 +30,7 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 21 items
+### Maintainer &mdash; 22 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -43,7 +43,7 @@ every item that was `merged-upstream` then is `released`.
 | `BFQ-ENV` | `needs-decision` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies | #8849 |
 | `DEPENDABOT-CONFIG` | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts co | &mdash; |
 | `ID-ABSENT-DECISION` | `needs-decision` | Decide: a write that carries no identifier (and no _id) - keep the time-key fall | &mdash; |
-| `ID-CLIENT-OID-DECISION` | `needs-decision` | Decide: may a client set _id (an ObjectId it creates), and which field wins when | &mdash; |
+| `ID-CLIENT-OID-DECISION` | `needs-decision` | Decide: may a client set _id (an ObjectId it creates) over API v1? (API v3 decid | &mdash; |
 | `ID-DELETE-REUSE-DECISION` | `needs-decision` | Decide: after a delete, what does a re-send of the same identifier (or _id) do - | &mdash; |
 | `ID-FORMAT-DECISION` | `needs-decision` | Decide: the client identifier's format (opaque string with limits; UUID not requ | &mdash; |
 | `ID-SCOPE-DECISION` | `needs-decision` | Decide: is identifier unique per collection, across collections, and per tenant  | &mdash; |
@@ -51,6 +51,7 @@ every item that was `merged-upstream` then is `released`.
 | `MOD-UNITS-CANONICAL` | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), an | &mdash; |
 | `MOD-WRITE-VALIDATION-READ` | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
+| `BFQ-193` | `ready-to-push` | BF-193 - the realtime socket and other write paths log every record written thro | &mdash; |
 | `ID-SIMPLE-MATCH` | `ready-to-push` | API v1 entries and devicestatus match on identifier like treatments (the simple  | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |

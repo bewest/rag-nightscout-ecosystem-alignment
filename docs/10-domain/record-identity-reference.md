@@ -70,8 +70,9 @@ released), v1 devicestatus, profile and food, and the socket, stored a sent 24-h
 string itself, while their lookups convert to an ObjectId, so the record could not be found,
 edited or deleted by its id [M]; that is BF-99 to BF-102. On dev those paths store an ObjectId,
 and every v1 and socket lookup also matches the string form (`lib/server/object-id-forms.js`
-@fade2299) [M]. API v3 still stores a body `_id` as sent, a 24-hex value as a string, on both
-refs [M]; see §2.6.
+@fade2299) [M]. API v3 stores a body `_id` as sent, a 24-hex value as a string, on both
+refs [M]; see §2.6. On `dev` since #8845 (merged 2026-10-26, `47723cda`) API v3 refuses a body
+`_id` with 400 [R] (BF-170).
 
 **`identifier`, the client's sync identity.** A string the client chooses, compared exactly as
 stored (case kept) [M]. API v3 requires one on every record: when a POST has none, the server
@@ -173,7 +174,9 @@ API v3 does not read or convert `_id`; a POST that carries one is stored with it
 24-hex value becomes a **string** `_id`, on both refs [M]. v3 replies and reads never show `_id`
 [M], so the client cannot see this. On 15.0.8 a v1 `find[_id]` for that hex then misses the
 record (`query.js` converts to an ObjectId); dev's v1 lookups match both forms [R]. Filed as
-BF-170 (2026-10-18).
+BF-170 (2026-10-18). On `dev` since #8845 (merged 2026-10-26, `47723cda`), API v3 create, `PUT`
+and `PATCH` refuse a client-supplied body `_id` with 400 [R], and
+[identity I2](../30-design/platform/spec/identity.md#1-rules) states that rule.
 
 ## 3. `UUID_HANDLING`
 
@@ -253,7 +256,8 @@ Each rule says the version it holds from; "dev" means not yet released.
    `identifier`.** A 24-hex `_id` is stored as that ObjectId on v1 entries and treatments since
    15.0.7, and on v1 devicestatus, profile, food and the socket on dev; on 15.0.8 those paths
    store it as a string that their own id lookups miss [M]. API v3 stores a body `_id` as a
-   string on both, and never returns it [M]; on v3, use `identifier`.
+   string on both, and never returns it [M]; on `dev` since #8845 it refuses one with 400 [R]. On
+   v3, use `identifier`.
 2. **Do not put any other value in `_id`.** On v1 entries and treatments it is moved to
    `identifier` or dropped (`UUID_HANDLING`, 15.0.7+); on v1 devicestatus, profile and food it is
    refused with 400 (15.0.7+); on the socket and v3 it is stored as the `_id` (all versions) [M].
@@ -281,7 +285,7 @@ Each is a row in [the queue](../../queue/QUEUE.md); only `ID-ABSENT-DECISION` is
 | item | question |
 |---|---|
 | `ID-FORMAT-DECISION` | what an `identifier` may contain (opaque string, limits; UUID not required) |
-| `ID-CLIENT-OID-DECISION` | may a client set `_id`, and which wins when `_id` and `identifier` name different records |
+| `ID-CLIENT-OID-DECISION` | may a client set `_id` over API v1 (API v3 refuses one on `dev`, BF-170; `identifier` wins when the two name different records, decided 2026-10-18) |
 | `ID-V3-IMMUTABLE-DECISION` | on an `identifier` match, may `date`, `device` or `eventType` change |
 | `ID-ABSENT-DECISION` | a write with no `identifier`: decided 2026-10-18 (maintainer): `identifier` becomes mandatory at a future version boundary and for registered controller instances, and legacy paths keep the time-key fallback until then; the version and the detection of registered instances are open |
 | `ID-DELETE-REUSE-DECISION` | after a delete, a re-send of the same `identifier`: resurrect, refuse, or create new |

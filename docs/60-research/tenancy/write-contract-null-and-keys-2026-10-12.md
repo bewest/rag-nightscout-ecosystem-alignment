@@ -1,6 +1,11 @@
 # WRITE-CONTRACT: explicit nulls, natural keys and identical re-sends, measured
 
-*Contributor-facing.* **Snapshot, 2026-10-12.** Input to the maintainer decisions in
+*Contributor-facing.* **Snapshot, 2026-10-12. Status: superseded for Q1b by the maintainer's
+decision of 2026-10-26, which sets the `null` rule's scope (merge on match, API v3 `PATCH` and the
+socket's `dbUpdate`; never a replace or a create) and ships it in 16.0.0; the current rule is in
+the [write contract §6.1](../../30-design/tenancy/write-contract-spec-2026-10-07.md#61-decided-2026-10-12)
+and [identity §3](../../30-design/platform/spec/identity.md#3-match-order-per-collection). §1.3's
+devicestatus case does not arise: under Q3 (i) a devicestatus re-send is never merged.** Input to the maintainer decisions in
 [write-contract spec §6](../../30-design/tenancy/write-contract-spec-2026-10-07.md#6-decisions-for-the-maintainer)
 after the 2026-10-12 choices: Q1 = (a) merge on match; Q1b = (ii) under merge a JSON `null` deletes
 the field (RFC 7386); Q2 = (b) an identical re-send keeps today's rewrite. Three questions:

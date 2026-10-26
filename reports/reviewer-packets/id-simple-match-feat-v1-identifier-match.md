@@ -79,29 +79,31 @@ off dev or deleted.
 
 ## Notes carried on the item
 
-2026-10-26: built as feat/v1-identifier-match 8d0f9a22 (one commit over dev
-47723cda; lib/server/entries.js +84/-8, lib/server/devicestatus.js +97, two
-test files), not pushed. A re-sent identifier updates the stored record; an
-identifier miss still falls back to sysTime+type for entries (status quo,
-TEST-ENTRY-UUID-003 pins it), unlike v1 treatments, which never fall back;
-that choice is the maintainer's (next-gen plan decision D-ID-FALLBACK).
-identifier decides over a conflicting _id. upsertQueryFor is at entries.js:308
-on 47723cda. Draft PR body and push commands are in the lane report.
-2026-10-25: RT-1 merged (#8828, dev eb72a1d3), so this item is no longer
-blocked and can go to dev. Neither lib/server/entries.js nor
-lib/server/devicestatus.js changed between fade2299 and eb72a1d3 (git diff
---name-only fade2299 official/dev -- both files prints nothing), so the line
-numbers above still hold. Cut 2 changes entries.js, so landing before cut 2's
-catch-up adds to that merge (RT-2). 2026-10-21, later: cut 1's catch-up merge
-is done (RT-REBASE's cut 1 part; 806ff2f0 contains dev 04d435eb), so blocks_on
-moves from RT-REBASE to RT-1: this lands on dev after #8828 merges, which is
-the maintainer's 2026-10-17 order. Cut 1 still touches neither
-lib/server/entries.js nor lib/server/devicestatus.js (`git diff --name-only
-official/dev official/chore/retire-jsdom` on 806ff2f0 lists neither).
-2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Still waits
-on cut 1's catch-up merge (RT-REBASE, in progress). Decided by the maintainer
-2026-10-17: not in 15.0.9; lands on dev after cut 1's rebase, with BFQ-169.
-15.0.9 is dev as it stands at fade2299 (releases/cgm-remote-
+2026-10-26: carries the API v1 half of ID-CLIENT-OID-DECISION (the Loop
+reply's simple contract: whether a client may create its own ObjectId as _id
+over v1); the API v3 half is decided (BF-170, identity I2). 2026-10-26: built
+as feat/v1-identifier-match 8d0f9a22 (one commit over dev 47723cda;
+lib/server/entries.js +84/-8, lib/server/devicestatus.js +97, two test files),
+not pushed. A re-sent identifier updates the stored record; an identifier miss
+still falls back to sysTime+type for entries (status quo, TEST-ENTRY-UUID-003
+pins it), unlike v1 treatments, which never fall back; that choice is the
+maintainer's (next-gen plan decision D-ID-FALLBACK). identifier decides over a
+conflicting _id. upsertQueryFor is at entries.js:308 on 47723cda. Draft PR
+body and push commands are in the lane report. 2026-10-25: RT-1 merged (#8828,
+dev eb72a1d3), so this item is no longer blocked and can go to dev. Neither
+lib/server/entries.js nor lib/server/devicestatus.js changed between fade2299
+and eb72a1d3 (git diff --name-only fade2299 official/dev -- both files prints
+nothing), so the line numbers above still hold. Cut 2 changes entries.js, so
+landing before cut 2's catch-up adds to that merge (RT-2). 2026-10-21, later:
+cut 1's catch-up merge is done (RT-REBASE's cut 1 part; 806ff2f0 contains dev
+04d435eb), so blocks_on moves from RT-REBASE to RT-1: this lands on dev after
+#8828 merges, which is the maintainer's 2026-10-17 order. Cut 1 still touches
+neither lib/server/entries.js nor lib/server/devicestatus.js (`git diff
+--name-only official/dev official/chore/retire-jsdom` on 806ff2f0 lists
+neither). 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on.
+Still waits on cut 1's catch-up merge (RT-REBASE, in progress). Decided by the
+maintainer 2026-10-17: not in 15.0.9; lands on dev after cut 1's rebase, with
+BFQ-169. 15.0.9 is dev as it stands at fade2299 (releases/cgm-remote-
 monitor-15.0.9/contents.md), and any merge to dev moves the head off the
 candidate whose re-approval RT-0 owes. blocks_on names RT-REBASE because no
 separate item marks cut 1's catch-up merge done; only cut 1's part is needed
