@@ -481,6 +481,12 @@ As of `dev` `47723cda` (2026-10-26). The decisions already made are in [decision
 Whether cuts 3–5 ship in 16.0.0 is answered: all three are merged into `dev`, so they ship in 16.0.0
 unless reverted.
 
+**Required before the tag** (maintainer, 2026-10-26, session -66; queue `RT-16-RELEASE`): (a) a live
+Pushover and APNs delivery check (`RT-16-LIVE-ALARMS`); (b) a real-rig soak on `dev` (`RT-16-RIG-SOAK`);
+(c) the BF-72 and BF-161 fork fixes merged and published with 16.0.0 (`BFQ-72`, `BFQ-161`). None is met.
+BF-193 is not a pre-tag requirement; the maintainer asked whether the socket's payload logging is needed
+for debugging, and that question is open.
+
 **Decisions open, with their owner:**
 
 1. **The scope of BF-161's draft advisory** (maintainer): publish it now for BF-151 (released in 15.0.9)
@@ -519,18 +525,33 @@ unless reverted.
     2 releases and 180 days for a runtime floor that can stop data arriving; MongoDB 4.4 was deprecated
     in 15.0.9, and 3.6, 4.0 and 4.2 stop serving with 16.0.0 (driver 7, decided 2026-10-25). The
     decision is recorded; a waiver of §5.4's window, with its reason for the release notes, is not.
+12. **BF-194** (maintainer): API v1 removes `units` from a treatment with no glucose value before
+    `WRITE_VALIDATION` runs, so a v1 temp target sent in mmol/L is stored with mmol/L numbers and no
+    units and reads as mg/dL, in every mode, on 15.0.9 and `dev` (reproduced, integration record R15):
+    keep the units, convert, or refuse. Queue `BFQ-194`.
+
+**Found by R15 (reproduced; no register entry):**
+
+- `npm test` and `test-ci` glob `./tests/*.test.js` (310 files) while `tests/tiers.json` maps all 377;
+  the 67 outside the glob are the browser tier (40), `tests/client-core/` (26) and one harness fixture
+  test. CI runs them through the tier runner; a contributor's local `npm test` skips the 27 non-browser
+  files that `npm run test:all` runs.
+- After driver 7 refuses MongoDB 4.2, the boot log still prints "Mongo Storage system ready"
+  (`lib/server/bootevent.js:208`), though the site serves the boot error page.
+- API v3 under `WRITE_VALIDATION=log` logs each bad record twice (`validate` in
+  `lib/api3/generic/create/operation.js` and again in `create/insert.js`).
+- API v3 refusals under `reject` write no log line; API v1 refusals do.
 
 **Repository settings, for the maintainer** (branch protection read 2026-10-26 with `gh api
 repos/nightscout/cgm-remote-monitor/branches/<branch>/protection`: `dev` requires `Run Tests (24, 6)`;
 `master` requires `Run Tests (22, 6)`, `Run Tests (22, 4.4)` and `Run Tests (24, 6)` and one approving
-review; `enforce_admins` is off on both). Nothing in a PR changes these:
+review; `enforce_admins` is off on both). No workflow on `dev` emits `Run Tests (22, 4.4)`, so the
+staging PR #8824 cannot meet `master`'s protection as it stands.
 
-1. `master`: drop the required check `Run Tests (22, 4.4)`. No workflow on `dev` emits it, so the staging
-   PR #8824 cannot meet `master`'s protection until it is dropped.
-2. `dev` and `master`: require *Tests pass*, the job #8843 added to stand for every test job, in place of
-   the individual `Run Tests` names; the `(24, 6)` and `(22, 6)` cells then have no required-check reason
-   to stay.
-3. Optionally, require the three *Browser tests (26, …)* jobs, if *Tests pass* is not adopted.
+**Proposed, not decided:** `master` and `dev` require only the *Tests pass* check (job `tests-pass`,
+`.github/workflows/main.yml:317` on `dev`, `if: always()`, needing every test job and the pull-request Docker validation), plus one approving
+review on `master`. Caveat: *Tests pass* accepts `skipped` as well as `success` from every job it needs
+(`main.yml:327-337`), so a test job skipped in full would still let it pass.
 
 **Follow-ups filed 2026-10-25:** `RT-BUNDLE-THEME-SPLIT` (page-bundle budget option B: load the modern
 theme's code only when it is chosen; owner Andy Low or the maintainer; not started). `RT-BOOT-INDEX-AWAIT`
@@ -543,7 +564,7 @@ merged with #8849.
 2. BF-72 and BF-161 through their advisory forks, each after a merge of `dev`, published with the
    release that carries them.
 
-**Before the tag:** the live acceptance checks #8605 leaves to the maintainer (Pushover emergency
+**Before the tag:** the three requirements above (the live delivery check, the real-rig soak, BF-72 and BF-161), the other live acceptance checks #8605 leaves to the maintainer (Pushover emergency
 delivery, acknowledgement and cancellation; alarm de-duplication over its real window; APNs delivery
 to a phone; production hosting, upgrade and rollback; physical-device accessibility), the call for
 testers ([testing-notes.md](testing-notes.md)), the tag message and the release notes (written last,
