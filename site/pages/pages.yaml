@@ -48,9 +48,9 @@ pages:
     source_commit: 635934af3
     render: tools/site/render_apis.py
     api:
-      status: draft-pr
+      status: superseded
       note: >-
-        Describes the remote-commands queue of cgm-remote-monitor pull request #7791, which is not
-        merged and is in no release. The project's current design for commands is the platform
-        commands specification.
+        Describes the remote-commands queue of cgm-remote-monitor pull request #7791, which is open,
+        unmerged and in no release. The states, expiry, routing and cancel steps are replaced by the
+        platform commands specification. The command path that ships today is not documented here.
       see: docs/30-design/platform/spec/commands.md
