@@ -35,7 +35,7 @@
     "sensitivity_why": "name is on the redaction denylist",
     "tier": "universal",
     "tier_reason": "all 11 sites, 100.0% of documents",
-    "description": "MongoDB document ID (ObjectId as string in v1, any string in v3)",
+    "description": "Storage key Nightscout assigns. API v3 does not return it and\nrefuses a request body that carries it (400). See \"API versions\"\nabove.",
     "evidence": {
      "docs_present": 896589,
      "doc_frequency": 1.0,
@@ -303,7 +303,7 @@
     "sensitivity": "identifying",
     "data_category": "identity",
     "sensitivity_why": "name is on the redaction denylist",
-    "description": "API v3 primary key. Server-assigned, immutable after creation.\nUsed for document addressing in v3 endpoints.",
+    "description": "The record's sync identity, assigned by the client and the same on\nevery retry; it need not be a UUID. When a client sends none, API\nv3 computes one; a document stored without one is read back through\nAPI v3 with its `_id` string as `identifier`. Immutable once stored.\nSee \"API versions\" above.\nUsed for document addressing in v3 endpoints.",
     "notes": [
      "indexed by lib/server/entries.js:246"
     ]

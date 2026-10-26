@@ -7,6 +7,7 @@
  "properties": {
   "_id": {
    "type": "string",
+   "description": "Storage key Nightscout assigns. API v3 does not return it and",
    "x-sensitivity": "identifying",
    "x-data-category": "identity"
   },
@@ -29,6 +30,7 @@
   },
   "identifier": {
    "type": "string",
+   "description": "The record's sync identity, assigned by the client and the same on",
    "x-sensitivity": "identifying",
    "x-data-category": "identity"
   },

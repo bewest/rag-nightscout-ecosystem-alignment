@@ -60,6 +60,7 @@
     "sensitivity_why": "name is on the redaction denylist",
     "tier": "universal",
     "tier_reason": "all 11 sites, 100.0% of documents",
+    "description": "Storage key Nightscout assigns. API v3 does not return it and\nrefuses a request body that carries it (400). See \"API versions\"\nabove.",
     "evidence": {
      "docs_present": 202,
      "doc_frequency": 1.0,
@@ -165,7 +166,8 @@
     "placement": "core",
     "sensitivity": "identifying",
     "data_category": "identity",
-    "sensitivity_why": "name is on the redaction denylist"
+    "sensitivity_why": "name is on the redaction denylist",
+    "description": "The record's sync identity, assigned by the client and the same on\nevery retry; it need not be a UUID. When a client sends none, API\nv3 computes one; a document stored without one is read back through\nAPI v3 with its `_id` string as `identifier`. Immutable once stored.\nSee \"API versions\" above."
    },
    "isValid": {
     "path": "isValid",
