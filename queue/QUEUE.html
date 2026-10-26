@@ -3119,7 +3119,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-26 at <code>20203c51e</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>fe2bc5f08</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3162,7 +3162,7 @@
 </tr>
 <tr>
 <td>runnable gates</td>
-<td>353</td>
+<td>356</td>
 </tr>
 <tr>
 <td>explicit <code>no-gate:</code> markers</td>
@@ -3170,7 +3170,7 @@
 </tr>
 </tbody>
 </table>
-<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 335 of the 688 gate slots in this queue are in that state.</p>
+<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 335 of the 691 gate slots in this queue are in that state.</p>
 <h3 id="claimed-state-not-a-measurement----run-make-queue-status">Claimed state (NOT a measurement -- run <code>make queue-status</code>)<a class="headerlink" href="#claimed-state-not-a-measurement----run-make-queue-status" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3188,8 +3188,8 @@
 </tr>
 <tr>
 <td><code>in-progress</code></td>
-<td>7</td>
-<td>BFQ-178, ID-CONVENTIONS, BFQ-191, BFQ-195, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY</td>
+<td>6</td>
+<td>BFQ-178, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY</td>
 </tr>
 <tr>
 <td><code>gate-not-met</code></td>
@@ -3198,8 +3198,8 @@
 </tr>
 <tr>
 <td><code>ready-to-push</code></td>
-<td>4</td>
-<td>P0-C-REMEDIATE, ID-SIMPLE-MATCH, T30-AUTH, WS-LAB</td>
+<td>3</td>
+<td>P0-C-REMEDIATE, T30-AUTH, WS-LAB</td>
 </tr>
 <tr>
 <td><code>blocked</code></td>
@@ -3208,8 +3208,8 @@
 </tr>
 <tr>
 <td><code>in-flight-upstream</code></td>
-<td>4</td>
-<td>ARCH-8854, BFQ-72, BFQ-161, BFQ-193</td>
+<td>6</td>
+<td>ID-SIMPLE-MATCH, ARCH-8854, BFQ-72, BFQ-161, BFQ-193, BFQ-195</td>
 </tr>
 <tr>
 <td><code>merged-upstream</code></td>
@@ -5153,10 +5153,10 @@ that costs.</p>
 <tr>
 <td><code>ID-SIMPLE-MATCH</code></td>
 <td>API v1 entries and devicestatus match on identifier like treatments (the simple contract)</td>
-<td><code>ready-to-push</code></td>
-<td><code>feat/v1-identifier-match</code></td>
+<td><code>in-flight-upstream</code></td>
+<td><code>bf/16.0.0-null-removes</code></td>
 <td>minor</td>
-<td>1 run + 1 no-gate</td>
+<td>2 run + 1 no-gate</td>
 </tr>
 <tr>
 <td><code>ARCH-8854</code></td>
@@ -6058,7 +6058,7 @@ that costs.</p>
 <li><code>releases/cgm-remote-monitor-16.0.0/contents.md</code></li>
 <li><code>releases/cgm-remote-monitor-16.0.0/decisions.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-26, later (maintainer, session -66): BF-193's logging question is decided (debug-gated payload logging through DEBUG_LOGGING; BFQ-193, draft PR #8856), still not a pre-tag requirement. Q1b is decided for 16.0.0 (WRITE- CONTRACT, BFQ-195). Branch protection: master requires only Tests pass and one approving review, decided, the settings change owed by the maintainer (contents.md, Repository settings). Filed 2026-10-26 from the maintainer's pre-tag requirements (session -66, 2026-10-26): before the tag, (a) a live Pushover and APNs delivery check (RT-16-LIVE-ALARMS), (b) a real-rig soak on dev (RT-16-RIG-SOAK), and (c) the BF-72 and BF-161 fork fixes merged and published with 16.0.0 (BFQ-72, BFQ-161). BF-193 is not a pre-tag requirement; whether payload logging is needed for debugging is the maintainer's open question. Other open items a releaser must settle are in contents.md. The generated release-waits view still reads RT-0 (15.0.9), so it does not list these blockers.</p>
+<p><strong>Notes.</strong> 2026-10-26, later (maintainer, session -66): BF-193's logging question is decided (debug-gated payload logging through DEBUG_LOGGING; BFQ-193, draft PR #8856), still not a pre-tag requirement. Q1b is decided for 16.0.0 (WRITE- CONTRACT, BFQ-195; with ID-SIMPLE-MATCH in draft PR #8859, head fc170a4c). Branch protection: master requires only Tests pass and one approving review, decided, the settings change owed by the maintainer (contents.md, Repository settings). Filed 2026-10-26 from the maintainer's pre-tag requirements (session -66, 2026-10-26): before the tag, (a) a live Pushover and APNs delivery check (RT-16-LIVE-ALARMS), (b) a real-rig soak on dev (RT-16-RIG- SOAK), and (c) the BF-72 and BF-161 fork fixes merged and published with 16.0.0 (BFQ-72, BFQ-161). BF-193 is not a pre-tag requirement; whether payload logging is needed for debugging is the maintainer's open question. Other open items a releaser must settle are in contents.md. The generated release-waits view still reads RT-0 (15.0.9), so it does not list these blockers.</p>
 <h3 id="rt-16-live-alarms--1600-pre-tag-check-live-pushover-and-apns-delivery-on-dev"><code>RT-16-LIVE-ALARMS</code> &mdash; 16.0.0 pre-tag check: live Pushover and APNs delivery on dev<a class="headerlink" href="#rt-16-live-alarms--1600-pre-tag-check-live-pushover-and-apns-delivery-on-dev" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -6757,7 +6757,7 @@ that costs.</p>
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-flight-upstream</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -6765,7 +6765,7 @@ that costs.</p>
 </tr>
 <tr>
 <td>branch</td>
-<td><code>feat/v1-identifier-match</code></td>
+<td><code>bf/16.0.0-null-removes</code></td>
 </tr>
 <tr>
 <td>base</td>
@@ -6785,13 +6785,15 @@ that costs.</p>
 </tr>
 </tbody>
 </table>
-<p><strong>Blast radius.</strong> Small and standalone, one PR to dev with BF-169 (BFQ-169). lib/server/entries.js upsertQueryFor (301-319 at fade2299): match identifier first, as treatments do, then sysTime+type. lib/server/devicestatus.js create (92-172 at fade2299; insertMany unordered after #8758's withoutStoredIds at 57-90): a status whose identifier is already stored writes nothing and is answered with the stored _id (decided 2026-10-26; 8d0f9a22 replaces the stored status's fields, so the bundle changes it), the rest are inserted as today. Tests for both. No change to treatments, API v3 or the websocket.</p>
+<p><strong>Blast radius.</strong> Built as feat/v1-identifier-match 8d0f9a22; ships inside draft PR #8859 (bf/16.0.0-null-removes), the 16.0.0 re-send and merge PR. First scoped as one PR to dev with BF-169 (BFQ-169). lib/server/entries.js upsertQueryFor (301-319 at fade2299): match identifier first, as treatments do, then sysTime+type. lib/server/devicestatus.js create (92-172 at fade2299; insertMany unordered after #8758's withoutStoredIds at 57-90): a status whose identifier is already stored writes nothing and is answered with the stored _id (decided 2026-10-26; 8d0f9a22 replaces the stored status's fields, so the bundle changes it), the rest are inserted as today. Tests for both. No change to treatments, API v3 or the websocket.</p>
 <p><strong>What an operator sees.</strong> An app that labels each glucose reading or loop status with its own id can send it again without a second copy being stored.</p>
 <p><strong>Why <code>minor</code>.</strong> Versioning policy section 2, question 10: the same write stores a different set of records (a re-send that today adds a second entry or devicestatus becomes a match on the stored one). By rule R3 one minor row makes the release a minor, and 15.0.9 is decided as a patch (RT-VERSION, RT-COUNT-COMPAT), so it cannot go into 15.0.9.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda feat/v1-identifier-match</code></li>
-<li>The branch contains dev 47723cda (cut 5 merged). Red if the branch is rebased off dev or deleted.</li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda bf/16.0.0-null-removes</code></li>
+<li>The PR #8859 branch contains dev 47723cda (cut 5 merged). Red if the branch is rebased off dev or deleted.</li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8d0f9a22 bf/16.0.0-null-removes</code></li>
+<li>This item's commit 8d0f9a22 (built as feat/v1-identifier-match) is on the PR #8859 branch. Red if the branch is rewritten without it.</li>
 <li><strong>NO GATE</strong> &mdash; Behaviour is measured outside the queue. tools/lab/v3-identifier-immutable's "v1 entries: same identifier, date +60 s" cell, run 2026-10-26: stored n=2 on dev 47723cda, n=1 on 8d0f9a22 with the later date kept; every API v3 cell the same on both builds. The PR's mocha cases (11 entries, 7 devicestatus) each have a red control. Against dev's two files, 6 of 11 and 3 of 7 fail with the original symptom (expected 2 to be 1). Seven code mutations turn the cases that pass on dev red. 74 related test files, 1428 passing; tests/tiers.json check ok; trial merge with #8854 880b7369 clean, its boundary gate passes.</li>
 </ul>
 <p><strong>Evidence.</strong></p>
@@ -6800,7 +6802,7 @@ that costs.</p>
 <li><code>tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md</code></li>
 <li><code>docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-26, later (maintainer, via session -66): (a) D-ID-FALLBACK decided: for 16.0.0 a v1 entries re-send whose identifier matches nothing still matches on sysTime+type, as today (TEST-ENTRY-UUID-003); treatments never fall back; to be revisited once identifiers are common. (b) A devicestatus re-send whose identifier is already stored writes nothing (no merge, no new record, no srvModified change) and the reply carries the stored _id, on API v1 and v3; v3, which today replaces and moves srvModified, is aligned in the same PR. (c) This item ships in one 16.0.0 re-send and merge PR with Q1b, BF-195 and (b), on bf/16.0.0-null-removes (Q1b head 1bdce62c; bundle in progress). Evidence for (b): the devicestatus study of 2026-10-26, reproduced on dev 47723cda and 8d0f9a22; client survey read-derived: no client sends an identifier on any devicestatus path (Loop's remote overrides travel as treatments and push notifications). 2026-10-26: carries the API v1 half of ID-CLIENT-OID-DECISION (the Loop reply's simple contract: whether a client may create its own ObjectId as _id over v1); the API v3 half is decided (BF-170, identity I2). 2026-10-26: built as feat/v1-identifier-match 8d0f9a22 (one commit over dev 47723cda; lib/server/entries.js +84/-8, lib/server/devicestatus.js +97, two test files), not pushed. A re-sent identifier updates the stored record; an identifier miss still falls back to sysTime+type for entries (status quo, TEST-ENTRY-UUID-003 pins it), unlike v1 treatments, which never fall back; that choice is the maintainer's (next-gen plan decision D-ID-FALLBACK). identifier decides over a conflicting _id. upsertQueryFor is at entries.js:308 on 47723cda. Draft PR body and push commands are in the lane report. 2026-10-25: RT-1 merged (#8828, dev eb72a1d3), so this item is no longer blocked and can go to dev. Neither lib/server/entries.js nor lib/server/devicestatus.js changed between fade2299 and eb72a1d3 (git diff --name-only fade2299 official/dev -- both files prints nothing), so the line numbers above still hold. Cut 2 changes entries.js, so landing before cut 2's catch-up adds to that merge (RT-2). 2026-10-21, later: cut 1's catch-up merge is done (RT-REBASE's cut 1 part; 806ff2f0 contains dev 04d435eb), so blocks_on moves from RT-REBASE to RT-1: this lands on dev after #8828 merges, which is the maintainer's 2026-10-17 order. Cut 1 still touches neither lib/server/entries.js nor lib/server/devicestatus.js (<code>git diff --name-only official/dev official/chore/retire-jsdom</code> on 806ff2f0 lists neither). 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Still waits on cut 1's catch-up merge (RT-REBASE, in progress). Decided by the maintainer 2026-10-17: not in 15.0.9; lands on dev after cut 1's rebase, with BFQ-169. 15.0.9 is dev as it stands at fade2299 (releases/cgm-remote- monitor-15.0.9/contents.md), and any merge to dev moves the head off the candidate whose re-approval RT-0 owes. blocks_on names RT-REBASE because no separate item marks cut 1's catch-up merge done; only cut 1's part is needed (RT-1 blocks on the same two). Why after the rebase: RT-REBASE records that each further merge to dev raises the cuts' catch-up cost. Cuts 2-5 already change both files this item touches: <code>git diff --name-only $(git merge-base fade2299 &lt;cut&gt;) &lt;cut&gt; -- lib/server/entries.js lib/server/devicestatus.js</code> lists entries.js on cut 2 and both files on cuts 3, 4 and 5 (measured 2026-10-17); cut 1 touches neither. Landing after the catch-up merge keeps this change out of that merge's conflicts. The tenancy item ID-FIRST-MATCH absorbs this rule into the write step once WC-STEP-PATCH exists (it blocks on this item). Background: the simple contract in the Loop reply (LOOP-ID-REPLY) - _id an ObjectId or absent; identifier when _id is absent; the time key when neither.</p>
+<p><strong>Notes.</strong> 2026-10-26, later: ships inside draft PR #8859 to dev (bf/16.0.0-null-removes, head fc170a4c), opened by the maintainer, with Q1b (913d0895), BF-195 (1bdce62c), a merge of 8d0f9a22 (cf2a2a67: entries find their stored match first, then merge) and the devicestatus rule (b) as fc170a4c (a re-send with a stored identifier writes nothing and the reply carries the stored _id, v1 and v3; lib/api3/generic/create/acknowledge.js). dev is still 47723cda. Measured by session -66: npm test 4375 passing, 0 failing, 3 pending and test:all 4703 passing, 0 failing, 3 pending (re-run on fc170a4c 2026-10-26, Node 22.23.4, MongoDB 5.0; the first run, before push, had 1 environmental failure, development-watch ENOSPC on the host's file-watcher limit). With the code reverted 6 of 10 new v1 tests and 5 of 8 new v3 tests fail, controls pass; the devicestatus re-send probe leaves 1 record where dev stored 2, 3, then 4. Two existing expectations changed deliberately (api.crud-by-id matrix v3 devicestatus re-send row; api3.empty-identifier-edit). Trial merge with #8854: one textual conflict (an import line in lib/api3/generic/patch/operation.js, keep both requires) and 4 of #8854's cross-path matrix cells need a 3-line expectation change, applied by whichever PR merges second; with it all 405 matrix tests pass. Merges cleanly with #8856. Points for review in the PR body: v3's created_at+device devicestatus fallback still replaces; a deleted status re-sent with its identifier stays deleted; two simultaneous first sends with the same new identifier can both be stored (no unique index). 2026-10-26, later (maintainer, via session -66): (a) D-ID-FALLBACK decided: for 16.0.0 a v1 entries re-send whose identifier matches nothing still matches on sysTime+type, as today (TEST-ENTRY-UUID-003); treatments never fall back; to be revisited once identifiers are common. (b) A devicestatus re-send whose identifier is already stored writes nothing (no merge, no new record, no srvModified change) and the reply carries the stored _id, on API v1 and v3; v3, which today replaces and moves srvModified, is aligned in the same PR. (c) This item ships in one 16.0.0 re-send and merge PR with Q1b, BF-195 and (b), on bf/16.0.0-null-removes (Q1b head 1bdce62c; bundle in progress). Evidence for (b): the devicestatus study of 2026-10-26, reproduced on dev 47723cda and 8d0f9a22; client survey read-derived: no client sends an identifier on any devicestatus path (Loop's remote overrides travel as treatments and push notifications). 2026-10-26: carries the API v1 half of ID-CLIENT-OID-DECISION (the Loop reply's simple contract: whether a client may create its own ObjectId as _id over v1); the API v3 half is decided (BF-170, identity I2). 2026-10-26: built as feat/v1-identifier-match 8d0f9a22 (one commit over dev 47723cda; lib/server/entries.js +84/-8, lib/server/devicestatus.js +97, two test files), not pushed. A re-sent identifier updates the stored record; an identifier miss still falls back to sysTime+type for entries (status quo, TEST-ENTRY-UUID-003 pins it), unlike v1 treatments, which never fall back; that choice is the maintainer's (next-gen plan decision D-ID-FALLBACK). identifier decides over a conflicting _id. upsertQueryFor is at entries.js:308 on 47723cda. Draft PR body and push commands are in the lane report. 2026-10-25: RT-1 merged (#8828, dev eb72a1d3), so this item is no longer blocked and can go to dev. Neither lib/server/entries.js nor lib/server/devicestatus.js changed between fade2299 and eb72a1d3 (git diff --name-only fade2299 official/dev -- both files prints nothing), so the line numbers above still hold. Cut 2 changes entries.js, so landing before cut 2's catch-up adds to that merge (RT-2). 2026-10-21, later: cut 1's catch-up merge is done (RT-REBASE's cut 1 part; 806ff2f0 contains dev 04d435eb), so blocks_on moves from RT-REBASE to RT-1: this lands on dev after #8828 merges, which is the maintainer's 2026-10-17 order. Cut 1 still touches neither lib/server/entries.js nor lib/server/devicestatus.js (<code>git diff --name-only official/dev official/chore/retire-jsdom</code> on 806ff2f0 lists neither). 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Still waits on cut 1's catch-up merge (RT-REBASE, in progress). Decided by the maintainer 2026-10-17: not in 15.0.9; lands on dev after cut 1's rebase, with BFQ-169. 15.0.9 is dev as it stands at fade2299 (releases/cgm-remote- monitor-15.0.9/contents.md), and any merge to dev moves the head off the candidate whose re-approval RT-0 owes. blocks_on names RT-REBASE because no separate item marks cut 1's catch-up merge done; only cut 1's part is needed (RT-1 blocks on the same two). Why after the rebase: RT-REBASE records that each further merge to dev raises the cuts' catch-up cost. Cuts 2-5 already change both files this item touches: <code>git diff --name-only $(git merge-base fade2299 &lt;cut&gt;) &lt;cut&gt; -- lib/server/entries.js lib/server/devicestatus.js</code> lists entries.js on cut 2 and both files on cuts 3, 4 and 5 (measured 2026-10-17); cut 1 touches neither. Landing after the catch-up merge keeps this change out of that merge's conflicts. The tenancy item ID-FIRST-MATCH absorbs this rule into the write step once WC-STEP-PATCH exists (it blocks on this item). Background: the simple contract in the Loop reply (LOOP-ID-REPLY) - _id an ObjectId or absent; identifier when _id is absent; the time key when neither.</p>
 <h3 id="arch-8854--8854---shared-write-boundary-read-contract-and-ci-gates-into-1600-after-four-alignment-conditions-outcome-b"><code>ARCH-8854</code> &mdash; #8854 - shared write boundary, read contract and CI gates; into 16.0.0 after four alignment conditions (outcome B)<a class="headerlink" href="#arch-8854--8854---shared-write-boundary-read-contract-and-ci-gates-into-1600-after-four-alignment-conditions-outcome-b" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -9048,10 +9050,10 @@ distinction is the only thing that makes the register mean anything - widening
 <tr>
 <td><code>BFQ-195</code></td>
 <td>BF-195 - a stale profile is pushed over the socket after a profile re-send</td>
-<td><code>in-progress</code></td>
+<td><code>in-flight-upstream</code></td>
 <td><code>bf/16.0.0-null-removes</code></td>
 <td>patch</td>
-<td>0 run + 1 no-gate</td>
+<td>2 run + 1 no-gate</td>
 </tr>
 <tr>
 <td><code>BFQ-134</code></td>
@@ -15135,7 +15137,7 @@ distinction is the only thing that makes the register mean anything - widening
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 <li><code>docs/30-design/tenancy/write-contract-spec-2026-10-07.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-26: Q1b is decided (maintainer): on a merge on match a null removes the field; it ships in 16.0.0 on bf/16.0.0-null-removes (in progress), which changes tests/api.profiles.resend.test.js:218, the test that pins dev's stored null. Until then dev stores null as null. 2026-10-26, 11:34:16Z: merged. AndyLow91 merged #8845 (bf/16.0.0-record-identity, head 50219945) into dev as 900abf7a (gh pr view 8845); 25 files, +1314/-107 against its first parent. AndyLow91 added 50219945 ("Require update permission for profile POST merges") on top. CI: push run 40316054930 passed and published at 11:43:24Z. Merged is not released. 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record- identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). 2026-10-25: fixed as c62a16c9 on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane), implementing the decided write-contract Q1 merge (2026-10-12): a profile re-sent with a stored _id is merged into it and answered 200 with that _id; an identical re-send writes nothing; Q1b (null deletes a field) is not implemented and stays unconfirmed. Evidence, reported by the lane: write- contract matrix b29f1bf7 against 26191780, 42 of 336 cells differ, 40 intended and 2 in the racy cache field. Filed 2026-10-07 from the WRITE-CONTRACT write matrix. Present on 15.0.8 too. BF-116 fixed the same shape for devicestatus.</p>
+<p><strong>Notes.</strong> 2026-10-26: Q1b is decided (maintainer): on a merge on match a null removes the field; it ships in 16.0.0 on bf/16.0.0-null-removes (in progress), which changes tests/api.profiles.resend.test.js:218, the test that pins dev's stored null. Until then dev stores null as null. 2026-10-26, later: that branch is draft PR #8859 to dev (head fc170a4c), opened by the maintainer. 2026-10-26, 11:34:16Z: merged. AndyLow91 merged #8845 (bf/16.0.0-record-identity, head 50219945) into dev as 900abf7a (gh pr view 8845); 25 files, +1314/-107 against its first parent. AndyLow91 added 50219945 ("Require update permission for profile POST merges") on top. CI: push run 40316054930 passed and published at 11:43:24Z. Merged is not released. 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). 2026-10-25: fixed as c62a16c9 on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane), implementing the decided write- contract Q1 merge (2026-10-12): a profile re-sent with a stored _id is merged into it and answered 200 with that _id; an identical re-send writes nothing; Q1b (null deletes a field) is not implemented and stays unconfirmed. Evidence, reported by the lane: write-contract matrix b29f1bf7 against 26191780, 42 of 336 cells differ, 40 intended and 2 in the racy cache field. Filed 2026-10-07 from the WRITE-CONTRACT write matrix. Present on 15.0.8 too. BF-116 fixed the same shape for devicestatus.</p>
 <h3 id="bfq-167--bf-167---devicestatus-removes-filter-is-not-pinned-by-any-test"><code>BFQ-167</code> &mdash; BF-167 - devicestatus remove()'s filter is not pinned by any test<a class="headerlink" href="#bfq-167--bf-167---devicestatus-removes-filter-is-not-pinned-by-any-test" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -16741,7 +16743,7 @@ distinction is the only thing that makes the register mean anything - widening
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>in-progress</code></td>
+<td><code>in-flight-upstream</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -16782,13 +16784,17 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a race fixed; what is stored and replied does not change</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><strong>NO GATE</strong> &mdash; Reproduced 2026-10-26 by the Q1b study, 2 of 2 runs on dev 47723cda and on lab/q1b-null-removes 63c33a0e: a socket client receives the earlier profile in dataUpdate after a profile re-send. A queue gate would re-send a profile in-process with a socket listener and assert the pushed profile is the merged one; control: dev 47723cda fails it. Written with the fix on bf/16.0.0-null-removes.</li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda bf/16.0.0-null-removes</code></li>
+<li>The PR #8859 branch contains dev 47723cda. Red if the branch is rebased off dev or deleted.</li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1bdce62c bf/16.0.0-null-removes</code></li>
+<li>The fix commit 1bdce62c is on the PR #8859 branch. Red if the branch is rewritten without it.</li>
+<li><strong>NO GATE</strong> &mdash; Reproduced 2026-10-26 by the Q1b study, 2 of 2 runs on dev 47723cda and on lab/q1b-null-removes 63c33a0e: a socket client receives the earlier profile in dataUpdate after a profile re-send. A queue gate would re-send a profile in-process with a socket listener and assert the pushed profile is the merged one; control: dev 47723cda fails it. The fix's test is in draft PR #8859 (bf/16.0.0-null-removes, head fc170a4c); behaviour is measured outside the queue (the suite needs MongoDB): on fc170a4c, measured by session -66, npm test 4375 passing, 0 failing, 3 pending and test:all 4703 passing, 0 failing, 3 pending (re-run 2026-10-26; the first run had 1 environmental failure, development-watch ENOSPC on the file-watcher limit).</li>
 </ul>
 <p><strong>Evidence.</strong></p>
 <ul>
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-26, later: lands in the one 16.0.0 re-send and merge PR on bf/16.0.0-null-removes (Q1b head 1bdce62c; bundle in progress; at cf2a2a67 the branch carries 913d0895 for Q1b, 1bdce62c for BF-195 and a merge of 8d0f9a22, read from git log, not measured here) with Q1b, ID-SIMPLE-MATCH and the devicestatus identifier re-send rule (maintainer, 2026-10-26). 2026-10-26: id allocated by session -66 and filed from the Q1b study. Fix direction, unverified: emit data-received once the write has completed. To land with Q1b (a null in an update removes the field, decided by the maintainer 2026-10-26, for 16.0.0) on bf/16.0.0-null-removes, in progress (the branch is at dev 47723cda).</p>
+<p><strong>Notes.</strong> 2026-10-26, later: in draft PR #8859 to dev (bf/16.0.0-null-removes, head fc170a4c), opened by the maintainer, as 1bdce62c ("Announce a profile write after it finishes, not when it starts"), with Q1b 913d0895, ID-SIMPLE-MATCH (merge cf2a2a67) and the devicestatus rule fc170a4c. Measured by session -66: npm test 4375 passing, 0 failing, 3 pending and test:all 4703 / 0 / 3 (re-run 2026-10-26; the first run had 1 environmental ENOSPC failure). Merges cleanly with #8856; with #8854 one import-line conflict and a 3-line matrix expectation change (ID-SIMPLE-MATCH). 2026-10-26, later: lands in the one 16.0.0 re-send and merge PR on bf/16.0.0-null-removes (Q1b head 1bdce62c; bundle in progress; at cf2a2a67 the branch carries 913d0895 for Q1b, 1bdce62c for BF-195 and a merge of 8d0f9a22, read from git log, not measured here) with Q1b, ID-SIMPLE-MATCH and the devicestatus identifier re-send rule (maintainer, 2026-10-26). 2026-10-26: id allocated by session -66 and filed from the Q1b study. Fix direction, unverified: emit data-received once the write has completed. To land with Q1b (a null in an update removes the field, decided by the maintainer 2026-10-26, for 16.0.0) on bf/16.0.0-null-removes, in progress (the branch is at dev 47723cda).</p>
 <h3 id="bfq-134--bf-134---every-loop-remote-command-leaves-an-apns-connection-and-a-heartbeat-timer-open"><code>BFQ-134</code> &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open<a class="headerlink" href="#bfq-134--bf-134---every-loop-remote-command-leaves-an-apns-connection-and-a-heartbeat-timer-open" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -19117,7 +19123,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>docs/30-design/tenancy/write-contract-spec-2026-10-07.md</code></li>
 <li><code>tools/qc/write-contract-matrix.js</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-26: its blocker SEAM-REFRESH can now take dev as its base (cut 5 merged, 47723cda). Draft #8854 (AndyLow91, wip/architecture-data-contracts 880b7369, 1 commit on dev 47723cda, 31 files +934/-45) adds a shared write step (lib/storage/write-step.js, a Proxy over the driver collection with a data-free storage-write-committed event and no consumer yet), a read contract (lib/storage/read-contract.js, an API v3 Nightscout-Data-Warnings header) and a write-boundary check; its body says it is a foundation and not the complete proposed write-intent service. How it relates to the architecture review's open questions Q-A (pull the single write step forward, ahead of multitenancy) and Q-G (sequencing against the release train), and to this item, is for the maintainer and the author; not measured here. Execution plan section 4.1. Absorbs OID-STORAGE-HELPER (the _id rule alone) if that has not landed on dev first; if it has, its helper moves behind the interface here. Under single, the change event carries the runtime-derived copy and replaces the separate emissions the cache, v3 history and the socket consume. Under multi the change feed (D6) is the event. BFQ-CAP02's loader runs imported documents through the same step. Ships to single-tenant operators as its own release, before any Phase 2 work. Spec drafted 2026-10-07 (docs/30-design/tenancy/write-contract- spec-2026-10-07.md), measured on dev 43289dde and 15.0.8 92d08342 with tools/qc/write-contract-matrix.js (336 cells per build; stored state differs between paths in 33 of 66 groups on dev, 47 on 15.0.8; a cross-path re-send without _id is stored twice in 38 of 66 path pairs; six one-line ablations each turn exactly their predicted cells red). Proposes one write(intent) step in lib/storage/write-step.js inside collectionFor, merge-on-match re-sends, one natural key per collection and one event per write; semver minor if merge- on-match is chosen. Its gates G1 to G8 are in spec §5 and replace the no-gate above when the item starts. Needs maintainer decisions Q1 to Q6 (spec §6); Q3's devicestatus key needs an ns-data corpus count of created_at+device collisions first. Found BF-164, BF-165 and BF-166. Still blocked on SEAM- REFRESH. 2026-10-26 (maintainer, session -66): Q1b decided for 16.0.0. A null in an update removes the field (RFC 7386, recursive, arrays replaced whole) on a merge on match for treatments, entries, profile, food and activity, on API v3 PATCH and on the socket's dbUpdate (aligned with PATCH); never on v1 or v3 PUT or on any create; applied after v1 prepareData; dbUpdateUnset kept. It ships ahead of the step, on bf/16.0.0-null-removes (in progress) with BF-195's fix (BFQ-195). Spec section 6.1 and section 2.2's set/unset maps updated. Maintainer decisions 2026-10-12 (spec section 6): Q1 merge on match, every collection and path; Q1b a field sent as null is removed (JSON Merge Patch), to be confirmed by a corpus and client-code measurement of explicit nulls; Q2 keep each path's identical-re-send behaviour (b1: v1, v3 and in-process rewrite, the socket and devicestatus answer unchanged), with the impact on clients to be measured; Q3 entries date+type, devicestatus created_at+device, profile created_at on every path, final once the corpus shows no client collides; Q4 the socket's +-2 s match kept as the socket's explicit near option, C5's missing event fixed, retired on field evidence or decided later; Q5 activity gets server dates and soft delete like the other five; Q6 two releases, the step with today's matrix pinned (patch, gate G1), then the changes (minor). U2 is dropped; U7 (every path reaches the storage socket) is held out of the contract until BF-164's question is answered. Q3 devicestatus re-decided 2026-10-12, after the corpus showed Loop writing 3,078 groups of distinct statuses that share created_at+device: the key identifies identical retries only (unchanged, nothing written); a differing body is a new record, on every path. Loop's upload code is being read to say what the same-key pairs are, for a possible later merge change.</p>
+<p><strong>Notes.</strong> 2026-10-26: its blocker SEAM-REFRESH can now take dev as its base (cut 5 merged, 47723cda). Draft #8854 (AndyLow91, wip/architecture-data-contracts 880b7369, 1 commit on dev 47723cda, 31 files +934/-45) adds a shared write step (lib/storage/write-step.js, a Proxy over the driver collection with a data-free storage-write-committed event and no consumer yet), a read contract (lib/storage/read-contract.js, an API v3 Nightscout-Data-Warnings header) and a write-boundary check; its body says it is a foundation and not the complete proposed write-intent service. How it relates to the architecture review's open questions Q-A (pull the single write step forward, ahead of multitenancy) and Q-G (sequencing against the release train), and to this item, is for the maintainer and the author; not measured here. Execution plan section 4.1. Absorbs OID-STORAGE-HELPER (the _id rule alone) if that has not landed on dev first; if it has, its helper moves behind the interface here. Under single, the change event carries the runtime-derived copy and replaces the separate emissions the cache, v3 history and the socket consume. Under multi the change feed (D6) is the event. BFQ-CAP02's loader runs imported documents through the same step. Ships to single-tenant operators as its own release, before any Phase 2 work. Spec drafted 2026-10-07 (docs/30-design/tenancy/write-contract- spec-2026-10-07.md), measured on dev 43289dde and 15.0.8 92d08342 with tools/qc/write-contract-matrix.js (336 cells per build; stored state differs between paths in 33 of 66 groups on dev, 47 on 15.0.8; a cross-path re-send without _id is stored twice in 38 of 66 path pairs; six one-line ablations each turn exactly their predicted cells red). Proposes one write(intent) step in lib/storage/write-step.js inside collectionFor, merge-on-match re-sends, one natural key per collection and one event per write; semver minor if merge- on-match is chosen. Its gates G1 to G8 are in spec §5 and replace the no-gate above when the item starts. Needs maintainer decisions Q1 to Q6 (spec §6); Q3's devicestatus key needs an ns-data corpus count of created_at+device collisions first. Found BF-164, BF-165 and BF-166. Still blocked on SEAM- REFRESH. 2026-10-26 (maintainer, session -66): Q1b decided for 16.0.0. A null in an update removes the field (RFC 7386, recursive, arrays replaced whole) on a merge on match for treatments, entries, profile, food and activity, on API v3 PATCH and on the socket's dbUpdate (aligned with PATCH); never on v1 or v3 PUT or on any create; applied after v1 prepareData; dbUpdateUnset kept. It ships ahead of the step, on bf/16.0.0-null-removes (in progress) with BF-195's fix (BFQ-195). Spec section 6.1 and section 2.2's set/unset maps updated. 2026-10-26, later: Q1b (913d0895, lib/server/merge-patch.js) is in draft PR #8859 to dev (bf/16.0.0-null-removes, head fc170a4c), opened by the maintainer; this step itself is not built. Maintainer decisions 2026-10-12 (spec section 6): Q1 merge on match, every collection and path; Q1b a field sent as null is removed (JSON Merge Patch), to be confirmed by a corpus and client-code measurement of explicit nulls; Q2 keep each path's identical-re- send behaviour (b1: v1, v3 and in-process rewrite, the socket and devicestatus answer unchanged), with the impact on clients to be measured; Q3 entries date+type, devicestatus created_at+device, profile created_at on every path, final once the corpus shows no client collides; Q4 the socket's +-2 s match kept as the socket's explicit near option, C5's missing event fixed, retired on field evidence or decided later; Q5 activity gets server dates and soft delete like the other five; Q6 two releases, the step with today's matrix pinned (patch, gate G1), then the changes (minor). U2 is dropped; U7 (every path reaches the storage socket) is held out of the contract until BF-164's question is answered. Q3 devicestatus re-decided 2026-10-12, after the corpus showed Loop writing 3,078 groups of distinct statuses that share created_at+device: the key identifies identical retries only (unchanged, nothing written); a differing body is a new record, on every path. Loop's upload code is being read to say what the same-key pairs are, for a possible later merge change.</p>
 <h3 id="id-dup-measure--measure-duplicate-identifier-values-across-the-12-site-ns-data-corpus"><code>ID-DUP-MEASURE</code> &mdash; Measure duplicate identifier values across the 12-site ns-data corpus<a class="headerlink" href="#id-dup-measure--measure-duplicate-identifier-values-across-the-12-site-ns-data-corpus" title="Permanent link">&para;</a></h3>
 <table>
 <thead>

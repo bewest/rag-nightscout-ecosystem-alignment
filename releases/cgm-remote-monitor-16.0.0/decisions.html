@@ -2331,7 +2331,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>3e609f77d</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>fe2bc5f08</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>47723cda</code> (2026-10-26). Each row states the decision as it stands, with its date and who made
 it. Item state is in <code>queue/work-queue.yaml</code>; what 16.0.0 contains and what is still open is in
@@ -2550,13 +2550,13 @@ public.</em></p>
 <td><strong>Write contract Q1b: a <code>null</code> in an update removes the field, in 16.0.0.</strong> Scope: a merge on match (a re-send matching a stored record) for treatments, entries, profile, food and activity; API v3 <code>PATCH</code>; the socket's <code>dbUpdate</code>, aligned with <code>PATCH</code>. Never on v1 or v3 <code>PUT</code> (replace) or on any create. Applied after v1 <code>prepareData</code>; recursive per RFC 7386, arrays replaced whole; <code>dbUpdateUnset</code> kept</td>
 <td>maintainer, 2026-10-26, relayed via session -66, after the Q1b study (reproduced on <code>v15.0.9</code> <code>c6a0d8ed</code>, <code>dev</code> <code>47723cda</code> and <code>lab/q1b-null-removes</code> <code>63c33a0e</code>; client survey read-derived: no client sends <code>null</code> to mean "clear", the incidental senders do so on create or replace paths, and Loop, xDrip+, xDrip4iOS, the profile editor and the report editor clear by omitting fields from a replace)</td>
 <td><code>WRITE-CONTRACT</code>, <code>BFQ-195</code></td>
-<td>not on <code>dev</code>: <code>dev</code> <code>47723cda</code> stores a <code>null</code> as <code>null</code> on every path (<code>tests/api.profiles.resend.test.js:218</code> pins it); built on <code>bf/16.0.0-null-removes</code> (in progress) with BF-195's fix. Specs: <a href="../../docs/30-design/platform/spec/identity.html#3-match-order-per-collection">identity §3</a>, <a href="../../docs/30-design/platform/spec/sync-transport.html#2-the-write-path">sync-transport T2</a>, <a href="../../docs/30-design/tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-10-12">write contract §6.1</a></td>
+<td>not on <code>dev</code>: <code>dev</code> <code>47723cda</code> stores a <code>null</code> as <code>null</code> on every path (<code>tests/api.profiles.resend.test.js:218</code> pins it); in draft PR #8859 (<code>bf/16.0.0-null-removes</code>, head <code>fc170a4c</code>; Q1b <code>913d0895</code>, <code>lib/server/merge-patch.js</code>) with BF-195's fix. Specs: <a href="../../docs/30-design/platform/spec/identity.html#3-match-order-per-collection">identity §3</a>, <a href="../../docs/30-design/platform/spec/sync-transport.html#2-the-write-path">sync-transport T2</a>, <a href="../../docs/30-design/tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-10-12">write contract §6.1</a></td>
 </tr>
 <tr>
 <td><strong>BF-195 lands with Q1b</strong>: the profile path's <code>data-received</code> is emitted after the merge write completes, so the socket does not push the profile as it was before a re-send</td>
 <td>session -66, 2026-10-26, with the maintainer's Q1b decision</td>
 <td><code>BFQ-195</code></td>
-<td>open; reproduced 2 of 2 on <code>dev</code> <code>47723cda</code> and the lab branch; fix in progress on <code>bf/16.0.0-null-removes</code></td>
+<td>reproduced 2 of 2 on <code>dev</code> <code>47723cda</code> and the lab branch; fixed as <code>1bdce62c</code> in draft PR #8859 (<code>bf/16.0.0-null-removes</code>, head <code>fc170a4c</code>)</td>
 </tr>
 <tr>
 <td><strong>The Q1b merge is recursive (RFC 7386), accepted with its consequence</strong>: a profile re-send whose <code>store</code> leaves out a named profile keeps it; removal takes <code>store: {"&lt;name&gt;": null}</code> or a <code>PUT</code> (the profile editor uses <code>PUT</code>). The same nested merge applies to API v3 <code>PATCH</code> and socket <code>dbUpdate</code></td>
@@ -2568,7 +2568,7 @@ public.</em></p>
 <td><strong>A devicestatus re-send whose <code>identifier</code> is already stored writes nothing</strong>: no merge, no new record, no <code>srvModified</code> change; the reply carries the stored <code>_id</code>; on API v1 and v3, with v3 (which today replaces and moves <code>srvModified</code>) aligned in the same PR</td>
 <td>maintainer, 2026-10-26, relayed via session -66, after the devicestatus study (reproduced on <code>dev</code> <code>47723cda</code> and <code>feat/v1-identifier-match</code> <code>8d0f9a22</code>; client survey read-derived: no client sends an <code>identifier</code> on any devicestatus path; Loop's remote overrides travel as treatments and push notifications)</td>
 <td><code>ID-SIMPLE-MATCH</code>, <code>WRITE-CONTRACT</code></td>
-<td>not on <code>dev</code>; in the re-send and merge PR below</td>
+<td>not on <code>dev</code>; on draft PR #8859 as <code>fc170a4c</code> (v1 and v3; <code>lib/api3/generic/create/acknowledge.js</code>); v3's <code>created_at</code>+<code>device</code> fallback still replaces, a point for review in the PR body</td>
 </tr>
 <tr>
 <td><strong>D-ID-FALLBACK: the entries fallback stays for 16.0.0</strong>: a v1 entries re-send whose <code>identifier</code> matches nothing still matches on <code>sysTime</code>+<code>type</code>, as today (TEST-ENTRY-UUID-003); treatments never fall back; revisited once identifiers are common</td>
@@ -2580,7 +2580,7 @@ public.</em></p>
 <td><strong>One 16.0.0 re-send and merge PR</strong> bundles <code>ID-SIMPLE-MATCH</code> (<code>8d0f9a22</code>), Q1b, BF-195 and the devicestatus <code>identifier</code> rule, on <code>bf/16.0.0-null-removes</code>; <strong>BF-193 stays its own PR</strong></td>
 <td>maintainer, 2026-10-26, relayed via session -66</td>
 <td><code>ID-SIMPLE-MATCH</code>, <code>WRITE-CONTRACT</code>, <code>BFQ-195</code>, <code>BFQ-193</code></td>
-<td>bundle in progress (Q1b head <code>1bdce62c</code>); BF-193 is draft PR #8856 (<code>8ae43eb4</code>)</td>
+<td>the bundle is draft PR #8859 (<code>bf/16.0.0-null-removes</code>, head <code>fc170a4c</code>, opened 2026-10-26 by the maintainer), the devicestatus rule now on it; BF-193 is draft PR #8856 (<code>8ae43eb4</code>)</td>
 </tr>
 <tr>
 <td><strong>#8854 is outcome B: in 16.0.0, aligned first</strong>, after four conditions: (1) under <code>reject</code> the socket answers per item, or socket validation waits; (2) <code>Nightscout-Data-Warnings</code> off by default or held; (3) <code>storage-write-committed</code> internal and unstable; (4) a separate name for this repository's <code>write(intent)</code> layer. The client replay is re-run on the merged tree</td>

@@ -2243,7 +2243,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>3e609f77d</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>fe2bc5f08</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -2965,9 +2965,9 @@ runtime Docker image.</p>
 </tr>
 <tr>
 <td>the re-send and merge contract: <code>ID-SIMPLE-MATCH</code>, Q1b (a <code>null</code> in an update removes the field), BF-195 (a stale profile pushed over the socket after a re-send) and the devicestatus <code>identifier</code> rule, one PR</td>
-<td><code>bf/16.0.0-null-removes</code> (local)</td>
-<td><code>cf2a2a67</code> on <code>dev</code> <code>47723cda</code>: Q1b <code>913d0895</code>, BF-195 <code>1bdce62c</code>, <code>ID-SIMPLE-MATCH</code> <code>8d0f9a22</code> merged (read from <code>git log</code>)</td>
-<td>in progress; the devicestatus <code>identifier</code> rule is not yet on it (<code>8d0f9a22</code> replaces a stored status's fields; v3 still replaces)</td>
+<td><code>bf/16.0.0-null-removes</code>, <strong>draft #8859</strong> (the maintainer, base <code>dev</code>)</td>
+<td><code>fc170a4c</code>, five commits on <code>dev</code> <code>47723cda</code>: <code>ID-SIMPLE-MATCH</code> <code>8d0f9a22</code>, Q1b <code>913d0895</code>, BF-195 <code>1bdce62c</code>, merge <code>cf2a2a67</code>, the devicestatus <code>identifier</code> rule <code>fc170a4c</code> (read from <code>git log</code>)</td>
+<td>draft PR opened 2026-10-26; the devicestatus <code>identifier</code> rule is on it (v1 and v3: a re-send with a stored <code>identifier</code> writes nothing and the reply carries the stored <code>_id</code>); <code>npm test</code> 4375 / 0 failing / 3 pending and <code>test:all</code> 4703 / 0 / 3 (re-run on <code>fc170a4c</code> 2026-10-26; the first run had 1 environmental <code>ENOSPC</code> failure); with #8854 one import-line conflict and a 3-line matrix expectation change for whichever merges second</td>
 <td><code>ID-SIMPLE-MATCH</code>, <code>WRITE-CONTRACT</code>, <code>BFQ-195</code></td>
 </tr>
 </tbody>
