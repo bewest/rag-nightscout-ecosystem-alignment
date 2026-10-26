@@ -4606,10 +4606,10 @@ items:
     title: "API v1 entries and devicestatus match on identifier like treatments (the simple contract)"
     parcel: release-train
     repo: cgm-remote-monitor
-    branch: ""
-    base: official/dev@eb72a1d3
-    worktree: externals/cgm-remote-monitor-official
-    state: not-started
+    branch: feat/v1-identifier-match
+    base: official/dev@47723cda
+    worktree: externals/work/crm-idmatch
+    state: ready-to-push
     pr: []
     blast_radius: >
       Small and standalone, one PR to dev with BF-169 (BFQ-169).
@@ -4632,21 +4632,35 @@ items:
       (RT-VERSION, RT-COUNT-COMPAT), so it cannot go into 15.0.9.
     register: []
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda feat/v1-identifier-match
+        kind: static
+        describe: >
+          The branch contains dev 47723cda (cut 5 merged). Red if the branch is
+          rebased off dev or deleted.
       - no-gate: >
-          Not started. Gate to write: tools/lab/v3-identifier-immutable's
-          "v1 entries: same identifier, date +60 s" cell, which reads stored
-          n=2 on 15.0.8 and fade2299 (results 2026-10-17), must read n=1 on
-          the fix branch, with the later date stored; plus a v1 devicestatus
-          case (same identifier POSTed twice: n=2 today, n=1 after). Red
-          control: the same lab against fade2299. The lab needs docker and two
-          archived builds, so it is not wired as a queue gate here; a mocha
-          case in the PR is the CI gate.
-    blocks_on: [RT-1]
+          Behaviour is measured outside the queue. tools/lab/v3-identifier-immutable's
+          "v1 entries: same identifier, date +60 s" cell, run 2026-10-26: stored n=2
+          on dev 47723cda, n=1 on 8d0f9a22 with the later date kept; every API v3 cell
+          the same on both builds. The PR's mocha cases (11 entries, 7 devicestatus) each
+          have a red control. Against dev's two files, 6 of 11 and 3 of 7 fail with the
+          original symptom (expected 2 to be 1). Seven code mutations turn the cases that
+          pass on dev red. 74 related test files, 1428 passing; tests/tiers.json check ok;
+          trial merge with #8854 880b7369 clean, its boundary gate passes.
+    blocks_on: []
     evidence:
       - docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md
       - tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md
       - docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
     notes: >
+      2026-10-26: built as feat/v1-identifier-match 8d0f9a22 (one commit over dev
+      47723cda; lib/server/entries.js +84/-8, lib/server/devicestatus.js +97, two
+      test files), not pushed. A re-sent identifier updates the stored record; an
+      identifier miss still falls back to sysTime+type for entries (status quo,
+      TEST-ENTRY-UUID-003 pins it), unlike v1 treatments, which never fall back;
+      that choice is the maintainer's (next-gen plan decision D-ID-FALLBACK).
+      identifier decides over a conflicting _id. upsertQueryFor is at entries.js:308
+      on 47723cda. Draft PR body and push commands are in the lane report.
+
       2026-10-25: RT-1 merged (#8828, dev eb72a1d3), so this item is no
       longer blocked and can go to dev. Neither lib/server/entries.js nor
       lib/server/devicestatus.js changed between fade2299 and eb72a1d3 (git
@@ -19264,9 +19278,9 @@ items:
     title: "cgm-remote-monitor: accept registrations and derive typed storage, validation and query from them, single-tenant first"
     parcel: platform
     repo: cgm-remote-monitor
-    branch: ""
+    branch: feat/registration-catalogue
     base: origin/dev
-    state: not-started
+    state: in-progress
     pr: []
     blast_radius: >
       Single-tenant first (maintainer, 2026-10-16). Built on origin/dev,
@@ -19339,6 +19353,8 @@ items:
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
       - docs/30-design/tenancy/nightscout-storage-seam-interface-2026-09-14.md
     notes: >
+      2026-10-26: slice 0 of the hub implementer guide (docs/30-design/platform/guides/hub-implementer.md, order S0, S1, S2, S5, S3, S4, S6) is built as feat/registration-catalogue 6d17aedc over dev 47723cda, not pushed: GET /.well-known/nightscout/sync (capability document without submit, instances or commands) and /.well-known/nightscout/controllers with the AndroidAPS, Loop and Trio registrations vendored as JSON under lib/registration/catalogue/, behind CONTROLLER_REGISTRATION (off by default; name and shape are the maintainer's, next-gen plan D-REG-FLAG). Measured: 4 conformance cases pass (older-hub-no-capabilities, older-hub-older-controller, hub-without-submit, commands/discover-without-commands-capability), 184 not applicable by name with reasons, 0 fail; /api/v1/status.json and /api/v3/status byte-identical to dev with the flag off and on; 10 mocha tests with 14 red controls. The vendoring generator is tools/nsschema/vendor_catalogue.py. Spec gaps found: the catalogue index shape, the grammar minor and kinds[].versionRange are not specified.
+
       D18 and its addendum (maintainer, 2026-10-09 and 2026-10-12): the
       hub derives typed API from a registration and stays an observer; it
       never computes composition or dosing state. cgm-remote-monitor is

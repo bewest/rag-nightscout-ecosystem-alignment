@@ -64,11 +64,11 @@
    "means": "a pull request is open"
   },
   {
-   "id": "progress",
-   "label": "in progress",
+   "id": "ready",
+   "label": "ready to push",
    "mark": "▶",
    "style": "review",
-   "means": "a branch exists and is being built"
+   "means": "a branch is built and checked; the push and PR are the maintainer's"
   },
   {
    "id": "planned",
@@ -83,6 +83,13 @@
    "mark": "?",
    "style": "decision",
    "means": "waiting on a maintainer decision below"
+  },
+  {
+   "id": "progress",
+   "label": "in progress",
+   "mark": "▷",
+   "style": "planned",
+   "means": "a branch exists and is being built"
   }
  ],
  "items": [
@@ -229,12 +236,12 @@
    "id": "ID-SIMPLE-MATCH",
    "track": "identity",
    "phase": "now",
-   "state": "progress",
+   "state": "ready",
    "short": "v1 identifier match",
    "title": "API v1 entries and devicestatus match a re-sent record on identifier, as v1 treatments already do",
-   "ref": "feat/v1-identifier-match",
+   "ref": "feat/v1-identifier-match (8d0f9a22)",
    "where": "lib/server/entries.js, lib/server/devicestatus.js",
-   "check": "same identifier twice stores one record; red control against dev",
+   "check": "lab cell: same identifier twice stored n=2 on dev, n=1 on the branch; 18 cases with red controls",
    "depends": [
     "DEV-8845"
    ]
@@ -317,17 +324,17 @@
    "id": "REG-S0",
    "track": "registration",
    "phase": "now",
-   "state": "progress",
+   "state": "ready",
    "short": "Catalogue, read-only",
    "title": "GET /.well-known/nightscout/sync and /.well-known/nightscout/controllers serving the shipped catalogue, behind a flag that is off by default",
-   "ref": "feat/registration-catalogue",
+   "ref": "feat/registration-catalogue (6d17aedc)",
    "spec": [
     {
      "label": "registration §4",
      "href": "spec/registration.md#4-the-capability-document"
     }
    ],
-   "check": "the capability document validates against specs/sync/hub-capabilities.schema.json; flag off is byte-identical to dev",
+   "check": "4 conformance cases pass, 184 not applicable by name; flag off is byte-identical to dev",
    "depends": [
     "REG-SPECS"
    ]
@@ -618,10 +625,32 @@
    ]
   },
   {
+   "id": "D-ID-FALLBACK",
+   "short": "After an identifier miss",
+   "owner": "maintainer",
+   "question": "When a v1 entry's identifier is not yet stored, does it still match a stored reading at the same time and type (as dev does today, pinned by TEST-ENTRY-UUID-003), or only ever match on identifier, as v1 treatments do?",
+   "holds": [
+    "ID-SIMPLE-MATCH"
+   ],
+   "options": [
+    {
+     "label": "Keep the time-key fallback (as built)",
+     "recommended": true,
+     "gains": "no change for readings whose app ids change; TEST-ENTRY-UUID-003 stays green",
+     "risks": "a new identifier at a stored time takes over that reading, as today"
+    },
+    {
+     "label": "Identifier only, like treatments",
+     "gains": "one rule for entries and treatments",
+     "risks": "two readings stored at one time when an app's ids change; an existing test changes"
+    }
+   ]
+  },
+  {
    "id": "D-REG-FLAG",
    "short": "Registration flag and catalogue home",
    "owner": "maintainer",
-   "question": "What the off-by-default setting is called, where the vendored catalogue lives in cgm-remote-monitor, and what happens to docs/proposals/schemas/controller-instance-registration.schema.json on dev.",
+   "question": "The setting is built as CONTROLLER_REGISTRATION (on/off, default off). Keep it, or use a staged mode (off, catalogue, submit) like WRITE_VALIDATION? Also: the vendored catalogue's home (lib/registration/catalogue/), the one-hour cache, and the older proposal schemas in docs/proposals/ on dev (left in place for now).",
    "holds": [
     "REG-S0"
    ],
