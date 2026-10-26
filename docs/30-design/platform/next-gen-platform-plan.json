@@ -1,5 +1,5 @@
 {
- "measured": "2026-10-26 against cgm-remote-monitor dev 47723cda and draft #8854 880b7369",
+ "measured": "2026-10-26 against cgm-remote-monitor dev 47723cda and draft #8854 880b7369; seam replay seam/replay-2610 f41cb244",
  "tracks": [
   {
    "id": "storage",
@@ -127,19 +127,6 @@
    ]
   },
   {
-   "id": "ST-MATCH",
-   "track": "storage",
-   "phase": "boundary",
-   "state": "planned",
-   "short": "Matching behind the step",
-   "title": "Move identifier, fallback-key and server-date matching from the six adapters into the write step, behaviour pinned by the matrix",
-   "where": "lib/storage/write-step.js; lib/server/{entries,treatments,devicestatus,profile,food,activity}.js",
-   "check": "#8854's matrix and tools/qc/write-contract-matrix.js: no cell changes",
-   "depends": [
-    "PR-8854"
-   ]
-  },
-  {
    "id": "ST-EVENT",
    "track": "storage",
    "phase": "boundary",
@@ -153,16 +140,42 @@
    ]
   },
   {
-   "id": "ST-CONTEXT",
+   "id": "ST-FILTER",
    "track": "storage",
    "phase": "boundary",
    "state": "planned",
-   "short": "Origin in the context",
-   "title": "Add the write origin (live or backfill) to the step's context {name, source, env, bus}, leaving room for a tenant binding",
-   "where": "lib/storage/write-step.js",
-   "check": "every adapter passes an origin; the AST gate refuses one that does not",
+   "short": "Filter tree and interface",
+   "title": "Slice 1: the backend-neutral filter tree and storage interface methods under the API v3 collection adapter, composed with #8854's boundary; no call site changes",
+   "where": "lib/storage/filter.js, lib/api3/storage/mongoCollection/ (from old chain 4f753ab9, b0709c2c, 68ffbd66, c40d37f7, ef89bdb8, c1218d50, d75c1154, plus the type and nottype nodes)",
+   "check": "both write-contract matrices unchanged; the mingo differential; #8854's gates",
    "depends": [
     "PR-8854"
+   ]
+  },
+  {
+   "id": "ST-READS",
+   "track": "storage",
+   "phase": "boundary",
+   "state": "planned",
+   "short": "v1 reads on the interface",
+   "title": "Slice 2: v1 list, get and query reads go through the interface (fromMongo), dev's count rules kept",
+   "where": "six v1 modules, about 250 lines",
+   "check": "api.* suites; a new end-to-end $type/$exists test, which dev lacks",
+   "depends": [
+    "ST-FILTER"
+   ]
+  },
+  {
+   "id": "ST-WRITES",
+   "track": "storage",
+   "phase": "boundary",
+   "state": "planned",
+   "short": "v1 and socket writes",
+   "title": "Slice 3: v1 and socket writes go through the interface, each labelled by its source (and later its origin); #8854's boundary check accepts interface acquisition",
+   "where": "treatments, entries, devicestatus, profile (incl. mergeInto), food, activity, authorization storage, websocket; about 400 lines",
+   "check": "our matrix with 0 cells changed (the replay's hard-delete key order fixed first); #8854's per-cell boundary assertions",
+   "depends": [
+    "ST-READS"
    ]
   },
   {
@@ -171,7 +184,7 @@
    "phase": "intent",
    "state": "planned",
    "short": "write(intent)",
-   "title": "One write(intent) -> WriteResult.items[] for every v1, v3 and socket path, today's behaviour pinned; BF-165's _id in every reply",
+   "title": "Slice 4: write(intent) -> WriteResult.items[] above the interface: id forms, server dates, twin removal and identifier matching move into one step; validation and the commit event move up to it",
    "spec": [
     {
      "label": "write contract spec",
@@ -180,26 +193,20 @@
    ],
    "check": "write-contract spec G1: every matrix cell equal to dev except BF-165's two",
    "depends": [
-    "ST-MATCH",
-    "ST-EVENT",
-    "ST-CONTEXT"
-   ]
+    "ST-WRITES",
+    "ST-EVENT"
+   ],
+   "where": "a new intent module with its own name (#8854 condition 4); about 500 lines"
   },
   {
-   "id": "ST-IFACE",
+   "id": "ST-HARNESS",
    "track": "storage",
    "phase": "intent",
    "state": "planned",
-   "short": "Backend-neutral store",
-   "title": "The step calls a backend-neutral storage interface with the filter AST instead of the driver Collection; MongoDB adapter only",
-   "spec": [
-    {
-     "label": "storage seam interface",
-     "href": "../tenancy/nightscout-storage-seam-interface-2026-09-14.md"
-    }
-   ],
-   "where": "lib/storage/ (reference: old chain 4f753ab9 filter AST, 68ffbd66 fromMongo)",
-   "check": "the 3,000-filter differential against mingo, re-run on dev",
+   "short": "Backend harness, tenant scope",
+   "title": "Slice 5: backend-selectable test harness, storage backend selection and the tenant-scope binding; no behaviour change in single mode",
+   "where": "tests/support/backends.js, lib/storage/tenant-scope.js (old chain a2690bd4, 136f53e3, 8355c563, a492f2ed)",
+   "check": "NS_TEST_BACKEND controls: mongodb runs, postgres pending until ST-PG, an unknown name throws",
    "depends": [
     "WC-STEP-PATCH"
    ]
@@ -214,7 +221,7 @@
    "where": "lib/storage/postgres-storage.js (reference: old chain 983ff64f, 7cc03cda)",
    "check": "the backend-selectable suite run on both stores",
    "depends": [
-    "ST-IFACE"
+    "ST-HARNESS"
    ]
   },
   {
@@ -509,7 +516,7 @@
    "short": "Tenant resolution",
    "title": "A request resolves to a tenant or is refused; platform admin on its own interface (reference: old chain T3.1, T3.2)",
    "depends": [
-    "ST-CONTEXT",
+    "ST-HARNESS",
     "T30-SCHEMA-CONFIG"
    ]
   },
@@ -541,23 +548,22 @@
   {
    "id": "D-SEAM",
    "short": "How the seam reaches dev",
-   "owner": "maintainer; leaning to build on #8854 (2026-10-26)",
+   "owner": "maintainer; leaning to build on #8854 (2026-10-26); measured by the replay trial",
    "question": "Bring the September seam chain to dev by replaying it, by re-deriving it, or by building on #8854's boundary in slices?",
    "holds": [
-    "ST-MATCH",
-    "ST-CONTEXT"
+    "ST-FILTER"
    ],
    "options": [
     {
      "label": "Build on #8854 in slices",
      "recommended": true,
-     "gains": "one boundary that the co-maintainer wrote and the follow-up list already names; slices fit the merge-dev-in, child-PR workflow; dev's #8845 and #8841 rules stay where they are",
-     "risks": "the seam's filter AST, PostgreSQL backend and red controls are rebuilt rather than reused; #8854's open contract questions gate the later slices"
+     "gains": "#8854 changes 0 of 336 matrix cells; the seam's interface composes above its boundary with 2 conflicting paths and its 367 tests pass; 5 slices, about 2,000 lines of code and 1,000 of tests; fits the merge-dev-in, child-PR workflow",
+     "risks": "the call-site conversions are re-derived rather than reused; #8854's boundary check needs one rule to accept interface acquisition"
     },
     {
      "label": "Replay the old chain",
-     "gains": "reuses September's commits and their tests",
-     "risks": "30 conflicting paths in one merge; 14 internal merges; two parts already on dev in another form; a second boundary beside #8854"
+     "gains": "it works: S1+S2 replayed onto dev with 0 tests lost (4610 on dev, 4698 on the replay)",
+     "risks": "the conversion commits no longer match their messages because dev rewrote that code; two parallel boundaries to reconcile afterwards; 3 matrix cells changed"
     },
     {
      "label": "Re-derive without #8854",
@@ -716,19 +722,19 @@
    "facts": [
     [
      "Base",
-     "draft #8854 (880b7369) on dev 47723cda"
+     "#8854 (880b7369), decided into 16.0.0"
     ],
     [
-     "Already in place",
-     "one boundary for six v1 modules, socket and API v3; 336-cell matrix; AST gate"
+     "Measured",
+     "0 of 336 matrix cells changed by #8854; the seam's interface composes above it (2 conflicting paths; its 367 tests pass)"
     ],
     [
-     "Reused from the old chain",
-     "filter AST, fromMongo bridge, bulkUpsert modes, the 3,000-filter differential (as reference)"
+     "Slices",
+     "5 PRs, about 2,000 lines of code and 1,000 of tests"
     ],
     [
-     "Review shape",
-     "child PRs of 2-25 files, dev merged in, as #8605's 109 children were"
+     "Reused",
+     "filter tree and interface commits; call-site conversions re-derived"
     ]
    ]
   },
@@ -737,20 +743,20 @@
    "summary": "Cherry-pick the 51 September commits onto dev and split them into a stack.",
    "facts": [
     [
-     "Distance",
-     "51 commits ahead, 678 behind; merge base 0a4109f6 (2026-09-09)"
+     "Measured",
+     "S1+S2 replayed onto dev: 22 commits, 9 clean, 7 mechanical, 6 semantic; 7 fix-up commits"
     ],
     [
-     "One merge",
-     "30 conflicting paths"
+     "Tests",
+     "0 lost; 4610 passing on dev, 4698 on the replay"
     ],
     [
-     "Per commit",
-     "0-3 files for most; 14 for the operator allowlist dev already has"
+     "Matrix",
+     "3 cells changed (v1 hard-delete reply key order)"
     ],
     [
-     "Dev since then",
-     "treatments +161/-38, websocket +161/-62, query +219/-23"
+     "For review",
+     "conversion commits describe code dev has since replaced"
     ]
    ]
   },

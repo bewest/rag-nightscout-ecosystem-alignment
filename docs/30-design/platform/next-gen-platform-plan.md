@@ -51,12 +51,18 @@ What a #8854-first path keeps compatible:
 | Backward | the API v3 create and deduplication reply (`status`, `identifier`, `isDeduplication`, `lastModified`), and AndroidAPS's string-matched refusal texts | `tests/write-validation.test.js`; the v3 suites |
 | Backward | Loop's `syncIdentifier` and Trio's `id` stored and returned untouched | write-contract matrix |
 | Backward | v1 treatment upsert on `created_at` + `eventType` | write-contract matrix |
-| Forward | two mature backends (D2–D4): the step calls a backend-neutral interface, not a driver Collection | ST-IFACE |
-| Forward | the closed query operator set (D8) as a filter AST | ST-IFACE, the mingo differential |
-| Forward | write origin, then a tenant binding, in the step's context | ST-CONTEXT, TEN-RESOLVE |
+| Forward | two mature backends (D2–D4): a backend-neutral interface above #8854's boundary, which stays as the MongoDB-edge observer; `write(intent)` above the interface | ST-FILTER to WC-STEP-PATCH |
+| Forward | the closed query operator set (D8) as a filter tree | ST-FILTER, the mingo differential |
+| Forward | source and origin labels, then a tenant binding, on every write | ST-WRITES, ST-HARNESS, TEN-RESOLVE |
 | Forward | one commit fact the change feed (D6) can carry | ST-EVENT (decision D-EVENT) |
 
-The September chain stays useful as reference. Its filter AST (`4f753ab9`), `fromMongo` bridge (`68ffbd66`), `bulkUpsert` mode split, PostgreSQL backend (`983ff64f`, `7cc03cda`) and tenant scope binding are the starting points for ST-IFACE, ST-PG and TEN-RESOLVE. They are not merged as they stand.
+The September chain stays useful as reference. Its filter AST (`4f753ab9`), `fromMongo` bridge (`68ffbd66`), `bulkUpsert` mode split, PostgreSQL backend (`983ff64f`, `7cc03cda`) and tenant scope binding are the starting points for ST-FILTER, ST-PG and TEN-RESOLVE. They are not merged as they stand.
+
+The replay trial measured both paths on dev `47723cda`. Branches: `seam/replay-2610` `f41cb244` and `seam/compose-8854-2610` `873c0cbb`, both local.
+
+- **The replay works.** The September S1 and S2 commits apply to dev with no test lost: 4,610 passing on dev, 4,698 on the replay (the 88 are the seam's own files). Three write-contract cells change: the v1 hard-delete reply's key order.
+- **The seam's interface composes above #8854's boundary.** The two conflict in 2 paths. On the composed branch #8854's 367 tests pass. Its boundary check flags the socket, because that file now acquires its collection through the interface; the check needs one rule for this.
+- **Which old commits carry over.** The filter-tree and interface commits replay cleanly and keep their measured reasons. The call-site conversions describe code dev has since rewritten, so slices 2 and 3 are re-derived on dev.
 
 ## 5. The tracks in detail
 
@@ -65,12 +71,13 @@ The September chain stays useful as reference. Its filter AST (`4f753ab9`), `fro
 | item | builds | needs | check |
 |---|---|---|---|
 | PR-8854 | the boundary, read contract, data diagnostics, `--fail-zero`; into 16.0.0 after the four conditions of outcome B | dev | 336-cell matrix equal to dev; AST gate with bypass controls |
-| ST-MATCH | identifier, fallback-key and server-date matching moved into the step | PR-8854 | no matrix cell changes |
+| ST-FILTER | slice 1: filter tree and interface methods under the API v3 adapter, composed with the boundary | PR-8854 | both matrices unchanged; the mingo differential |
+| ST-READS | slice 2: v1 reads through the interface | ST-FILTER | api.* suites; a new end-to-end `$type`/`$exists` test |
+| ST-WRITES | slice 3: v1 and socket writes through the interface, labelled by source | ST-READS | our matrix at 0 cells changed; #8854's per-cell boundary assertions |
 | ST-EVENT | the commit event's granularity and contents | PR-8854, D-EVENT | each stored record named once per write |
-| ST-CONTEXT | write origin (live or backfill) in the step's context | PR-8854 | AST gate refuses an adapter without an origin |
-| WC-STEP-PATCH | write(intent) -> WriteResult.items[]; BF-165's `_id` in every reply | the three above, D-Q1B | [write-contract spec](../tenancy/write-contract-spec-2026-10-07.md) G1 |
-| ST-IFACE | backend-neutral store under the step, filter AST | WC-STEP-PATCH | the 3,000-filter differential against mingo |
-| ST-PG | PostgreSQL with row-level security, entries first | ST-IFACE | the backend-selectable suite on both stores |
+| WC-STEP-PATCH | slice 4: `write(intent)` -> WriteResult.items[] above the interface; matching, server dates and validation move into it | ST-WRITES, ST-EVENT, D-Q1B | [write-contract spec](../tenancy/write-contract-spec-2026-10-07.md) G1 |
+| ST-HARNESS | slice 5: backend-selectable harness, backend selection, tenant scope | WC-STEP-PATCH | `NS_TEST_BACKEND` controls |
+| ST-PG | PostgreSQL with row-level security, entries first | ST-HARNESS | the backend-selectable suite on both stores |
 
 ### 5.2 Identity
 
@@ -104,7 +111,7 @@ Slices S0, S1, S2 and S5 need no storage work and go straight to dev; S5 comes b
 |---|---|---|
 | T30-RESEARCH | the tenant-owner configuration surface (277 settings classified) | D-T30 |
 | T30-SCHEMA-CONFIG | the per-tenant settings table (D15) | T30-RESEARCH |
-| TEN-RESOLVE | tenant resolution and the platform admin interface (D7, D10, D16) | ST-CONTEXT, T30-SCHEMA-CONFIG |
+| TEN-RESOLVE | tenant resolution and the platform admin interface (D7, D10, D16) | ST-HARNESS, T30-SCHEMA-CONFIG |
 | T30-WIRING | tenant-scoped API keys and per-tenant signing keys (D13, D14) | TEN-RESOLVE |
 | TEN-LAB | two tenants on PostgreSQL in a Docker Compose lab, isolation checked with a control | ST-PG, T30-WIRING |
 
