@@ -32,18 +32,18 @@ This directory contains OpenAPI specifications (3.0.3 and 3.1.0; see [Lint statu
 
 The label each spec carries on the static site (recommended 2026-10-26; the site manifest is authoritative). Comparison sources: cgm-remote-monitor `dev` 47723cda, `docs/30-design/platform/spec/`, Nocturne `main` 36d5ef4a2.
 
-| Spec File | Site status | Basis |
-|-----------|-------------|-------|
-| `aid-entries-2025.yaml` | de facto 2025 | Stored document shape reconciled against the 2026-04 corpus; the declared operation follows API v3 on `dev` 47723cda (envelope, `limit`, authentication), though not every v3 parameter is declared. Input to `tools/nsschema`. |
-| `aid-treatments-2025.yaml` | de facto 2025 | As entries. |
-| `aid-devicestatus-2025.yaml` | de facto 2025 | As entries. |
-| `aid-profile-2025.yaml` | de facto 2025 | As entries. |
-| `aid-commands-2025.yaml` | superseded | Describes PR #7791 (open, not on `dev`); replaced by `spec/commands.md`. |
-| `aid-insulin-2025.yaml` | proposed | Describes PR #8261 (open, not on `dev`) plus fields of this repo's own. |
-| `aid-heartrate-2025.yaml` | superseded | Describes PR #8083 (open, not on `dev`); the measured recommendation is the shipping `activity` collection (`docs/30-design/platform/nightscout-devicestatus-profile-fidelity-2026-09-10.md`). |
-| `aid-alignment-extensions.yaml` | superseded | Its schemas are replaced by the identity, registration and state-intent specs in `docs/30-design/platform/spec/`, which are proposed. |
-| `aid-statespan-2025.yaml` | historical | Hypothetical V3 extension; no state-span code on `dev`. Not rendered. |
-| `nocturne-v4-extension.yaml` | historical | Four of its six paths no longer exist in Nocturne `main` 36d5ef4a2; Nocturne publishes its own OpenAPI description. |
+| Spec File | Site status | Page | Basis |
+|-----------|-------------|------|-------|
+| `aid-entries-2025.yaml` | de facto 2025 | [rendered](../../site/pages/api-aid-entries-2025.html) | Stored document shape reconciled against the 2026-04 corpus; the declared operation follows API v3 on `dev` 47723cda (envelope, `limit`, authentication), though not every v3 parameter is declared. Input to `tools/nsschema`. |
+| `aid-treatments-2025.yaml` | de facto 2025 | [rendered](../../site/pages/api-aid-treatments-2025.html) | As entries. |
+| `aid-devicestatus-2025.yaml` | de facto 2025 | [rendered](../../site/pages/api-aid-devicestatus-2025.html) | As entries. |
+| `aid-profile-2025.yaml` | de facto 2025 | [rendered](../../site/pages/api-aid-profile-2025.html) | As entries. |
+| `aid-commands-2025.yaml` | superseded | [rendered](../../site/pages/api-aid-commands-2025.html) | Describes PR #7791 (open, not on `dev`); replaced by `spec/commands.md`. |
+| `aid-insulin-2025.yaml` | proposed | [rendered](../../site/pages/api-aid-insulin-2025.html) | Describes PR #8261 (open, not on `dev`) plus fields of this repo's own. |
+| `aid-heartrate-2025.yaml` | superseded | [rendered](../../site/pages/api-aid-heartrate-2025.html) | Describes PR #8083 (open, not on `dev`); the measured recommendation is the shipping `activity` collection (`docs/30-design/platform/nightscout-devicestatus-profile-fidelity-2026-09-10.md`). |
+| `aid-alignment-extensions.yaml` | superseded | [rendered](../../site/pages/api-aid-alignment-extensions.html) | Its schemas are replaced by the identity, registration and state-intent specs in `docs/30-design/platform/spec/`, which are proposed. |
+| `aid-statespan-2025.yaml` | historical | not rendered | Hypothetical V3 extension; no state-span code on `dev`. Not rendered. |
+| `nocturne-v4-extension.yaml` | historical | not rendered | Four of its six paths no longer exist in Nocturne `main` 36d5ef4a2; Nocturne publishes its own OpenAPI description. |
 
 ### Open questions
 
