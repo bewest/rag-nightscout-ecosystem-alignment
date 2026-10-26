@@ -69,9 +69,15 @@ maintainer - a design decision before code
 
 ## Notes carried on the item
 
-2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Question
-for the maintainer: a notice for readings that arrive dated ahead of the
-server clock by more than a tolerance, or the status quo? (The 2026-10-13
+2026-10-25: the premise "v1 entries store no server-receipt time" no longer
+holds on dev b29f1bf7: every live entries write path stores srvModified from
+the server clock at receipt, and a client-sent value is replaced or refused
+(measured, MongoDB 8.0.34; on 15.0.9 read-derived). Caveat: one stored future
+srvModified pins the clock ahead (BF-181, BFQ-181). Stays needs-decision.
+Decision 2026-10-25 (maintainer): verify srvModified first, before choosing a
+design. 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on.
+Question for the maintainer: a notice for readings that arrive dated ahead of
+the server clock by more than a tolerance, or the status quo? (The 2026-10-13
 decision that alarm timing itself is unchanged is recorded on records/rt-
 propagation-merge 4f083622f, not yet on main.) 2026-10-02 (maintainer, relayed
 by session -d4): DEFERRED until after 15.0.9. Long-standing, and an uploader

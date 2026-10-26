@@ -369,9 +369,13 @@ As of `dev` `b29f1bf7` (2026-10-25). The decisions already made are in [decision
    are to be rebuilt in code before anything is published. Packet:
    [bfq-72](../../reports/reviewer-packets/bfq-72-bf-regex-limits.md).
 4. **BF-95** (maintainer): a notice for readings that arrive dated ahead of the server clock, or the
-   status quo. Packet: [bfq-95](../../reports/reviewer-packets/bfq-95.md).
+   status quo. Packet: [bfq-95](../../reports/reviewer-packets/bfq-95.md). 2026-10-25 (maintainer): verify
+   `srvModified` first; on `dev` it is now a server receipt time on every live path (caveat BF-181).
 5. **BF-152** (maintainer, with the AndroidAPS developers): is API v3 `settings` meant to be readable
-   with a follower's read token, or admin-only? Packet: [bfq-152](../../reports/reviewer-packets/bfq-152.md).
+   with a follower's read token, or admin-only? **Decided 2026-10-25**: a staged ladder, an opt-in
+   admin-only settings read in 16.x (`API3_SETTINGS_STRICT_READ_ENABLED`, default off; cherry-pick
+   `faffe875` of `06ba6201` in PR #8845 to `dev`, pending push), a question to the AndroidAPS developers
+   about a narrower scope, and a strict default later on the calendar. Queue `BFQ-152` (`in-flight-upstream`).
 6. **Dependabot configuration** (maintainer): version updates targeting `dev`, dismissing alerts that
    are fixed on `dev` or not reachable, or releasing more often. Packet:
    [dependabot-config](../../reports/reviewer-packets/dependabot-config.md).

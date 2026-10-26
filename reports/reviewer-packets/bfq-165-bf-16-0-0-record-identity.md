@@ -11,30 +11,29 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-164
+# Review packet — BFQ-165 (PR #8845)
 
-**BF-164 - writes outside API v3 never reach the v3 storage socket**
+**BF-165 - a treatment re-send matched by its fallback key is answered without
+_id**
 
 | | |
 |---|---|
 | repository | `cgm-remote-monitor` |
-| branch | `` |
-| base | `official/dev@43289dde` |
-| claimed state | `needs-decision` — a claim; `make queue-status ID=BFQ-164` is the measurement |
-| semver | `minor` |
-| register entries | `BF-164` |
+| branch | `bf/16.0.0-record-identity` |
+| base | `official/dev@b29f1bf7` |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-165` is the measurement |
+| semver | `patch` |
+| register entries | `BF-165` |
 | operator exposure | **reaches an operator on today's release** |
 
 ## What this changes
 
-lib/api3/storageSocket.js and the shared data-update path, or the write step
-WRITE-CONTRACT proposes; every v1, socket and in-process write would start
-emitting storage-socket events.
+lib/server/treatments.js's fallback-key re-send reply, over API v1 and in-
+process; the reply and data-update document would carry the stored _id.
 
 ## Why that semver
 
-clients subscribed to the storage socket start receiving events they did not
-before
+the reply gains the field a client already expects
 
 ## Who should review this, and why
 
@@ -48,11 +47,9 @@ maintainer
 
 *Each of these is the author recording, at the time, a property they could not measure. This is the reviewer's worklist.*
 
-- Reproduced by tools/qc/write-contract-matrix.js with a real /storage
-  subscriber: 0 of 190 non-v3 write cells emit, v3 create in the same run
-  does. A gate would run the matrix's wire column and fail on any non-v3
-  write cell with wire none; the control is the same run on 43289dde, which
-  must fail.
+- Reproduced: matrix cells treatments v1 resend-identity and treatments
+  inproc resend-identity answer 200 with one document without _id. A gate
+  asserts the _id is present; control: 43289dde fails it.
 
 ## Evidence
 
@@ -61,16 +58,15 @@ maintainer
 
 ## Notes carried on the item
 
-Filed 2026-10-07 from the WRITE-CONTRACT write matrix. Present on 15.0.8 too.
-Overlaps BF-122's mechanism paragraph, whose fix covered history only. Either
-a narrow fix on dev ahead of WRITE-CONTRACT or item 5 of WRITE-CONTRACT; not
-decided. AndroidAPS NSClientV3's reliance on the socket is read, not run.
-Reclassified 2026-10-12 (maintainer): a behaviour question, not a fix. The
-AndroidAPS authors indicate the v3-only emission may be intended (v3 validates
-what it accepts). Next: a lab run timing when AndroidAPS NSClientV3 in
-websocket mode receives a v1-written carb, and one question to the AndroidAPS
-authors on whether broadcasting non-v3 writes would help or harm. No dev fix
-until both are in.
+2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity; the
+remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending
+push). 2026-10-25: fixed as 0d5edc66 on bf/16.0.0-record-identity (PR #8845,
+head bf37858e after merging dev 428b20b7, pending push; session f4's identity
+lane): a fallback-key match is answered with the stored _id (one indexed
+findOne per unmatched item), and data-update carries it. Semver: the write-
+contract spec's U6 says minor; 16.0.0 is a major either way. Filed 2026-10-07
+from the WRITE-CONTRACT write matrix. Present on 15.0.8 too. NightscoutKit's
+'NA' handling is read, not run.
 
 ---
 
@@ -78,7 +74,7 @@ until both are in.
 
 - [ ] Re-read **what these gates do NOT prove**. A gate can pass for the wrong reason; two in this project did, and both were green.
 - [ ] If the diff changes what an existing test expects, confirm the reason is stated **in the diff**, where a reviewer sees it.
-- [ ] `make queue-status ID=BFQ-164` — do the gates still agree with the claimed state?
+- [ ] `make queue-status ID=BFQ-165` — do the gates still agree with the claimed state?
 - [ ] **Do not merge, push or tag.** Publication is a separate, deliberate human act; pushing `dev` or `master` builds and publishes a Docker image.
 
 *Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-27, against cgm-remote-monitor-official `7000eb18`.*
