@@ -33,6 +33,7 @@ repository.
 | [`ID-DELETE-REUSE-DECISION`](id-delete-reuse-decision.md) | &mdash; | `needs-decision` | Decide: after a delete, what does a re-send of the same identifier (or _id) do - resurrect, refuse, or create new? |
 | [`ID-FORMAT-DECISION`](id-format-decision.md) | &mdash; | `needs-decision` | Decide: the client identifier's format (opaque string with limits; UUID not required) |
 | [`ID-SCOPE-DECISION`](id-scope-decision.md) | &mdash; | `needs-decision` | Decide: is identifier unique per collection, across collections, and per tenant under TENANCY_MODE=multi? |
+| [`ID-SIMPLE-MATCH`](id-simple-match-feat-v1-identifier-match.md) | &mdash; | `ready-to-push` | API v1 entries and devicestatus match on identifier like treatments (the simple contract) |
 | [`ID-V3-IMMUTABLE-DECISION`](id-v3-immutable-decision.md) | &mdash; | `needs-decision` | Decide: on an identifier match, may date, device or eventType change? |
 | [`MOD-UNITS-CANONICAL`](mod-units-canonical.md) | &mdash; | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), and the conversion constant |
 | [`MOD-WRITE-VALIDATION-READ`](mod-write-validation-read.md) | &mdash; | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-side flag, R1/R2) |
