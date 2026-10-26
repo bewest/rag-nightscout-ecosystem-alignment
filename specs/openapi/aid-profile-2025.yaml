@@ -6,6 +6,31 @@ info:
     OpenAPI specification for the Nightscout `profile` collection documenting
     the de facto standard as implemented across AID systems circa 2025.
     
+    ## API versions
+
+    The operations declared here are Nightscout API v3 as shipped on
+    cgm-remote-monitor dev 47723cda (`lib/api3/swagger.yaml`). The document
+    schema describes the stored `profile` document, which clients write through
+    API v1 or API v3: Loop (NightscoutKit `NightscoutClient.swift:13-17`) and
+    Trio (`NightscoutAPI.swift:14-18`, 0b29cd534) use API v1; AAPS uses API
+    v3 (`core/nssdk/.../networking/NightscoutApi.kt`). The `x-aid-controllers`
+    notes describe what each controller writes, through whichever API it
+    uses; they are not API v3 behaviour.
+
+    In API v3:
+    - a successful response is wrapped as `{status, result}`
+      (`lib/api3/shared/renderer.js:117-122`);
+    - `identifier` is the record's sync identity, assigned by the client;
+      when none is sent the server computes one
+      (`lib/api3/shared/operationTools.js:209-216`), and a document stored
+      without one is read back with its `_id` string as `identifier`
+      (`lib/api3/storage/mongoCollection/utils.js:10-16`);
+    - `_id` is the storage key Nightscout assigns: API v3 does not return it
+      (`utils.js:10-16`) and refuses a create or update body that carries it
+      with 400 (`operationTools.js:197-203`, called from
+      `generic/create/operation.js:35` and `generic/update/operation.js:32`).
+      API v1 keeps its own `_id` handling.
+
     ## Current Limitations
     - No distinction between prescribed, desired, and effective profiles
     - AAPS ProfileSwitch semantics differ from Loop overrides (GAP-002)
@@ -67,9 +92,16 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ProfileDocument'
+                type: object
+                description: API v3 response envelope (lib/api3/shared/renderer.js:117-122)
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProfileDocument'
         '401':
           description: |
             Missing or bad access token or JWT (cgm-remote-monitor
@@ -99,8 +131,18 @@ components:
       properties:
         _id:
           type: string
+          description: |
+            Storage key Nightscout assigns. API v3 does not return it and
+            refuses a request body that carries it (400). See "API versions"
+            above.
         identifier:
           type: string
+          description: |
+            The record's sync identity, assigned by the client and the same on
+            every retry; it need not be a UUID. When a client sends none, API
+            v3 computes one; a document stored without one is read back through
+            API v3 with its `_id` string as `identifier`. Immutable once stored.
+            See "API versions" above.
         created_at:
           type: string
           format: date-time
