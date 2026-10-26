@@ -1,5 +1,5 @@
 {
- "measured": "2026-10-26 against cgm-remote-monitor dev 47723cda and draft #8854 880b7369; seam replay seam/replay-2610 f41cb244",
+ "measured": "2026-10-26 against cgm-remote-monitor dev 47723cda and #8854 at fa22d573; seam replay seam/replay-2610 f41cb244",
  "tracks": [
   {
    "id": "storage",
@@ -112,10 +112,10 @@
    "state": "review",
    "short": "Shared write boundary",
    "title": "Every v1/internal module, the socket and API v3 write through lib/storage/write-step.js; read contract and data diagnostics; zero-test runs fail. Decided 2026-10-26: lands in 16.0.0 after four alignment conditions (outcome B)",
-   "ref": "#8854 (draft, 880b7369)",
+   "ref": "#8854 (fa22d573, out of draft)",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8854",
-   "where": "lib/storage/write-step.js, lib/storage/read-contract.js, scripts/check-write-boundary.js",
-   "check": "tests/api.crud-by-id.matrix.test.js (336 cells pinned to dev) and the boundary AST gate",
+   "where": "lib/storage/write-step.js, lib/storage/validated-update.js, lib/storage/read-contract.js, scripts/check-write-boundary.js",
+   "check": "0 of 336 write-contract cells changed (re-measured at fa22d573); its own 430 tests and boundary gate",
    "depends": [
     "DEV-8841"
    ],
@@ -124,6 +124,19 @@
      "label": "#8854 brief",
      "href": "../modernization/pr-8854-alignment-2026-10-26.md"
     }
+   ]
+  },
+  {
+   "id": "QC-MATRIX-TT",
+   "track": "storage",
+   "phase": "now",
+   "state": "planned",
+   "short": "Matrix: validation cells",
+   "title": "Extend the write-contract matrix with Temporary Target records in reject mode, so validated updates are pinned on all four paths (today the matrix never reaches them)",
+   "where": "tools/qc/write-contract-matrix.js",
+   "check": "off and reject differ in the new cells and nowhere else",
+   "depends": [
+    "PR-8854"
    ]
   },
   {
@@ -184,7 +197,7 @@
    "phase": "intent",
    "state": "planned",
    "short": "write(intent)",
-   "title": "Slice 4: write(intent) -> WriteResult.items[] above the interface: id forms, server dates, twin removal and identifier matching move into one step; validation and the commit event move up to it",
+   "title": "Slice 4: write(intent) -> WriteResult.items[] above the interface: id forms, server dates, twin removal and identifier matching move into one step; validation and the commit event move up to it; the compare-and-set that #8854's validated updates do with MongoDB $expr moves behind a backend-neutral adapter method (for example updateIfUnchanged) before PostgreSQL",
    "spec": [
     {
      "label": "write contract spec",
@@ -590,27 +603,6 @@
      "label": "Per driver operation, counts only (as drafted)",
      "gains": "no change to the draft",
      "risks": "the change feed cannot name records from it"
-    }
-   ]
-  },
-  {
-   "id": "D-Q1B",
-   "short": "Does null remove a field",
-   "owner": "maintainer",
-   "question": "On a merge, does an explicit null remove the field (identity §3, sync-transport T2, write contract §6.1) or store null (#8845 on dev)?",
-   "holds": [
-    "WC-STEP-PATCH"
-   ],
-   "options": [
-    {
-     "label": "Null removes the field",
-     "gains": "matches three written specs and the 2026-10-12 decision",
-     "risks": "changes what dev stores today"
-    },
-    {
-     "label": "Null stores null",
-     "gains": "matches dev as shipped in #8845",
-     "risks": "three specs are amended"
     }
    ]
   },

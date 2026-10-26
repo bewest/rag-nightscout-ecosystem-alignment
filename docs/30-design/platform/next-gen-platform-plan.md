@@ -1,6 +1,6 @@
 # Next-gen platform: one write path, four tracks
 
-*Contributor-facing. Living plan, current at cgm-remote-monitor dev `47723cda` (2026-10-26) and draft [#8854](https://github.com/nightscout/cgm-remote-monitor/pull/8854) at `880b7369`. Status: proposed; the decisions in §6 are open.*
+*Contributor-facing. Living plan, current at cgm-remote-monitor dev `47723cda` (2026-10-26) and [#8854](https://github.com/nightscout/cgm-remote-monitor/pull/8854) at `fa22d573`. Status: proposed; the decisions in §6 are open.*
 
 The interactive version, with the dependency map, is the site page [nightscout-next-gen-platform.html](../../../site/pages/nightscout-next-gen-platform.html).
 
@@ -58,10 +58,10 @@ What a #8854-first path keeps compatible:
 
 The September chain stays useful as reference. Its filter AST (`4f753ab9`), `fromMongo` bridge (`68ffbd66`), `bulkUpsert` mode split, PostgreSQL backend (`983ff64f`, `7cc03cda`) and tenant scope binding are the starting points for ST-FILTER, ST-PG and TEN-RESOLVE. They are not merged as they stand.
 
-The replay trial measured both paths on dev `47723cda`. Branches: `seam/replay-2610` `f41cb244` and `seam/compose-8854-2610` `873c0cbb`, both local.
+The replay trial measured both paths on dev `47723cda`. Branches: `seam/replay-2610` `f41cb244`, `seam/compose-8854-2610` `873c0cbb` and, re-measured at #8854 `fa22d573`, `seam/compose-fa22-2610` `089bbfc5`; all local.
 
 - **The replay works.** The September S1 and S2 commits apply to dev with no test lost: 4,610 passing on dev, 4,698 on the replay (the 88 are the seam's own files). Three write-contract cells change: the v1 hard-delete reply's key order.
-- **The seam's interface composes above #8854's boundary.** The two conflict in 2 paths. On the composed branch #8854's 367 tests pass. Its boundary check flags the socket, because that file now acquires its collection through the interface; the check needs one rule for this.
+- **The seam's interface composes above #8854's boundary.** The two conflict in 2 paths. On the composed branch #8854's 367 tests pass. The one failure is its boundary check flagging the socket, because that file now acquires its collection through the interface; the check needs one rule for this.
 - **Which old commits carry over.** The filter-tree and interface commits replay cleanly and keep their measured reasons. The call-site conversions describe code dev has since rewritten, so slices 2 and 3 are re-derived on dev.
 
 ## 5. The tracks in detail
@@ -71,11 +71,12 @@ The replay trial measured both paths on dev `47723cda`. Branches: `seam/replay-2
 | item | builds | needs | check |
 |---|---|---|---|
 | PR-8854 | the boundary, read contract, data diagnostics, `--fail-zero`; into 16.0.0 after the four conditions of outcome B | dev | 336-cell matrix equal to dev; AST gate with bypass controls |
+| QC-MATRIX-TT | Temporary Target records in reject mode added to the write-contract matrix | PR-8854 | off and reject differ only in the new cells |
 | ST-FILTER | slice 1: filter tree and interface methods under the API v3 adapter, composed with the boundary | PR-8854 | both matrices unchanged; the mingo differential |
 | ST-READS | slice 2: v1 reads through the interface | ST-FILTER | api.* suites; a new end-to-end `$type`/`$exists` test |
 | ST-WRITES | slice 3: v1 and socket writes through the interface, labelled by source | ST-READS | our matrix at 0 cells changed; #8854's per-cell boundary assertions |
 | ST-EVENT | the commit event's granularity and contents | PR-8854, D-EVENT | each stored record named once per write |
-| WC-STEP-PATCH | slice 4: `write(intent)` -> WriteResult.items[] above the interface; matching, server dates and validation move into it | ST-WRITES, ST-EVENT, D-Q1B | [write-contract spec](../tenancy/write-contract-spec-2026-10-07.md) G1 |
+| WC-STEP-PATCH | slice 4: `write(intent)` -> WriteResult.items[] above the interface; matching, server dates, the null-removes rule and validation move into it; compare-and-set behind an adapter method | ST-WRITES, ST-EVENT | [write-contract spec](../tenancy/write-contract-spec-2026-10-07.md) G1 |
 | ST-HARNESS | slice 5: backend-selectable harness, backend selection, tenant scope | WC-STEP-PATCH | `NS_TEST_BACKEND` controls |
 | ST-PG | PostgreSQL with row-level security, entries first | ST-HARNESS | the backend-selectable suite on both stores |
 
@@ -120,6 +121,8 @@ The decisions D1–D20 are in the [execution plan](../tenancy/nightscout-multite
 ## 6. Open decisions
 
 Select **Show on the map** on a card to see which items it holds up.
+
+Decided 2026-10-26: an explicit null removes a field on merge-on-match and API v3 PATCH (RFC 7386), never on PUT or create, and devicestatus never merges; in 16.0.0, in one shared merge helper.
 
 Decided 2026-10-26: #8854 lands in 16.0.0 after four alignment conditions (outcome B in its [brief](../modernization/pr-8854-alignment-2026-10-26.md)): a per-item socket reply or no socket validation yet, the data-warnings header off or held, the commit event marked internal and unstable, and a separate name for the intent layer.
 
