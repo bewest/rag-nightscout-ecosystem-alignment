@@ -86,7 +86,14 @@ without it.
 
 ## Notes carried on the item
 
-2026-10-26, later: draft PR #8856 to dev (bf/16.0.0-log-privacy, head
+2026-10-26, after #8854 merged (dev 7ad3a67f): session -66 merged dev 7ad3a67f
+into bf/16.0.0-log-privacy locally as 6b6ad320, no conflicts, not pushed (the
+PR head is still 8ae43eb4; the push is the maintainer's). On 6b6ad320: npm
+test 4436 passing, 0 failing, 3 pending; test:all 4764 passing, 0 failing, 3
+pending. The log lines #8854 adds are console.error(err) on storage errors
+(the follow-up below: error objects may contain documents) and the validation
+line, which names rules and fields only. #8856 and #8859 merge with each other
+cleanly. 2026-10-26, later: draft PR #8856 to dev (bf/16.0.0-log-privacy, head
 8ae43eb4), opened by the maintainer. 2026-10-26, later (maintainer): BF-193
 stays its own PR, separate from the 16.0.0 re-send and merge bundle.
 2026-10-26: decided by the maintainer (session -66): debug-gated payload

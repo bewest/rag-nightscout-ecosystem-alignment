@@ -34,13 +34,13 @@ every item that was `merged-upstream` then is `released`.
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
-| `ARCH-8854` | `in-flight-upstream` | #8854 - shared write boundary, read contract and CI gates; into 16.0.0 after fou | #8854 |
 | `BFQ-161` | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory  | &mdash; |
 | `BFQ-193` | `in-flight-upstream` | BF-193 - the realtime socket and other write paths log every record written thro | #8856 |
 | `BFQ-195` | `in-flight-upstream` | BF-195 - a stale profile is pushed over the socket after a profile re-send | #8859 |
 | `ID-SIMPLE-MATCH` | `in-flight-upstream` | API v1 entries and devicestatus match on identifier like treatments (the simple  | #8859 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
+| `ARCH-8854-FAILED` | `needs-decision` | Decide: the socket's failed slot that #8854 adds under WRITE_VALIDATION=reject - | &mdash; |
 | `BFQ-194` | `needs-decision` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/ | &mdash; |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
 | `BFQ-ENV` | `needs-decision` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies | #8849 |
@@ -82,7 +82,6 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
-| **#8854** | `ARCH-8854` | `wip/architecture-data-contracts` | #8854 - shared write boundary, read contract and CI gates; i | Maintainer |
 | **#8856** | `BFQ-193` | `bf/16.0.0-log-privacy` | BF-193 - the realtime socket and other write paths log every | Maintainer |
 | **#8859** | `BFQ-195` | `bf/16.0.0-null-removes` | BF-195 - a stale profile is pushed over the socket after a p | Maintainer |
 | **#8859** | `ID-SIMPLE-MATCH` | `bf/16.0.0-null-removes` | API v1 entries and devicestatus match on identifier like tre | Maintainer |

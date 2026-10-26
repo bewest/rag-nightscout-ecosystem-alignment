@@ -25,9 +25,9 @@ current and the prose is stale.
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
 | **Remedial** | `phase0`, `register-open`, `docs-truth` | 180 | 38 | 12 |
-| **Modernization** | `release-train` | 47 | 8 | 4 |
-| **Multitenant** | `tenancy`, `platform` | 67 | 16 | 9 |
-| | **total** | **296** | **62** | **25** |
+| **Modernization** | `release-train` | 48 | 8 | 4 |
+| **Multitenant** | `tenancy`, `platform` | 67 | 17 | 9 |
+| | **total** | **297** | **63** | **25** |
 
 <!-- END GENERATED: horizons -->
 
@@ -213,9 +213,9 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `released` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  |  | 17 |  | 1 |  |  |  | **22** |
-| `release-train` | 8 |  | 3 |  | 1 | 2 | 12 | 15 | 2 | 1 |  |  | 3 | **47** |
+| `release-train` | 8 |  | 3 |  | 1 | 1 | 13 | 15 | 3 | 1 |  |  | 3 | **48** |
 | `register-open` | 28 | 3 | 1 | 1 | 3 | 4 | 31 | 58 | 6 |  |  | 4 |  | **139** |
-| `tenancy` | 8 | 1 |  | 1 | 13 |  |  |  | 7 | 3 | 1 |  |  | **34** |
+| `tenancy` | 9 | 1 |  | 1 | 12 |  |  |  | 7 | 3 | 1 |  |  | **34** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  |  | 11 |  |  |  | **19** |
 | `backfix2` |  |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
 | `platform` | 8 | 2 |  |  |  |  |  |  |  | 23 |  |  |  | **33** |
@@ -254,14 +254,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 259 | 88% |
+| Maintainer | 260 | 88% |
 | SECURITY reviewer | 17 | 6% |
 | Maintainer + a second human | 8 | 3% |
 | SAFETY reviewer | 6 | 2% |
 | Whoever edits it next | 3 | 1% |
 | Unassigned | 2 | 1% |
 | Upstream reviewers | 1 | 0% |
-| **total** | **296** | |
+| **total** | **297** | |
 
 <!-- END GENERATED: reviewer-load -->
 
