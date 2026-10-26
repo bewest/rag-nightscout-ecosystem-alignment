@@ -1,0 +1,1914 @@
+openapi: 3.1.0
+info:
+  title: Nightscout API v4 (proposed)
+  version: 0.1.0-proposed
+  license:
+    name: AGPL 3
+    url: https://www.gnu.org/licenses/agpl.txt
+  description: |
+    **Proposed, not released.** The v4 surface exactly as the platform specifications define it
+    (`docs/30-design/platform/spec/`, alignment `main` `6e6223f26`), with the routes that
+    cgm-remote-monitor draft PR [#8857](https://github.com/nightscout/cgm-remote-monitor/pull/8857)
+    serves at `3be98536` behind `CONTROLLER_REGISTRATION` (off by default). Nothing here is on
+    cgm-remote-monitor `dev`. The current API is described beside it in
+    `specs/openapi/upstream/cgm-remote-monitor/api-v1.yaml` and `api-v3.yaml`.
+
+    Every operation carries three extensions, also written at the top of its description:
+
+    - `x-status`: `in-pr-8857` (served by #8857 at `3be98536`), `specified` (rules and
+      conformance cases, no hub serves it), or `open` (defined elsewhere in this repository, with
+      its path or placement undecided).
+    - `x-spec-rules`: the rule and section ids the operation implements.
+    - `x-listener`: the listener that serves it, from authority AU2 (decision D16): `data` is
+      `ns-api` (devices, clients, viewers), `tenant-admin` is `ns-tenant-admin` (the tenant owner,
+      a second bound socket inside `ns-api`), `operator` is `ns-admin`. Under
+      `TENANCY_MODE=single` there is one listener and the owner's actions are taken there with
+      `API_SECRET` (`x-single`). No v4 operation in the specifications is served on `operator`.
+
+    Paths and permission names are proposals, as the specifications say. Bodies are the JSON
+    Schemas in `specs/sync/`, referenced rather than copied; the command and proposal bodies have
+    no JSON Schema file yet and are written here from the member tables of commands §7.1.
+
+    The statistics operations come from the statistics API proposal, not the platform
+    specifications; they are `open` because the proposal writes them under `/api/v3/stats/` and the
+    v4 placement is a recommendation, not a decision.
+
+    Operations the specifications describe without a path (typed record writes and reads, the
+    plan operations, the owner's view of who acts for the person, the tenant-owner configuration
+    surface, the operator's tenant lifecycle) are not listed here; they are in
+    `docs/30-design/platform/v4-surface-and-nocturne-2026-10-26.md` as open.
+servers:
+  - url: https://{site}
+    description: >-
+      Data listener: `ns-api` under `TENANCY_MODE=multi` (the tenant is resolved from the host),
+      or the one listener of a `single` site.
+    variables:
+      site:
+        default: nightscout.example.org
+        description: The site's (or the tenant's) host name.
+x-tenant-admin-server: &tenantAdminServer
+  url: https://{tenantAdmin}
+  description: >-
+    Tenant-owner listener `ns-tenant-admin`: a second bound socket inside `ns-api` on its own bind
+    address (decided 2026-10-16); the address is not specified. On a `single` site this is the one
+    listener, with `API_SECRET`.
+  variables:
+    tenantAdmin:
+      default: tenant-admin.example.org
+      description: The owner listener's host (and port); deployment-specific.
+tags:
+  - name: Discovery
+    description: >-
+      Unauthenticated, cacheable documents about the hub software (registration §2, §4). The same
+      on every tenant host; never lists a tenant's registrations.
+  - name: Registrations
+    description: >-
+      The product resource `<submit.href>/<vendor>/<product>`: a controller's registration, keyed
+      by (vendor, product) within a tenant (registration §5).
+  - name: Definitions and instances
+    description: >-
+      Content-addressed definitions and leased running copies of a product (registration §7–§9,
+      decision D19).
+  - name: Owner actions
+    description: >-
+      The tenant owner's actions on registrations and instances (authority §4). Served on
+      `ns-tenant-admin`; on `single`, on the one listener with `API_SECRET`. An owner action on the
+      data listener with any other credential is 403 `not-authorised`.
+  - name: Commands
+    description: >-
+      The command record (commands §4, §5, §7). The hub routes and records; it never decides
+      whether a change is safe and never alters what was asked (D18).
+  - name: Proposals
+    description: >-
+      A proposal and its approval in front of a command (commands §6).
+  - name: Statistics
+    description: >-
+      Computed reads over stored glucose and treatment records, from the statistics API proposal
+      (`docs/sdqctl-proposals/statistics-api-proposal.md`, REQ-STATS-001 to 004), which writes
+      them at `/api/v3/stats/*`. Placed here under `/api/v4/statistics/` as the comparison page
+      recommends; the placement, the segment name and the time-zone rule are open.
+paths:
+  /.well-known/nightscout/sync:
+    get:
+      tags: [Discovery]
+      operationId: getSyncCapabilities
+      summary: Read the hub capability document
+      description: |
+        **Status:** in PR #8857 (`lib/registration/index.js:136`, `:157`). **Listener:** data,
+        unauthenticated. **Rules:** registration §4, CM31.
+
+        What the hub reads and stores: grammar majors, interpreted members, horizons, type
+        keywords, limits, the well-known catalogue, and, when offered, `submit`, `instances` and
+        `commands`. A controller reads it at launch and after a controller release, never on a
+        timer. #8857 serves no `commands` member, so a controller offers no hub command path.
+      x-status: in-pr-8857
+      x-spec-rules: [registration §4, CM31]
+      x-listener: [data]
+      x-credential: none
+      security: []
+      responses:
+        '200':
+          description: The capability document. Cache-Control `public, max-age=3600` in #8857.
+          content:
+            application/json:
+              schema:
+                $ref: ../../sync/hub-capabilities.schema.json
+        '404':
+          $ref: '#/components/responses/NotOffered'
+  /.well-known/nightscout/controllers:
+    get:
+      tags: [Discovery]
+      operationId: getWellKnownCatalogue
+      summary: Read the well-known controller catalogue
+      description: |
+        **Status:** in PR #8857 (`lib/registration/index.js:137`). **Listener:** data,
+        unauthenticated. **Rules:** registration §2, §4 (`wellKnown.catalogue`).
+
+        The index of the well-known registrations the hub ships (generated from measurement), the
+        shared slot list and the catalogue mappings for older controller versions.
+      x-status: in-pr-8857
+      x-spec-rules: [registration §2, registration §4, registration §16 Q2]
+      x-listener: [data]
+      x-credential: none
+      security: []
+      responses:
+        '200':
+          description: >-
+            The catalogue index. Its shape is #8857's (`lib/registration/index.js:113-121`); the
+            specifications give its members inside the capability document's `wellKnown`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WellKnownCatalogue'
+        '404':
+          $ref: '#/components/responses/NotOffered'
+  /.well-known/nightscout/controllers/{kindId}:
+    get:
+      tags: [Discovery]
+      operationId: getWellKnownRegistration
+      summary: Read one well-known registration
+      description: |
+        **Status:** in PR #8857 (`lib/registration/index.js:49`, `:138-140`). **Listener:** data,
+        unauthenticated. **Rules:** registration §2, §4 (`wellKnown.kinds[].href`).
+
+        The specifications give each kind an `href`; #8857 serves it at this path, with `kindId`
+        one of `loop`, `trio`, `androidaps`.
+      x-status: in-pr-8857
+      x-spec-rules: [registration §2, registration §4]
+      x-listener: [data]
+      x-credential: none
+      security: []
+      parameters:
+        - name: kindId
+          in: path
+          required: true
+          description: The catalogue entry's `id`.
+          schema:
+            type: string
+            examples: [loop]
+      responses:
+        '200':
+          description: A well-known registration in the registration grammar.
+          content:
+            application/json:
+              schema:
+                $ref: ../../sync/controller-state-model.schema.json
+        '404':
+          $ref: '#/components/responses/NotOffered'
+  /api/v4/registrations/{vendor}/{product}:
+    parameters:
+      - $ref: '#/components/parameters/vendor'
+      - $ref: '#/components/parameters/product'
+    put:
+      tags: [Registrations]
+      operationId: putRegistration
+      summary: Create or update a controller's registration
+      description: |
+        **Status:** in PR #8857 (`lib/registration/products.js:266`). **Listener:** data.
+        **Credential:** `api:registrations:create`; an update also needs the binding.
+        **Rules:** registration §5.1–§5.4, §6, G1–G5; authority §3, §5, AU4.
+
+        `If-None-Match: *` creates, `If-Match: <etag>` updates; no precondition is 428. Checks run
+        in order: authorisation (403), preconditions (428, 412), the owner's block (403
+        `blocked-by-owner`), the registration as a whole (422, 413), then each element. The outcome
+        is `accepted` or `partial` (201 on create, 200 on update), and the reply names the
+        `definitionId` the hub computed. A retry of stored content is a 200 no-op.
+      x-status: in-pr-8857
+      x-spec-rules: [registration §5.1, registration §5.2, registration §5.3, registration §5.4, AU4, authority §3, authority §5]
+      x-listener: [data]
+      x-single: one listener; `API_SECRET` may register and is recorded as `api-secret`
+      x-credential: api:registrations:create, plus the binding to update
+      parameters:
+        - $ref: '#/components/parameters/ifNoneMatch'
+        - $ref: '#/components/parameters/ifMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../../sync/controller-state-model.schema.json
+      responses:
+        '200':
+          $ref: '#/components/responses/Registration'
+        '201':
+          $ref: '#/components/responses/Registration'
+        '403':
+          $ref: '#/components/responses/Registration'
+        '412':
+          $ref: '#/components/responses/Registration'
+        '413':
+          $ref: '#/components/responses/Registration'
+        '422':
+          $ref: '#/components/responses/Registration'
+        '428':
+          $ref: '#/components/responses/Registration'
+    get:
+      tags: [Registrations]
+      operationId: getRegistration
+      summary: Read a registration with its current element results
+      description: |
+        **Status:** in PR #8857 (`lib/registration/products.js:336`; it requires
+        `api:registrations:create`). **Listener:** data. **Rules:** registration §5.1, §5.4.
+
+        The stored registration with its element results as evaluated against the hub's current
+        capabilities, its binding and credential kind. An element's result can change after a hub
+        upgrade while the stored registration and its etag do not.
+      x-status: in-pr-8857
+      x-spec-rules: [registration §5.1, registration §5.4]
+      x-listener: [data]
+      x-credential: api:registrations:create
+      responses:
+        '200':
+          $ref: '#/components/responses/Registration'
+        '403':
+          $ref: '#/components/responses/Registration'
+        '404':
+          $ref: '#/components/responses/Registration'
+    delete:
+      tags: [Registrations]
+      operationId: retireRegistration
+      summary: Retire a registration
+      description: |
+        **Status:** in PR #8857 for the controller (`lib/registration/products.js:271`); the
+        owner's retire is served there as `POST …/retire` instead (see that operation).
+        **Listener:** data for the bound controller; tenant-admin for the owner (registration §5.1,
+        and `registration-submit.schema.json` `request`: "`retire` is `DELETE`").
+        **Credential:** the bound controller with `api:registrations:delete`; or the owner.
+        **Rules:** registration §5.1, §5.5; authority §4.
+
+        Retiring sets the state to `retired`, changes the etag, and keeps the declaration, binding
+        and stored data; namespaces stay claimed until the owner frees them. `If-Match` required.
+      x-status: in-pr-8857
+      x-spec-rules: [registration §5.1, registration §5.5, authority §4]
+      x-listener: [data, tenant-admin]
+      x-single: one listener; the owner is whoever presents `API_SECRET`
+      x-credential: api:registrations:delete and the binding (controller); the owner (tenant-admin)
+      parameters:
+        - $ref: '#/components/parameters/ifMatch'
+      responses:
+        '200':
+          $ref: '#/components/responses/Registration'
+        '403':
+          $ref: '#/components/responses/Registration'
+        '404':
+          $ref: '#/components/responses/Registration'
+        '409':
+          $ref: '#/components/responses/Registration'
+        '412':
+          $ref: '#/components/responses/Registration'
+        '428':
+          $ref: '#/components/responses/Registration'
+  /api/v4/registrations/{vendor}/{product}/definitions/{definitionId}:
+    parameters:
+      - $ref: '#/components/parameters/vendor'
+      - $ref: '#/components/parameters/product'
+      - $ref: '#/components/parameters/definitionId'
+    put:
+      tags: [Definitions and instances]
+      operationId: putDefinition
+      summary: Add a definition to a product, immutably
+      description: |
+        **Status:** in PR #8857 (`lib/registration/products.js:277`). **Listener:** data.
+        **Credential:** the credential the product is bound to, with `api:registrations:create`.
+        **Rules:** registration §7; identity §2; D19.
+
+        `If-None-Match: *` only. The body's hash must equal the path id (422
+        `definition-id-mismatch`). The owner never adds one. Adding a definition never changes the
+        product resource or its etag; an identical retry is a 200 no-op.
+      x-status: in-pr-8857
+      x-spec-rules: [registration §7, identity §2, D19]
+      x-listener: [data]
+      x-credential: api:registrations:create and the product's binding
+      parameters:
+        - $ref: '#/components/parameters/ifNoneMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../../sync/controller-state-model.schema.json
+      responses:
+        '200':
+          $ref: '#/components/responses/Registration'
+        '201':
+          $ref: '#/components/responses/Registration'
+        '403':
+          $ref: '#/components/responses/Registration'
+        '404':
+          $ref: '#/components/responses/Registration'
+        '409':
+          $ref: '#/components/responses/Registration'
+        '422':
+          $ref: '#/components/responses/Registration'
+        '428':
+          $ref: '#/components/responses/Registration'
+  /api/v4/registrations/{vendor}/{product}/instances/{instanceId}:
+    parameters:
+      - $ref: '#/components/parameters/vendor'
+      - $ref: '#/components/parameters/product'
+      - $ref: '#/components/parameters/instanceId'
+    put:
+      tags: [Definitions and instances]
+      operationId: putInstance
+      summary: Create, renew or change an instance
+      description: |
+        **Status:** in PR #8857 (`lib/registration/products.js:283`). **Listener:** data.
+        **Credential:** any credential with `api:registrations:create`; an existing instance's
+        binding to renew. **Rules:** registration §8–§10, §11; authority §3, §6; identity §2.
+
+        The body names a stored definition, roles `{channel, role, provenance}` and labels. Each
+        create or renewal sets `leaseExpiresAt` (capability `instances.leaseSeconds`). A role is
+        refused per role (`role-held`, `unknown-channel`, `not-a-command-channel`,
+        `not-registration-owner` for a `device` command sink, …), never the instance. The owner
+        never writes an instance.
+      x-status: in-pr-8857
+      x-spec-rules: [registration §8, registration §9, registration §10, authority §3, authority §6, identity §2]
+      x-listener: [data]
+      x-credential: api:registrations:create; the instance's binding to renew
+      parameters:
+        - $ref: '#/components/parameters/ifNoneMatch'
+        - $ref: '#/components/parameters/ifMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../../sync/controller-instance.schema.json
+      responses:
+        '200':
+          $ref: '#/components/responses/Instance'
+        '201':
+          $ref: '#/components/responses/Instance'
+        '403':
+          $ref: '#/components/responses/Instance'
+        '404':
+          $ref: '#/components/responses/Instance'
+        '409':
+          $ref: '#/components/responses/Instance'
+        '412':
+          $ref: '#/components/responses/Instance'
+        '422':
+          $ref: '#/components/responses/Instance'
+        '428':
+          $ref: '#/components/responses/Instance'
+    delete:
+      tags: [Definitions and instances]
+      operationId: deleteInstance
+      summary: Release an instance and all its roles
+      description: |
+        **Status:** in PR #8857 (`lib/registration/products.js:289`). **Listener:** data.
+        **Credential:** the credential the instance is bound to, with `api:registrations:delete`.
+        **Rules:** registration §7, §8.
+
+        `If-Match` the instance's etag. Records it wrote keep its id.
+      x-status: in-pr-8857
+      x-spec-rules: [registration §7, registration §8]
+      x-listener: [data]
+      x-credential: api:registrations:delete and the instance's binding
+      parameters:
+        - $ref: '#/components/parameters/ifMatch'
+      responses:
+        '200':
+          $ref: '#/components/responses/Instance'
+        '403':
+          $ref: '#/components/responses/Instance'
+        '404':
+          $ref: '#/components/responses/Instance'
+        '412':
+          $ref: '#/components/responses/Instance'
+        '428':
+          $ref: '#/components/responses/Instance'
+  /api/v4/registrations/instances:
+    get:
+      tags: [Owner actions]
+      operationId: listInstances
+      summary: The owner's listing of instances, overlaps and registrations
+      description: |
+        **Status:** in PR #8857 at this path (`lib/registration/products.js:295`); authority §4
+        names the listing and gives no path. **Listener:** tenant-admin; on `single`,
+        `API_SECRET`. **Rules:** authority §4, §8; registration §8, §9.
+
+        Every instance with its roles, labels and liveness; the overlaps (channel, role, claimant,
+        holder); `registrations` with `boundTo`, `credentialKind` and `bindingEvent`;
+        `slotNameObservations`; observed aliases only with `includeWithheld=true`.
+      x-status: in-pr-8857
+      x-spec-rules: [authority §4, authority §8, registration §8, registration §9]
+      x-listener: [tenant-admin]
+      x-single: one listener with `API_SECRET`
+      x-credential: the tenant owner
+      servers:
+        - *tenantAdminServer
+      security:
+        - tenantOwner: []
+        - apiSecret: []
+      parameters:
+        - name: includeWithheld
+          in: query
+          required: false
+          description: Include withheld members (observed aliases).
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          $ref: '#/components/responses/Instance'
+        '403':
+          $ref: '#/components/responses/Instance'
+  /api/v4/registrations/{vendor}/{product}/retire:
+    parameters:
+      - $ref: '#/components/parameters/vendor'
+      - $ref: '#/components/parameters/product'
+    post:
+      tags: [Owner actions]
+      operationId: ownerRetire
+      summary: Retire a registration (the owner, as #8857 serves it)
+      description: |
+        **Status:** in PR #8857 only (`lib/registration/negotiate.js:742` lists `retire` among the
+        owner's `POST` actions). The specifications give the owner's retire as `DELETE` on the
+        product resource (registration §5.1; `registration-submit.schema.json` `request`); this
+        difference is an open decision on the comparison page. **Listener:** tenant-admin; on
+        `single`, `API_SECRET`. **Rules:** authority §4, registration §5.5.
+      x-status: in-pr-8857
+      x-spec-rules: [authority §4, registration §5.5]
+      x-listener: [tenant-admin]
+      x-single: one listener with `API_SECRET`
+      x-credential: the tenant owner
+      servers:
+        - *tenantAdminServer
+      security:
+        - tenantOwner: []
+        - apiSecret: []
+      parameters:
+        - $ref: '#/components/parameters/ifMatch'
+      responses:
+        '200':
+          $ref: '#/components/responses/Registration'
+        '403':
+          $ref: '#/components/responses/Registration'
+        '404':
+          $ref: '#/components/responses/Registration'
+        '409':
+          $ref: '#/components/responses/Registration'
+        '412':
+          $ref: '#/components/responses/Registration'
+        '428':
+          $ref: '#/components/responses/Registration'
+  /api/v4/registrations/{vendor}/{product}/block:
+    parameters:
+      - $ref: '#/components/parameters/vendor'
+      - $ref: '#/components/parameters/product'
+    post:
+      tags: [Owner actions]
+      operationId: ownerBlock
+      summary: Block a registration, or an identity with nothing stored
+      description: |
+        **Status:** in PR #8857 (`lib/registration/products.js:307`). **Listener:** tenant-admin;
+        on `single`, `API_SECRET`. **Rules:** authority §4; registration §5.1, §5.2.
+
+        State `blocked`, recording `blockedFrom`; the controller's writes and typed writes are
+        refused 403 `blocked-by-owner`. `If-Match`, or `If-None-Match: *` to block an identity
+        with nothing stored.
+      x-status: in-pr-8857
+      x-spec-rules: [authority §4, registration §5.1, registration §5.2]
+      x-listener: [tenant-admin]
+      x-single: one listener with `API_SECRET`
+      x-credential: the tenant owner
+      servers:
+        - *tenantAdminServer
+      security:
+        - tenantOwner: []
+        - apiSecret: []
+      parameters:
+        - $ref: '#/components/parameters/ifMatch'
+        - $ref: '#/components/parameters/ifNoneMatch'
+      responses:
+        '200':
+          $ref: '#/components/responses/Registration'
+        '201':
+          $ref: '#/components/responses/Registration'
+        '403':
+          $ref: '#/components/responses/Registration'
+        '412':
+          $ref: '#/components/responses/Registration'
+        '428':
+          $ref: '#/components/responses/Registration'
+  /api/v4/registrations/{vendor}/{product}/unblock:
+    parameters:
+      - $ref: '#/components/parameters/vendor'
+      - $ref: '#/components/parameters/product'
+    post:
+      tags: [Owner actions]
+      operationId: ownerUnblock
+      summary: Unblock a registration
+      description: |
+        **Status:** in PR #8857 (`lib/registration/products.js:307`). **Listener:** tenant-admin;
+        on `single`, `API_SECRET`. **Rules:** authority §4.
+
+        Restores the interrupted state (`active` or `retired`); removes a pre-emptive block; never
+        reactivates a retired registration.
+      x-status: in-pr-8857
+      x-spec-rules: [authority §4]
+      x-listener: [tenant-admin]
+      x-single: one listener with `API_SECRET`
+      x-credential: the tenant owner
+      servers:
+        - *tenantAdminServer
+      security:
+        - tenantOwner: []
+        - apiSecret: []
+      parameters:
+        - $ref: '#/components/parameters/ifMatch'
+      responses:
+        '200':
+          $ref: '#/components/responses/Registration'
+        '403':
+          $ref: '#/components/responses/Registration'
+        '412':
+          $ref: '#/components/responses/Registration'
+        '428':
+          $ref: '#/components/responses/Registration'
+  /api/v4/registrations/{vendor}/{product}/release:
+    parameters:
+      - $ref: '#/components/parameters/vendor'
+      - $ref: '#/components/parameters/product'
+    post:
+      tags: [Owner actions]
+      operationId: ownerRelease
+      summary: Release a registration from its subject
+      description: |
+        **Status:** in PR #8857 (`lib/registration/products.js:307`). **Listener:** tenant-admin;
+        on `single`, `API_SECRET`. **Rules:** authority §3, §4, §6.
+
+        `boundTo: null`; the next credential with the permission that updates it is bound
+        (`bindingEvent: next-writer`). Drops `device` command-sink roles that no longer match.
+      x-status: in-pr-8857
+      x-spec-rules: [authority §3, authority §4, authority §6]
+      x-listener: [tenant-admin]
+      x-single: one listener with `API_SECRET`
+      x-credential: the tenant owner
+      servers:
+        - *tenantAdminServer
+      security:
+        - tenantOwner: []
+        - apiSecret: []
+      parameters:
+        - $ref: '#/components/parameters/ifMatch'
+      responses:
+        '200':
+          $ref: '#/components/responses/Registration'
+        '403':
+          $ref: '#/components/responses/Registration'
+        '412':
+          $ref: '#/components/responses/Registration'
+        '428':
+          $ref: '#/components/responses/Registration'
+  /api/v4/registrations/{vendor}/{product}/transfer:
+    parameters:
+      - $ref: '#/components/parameters/vendor'
+      - $ref: '#/components/parameters/product'
+    post:
+      tags: [Owner actions]
+      operationId: ownerTransfer
+      summary: Bind a registration to a named subject
+      description: |
+        **Status:** in PR #8857 (`lib/registration/products.js:325-331`). **Listener:**
+        tenant-admin; on `single`, `API_SECRET`. **Rules:** authority §3, §4, §6.
+
+        Binds to `transferTo`; drops `device` command-sink roles of instances that no longer match
+        the binding, except roles granted by `transfer-role`.
+      x-status: in-pr-8857
+      x-spec-rules: [authority §3, authority §4, authority §6]
+      x-listener: [tenant-admin]
+      x-single: one listener with `API_SECRET`
+      x-credential: the tenant owner
+      servers:
+        - *tenantAdminServer
+      security:
+        - tenantOwner: []
+        - apiSecret: []
+      parameters:
+        - $ref: '#/components/parameters/ifMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [transferTo]
+              properties:
+                transferTo:
+                  $ref: ../../sync/registration-submit.schema.json#/$defs/binding
+      responses:
+        '200':
+          $ref: '#/components/responses/Registration'
+        '403':
+          $ref: '#/components/responses/Registration'
+        '412':
+          $ref: '#/components/responses/Registration'
+        '422':
+          $ref: '#/components/responses/Registration'
+        '428':
+          $ref: '#/components/responses/Registration'
+  /api/v4/registrations/{vendor}/{product}/free-namespaces:
+    parameters:
+      - $ref: '#/components/parameters/vendor'
+      - $ref: '#/components/parameters/product'
+    post:
+      tags: [Owner actions]
+      operationId: ownerFreeNamespaces
+      summary: Free a retired registration's namespaces
+      description: |
+        **Status:** in PR #8857 (`lib/registration/products.js:307`). **Listener:** tenant-admin;
+        on `single`, `API_SECRET`. **Rules:** authority §4, §5; registration §5.5.
+
+        409 `not-retired` for an active registration. The declaration and stored data stay
+        readable.
+      x-status: in-pr-8857
+      x-spec-rules: [authority §4, authority §5, registration §5.5]
+      x-listener: [tenant-admin]
+      x-single: one listener with `API_SECRET`
+      x-credential: the tenant owner
+      servers:
+        - *tenantAdminServer
+      security:
+        - tenantOwner: []
+        - apiSecret: []
+      parameters:
+        - $ref: '#/components/parameters/ifMatch'
+      responses:
+        '200':
+          $ref: '#/components/responses/Registration'
+        '403':
+          $ref: '#/components/responses/Registration'
+        '409':
+          $ref: '#/components/responses/Registration'
+        '412':
+          $ref: '#/components/responses/Registration'
+        '428':
+          $ref: '#/components/responses/Registration'
+  /api/v4/registrations/{vendor}/{product}/transfer-role:
+    parameters:
+      - $ref: '#/components/parameters/vendor'
+      - $ref: '#/components/parameters/product'
+    post:
+      tags: [Owner actions]
+      operationId: ownerTransferRole
+      summary: Move one role from its holder to a live claimant
+      description: |
+        **Status:** in PR #8857 (`lib/registration/products.js:315-318`). **Listener:**
+        tenant-admin; on `single`, `API_SECRET`. **Rules:** authority §4, §6; registration §9.
+
+        `If-Match` the etag of the instance the role is moved from. 409 `role-not-granted`,
+        `role-not-claimed` or `not-live`. The moved role records `grantedBy: transfer-role`.
+      x-status: in-pr-8857
+      x-spec-rules: [authority §4, authority §6, registration §9]
+      x-listener: [tenant-admin]
+      x-single: one listener with `API_SECRET`
+      x-credential: the tenant owner
+      servers:
+        - *tenantAdminServer
+      security:
+        - tenantOwner: []
+        - apiSecret: []
+      parameters:
+        - $ref: '#/components/parameters/ifMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [transferRole]
+              properties:
+                transferRole:
+                  $ref: ../../sync/registration-submit.schema.json#/$defs/instanceRequest/properties/transferRole
+      responses:
+        '200':
+          $ref: '#/components/responses/Instance'
+        '403':
+          $ref: '#/components/responses/Instance'
+        '409':
+          $ref: '#/components/responses/Instance'
+        '412':
+          $ref: '#/components/responses/Instance'
+        '428':
+          $ref: '#/components/responses/Instance'
+  /api/v4/registrations/{vendor}/{product}/pin-version:
+    parameters:
+      - $ref: '#/components/parameters/vendor'
+      - $ref: '#/components/parameters/product'
+    post:
+      tags: [Owner actions]
+      operationId: ownerPinVersion
+      summary: Pin the version a site's default views show for one element
+      description: |
+        **Status:** in PR #8857 (`lib/registration/products.js:319-323`). **Listener:**
+        tenant-admin; on `single`, `API_SECRET`. **Rules:** authority §4; registration §12.
+
+        Pins are a resource of their own per product with their own etag (`If-None-Match: *` for
+        the first pin, `If-Match` after), so a pin never changes the product's etag. 422
+        `unknown-version` for a version no stored definition stores.
+      x-status: in-pr-8857
+      x-spec-rules: [authority §4, registration §12]
+      x-listener: [tenant-admin]
+      x-single: one listener with `API_SECRET`
+      x-credential: the tenant owner
+      servers:
+        - *tenantAdminServer
+      security:
+        - tenantOwner: []
+        - apiSecret: []
+      parameters:
+        - $ref: '#/components/parameters/ifMatch'
+        - $ref: '#/components/parameters/ifNoneMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PinRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/Instance'
+        '201':
+          $ref: '#/components/responses/Instance'
+        '403':
+          $ref: '#/components/responses/Instance'
+        '412':
+          $ref: '#/components/responses/Instance'
+        '422':
+          $ref: '#/components/responses/Instance'
+        '428':
+          $ref: '#/components/responses/Instance'
+  /api/v4/registrations/{vendor}/{product}/unpin-version:
+    parameters:
+      - $ref: '#/components/parameters/vendor'
+      - $ref: '#/components/parameters/product'
+    post:
+      tags: [Owner actions]
+      operationId: ownerUnpinVersion
+      summary: Remove a version pin
+      description: |
+        **Status:** in PR #8857 (`lib/registration/products.js:319-323`). **Listener:**
+        tenant-admin; on `single`, `API_SECRET`. **Rules:** authority §4; registration §12.
+      x-status: in-pr-8857
+      x-spec-rules: [authority §4, registration §12]
+      x-listener: [tenant-admin]
+      x-single: one listener with `API_SECRET`
+      x-credential: the tenant owner
+      servers:
+        - *tenantAdminServer
+      security:
+        - tenantOwner: []
+        - apiSecret: []
+      parameters:
+        - $ref: '#/components/parameters/ifMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PinRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/Instance'
+        '403':
+          $ref: '#/components/responses/Instance'
+        '412':
+          $ref: '#/components/responses/Instance'
+        '428':
+          $ref: '#/components/responses/Instance'
+  /api/v4/commands:
+    post:
+      tags: [Commands]
+      operationId: sendCommand
+      summary: Send a command to a channel
+      description: |
+        **Status:** specified, not served. **Listener:** data (commands §7.1 names no listener;
+        AU2 puts clients on the data listener). **Credential:** `api:commands:create`.
+        **Rules:** CM1–CM6, CM30, CM32; commands §2.
+
+        The hub checks only that the channel accepts commands, the routing, the expiry, the size
+        and the sender's permission; it never checks a dose, a limit or the therapy state, and it
+        never changes the payload (CM5). A re-send with the same `requestId` answers 200 with the
+        first `commandId`.
+      x-status: specified
+      x-spec-rules: [CM1, CM2, CM3, CM4, CM5, CM6, CM30, CM32]
+      x-listener: [data]
+      x-credential: api:commands:create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommandSend'
+      responses:
+        '200':
+          $ref: '#/components/responses/CommandAccepted'
+        '201':
+          $ref: '#/components/responses/CommandAccepted'
+        '403':
+          $ref: '#/components/responses/Refusal'
+        '404':
+          $ref: '#/components/responses/Refusal'
+        '409':
+          $ref: '#/components/responses/Refusal'
+        '413':
+          $ref: '#/components/responses/Refusal'
+        '422':
+          $ref: '#/components/responses/Refusal'
+    get:
+      tags: [Commands]
+      operationId: listOutstanding
+      summary: The outstanding list for a channel
+      description: |
+        **Status:** specified, not served. **Listener:** data. **Credential:**
+        `api:commands:read`, `api:commands:create` or `api:proposals:read`. **Rules:** CM24, CM30,
+        CM32.
+
+        Every open proposal and every command that is not final on the channel, the doses since,
+        and each live holder of the channel's sink with its fetch bound. A follower can see the
+        queue without acting on it.
+      x-status: specified
+      x-spec-rules: [CM24, CM30, CM32]
+      x-listener: [data]
+      x-credential: api:commands:read | api:commands:create | api:proposals:read
+      parameters:
+        - name: channel
+          in: query
+          required: true
+          description: The channel (registration §9).
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The outstanding list.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OutstandingList'
+        '403':
+          $ref: '#/components/responses/Refusal'
+        '404':
+          $ref: '#/components/responses/Refusal'
+  /api/v4/commands/{commandId}:
+    parameters:
+      - $ref: '#/components/parameters/commandId'
+    get:
+      tags: [Commands]
+      operationId: getCommand
+      summary: Read a command
+      description: |
+        **Status:** specified, not served. **Listener:** data. **Rules:** CM6, CM32.
+
+        A command on another tenant is 404, as one that does not exist is.
+      x-status: specified
+      x-spec-rules: [CM6, CM32]
+      x-listener: [data]
+      x-credential: as the outstanding list (CM24)
+      responses:
+        '200':
+          description: The command record.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Command'
+        '403':
+          $ref: '#/components/responses/Refusal'
+        '404':
+          $ref: '#/components/responses/Refusal'
+  /api/v4/commands/{commandId}/cancel:
+    parameters:
+      - $ref: '#/components/parameters/commandId'
+    post:
+      tags: [Commands]
+      operationId: cancelCommand
+      summary: Cancel a command
+      description: |
+        **Status:** specified, not served. **Listener:** data. **Credential:** the sender, or the
+        subject acting for the person (CM14). **Rules:** CM25, CM26, CM32.
+
+        A `pending` command becomes `cancelled` (200). One already fetched or acknowledged keeps
+        its state with `cancelRequested` (202), and each fetch carries the cancel until the
+        controller reports. A final command is 409 `already-final`.
+      x-status: specified
+      x-spec-rules: [CM25, CM26, CM32]
+      x-listener: [data]
+      x-credential: the sender, or the subject acting for the person
+      responses:
+        '200':
+          $ref: '#/components/responses/CancelResult'
+        '202':
+          $ref: '#/components/responses/CancelResult'
+        '403':
+          $ref: '#/components/responses/Refusal'
+        '404':
+          $ref: '#/components/responses/Refusal'
+        '409':
+          $ref: '#/components/responses/Refusal'
+  /api/v4/commands/{commandId}/reports:
+    parameters:
+      - $ref: '#/components/parameters/commandId'
+    post:
+      tags: [Commands]
+      operationId: reportOutcome
+      summary: Report a command's outcome (the destination)
+      description: |
+        **Status:** specified, not served. **Listener:** data. **Credential:** the destination
+        instance's bound subject; no command permission. **Rules:** CM7–CM9, CM32.
+
+        `acknowledged`, then `succeeded`, `failed` or `refused`, with the payload hash, a reason
+        when refused or failed, and when enacted the identity of the record that shows the effect.
+      x-status: specified
+      x-spec-rules: [CM7, CM8, CM9, CM32]
+      x-listener: [data]
+      x-credential: the destination instance's bound subject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Report'
+      responses:
+        '200':
+          description: The report is recorded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Command'
+        '403':
+          $ref: '#/components/responses/Refusal'
+        '404':
+          $ref: '#/components/responses/Refusal'
+        '409':
+          $ref: '#/components/responses/Refusal'
+        '422':
+          $ref: '#/components/responses/Refusal'
+  /api/v4/instances/{instanceId}/commands:
+    parameters:
+      - $ref: '#/components/parameters/instanceId'
+    get:
+      tags: [Commands]
+      operationId: fetchCommands
+      summary: Fetch the commands waiting for an instance (the destination)
+      description: |
+        **Status:** specified, not served; the capability's `commands.fetch` template.
+        **Listener:** data. **Credential:** the instance's own credential; a fetch naming an
+        instance that is not the credential's own is refused. **Rules:** CM18, CM26, CM31, CM32.
+
+        Each waiting command is returned again by each fetch until the controller reports, with
+        any carried cancels. A fetch-now signal on the socket carries nothing; this fetch is the
+        path that always works.
+      x-status: specified
+      x-spec-rules: [CM18, CM26, CM31, CM32]
+      x-listener: [data]
+      x-credential: the instance's own bound subject
+      responses:
+        '200':
+          description: The waiting commands and carried cancels.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FetchResult'
+        '403':
+          $ref: '#/components/responses/Refusal'
+        '404':
+          $ref: '#/components/responses/Refusal'
+  /api/v4/proposals:
+    post:
+      tags: [Proposals]
+      operationId: propose
+      summary: Propose a command
+      description: |
+        **Status:** specified, not served. **Listener:** data. **Credential:**
+        `api:proposals:create`, and a propose role on the channel held by the proposer's own
+        instance. **Rules:** CM11, CM12, CM32.
+
+        `basedOn` (the target product's state version the proposer read) is required. Read access
+        never confers a propose role.
+      x-status: specified
+      x-spec-rules: [CM11, CM12, CM32]
+      x-listener: [data]
+      x-credential: api:proposals:create and a propose role
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProposalCreate'
+      responses:
+        '201':
+          description: The proposal is recorded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [proposalId]
+                properties:
+                  proposalId:
+                    type: string
+        '403':
+          $ref: '#/components/responses/Refusal'
+        '404':
+          $ref: '#/components/responses/Refusal'
+        '409':
+          $ref: '#/components/responses/Refusal'
+        '413':
+          $ref: '#/components/responses/Refusal'
+        '422':
+          $ref: '#/components/responses/Refusal'
+  /api/v4/proposals/{proposalId}:
+    parameters:
+      - $ref: '#/components/parameters/proposalId'
+    get:
+      tags: [Proposals]
+      operationId: getProposal
+      summary: Read a proposal
+      description: |
+        **Status:** specified, not served. **Listener:** data. **Credential:**
+        `api:proposals:read` or `api:commands:create`. **Rules:** CM11, CM32.
+      x-status: specified
+      x-spec-rules: [CM11, CM32]
+      x-listener: [data]
+      x-credential: api:proposals:read | api:commands:create
+      responses:
+        '200':
+          description: The proposal.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Proposal'
+        '403':
+          $ref: '#/components/responses/Refusal'
+        '404':
+          $ref: '#/components/responses/Refusal'
+  /api/v4/proposals/{proposalId}/approve:
+    parameters:
+      - $ref: '#/components/parameters/proposalId'
+    post:
+      tags: [Proposals]
+      operationId: approveProposal
+      summary: Approve a proposal, which sends its command
+      description: |
+        **Status:** specified, not served. **Listener:** data. **Credential:**
+        `api:commands:create`; approving is sending. An agent's proposal is never approved by the
+        subject that proposed it (403 `self-approval`). **Rules:** CM13–CM15, CM22, CM30, CM32.
+
+        The approval binds to the exact change by its `payloadHash`. The hub checks the
+        proposal's state, the hash, the routing, the destination and the state version the
+        proposal was based on.
+      x-status: specified
+      x-spec-rules: [CM13, CM14, CM15, CM22, CM30, CM32]
+      x-listener: [data]
+      x-credential: api:commands:create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Approve'
+      responses:
+        '201':
+          $ref: '#/components/responses/CommandAccepted'
+        '403':
+          $ref: '#/components/responses/Refusal'
+        '404':
+          $ref: '#/components/responses/Refusal'
+        '409':
+          $ref: '#/components/responses/Refusal'
+  /api/v4/proposals/{proposalId}/reject:
+    parameters:
+      - $ref: '#/components/parameters/proposalId'
+    post:
+      tags: [Proposals]
+      operationId: rejectProposal
+      summary: Reject a proposal
+      description: |
+        **Status:** specified, not served. **Listener:** data. **Credential:**
+        `api:commands:create`. **Rules:** CM14, CM32.
+      x-status: specified
+      x-spec-rules: [CM14, CM32]
+      x-listener: [data]
+      x-credential: api:commands:create
+      responses:
+        '200':
+          $ref: '#/components/responses/ProposalState'
+        '403':
+          $ref: '#/components/responses/Refusal'
+        '404':
+          $ref: '#/components/responses/Refusal'
+        '409':
+          $ref: '#/components/responses/Refusal'
+  /api/v4/proposals/{proposalId}/withdraw:
+    parameters:
+      - $ref: '#/components/parameters/proposalId'
+    post:
+      tags: [Proposals]
+      operationId: withdrawProposal
+      summary: Withdraw a proposal
+      description: |
+        **Status:** specified, not served. **Listener:** data. **Credential:** the proposer, or
+        the subject the tenant marks as acting for the person. **Rules:** CM14, CM32.
+      x-status: specified
+      x-spec-rules: [CM14, CM32]
+      x-listener: [data]
+      x-credential: the proposer, or the subject acting for the person
+      responses:
+        '200':
+          $ref: '#/components/responses/ProposalState'
+        '403':
+          $ref: '#/components/responses/Refusal'
+        '404':
+          $ref: '#/components/responses/Refusal'
+        '409':
+          $ref: '#/components/responses/Refusal'
+  /api/v4/proposals/{proposalId}/evaluations:
+    parameters:
+      - $ref: '#/components/parameters/proposalId'
+    post:
+      tags: [Proposals]
+      operationId: attachEvaluation
+      summary: Attach an evaluation to a proposal
+      description: |
+        **Status:** specified, not served. **Listener:** data. **Credential:** anyone who may read
+        the proposal (CM11). **Rules:** CM16, CM32.
+
+        An evaluation is evidence: it never changes the proposal's state and never approves.
+      x-status: specified
+      x-spec-rules: [CM16, CM11, CM32]
+      x-listener: [data]
+      x-credential: as reading the proposal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Evaluation'
+      responses:
+        '201':
+          description: The evaluation is attached.
+        '403':
+          $ref: '#/components/responses/Refusal'
+        '404':
+          $ref: '#/components/responses/Refusal'
+  /api/v4/statistics/daily:
+    get:
+      tags: [Statistics]
+      operationId: getDailyStatistics
+      summary: Per-day glucose statistics
+      description: |
+        **Status:** open: REQ-STATS-001 of the statistics API proposal defines it at
+        `/api/v3/stats/daily`; no platform specification and no
+        conformance case covers it. **Listener:** data. **Credential:** read.
+
+        Per day: entry count, gaps and coverage; mean, median, min, max, SD, CV; percentiles; time in five ranges; A1c and GMI estimates.
+      x-status: open
+      x-listener: [data]
+      x-credential: read (`readable` today, AU5; Nocturne's equivalent is `reports.read`)
+      x-spec-rules: [REQ-STATS-001]
+      parameters:
+        - $ref: '#/components/parameters/statsFrom'
+        - $ref: '#/components/parameters/statsTo'
+        - $ref: '#/components/parameters/statsUnits'
+        - $ref: '#/components/parameters/statsTargetLow'
+        - $ref: '#/components/parameters/statsTargetHigh'
+      responses:
+        '200':
+          description: The statistics.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DailyStatistics'
+        '403':
+          $ref: '#/components/responses/Refusal'
+  /api/v4/statistics/daily/{date}:
+    get:
+      tags: [Statistics]
+      operationId: getDayStatistics
+      summary: One day's glucose statistics
+      description: |
+        **Status:** open: REQ-STATS-001 of the statistics API proposal defines it at
+        `/api/v3/stats/daily/{date}`; no platform specification and no
+        conformance case covers it. **Listener:** data. **Credential:** read.
+
+        As the daily array, for one day.
+      x-status: open
+      x-listener: [data]
+      x-credential: read (`readable` today, AU5; Nocturne's equivalent is `reports.read`)
+      x-spec-rules: [REQ-STATS-001]
+      parameters:
+        - name: date
+          in: path
+          required: true
+          description: The day; which time zone bounds it is open.
+          schema:
+            type: string
+            format: date
+        - $ref: '#/components/parameters/statsFrom'
+        - $ref: '#/components/parameters/statsTo'
+        - $ref: '#/components/parameters/statsUnits'
+        - $ref: '#/components/parameters/statsTargetLow'
+        - $ref: '#/components/parameters/statsTargetHigh'
+      responses:
+        '200':
+          description: The statistics.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyStatistics'
+        '403':
+          $ref: '#/components/responses/Refusal'
+  /api/v4/statistics/summary:
+    get:
+      tags: [Statistics]
+      operationId: getSummaryStatistics
+      summary: Period summary statistics
+      description: |
+        **Status:** open: REQ-STATS-002 of the statistics API proposal defines it at
+        `/api/v3/stats/summary`; no platform specification and no
+        conformance case covers it. **Listener:** data. **Credential:** read.
+
+        Aggregated over the range: glucose, GVI and PGS, range percentages, A1c and GMI estimates, variability.
+      x-status: open
+      x-listener: [data]
+      x-credential: read (`readable` today, AU5; Nocturne's equivalent is `reports.read`)
+      x-spec-rules: [REQ-STATS-002]
+      parameters:
+        - name: period
+          in: query
+          required: false
+          description: Aggregation period.
+          schema:
+            type: string
+            enum: [day, week, month]
+        - $ref: '#/components/parameters/statsFrom'
+        - $ref: '#/components/parameters/statsTo'
+        - $ref: '#/components/parameters/statsUnits'
+        - $ref: '#/components/parameters/statsTargetLow'
+        - $ref: '#/components/parameters/statsTargetHigh'
+      responses:
+        '200':
+          description: The statistics.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PeriodSummary'
+        '403':
+          $ref: '#/components/responses/Refusal'
+  /api/v4/statistics/hourly:
+    get:
+      tags: [Statistics]
+      operationId: getHourlyStatistics
+      summary: Hourly glucose distribution
+      description: |
+        **Status:** open: REQ-STATS-003 of the statistics API proposal defines it at
+        `/api/v3/stats/hourly`; no platform specification and no
+        conformance case covers it. **Listener:** data. **Credential:** read.
+
+        Per hour of the day: count, mean and percentiles, for percentile and AGP charts without fetching every entry.
+      x-status: open
+      x-listener: [data]
+      x-credential: read (`readable` today, AU5; Nocturne's equivalent is `reports.read`)
+      x-spec-rules: [REQ-STATS-003]
+      parameters:
+        - $ref: '#/components/parameters/statsFrom'
+        - $ref: '#/components/parameters/statsTo'
+        - $ref: '#/components/parameters/statsUnits'
+        - $ref: '#/components/parameters/statsTargetLow'
+        - $ref: '#/components/parameters/statsTargetHigh'
+      responses:
+        '200':
+          description: The statistics.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HourlyDistribution'
+        '403':
+          $ref: '#/components/responses/Refusal'
+  /api/v4/statistics/treatments:
+    get:
+      tags: [Statistics]
+      operationId: getTreatmentStatistics
+      summary: Insulin and carbohydrate summaries
+      description: |
+        **Status:** open: REQ-STATS-004 of the statistics API proposal defines it at
+        `/api/v3/stats/treatments`; no platform specification and no
+        conformance case covers it. **Listener:** data. **Credential:** read.
+
+        Daily insulin totals (basal, bolus, SMB, correction, carb bolus), carbohydrate totals, and ratios.
+      x-status: open
+      x-listener: [data]
+      x-credential: read (`readable` today, AU5; Nocturne's equivalent is `reports.read`)
+      x-spec-rules: [REQ-STATS-004]
+      parameters:
+        - $ref: '#/components/parameters/statsFrom'
+        - $ref: '#/components/parameters/statsTo'
+        - $ref: '#/components/parameters/statsUnits'
+        - $ref: '#/components/parameters/statsTargetLow'
+        - $ref: '#/components/parameters/statsTargetHigh'
+      responses:
+        '200':
+          description: The statistics.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TreatmentSummary'
+        '403':
+          $ref: '#/components/responses/Refusal'
+  /api/v4/statistics/current:
+    get:
+      tags: [Statistics]
+      operationId: getCurrentStatistics
+      summary: Current glucose and recent statistics
+      description: |
+        **Status:** open: REQ-STATS-005 of the statistics API proposal defines it at
+        `/api/v3/stats/current`; no platform specification and no
+        conformance case covers it. **Listener:** data. **Credential:** read.
+
+        Listed in the proposal's endpoint table and as the `nightscout://stats/current` MCP resource; the proposal gives no response schema.
+      x-status: open
+      x-listener: [data]
+      x-credential: read (`readable` today, AU5; Nocturne's equivalent is `reports.read`)
+      x-spec-rules: [REQ-STATS-005]
+      parameters:
+        - $ref: '#/components/parameters/statsFrom'
+        - $ref: '#/components/parameters/statsTo'
+        - $ref: '#/components/parameters/statsUnits'
+        - $ref: '#/components/parameters/statsTargetLow'
+        - $ref: '#/components/parameters/statsTargetHigh'
+      responses:
+        '200':
+          description: The statistics.
+          content:
+            application/json:
+              schema:
+                type: object
+        '403':
+          $ref: '#/components/responses/Refusal'
+security:
+  - subjectToken: []
+  - apiSecret: []
+components:
+  securitySchemes:
+    subjectToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >-
+        A subject's token on the data listener: the native per-tenant credential of a device,
+        uploader or client (AU1). Registrations and instances bind to the subject, never the token
+        (AU4).
+    apiSecret:
+      type: apiKey
+      in: header
+      name: api-secret
+      description: >-
+        The SHA-1 of `API_SECRET`, on a `single` site only; there is no deployment-wide secret
+        under `TENANCY_MODE=multi` (AU3, D13). On `single` it is also the owner's credential.
+    tenantOwner:
+      type: http
+      scheme: bearer
+      description: >-
+        The tenant owner's credential on `ns-tenant-admin`. Its form is not specified: native
+        today, Ory Kratos if D17 row 2 lands (adopted in principle, gated).
+  parameters:
+    statsFrom:
+      name: from
+      in: query
+      required: false
+      description: Start (ISO 8601); default 14 days ago (statistics API proposal).
+      schema:
+        type: string
+        format: date-time
+    statsTo:
+      name: to
+      in: query
+      required: false
+      description: End (ISO 8601); default now.
+      schema:
+        type: string
+        format: date-time
+    statsUnits:
+      name: units
+      in: query
+      required: false
+      description: Glucose units; default from the profile.
+      schema:
+        type: string
+        enum: [mg/dL, mmol/L]
+    statsTargetLow:
+      name: targetLow
+      in: query
+      required: false
+      description: Low threshold; default from the profile.
+      schema:
+        type: number
+    statsTargetHigh:
+      name: targetHigh
+      in: query
+      required: false
+      description: High threshold; default from the profile.
+      schema:
+        type: number
+    vendor:
+      name: vendor
+      in: path
+      required: true
+      description: The registration's `metadata.vendor`, percent-encoded.
+      schema:
+        type: string
+    product:
+      name: product
+      in: path
+      required: true
+      description: The registration's `metadata.product`, percent-encoded.
+      schema:
+        type: string
+    definitionId:
+      name: definitionId
+      in: path
+      required: true
+      description: The definition's content address (identity §2).
+      schema:
+        $ref: ../../sync/controller-instance.schema.json#/$defs/definitionId
+    instanceId:
+      name: instanceId
+      in: path
+      required: true
+      description: A random lowercase UUID v4 the controller generates once per running copy (identity §2).
+      schema:
+        $ref: ../../sync/controller-instance.schema.json#/$defs/instanceId
+    commandId:
+      name: commandId
+      in: path
+      required: true
+      description: The id the hub assigned when it recorded the command (CM1).
+      schema:
+        type: string
+    proposalId:
+      name: proposalId
+      in: path
+      required: true
+      description: The id the hub assigned when it recorded the proposal (CM11).
+      schema:
+        type: string
+    ifMatch:
+      name: If-Match
+      in: header
+      required: false
+      description: The current etag; quoted or bare. Every write carries exactly one precondition.
+      schema:
+        type: string
+    ifNoneMatch:
+      name: If-None-Match
+      in: header
+      required: false
+      description: '`*` to create; every write carries exactly one precondition.'
+      schema:
+        type: string
+        const: '*'
+  responses:
+    NotOffered:
+      description: >-
+        The hub does not offer this (in #8857, `CONTROLLER_REGISTRATION` is off).
+    Registration:
+      description: >-
+        The registration response: `outcome` `accepted`, `partial`, `rejected`,
+        `precondition-failed`, `retired`, `applied` or `not-found`, with reasons, element results
+        and the current etag.
+      content:
+        application/json:
+          schema:
+            $ref: ../../sync/registration-submit.schema.json#/$defs/response
+    Instance:
+      description: >-
+        The instance response: an instance with its lease and per-role results, an owner action's
+        result, or the owner's listing.
+      content:
+        application/json:
+          schema:
+            $ref: ../../sync/registration-submit.schema.json#/$defs/instanceResponse
+    CommandAccepted:
+      description: The command recorded (201), or the first one for a repeated `requestId` (200).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommandAccepted'
+    CancelResult:
+      description: '`cancelled` (200), or the command''s state with `cancelRequested: true` (202).'
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [state]
+            properties:
+              state:
+                $ref: '#/components/schemas/CommandState'
+              cancelRequested:
+                type: boolean
+    ProposalState:
+      description: The proposal's new state.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              state:
+                $ref: '#/components/schemas/ProposalStateName'
+    Refusal:
+      description: >-
+        A refusal: the first applicable of another tenant (404), permission and ownership (403),
+        content (413, 422), then state (409).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Refusal'
+  schemas:
+    DailyStatistics:
+      type: object
+      description: REQ-STATS-001, from the proposal's example.
+      properties:
+        date:
+          type: string
+          format: date
+        entries:
+          type: object
+          properties:
+            count: {type: integer}
+            gaps: {type: integer}
+            coverage: {type: number}
+        glucose:
+          $ref: '#/components/schemas/GlucoseSummary'
+        percentiles:
+          $ref: '#/components/schemas/Percentiles'
+        ranges:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              count: {type: integer}
+              percent: {type: number}
+              threshold: {type: number}
+              low: {type: number}
+              high: {type: number}
+        estimates:
+          $ref: '#/components/schemas/Estimates'
+    GlucoseSummary:
+      type: object
+      properties:
+        mean: {type: number}
+        median: {type: number}
+        min: {type: number}
+        max: {type: number}
+        stdDev: {type: number}
+        cv: {type: number}
+        gvi: {type: number}
+        pgs: {type: number}
+    Percentiles:
+      type: object
+      properties:
+        p10: {type: number}
+        p25: {type: number}
+        p50: {type: number}
+        p75: {type: number}
+        p90: {type: number}
+    Estimates:
+      type: object
+      properties:
+        a1c_dcct: {type: number}
+        a1c_ifcc: {type: number}
+        gmi: {type: number}
+    Period:
+      type: object
+      properties:
+        from: {type: string, format: date}
+        to: {type: string, format: date}
+        days: {type: integer}
+    PeriodSummary:
+      type: object
+      description: REQ-STATS-002, from the proposal's example.
+      properties:
+        period:
+          $ref: '#/components/schemas/Period'
+        glucose:
+          $ref: '#/components/schemas/GlucoseSummary'
+        ranges:
+          type: object
+          additionalProperties:
+            type: number
+        estimates:
+          $ref: '#/components/schemas/Estimates'
+        variability:
+          type: object
+          properties:
+            meanDailyChange: {type: number}
+            meanHourlyChange: {type: number}
+            fluctuationRate5: {type: number}
+            fluctuationRate10: {type: number}
+    HourlyDistribution:
+      type: object
+      description: REQ-STATS-003, from the proposal's example.
+      properties:
+        period:
+          $ref: '#/components/schemas/Period'
+        hours:
+          type: array
+          items:
+            type: object
+            properties:
+              hour: {type: integer, minimum: 0, maximum: 23}
+              count: {type: integer}
+              mean: {type: number}
+              percentiles:
+                $ref: '#/components/schemas/Percentiles'
+    TreatmentSummary:
+      type: object
+      description: REQ-STATS-004, from the proposal's example.
+      properties:
+        period:
+          $ref: '#/components/schemas/Period'
+        insulin:
+          type: object
+          additionalProperties:
+            type: number
+        carbs:
+          type: object
+          additionalProperties:
+            type: number
+        ratios:
+          type: object
+          additionalProperties:
+            type: number
+    WellKnownCatalogue:
+      type: object
+      description: As #8857 serves it (`lib/registration/index.js:113-121`).
+      required: [apiVersion, kind, kinds]
+      properties:
+        apiVersion:
+          const: nightscout.dev/sync/v1
+        kind:
+          const: WellKnownCatalogue
+        kinds:
+          type: array
+          items:
+            type: object
+            required: [id, vendor, product, href]
+            properties:
+              id:
+                type: string
+              vendor:
+                type: string
+              product:
+                type: string
+              href:
+                type: string
+        slots:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+        mappings:
+          type: array
+          items:
+            type: object
+    PinRequest:
+      type: object
+      description: authority §4, registration §12.
+      required: [element]
+      properties:
+        element:
+          type: string
+          description: The element id (registration §5.3).
+        version:
+          type: string
+          description: A version some stored definition stores; required to pin.
+    Initiator:
+      description: >-
+        Who started it, in the controller's vocabulary (state and intent S8): a shared value or
+        `{value: other, controllerTerm}`.
+      oneOf:
+        - type: string
+        - $ref: ../../sync/controller-instance.schema.json#/$defs/otherTerm
+    Product:
+      type: object
+      required: [vendor, product]
+      properties:
+        vendor:
+          type: string
+        product:
+          type: string
+    CommandState:
+      type: string
+      description: commands §4–§5. `fetched` is a receipt, not an outcome; the last four are the controller's.
+      enum: [pending, not-routed, fetched, unconfirmed, undeliverable, expired, cancelled, acknowledged, succeeded, failed, refused]
+    ProposalStateName:
+      type: string
+      enum: [open, approved, rejected, withdrawn, expired]
+    CommandSend:
+      type: object
+      description: commands §7.1, Send. Members not listed are ignored (G1).
+      required: [channel, payload, expiresAt]
+      properties:
+        channel:
+          type: string
+        product:
+          $ref: '#/components/schemas/Product'
+        payload:
+          description: Stored exactly as received (CM1, CM5).
+        expiresAt:
+          type: string
+          format: date-time
+        requestId:
+          type: string
+        initiator:
+          $ref: '#/components/schemas/Initiator'
+    CommandAccepted:
+      type: object
+      description: commands §7.1, reply 201.
+      required: [commandId, state]
+      properties:
+        commandId:
+          type: string
+        state:
+          $ref: '#/components/schemas/CommandState'
+        fetchWithinSeconds:
+          type: integer
+        mayExpireUnfetched:
+          type: boolean
+        outstanding:
+          $ref: '#/components/schemas/OutstandingList'
+    OutstandingItem:
+      type: object
+      properties:
+        id:
+          type: string
+        sender:
+          type: string
+        proposer:
+          type: string
+        initiator:
+          $ref: '#/components/schemas/Initiator'
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        state:
+          type: string
+    OutstandingList:
+      type: object
+      description: CM24.
+      properties:
+        proposals:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutstandingItem'
+        commands:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutstandingItem'
+        dosesSince:
+          type: array
+          items: {}
+        destinations:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              fetchWithinSeconds:
+                type: integer
+    Command:
+      type: object
+      description: The command record (commands §4).
+      properties:
+        commandId:
+          type: string
+        channel:
+          type: string
+        payload: {}
+        payloadHash:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+        initiator:
+          $ref: '#/components/schemas/Initiator'
+        state:
+          $ref: '#/components/schemas/CommandState'
+        cancelRequested:
+          type: boolean
+        proposalId:
+          type: string
+        basedOn:
+          type: string
+    FetchResult:
+      type: object
+      description: commands §7.1, Fetch.
+      properties:
+        commands:
+          type: array
+          items:
+            $ref: '#/components/schemas/Command'
+        cancels:
+          type: array
+          items:
+            type: object
+            required: [commandId]
+            properties:
+              commandId:
+                type: string
+    Report:
+      type: object
+      description: commands §7.1, Report (CM7).
+      required: [state, payloadHash]
+      properties:
+        state:
+          type: string
+          enum: [acknowledged, succeeded, failed, refused]
+        payloadHash:
+          type: string
+        reason:
+          type: string
+        record:
+          description: When enacted, the identity of the record that shows the effect.
+    ProposalCreate:
+      type: object
+      description: commands §7.1, Propose (CM11).
+      required: [proposer, channel, payload, basedOn, expiresAt]
+      properties:
+        proposer:
+          type: string
+          description: The proposing instance's `instanceId`.
+        channel:
+          type: string
+        product:
+          $ref: '#/components/schemas/Product'
+        instanceId:
+          type: string
+        payload: {}
+        basedOn:
+          type: string
+          description: The state version of the target product the proposer read (state and intent A12).
+        expiresAt:
+          type: string
+          format: date-time
+    Proposal:
+      allOf:
+        - $ref: '#/components/schemas/ProposalCreate'
+        - type: object
+          properties:
+            proposalId:
+              type: string
+            payloadHash:
+              type: string
+            state:
+              $ref: '#/components/schemas/ProposalStateName'
+    Approve:
+      type: object
+      description: commands §7.1, Approve (CM13).
+      required: [payloadHash]
+      properties:
+        payloadHash:
+          type: string
+        initiator:
+          $ref: '#/components/schemas/Initiator'
+    Evaluation:
+      type: object
+      description: CM16. Its members are not specified; an evaluation is evidence.
+    Refusal:
+      type: object
+      required: [code]
+      properties:
+        code:
+          type: string
+          description: An open vocabulary (registration §5.3); a client treats an unknown code as a refusal.
+        commandId:
+          type: string
+          description: For a command refused at routing (CM1).
+        detail:
+          type: string

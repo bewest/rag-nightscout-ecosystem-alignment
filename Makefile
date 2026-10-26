@@ -360,11 +360,11 @@ validate-telemetry:
 	@echo "Validating Nightscout telemetry schema fixtures..."
 	@python3 tools/validate_telemetry_schema.py
 
-# Lint specs/openapi/*.yaml against the OpenAPI specification and Redocly's
+# Lint specs/openapi/*.yaml and specs/openapi/proposed/*.yaml against the OpenAPI specification and Redocly's
 # recommended rules (config: redocly.yaml). validate-json only checks that
 # the top-level keys exist. Needs Node; npx fetches the pinned CLI.
 REDOCLY_CLI ?= npx -y @redocly/cli@1.34.0
-OPENAPI_SPECS ?= $(wildcard specs/openapi/*.yaml)
+OPENAPI_SPECS ?= $(wildcard specs/openapi/*.yaml specs/openapi/proposed/*.yaml)
 openapi-lint:
 	@$(REDOCLY_CLI) lint --format=summary $(OPENAPI_SPECS)
 
