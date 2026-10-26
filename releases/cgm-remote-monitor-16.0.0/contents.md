@@ -367,6 +367,11 @@ candidate is named.
 - MongoDB 4.4 or newer is required to start once cut 3 (driver 7) is in: on 3.6, 4.0 or 4.2 the site does not
   serve data and shows a page naming the database server's version and the minimum it needs (BF-182); the
   fix is to upgrade MongoDB. 5.0 through 8.0 are the supported, tested range; 4.4 starts but is untested.
+- Production-only installs (`npm ci --omit=dev` or `NODE_ENV=production`) that worked on 15.0.9 do not
+  build the client bundle since cut 2 (webpack and Babel are devDependencies). BF-179 (planned for cut 3)
+  turns the failure into a message naming the fix (`npm ci --include=dev`, then
+  `npm prune --omit=dev --ignore-scripts`); it does not restore the old behaviour. The project's
+  Dockerfile and `azure-deploy.sh` install dev dependencies and are not affected.
 - The opt-in `THEME=modern` dashboard (#8831).
 - The Bolus Wizard Preview and Careportal Bolus Wizard unit fixes (BF-172, BF-173) and the profile
   picker (BF-174); BF-09 (the socket's duplicate check keeps zero temps, cancels and zero amounts); #8816's snooze; #8812 and #8808's report figures.
