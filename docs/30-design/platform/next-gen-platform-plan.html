@@ -5604,8 +5604,8 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>7602e7dde</code>.</em></p>
-<p><em>Contributor-facing. Living plan, current at cgm-remote-monitor dev <code>47723cda</code> (2026-10-26) and draft <a href="https://github.com/nightscout/cgm-remote-monitor/pull/8854">#8854</a> at <code>880b7369</code>. Status: proposed; the decisions in §6 are open.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>723ed9230</code>.</em></p>
+<p><em>Contributor-facing. Living plan, current at cgm-remote-monitor dev <code>47723cda</code> (2026-10-26) and <a href="https://github.com/nightscout/cgm-remote-monitor/pull/8854">#8854</a> at <code>fa22d573</code>. Status: proposed; the decisions in §6 are open.</em></p>
 <p>The interactive version, with the dependency map, is the site page <a href="../../../site/pages/nightscout-next-gen-platform.html">nightscout-next-gen-platform.html</a>.</p>
 <p>This plan covers the work that follows the 16.0.0 modernization:</p>
 <ul>
@@ -5740,10 +5740,10 @@
 </tbody>
 </table>
 <p>The September chain stays useful as reference. Its filter AST (<code>4f753ab9</code>), <code>fromMongo</code> bridge (<code>68ffbd66</code>), <code>bulkUpsert</code> mode split, PostgreSQL backend (<code>983ff64f</code>, <code>7cc03cda</code>) and tenant scope binding are the starting points for ST-FILTER, ST-PG and TEN-RESOLVE. They are not merged as they stand.</p>
-<p>The replay trial measured both paths on dev <code>47723cda</code>. Branches: <code>seam/replay-2610</code> <code>f41cb244</code> and <code>seam/compose-8854-2610</code> <code>873c0cbb</code>, both local.</p>
+<p>The replay trial measured both paths on dev <code>47723cda</code>. Branches: <code>seam/replay-2610</code> <code>f41cb244</code>, <code>seam/compose-8854-2610</code> <code>873c0cbb</code> and, re-measured at #8854 <code>fa22d573</code>, <code>seam/compose-fa22-2610</code> <code>089bbfc5</code>; all local.</p>
 <ul>
 <li><strong>The replay works.</strong> The September S1 and S2 commits apply to dev with no test lost: 4,610 passing on dev, 4,698 on the replay (the 88 are the seam's own files). Three write-contract cells change: the v1 hard-delete reply's key order.</li>
-<li><strong>The seam's interface composes above #8854's boundary.</strong> The two conflict in 2 paths. On the composed branch #8854's 367 tests pass. Its boundary check flags the socket, because that file now acquires its collection through the interface; the check needs one rule for this.</li>
+<li><strong>The seam's interface composes above #8854's boundary.</strong> The two conflict in 2 paths. On the composed branch #8854's 367 tests pass. The one failure is its boundary check flagging the socket, because that file now acquires its collection through the interface; the check needs one rule for this.</li>
 <li><strong>Which old commits carry over.</strong> The filter-tree and interface commits replay cleanly and keep their measured reasons. The call-site conversions describe code dev has since rewritten, so slices 2 and 3 are re-derived on dev.</li>
 </ul>
 <h2 id="5-the-tracks-in-detail">5. The tracks in detail<a class="headerlink" href="#5-the-tracks-in-detail" title="Permanent link">&para;</a></h2>
@@ -5763,6 +5763,12 @@
 <td>the boundary, read contract, data diagnostics, <code>--fail-zero</code>; into 16.0.0 after the four conditions of outcome B</td>
 <td>dev</td>
 <td>336-cell matrix equal to dev; AST gate with bypass controls</td>
+</tr>
+<tr>
+<td>QC-MATRIX-TT</td>
+<td>Temporary Target records in reject mode added to the write-contract matrix</td>
+<td>PR-8854</td>
+<td>off and reject differ only in the new cells</td>
 </tr>
 <tr>
 <td>ST-FILTER</td>
@@ -5790,8 +5796,8 @@
 </tr>
 <tr>
 <td>WC-STEP-PATCH</td>
-<td>slice 4: <code>write(intent)</code> -&gt; WriteResult.items[] above the interface; matching, server dates and validation move into it</td>
-<td>ST-WRITES, ST-EVENT, D-Q1B</td>
+<td>slice 4: <code>write(intent)</code> -&gt; WriteResult.items[] above the interface; matching, server dates, the null-removes rule and validation move into it; compare-and-set behind an adapter method</td>
+<td>ST-WRITES, ST-EVENT</td>
 <td><a href="../tenancy/write-contract-spec-2026-10-07.html">write-contract spec</a> G1</td>
 </tr>
 <tr>
@@ -5948,6 +5954,7 @@
 <p>The decisions D1–D20 are in the <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a>. Single-tenant on MongoDB stays first-class (D1, D4). Every tenancy item ships behind <code>TENANCY_MODE=multi</code>.</p>
 <h2 id="6-open-decisions">6. Open decisions<a class="headerlink" href="#6-open-decisions" title="Permanent link">&para;</a></h2>
 <p>Select <strong>Show on the map</strong> on a card to see which items it holds up.</p>
+<p>Decided 2026-10-26: an explicit null removes a field on merge-on-match and API v3 PATCH (RFC 7386), never on PUT or create, and devicestatus never merges; in 16.0.0, in one shared merge helper.</p>
 <p>Decided 2026-10-26: #8854 lands in 16.0.0 after four alignment conditions (outcome B in its <a href="../modernization/pr-8854-alignment-2026-10-26.html">brief</a>): a per-item socket reply or no socket validation yet, the data-warnings header off or held, the commit event marked internal and unstable, and a separate name for the intent layer.</p>
 <!-- chart: decisions -->
 

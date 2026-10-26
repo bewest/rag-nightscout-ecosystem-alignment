@@ -4642,7 +4642,7 @@
 <p class="admonition-title">Record</p>
 <p>Record as of 2026-10-26. A point-in-time document; it is not kept up to date.</p>
 </div>
-<p><em>Contributor-facing. Snapshot, 2026-10-26, read at cgm-remote-monitor dev <code>47723cda</code> and draft <a href="https://github.com/nightscout/cgm-remote-monitor/pull/8854">#8854</a> at <code>880b7369</code>. Status: decided 2026-10-26, outcome B with four conditions (§4); written for both maintainers to read together.</em></p>
+<p><em>Contributor-facing. Snapshot, 2026-10-26, read at cgm-remote-monitor dev <code>47723cda</code> and draft <a href="https://github.com/nightscout/cgm-remote-monitor/pull/8854">#8854</a> at <code>880b7369</code>; §5 re-measured at <code>fa22d573</code>. Status: decided 2026-10-26, outcome B with four conditions (§4); written for both maintainers to read together.</em></p>
 <h2 id="1-what-8854-is">1. What #8854 is<a class="headerlink" href="#1-what-8854-is" title="Permanent link">&para;</a></h2>
 <h1 id="8854-answers-the-architecture-review-of-2026-10-25-that-review-found-the-same-class-of-defect-recurring-because-v1-api-v3-the-socket-and-in-process-callers-each-apply-the-common-rules-in-their-own-place-8854-makes-one-place-that-every-one-of-them-writes-through-it-changes-no-reply-a-client-sees-except-where-3-says-so">8854 answers the <a href="cgm-remote-monitor-architecture-review-2026-10-25.html">architecture review</a> of 2026-10-25. That review found the same class of defect recurring because v1, API v3, the socket and in-process callers each apply the common rules in their own place. #8854 makes one place that every one of them writes through. It changes no reply a client sees, except where §3 says so.<a class="headerlink" href="#8854-answers-the-architecture-review-of-2026-10-25-that-review-found-the-same-class-of-defect-recurring-because-v1-api-v3-the-socket-and-in-process-callers-each-apply-the-common-rules-in-their-own-place-8854-makes-one-place-that-every-one-of-them-writes-through-it-changes-no-reply-a-client-sees-except-where-3-says-so" title="Permanent link">&para;</a></h1>
 <table>
@@ -4914,7 +4914,7 @@
 <tr>
 <td>backward</td>
 <td>Loop's <code>syncIdentifier</code> and Trio's <code>id</code> stored and returned untouched</td>
-<td>the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9632720a53ab7d7022c3dcbd02bae47bb5d0240d/tools/qc/write-contract-matrix.js">write-contract matrix</a></td>
+<td>the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4b11a6480beedd60f1b0e6021a699301f26f3156/tools/qc/write-contract-matrix.js">write-contract matrix</a></td>
 </tr>
 <tr>
 <td>forward</td>
@@ -4939,6 +4939,19 @@
 <li><strong>#8854's own matrix covers other ground.</strong> It covers CRUD by id, internal create and re-send, validation on four paths, and a boundary-source assertion per cell. It does not cover re-send identity, soft delete, server dates and history, or emissions. Each slice is gated on both.</li>
 <li><strong>The September seam's interface composes above #8854's boundary.</strong> They conflict in 2 paths, and #8854's 367 tests pass on the composition.</li>
 <li><strong>The boundary check needs one rule</strong> to accept a collection acquired through the interface (<code>scripts/check-write-boundary.js</code> flags <code>websocket.js</code> there). This is small, and it can be made in #8854 or in the first slice after it.</li>
+</ul>
+<p><strong>Re-measured at <code>fa22d573</code></strong>, the head after #8854 left draft (three commits past <code>880b7369</code>: <code>a7e65ecf</code> atomic validated updates in <code>lib/storage/validated-update.js</code>, <code>3b095381</code>, <code>fa22d573</code>):</p>
+<ul>
+<li><strong>Write-contract matrix.</strong> 0 of 336 cells differ from dev, and 0 with <code>WRITE_VALIDATION=reject</code> on both sides. The replay's known 3-cell difference shows the comparison can go red.</li>
+<li><strong>Validated updates are not covered by our matrix.</strong> Its fixtures carry no Temporary Target fields, so the new code path is reached only by #8854's own tests. Extending the matrix is the next-gen plan's QC-MATRIX-TT.</li>
+<li><strong>Composition.</strong> The September interface still composes above the boundary: the same 2 conflicting paths, and #8854's tests pass 429 of 430. The one failure is the boundary check's rule described above.</li>
+<li><strong>Socket updates on the composition.</strong> They now go through the interface into #8854's compare-and-set, and its socket, v3 and cross-path conditional-update tests pass.</li>
+<li><strong>What validated updates mean for the plan.</strong></li>
+<li>The compare-and-set sits at the driver edge and builds its filter with MongoDB <code>$expr</code>/<code>$literal</code> (<code>validated-update.js:48-57</code>).</li>
+<li>For MongoDB it closes #8854's open item 2 (atomic validation).</li>
+<li>It makes socket validation simpler.</li>
+<li>Before a PostgreSQL backend, the same guarantee needs a backend-neutral adapter method (for example <code>updateIfUnchanged(filter, snapshot, update)</code>). The MongoDB adapter keeps <code>$expr</code>; PostgreSQL does it in SQL. That moves where the code lives, not what it does.</li>
+<li><strong>Conditions unchanged.</strong> The four conditions of §4 still apply at this head, as checked by session -66: the header at <code>read-contract.js:93</code>, the event at <code>write-step.js:62</code>, and the socket's <code>[]</code> at <code>websocket.js:533/557/569</code>.</li>
 </ul>
 <p>The <a href="../platform/next-gen-platform-plan.html">next-gen platform plan</a> lays these out as five slices after #8854.</p>
 
