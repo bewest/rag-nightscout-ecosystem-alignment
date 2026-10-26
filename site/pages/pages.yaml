@@ -54,3 +54,73 @@ pages:
         unmerged and in no release. The states, expiry, routing and cancel steps are replaced by the
         platform commands specification. The command path that ships today is not documented here.
       see: docs/30-design/platform/spec/commands.md
+  api-aid-entries-2025.html:
+    kind: living
+    sources: [specs/openapi/aid-entries-2025.yaml]
+    source_commit: 703e20d4c
+    render: tools/site/render_apis.py
+    api:
+      status: de-facto
+      note: >-
+        Describes the stored entries documents that shipping apps upload, reconciled against the 2026-04 corpus; the operation follows API v3 on cgm-remote-monitor dev 47723cda, though not every v3 search parameter is declared. Schemas named as 2026 extensions are this repository's proposals, not shipping fields.
+      see: specs/openapi/README.md
+  api-aid-treatments-2025.html:
+    kind: living
+    sources: [specs/openapi/aid-treatments-2025.yaml]
+    source_commit: 703e20d4c
+    render: tools/site/render_apis.py
+    api:
+      status: de-facto
+      note: >-
+        Describes the stored treatments documents that shipping apps upload, reconciled against the 2026-04 corpus; the operation follows API v3 on cgm-remote-monitor dev 47723cda, though not every v3 search parameter is declared. Schemas named as 2026 extensions are this repository's proposals, not shipping fields.
+      see: specs/openapi/README.md
+  api-aid-devicestatus-2025.html:
+    kind: living
+    sources: [specs/openapi/aid-devicestatus-2025.yaml]
+    source_commit: 703e20d4c
+    render: tools/site/render_apis.py
+    api:
+      status: de-facto
+      note: >-
+        Describes the stored devicestatus documents that shipping apps upload, reconciled against the 2026-04 corpus; the operation follows API v3 on cgm-remote-monitor dev 47723cda, though not every v3 search parameter is declared. Schemas named as 2026 extensions are this repository's proposals, not shipping fields.
+      see: specs/openapi/README.md
+  api-aid-profile-2025.html:
+    kind: living
+    sources: [specs/openapi/aid-profile-2025.yaml]
+    source_commit: 47fb35de4
+    render: tools/site/render_apis.py
+    api:
+      status: de-facto
+      note: >-
+        Describes the stored profile documents that shipping apps upload, reconciled against the 2026-04 corpus; the operation follows API v3 on cgm-remote-monitor dev 47723cda, though not every v3 search parameter is declared. Schemas named as 2026 extensions are this repository's proposals, not shipping fields.
+      see: specs/openapi/README.md
+  api-aid-insulin-2025.html:
+    kind: living
+    sources: [specs/openapi/aid-insulin-2025.yaml]
+    source_commit: 2018ffa13
+    render: tools/site/render_apis.py
+    api:
+      status: proposed
+      note: >-
+        Describes the insulin collection of cgm-remote-monitor pull request #8261, which is open and in no release, together with fields this repository adds; no platform specification covers an insulin collection yet.
+      see: specs/openapi/README.md
+  api-aid-heartrate-2025.html:
+    kind: living
+    sources: [specs/openapi/aid-heartrate-2025.yaml]
+    source_commit: cf295305b
+    render: tools/site/render_apis.py
+    api:
+      status: superseded
+      note: >-
+        Describes the heart-rate collection of cgm-remote-monitor pull request #8083, which is open and in no release. The measured recommendation is to use the activity collection that ships today.
+      see: docs/30-design/platform/nightscout-devicestatus-profile-fidelity-2026-09-10.md
+  api-aid-alignment-extensions.html:
+    kind: living
+    sources: [specs/openapi/aid-alignment-extensions.yaml]
+    source_commit: 870f56625
+    render: tools/site/render_apis.py
+    api:
+      status: superseded
+      note: >-
+        Schemas proposed in early 2026 for identity, authority, overrides and profile changes. They are replaced by the platform identity, registration and state-intent specifications, which are themselves proposals.
+      see: docs/30-design/platform/spec/identity.md
