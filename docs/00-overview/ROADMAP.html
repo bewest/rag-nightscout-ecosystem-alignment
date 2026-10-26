@@ -2390,7 +2390,7 @@
 
 
 <h1 id="roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order">Roadmap for cgm-remote-monitor: what comes next, and in what order<a class="headerlink" href="#roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>fe2bc5f08</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>4a36e1d20</code>.</em></p>
 <p><em>What this is: a map of the work ahead (contributor-facing). Read after <a href="PROGRAMME-STATUS.html">programme
 status</a>; leads to <a href="NEEDS-A-HUMAN.html">work waiting on a person</a>. Prepared for the
 Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 and §2 dated
@@ -2605,9 +2605,9 @@ harness cut 1 keeps is retired later under scope B (<code>RT-JSDOM-REST</code>, 
 <tbody>
 <tr>
 <td style="text-align: right;">1</td>
-<td><code>ARCH-8854</code></td>
-<td>#8854 - shared write boundary, read contract and CI gates; into 16.0.0 after fou</td>
-<td><code>in-flight-upstream</code></td>
+<td><code>ARCH-8854-FAILED</code></td>
+<td>Decide: the socket's failed slot that #8854 adds under WRITE_VALIDATION=reject -</td>
+<td><code>needs-decision</code></td>
 <td>&mdash;</td>
 </tr>
 <tr>
@@ -2800,11 +2800,25 @@ Until then, the order below is the order of development, not of release.</p>
 <td>&mdash;</td>
 </tr>
 <tr>
+<td style="text-align: right;">1</td>
+<td><code>WC-STEP-PATCH</code></td>
+<td>Release 1 (patch): one write step for every v1, v3 and socket path, today's beha</td>
+<td><code>not-started</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
 <td style="text-align: right;">2</td>
 <td><code>ID-ABSENT-DECISION</code></td>
 <td>Decide: a write that carries no identifier (and no _id) - keep the time-key fall</td>
 <td><code>needs-decision</code></td>
 <td><code>LOOP-ID-REPLY</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td><code>ID-BATCH-RESULTS</code></td>
+<td>Release 2 (minor): per-item results in v1 batch replies; one bad item no longer</td>
+<td><code>blocked</code></td>
+<td><code>WC-STEP-PATCH</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
@@ -2822,6 +2836,13 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
+<td><code>ID-FIRST-MATCH</code></td>
+<td>Release 2 (minor): identifier-first matching for entries, devicestatus and socke</td>
+<td><code>blocked</code></td>
+<td><code>WC-STEP-PATCH</code>, <code>ID-SIMPLE-MATCH</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
 <td><code>ID-FORMAT-DECISION</code></td>
 <td>Decide: the client identifier's format (opaque string with limits; UUID not requ</td>
 <td><code>needs-decision</code></td>
@@ -2836,6 +2857,13 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
+<td><code>ID-V1-LOOKUP</code></td>
+<td>Release 2 (minor): v1 GET and DELETE by any identifier, without the default time</td>
+<td><code>blocked</code></td>
+<td><code>WC-STEP-PATCH</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
 <td><code>ID-V3-IMMUTABLE-DECISION</code></td>
 <td>Decide: on an identifier match, may date, device or eventType change?</td>
 <td><code>needs-decision</code></td>
@@ -2843,17 +2871,17 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
+<td><code>ID-VALIDATE</code></td>
+<td>Release 2 (minor): validate identifier on every collection; empty and null mean</td>
+<td><code>blocked</code></td>
+<td><code>WC-STEP-PATCH</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
 <td><code>T30-SCHEMA-CONFIG</code></td>
 <td>T3.0 part 2b - per-tenant configuration table, and where human identity lives</td>
 <td><code>not-started</code></td>
 <td><code>T30-RESEARCH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">2</td>
-<td><code>WC-STEP-PATCH</code></td>
-<td>Release 1 (patch): one write step for every v1, v3 and socket path, today's beha</td>
-<td><code>blocked</code></td>
-<td><code>ARCH-8854</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
@@ -2871,31 +2899,10 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
-<td><code>ID-BATCH-RESULTS</code></td>
-<td>Release 2 (minor): per-item results in v1 batch replies; one bad item no longer</td>
+<td><code>ID-UNIQUE-INDEX</code></td>
+<td>Partial unique index on identifier, retry-as-update on duplicate key, start-up s</td>
 <td><code>blocked</code></td>
-<td><code>WC-STEP-PATCH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">3</td>
-<td><code>ID-FIRST-MATCH</code></td>
-<td>Release 2 (minor): identifier-first matching for entries, devicestatus and socke</td>
-<td><code>blocked</code></td>
-<td><code>WC-STEP-PATCH</code>, <code>ID-SIMPLE-MATCH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">3</td>
-<td><code>ID-V1-LOOKUP</code></td>
-<td>Release 2 (minor): v1 GET and DELETE by any identifier, without the default time</td>
-<td><code>blocked</code></td>
-<td><code>WC-STEP-PATCH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">3</td>
-<td><code>ID-VALIDATE</code></td>
-<td>Release 2 (minor): validate identifier on every collection; empty and null mean</td>
-<td><code>blocked</code></td>
-<td><code>WC-STEP-PATCH</code></td>
+<td><code>ID-FIRST-MATCH</code>, <code>ID-BATCH-RESULTS</code>, <code>ID-V3-IMMUTABLE-DECISION</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
@@ -2910,13 +2917,6 @@ Until then, the order below is the order of development, not of release.</p>
 <td>T3.2 remainder - platform.sql carries no config, secret or signing key</td>
 <td><code>blocked</code></td>
 <td><code>T30-SCHEMA-CONFIG</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">4</td>
-<td><code>ID-UNIQUE-INDEX</code></td>
-<td>Partial unique index on identifier, retry-as-update on duplicate key, start-up s</td>
-<td><code>blocked</code></td>
-<td><code>ID-FIRST-MATCH</code>, <code>ID-BATCH-RESULTS</code>, <code>ID-V3-IMMUTABLE-DECISION</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">4</td>

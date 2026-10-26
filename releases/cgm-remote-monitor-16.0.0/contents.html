@@ -2245,13 +2245,15 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>fe2bc5f08</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>4a36e1d20</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
 <code>official/master</code> <code>c6a0d8ed</code> (= <code>v15.0.9</code>, the shipping release), in
 <code>externals/cgm-remote-monitor-official</code> after <code>git fetch official</code>, with <code>gh pr view</code>, <code>gh run view</code> and
-<code>gh api</code> for PR, CI and branch-protection state.</p>
+<code>gh api</code> for PR, CI and branch-protection state. Updated at 22:13Z for <code>dev</code> <code>7ad3a67f</code> (#8854 <code>c08cbe03</code>,
+then #8084): the Identity rows for <code>dev</code>, the merge list, #8854 and the in-flight rows; the other figures
+are still those of <code>47723cda</code>.</p>
 <blockquote>
 <p>Complements the generated changelog. The changelog is authoritative for <em>what merged</em>; this file
 records what the release is made of so far, how each figure was measured, and what is unsettled.</p>
@@ -2291,23 +2293,23 @@ for testers is <a href="testing-notes.html">testing-notes.md</a> (not written ye
 </tr>
 <tr>
 <td><code>dev</code> head</td>
-<td><code>47723cda</code> (merge of #8605, cut 5, 2026-10-26 17:32:44Z, by AndyLow91), tree <code>200a1c00</code></td>
+<td><code>7ad3a67f</code> (merge of #8084, 2026-10-26 22:13:18Z, by AndyLow91), tree <code>8469654e</code>; before it <code>c08cbe03</code> (#8854, 21:20:34Z) and <code>47723cda</code> (#8605, cut 5, 17:32:44Z, tree <code>200a1c00</code>)</td>
 </tr>
 <tr>
 <td>Commits on <code>dev</code></td>
-<td>857 — <code>git rev-list --count official/master..official/dev</code> (484 without merges, <code>--no-merges</code>)</td>
+<td>882 — <code>git rev-list --count official/master..official/dev</code> (506 without merges, <code>--no-merges</code>); 857 at <code>47723cda</code></td>
 </tr>
 <tr>
 <td>First-parent commits on <code>dev</code></td>
-<td>35 — <code>git rev-list --first-parent --count official/master..official/dev</code>: 34 PR merges and the cycle's version bump <code>04d435eb</code></td>
+<td>37 — <code>git rev-list --first-parent --count official/master..official/dev</code>: 36 PR merges and the cycle's version bump <code>04d435eb</code></td>
 </tr>
 <tr>
 <td>Diff on <code>dev</code></td>
-<td>745 files, +123438/−15023 — <code>git diff --shortstat official/master official/dev</code></td>
+<td>847 files, +126813/−15088 — <code>git diff --shortstat official/master official/dev</code>; 745 files, +123438/−15023 at <code>47723cda</code></td>
 </tr>
 <tr>
 <td>Merged on 2026-10-26</td>
-<td>15 PRs, from <code>b29f1bf7</code> to <code>47723cda</code>: 460 files, +79273/−3101 — <code>git diff --shortstat b29f1bf7 official/dev</code>; the eleven after <code>207a8352</code>: <code>git rev-list --first-parent --count 207a8352..official/dev</code> = 11</td>
+<td>17 PRs, from <code>b29f1bf7</code> to <code>7ad3a67f</code>: 611 files, +86276/−3996 — <code>git diff --shortstat b29f1bf7 official/dev</code>; the thirteen after <code>207a8352</code>: <code>git rev-list --first-parent --count 207a8352..official/dev</code> = 13</td>
 </tr>
 <tr>
 <td><code>package.json</code> version</td>
@@ -2335,7 +2337,11 @@ for testers is <a href="testing-notes.html">testing-notes.md</a> (not written ye
 </tr>
 <tr>
 <td>Staging PR</td>
-<td>#8824 (<code>dev</code> → <code>master</code>, "new dev branch post 15.0.9 release"): open, head <code>47723cda</code>, <code>mergeable</code> <code>MERGEABLE</code>, <code>mergeStateStatus</code> <code>BLOCKED</code>, <code>reviewDecision</code> <code>REVIEW_REQUIRED</code>; every check reported on the head passed except the jobs skipped by design (<em>Publish to Docker Hub</em> and <em>Build Docker image</em> on the <code>pull_request</code> run, <em>Validate Docker image</em> on the push run) — <code>gh pr view 8824</code>, <code>gh pr checks 8824</code>. <code>master</code>'s branch protection requires <code>Run Tests (22, 6)</code>, <code>Run Tests (22, 4.4)</code> and <code>Run Tests (24, 6)</code> (<code>gh api repos/nightscout/cgm-remote-monitor/branches/master/protection</code>, read 2026-10-26); no workflow on <code>dev</code> emits <code>Run Tests (22, 4.4)</code> since #8833, so #8824 cannot meet <code>master</code>'s required checks until that setting changes, and it also needs one approving review</td>
+<td>#8824 (<code>dev</code> → <code>master</code>, "new dev branch post 15.0.9 release"): open, head <code>7ad3a67f</code> (<code>BLOCKED</code>, <code>REVIEW_REQUIRED</code>, read after 22:13Z); at <code>47723cda</code>: <code>mergeable</code> <code>MERGEABLE</code>, <code>mergeStateStatus</code> <code>BLOCKED</code>, <code>reviewDecision</code> <code>REVIEW_REQUIRED</code>; every check reported on the head passed except the jobs skipped by design (<em>Publish to Docker Hub</em> and <em>Build Docker image</em> on the <code>pull_request</code> run, <em>Validate Docker image</em> on the push run) — <code>gh pr view 8824</code>, <code>gh pr checks 8824</code>. <code>master</code>'s branch protection requires <code>Run Tests (22, 6)</code>, <code>Run Tests (22, 4.4)</code> and <code>Run Tests (24, 6)</code> (<code>gh api repos/nightscout/cgm-remote-monitor/branches/master/protection</code>, read 2026-10-26); no workflow on <code>dev</code> emits <code>Run Tests (22, 4.4)</code> since #8833, so #8824 cannot meet <code>master</code>'s required checks until that setting changes, and it also needs one approving review</td>
+</tr>
+<tr>
+<td>CI on <code>7ad3a67f</code></td>
+<td><code>push</code> run 40410737772 passed every job and published (<em>Validate Docker image</em> skipped by design); <code>pull_request</code> run 40410745675 and CodeQL (40410737784, 40410745580) passed; on <code>c08cbe03</code>, push 40403541566 and <code>pull_request</code> 40403553936 passed — <code>gh run list --commit</code>, <code>gh run view &lt;id&gt; --json jobs</code></td>
 </tr>
 <tr>
 <td>CI on <code>47723cda</code></td>
@@ -2356,7 +2362,7 @@ bodies (see the integration record). No live site, vendor account or Docker imag
 <h2 id="what-is-merged-so-far">What is merged so far<a class="headerlink" href="#what-is-merged-so-far" title="Permanent link">&para;</a></h2>
 <p>Merge SHAs: <code>git log --first-parent --format='%h %ad %an %s' --date=iso official/master..official/dev</code>;
 merge times are <code>gh pr view &lt;n&gt; --json mergedAt</code>. The first nineteen merges below were made on
-2026-10-25 (#8834, #8835 and #8838 by bewest, the others by AndyLow91), the last fifteen on 2026-10-26
+2026-10-25 (#8834, #8835 and #8838 by bewest, the others by AndyLow91), the last seventeen on 2026-10-26
 (#8843, #8848 and #8850 by bewest, the others by AndyLow91). Register ids refer to the
 <a href="../../docs/30-design/remedial/nightscout-backfix-register.html">backfix register</a>.</p>
 <table>
@@ -2713,6 +2719,26 @@ merge times are <code>gh pr view &lt;n&gt; --json mergedAt</code>. The first nin
 <td><code>RT-3</code></td>
 <td>cut 5: Express 5, Helmet 8, Axios 1, EJS 6, entities 8, <code>mime-types</code> 3, Swagger UI 5, APNs 8, a native Pushover client, a maintained notification cache, Flot 4 (204 files, +59400/−1515)</td>
 </tr>
+<tr>
+<td>#8854</td>
+<td>10-26 21:20:34</td>
+<td><code>c08cbe03</code></td>
+<td><code>246313e4</code></td>
+<td>AndyLow91</td>
+<td>—</td>
+<td><code>ARCH-8854</code></td>
+<td>shared persistence and stored-data contracts: the persistence boundary <code>lib/storage/write-step.js</code>, socket Temporary Target validation under <code>reject</code>, the opt-in <code>Nightscout-Data-Warnings</code> header (46 files, +2340/−100; below)</td>
+</tr>
+<tr>
+<td>#8084</td>
+<td>10-26 22:13:18</td>
+<td><code>7ad3a67f</code></td>
+<td><code>27886bab</code></td>
+<td>gardenrobot</td>
+<td>—</td>
+<td>—</td>
+<td>Google Fonts replaced by fonts served from the site; the Content-Security-Policy drops the Google font hosts (92 files, +1093/−23); not examined further</td>
+</tr>
 </tbody>
 </table>
 <p>Before merging, AndyLow91 merged <code>dev</code> into most branches and added commits of his own (read with
@@ -2844,8 +2870,24 @@ authors'):</p>
   acknowledgement and cancellation, alarm de-duplication over its real window, APNs delivery to a phone,
   production hosting, upgrade and rollback, and physical-device accessibility as maintainer-owned
   acceptance work.</li>
+<li><strong>#8854</strong>: eleven commits by AndyLow91 over <code>dev</code> <code>47723cda</code>, from <code>880b7369</code> to <code>246313e4</code>, merged
+  after the four outcome-B points (<a href="decisions.html">decisions</a>), which he agreed to on the PR at 20:32Z. By
+  mechanism: the six v1 and internal collection modules, the legacy socket and API v3 go through the
+  persistence boundary (<code>lib/storage/write-step.js</code>, a wrapper over the driver collection that keeps
+  existing replies and validates the effective result of <code>$set</code> and <code>$unset</code>); it emits a data-free
+  <code>storage-write-committed</code> event marked internal and unstable, with no consumer; the opt-in Temporary Target
+  rules also apply to the socket's add, update and unset, and under <code>reject</code> the socket answers a refused
+  item with a <code>refused</code> slot in input order, as API v1 does; a non-mutating stored-data inspection
+  (<code>lib/storage/read-contract.js</code>) can add a <code>Nightscout-Data-Warnings</code> header to API v3 reads, off unless
+  <code>API_V3_DATA_WARNINGS=true</code> and called experimental; a read-only diagnostic command
+  (<code>scripts/diagnose-data.js</code>) and a write-boundary check (<code>scripts/check-write-boundary.js</code>); guards for
+  malformed cache values, authorization identities and history timestamps; Mocha runs that find zero tests
+  fail (<code>--fail-zero</code>). Not asked for: <code>246313e4</code> adds a <code>failed</code> slot on socket treatment arrays under
+  <code>reject</code> for an item whose write cannot be confirmed (open item 11). The merged tree's client replay is
+  R16 in the integration record: 0 differences from <code>47723cda</code> in 201 cells.</li>
 </ul>
-<p>None of these merged trees was re-run locally by this programme. The merged trees' CI is in
+<p>None of these merged trees was re-run locally by this programme, except the client replay on <code>7ad3a67f</code>
+(R16). The merged trees' CI is in
 <a href="#identity">Identity</a> and the integration record (R13, R14).</p>
 <h2 id="merge-state">Merge state<a class="headerlink" href="#merge-state" title="Permanent link">&para;</a></h2>
 <ul>
@@ -2870,7 +2912,9 @@ marked <em>owed</em> has a candidate change whose classification is not recorded
   copies; #8845 makes API v3 refuse a client body <code>_id</code> with 400 (BF-170), answers a v1 re-send with its
   stored <code>_id</code> (BF-165) and merges a profile re-sent with its <code>_id</code> instead of answering 500 (BF-166);
   #8852 answers malformed API v1 profile uploads with 400 and caps them at 10,000 records; #8841 adds
-  <code>refused</code> slots to v1 batch replies under <code>WRITE_VALIDATION=reject</code>; cut 5 moves the routes to
+  <code>refused</code> slots to v1 batch replies under <code>WRITE_VALIDATION=reject</code>, and #8854 the same slots, and a
+  <code>failed</code> slot, to socket replies under <code>reject</code>, and the opt-in <code>Nightscout-Data-Warnings</code> header on API v3
+  reads; cut 5 moves the routes to
   Express 5 (the query parser keeps <code>allowPrototypes: true</code> and sets <code>arrayLimit: 1000</code> and
   <code>parameterLimit: 1000</code>, <code>lib/middleware/configure-request.js:8-9</code>; read-derived: Express 4's extended
   parser used <code>qs</code>'s default <code>arrayLimit</code> of 20)</li>
@@ -2911,7 +2955,8 @@ runtime Docker image.</p>
 <p><strong>Classification:</strong> MAJOR, because of S5 and S6 (cut 1) and S5 again (cut 3's MongoDB floor).
 <strong>Directory name says:</strong> 16.0.0. <strong>Settled?</strong> Yes, by the maintainer, 2026-10-21.</p>
 <h2 id="in-flight-for-this-release">In flight for this release<a class="headerlink" href="#in-flight-for-this-release" title="Permanent link">&para;</a></h2>
-<p>Read 2026-10-26, 19:10Z. Every cut is merged (<a href="#merge-state">Merge state</a>).</p>
+<p>Read 2026-10-26, 19:10Z; #8854, #8856 and #8859 updated at 22:13Z. Every cut is merged
+(<a href="#merge-state">Merge state</a>); #8854 is merged (<a href="#what-is-merged-so-far">What is merged so far</a>).</p>
 <table>
 <thead>
 <tr>
@@ -2923,13 +2968,6 @@ runtime Docker image.</p>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>shared persistence and stored-data contracts</td>
-<td><code>wip/architecture-data-contracts</code>, <strong>draft #8854</strong> (AndyLow91, base <code>dev</code>)</td>
-<td><code>880b7369</code>, one commit on <code>dev</code> <code>47723cda</code></td>
-<td>open draft, mergeable; every check on its head passed. Decided 2026-10-26: in 16.0.0 after four alignment conditions (outcome B, <a href="decisions.html">decisions</a>)</td>
-<td><code>ARCH-8854</code>, <code>WRITE-CONTRACT</code>, <code>MOD-WRITE-VALIDATION-READ</code> (related)</td>
-</tr>
 <tr>
 <td>Crowdin translations</td>
 <td><code>crowdin_incoming</code>, <strong>#8855</strong> (sulkaharo)</td>
@@ -2962,33 +3000,18 @@ runtime Docker image.</p>
 <td>BF-193: write paths log whole records</td>
 <td><code>bf/16.0.0-log-privacy</code>, <strong>draft #8856</strong> (the maintainer, base <code>dev</code>)</td>
 <td><code>8ae43eb4</code>, one commit on <code>dev</code> <code>47723cda</code></td>
-<td>draft PR opened 2026-10-26</td>
+<td>draft PR opened 2026-10-26. <code>dev</code> <code>7ad3a67f</code> merged in locally as <code>6b6ad320</code> (session -66, no conflicts, not pushed): <code>npm test</code> 4436 passing, 0 failing, 3 pending; <code>test:all</code> 4764 passing, 0 failing, 3 pending</td>
 <td><code>BFQ-193</code></td>
 </tr>
 <tr>
 <td>the re-send and merge contract: <code>ID-SIMPLE-MATCH</code>, Q1b (a <code>null</code> in an update removes the field), BF-195 (a stale profile pushed over the socket after a re-send) and the devicestatus <code>identifier</code> rule, one PR</td>
 <td><code>bf/16.0.0-null-removes</code>, <strong>draft #8859</strong> (the maintainer, base <code>dev</code>)</td>
 <td><code>fc170a4c</code>, five commits on <code>dev</code> <code>47723cda</code>: <code>ID-SIMPLE-MATCH</code> <code>8d0f9a22</code>, Q1b <code>913d0895</code>, BF-195 <code>1bdce62c</code>, merge <code>cf2a2a67</code>, the devicestatus <code>identifier</code> rule <code>fc170a4c</code> (read from <code>git log</code>)</td>
-<td>draft PR opened 2026-10-26; the devicestatus <code>identifier</code> rule is on it (v1 and v3: a re-send with a stored <code>identifier</code> writes nothing and the reply carries the stored <code>_id</code>); <code>npm test</code> 4375 / 0 failing / 3 pending and <code>test:all</code> 4703 / 0 / 3 (re-run on <code>fc170a4c</code> 2026-10-26; the first run had 1 environmental <code>ENOSPC</code> failure); with #8854 one import-line conflict and a 3-line matrix expectation change for whichever merges second</td>
+<td>draft PR opened 2026-10-26; the devicestatus <code>identifier</code> rule is on it (v1 and v3: a re-send with a stored <code>identifier</code> writes nothing and the reply carries the stored <code>_id</code>); <code>npm test</code> 4375 passing, 0 failing, 3 pending and <code>test:all</code> 4703 passing, 0 failing, 3 pending (re-run on <code>fc170a4c</code> 2026-10-26; the first run had 1 environmental <code>ENOSPC</code> failure); with #8854 one import-line conflict and a 3-line matrix expectation change for whichever merges second. #8854 merged first: <code>dev</code> <code>7ad3a67f</code> merged in locally as <code>5c6ceabb</code> (session -66, not pushed; both requires kept, #8854's cross-path resend cells updated): <code>npm test</code> 4521 passing, 0 failing, 3 pending; <code>test:all</code> 4849 passing, 0 failing, 3 pending (integration record R16)</td>
 <td><code>ID-SIMPLE-MATCH</code>, <code>WRITE-CONTRACT</code>, <code>BFQ-195</code></td>
 </tr>
 </tbody>
 </table>
-<p><strong>#8854</strong> (read from its body and <code>git diff --stat official/dev...refs/triage/pr-8854</code>, 31 files,
-+934/−45; the runs are the author's). Its body targets the
-<a href="../../docs/30-design/modernization/cgm-remote-monitor-architecture-review-2026-10-25.html">architecture review</a>
-and says it is a foundation, not the complete proposed write-intent service, and not merge-ready. By
-mechanism: the six v1 and internal collection modules, the legacy socket and API v3 go through a
-shared write step (<code>lib/storage/write-step.js</code>, new, a wrapper over the driver collection that keeps
-existing replies and emits a data-free <code>storage-write-committed</code> event with no consumer yet); the
-opt-in Temporary Target rules also apply to the socket's add, update and unset; a non-mutating stored
-data inspection (<code>lib/storage/read-contract.js</code>, new) adds a <code>Nightscout-Data-Warnings</code> header to API v3
-responses; a read-only diagnostic command (<code>scripts/diagnose-data.js</code>) and a write-boundary check
-(<code>scripts/check-write-boundary.js</code>); guards for malformed cache values, authorization identities and
-history timestamps; a future <code>srvModified</code> is reported, not rewound; Mocha runs that find zero tests
-fail (<code>--fail-zero</code>). The body reports, against <code>dev</code> <code>47723cda</code>: the 336 original CRUD-matrix results
-match a fresh baseline exactly, integration 2,233 passing / 1 pending, unit 1,441, Chromium 650; and five
-sensor-age assertions failing in Europe/London around the October DST change on unchanged <code>dev</code>.</p>
 <p>BF-72's fix, by mechanism: a length cap on every pattern and a time limit on every query whose filter
 holds a regular expression, generated ones included; a refusal check for caller-written patterns
 only behind <code>QUERY_REGEX_REFUSE_UNSAFE</code>, default off. BF-161's fix: a nesting-depth limit checked
@@ -3201,7 +3224,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then.</p>
 <h2 id="open-items-a-releaser-must-settle">Open items a releaser must settle<a class="headerlink" href="#open-items-a-releaser-must-settle" title="Permanent link">&para;</a></h2>
-<p>As of <code>dev</code> <code>47723cda</code> (2026-10-26). The decisions already made are in <a href="decisions.html">decisions.md</a>.
+<p>As of <code>dev</code> <code>47723cda</code> (2026-10-26), with item 11 from <code>7ad3a67f</code>. The decisions already made are in <a href="decisions.html">decisions.md</a>.
 Whether cuts 3–5 ship in 16.0.0 is answered: all three are merged into <code>dev</code>, so they ship in 16.0.0
 unless reverted.</p>
 <p><strong>Required before the tag</strong> (maintainer, 2026-10-26, session -66; queue <code>RT-16-RELEASE</code>): (a) a live
@@ -3244,6 +3267,12 @@ BF-193 is not a pre-tag requirement; its fix shape is decided (debug-gated paylo
     <code>WRITE_VALIDATION</code> runs, so a v1 temp target sent in mmol/L is stored with mmol/L numbers and no
     units and reads as mg/dL, in every mode, on 15.0.9 and <code>dev</code> (reproduced, integration record R15):
     keep the units, convert, or refuse. Queue <code>BFQ-194</code>.</li>
+<li><strong>#8854's <code>failed</code> slot</strong> (maintainer): under <code>reject</code>, a socket treatment array answers an item whose
+    write cannot be confirmed (a lookup, similar-record match or insert error, such as a duplicate key) with a
+    slot without <code>_id</code> carrying <code>failed: {status: 500, message: "Treatment write could not be confirmed"}</code>,
+    where <code>47723cda</code> left the item out of the reply (<code>lib/server/websocket.js:557-563</code> on <code>7ad3a67f</code>;
+    read, not measured). API v1 has no equivalent. List it in the 16.0.0 client notes as it is, or agree it
+    alongside <code>refused</code> (and whether API v1 should match). Queue <code>ARCH-8854-FAILED</code>.</li>
 </ol>
 <p><strong>Found by R15 (reproduced; no register entry):</strong></p>
 <ul>
@@ -3305,6 +3334,12 @@ candidate is named.</p>
 <li>The opt-in <code>THEME=modern</code> dashboard (#8831) and the opt-in <code>SHOW_SECONDS</code> clock (#8555).</li>
 <li>The opt-in <code>WRITE_VALIDATION</code> for Temporary Targets (#8841), what <code>log</code> and <code>reject</code> do, that most
   uploaders lose a refused record without showing an error, and that an unrecognised value means <code>off</code>.</li>
+<li>
+<h1 id="8854-under-write_validationreject-the-realtime-socket-checks-temporary-targets-too-and-answers-a">8854 under <code>WRITE_VALIDATION=reject</code>: the realtime socket checks Temporary Targets too and answers a<a class="headerlink" href="#8854-under-write_validationreject-the-realtime-socket-checks-temporary-targets-too-and-answers-a" title="Permanent link">&para;</a></h1>
+  refused one with a <code>refused</code> slot in input order, without <code>_id</code>, storing the rest of the batch (15.0.9 and
+  <code>47723cda</code> stored them all); a treatment whose write cannot be confirmed is answered with a <code>failed</code> slot
+  (open item 11). The <code>Nightscout-Data-Warnings</code> header on API v3 reads is experimental and off unless
+  <code>API_V3_DATA_WARNINGS=true</code>. Nothing changes with <code>WRITE_VALIDATION</code> off.</li>
 <li>The opt-in <code>API3_SETTINGS_STRICT_READ_ENABLED</code> (#8845, BF-152 step 1), and that an AndroidAPS 4.0
   follower using a read-only token it was not given by AndroidAPS is refused when it is on.</li>
 <li>Record identity (#8845): API v3 refuses a client body <code>_id</code> with 400 (BF-170); API v3 PATCH, PUT and

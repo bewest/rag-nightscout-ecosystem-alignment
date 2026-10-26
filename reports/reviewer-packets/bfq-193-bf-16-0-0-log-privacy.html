@@ -1703,14 +1703,14 @@
   
   
     <li class="md-nav__item">
-      <a href="arch-8854-wip-architecture-data-contracts.html" class="md-nav__link">
+      <a href="arch-8854-failed.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Arch 8854 wip architecture data contracts
+    Arch 8854 failed
   
 
     
@@ -3236,7 +3236,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-26 at <code>3e609f77d</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>4a36e1d20</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3338,7 +3338,14 @@ without it.</p>
 <li><a href="../../docs/30-design/remedial/nightscout-backfix-register.html"><code>docs/30-design/remedial/nightscout-backfix-register.md</code></a></li>
 </ul>
 <h2 id="notes-carried-on-the-item">Notes carried on the item<a class="headerlink" href="#notes-carried-on-the-item" title="Permanent link">&para;</a></h2>
-<p>2026-10-26, later: draft PR #8856 to dev (bf/16.0.0-log-privacy, head
+<p>2026-10-26, after #8854 merged (dev 7ad3a67f): session -66 merged dev 7ad3a67f
+into bf/16.0.0-log-privacy locally as 6b6ad320, no conflicts, not pushed (the
+PR head is still 8ae43eb4; the push is the maintainer's). On 6b6ad320: npm
+test 4436 passing, 0 failing, 3 pending; test:all 4764 passing, 0 failing, 3
+pending. The log lines #8854 adds are console.error(err) on storage errors
+(the follow-up below: error objects may contain documents) and the validation
+line, which names rules and fields only. #8856 and #8859 merge with each other
+cleanly. 2026-10-26, later: draft PR #8856 to dev (bf/16.0.0-log-privacy, head
 8ae43eb4), opened by the maintainer. 2026-10-26, later (maintainer): BF-193
 stays its own PR, separate from the 16.0.0 re-send and merge bundle.
 2026-10-26: decided by the maintainer (session -66): debug-gated payload

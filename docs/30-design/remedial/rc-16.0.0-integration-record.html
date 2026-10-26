@@ -4623,7 +4623,7 @@
 
 
 <h1 id="1600-integration-record">16.0.0 integration record<a class="headerlink" href="#1600-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>15705e554</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>4a36e1d20</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 16.0.0 candidate is assembled and
 tested, in the form of the <a href="rc-15.0.9-integration-record.html">15.0.9 integration record</a>. Item state is
 in <code>queue/work-queue.yaml</code>; defect facts are in the <a href="nightscout-backfix-register.html">backfix register</a>;
@@ -4642,6 +4642,10 @@ No verification record is captured until release time
 <p>release <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">contents</a>. The staging PR is #8824
 (open, head <code>47723cda</code>, review required; <code>master</code> still requires <code>Run Tests (22, 4.4)</code>, which <code>dev</code> no
 longer emits). There is no 16.0.0 tag and no release candidate is named yet.</p>
+<p><strong>Since then, 2026-10-26, 22:13Z.</strong> <code>dev</code> is <code>7ad3a67f</code> (the merge of #8084, after #8854 <code>c08cbe03</code>; tree
+<code>8469654e</code>): 882 commits and 37 first-parent commits ahead of <code>master</code> <code>c6a0d8ed</code>; 847 files,
++126813/−15088 (the same commands). #8824's head is <code>7ad3a67f</code> (<code>BLOCKED</code>, <code>REVIEW_REQUIRED</code>). R16 is the
+client replay on this tree.</p>
 <p>Each entry gives the commit, the runtime and the counts as passing / pending / failing, and says who
 ran it. <strong>Reproduced</strong> entries were run by a programme session; CI entries are read from GitHub run
 metadata.</p>
@@ -5423,6 +5427,131 @@ and again in <code>create/insert.js</code>; two identical lines per record in th
 refusals under <code>reject</code> write no log line, where API v1's do; and <strong>BF-194</strong>: API v1 removes <code>units</code>
 from a treatment with no glucose value before validation (<code>lib/server/treatments.js:639-643</code>), so a v1
 temp target labelled <code>mmol/L</code> 6.0 is stored as 6 with no units under every mode, on 15.0.9 and <code>dev</code>.</p>
+<h3 id="r16--dev-7ad3a67f-after-8854-client-replay-and-socket-probe-2026-10-26">R16 · <code>dev</code> <code>7ad3a67f</code> after #8854: client replay and socket probe (2026-10-26)<a class="headerlink" href="#r16--dev-7ad3a67f-after-8854-client-replay-and-socket-probe-2026-10-26" title="Permanent link">&para;</a></h3>
+<p><strong>Reproduced</strong> by session -66 on 2026-10-26, with session -66's client replay harness (the R15 harness),
+on <code>dev</code> <code>7ad3a67f</code>: #8854 merged by AndyLow91 at 21:20Z as <code>c08cbe03</code> (head <code>246313e4</code>), then #8084 (local
+fonts; its only <code>lib/</code> change is the Content-Security-Policy font sources in <code>lib/server/app.js</code>). Node
+22.23.4, MongoDB 5.0.33 in its own container, a fresh database per run. The client libraries came from the
+<code>47723cda</code> tree, so only the server varied. This is the re-run that the outcome-B decision on #8854 asked
+for (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html">decisions</a>); the suites and the browser tier
+were not run on <code>7ad3a67f</code>. CI on <code>7ad3a67f</code>: push run 40410737772 passed every job and published the image
+(<em>Validate Docker image</em> skipped by design); <code>pull_request</code> run 40410745675 and CodeQL passed (<code>gh run view</code>).</p>
+<p><strong>Client replay.</strong> The 67 rows of R15 under <code>WRITE_VALIDATION</code> <code>off</code>, <code>log</code> and <code>reject</code>, compared with the
+same replay on <code>dev</code> <code>47723cda</code>:</p>
+<table>
+<thead>
+<tr>
+<th>mode</th>
+<th>cells</th>
+<th>differences from <code>47723cda</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>off</code></td>
+<td>67</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>log</code></td>
+<td>67</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>reject</code></td>
+<td>67</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>All 201 cells are identical in status, stored result and note; no liveness check failed. Non-vacuity:
+<code>off</code> against <code>reject</code> on <code>7ad3a67f</code> shows the 6 differences #8841 is expected to make (R15's <code>reject</code>
+rows other than BF-170's three).</p>
+<p><strong>Socket and header probe.</strong> The replay has no socket write cell and records only the <code>Warning</code> header, so
+a supplementary probe with synthetic Temporary Targets measured both:</p>
+<table>
+<thead>
+<tr>
+<th>case</th>
+<th><code>7ad3a67f</code></th>
+<th><code>47723cda</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>reject</code>, socket batch <code>[good, bad]</code></td>
+<td>the good one stored; the bad one answered with a <code>refused</code> slot (400, the target-order rule), in input order, without <code>_id</code></td>
+<td>both stored</td>
+</tr>
+<tr>
+<td><code>reject</code>, socket single bad Temporary Target</td>
+<td><code>[{refused}]</code>, nothing stored</td>
+<td>stored</td>
+</tr>
+<tr>
+<td><code>off</code>, the same socket writes</td>
+<td>unchanged</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>reject</code>, API v1 mixed batch</td>
+<td><code>Warning: 299</code> and a <code>refused</code> slot, the same shape as the socket's</td>
+<td>—</td>
+</tr>
+<tr>
+<td>API v3 search and history with a flagged record stored</td>
+<td>no <code>Nightscout-Data-Warnings</code> header by default; sent with <code>API_V3_DATA_WARNINGS=true</code></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The four outcome-B points</strong>, on <code>7ad3a67f</code>: (1) the socket answers per item under <code>reject</code>: met, measured
+above (<code>lib/server/websocket.js:549-553</code> and <code>:615-645</code>; the slot shape is <code>lib/server/write-validation.js:200-210</code>);
+(2) <code>Nightscout-Data-Warnings</code> off by default: met, measured (<code>lib/server/env.js:132</code>; <code>README.md:275</code> and
+cgm-remote-monitor's <code>data-contracts.md</code> (its architecture docs, lines 17 and 72) call it experimental pending agreement with v1's
+<code>Warning: 299</code>); (3) <code>storage-write-committed</code> internal and unstable: met, read (<code>lib/storage/write-step.js:54-56</code>,
+"INTERNAL AND UNSTABLE"; <code>data-contracts.md:47-51</code>); (4) the #8854 layer is the "persistence boundary"
+(<code>lib/storage/write-step.js</code>), and its docs give the future <code>write(intent)</code> layer a separate name such as
+<code>write-intent.js</code>: met, read. AndyLow91 agreed to the four points on the PR at 20:32Z.</p>
+<p><strong>Not asked for, read and not measured</strong> (no fault injection): <code>246313e4</code> adds a client-visible <code>failed</code>
+member. On socket treatment arrays under <code>reject</code>, an item whose write cannot be confirmed (a lookup error,
+a similar-record match error, an insert error such as a duplicate key; <code>websocket.js:557-563</code>, <code>:634-644</code>,
+<code>:721-723</code>, <code>:784-785</code>, <code>:804-807</code>) is answered with a slot without <code>_id</code> carrying <code>failed: {status: 500,
+message: "Treatment write could not be confirmed"}</code>; on <code>47723cda</code> such an item dropped out of the reply.
+API v1 has no equivalent. A client-sent <code>failed</code> field is deleted on refusal slots, overwritten on
+unconfirmed slots and passed through on stored records. Open for the maintainer (queue <code>ARCH-8854-FAILED</code>).</p>
+<p><strong>The open 16.0.0 PRs with <code>7ad3a67f</code> merged in</strong> (session -66, local merges, not pushed; each PR's head
+is unchanged; Node 22.23.4, MongoDB 5.0):</p>
+<table>
+<thead>
+<tr>
+<th>PR</th>
+<th>local merge</th>
+<th><code>npm test</code></th>
+<th><code>npm run test:all</code></th>
+<th>note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#8859 (<code>bf/16.0.0-null-removes</code>, head <code>fc170a4c</code>)</td>
+<td><code>5c6ceabb</code></td>
+<td>4521 passing, 0 failing, 3 pending</td>
+<td>4849 passing, 0 failing, 3 pending</td>
+<td>both requires kept in <code>lib/api3/generic/patch/operation.js</code>; #8854's cross-path resend cells in <code>tests/api.crud-by-id.matrix.test.js</code> updated (v1 resend expects 200; only v3 to socket still duplicates). Red control: <code>dev</code>'s matrix file on the merged tree, 413 passing, 9 failing (the 4 cross-path cells and 5 v3 devicestatus resend rows); updated, 422 passing, 0 failing</td>
+</tr>
+<tr>
+<td>#8856 (<code>bf/16.0.0-log-privacy</code>, head <code>8ae43eb4</code>)</td>
+<td><code>6b6ad320</code>, no conflicts</td>
+<td>4436 passing, 0 failing, 3 pending</td>
+<td>4764 passing, 0 failing, 3 pending</td>
+<td>#8854's new log lines: <code>console.error(err)</code> on storage errors (the BF-193 follow-up: an error object may contain the document) and the validation line, which names rules and fields only</td>
+</tr>
+</tbody>
+</table>
+<h1 id="8856-and-8859-merge-with-each-other-cleanly-8854s-boundary-validates-the-effective-result-of-set">8856 and #8859 merge with each other cleanly. #8854's boundary validates the effective result of <code>$set</code><a class="headerlink" href="#8856-and-8859-merge-with-each-other-cleanly-8854s-boundary-validates-the-effective-result-of-set" title="Permanent link">&para;</a></h1>
+<p>and <code>$unset</code> (<code>lib/storage/write-step.js:35</code>, <code>write-validation.js:143</code>), so a <code>null</code> that removes a field
+under #8859 goes through <code>reject</code>-mode validation.</p>
 <h2 id="known-test-defects-on-dev">Known test defects on <code>dev</code><a class="headerlink" href="#known-test-defects-on-dev" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5484,6 +5613,16 @@ temp target labelled <code>mmol/L</code> 6.0 is stored as 6 with no units under 
 <td>the browser tier on <code>47723cda</code></td>
 <td><code>dev</code></td>
 <td>Chromium, Firefox and WebKit locally (R15 did not run it; CI did, R14)</td>
+</tr>
+<tr>
+<td>the suites on <code>7ad3a67f</code></td>
+<td><code>dev</code></td>
+<td><code>npm test</code> and <code>npm run test:all</code> on the tree with #8854 merged (R16 ran the client replay and the socket probe only; CI passed)</td>
+</tr>
+<tr>
+<td>the <code>failed</code> slot</td>
+<td><code>dev</code> <code>7ad3a67f</code></td>
+<td>a fault-injection cell (an insert error on a socket treatment array under <code>reject</code>), once its shape is decided (<code>ARCH-8854-FAILED</code>)</td>
 </tr>
 <tr>
 <td>the release candidate</td>
