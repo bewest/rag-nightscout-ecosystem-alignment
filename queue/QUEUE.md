@@ -6068,7 +6068,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Filed 2026-10-25 by session f4 from the resilience lane's smoke run. The victim-side fix travels in session -b7's CI matrix PR; the polluter side (the stress tier dropping its own data) is open.
+**Notes.** Filed 2026-10-25 by session f4 from the resilience lane's smoke run. Both sides are fixed on session -b7's local ci/edge-diagonal-matrix: victim b9b5ef29 (api3.search starts empty) and polluter 57717695 (concurrent- writes.test.js afterEach and XX_clean remove devicestatus and entries; the stress tier leaves 0 on MongoDB 7.0). Closes with that PR.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 
