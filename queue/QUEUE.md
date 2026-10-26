@@ -31,18 +31,18 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 275 |
+| items | 276 |
 | runnable gates | 338 |
-| explicit `no-gate:` markers | 297 |
+| explicit `no-gate:` markers | 298 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 297 of the 635 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 298 of the 636 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 72 | RT-JSDOM-REST, RT-BUNDLE-THEME-SPLIT, RT-BOOT-INDEX-AWAIT, ID-SIMPLE-MATCH, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-159, BFQ-160, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-179, BFQ-181, BFQ-183, BFQ-184, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
-| `in-progress` | 10 | RT-REBASE, ID-CONVENTIONS, BFQ-46, BFQ-ENV, BFQ-152, BFQ-156, BFQ-180, BFQ-182, OID-LAB, LOOP-ID-REPLY |
+| `in-progress` | 11 | RT-REBASE, ID-CONVENTIONS, BFQ-46, BFQ-ENV, BFQ-152, BFQ-156, BFQ-180, BFQ-182, BFQ-185, OID-LAB, LOOP-ID-REPLY |
 | `gate-not-met` | 6 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 21 | RT-TEST-TIERS, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, WC-STEP-PATCH, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-154 |
@@ -2349,7 +2349,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 126 items
+`parcel: register-open` &mdash; 127 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2466,6 +2466,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-182` | BF-182 - on cut 3 (driver 7), boot against MongoDB 4.2 or older retries forever with no HTTP server | `in-progress` | `wip/cut3-onto-16.0.0` | major | 1 run + 1 no-gate |
 | `BFQ-183` | BF-183 - the API v3 storage socket logs the supplied credential on a failed authorization | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-184` | BF-184 - API v3 /status apiPermissions reports only wildcard permissions | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-185` | BF-185 - the stress test tier leaves devicestatus documents that break api3.search in a later run | `in-progress` | `ci/edge-diagonal-matrix` | n/a | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `released` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -6038,6 +6039,36 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** Filed 2026-10-25 by session f4 from the API v3 contract lane. Same loop on v15.0.9 and v15.0.8. AndroidAPS works around it (NSAndroidClientImpl.withSettingsRights, read).
+
+### `BFQ-185` &mdash; BF-185 - the stress test tier leaves devicestatus documents that break api3.search in a later run
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `cgm-remote-monitor` |
+| branch | `ci/edge-diagonal-matrix` |
+| base | `official/dev@b29f1bf7` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| ships to operators today | no (pre-release) |
+| register | `BF-185` |
+
+**Blast radius.** Tests only: the stress tier (polluter) and tests/api3.search.test.js before() (victim). No product code.
+
+**What an operator sees.** Nothing an operator runs changes. Contributors running the tests locally can see API v3 search tests fail depending on file order.
+
+**Why `n/a`.** test only
+
+**Gates.**
+
+- **NO GATE** &mdash; Reproduced 2026-10-25 on dev b29f1bf7 (test:stress then api3.search, 28 failing, "expected 20 to be 10") and by session -b7 on MongoDB 7.0. The victim-side fix b9b5ef29 on session -b7's local ci/edge-diagonal-matrix passes 151 in the same sequence; the gate is that sequence, control dev b29f1bf7.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-10-25 by session f4 from the resilience lane's smoke run. The victim-side fix travels in session -b7's CI matrix PR; the polluter side (the stress tier dropping its own data) is open.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 

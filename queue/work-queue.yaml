@@ -15058,6 +15058,40 @@ items:
       loop on v15.0.9 and v15.0.8. AndroidAPS works around it
       (NSAndroidClientImpl.withSettingsRights, read).
 
+  - id: BFQ-185
+    title: "BF-185 - the stress test tier leaves devicestatus documents that break api3.search in a later run"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ci/edge-diagonal-matrix
+    base: official/dev@b29f1bf7
+    state: in-progress
+    pr: []
+    ships_to_operators_today: false
+    blast_radius: >
+      Tests only: the stress tier (polluter) and tests/api3.search.test.js
+      before() (victim). No product code.
+    review: maintainer
+    operator_visible: >
+      Nothing an operator runs changes. Contributors running the tests
+      locally can see API v3 search tests fail depending on file order.
+    semver: n/a
+    semver_reason: test only
+    register: [BF-185]
+    gates:
+      - no-gate: >
+          Reproduced 2026-10-25 on dev b29f1bf7 (test:stress then api3.search,
+          28 failing, "expected 20 to be 10") and by session -b7 on MongoDB
+          7.0. The victim-side fix b9b5ef29 on session -b7's local
+          ci/edge-diagonal-matrix passes 151 in the same sequence; the gate
+          is that sequence, control dev b29f1bf7.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-10-25 by session f4 from the resilience lane's smoke run.
+      The victim-side fix travels in session -b7's CI matrix PR; the
+      polluter side (the stress tier dropping its own data) is open.
+
   - id: RT-PR-8815
     title: "#8815 - a bearer token whose subject was deleted is refused instead of stopping the server (awss1i; BF-171, fixes #8225), merged for 15.0.9"
     parcel: release-train
