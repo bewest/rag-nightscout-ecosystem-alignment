@@ -11,7 +11,8 @@ state and the conformance case) and `specs/sync/hub-capabilities.schema.json`
 product resource `<submit.href>/<vendor>/<product>` keeps the negotiation
 contract (§3.5) unchanged, and this module adds the two resources beside it —
 content-addressed definitions at `<product>/definitions/<definitionId>` and
-leased instances at `<product>/instances/<instanceId>` — plus the owner's
+leased instances at `/api/v4/instances/<instanceId>` (flat since
+2026-10-26; the request names the product) — plus the owner's
 role transfer and version pins, command routing, read selection, the
 projected carrier view for older readers, attribution of writes and
 retention. Given a hub's capability document, its stored state and a
@@ -443,7 +444,7 @@ def put_definition(caps, hub_state, submitter, request, body, grammar, well_know
     return response, after
 
 
-# ── instances: PUT / DELETE <product>/instances/<instanceId> ──────────
+# ── instances: PUT / DELETE /api/v4/instances/<instanceId> ───────────
 
 def put_instance(caps, hub_state, submitter, request, body, now, well_known):
     identity = _ident(request["identity"])

@@ -19,7 +19,9 @@ overwriting one another. The hub records what each copy reports; it never decide
 
 Paths and permission names on this page are proposals. Every request below is on the data listener
 (`ns-api`, or `single`) unless it says the owner's listener (`ns-tenant-admin`, or `API_SECRET` on
-`single`).
+`single`). Registration is per tenant: it affects only that tenant's site and data
+and is never an operator action ([authority AU6](authority.md#2-principals-and-credentials),
+maintainer, 2026-10-26).
 
 ## 1. Files
 
@@ -112,7 +114,14 @@ release, never on a timer, on a lease renewal or because a request was refused.
 ### 5.1 Identity and methods
 
 A registration's identity within a tenant is `(metadata.vendor, metadata.product)`.
-`versionRange` is an attribute: a new release updates the same registration. The product resource
+`versionRange` is an attribute: a new release updates the same registration.
+`metadata.softwareId` is proposed as a further attribute (maintainer, 2026-10-26): the reverse-DNS
+id of the software in the same form as the RFC 7591 `software_id` Nocturne's client registration
+and known-app directory use (`org.loopkit.loop`), compared exactly, so a hub can join who wrote a
+record with what it means on one key
+([controller descriptions §2.2](../PROPOSAL-controller-descriptions-2026-09-11.md#22-two-halves-who-a-controller-is-and-what-its-data-means)).
+It is optional and not part of the identity. Whether two products may share one, and whether a hub
+checks it against the credential's registered client, are open (§18). The product resource
 is `<submit.href>/<vendor>/<product>`, each segment percent-encoded.
 
 | method | who | meaning | precondition |
@@ -261,11 +270,23 @@ and builds of one product coexist; instances (§8) say which copy is connected.
 |---|---|---|---|---|
 | `<…>/<product>` | as §5 | as §5 | the product: binding, state, owner actions, namespaces, etag, element results. Its body is a definition | as §5 |
 | `<…>/<product>/definitions/<definitionId>` | `PUT` | the credential the product is bound to | add a definition, immutably | `If-None-Match: *` only |
-| `<…>/<product>/instances/<instanceId>` | `PUT` | any credential with `api:registrations:create` | create, renew or change an instance | as §5 |
-| `<…>/<product>/instances/<instanceId>` | `DELETE` | the credential the instance is bound to, with `api:registrations:delete` | release the instance and all its roles | `If-Match` |
+| `/api/v4/instances/<instanceId>` | `PUT` | any credential with `api:registrations:create` | create, renew or change an instance; the body names the product | as §5 |
+| `/api/v4/instances/<instanceId>` | `DELETE` | the credential the instance is bound to, with `api:registrations:delete` | release the instance and all its roles | `If-Match` |
+| `/api/v4/instances` | `GET` | the owner | the owner's listing ([authority §4](authority.md#4-the-owners-actions)) | none |
 
-A hub that advertises `instances` serves the two added resources; one that does not serves
+A hub that advertises `instances` serves the added resources; one that does not serves
 neither, and §5 applies unchanged.
+
+**Amendment, maintainer 2026-10-26: one flat root for instances.** The instance resource is
+`/api/v4/instances/<instanceId>`, beside its command fetch `/api/v4/instances/<instanceId>/commands`
+([commands CM32](commands.md#71-discovery-and-paths-proposed)), so one running copy has one path
+root. Before this amendment it was `<submit.href>/<vendor>/<product>/instances/<instanceId>`.
+Definitions stay under the product, because a definition belongs to one product. The instance
+body names its product (`product: {vendor, product}`, `controller-instance.schema.json`); the order
+of checks below reads the product from it, and a renewal naming a product other than the stored
+instance's is 422 `invalid-instance`. The instance is looked up within the request's tenant, as
+every tenant resource is (CM6). The id is a random UUID v4 (identity §2), so a copy keeps one
+path for its life. cgm-remote-monitor's draft #8857 serves the earlier nested path.
 
 **Identity.** The definition id is defined in [identity §2](identity.md#2-contract-ids). A product
 `PUT`'s accepted or partial response names the `definitionId` the hub computed. Every definition
@@ -564,6 +585,8 @@ Rules the specification chose that await the maintainer's confirmation:
   mapping that erases its evidence makes `historical` depend on Q3 records; a `proposed` entry never
   fails the check; declaration entries are measured only by hub records.
 - **Identity:** two choices are listed in [identity §5](identity.md#5-open-decisions).
+- **`metadata.softwareId` (§5.1, proposed 2026-10-26):** whether two products may share one;
+  whether a hub checks it against the credential's registered OAuth client where the hub has one.
 
 Open: the contract per tenancy mode (`SPEC-REG-MODES`), the mechanics of registration
 state across a site's move into a tenant, whose binding rule [authority §3](authority.md#3-binding-and-credential-kind) states (`SPEC-REG-MIGRATE`). The command API is proposed in the [commands specification](commands.md).
