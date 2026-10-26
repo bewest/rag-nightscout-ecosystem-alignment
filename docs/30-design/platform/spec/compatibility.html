@@ -6005,7 +6005,7 @@
 
 
 <h1 id="l0l5-compatibility-what-each-app-does-with-a-hub-today-and-what-it-sees-from-one-that-implements-the-specifications">L0–L5 Compatibility: what each app does with a hub today, and what it sees from one that implements the specifications<a class="headerlink" href="#l0l5-compatibility-what-each-app-does-with-a-hub-today-and-what-it-sees-from-one-that-implements-the-specifications" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>fe5ae19e7</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>a31885f18</code>.</em></p>
 <p><em>Contributor-facing. Living specification table, current at <code>main</code> <code>8cb0b5ed</code> (2026-10-18). Covers
 layers L0–L5 of the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>.
 Queue: <code>SPEC-COMPAT-APPS</code>.</em></p>
@@ -6648,7 +6648,7 @@ and sync, L5 authority, as the <a href="../index.html">platform index</a> define
 </tr>
 <tr>
 <td>Nocturne</td>
-<td>v1 by-id routes accept 24-hex and 32-hex (UUID v7 without dashes) ids, and look up by GUID, then by exact <code>LegacyId</code>, then by GUID prefix.</td>
+<td>Measured at 89dcaf1dd (tools/lab/nocturne-parity) - serves a 24-hex <code>_id</code> on v1 and v3 and sets v3 <code>identifier</code> equal to it, replacing a client-sent <code>identifier</code> (a read by the client's identifier answers 404); a v3 re-send is answered 200 with <code>isDeduplication</code> for entries and 201 without it for treatments, devicestatus and profile, and a treatment re-send is stored once. Read at 42275c81 - v1 by-id routes accept 24-hex and 32-hex (UUID v7 without dashes) ids, and look up by GUID, then by exact <code>LegacyId</code>, then by GUID prefix.</td>
 <td>It would serve a 24-hex <code>_id</code> on v1 and none in v3 reads, keep a client 24-hex <code>_id</code> in lower case on v1 and refuse a client <code>_id</code> on v3 with 400 (I2), answer each write with both ids and <code>matchedBy</code> (I4), and match a re-send on <code>identifier</code>, then <code>_id</code>, then the natural key (I5).</td>
 <td>opt-in</td>
 <td>I2, I4, I5, I8</td>

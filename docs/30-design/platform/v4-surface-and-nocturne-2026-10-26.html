@@ -5620,7 +5620,7 @@
 cgm-remote-monitor draft PR #8857 at <code>3be98536</code>, Nocturne <code>main</code> <code>89dcaf1dd</code>. Every Nocturne
 statement below was read from source at <code>89dcaf1dd</code> and nothing was run against it (read-derived).
 The proposed surface is described in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ba54f29fa2690dbc171c0800ca6f904d158d0c6c/specs/openapi/proposed/nightscout-v4.yaml"><code>specs/openapi/proposed/nightscout-v4.yaml</code></a>;
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a31885f184f4c950535f790f156fc4d96d9bc4e0/specs/openapi/proposed/nightscout-v4.yaml"><code>specs/openapi/proposed/nightscout-v4.yaml</code></a>;
 the current API in <a href="../../../specs/openapi/upstream/cgm-remote-monitor/index.html"><code>specs/openapi/upstream/cgm-remote-monitor/</code></a>.
 Nocturne paths are relative to <code>src/API/Nocturne.API/</code> unless they begin with <code>Core.</code> (under
 <code>src/Core/Nocturne.</code>) or <code>tests/</code>. Nothing here has been sent to either project.</em></p>
@@ -5649,7 +5649,7 @@ candidate for a shared contract.</p>
   second, after the identity decisions. Everything else in Nocturne's v4 stays hub-specific (§6).</li>
 </ul>
 <h2 id="2-the-proposed-v4-surface-operation-by-operation">2. The proposed v4 surface, operation by operation<a class="headerlink" href="#2-the-proposed-v4-surface-operation-by-operation" title="Permanent link">&para;</a></h2>
-<p>From <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ba54f29fa2690dbc171c0800ca6f904d158d0c6c/specs/openapi/proposed/nightscout-v4.yaml"><code>nightscout-v4.yaml</code></a>. Listener names
+<p>From <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a31885f184f4c950535f790f156fc4d96d9bc4e0/specs/openapi/proposed/nightscout-v4.yaml"><code>nightscout-v4.yaml</code></a>. Listener names
 follow <a href="spec/authority.html#2-principals-and-credentials">authority AU2</a> (D16): <code>data</code> is <code>ns-api</code>
 (devices, clients, viewers); <code>tenant-admin</code> is <code>ns-tenant-admin</code>, the owner's second bound socket
 inside <code>ns-api</code>. Under <code>TENANCY_MODE=single</code> there is one listener and <code>API_SECRET</code> acts as the
@@ -6458,7 +6458,7 @@ also specifies an MCP resource provider on top (REQ-STATS-005;
 <ul>
 <li>API v3 is a per-collection contract: its description is <code>/{collection}</code>, <code>/{collection}/{identifier}</code>
   and <code>/history</code> with <code>version</code>, <code>status</code> and <code>lastModified</code> beside them
-  (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ba54f29fa2690dbc171c0800ca6f904d158d0c6c/specs/openapi/upstream/cgm-remote-monitor/api-v3.yaml">api-v3.yaml</a>), and cgm-remote-monitor
+  (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a31885f184f4c950535f790f156fc4d96d9bc4e0/specs/openapi/upstream/cgm-remote-monitor/api-v3.yaml">api-v3.yaml</a>), and cgm-remote-monitor
   mounts routes per enabled collection (<code>lib/api3/generic/collection.js:42-57</code>, collections listed
   at <code>lib/api3/index.js:66</code>). A documented client reading <code>/{collection}/{identifier}</code> would take
   <code>/api/v3/stats/daily</code> for a record of a collection called <code>stats</code>.</li>
