@@ -364,7 +364,9 @@ candidate is named.
   to start.
 - The legacy Dexcom Share and MiniMed CareLink bridges are removed; leftover bridge settings stop the
   site with a page naming the replacements; Dexcom Share data comes in through `nightscout-connect`.
-- MongoDB 5.0 through 8.0 are supported; 4.4 and earlier are not.
+- MongoDB 4.4 or newer is required to start once cut 3 (driver 7) is in: on 3.6, 4.0 or 4.2 the site does not
+  serve data and shows a page naming the database server's version and the minimum it needs (BF-182); the
+  fix is to upgrade MongoDB. 5.0 through 8.0 are the supported, tested range; 4.4 starts but is untested.
 - The opt-in `THEME=modern` dashboard (#8831).
 - The Bolus Wizard Preview and Careportal Bolus Wizard unit fixes (BF-172, BF-173) and the profile
   picker (BF-174); BF-09 (the socket's duplicate check keeps zero temps, cancels and zero amounts); #8816's snooze; #8812 and #8808's report figures.
