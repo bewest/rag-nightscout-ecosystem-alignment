@@ -96,15 +96,15 @@ The rules are in the [identity specification](spec/identity.md) and the [identif
 
 | slice | builds | needs | check |
 |---|---|---|---|
-| REG-S0 | capability document and catalogue, read-only, flag off by default | specs | schema validation; flag off is byte-identical to dev |
-| REG-S1 | submit, etag, retire; MongoDB store; single mode | REG-S0 | negotiation conformance cases against a booted server |
+| REG-S0 | capability document and catalogue, read-only, flag off by default (built) | specs | schema validation; flag off is byte-identical to dev |
+| REG-S1 | submit, etag, retire; MongoDB store; single mode (built: 25 of 32 cases pass, 6 mapped, 1 not applicable) | REG-S0 | negotiation conformance cases against a booted server |
 | REG-S2 | definitions, leased instances, channels and roles | REG-S1 | instance conformance cases |
 | REG-S5 | owner actions on a single-tenant site with `API_SECRET` | REG-S1, REG-S2 | owner-action conformance cases |
 | REG-S3 | typed writes and read selection | REG-S2, WC-STEP-PATCH, SPEC-ID-AMEND | unregistered writers byte-identical |
 | REG-S4 | projected views for older readers | REG-S3 | projection cases |
 | HUB-REG-CRM-SEAM | registrations under tenant scope | REG-S2, ST-PG, T30-WIRING | per-mode cases (SPEC-REG-MODES) |
 
-Slices S0, S1, S2 and S5 need no storage work and go straight to dev; S5 comes before S3 because only S3 waits on the write step. The [hub implementer's guide](guides/hub-implementer.md) maps each slice to modules on dev. The [controller guide](guides/new-controller.md) is the same flow from the controller author's side.
+Slices S0, S1, S2 and S5 need no storage work and go to dev together as one single-tenant registration PR; S5 comes before S3 because only S3 waits on the write step. S0, S1 and the product half of S5 are built on `feat/registration-catalogue` (`6c67ddfc`, local). Of the 186 cases, 28 pass, 16 are mapped and 0 fail; the rest wait for later slices. S2 waits on decision D-REG-EXCL. The [hub implementer's guide](guides/hub-implementer.md) maps each slice to modules on dev. The [controller guide](guides/new-controller.md) is the same flow from the controller author's side.
 
 ### 5.4 Tenancy
 
@@ -130,7 +130,7 @@ Decided 2026-10-26: #8854 lands in 16.0.0 after four alignment conditions (outco
 
 ## 7. How the work moves
 
-- **Pull requests.** Each slice is one PR to dev, or a child PR to an integration branch when a track has several slices in flight, the way #8605 carried 109 children. Dev is merged into the branch, not rebased. A PR's merge records that the merged tree matches the reviewed tree.
+- **Pull requests.** Sized by milestone, not by slice: one single-tenant registration PR (S0, S1, S2, S5); one 16.0.0 re-send and merge contract PR (identifier matching, the null-removes rule, BF-195, the devicestatus answer); the storage slices grouped into few PRs after #8854. A track with many pieces in flight uses an integration branch with child PRs, the way #8605 carried 109 children. Dev is merged into the branch, not rebased. A PR's merge records that the merged tree matches the reviewed tree.
 - **What pins behaviour.** #8854's CRUD matrix and this repository's write-contract matrix. A slice that changes no behaviour changes no cell. A slice that changes behaviour lists the cells it changes and why.
 - **Red controls.** Every new test is shown failing against the code it guards before the change, with the original symptom.
 - **Conformance.** The registration and identity cases in `specs/sync/conformance/` run against a booted server by a harness in this repository (D12), reported case by case as passed, mapped or not applicable.
