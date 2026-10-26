@@ -150,3 +150,15 @@ pages:
         fails the OpenAPI linter and omits endpoints; when the correction merges, this page is
         re-rendered from dev and marked current.
       see: specs/openapi/upstream/cgm-remote-monitor/README.md
+  api-nightscout-v4-proposed.html:
+    kind: living
+    sources: [specs/openapi/proposed/nightscout-v4.yaml]
+    source_commit: 037ceb416
+    render: tools/site/render_apis.py
+    api:
+      status: proposed
+      note: >-
+        The API v4 surface the platform specifications define: discovery, controller registration and
+        instances, commands and proposals, and statistics reads. Each operation names its listener and
+        whether it is served in pull request #8857, specified only, or still open.
+      see: docs/30-design/platform/v4-surface-and-nocturne-2026-10-26.md
