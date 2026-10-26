@@ -78,6 +78,7 @@ orders:
   # The README's layer order, L0 to L5, after the glossary.
   docs/30-design/platform/guides:
     - new-controller.md
+    - hub-implementer.md
     - add-a-setting.md
   docs/30-design/platform/spec:
     - glossary.md

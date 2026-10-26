@@ -224,3 +224,5 @@ hub that implements the specifications without the app changing.
 Two guides walk a controller developer through the specifications step by step, each step naming
 its rule and the conformance case that shows it: [add a setting in your next
 release](guides/add-a-setting.md) and [bring a new controller onto a hub](guides/new-controller.md).
+Their hub-side companion, [implementing registration in cgm-remote-monitor](guides/hub-implementer.md),
+tells a hub contributor where each slice goes in the code, in what order, and how it is checked.
