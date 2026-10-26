@@ -28,6 +28,14 @@ This directory contains OpenAPI specifications (3.0.3 and 3.1.0; see [Lint statu
 
 ---
 
+## Current API beside these specs
+
+cgm-remote-monitor's own API documents, copied with their provenance into
+[`upstream/cgm-remote-monitor/`](upstream/cgm-remote-monitor/README.md), are rendered next to
+the pages below: [API v1](../../site/pages/api-cgm-remote-monitor-v1.html) and
+[API v3](../../site/pages/api-cgm-remote-monitor-v3.html). Today they come from the 16.0.0
+correction branch, not yet merged; their banners say so.
+
 ## Site status
 
 The label each spec carries on the static site (recommended 2026-10-26; the site manifest is authoritative). Comparison sources: cgm-remote-monitor `dev` 47723cda, `docs/30-design/platform/spec/`, Nocturne `main` 36d5ef4a2.

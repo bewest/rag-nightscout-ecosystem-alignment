@@ -124,3 +124,29 @@ pages:
       note: >-
         Schemas proposed in early 2026 for identity, authority, overrides and profile changes. They are replaced by the platform identity, registration and state-intent specifications, which are themselves proposals.
       see: docs/30-design/platform/spec/identity.md
+  api-cgm-remote-monitor-v1.html:
+    kind: living
+    sources: [specs/openapi/upstream/cgm-remote-monitor/api-v1.yaml]
+    source_commit: f5413f2e6
+    render: tools/site/render_apis.py
+    api:
+      status: draft-pr
+      note: >-
+        cgm-remote-monitor's own API v1 document, corrected for 16.0.0 on branch
+        docs/16.0.0-swagger-accuracy (dev c08cbe03 plus documentation changes). The copy on dev today
+        fails the OpenAPI linter and omits endpoints; when the correction merges, this page is
+        re-rendered from dev and marked current.
+      see: specs/openapi/upstream/cgm-remote-monitor/README.md
+  api-cgm-remote-monitor-v3.html:
+    kind: living
+    sources: [specs/openapi/upstream/cgm-remote-monitor/api-v3.yaml]
+    source_commit: f5413f2e6
+    render: tools/site/render_apis.py
+    api:
+      status: draft-pr
+      note: >-
+        cgm-remote-monitor's own API v3 document, corrected for 16.0.0 on branch
+        docs/16.0.0-swagger-accuracy (dev c08cbe03 plus documentation changes). The copy on dev today
+        fails the OpenAPI linter and omits endpoints; when the correction merges, this page is
+        re-rendered from dev and marked current.
+      see: specs/openapi/upstream/cgm-remote-monitor/README.md
