@@ -27,6 +27,7 @@ info:
     name: AID Alignment Workspace
   license:
     name: AGPL-3.0
+    url: https://www.gnu.org/licenses/agpl-3.0.html
 
 # Components only: this document defines schemas for other specs to reference.
 # OpenAPI 3.0.3 requires `paths`; an empty object declares no operations.

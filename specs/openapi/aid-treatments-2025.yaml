@@ -44,6 +44,7 @@ info:
     name: AID Alignment Workspace
   license:
     name: AGPL-3.0
+    url: https://www.gnu.org/licenses/agpl-3.0.html
 
 servers:
   - url: /api/v3
