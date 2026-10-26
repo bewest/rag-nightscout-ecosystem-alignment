@@ -303,6 +303,8 @@ bin/
   vcpool.js             ns-vcpool    — connect actors + egress proxy
 ```
 
+*Amended 2026-10-26 by **D21**: the roles below are started as subcommands of one executable, `nightscout single` and `nightscout serve <roles>`, not as one script per role. The table of which factories each role calls is unchanged ([execution plan §2.12](nightscout-multitenancy-execution-plan-2026-09-14.md#212-d21--one-entrypoint-serve-roles-maintainer-2026-10-26)).*
+
 **Four hosted entrypoints and one legacy entrypoint, over one `package.json` and one CI
 pipeline** — not five repositories. {M} §10.5 already argued this and it holds: these are
 thin `bin/` scripts selecting which factories to call, not independent products with

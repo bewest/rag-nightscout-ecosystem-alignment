@@ -31,21 +31,21 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 297 |
+| items | 300 |
 | runnable gates | 357 |
-| explicit `no-gate:` markers | 336 |
+| explicit `no-gate:` markers | 339 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 336 of the 693 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 339 of the 696 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 63 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-STEP-PATCH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
-| `in-progress` | 6 | BFQ-178, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY |
+| `not-started` | 64 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-STEP-PATCH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, PLAT-ENTRY |
+| `in-progress` | 7 | BFQ-178, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY, ST-FILTER-READS |
 | `gate-not-met` | 5 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
-| `blocked` | 16 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
+| `blocked` | 17 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164, PLAT-SERVE |
 | `in-flight-upstream` | 5 | ID-SIMPLE-MATCH, BFQ-72, BFQ-161, BFQ-193, BFQ-195 |
 | `merged-upstream` | 44 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-192, MOD-WRITE-VALIDATION |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
@@ -7317,7 +7317,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 34 items
+`parcel: tenancy` &mdash; 35 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -7358,6 +7358,7 @@ alarm-readiness items, and the seam branch refresh.
 | `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up safe on existing duplicates | `blocked` | `-` | minor | 0 run + 1 no-gate |
 | `BFQ-66` | BF-66 - the deployment's own tokens fail its own tenant check | `blocked` | `crm-seam` | n/a | 0 run + 2 no-gate |
 | `BFQ-CAP02` | CAP-02 - no importer, and no Mongo to PostgreSQL loader | `not-started` | `crm-seam` | n/a | 0 run + 2 no-gate |
+| `ST-FILTER-READS` | Storage interface, first PR: the filter tree and interface methods under API v3's adapter (ST-FILTER), and API v1 reads through them (ST-READS), with no v1 answer changed | `in-progress` | `feat/storage-filter` | patch | 0 run + 1 no-gate |
 
 ### `T30-RESEARCH` &mdash; T3.0 part 1 - enumerate the per-tenant configuration surface
 
@@ -8416,6 +8417,36 @@ alarm-readiness items, and the seam branch refresh.
 
 **Notes.** §1c, so it is neither §1 nor §1b. ships_to_operators_today is false because an operator on today's release sees nothing - the capability is needed by hosted- tenant onboarding, which does not exist yet. The execution plan lists per- tenant EXPORT under "Endpoints (proposed, to be argued)" although it is implemented, and says nothing about import, so the asymmetry is invisible to a reader of either document. Prior art for the rehearsal shape, and not the missing piece - tools/rehearse-database-upgrade.py:76. Waits on WRITE-CONTRACT (2026-09-27): the loader runs every imported document through the same write step as a live write, with OID-MIGRATION's rules for twins, so an imported record and a written one cannot differ (execution plan section 4.1).
 
+### `ST-FILTER-READS` &mdash; Storage interface, first PR: the filter tree and interface methods under API v3's adapter (ST-FILTER), and API v1 reads through them (ST-READS), with no v1 answer changed
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `cgm-remote-monitor` |
+| branch | `feat/storage-filter` |
+| base | `official/dev@7ad3a67f` |
+| worktree | `externals/work/crm-stfilter` |
+| semver | `patch` |
+| review | maintainer, plus a second human - every v1 read path moves |
+
+**Blast radius.** lib/storage/filter.js (new: the filter tree, fromMongo, the MongoDB adapter), lib/api3/storage/mongoCollection/{index,find,modify}.js (interface methods, every write through #8854's write-step proxy), lib/server/query-operator- allowlist.js (cycle guard); ST-READS adds the read sites of lib/server/{entries, treatments, devicestatus, profile, food, activity}.js. write-step.js, validated-update.js and check-write-boundary.js are unchanged.
+
+**What an operator sees.** Nothing should look different: every API v1 request gets the same records, status and error as before. Shapes the new filter tree would refuse are listed in the PR, not refused.
+
+**Why `patch`.** No client-visible change; the write-contract matrix (336 cells, off and reject) and #8854's CRUD matrix are the pins.
+
+**Gates.**
+
+- **NO GATE** &mdash; In progress. ST-FILTER measured 2026-10-26 at 50172510 on dev 7ad3a67f: npm test 4505/0/3 (dev 4429/0/3), test:all 4833/0/3 (dev 4757/0/3), #8854 matrix 422 = 422, write-contract matrix 0 of 336 cells differ off and reject (red control: 5 cells), live mongod differential 0 mismatches over 5,467 and 11,467 filters. The gate for the PR is the same set re-run on the ST-READS head.
+
+**Evidence.**
+
+- `docs/30-design/platform/next-gen-platform-plan.md`
+- `docs/30-design/modernization/pr-8854-alignment-2026-10-26.md`
+- `tools/qc/write-contract-matrix.js`
+
+**Notes.** 2026-10-26: the maintainer decided ST-FILTER and ST-READS go up as one PR. ST- FILTER found five defects in the September seam's fromMongo, each of which widens or changes a read ({a: {}} dropped, empty $or and $and matching everything, $exists undefined read as presence, RegExp g and s flags swapped, mongod-refused $regex options coerced); the mingo round trip could not see them, the live-mongod differential did. All five are fixed on the branch and pinned by tests.
+
 ---
 
 ## Document-truth sweeps
@@ -9138,7 +9169,7 @@ flag rule: versioning policy section 5.7.
 
 ## Controller registration and intent observability
 
-`parcel: platform` &mdash; 33 items
+`parcel: platform` &mdash; 35 items
 
 D18 (maintainer, 2026-10-09): two-tier controller registration - well-known
 declarations for backwards compatibility, controller-owned typed registrations
@@ -9182,6 +9213,8 @@ reproduced ones.
 | `SPEC-RECORDS` | Platform spec L1: the records specification (observation primitives, decomposition of today's documents, effective-dated settings snapshots) | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 2 run |
 | `SPEC-ACTIVE-STATE` | Decide and specify what a hub reports as active at a time, and a therapy-state version an approval can bind to | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 2 run |
 | `SCHEMA-INTENT-GAPS` | Registration grammar: the initiators other form, duration units on requested and applied carriers, typed carrier fields | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 2 run |
+| `PLAT-ENTRY` | One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT, CMD single, HEALTHCHECK; no start path changes | `not-started` | `-` | minor | 0 run + 1 no-gate |
+| `PLAT-SERVE` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a time, `api` first; each listener bound separately | `blocked` | `-` | minor | 0 run + 1 no-gate |
 
 ### `LAB-G7-TWO-DISPLAY` &mdash; Lab: two displays on one real G7 sensor report the same seconds counter for each reading, live and backfill
 
@@ -10267,6 +10300,64 @@ reproduced ones.
 - `docs/30-design/platform/spec/state-intent.md`
 
 **Notes.** Done 2026-10-18 by a background agent in worktree rag-alignment-intent-gaps (commit 113f98c7, cherry-picked). Source reads: Loop's applied override duration is seconds remaining (NightscoutService fe075ef StoredDosingDecision.swift:129, NightscoutKit 4ec9fd1 OverrideStatus.swift:17,44-46); AndroidAPS timeshift and originalTimeshift are milliseconds (7e1d537d49 PS.kt:22, EPS.kt:24, ProfileFunctionImpl.kt:218, CommandQueueImplementation.kt:202, TreatmentMapper.kt:510,540, RemoteTreatment.kt:85,101), agreeing with the hub active-state lab and MAP- AAPS-PROFILESWITCH. A free initiator string stays valid (the controller's own vocabulary); only a malformed other-form object is rejected. Non-vacuity: eight weakenings, one at a time, each red for the right reason (strings-only initiators, any-object initiators, durationUnit removed from carrier, "hours" added to the units, path not required, strings-only paths, the type-xor- typeRef rule dropped, fieldTyping dropped). Suites: tools/nsschema 1675 passed; the three registration suites 1,281 unchanged. Open, in state and intent §8: the reference meaning comparison treats a typed path {path: x} with no typing members as different from the bare string x, so rewriting one as the other at one version would be refused version-conflict.
+
+### `PLAT-ENTRY` &mdash; One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT, CMD single, HEALTHCHECK; no start path changes
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@7ad3a67f` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer |
+
+**Blast radius.** New bin/nightscout.js and a package.json "bin" entry; Dockerfile ENTRYPOINT/CMD/HEALTHCHECK. lib/server/server.js stays the implementation of `single`, so Procfile, npm start, server.js, web.config (iisnode) and start.sh are untouched.
+
+**What an operator sees.** Nothing changes for a site started the old way. Docker images gain a health check, and `nightscout diagnose data` / `nightscout version` can be run inside the container.
+
+**Why `minor`.** Adds a command and an image health check; no existing behaviour changes.
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started. Gate: a test boots the app through each legacy start path and through `nightscout single` and compares them; an unknown subcommand exits 64; `nightscout healthcheck` is red against a stopped server and green against a running one; the image built with the new ENTRYPOINT passes its HEALTHCHECK.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/30-design/tenancy/nightscout-deployable-components-2026-09-14.md`
+
+**Notes.** 2026-10-26: the maintainer chose one executable with subcommands, the Consul / node-multienv start_container.sh / Ory `serve` pattern, and `serve <roles>` for hosted roles (D21, execution plan section 2.12). Node, not bash: self- hosters run on Windows, IIS and Azure, and the final image has no npm. The dispatcher require()s the role in-process so SIGTERM reaches the server.
+
+### `PLAT-SERVE` &mdash; `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a time, `api` first; each listener bound separately
+
+| | |
+|---|---|
+| state (claimed) | `blocked` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@7ad3a67f` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer, plus a second human - the boot sequence moves |
+| blocks on | `PLAT-ENTRY`, `ST-FILTER-READS` |
+
+**Blast radius.** bin/nightscout.js, lib/server/bootevent.js (the factory chain split by role, per the components document's table), lib/server/server.js (listener construction per role).
+
+**What an operator sees.** Nothing for single-tenant sites. A hoster can start `serve api` without the in-memory data layer.
+
+**Why `minor`.** new subcommands; `single` unchanged
+
+**Gates.**
+
+- **NO GATE** &mdash; Blocked on PLAT-ENTRY and ST-FILTER-READS. Gate: `serve api` passes the API v3 suites with no bus or ddata constructed (asserted, with a control that constructs one); `serve admin` refuses the consumer listener's address; `single` passes the full suite unchanged.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/nightscout-deployable-components-2026-09-14.md`
+
+**Notes.** 2026-10-26 (D21). Open: whether a composed `serve` of every role is part of the multi target or only a small-hoster convenience. TEN-RESOLVE (platform admin on its own interface) depends on this item.
 
 ---
 

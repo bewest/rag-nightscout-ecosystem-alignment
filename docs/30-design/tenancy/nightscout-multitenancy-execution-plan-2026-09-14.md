@@ -2,8 +2,8 @@
 
 *Contributor- and maintainer-facing.*
 
-**Status: living document — the decision record.** Decisions D1–D20 are the maintainer's
-(2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16) and are all **adopted**, except **D17 row 2**
+**Status: living document — the decision record.** Decisions D1–D21 are the maintainer's
+(2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16, D21 on 2026-10-26) and are all **adopted**, except **D17 row 2**
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is **adopted in principle,
 gated** on the edge's production conditions and the compliance question (`T30-ORY-PROOF` held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. **Item state lives
@@ -130,7 +130,7 @@ preference.
 | **D2** | **Shared logical storage with a tenant discriminator** — *not* database-per-tenant. Database-per-tenant costs 47 WiredTiger files and ~3.7 MB of non-evictable `mongod` RSS **per tenant holding zero documents**, and fatal-asserts on file descriptors; the shared shape is 104 files total at 400 tenants, flat | {DB} §4, §7 |
 | **D3** | **PostgreSQL + RLS for the multitenant service.** Index locality no longer separates the engines — the deciding property is that a forgotten filter returns **0 rows** under RLS and **every tenant's rows** under a discriminator | {DB} §7.1, §8.2 |
 | **D4** | **MongoDB is permanent for the single-tenant target**, not a deprecated path. Existing self-hosters keep their databases, so the storage seam carries two mature backends permanently (§4) | maintainer, 2026-09-14 |
-| **D5** | **Four hosted entrypoints over one core** — `api` (stateless), `evaluator` (change-driven), `realtime` (fan-out), `vcpool` — plus `single` unchanged. The split is also a configuration-source split (D15) | {C} §2, {DB} §6 |
+| **D5** | **Four hosted entrypoints over one core** — `api` (stateless), `evaluator` (change-driven), `realtime` (fan-out), `vcpool` — plus `single` unchanged. The split is also a configuration-source split (D15). *(packaged by D21 as `nightscout serve <roles>`, 2026-10-26)* | {C} §2, {DB} §6 |
 | **D6** | **Change feed = replication slot (spine) + `NOTIFY` (latency) + bounded aggregate poll (backstop)**, with `NOTIFY` emitted **by the slot reader, never by a trigger** | {DB} §8.5, §9.4; measured in T4.1 |
 | **D7** | **The platform-admin plane gets its own entrypoint on its own network interface**, ORY-style, secured by unreachability rather than a credential. Tenant admin stays on the consumer interface under RLS. A deliberate departure from Nocturne | maintainer, 2026-09-14 — §2 |
 | **D8** | **API v3's closed operator set is the query contract; v1 is bounded by corpus evidence.** `mingo` is the differential-test oracle | maintainer, 2026-09-14 — §3 |
@@ -146,6 +146,7 @@ preference.
 | **D18** | **Controller registration has two tiers.** *Well-known* declarations ship with the hub, so legacy writers are described with no controller change (backwards compatibility). *Controller-owned* registrations are dynamic and typed: a controller declares its own definitions — intent kinds, states, transitions, initiators, effect fields, command contract — and the hub offers typed API for them, so controller-unique features have a home other than untyped `devicestatus`. Adoption follows the WHATWG pattern: specify what happens now, leave room to extend; the controller owns its registration's lifecycle. **Roles:** the hub (Nightscout, Nocturne) is responsible for observability; the controller is responsible for sending data accurately and for syncing and reconciling. The hub records a controller's composition and reconciliation results; it does not compute dosing state. **Addendum (2026-10-12):** every extensible field is typed; the grammar is must-ignore with typed, namespaced extensions, open vocabularies, per-kind versions, declared horizons and hub/controller negotiation, so neither side releases in lockstep | maintainer, 2026-10-09 and 2026-10-12 — §2.6.1 |
 | **D19** | **A registration separates the definition from the instance.** A *definition* says what a controller's data means; it is immutable, identified by the hash of its content, and many coexist under one `(vendor, product)`. An *instance* is one connected copy of a controller (phone, simulator, lab rig, agent): it names the definition it runs, holds a lease, declares a provenance (`device` or `simulated`) on each channel role it plays, and carries typed labels. Among `device`-provenance instances each channel role has one source of record, handed off by release, lease lapse or owner transfer; an overlapping writer is flagged, never silently resolved, and a command has one destination. Registered instances write typed records only for accepted elements; older readers get a declared, read-only view in today's shapes. The hub still decides nothing about dosing. *(corrected 2026-10-15: reverse-DNS, `dev.nightscout/` — the well-known label prefix of rule 7; specified 2026-10-15, `SPEC-REG-INSTANCE`, hub-sync design §3.6)* | maintainer, 2026-10-14 — §2.6.2 |
 | **D20** | **Quirks are scoped to the versions that produce them, and identity has two fields under one rule.** A quirk names the `(vendor, product, versions)` it affects, for stored documents and for declarations alike; versions released before registration get their mapping from the catalogue, newer versions declare it themselves, the hub records each mapping it applies, and a quirk moves to historical and then retired as measurement shows the affected versions gone. `identifier` is the sync identity the client assigns; `_id` is the storage key the hub assigns and returns; in single-tenant legacy mode `_id` is an ObjectId. *(amended 2026-10-16: every legacy surface serves 24-hex `_id` values; the opaque option is dropped — §2.6.3 walk-through)* | maintainer, 2026-10-16 — §2.6.3 |
+| **D21** | **One executable, and roles are served by `nightscout serve <roles>`.** `bin/nightscout.js` (Node, not a shell script) is the container `ENTRYPOINT` and dispatches subcommands, as Consul and node-multienv's `start_container.sh` do. `nightscout single` is today's server, and every existing way of starting it (`Procfile`, `npm start`, `server.js`, iisnode's `web.config`, `start.sh`, the image's `CMD`) stays equal to it (D1). Hosted roles — D5's `api`, `evaluator`, `realtime`, `vcpool` and D16's `tenant-admin` and `admin` — are started as `nightscout serve <role>[,<role>…]`; several roles may share one process, and each listener has its own bind address, so `admin` stays off the consumer interface (D7), as Ory's `serve public|admin|all` does. Subcommands an operator runs against a deployed site (`diagnose data`, `healthcheck`, `version`, `env`, later `migrate`) live in the same dispatcher; developer tooling stays in `scripts/`. The dispatcher selects the bootstrap and keeps D15's split. Reorganising the repository into packages ({C} §3) is a separate, later track. **Open:** whether a composed `serve` of every role is part of the multi target or only a small-hoster convenience | maintainer, 2026-10-26 — §2.12 |
 
 **Amendment carried with D13, true however D17 row 2 lands:** *credentials are per-tenant,
 identity is per-cohort, authorization is per-tenant.* Isolation rests on the authorization layer
@@ -870,6 +871,45 @@ Wherever this metadata is rendered (a boot-error page, a suspended-tenant respon
 notification), the text is user-facing. It must say plainly which party to contact and for what,
 and it must not suggest that contacting anyone replaces the person's own care team when the
 problem concerns their therapy rather than the software.
+
+### 2.12 D21 — one entrypoint, `serve <roles>` (maintainer, 2026-10-26)
+
+D5 decided the roles and D16 the listeners; neither said how an operator starts one. The
+components document sketched one `bin/` script per role ({C} §3). D21 replaces that sketch
+with one executable and a subcommand per role, the pattern Consul uses for its agent and tools,
+node-multienv uses in `start_container.sh` (`multienv`, `resolver`, `runner`, `inspector`, …),
+and Ory uses to turn its public and admin listeners on and off (`serve public`, `serve admin`,
+`serve all`).
+
+| subcommand | what it runs | configuration (D15) |
+|---|---|---|
+| `nightscout single` | today's server: one process, `ctx.ddata`, the cache, every listener | the process environment |
+| `nightscout serve api` | express and storage; no bus, no `ddata` | per-tenant, from the database |
+| `nightscout serve evaluator` | change feed, plugins, notifications; no express | per-tenant, from the database |
+| `nightscout serve realtime` | socket.io and the change feed; no storage writes | per-tenant, from the database |
+| `nightscout serve vcpool` | connector actors and the egress proxy | per-tenant, from the database |
+| `nightscout serve tenant-admin` | the tenant owner's configuration listener (D16) | per-tenant, from the database |
+| `nightscout serve admin` | the platform operator's listener, on its own interface (D7) | the deployment's own settings |
+| `nightscout serve api,realtime` | several roles in one process, each listener on its own bind address | as each role |
+| `nightscout diagnose data`, `healthcheck`, `version`, `env` | operator tools against a deployed site | as `single`, or as the role named |
+
+Rules that follow:
+
+1. **No start path changes.** `node lib/server/server.js` stays the implementation of `single`;
+   the dispatcher `require()`s it in-process (no child process, so `SIGTERM` reaches the server
+   directly). A test boots the app both ways and compares them.
+2. **Listeners are named and bound separately.** A role that serves HTTP takes its own address
+   and port; `admin` refuses to share the consumer listener's address.
+3. **A subcommand is something an operator runs against a deployed site.** Build, test and
+   analysis scripts stay in `scripts/` and `package.json`.
+4. **An unknown subcommand prints the list and exits with status 64** (`EX_USAGE`); `help` lists
+   the subcommands with one line each.
+5. **The image's healthcheck is `nightscout healthcheck`**, so the image needs no curl.
+
+Work items: PLAT-ENTRY (the dispatcher with `single` and the operator tools, no behaviour
+change) and PLAT-SERVE (the hosted roles, carved one at a time from `bootevent`'s factory chain,
+starting with `api`) in [`queue/work-queue.yaml`](../../../queue/work-queue.yaml) and the
+[next-gen platform plan](../platform/next-gen-platform-plan.md) §5.4.
 
 ## 3. D8 — the query surface
 

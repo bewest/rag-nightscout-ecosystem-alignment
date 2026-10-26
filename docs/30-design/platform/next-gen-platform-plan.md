@@ -110,13 +110,15 @@ Slices S0, S1, S2 and S5 need no storage work and go to dev together as one sing
 
 | item | builds | needs |
 |---|---|---|
+| PLAT-ENTRY | one executable, `bin/nightscout.js`: `single` (today's server, every old start path unchanged) and the operator tools; image ENTRYPOINT and HEALTHCHECK (D21) | dev |
+| PLAT-SERVE | `nightscout serve <roles>`: hosted roles carved from `bootevent`, `api` first, each listener bound separately (D5, D7, D16) | PLAT-ENTRY, ST-READS |
 | T30-RESEARCH | the tenant-owner configuration surface (277 settings classified) | D-T30 |
 | T30-SCHEMA-CONFIG | the per-tenant settings table (D15) | T30-RESEARCH |
-| TEN-RESOLVE | tenant resolution and the platform admin interface (D7, D10, D16) | ST-HARNESS, T30-SCHEMA-CONFIG |
+| TEN-RESOLVE | tenant resolution and the platform admin interface (D7, D10, D16) | ST-HARNESS, T30-SCHEMA-CONFIG, PLAT-SERVE |
 | T30-WIRING | tenant-scoped API keys and per-tenant signing keys (D13, D14) | TEN-RESOLVE |
 | TEN-LAB | two tenants on PostgreSQL in a Docker Compose lab, isolation checked with a control | ST-PG, T30-WIRING |
 
-The decisions D1–D20 are in the [execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md). Single-tenant on MongoDB stays first-class (D1, D4). Every tenancy item ships behind `TENANCY_MODE=multi`.
+The decisions D1–D21 are in the [execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md). Single-tenant on MongoDB stays first-class (D1, D4). Every tenancy item ships behind `TENANCY_MODE=multi`.
 
 ## 6. Open decisions
 
@@ -125,6 +127,8 @@ Select **Show on the map** on a card to see which items it holds up.
 Decided 2026-10-26: an explicit null removes a field on merge-on-match, API v3 PATCH and the socket's `dbUpdate` (RFC 7386; [write contract §6.1](../tenancy/write-contract-spec-2026-10-07.md#61-decided-2026-10-12)), never on PUT or create, and devicestatus never merges; in 16.0.0, in one shared merge helper.
 
 Decided 2026-10-26 (D-ID-FALLBACK): for 16.0.0 a v1 entries re-send whose identifier matches nothing still matches on `sysTime`+`type`, as today (TEST-ENTRY-UUID-003); treatments never fall back; revisited once identifiers are common. A devicestatus re-send whose identifier is stored writes nothing and is answered with the stored `_id`, on v1 and v3.
+
+Decided 2026-10-26 (D21): Nightscout starts through one executable. `nightscout single` is today's server, hosted roles are `nightscout serve <roles>`, and operator tools are subcommands of the same dispatcher, as Consul, node-multienv and Ory do it. Still open: whether serving every role in one process is part of the multi target.
 
 Decided 2026-10-26: #8854 lands in 16.0.0 after four alignment conditions (outcome B in its [brief](../modernization/pr-8854-alignment-2026-10-26.md)): a per-item socket reply or no socket validation yet, the data-warnings header off or held, the commit event marked internal and unstable, and a separate name for the intent layer.
 

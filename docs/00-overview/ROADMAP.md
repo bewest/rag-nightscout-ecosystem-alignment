@@ -14,7 +14,7 @@ live in these places, and this page links to them:
 | what | where it is decided |
 |---|---|
 | the release train and each release's number | [versioning policy §8.3](../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md#83-the-release-train) |
-| tenancy decisions D1–D20 and the tenancy task definitions | [multitenancy execution plan](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) |
+| tenancy decisions D1–D21 and the tenancy task definitions | [multitenancy execution plan](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) |
 | defect facts, and what ships to operators today | [backfix register](../30-design/remedial/nightscout-backfix-register.md) |
 | each item's state, gate and blockers | `queue/work-queue.yaml`; `make queue-status` measures it |
 
@@ -181,6 +181,7 @@ Until then, the order below is the order of development, not of release.
 | 1 | `A7A-7` | §7a item 7 - the clock question | `unsettled` | &mdash; |
 | 1 | `ID-CONVENTIONS` | Identifier conventions: one URL-form identifier template per record kind and sou | `in-progress` | &mdash; |
 | 1 | `SEAM-REFRESH` | Refresh the seam chain once after 15.0.9, onto the base the release train leaves | `blocked` | &mdash; |
+| 1 | `ST-FILTER-READS` | Storage interface, first PR: the filter tree and interface methods under API v3' | `in-progress` | &mdash; |
 | 1 | `T30-AUTH` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | `ready-to-push` | &mdash; |
 | 1 | `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | &mdash; |
 | 1 | `T43` | T4.3 - ns-realtime, LISTEN per served tenant | `not-started` | &mdash; |

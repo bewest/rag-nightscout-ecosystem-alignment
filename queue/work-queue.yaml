@@ -21423,3 +21423,124 @@ items:
       comparison treats a typed path {path: x} with no typing members as
       different from the bare string x, so rewriting one as the other at
       one version would be refused version-conflict.
+
+  - id: ST-FILTER-READS
+    title: "Storage interface, first PR: the filter tree and interface methods under API v3's adapter (ST-FILTER), and API v1 reads through them (ST-READS), with no v1 answer changed"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: feat/storage-filter
+    base: official/dev@7ad3a67f
+    worktree: externals/work/crm-stfilter
+    state: in-progress
+    pr: []
+    blast_radius: >
+      lib/storage/filter.js (new: the filter tree, fromMongo, the MongoDB
+      adapter), lib/api3/storage/mongoCollection/{index,find,modify}.js
+      (interface methods, every write through #8854's write-step proxy),
+      lib/server/query-operator-allowlist.js (cycle guard); ST-READS adds
+      the read sites of lib/server/{entries, treatments, devicestatus,
+      profile, food, activity}.js. write-step.js, validated-update.js and
+      check-write-boundary.js are unchanged.
+    review: maintainer, plus a second human - every v1 read path moves
+    operator_visible: >
+      Nothing should look different: every API v1 request gets the same
+      records, status and error as before. Shapes the new filter tree would
+      refuse are listed in the PR, not refused.
+    semver: patch
+    semver_reason: >
+      No client-visible change; the write-contract matrix (336 cells, off
+      and reject) and #8854's CRUD matrix are the pins.
+    gates:
+      - no-gate: >
+          In progress. ST-FILTER measured 2026-10-26 at 50172510 on dev
+          7ad3a67f: npm test 4505/0/3 (dev 4429/0/3), test:all 4833/0/3
+          (dev 4757/0/3), #8854 matrix 422 = 422, write-contract matrix 0
+          of 336 cells differ off and reject (red control: 5 cells), live
+          mongod differential 0 mismatches over 5,467 and 11,467 filters.
+          The gate for the PR is the same set re-run on the ST-READS head.
+    blocks_on: []
+    evidence:
+      - docs/30-design/platform/next-gen-platform-plan.md
+      - docs/30-design/modernization/pr-8854-alignment-2026-10-26.md
+      - tools/qc/write-contract-matrix.js
+    notes: >
+      2026-10-26: the maintainer decided ST-FILTER and ST-READS go up as one
+      PR. ST-FILTER found five defects in the September seam's fromMongo,
+      each of which widens or changes a read ({a: {}} dropped, empty $or and
+      $and matching everything, $exists undefined read as presence, RegExp g
+      and s flags swapped, mongod-refused $regex options coerced); the
+      mingo round trip could not see them, the live-mongod differential
+      did. All five are fixed on the branch and pinned by tests.
+
+  - id: PLAT-ENTRY
+    title: "One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT, CMD single, HEALTHCHECK; no start path changes"
+    parcel: platform
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@7ad3a67f
+    state: not-started
+    pr: []
+    blast_radius: >
+      New bin/nightscout.js and a package.json "bin" entry; Dockerfile
+      ENTRYPOINT/CMD/HEALTHCHECK. lib/server/server.js stays the
+      implementation of `single`, so Procfile, npm start, server.js,
+      web.config (iisnode) and start.sh are untouched.
+    review: maintainer
+    operator_visible: >
+      Nothing changes for a site started the old way. Docker images gain a
+      health check, and `nightscout diagnose data` / `nightscout version`
+      can be run inside the container.
+    semver: minor
+    semver_reason: >
+      Adds a command and an image health check; no existing behaviour
+      changes.
+    gates:
+      - no-gate: >
+          Not started. Gate: a test boots the app through each legacy start
+          path and through `nightscout single` and compares them; an unknown
+          subcommand exits 64; `nightscout healthcheck` is red against a
+          stopped server and green against a running one; the image built
+          with the new ENTRYPOINT passes its HEALTHCHECK.
+    blocks_on: []
+    evidence:
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
+      - docs/30-design/tenancy/nightscout-deployable-components-2026-09-14.md
+    notes: >
+      2026-10-26: the maintainer chose one executable with subcommands, the
+      Consul / node-multienv start_container.sh / Ory `serve` pattern, and
+      `serve <roles>` for hosted roles (D21, execution plan section 2.12).
+      Node, not bash: self-hosters run on Windows, IIS and Azure, and the
+      final image has no npm. The dispatcher require()s the role in-process
+      so SIGTERM reaches the server.
+
+  - id: PLAT-SERVE
+    title: "`nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a time, `api` first; each listener bound separately"
+    parcel: platform
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@7ad3a67f
+    state: blocked
+    pr: []
+    blast_radius: >
+      bin/nightscout.js, lib/server/bootevent.js (the factory chain split by
+      role, per the components document's table), lib/server/server.js
+      (listener construction per role).
+    review: maintainer, plus a second human - the boot sequence moves
+    operator_visible: >
+      Nothing for single-tenant sites. A hoster can start `serve api`
+      without the in-memory data layer.
+    semver: minor
+    semver_reason: new subcommands; `single` unchanged
+    gates:
+      - no-gate: >
+          Blocked on PLAT-ENTRY and ST-FILTER-READS. Gate: `serve api` passes
+          the API v3 suites with no bus or ddata constructed (asserted, with
+          a control that constructs one); `serve admin` refuses the consumer
+          listener's address; `single` passes the full suite unchanged.
+    blocks_on: [PLAT-ENTRY, ST-FILTER-READS]
+    evidence:
+      - docs/30-design/tenancy/nightscout-deployable-components-2026-09-14.md
+    notes: >
+      2026-10-26 (D21). Open: whether a composed `serve` of every role is
+      part of the multi target or only a small-hoster convenience. TEN-RESOLVE
+      (platform admin on its own interface) depends on this item.

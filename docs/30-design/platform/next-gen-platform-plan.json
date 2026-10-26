@@ -505,6 +505,42 @@
    ]
   },
   {
+   "id": "PLAT-ENTRY",
+   "track": "tenancy",
+   "phase": "now",
+   "state": "planned",
+   "short": "One entrypoint",
+   "title": "bin/nightscout.js dispatches subcommands (D21): `single` is today's server, plus operator tools `diagnose data`, `healthcheck`, `version`, `env`; the image gets ENTRYPOINT, CMD single and HEALTHCHECK. No behaviour change: Procfile, npm start, server.js, web.config, start.sh and the old CMD all still start the same server",
+   "where": "bin/nightscout.js, package.json bin, Dockerfile",
+   "check": "each legacy start path and `nightscout single` boot the same app (test); unknown subcommand exits 64; healthcheck red against a stopped server",
+   "spec": [
+    {
+     "label": "D21",
+     "href": "../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#212-d21--one-entrypoint-serve-roles-maintainer-2026-10-26"
+    }
+   ]
+  },
+  {
+   "id": "PLAT-SERVE",
+   "track": "tenancy",
+   "phase": "boundary",
+   "state": "planned",
+   "short": "serve <roles>",
+   "title": "`nightscout serve <role>[,<role>…]`: hosted roles carved one at a time from bootevent's factory chain, `api` first (API v3 holds no resident state); each listener on its own bind address so `admin` stays off the consumer interface (D5, D7, D16, D21)",
+   "where": "bin/nightscout.js, lib/server/bootevent.js, lib/server/server.js",
+   "check": "`serve api` answers the API v3 suites with no bus or ddata; `admin` refuses the consumer listener's address",
+   "depends": [
+    "PLAT-ENTRY",
+    "ST-READS"
+   ],
+   "spec": [
+    {
+     "label": "components doc",
+     "href": "../tenancy/nightscout-deployable-components-2026-09-14.md"
+    }
+   ]
+  },
+  {
    "id": "T30-RESEARCH",
    "track": "tenancy",
    "phase": "now",
@@ -539,7 +575,8 @@
    "title": "A request resolves to a tenant or is refused; platform admin on its own interface (reference: old chain T3.1, T3.2)",
    "depends": [
     "ST-HARNESS",
-    "T30-SCHEMA-CONFIG"
+    "T30-SCHEMA-CONFIG",
+    "PLAT-SERVE"
    ]
   },
   {
