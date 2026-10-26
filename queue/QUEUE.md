@@ -31,25 +31,25 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 285 |
+| items | 286 |
 | runnable gates | 345 |
-| explicit `no-gate:` markers | 306 |
+| explicit `no-gate:` markers | 307 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 306 of the 651 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 307 of the 652 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 61 | RT-JSDOM-REST, RT-BUNDLE-THEME-SPLIT, ID-SIMPLE-MATCH, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
-| `in-progress` | 24 | RT-REBASE, RT-BOOT-INDEX-AWAIT, ID-CONVENTIONS, BFQ-46, BFQ-ENV, BFQ-92, BFQ-93, BFQ-145, BFQ-152, BFQ-156, BFQ-159, BFQ-160, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-180, BFQ-183, BFQ-186, BFQ-190, BFQ-191, OID-LAB, LOOP-ID-REPLY |
+| `in-progress` | 16 | RT-REBASE, RT-BOOT-INDEX-AWAIT, ID-CONVENTIONS, BFQ-46, BFQ-ENV, BFQ-92, BFQ-93, BFQ-156, BFQ-159, BFQ-160, BFQ-180, BFQ-183, BFQ-190, BFQ-191, OID-LAB, LOOP-ID-REPLY |
 | `gate-not-met` | 6 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, MOD-WRITE-VALIDATION, WS-LAB |
 | `blocked` | 18 | RT-TEST-TIERS, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, WC-STEP-PATCH, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154 |
-| `in-flight-upstream` | 6 | RT-2, BFQ-72, BFQ-161, BFQ-179, BFQ-182, BFQ-185 |
+| `in-flight-upstream` | 14 | RT-2, BFQ-72, BFQ-145, BFQ-152, BFQ-161, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-179, BFQ-182, BFQ-185, BFQ-186 |
 | `merged-upstream` | 13 | BFQ-177, RT-D3-SUITE, RT-CONNECT-TEARDOWN, RT-1, BFQ-09, BFQ-158, BFQ-137, BFQ-157, BFQ-163, BFQ-172, BFQ-173, BFQ-174, BFQ-176 |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
-| `needs-decision` | 14 | T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
+| `needs-decision` | 15 | T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164, BFQ-192, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
 | `done` | 39 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 4 | BFQ-71, BFQ-41, BFQ-175, BFQ-141 |
@@ -1500,7 +1500,7 @@ that costs.
 
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 
-**Notes.** 2026-10-25: in progress as 488def62 on local bf/16.0.0-boot-resilience (head 8e3717e3 over dev b29f1bf7, not pushed; session f4's resilience lane, themed with BF-156, BF-46, BF-48 and BF-49). ensureIndexes returns a promise that never rejects; one createIndexes per collection, with a per-index fallback; the setupAuthorization and ensureIndexes boot stages wait at most 20 s (INDEX_WAIT_MS), then log a warning and continue; boot also asks for API v3's indexes on its six collections. Measured on MongoDB 8.0.34 (lane): boot on a dropped database 3.2 to 4.3 s (was 0.2 to 1 s) and the first write after it 2 to 4 ms; an indexed database still boots in about 0.2 s. Open for review: whether 20 s is the right cap. Filed 2026-10-25 from #8838's cab8896f, which gave the API3 SEARCH before hook a 30 s timeout. Measured there on MongoDB 7.0.43: on an empty database the first role insert in authSubject took 4.8 to 7.2 s behind the collections and indexes boot requests without awaiting them; once they exist it takes about 2 ms; boot itself 0.2 to 0.4 s. The test fix is merged (dev 2bc298b9); the product fix is this item.
+**Notes.** 2026-10-25: in progress as 488def62 on local bf/16.0.0-boot-resilience (head 0675e91e after merging dev 428b20b7, not pushed; session f4's resilience lane, themed with BF-156, BF-46, BF-48 and BF-49). ensureIndexes returns a promise that never rejects; one createIndexes per collection, with a per-index fallback; the setupAuthorization and ensureIndexes boot stages wait at most 20 s (INDEX_WAIT_MS), then log a warning and continue; boot also asks for API v3's indexes on its six collections. Measured on MongoDB 8.0.34 (lane): boot on a dropped database 3.2 to 4.3 s (was 0.2 to 1 s) and the first write after it 2 to 4 ms; an indexed database still boots in about 0.2 s. Open for review: whether 20 s is the right cap. Filed 2026-10-25 from #8838's cab8896f, which gave the API3 SEARCH before hook a 30 s timeout. Measured there on MongoDB 7.0.43: on an empty database the first role insert in authSubject took 4.8 to 7.2 s behind the collections and indexes boot requests without awaiting them; once they exist it takes about 2 ms; boot itself 0.2 to 0.4 s. The test fix is merged (dev 2bc298b9); the product fix is this item.
 
 ### `RT-CONNECT-TEARDOWN` &mdash; Remove the redundant connector teardown listener in bootevent.js once cut 1 is on dev
 
@@ -2151,7 +2151,7 @@ that costs.
 
 **Gates.**
 
-- `[static]` `git -C externals/cgm-remote-monitor-official cat-file -e a2e5fe49^{commit}`
+- `[static]` `git -C externals/cgm-remote-monitor-official cat-file -e 90fd47d0^{commit}`
   - the branch head exists in the shared clone; red if the local branch is lost before it is pushed (a rebase changes the id, and this gate must then name the new one)
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev feat/api3-domain-validation >/dev/null`
   - Merges into official/dev with no conflict.
@@ -2166,7 +2166,7 @@ that costs.
 - `docs/60-research/modernization/write-validation-design-2026-10-25.md`
 - `docs/60-research/remedial/upload-refusal-client-behaviour-2026-10-25.md`
 
-**Notes.** Filed 2026-10-25 by session f4 from the v3-validation lane. Draft: local branch feat/api3-domain-validation a2e5fe49 (e8125d89, 6e842c07, a2e5fe49) over dev b29f1bf7, not pushed. Decided 2026-10-25 (maintainer): D1 the setting shape; D2 a v1 batch under reject stores its valid items, keeps one object per item in order with refused slots without _id plus a refused member and a Warning 299 header, and answers 400 when every item is refused; D4 a double- labelled record is refused with a message naming the field and the units to send. Open: D5 (N1 or N2 and the conversion constant, MOD-UNITS-CANONICAL), D6 (thresholds 30 mmol/L and 20 mg/dL). Making reject the default is blocked on a refusal the person can see (clients that read refused, or a Nightscout-side notice), not on a date. ready-to-push means the gates pass and the next step is a human push of a draft PR.
+**Notes.** Filed 2026-10-25 by session f4 from the v3-validation lane. Draft: local branch feat/api3-domain-validation a2e5fe49 (e8125d89, 6e842c07, a2e5fe49) over dev b29f1bf7; head 90fd47d0 after merging dev 428b20b7, not pushed. Decided 2026-10-25 (maintainer): D1 the setting shape; D2 a v1 batch under reject stores its valid items, keeps one object per item in order with refused slots without _id plus a refused member and a Warning 299 header, and answers 400 when every item is refused; D4 a double-labelled record is refused with a message naming the field and the units to send. Open: D5 (N1 or N2 and the conversion constant, MOD-UNITS-CANONICAL), D6 (thresholds 30 mmol/L and 20 mg/dL). Making reject the default is blocked on a refusal the person can see (clients that read refused, or a Nightscout-side notice), not on a date. ready-to-push means the gates pass and the next step is a human push of a draft PR.
 
 ### `MOD-WRITE-VALIDATION-READ` &mdash; Flag stored records that break a write-validation rule on API v3 reads (read-side flag, R1/R2)
 
@@ -2453,7 +2453,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 133 items
+`parcel: register-open` &mdash; 134 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2534,13 +2534,13 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-136` | BF-136 - API v3 refuses an AndroidAPS write that lands on a record written through v1 (Field app cannot be modified), and AndroidAPS drops it | `released` | `bf/api3-app-field-v1-records` | patch | 1 run + 3 no-gate |
 | `BFQ-80` | BF-80 - an alarm viewer with no credential is held by the failed-login delay of its address (the cost of BF-75's fix) | `released` | `bf/alarm-anonymous-no-delay` | patch | 1 run + 2 no-gate |
 | `BFQ-137` | BF-137 - with more than one IFTTT Maker key, an alarm's Maker calls run out of order and a failed key is not retried | `merged-upstream` | `-` | patch | 1 run |
-| `BFQ-145` | BF-145 - API v3 PATCH and PUT by the shown id miss a record whose identifier is null, "" or 0 | `in-progress` | `bf/16.0.0-record-identity` | patch | 0 run + 1 no-gate |
+| `BFQ-145` | BF-145 - API v3 PATCH and PUT by the shown id miss a record whose identifier is null, "" or 0 | `in-flight-upstream` | `bf/16.0.0-record-identity` | patch | 0 run + 1 no-gate |
 | `BFQ-147` | BF-147 - two package.json overrides hold ajv and request's form-data inside published advisory ranges | `released` | `bf/override-advisory-pins` | patch | 0 run + 1 no-gate |
 | `BFQ-149` | BF-149 - the Day to Day report draws a cancelled or replaced temp target or override for its whole entered duration | `not-started` | `-` | patch | 1 run + 1 no-gate |
 | `BFQ-151` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (brace expansion has no bound), for 15.0.9 | `released` | `bf/braces-expansion-cap` | patch | 1 run + 1 no-gate |
 | `BFQ-73` | BF-73 - error responses carry a stack trace and server paths in production, for 15.0.9 | `released` | `bf/production-error-handler` | patch | 1 run + 1 no-gate |
 | `BFQ-153` | BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 style refresh) | `released` | `bf/dependency-refresh-2026-10` | patch | 1 run + 1 no-gate |
-| `BFQ-152` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission | `in-progress` | `bf/16.0.0-v3-settings-read-scope` | minor | 1 run + 1 no-gate |
+| `BFQ-152` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission | `in-flight-upstream` | `bf/16.0.0-record-identity` | minor | 1 run + 1 no-gate |
 | `DEPENDABOT-CONFIG` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev | `needs-decision` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-154` | BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed release | `blocked` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-155` | BF-155 - a failed storage read on GET /api/v1/activity ends the server process, for 15.0.9 | `released` | `bf/activity-read-error` | patch | 1 run + 1 no-gate |
@@ -2553,12 +2553,12 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-162` | BF-162 - an explicit TRUST_PROXY address list reaches proxy-addr 2.0.7, inside a critical advisory fixed in 2.0.8 | `released` | `bf/proxy-addr-2.0.8` | patch | 0 run + 1 no-gate |
 | `BFQ-163` | BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in 1.8.2 | `merged-upstream` | `deps/16.0.0-security-refresh` | patch | 1 run + 1 no-gate |
 | `BFQ-164` | BF-164 - writes outside API v3 never reach the v3 storage socket | `needs-decision` | `-` | minor | 0 run + 1 no-gate |
-| `BFQ-165` | BF-165 - a treatment re-send matched by its fallback key is answered without _id | `in-progress` | `bf/16.0.0-record-identity` | patch | 0 run + 1 no-gate |
-| `BFQ-166` | BF-166 - a profile re-sent with its own _id answers 500 | `in-progress` | `bf/16.0.0-record-identity` | patch | 0 run + 1 no-gate |
-| `BFQ-167` | BF-167 - devicestatus remove()'s filter is not pinned by any test | `in-progress` | `bf/16.0.0-record-identity` | n/a | 0 run + 1 no-gate |
+| `BFQ-165` | BF-165 - a treatment re-send matched by its fallback key is answered without _id | `in-flight-upstream` | `bf/16.0.0-record-identity` | patch | 0 run + 1 no-gate |
+| `BFQ-166` | BF-166 - a profile re-sent with its own _id answers 500 | `in-flight-upstream` | `bf/16.0.0-record-identity` | patch | 0 run + 1 no-gate |
+| `BFQ-167` | BF-167 - devicestatus remove()'s filter is not pinned by any test | `in-flight-upstream` | `bf/16.0.0-record-identity` | n/a | 0 run + 1 no-gate |
 | `BFQ-168` | BF-168 - the context chart's window sometimes cannot be dragged back to now | `released` | `bf/brush-extent` | patch | 2 run + 1 no-gate |
-| `BFQ-169` | BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a client-supplied one | `in-progress` | `bf/16.0.0-record-identity` | patch | 0 run + 1 no-gate |
-| `BFQ-170` | BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent | `in-progress` | `bf/16.0.0-record-identity` | minor | 0 run + 1 no-gate |
+| `BFQ-169` | BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a client-supplied one | `in-flight-upstream` | `bf/16.0.0-record-identity` | patch | 0 run + 1 no-gate |
+| `BFQ-170` | BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent | `in-flight-upstream` | `bf/16.0.0-record-identity` | minor | 0 run + 1 no-gate |
 | `BFQ-172` | BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819 proposed), a known issue of 15.0.9 | `merged-upstream` | `javier-erro:#8819` | patch | 1 run + 1 no-gate |
 | `BFQ-173` | BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units, a known issue of 15.0.9 | `merged-upstream` | `bf/boluscalc-profile-units` | patch | 1 run + 1 no-gate |
 | `BFQ-174` | BF-174 - the bolus calculator's profile picker is ignored; every value comes from the active profile, a known issue of 15.0.9 | `merged-upstream` | `bf/profile-spec-honoured` | patch | 1 run + 1 no-gate |
@@ -2571,12 +2571,13 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-183` | BF-183 - the API v3 storage socket logs the supplied credential on a failed authorization | `in-progress` | `bf/183-storage-socket-log-redaction` | patch | 0 run + 1 no-gate |
 | `BFQ-184` | BF-184 - API v3 /status apiPermissions reports only wildcard permissions | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-185` | BF-185 - the stress test tier leaves devicestatus documents that break api3.search in a later run | `in-flight-upstream` | `ci/edge-diagonal-matrix` | n/a | 0 run + 1 no-gate |
-| `BFQ-186` | BF-186 - API v3 logs a whole record when a client's identifier differs from the computed one | `in-progress` | `bf/16.0.0-record-identity` | patch | 1 run + 1 no-gate |
+| `BFQ-186` | BF-186 - API v3 logs a whole record when a client's identifier differs from the computed one | `in-flight-upstream` | `bf/16.0.0-record-identity` | patch | 1 run + 1 no-gate |
 | `BFQ-187` | BF-187 - an entries pattern segment over the braces parser's input limit answers 500, not 400 | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-188` | BF-188 - with no client bundle the server exits at boot with an unexplained module error | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-189` | BF-189 - tests/security.test.js (API_SECRET) fails depending on file order | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `BFQ-190` | BF-190 - an alarm on a page without a current reading cannot be silenced from the page | `in-progress` | `bf/16.0.0-client-alarms` | patch | 1 run + 1 no-gate |
 | `BFQ-191` | BF-191 - a stored treatment can stop the server process, and keeps doing so after a restart (mechanism only) | `in-progress` | `-` | n/a | 0 run + 1 no-gate |
+| `BFQ-192` | BF-192 - the populated reports page exceeds its retained-heap budget in the browser test on dev 428b20b7 | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `released` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -3400,7 +3401,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-25: the code half is fixed as 1d63df57 on local bf/16.0.0-boot- resilience (head 8e3717e3 over dev b29f1bf7, not pushed): the API v3 settings and CI are read in env.js into env.api3 with the same parsing (not trimmed), and lib/api3 no longer reads process.env; tests/env.api3.test.js is red with trimming added. The branch moves from bf/config-docs-truth, whose documentation half shipped in 15.0.9 (#8799). The census gate below still looks for README entries and an awaited deleteManyOr; read its arm against the branch before trusting a red. 2026-10-02: gate defect found by -d4's agent: config-surface-census.js's api3 arm (:138-142) accepts only `await self.storage.deleteManyOr`, so it stays red on a correct .then/.catch fix (bf/autoprune-promise). 2026-10-02 (maintainer, relayed by session -d4): the documentation half goes into 15.0.9 as BFQ-CONFIG-DOCS (bf/config-docs-truth); the code half, routing the API3_* variables through env.js, is after 15.0.9 and stays here. BF-156 (autoprune result) is carried in the BF-46 known issue of 15.0.9. 2026-10-02: documentation half on bf/config-docs-truth c102d98f with BFQ-ENV (README documents the API v3 settings; swagger text corrected, including a DEVICESTATUS=60 autoprune default the code never had). The code half stays open. BF-156 (autoprune result never handled) was found while doing it. 2026-10-02 (maintainer, relayed by session -d4): a known issue of 15.0.9, named in its release notes and contents (by -d4), and the documentation of the API3_* variables is updated. A local branch is being prepared by -d4's agent in externals/work/crm-bf46-env off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Kept out of BFQ-ENV deliberately. The other three are a documentation and plumbing residue; this one irreversibly deletes a person's glucose history through a name nobody can look up, with the result unawaited. A reviewer should not have to find it inside a batch whose other members are a README typo and a dead settings key.
+**Notes.** 2026-10-25: the code half is fixed as 1d63df57 on local bf/16.0.0-boot- resilience (head 0675e91e after merging dev 428b20b7, not pushed): the API v3 settings and CI are read in env.js into env.api3 with the same parsing (not trimmed), and lib/api3 no longer reads process.env; tests/env.api3.test.js is red with trimming added. The branch moves from bf/config-docs-truth, whose documentation half shipped in 15.0.9 (#8799). The census gate below still looks for README entries and an awaited deleteManyOr; read its arm against the branch before trusting a red. 2026-10-02: gate defect found by -d4's agent: config-surface-census.js's api3 arm (:138-142) accepts only `await self.storage.deleteManyOr`, so it stays red on a correct .then/.catch fix (bf/autoprune-promise). 2026-10-02 (maintainer, relayed by session -d4): the documentation half goes into 15.0.9 as BFQ-CONFIG-DOCS (bf/config-docs-truth); the code half, routing the API3_* variables through env.js, is after 15.0.9 and stays here. BF-156 (autoprune result) is carried in the BF-46 known issue of 15.0.9. 2026-10-02: documentation half on bf/config-docs-truth c102d98f with BFQ-ENV (README documents the API v3 settings; swagger text corrected, including a DEVICESTATUS=60 autoprune default the code never had). The code half stays open. BF-156 (autoprune result never handled) was found while doing it. 2026-10-02 (maintainer, relayed by session -d4): a known issue of 15.0.9, named in its release notes and contents (by -d4), and the documentation of the API3_* variables is updated. A local branch is being prepared by -d4's agent in externals/work/crm-bf46-env off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Kept out of BFQ-ENV deliberately. The other three are a documentation and plumbing residue; this one irreversibly deletes a person's glucose history through a name nobody can look up, with the result unawaited. A reviewer should not have to find it inside a batch whose other members are a README typo and a dead settings key.
 
 ### `BFQ-47` &mdash; BF-47 - an ordinary subject edit destroys stored fields, on today's release
 
@@ -3477,7 +3478,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-25: on local bf/16.0.0-boot-resilience (head 8e3717e3 over dev b29f1bf7, not pushed): BF-48 fixed as 8e4d30d3 (WEBHOOK_* read in env.js into env.webhook, passed as ctx.webhook); BF-49 partly fixed as 8e3717e3 (a start- up warning when the unread SECURE_HSTS_HEADER_INCLUDE_SUBDOMAINS is set; the alias and the five dead settings keys are open decisions). BF-50 and BF-51 were fixed by #8799 and released in 15.0.9; their gates here are stale. 2026-10-02 (maintainer, relayed by session -d4): BF-50 and BF-51 and the documentation half of BF-48 and BF-49 go into 15.0.9 as BFQ-CONFIG-DOCS; after 15.0.9 here: env.js routing for WEBHOOK_*, the HSTS alias, and reconciling the Azure template's Node ~22 with cut 1's ~24. 2026-10-02 (session -d4's agent): bf/config-docs-truth c102d98f, five commits (one per id: BF-46, 48, 49, 50, 51) on dev ca6fcfaf, README.md +33/-4, azuredeploy.json, lib/api3/swagger.yaml and swagger.json; no .js change; full suite 3534/0/4 (Node 24.15.0, MongoDB 7.0.43); not pushed; PR body reports/phase0-pr-bodies/config-docs-truth.md. The config-surface-census gate: readme (BF-50) and azure (BF-51) arms red -> green; api3 (BF-46), webhook (BF-48) and hsts (BF-49) stay red until the code half (env.js routing or an alias) is done. Gate defect: the hsts arm reads lib/settings.js from the main clone's working tree whatever --ref says. 2026-10-02 (maintainer, relayed by session -d4): correct the information for BF-48 to BF-51. Prepared with BFQ-46 by -d4's agent in externals/work/crm- bf46-env off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Batched because it is one piece of work with one runnable gate in four arms - make the configuration surface tell the truth - and because a reviewer reading any one of them alone would ask about the other three. Split it back by arm if the documentation half lands separately from the plumbing half. BF-46 is deliberately not batched here; see that item.
+**Notes.** 2026-10-25: on local bf/16.0.0-boot-resilience (head 0675e91e after merging dev 428b20b7, not pushed): BF-48 fixed as 8e4d30d3 (WEBHOOK_* read in env.js into env.webhook, passed as ctx.webhook); BF-49 partly fixed as 8e3717e3 (a start-up warning when the unread SECURE_HSTS_HEADER_INCLUDE_SUBDOMAINS is set; the alias and the five dead settings keys are open decisions). BF-50 and BF-51 were fixed by #8799 and released in 15.0.9; their gates here are stale. 2026-10-02 (maintainer, relayed by session -d4): BF-50 and BF-51 and the documentation half of BF-48 and BF-49 go into 15.0.9 as BFQ-CONFIG-DOCS; after 15.0.9 here: env.js routing for WEBHOOK_*, the HSTS alias, and reconciling the Azure template's Node ~22 with cut 1's ~24. 2026-10-02 (session -d4's agent): bf/config-docs-truth c102d98f, five commits (one per id: BF-46, 48, 49, 50, 51) on dev ca6fcfaf, README.md +33/-4, azuredeploy.json, lib/api3/swagger.yaml and swagger.json; no .js change; full suite 3534/0/4 (Node 24.15.0, MongoDB 7.0.43); not pushed; PR body reports/phase0-pr-bodies/config-docs-truth.md. The config-surface-census gate: readme (BF-50) and azure (BF-51) arms red -> green; api3 (BF-46), webhook (BF-48) and hsts (BF-49) stay red until the code half (env.js routing or an alias) is done. Gate defect: the hsts arm reads lib/settings.js from the main clone's working tree whatever --ref says. 2026-10-02 (maintainer, relayed by session -d4): correct the information for BF-48 to BF-51. Prepared with BFQ-46 by -d4's agent in externals/work/crm- bf46-env off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Batched because it is one piece of work with one runnable gate in four arms - make the configuration surface tell the truth - and because a reviewer reading any one of them alone would ask about the other three. Split it back by arm if the documentation half lands separately from the plumbing half. BF-46 is deliberately not batched here; see that item.
 
 ### `BFQ-52` &mdash; BF-52 - an age reminder whose 20-minute window passed without a check was never sent
 
@@ -3581,7 +3582,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/remedial/bf90-alarm-no-reading-2026-09-23.md`
 
-**Notes.** 2026-10-25: fixed as 5fb199b3 on local bf/16.0.0-client-alarms (head 72f3cc09 over dev b29f1bf7, not pushed; session f4's alarms lane): a non-glucose alarm is presented on a page with no reading when either local alarm setting for its level is on. Reproduced again on a real server in Chromium; tests/browser/server-alarms.test.js and tests/client.alarm-no-reading.test.js; browser 556/0 on Node 24.22.1 and 22.23.4, unit 1223, dom 164, integration 1994/1 (lane). The same commit fixes BF-190 (BFQ-190). Decision notes: the glucose/non-glucose group rule is kept; gating on pages with a reading is unchanged (staged-ladder follow-up). Open, no branch; it ships in a later release, not 15.0.9, paired with BFQ-52, and 15.0.9 carries it as a known issue. Filed 2026-09-23 from the BF-90 work. Safety-relevant - graded high in the register if unintended. Reproduced with ordinary pump-status uploads and PUMP_ENABLE_ALERTS=true; no server decision was forced. Decisions: - 2026-09-23 (maintainer): non-glucose alarms (pump, loop, age) should present on a page with no reading; not in 15.0.9.
+**Notes.** 2026-10-25: fixed as 5fb199b3 on local bf/16.0.0-client-alarms (head b7bf55e8 after merging dev 428b20b7, not pushed; session f4's alarms lane): a non- glucose alarm is presented on a page with no reading when either local alarm setting for its level is on. Reproduced again on a real server in Chromium; tests/browser/server-alarms.test.js and tests/client.alarm-no-reading.test.js; browser 556/0 on Node 24.22.1 and 22.23.4, unit 1223, dom 164, integration 1994/1 (lane). The same commit fixes BF-190 (BFQ-190). Decision notes: the glucose/non-glucose group rule is kept; gating on pages with a reading is unchanged (staged-ladder follow-up). Open, no branch; it ships in a later release, not 15.0.9, paired with BFQ-52, and 15.0.9 carries it as a known issue. Filed 2026-09-23 from the BF-90 work. Safety-relevant - graded high in the register if unintended. Reproduced with ordinary pump-status uploads and PUMP_ENABLE_ALERTS=true; no server decision was forced. Decisions: - 2026-09-23 (maintainer): non-glucose alarms (pump, loop, age) should present on a page with no reading; not in 15.0.9.
 
 ### `BFQ-93` &mdash; BF-93 - food changes never reach an open page
 
@@ -3612,7 +3613,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/remedial/bf69-quickpick-rebuild-2026-09-23.md`
 
-**Notes.** 2026-10-25: fixed as 91d9a4db on local bf/16.0.0-client-alarms (head 72f3cc09 over dev b29f1bf7, not pushed): food in the broadcast delta, and v1 food writes emit data-received; tests/data.calcdelta.test.js and tests/api.food.test.js red when reverted. 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Deferred until after 15.0.9 (2026-10-02); the fix the item names (food in calcdelta's broadcast delta) is a patch with no branch yet, so not-started. 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9. dev 74942ec6 still leaves food out of calcdelta's compressibleArrays (lib/data/calcdelta.js:106); #8756 (BF-69) only rebuilds the quick-pick chooser when the drawer opens. Filed 2026-09-23 from the BF-69 work (evidence section 8.1). An edited carb total on an existing quick pick takes the same path and was not run separately.
+**Notes.** 2026-10-25: fixed as 91d9a4db on local bf/16.0.0-client-alarms (head b7bf55e8 after merging dev 428b20b7, not pushed): food in the broadcast delta, and v1 food writes emit data-received; tests/data.calcdelta.test.js and tests/api.food.test.js red when reverted. 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Deferred until after 15.0.9 (2026-10-02); the fix the item names (food in calcdelta's broadcast delta) is a patch with no branch yet, so not-started. 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9. dev 74942ec6 still leaves food out of calcdelta's compressibleArrays (lib/data/calcdelta.js:106); #8756 (BF-69) only rebuilds the quick-pick chooser when the drawer opens. Filed 2026-09-23 from the BF-69 work (evidence section 8.1). An edited carb total on an existing quick pick takes the same path and was not run separately.
 
 ### `BFQ-94` &mdash; BF-94 - a kept profile instance can return a temp basal that has been replaced
 
@@ -5018,7 +5019,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-record-identity` |
 | base | `official/dev@b29f1bf7` |
@@ -5042,7 +5043,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-25: fixed as d4566292 on bf/16.0.0-record-identity (head 26191780 over dev b29f1bf7, not pushed; session f4's identity lane): identifyingFilter shares filterForEveryForm's no-own-identifier clause; PATCH 404 to 200, PUT's second record to a replace, a v3 POST with such a record's _id as identifier deduplicates. Filed 2026-09-26 from the BF-142 fix work; after 15.0.9 by the maintainer's decision (2026-09-26). Not a regression from 15.0.8.
+**Notes.** 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). 2026-10-25: fixed as d4566292 on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane): identifyingFilter shares filterForEveryForm's no-own-identifier clause; PATCH 404 to 200, PUT's second record to a replace, a v3 POST with such a record's _id as identifier deduplicates. Filed 2026-09-26 from the BF-142 fix work; after 15.0.9 by the maintainer's decision (2026-09-26). Not a regression from 15.0.8.
 
 ### `BFQ-147` &mdash; BF-147 - two package.json overrides hold ajv and request's form-data inside published advisory ranges
 
@@ -5208,17 +5209,17 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
-| branch | `bf/16.0.0-v3-settings-read-scope` |
+| branch | `bf/16.0.0-record-identity` |
 | base | `official/dev@b29f1bf7` |
-| worktree | `externals/cgm-remote-monitor-official` |
+| worktree | `externals/work/crm-identity-1600` |
 | semver | `minor` |
 | review | maintainer |
 | ships to operators today | **yes** |
 | register | `BF-152` |
 
-**Blast radius.** Step 1 (06ba6201, local, not pushed): an opt-in setting API3_SETTINGS_STRICT_READ_ENABLED, default off, that makes API v3 read by identifier of settings demand api:settings:admin, as search and history do. Default behaviour unchanged.
+**Blast radius.** Step 1 (faffe875 in PR #8845, cherry-picked from 06ba6201; pending push): an opt-in setting API3_SETTINGS_STRICT_READ_ENABLED, default off, that makes API v3 read by identifier of settings demand api:settings:admin, as search and history do. Default behaviour unchanged.
 
 **What an operator sees.** Nothing changes unless you turn it on. A new optional setting, API3_SETTINGS_STRICT_READ_ENABLED, lets you require full (admin) access before an app can read a saved app-settings document from Nightscout. If you turn it on, an AndroidAPS 4.0 follower that uses a read-only token can no longer load its settings from Nightscout; a token made by the AndroidAPS master phone already has the access it needs.
 
@@ -5226,8 +5227,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `git -C externals/cgm-remote-monitor-official cat-file -e 06ba6201^{commit}`
-  - step 1's commit exists in the shared clone; red if the local branch is lost before it is pushed (a rebase changes the id, and this gate must then name the new one)
+- `[static]` `git -C externals/cgm-remote-monitor-official cat-file -e faffe875^{commit}`
+  - step 1's commit (cherry-pick faffe875 on bf/16.0.0-record-identity, PR #8845) exists in the shared clone; red if it is lost before it is pushed (a rebase changes the id, and this gate must then name the new one)
 - **NO GATE** &mdash; A decision item. Reproduced 2026-10-01 on v15.0.8 and dev 3014f883: search and history 403, read by identifier 200, readable and denied. AndroidAPS's AAPSClient reads its running configuration by identifier (plugins/sync nsclientV3 LoadSettingsRunner).
 
 **Evidence.**
@@ -5235,7 +5236,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/60-research/remedial/aaps-websocket-delivery-lab-2026-10-25.md`
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-25, later: head 06ba6201 confirmed; the setting name API3_SETTINGS_STRICT_READ_ENABLED is confirmed by the maintainer. Write-up of the AndroidAPS findings: docs/60-research/remedial/aaps-websocket-delivery- lab-2026-10-25.md section 3. 2026-10-25 (maintainer decision): a staged ladder. (1) an opt-in, admin-only settings read in 16.x; (2) ask the AndroidAPS developers about a narrower scope; (3) a strict default later on the calendar. Step 1 is on local branch bf/16.0.0-v3-settings-read-scope 06ba6201 over dev b29f1bf7, not pushed: API3_SETTINGS_STRICT_READ_ENABLED, default off; integration 1999/1/0, unit 1218, red controls failed for the right reasons. Step 2 is the combined note to the AndroidAPS developers (with BF-164), drafted, not sent. Corrections, measured or read 2026-10-25: AAPSClient's v3 settings read exists only in AndroidAPS 4.0.0 (beta1, rc1, dev), not in released 3.4.2.6; tokens made by the AndroidAPS master (role aaps-client) carry api:settings:admin; *:*:read implies api:settings:read and api:settings:read:<x> under shiro-trie (measured), so a narrower scope needs a new verb. 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Question (for the maintainer, with the AndroidAPS developers): is API v3 settings meant to be readable with a follower's read token, or admin-only? 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9. Needs more research on AndroidAPS's use of settings first. 2026-10-02: the private fork of GHSA-25pr has a fix by Ruben Sutton (code2344, 28d1efa6, on v15.0.8): a shared requiredReadPermission that makes read by identifier and lastModified demand api:settings:admin, as search and history do. That is the gating choice, which breaks AAPSClient followers with read tokens; it is not taken until the AndroidAPS question is answered. After 15.0.9. The question for the AndroidAPS developers: is settings meant to be readable by a follower's read token (then search and history are the inconsistent side), or admin-only (then AAPSClient needs a token change first)?
+**Notes.** 2026-10-25, later: folded into PR #8845 to dev (bf/16.0.0-record-identity) as cherry-pick faffe875 of 06ba6201, pending push; the branch bf/16.0.0-v3-settings-read-scope will not be pushed. The setting name API3_SETTINGS_STRICT_READ_ENABLED is confirmed. 2026-10-25, later: head 06ba6201 confirmed; the setting name API3_SETTINGS_STRICT_READ_ENABLED is confirmed by the maintainer. Write-up of the AndroidAPS findings: docs/60-research/remedial/aaps-websocket-delivery-lab-2026-10-25.md section 3. 2026-10-25 (maintainer decision): a staged ladder. (1) an opt-in, admin-only settings read in 16.x; (2) ask the AndroidAPS developers about a narrower scope; (3) a strict default later on the calendar. Step 1 is on local branch bf/16.0.0-v3-settings-read-scope 06ba6201 over dev b29f1bf7, not pushed: API3_SETTINGS_STRICT_READ_ENABLED, default off; integration 1999/1/0, unit 1218, red controls failed for the right reasons. Step 2 is the combined note to the AndroidAPS developers (with BF-164), drafted, not sent. Corrections, measured or read 2026-10-25: AAPSClient's v3 settings read exists only in AndroidAPS 4.0.0 (beta1, rc1, dev), not in released 3.4.2.6; tokens made by the AndroidAPS master (role aaps-client) carry api:settings:admin; *:*:read implies api:settings:read and api:settings:read:<x> under shiro-trie (measured), so a narrower scope needs a new verb. 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Question (for the maintainer, with the AndroidAPS developers): is API v3 settings meant to be readable with a follower's read token, or admin-only? 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9. Needs more research on AndroidAPS's use of settings first. 2026-10-02: the private fork of GHSA-25pr has a fix by Ruben Sutton (code2344, 28d1efa6, on v15.0.8): a shared requiredReadPermission that makes read by identifier and lastModified demand api:settings:admin, as search and history do. That is the gating choice, which breaks AAPSClient followers with read tokens; it is not taken until the AndroidAPS question is answered. After 15.0.9. The question for the AndroidAPS developers: is settings meant to be readable by a follower's read token (then search and history are the inconsistent side), or admin-only (then AAPSClient needs a token change first)?
 
 ### `DEPENDABOT-CONFIG` &mdash; Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev
 
@@ -5358,7 +5359,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-25: re-applied to current dev as a5b569b9 on local bf/16.0.0-boot- resilience (head 8e3717e3 over dev b29f1bf7, not pushed); tests/api3.autoprune.test.js, 2 of 3 red with dev's collection.js. Follow-up, read not measured: the cached collection invalidates at most 1000 ids per deleteManyOr while the delete removes every match. 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. bf/autoprune-promise is still 8e4f7dce on dev ca6fcfaf and does not contain dev 04d435eb: before it is ready to push it owes a merge of dev and a full-suite re-run; the 1000-id cache invalidation question in the notes below is still unmeasured. 2026-10-02 (session -d4's agent): bf/autoprune-promise 8e4f7dce, one commit on dev ca6fcfaf (lib/api3/generic/collection.js +11/-10, the returned promise handled with .then/.catch; new tests/api3.autoprune.test.js, 3 tests), not pushed. The deleted count is logged; a failed delete is logged and the process keeps running; nextAutoPrune still advances hourly after a failure. Break-its: the unfixed code fails both behaviour tests, dropping only .catch gives an unhandled rejection, deletedCount for deleted fails the log test, advancing only on success fails the throttle test; outside mocha the unfixed code exits 1. Full suite 3537/0/4 (dev 3534/0/4). No other callback-style calls to async API v3 storage methods. PR body: reports/phase0-pr-bodies/autoprune- promise.md. Not measured, read only: the cached collection looks up at most 1000 ids to invalidate while the delete removes every match (mongoCachedCollection/index.js :119-124); worth a check before this merges. 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9, and carried in 15.0.9's BF-46 known issue. A fix branch, bf/autoprune-promise, is being prepared by -d4 in externals/work/crm-bf156 for the next release. Filed 2026-10-02. Whether it goes into 15.0.9 is being put to the maintainer by session -d4; not in RT-0's blocks_on until decided.
+**Notes.** 2026-10-25: re-applied to current dev as a5b569b9 on local bf/16.0.0-boot- resilience (head 0675e91e after merging dev 428b20b7, not pushed); tests/api3.autoprune.test.js, 2 of 3 red with dev's collection.js. Follow-up, read not measured: the cached collection invalidates at most 1000 ids per deleteManyOr while the delete removes every match. 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. bf/autoprune-promise is still 8e4f7dce on dev ca6fcfaf and does not contain dev 04d435eb: before it is ready to push it owes a merge of dev and a full-suite re-run; the 1000-id cache invalidation question in the notes below is still unmeasured. 2026-10-02 (session -d4's agent): bf/autoprune-promise 8e4f7dce, one commit on dev ca6fcfaf (lib/api3/generic/collection.js +11/-10, the returned promise handled with .then/.catch; new tests/api3.autoprune.test.js, 3 tests), not pushed. The deleted count is logged; a failed delete is logged and the process keeps running; nextAutoPrune still advances hourly after a failure. Break-its: the unfixed code fails both behaviour tests, dropping only .catch gives an unhandled rejection, deletedCount for deleted fails the log test, advancing only on success fails the throttle test; outside mocha the unfixed code exits 1. Full suite 3537/0/4 (dev 3534/0/4). No other callback-style calls to async API v3 storage methods. PR body: reports/phase0-pr-bodies/autoprune- promise.md. Not measured, read only: the cached collection looks up at most 1000 ids to invalidate while the delete removes every match (mongoCachedCollection/index.js :119-124); worth a check before this merges. 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9, and carried in 15.0.9's BF-46 known issue. A fix branch, bf/autoprune-promise, is being prepared by -d4 in externals/work/crm-bf156 for the next release. Filed 2026-10-02. Whether it goes into 15.0.9 is being put to the maintainer by session -d4; not in RT-0's blocks_on until decided.
 
 ### `BFQ-CONFIG-DOCS` &mdash; bf/config-docs-truth - documentation for BF-46, BF-48, BF-49, BF-74, BF-78, BF-81 and the fixes for BF-50, BF-51, for 15.0.9
 
@@ -5454,7 +5455,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/triage-2026-09/results-bf124/browser-probe.js`
 
-**Notes.** 2026-10-25: partly fixed. The token half is reproduced and fixed as 72f3cc09 on local bf/16.0.0-client-alarms (over dev b29f1bf7, not pushed): the redirect keeps ?token= (tests/browser/profile-redirect.test.js). The intermittent redirect did not reproduce: 0 of 29 loads on b29f1bf7 with a profile in effect. Split the race into its own item if it is seen again. Filed 2026-10-03 from session -d4's BF-124 and BF-127 browser runs. After 15.0.9 (maintainer, 2026-10-03). The same check is at renderer.js:1072 on v15.0.8; whether 15.0.8 shows the redirect as often is not measured.
+**Notes.** 2026-10-25: partly fixed. The token half is reproduced and fixed as 72f3cc09 on local bf/16.0.0-client-alarms (head b7bf55e8 after merging dev 428b20b7, not pushed): the redirect keeps ?token= (tests/browser/profile- redirect.test.js). The intermittent redirect did not reproduce: 0 of 29 loads on b29f1bf7 with a profile in effect. Split the race into its own item if it is seen again. Filed 2026-10-03 from session -d4's BF-124 and BF-127 browser runs. After 15.0.9 (maintainer, 2026-10-03). The same check is at renderer.js:1072 on v15.0.8; whether 15.0.8 shows the redirect as often is not measured.
 
 ### `BFQ-160` &mdash; BF-160 - the clock designer's link target is written with curly quotes
 
@@ -5616,7 +5617,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-record-identity` |
 | base | `official/dev@b29f1bf7` |
@@ -5641,13 +5642,13 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
 
-**Notes.** 2026-10-25: fixed as 0d5edc66 on bf/16.0.0-record-identity (head 26191780 over dev b29f1bf7, not pushed; session f4's identity lane): a fallback-key match is answered with the stored _id (one indexed findOne per unmatched item), and data-update carries it. Semver: the write-contract spec's U6 says minor; 16.0.0 is a major either way. Filed 2026-10-07 from the WRITE-CONTRACT write matrix. Present on 15.0.8 too. NightscoutKit's 'NA' handling is read, not run.
+**Notes.** 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). 2026-10-25: fixed as 0d5edc66 on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane): a fallback-key match is answered with the stored _id (one indexed findOne per unmatched item), and data-update carries it. Semver: the write- contract spec's U6 says minor; 16.0.0 is a major either way. Filed 2026-10-07 from the WRITE-CONTRACT write matrix. Present on 15.0.8 too. NightscoutKit's 'NA' handling is read, not run.
 
 ### `BFQ-166` &mdash; BF-166 - a profile re-sent with its own _id answers 500
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-record-identity` |
 | base | `official/dev@b29f1bf7` |
@@ -5672,13 +5673,13 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
 
-**Notes.** 2026-10-25: fixed as c62a16c9 on bf/16.0.0-record-identity (head 26191780 over dev b29f1bf7, not pushed; session f4's identity lane), implementing the decided write-contract Q1 merge (2026-10-12): a profile re-sent with a stored _id is merged into it and answered 200 with that _id; an identical re-send writes nothing; Q1b (null deletes a field) is not implemented and stays unconfirmed. Evidence, reported by the lane: write-contract matrix b29f1bf7 against 26191780, 42 of 336 cells differ, 40 intended and 2 in the racy cache field. Filed 2026-10-07 from the WRITE-CONTRACT write matrix. Present on 15.0.8 too. BF-116 fixed the same shape for devicestatus.
+**Notes.** 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). 2026-10-25: fixed as c62a16c9 on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane), implementing the decided write-contract Q1 merge (2026-10-12): a profile re-sent with a stored _id is merged into it and answered 200 with that _id; an identical re-send writes nothing; Q1b (null deletes a field) is not implemented and stays unconfirmed. Evidence, reported by the lane: write- contract matrix b29f1bf7 against 26191780, 42 of 336 cells differ, 40 intended and 2 in the racy cache field. Filed 2026-10-07 from the WRITE-CONTRACT write matrix. Present on 15.0.8 too. BF-116 fixed the same shape for devicestatus.
 
 ### `BFQ-167` &mdash; BF-167 - devicestatus remove()'s filter is not pinned by any test
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-record-identity` |
 | base | `official/dev@b29f1bf7` |
@@ -5703,7 +5704,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md`
 
-**Notes.** 2026-10-25: fixed as 0edb1db9 on bf/16.0.0-record-identity (head 26191780 over dev b29f1bf7, not pushed; session f4's identity lane) (test only). Filed 2026-10-07 from the seam propagation rehearsal. Register §1b, kind (c): behaviour is correct today.
+**Notes.** 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). 2026-10-25: fixed as 0edb1db9 on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane) (test only). Filed 2026-10-07 from the seam propagation rehearsal. Register §1b, kind (c): behaviour is correct today.
 
 ### `BFQ-168` &mdash; BF-168 - the context chart's window sometimes cannot be dragged back to now
 
@@ -5745,7 +5746,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-record-identity` |
 | base | `official/dev@b29f1bf7` |
@@ -5769,13 +5770,13 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-25: fixed as a1ab22b6 and 26191780 on bf/16.0.0-record-identity (head 26191780 over dev b29f1bf7, not pushed; session f4's identity lane), per the D20 two-id rule: identifier is the client's sync identity, kept as sent and not required to be a UUID; _id is the server's storage key. The maintainer lifted the pairing with ID-SIMPLE-MATCH, which stays a separate item. Filed 2026-10-17 while checking the Loop maintainers' proposal that Nightscout accept a client-supplied identifier. The text "this field is immutable by the client (it cannot be updated or patched)" is accurate for PUT and PATCH and stays; only the "should not create ... the server automatically assigns it" sentence is wrong. lib/api3/doc/ and README.md do not repeat it (read at fade2299). Decided by the maintainer 2026-10-17: ships with ID-SIMPLE-MATCH, in the same PR, on dev after cut 1's rebase; not in 15.0.9. A docs-only change is a patch and could ride a re-cut 15.0.9 candidate if the RC is re-cut for another reason; that is the one exception worth weighing, not a plan.
+**Notes.** 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). 2026-10-25: fixed as a1ab22b6 and 539856ef (rewritten from 26191780) on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane), per the D20 two-id rule: identifier is the client's sync identity, kept as sent and not required to be a UUID; _id is the server's storage key. The maintainer lifted the pairing with ID-SIMPLE- MATCH, which stays a separate item. Filed 2026-10-17 while checking the Loop maintainers' proposal that Nightscout accept a client-supplied identifier. The text "this field is immutable by the client (it cannot be updated or patched)" is accurate for PUT and PATCH and stays; only the "should not create ... the server automatically assigns it" sentence is wrong. lib/api3/doc/ and README.md do not repeat it (read at fade2299). Decided by the maintainer 2026-10-17: ships with ID-SIMPLE-MATCH, in the same PR, on dev after cut 1's rebase; not in 15.0.9. A docs-only change is a patch and could ride a re-cut 15.0.9 candidate if the RC is re-cut for another reason; that is the one exception worth weighing, not a plan.
 
 ### `BFQ-170` &mdash; BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-record-identity` |
 | base | `official/dev@b29f1bf7` |
@@ -5801,7 +5802,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `tools/lab/record-identity/results/record-identity-2026-10-18.md`
 - `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
 
-**Notes.** 2026-10-25: decided (maintainer): API v3 rejects a client-supplied _id, amending identity rule I2 for API v3 only. Fixed on bf/16.0.0-record-identity (head 26191780 over dev b29f1bf7, not pushed; session f4's identity lane): 304827fd (create and PUT answer 400) and 108592de (PATCH answers 400 instead of 500; that scope awaits the maintainer's confirmation). External survey (read): no API v3 client sends _id (AndroidAPS dev and 3.4.2.6, nightscout- librelink-up bff2317; nightscout-connect has no API v3 output; Nocturne does not write to Nightscout's API v3). Record-identity lab, reported by the lane: 60 cases, 4 intended differences. Candidate C1 of the write-contract note (section 7), filed 2026-10-18. On 15.0.8 a v1 find[_id] for the record misses it (query.js converts to an ObjectId); on dev v1 matches both forms (object- id-forms matchEitherForm), except an upper-case string asked for in lower case. Both read, not measured. No corpus client sends _id to v3; the Loop reply's rule 1 says a client ObjectId _id holds over v1 only. Natural vehicle for option (a): OID-STORAGE-HELPER, one storage-level rule for writes by _id, which would give v3 create the same toStoredId conversion v1 uses. C2 (a {"$oid": ...} body _id answers 500 on v3) is the same code path. ID-CLIENT- OID-DECISION's answer (may a client set _id) bears on whether option (b) is acceptable.
+**Notes.** 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). 2026-10-25: decided (maintainer): API v3 rejects a client-supplied _id, amending identity rule I2 for API v3 only. Fixed on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane): 304827fd (create and PUT answer 400) and b899edc1, rewritten from 108592de (PATCH answers 400 with "Field _id cannot be modified by the client" instead of 500; maintainer, option 1). External survey (read): no API v3 client sends _id (AndroidAPS dev and 3.4.2.6, nightscout-librelink- up bff2317; nightscout-connect has no API v3 output; Nocturne does not write to Nightscout's API v3). Record-identity lab, reported by the lane: 60 cases, 4 intended differences. Candidate C1 of the write-contract note (section 7), filed 2026-10-18. On 15.0.8 a v1 find[_id] for the record misses it (query.js converts to an ObjectId); on dev v1 matches both forms (object-id-forms matchEitherForm), except an upper-case string asked for in lower case. Both read, not measured. No corpus client sends _id to v3; the Loop reply's rule 1 says a client ObjectId _id holds over v1 only. Natural vehicle for option (a): OID-STORAGE-HELPER, one storage-level rule for writes by _id, which would give v3 create the same toStoredId conversion v1 uses. C2 (a {"$oid": ...} body _id answers 500 on v3) is the same code path. ID-CLIENT-OID-DECISION's answer (may a client set _id) bears on whether option (b) is acceptable.
 
 ### `BFQ-172` &mdash; BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819 proposed), a known issue of 15.0.9
 
@@ -6023,7 +6024,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-25, later: fixed as bb1ad38e on local bf/16.0.0-client-alarms (head 72f3cc09 over dev b29f1bf7, not pushed): the careportal clears the hidden glucose field and labels converted targets mg/dl. Reproduced in a real browser on dev b29f1bf7 and v15.0.9 c6a0d8ed (1785.09 charted). Severity set to medium in the register: silently ignored by AndroidAPS, charted far off-scale. Filed 2026-10-25 by session f4 from the BF-175 measurement. AndroidAPS (externals/AndroidAPS 7e1d537d) reads units mmol as mmol/L x18 and drops a temp target outside 72-180.16 mg/dL with a debug log only (NsIncomingDataProcessor.kt:172-179), read, not run. v15.0.9: same code by reading. Fix in progress on the alarms lane's local branch bf/16.0.0-client- alarms (not pushed). Also named in the drafted note to the AndroidAPS developers (with BF-152 and BF-164).
+**Notes.** 2026-10-25, later: fixed as bb1ad38e on local bf/16.0.0-client-alarms (head b7bf55e8 after merging dev 428b20b7, not pushed): the careportal clears the hidden glucose field and labels converted targets mg/dl. Reproduced in a real browser on dev b29f1bf7 and v15.0.9 c6a0d8ed (1785.09 charted). Severity set to medium in the register: silently ignored by AndroidAPS, charted far off- scale. Filed 2026-10-25 by session f4 from the BF-175 measurement. AndroidAPS (externals/AndroidAPS 7e1d537d) reads units mmol as mmol/L x18 and drops a temp target outside 72-180.16 mg/dL with a debug log only (NsIncomingDataProcessor.kt:172-179), read, not run. v15.0.9: same code by reading. Fix in progress on the alarms lane's local branch bf/16.0.0-client- alarms (not pushed). Also named in the drafted note to the AndroidAPS developers (with BF-152 and BF-164).
 
 ### `BFQ-181` &mdash; BF-181 - one future srvModified pins the shared write clock ahead, across restarts
 
@@ -6182,7 +6183,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-record-identity` |
 | base | `official/dev@b29f1bf7` |
@@ -6208,7 +6209,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Filed 2026-10-25 by session f4 from the identity lane. Fixed as b34f6703 on local bf/16.0.0-record-identity (head 26191780 over dev b29f1bf7, not pushed). Present on v15.0.9 by reading.
+**Notes.** 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). Filed 2026-10-25 by session f4 from the identity lane. Fixed as b34f6703 on local bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push). Present on v15.0.9 by reading.
 
 ### `BFQ-187` &mdash; BF-187 - an entries pattern segment over the braces parser's input limit answers 500, not 400
 
@@ -6348,7 +6349,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Blast radius.** Not described here while the defect is live on the shipping release.
 
-**What an operator sees.** DRAFT - DO NOT PUBLISH AHEAD OF THE ADVISORY. A treatment stored with an unexpected field type can stop Nightscout, and it keeps doing so after a restart until the record is removed. Writing such a record needs a credential that can write treatments, so keep your API secret and tokens private. A fix is planned for 16.0.0.
+**What an operator sees.** DRAFT - DO NOT PUBLISH AHEAD OF THE ADVISORY. A record stored with an unexpected field type can stop Nightscout, and it keeps doing so after a restart until the record is removed. Writing such a record needs a credential that can write treatments, so keep your API secret and tokens private. A fix is planned for 16.0.0.
 
 **Why `n/a`.** not graded while private; the fix shape is held with the advisory
 
@@ -6360,7 +6361,37 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Filed 2026-10-25 by session f4 from its AndroidAPS-safety lane; reproduced on dev b29f1bf7 and v15.0.9 c6a0d8ed. Availability, high (persistent), needs a credential with treatment write access. Fix in preparation on a local branch, to ship in 16.0.0 (maintainer decision 2026-10-25), via the maintainer's private advisory process.
+**Notes.** 2026-10-25: a second record kind of the same class was found and is covered by the same fix; the fix is prepared on a local branch (private) and API v1's refusal of such a record will answer 400 with its message instead of 500 (maintainer decision 2026-10-25). Filed 2026-10-25 by session f4 from its AndroidAPS-safety lane; reproduced on dev b29f1bf7 and v15.0.9 c6a0d8ed. Availability, high (persistent), needs a credential with treatment write access. Fix in preparation on a local branch, to ship in 16.0.0 (maintainer decision 2026-10-25), via the maintainer's private advisory process.
+
+### `BFQ-192` &mdash; BF-192 - the populated reports page exceeds its retained-heap budget in the browser test on dev 428b20b7
+
+| | |
+|---|---|
+| state (claimed) | `needs-decision` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@428b20b7` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer: raise the reports page's retained-heap budget, or slim the page. |
+| ships to operators today | no (pre-release) |
+| register | `BF-192` |
+
+**Blast radius.** Either tests/browser/page-populated.test.js (the 4850000-byte reports budget) or the reports page's retained heap after #8542 (reports-agp), by the maintainer's decision.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** a test budget or the page's memory use; no API or setting change
+
+**Gates.**
+
+- **NO GATE** &mdash; Measured 2026-10-25: tests/browser/page-populated.test.js "initializes populated reports and bounds retained V8 heap" fails with "reports: retained heap ~6.19 MB exceeds 4850000". Session f4's lanes, fresh worktrees, Node 22.23.4: 6192136 and 6189568 bytes. Session -f8, three runs each, Node 24.22.1, Chromium, TZ=UTC: b29f1bf7 ~4.45 MB (control, green), 428b20b7 ~6.20 MB, cut 3 12d1f645 ~5.94 MB, cut 4 99b6f68b likewise. The browser tier needs Chromium and MongoDB, so not a queue gate.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-10-25 by session f4 (register section 1b). Blocked on the maintainer's decision (raise the budget or slim the page). Likely introduced by #8542 (reports-agp), the only merge between b29f1bf7 and 428b20b7 (not bisected). Browser CI ran zero tests from #8839 until the runner fix e767ce4e in #8843, which is why dev's CI did not show it.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 

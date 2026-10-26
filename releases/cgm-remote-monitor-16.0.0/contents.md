@@ -236,9 +236,9 @@ As of `dev` `2bc298b9` (2026-10-25). The decisions already made are in [decision
    `srvModified` first; on `dev` it is now a server receipt time on every live path (caveat BF-181).
 5. **BF-152** (maintainer, with the AndroidAPS developers): is API v3 `settings` meant to be readable
    with a follower's read token, or admin-only? **Decided 2026-10-25**: a staged ladder, an opt-in
-   admin-only settings read in 16.x (`API3_SETTINGS_STRICT_READ_ENABLED`, default off; local branch
-   `bf/16.0.0-v3-settings-read-scope` `06ba6201`, not pushed), a question to the AndroidAPS developers
-   about a narrower scope, and a strict default later on the calendar. Queue `BFQ-152` (`in-progress`).
+   admin-only settings read in 16.x (`API3_SETTINGS_STRICT_READ_ENABLED`, default off; cherry-pick
+   `faffe875` of `06ba6201` in PR #8845 to `dev`, pending push), a question to the AndroidAPS developers
+   about a narrower scope, and a strict default later on the calendar. Queue `BFQ-152` (`in-flight-upstream`).
 6. **Dependabot configuration** (maintainer): version updates targeting `dev`, dismissing alerts that
    are fixed on `dev` or not reachable, or releasing more often. Packet:
    [dependabot-config](../../reports/reviewer-packets/dependabot-config.md).

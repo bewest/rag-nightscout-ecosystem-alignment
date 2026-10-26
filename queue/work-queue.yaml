@@ -3186,7 +3186,7 @@ items:
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
     notes: >
       2026-10-25: in progress as 488def62 on local bf/16.0.0-boot-resilience
-      (head 8e3717e3 over dev b29f1bf7, not pushed; session f4's resilience
+      (head 0675e91e after merging dev 428b20b7, not pushed; session f4's resilience
       lane, themed with BF-156, BF-46, BF-48 and BF-49). ensureIndexes returns
       a promise that never rejects; one createIndexes per collection, with a
       per-index fallback; the setupAuthorization and ensureIndexes boot stages
@@ -7950,7 +7950,7 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       2026-10-25: the code half is fixed as 1d63df57 on local
-      bf/16.0.0-boot-resilience (head 8e3717e3 over dev b29f1bf7, not pushed):
+      bf/16.0.0-boot-resilience (head 0675e91e after merging dev 428b20b7, not pushed):
       the API v3 settings and CI are read in env.js into env.api3 with the
       same parsing (not trimmed), and lib/api3 no longer reads process.env;
       tests/env.api3.test.js is red with trimming added. The branch moves from
@@ -8159,8 +8159,7 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
-      2026-10-25: on local bf/16.0.0-boot-resilience (head 8e3717e3 over dev
-      b29f1bf7, not pushed): BF-48 fixed as 8e4d30d3 (WEBHOOK_* read in env.js
+      2026-10-25: on local bf/16.0.0-boot-resilience (head 0675e91e after merging dev 428b20b7, not pushed): BF-48 fixed as 8e4d30d3 (WEBHOOK_* read in env.js
       into env.webhook, passed as ctx.webhook); BF-49 partly fixed as 8e3717e3
       (a start-up warning when the unread
       SECURE_HSTS_HEADER_INCLUDE_SUBDOMAINS is set; the alias and the five
@@ -8429,8 +8428,7 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/bf90-alarm-no-reading-2026-09-23.md
     notes: >
-      2026-10-25: fixed as 5fb199b3 on local bf/16.0.0-client-alarms (head
-      72f3cc09 over dev b29f1bf7, not pushed; session f4's alarms lane): a
+      2026-10-25: fixed as 5fb199b3 on local bf/16.0.0-client-alarms (head b7bf55e8 after merging dev 428b20b7, not pushed; session f4's alarms lane): a
       non-glucose alarm is presented on a page with no reading when either
       local alarm setting for its level is on. Reproduced again on a real
       server in Chromium; tests/browser/server-alarms.test.js and
@@ -8495,8 +8493,7 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/bf69-quickpick-rebuild-2026-09-23.md
     notes: >
-      2026-10-25: fixed as 91d9a4db on local bf/16.0.0-client-alarms (head
-      72f3cc09 over dev b29f1bf7, not pushed): food in the broadcast delta,
+      2026-10-25: fixed as 91d9a4db on local bf/16.0.0-client-alarms (head b7bf55e8 after merging dev 428b20b7, not pushed): food in the broadcast delta,
       and v1 food writes emit data-received; tests/data.calcdelta.test.js and
       tests/api.food.test.js red when reverted.
 
@@ -12920,8 +12917,8 @@ items:
     branch: bf/16.0.0-record-identity
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-identity-1600
-    state: in-progress
-    pr: []
+    state: in-flight-upstream
+    pr: [8845]
     ships_to_operators_today: true
     blast_radius: >
       lib/api3/storage/mongoCollection/utils.js identifyingFilter (used by
@@ -12949,8 +12946,11 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
-      2026-10-25: fixed as d4566292 on bf/16.0.0-record-identity (head
-      26191780 over dev b29f1bf7, not pushed; session f4's identity lane):
+      2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity;
+      the remote shows 539856ef; head bf37858e after merging dev 428b20b7,
+      pending push).
+
+      2026-10-25: fixed as d4566292 on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane):
       identifyingFilter shares filterForEveryForm's no-own-identifier clause;
       PATCH 404 to 200, PUT's second record to a replace, a v3 POST with such
       a record's _id as identifier deduplicates.
@@ -13480,14 +13480,14 @@ items:
     title: "BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: bf/16.0.0-v3-settings-read-scope
+    branch: bf/16.0.0-record-identity
     base: official/dev@b29f1bf7
-    worktree: externals/cgm-remote-monitor-official
-    state: in-progress
-    pr: []
+    worktree: externals/work/crm-identity-1600
+    state: in-flight-upstream
+    pr: [8845]
     ships_to_operators_today: true
     blast_radius: >
-      Step 1 (06ba6201, local, not pushed): an opt-in setting
+      Step 1 (faffe875 in PR #8845, cherry-picked from 06ba6201; pending push): an opt-in setting
       API3_SETTINGS_STRICT_READ_ENABLED, default off, that makes API v3
       read by identifier of settings demand api:settings:admin, as search
       and history do. Default behaviour unchanged.
@@ -13504,11 +13504,11 @@ items:
     semver_reason: a new opt-in setting, default off; a strict default later would be a separate, breaking step on the calendar
     register: [BF-152]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official cat-file -e 06ba6201^{commit}
+      - run: git -C externals/cgm-remote-monitor-official cat-file -e faffe875^{commit}
         kind: static
         describe: >
-          step 1's commit exists in the shared clone; red if the local
-          branch is lost before it is pushed (a rebase changes the id, and
+          step 1's commit (cherry-pick faffe875 on bf/16.0.0-record-identity, PR
+          #8845) exists in the shared clone; red if it is lost before it is pushed (a rebase changes the id, and
           this gate must then name the new one)
       - no-gate: >
           A decision item. Reproduced 2026-10-01 on v15.0.8 and dev 3014f883:
@@ -13520,6 +13520,11 @@ items:
       - docs/60-research/remedial/aaps-websocket-delivery-lab-2026-10-25.md
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25, later: folded into PR #8845 to dev (bf/16.0.0-record-identity)
+      as cherry-pick faffe875 of 06ba6201, pending push; the branch
+      bf/16.0.0-v3-settings-read-scope will not be pushed. The setting name
+      API3_SETTINGS_STRICT_READ_ENABLED is confirmed.
+
       2026-10-25, later: head 06ba6201 confirmed; the setting name
       API3_SETTINGS_STRICT_READ_ENABLED is confirmed by the maintainer.
       Write-up of the AndroidAPS findings:
@@ -13738,7 +13743,7 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       2026-10-25: re-applied to current dev as a5b569b9 on local
-      bf/16.0.0-boot-resilience (head 8e3717e3 over dev b29f1bf7, not pushed);
+      bf/16.0.0-boot-resilience (head 0675e91e after merging dev 428b20b7, not pushed);
       tests/api3.autoprune.test.js, 2 of 3 red with dev's collection.js.
       Follow-up, read not measured: the cached collection invalidates at most
       1000 ids per deleteManyOr while the delete removes every match.
@@ -13921,8 +13926,8 @@ items:
       - tools/lab/triage-2026-09/results-bf124/browser-probe.js
     notes: >
       2026-10-25: partly fixed. The token half is reproduced and fixed as
-      72f3cc09 on local bf/16.0.0-client-alarms (over dev b29f1bf7, not
-      pushed): the redirect keeps ?token=
+      72f3cc09 on local bf/16.0.0-client-alarms (head b7bf55e8 after merging
+      dev 428b20b7, not pushed): the redirect keeps ?token=
       (tests/browser/profile-redirect.test.js). The intermittent redirect did
       not reproduce: 0 of 29 loads on b29f1bf7 with a profile in effect. Split
       the race into its own item if it is seen again.
@@ -14275,8 +14280,8 @@ items:
     branch: bf/16.0.0-record-identity
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-identity-1600
-    state: in-progress
-    pr: []
+    state: in-flight-upstream
+    pr: [8845]
     ships_to_operators_today: true
     blast_radius: >
       lib/server/treatments.js's fallback-key re-send reply, over API v1 and
@@ -14298,8 +14303,11 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
     notes: >
-      2026-10-25: fixed as 0d5edc66 on bf/16.0.0-record-identity (head
-      26191780 over dev b29f1bf7, not pushed; session f4's identity lane): a
+      2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity;
+      the remote shows 539856ef; head bf37858e after merging dev 428b20b7,
+      pending push).
+
+      2026-10-25: fixed as 0d5edc66 on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane): a
       fallback-key match is answered with the stored _id (one indexed findOne
       per unmatched item), and data-update carries it. Semver: the
       write-contract spec's U6 says minor; 16.0.0 is a major either way.
@@ -14313,8 +14321,8 @@ items:
     branch: bf/16.0.0-record-identity
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-identity-1600
-    state: in-progress
-    pr: []
+    state: in-flight-upstream
+    pr: [8845]
     ships_to_operators_today: true
     blast_radius: >
       lib/server/profile.js create path over API v1 and in-process.
@@ -14333,8 +14341,11 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
     notes: >
-      2026-10-25: fixed as c62a16c9 on bf/16.0.0-record-identity (head
-      26191780 over dev b29f1bf7, not pushed; session f4's identity lane),
+      2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity;
+      the remote shows 539856ef; head bf37858e after merging dev 428b20b7,
+      pending push).
+
+      2026-10-25: fixed as c62a16c9 on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane),
       implementing the decided write-contract Q1 merge (2026-10-12): a profile
       re-sent with a stored _id is merged into it and answered 200 with that
       _id; an identical re-send writes nothing; Q1b (null deletes a field) is
@@ -14351,8 +14362,8 @@ items:
     branch: bf/16.0.0-record-identity
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-identity-1600
-    state: in-progress
-    pr: []
+    state: in-flight-upstream
+    pr: [8845]
     ships_to_operators_today: false
     blast_radius: >
       tests only: one test asserting that devicestatus remove() also deletes
@@ -14373,8 +14384,11 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md
     notes: >
-      2026-10-25: fixed as 0edb1db9 on bf/16.0.0-record-identity (head
-      26191780 over dev b29f1bf7, not pushed; session f4's identity lane)
+      2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity;
+      the remote shows 539856ef; head bf37858e after merging dev 428b20b7,
+      pending push).
+
+      2026-10-25: fixed as 0edb1db9 on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane)
       (test only).
 
       Filed 2026-10-07 from the seam propagation rehearsal. Register §1b, kind
@@ -14449,8 +14463,8 @@ items:
     branch: bf/16.0.0-record-identity
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-identity-1600
-    state: in-progress
-    pr: []
+    state: in-flight-upstream
+    pr: [8845]
     ships_to_operators_today: true
     blast_radius: >
       Documentation only: the identifierField description in
@@ -14473,8 +14487,12 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
-      2026-10-25: fixed as a1ab22b6 and 26191780 on bf/16.0.0-record-identity
-      (head 26191780 over dev b29f1bf7, not pushed; session f4's identity
+      2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity;
+      the remote shows 539856ef; head bf37858e after merging dev 428b20b7,
+      pending push).
+
+      2026-10-25: fixed as a1ab22b6 and 539856ef (rewritten from 26191780) on bf/16.0.0-record-identity
+      (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity
       lane), per the D20 two-id rule: identifier is the client's sync
       identity, kept as sent and not required to be a UUID; _id is the
       server's storage key. The maintainer lifted the pairing with
@@ -14499,8 +14517,8 @@ items:
     branch: bf/16.0.0-record-identity
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-identity-1600
-    state: in-progress
-    pr: []
+    state: in-flight-upstream
+    pr: [8845]
     ships_to_operators_today: true
     blast_radius: >
       lib/api3/generic/create/operation.js (or the v3 storage insertOne in
@@ -14534,12 +14552,16 @@ items:
       - tools/lab/record-identity/results/record-identity-2026-10-18.md
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
     notes: >
+      2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity;
+      the remote shows 539856ef; head bf37858e after merging dev 428b20b7,
+      pending push).
+
       2026-10-25: decided (maintainer): API v3 rejects a client-supplied _id,
       amending identity rule I2 for API v3 only. Fixed on
-      bf/16.0.0-record-identity (head 26191780 over dev b29f1bf7, not pushed;
+      bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push;
       session f4's identity lane): 304827fd (create and PUT answer 400) and
-      108592de (PATCH answers 400 instead of 500; that scope awaits the
-      maintainer's confirmation). External survey (read): no API v3 client
+      b899edc1, rewritten from 108592de (PATCH answers 400 with "Field _id
+      cannot be modified by the client" instead of 500; maintainer, option 1). External survey (read): no API v3 client
       sends _id (AndroidAPS dev and 3.4.2.6, nightscout-librelink-up bff2317;
       nightscout-connect has no API v3 output; Nocturne does not write to
       Nightscout's API v3). Record-identity lab, reported by the lane: 60
@@ -15064,7 +15086,7 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       2026-10-25, later: fixed as bb1ad38e on local bf/16.0.0-client-alarms
-      (head 72f3cc09 over dev b29f1bf7, not pushed): the careportal clears the
+      (head b7bf55e8 after merging dev 428b20b7, not pushed): the careportal clears the
       hidden glucose field and labels converted targets mg/dl. Reproduced in a
       real browser on dev b29f1bf7 and v15.0.9 c6a0d8ed (1785.09 charted).
       Severity set to medium in the register: silently ignored by AndroidAPS,
@@ -15318,8 +15340,8 @@ items:
     branch: bf/16.0.0-record-identity
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-identity-1600
-    state: in-progress
-    pr: []
+    state: in-flight-upstream
+    pr: [8845]
     ships_to_operators_today: true
     blast_radius: >
       lib/api3/shared/operationTools.js resolveIdentifier: the console.log(doc)
@@ -15350,9 +15372,12 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity;
+      the remote shows 539856ef; head bf37858e after merging dev 428b20b7,
+      pending push).
+
       Filed 2026-10-25 by session f4 from the identity lane. Fixed as b34f6703
-      on local bf/16.0.0-record-identity (head 26191780 over dev b29f1bf7, not
-      pushed). Present on v15.0.9 by reading.
+      on local bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push). Present on v15.0.9 by reading.
 
   - id: BFQ-187
     title: "BF-187 - an entries pattern segment over the braces parser's input limit answers 500, not 400"
@@ -15513,7 +15538,7 @@ items:
       SECURITY, through the maintainer's private advisory process.
       Disclosure-sensitive: mechanism only in any tracked file, as for BF-72.
     operator_visible: >
-      DRAFT - DO NOT PUBLISH AHEAD OF THE ADVISORY. A treatment stored with an
+      DRAFT - DO NOT PUBLISH AHEAD OF THE ADVISORY. A record stored with an
       unexpected field type can stop Nightscout, and it keeps doing so after a
       restart until the record is removed. Writing such a record needs a
       credential that can write treatments, so keep your API secret and tokens
@@ -15528,11 +15553,56 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: a second record kind of the same class was found and is
+      covered by the same fix; the fix is prepared on a local branch
+      (private) and API v1's refusal of such a record will answer 400 with
+      its message instead of 500 (maintainer decision 2026-10-25).
+
       Filed 2026-10-25 by session f4 from its AndroidAPS-safety lane;
       reproduced on dev b29f1bf7 and v15.0.9 c6a0d8ed. Availability, high
       (persistent), needs a credential with treatment write access. Fix in
       preparation on a local branch, to ship in 16.0.0 (maintainer decision
       2026-10-25), via the maintainer's private advisory process.
+
+  - id: BFQ-192
+    title: "BF-192 - the populated reports page exceeds its retained-heap budget in the browser test on dev 428b20b7"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@428b20b7
+    state: needs-decision
+    pr: []
+    ships_to_operators_today: false
+    blast_radius: >
+      Either tests/browser/page-populated.test.js (the 4850000-byte reports
+      budget) or the reports page's retained heap after #8542 (reports-agp),
+      by the maintainer's decision.
+    review: >
+      maintainer: raise the reports page's retained-heap budget, or slim the
+      page.
+    operator_visible: ""
+    semver: n/a
+    semver_reason: a test budget or the page's memory use; no API or setting change
+    register: [BF-192]
+    gates:
+      - no-gate: >
+          Measured 2026-10-25: tests/browser/page-populated.test.js
+          "initializes populated reports and bounds retained V8 heap" fails
+          with "reports: retained heap ~6.19 MB exceeds 4850000". Session f4's
+          lanes, fresh worktrees, Node 22.23.4: 6192136 and 6189568 bytes.
+          Session -f8, three runs each, Node 24.22.1, Chromium, TZ=UTC:
+          b29f1bf7 ~4.45 MB (control, green), 428b20b7 ~6.20 MB, cut 3
+          12d1f645 ~5.94 MB, cut 4 99b6f68b likewise. The browser tier needs
+          Chromium and MongoDB, so not a queue gate.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-10-25 by session f4 (register section 1b). Blocked on the
+      maintainer's decision (raise the budget or slim the page). Likely
+      introduced by #8542 (reports-agp), the only merge between b29f1bf7 and
+      428b20b7 (not bisected). Browser CI ran zero tests from #8839 until the
+      runner fix e767ce4e in #8843, which is why dev's CI did not show it.
 
   - id: MOD-WRITE-VALIDATION
     title: "WRITE_VALIDATION=off|log|reject: opt-in domain validation of Temporary Target writes on API v1 and v3 (draft)"
@@ -15564,7 +15634,7 @@ items:
     semver_reason: a new opt-in setting; default behaviour unchanged
     register: []
     gates:
-      - run: git -C externals/cgm-remote-monitor-official cat-file -e a2e5fe49^{commit}
+      - run: git -C externals/cgm-remote-monitor-official cat-file -e 90fd47d0^{commit}
         kind: static
         describe: >
           the branch head exists in the shared clone; red if the local branch
@@ -15600,7 +15670,8 @@ items:
     notes: >
       Filed 2026-10-25 by session f4 from the v3-validation lane. Draft: local
       branch feat/api3-domain-validation a2e5fe49 (e8125d89, 6e842c07,
-      a2e5fe49) over dev b29f1bf7, not pushed. Decided 2026-10-25
+      a2e5fe49) over dev b29f1bf7; head 90fd47d0 after merging dev 428b20b7,
+      not pushed. Decided 2026-10-25
       (maintainer): D1 the setting shape; D2 a v1 batch under reject stores
       its valid items, keeps one object per item in order with refused slots
       without _id plus a refused member and a Warning 299 header, and answers

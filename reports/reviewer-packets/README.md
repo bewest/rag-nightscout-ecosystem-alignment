@@ -26,9 +26,18 @@ repository.
 | [`BFQ-185`](bfq-185-ci-edge-diagonal-matrix.md) | #8843 | `in-flight-upstream` | BF-185 - the stress test tier leaves devicestatus documents that break api3.search in a later run |
 | [`BFQ-179`](bfq-179-chore-compose-mongodb6.md) | #8844 | `in-flight-upstream` | BF-179 - postinstall runs webpack, now a devDependency, so a production install of dev fails (dev b29f1bf7, cut 2) |
 | [`BFQ-182`](bfq-182-chore-compose-mongodb6.md) | #8844 | `in-flight-upstream` | BF-182 - on cut 3 (driver 7), boot against MongoDB 4.2 or older retries forever with no HTTP server |
+| [`BFQ-145`](bfq-145-bf-16-0-0-record-identity.md) | #8845 | `in-flight-upstream` | BF-145 - API v3 PATCH and PUT by the shown id miss a record whose identifier is null, "" or 0 |
+| [`BFQ-152`](bfq-152-bf-16-0-0-record-identity.md) | #8845 | `in-flight-upstream` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission |
+| [`BFQ-165`](bfq-165-bf-16-0-0-record-identity.md) | #8845 | `in-flight-upstream` | BF-165 - a treatment re-send matched by its fallback key is answered without _id |
+| [`BFQ-166`](bfq-166-bf-16-0-0-record-identity.md) | #8845 | `in-flight-upstream` | BF-166 - a profile re-sent with its own _id answers 500 |
+| [`BFQ-167`](bfq-167-bf-16-0-0-record-identity.md) | #8845 | `in-flight-upstream` | BF-167 - devicestatus remove()'s filter is not pinned by any test |
+| [`BFQ-169`](bfq-169-bf-16-0-0-record-identity.md) | #8845 | `in-flight-upstream` | BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a client-supplied one |
+| [`BFQ-170`](bfq-170-bf-16-0-0-record-identity.md) | #8845 | `in-flight-upstream` | BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent |
+| [`BFQ-186`](bfq-186-bf-16-0-0-record-identity.md) | #8845 | `in-flight-upstream` | BF-186 - API v3 logs a whole record when a client's identifier differs from the computed one |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`BFQ-161`](bfq-161-bf-entries-pattern-limit.md) | &mdash; | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes |
 | [`BFQ-164`](bfq-164.md) | &mdash; | `needs-decision` | BF-164 - writes outside API v3 never reach the v3 storage socket |
+| [`BFQ-192`](bfq-192.md) | &mdash; | `needs-decision` | BF-192 - the populated reports page exceeds its retained-heap budget in the browser test on dev 428b20b7 |
 | [`BFQ-72`](bfq-72-bf-regex-limits.md) | &mdash; | `in-flight-upstream` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | [`BFQ-95`](bfq-95.md) | &mdash; | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
 | [`DEPENDABOT-CONFIG`](dependabot-config.md) | &mdash; | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev |

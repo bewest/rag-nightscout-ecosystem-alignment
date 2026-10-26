@@ -54,7 +54,7 @@ maintainer, and the AndroidAPS, Loop and Trio developers on the refusal shape
 
 ## What was measured
 
-**`git -C externals/cgm-remote-monitor-official cat-file -e a2e5fe49^{commit}`** &nbsp;·&nbsp; kind: `static`
+**`git -C externals/cgm-remote-monitor-official cat-file -e 90fd47d0^{commit}`** &nbsp;·&nbsp; kind: `static`
 
 the branch head exists in the shared clone; red if the local branch is lost
 before it is pushed (a rebase changes the id, and this gate must then name the
@@ -95,16 +95,17 @@ containing "cannot be modified by the client" fails it.
 
 Filed 2026-10-25 by session f4 from the v3-validation lane. Draft: local
 branch feat/api3-domain-validation a2e5fe49 (e8125d89, 6e842c07, a2e5fe49)
-over dev b29f1bf7, not pushed. Decided 2026-10-25 (maintainer): D1 the setting
-shape; D2 a v1 batch under reject stores its valid items, keeps one object per
-item in order with refused slots without _id plus a refused member and a
-Warning 299 header, and answers 400 when every item is refused; D4 a double-
-labelled record is refused with a message naming the field and the units to
-send. Open: D5 (N1 or N2 and the conversion constant, MOD-UNITS-CANONICAL), D6
-(thresholds 30 mmol/L and 20 mg/dL). Making reject the default is blocked on a
-refusal the person can see (clients that read refused, or a Nightscout-side
-notice), not on a date. ready-to-push means the gates pass and the next step
-is a human push of a draft PR.
+over dev b29f1bf7; head 90fd47d0 after merging dev 428b20b7, not pushed.
+Decided 2026-10-25 (maintainer): D1 the setting shape; D2 a v1 batch under
+reject stores its valid items, keeps one object per item in order with refused
+slots without _id plus a refused member and a Warning 299 header, and answers
+400 when every item is refused; D4 a double-labelled record is refused with a
+message naming the field and the units to send. Open: D5 (N1 or N2 and the
+conversion constant, MOD-UNITS-CANONICAL), D6 (thresholds 30 mmol/L and 20
+mg/dL). Making reject the default is blocked on a refusal the person can see
+(clients that read refused, or a Nightscout-side notice), not on a date.
+ready-to-push means the gates pass and the next step is a human push of a
+draft PR.
 
 ---
 
