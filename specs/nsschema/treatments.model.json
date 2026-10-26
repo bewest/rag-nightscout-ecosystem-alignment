@@ -572,7 +572,7 @@
     "sensitivity_why": "values survived cross-site corroboration, so they are shared vocabulary",
     "tier": "universal",
     "tier_reason": "all 11 sites, 100.0% of documents",
-    "description": "Treatment classification. This is the primary discriminator for treatment types.\nNote: The same `eventType` may have different semantics across controllers.",
+    "description": "Treatment classification. This is the primary discriminator for treatment types.\nNote: The same `eventType` may have different semantics across controllers.\n\nOpen: the values below are the known ones, not a closed list.\nNightscout stores any string here: API v1 refuses only an `eventType`\nthat is not a string (cgm-remote-monitor `lib/server/treatments.js`,\n`validateDedupFields`), API v3 only makes it immutable on update\n(`lib/api3/generic/update/validate.js:71`), and `WRITE_VALIDATION`\nchecks the targets of a `Temporary Target` without restricting the\nvocabulary. A reader must accept a value it does not know\n(QUIRK-TREATMENTS-005).\n\nKnown values:\n- insulin: `Meal Bolus`, `Correction Bolus`, `Snack Bolus`,\n  `Combo Bolus`, `Bolus Wizard`\n- carbs: `Carb Correction`\n- basal, targets and profiles: `Temp Basal`, `Temporary Target`,\n  `Profile Switch`, `Temporary Override`\n- device and notes: `Site Change`, `Sensor Start`, `Sensor Change`,\n  `Insulin Change`, `Pump Battery Change`, `BG Check`,\n  `Announcement`, `Note`, `Question`, `Exercise`, `OpenAPS Offline`,\n  `Suspend Pump`, `Resume Pump`\n- AAPS-specific: `SMB`, `Target Range`, `NS Carbs`\n- observed in live data, previously undeclared: `Bolus`, `Carbs`\n- legacy: `Prime`, `<none>`",
     "evidence": {
      "docs_present": 369419,
      "doc_frequency": 1.0,
@@ -592,7 +592,6 @@
     "required_read": true,
     "required_write": true,
     "notes": [
-     "declared enum not enforced: 8 of 14 observed values could not be published, so the enum cannot be shown to be complete",
      "indexed by lib/server/treatments.js:443"
     ]
    },

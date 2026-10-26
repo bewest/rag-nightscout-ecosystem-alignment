@@ -53,6 +53,12 @@ info:
     - `units`: enum widened to the union of the three inconsistent
       declarations across our own specs and the values in live data
 
+    ### 2026-10-26 — open vocabulary
+
+    - `type` (`EntryType`): no longer a closed enum. cgm-remote-monitor
+      accepts any string, and observation cannot close an enum (evidence
+      §3.4); `sgv`, `mbg` and `cal` are kept as `examples`.
+
     Fields carry `x-aid-evidence` pointing at the census record that
     justifies them. Re-derive with `make schema`.
 
@@ -166,12 +172,17 @@ components:
   schemas:
     EntryType:
       type: string
-      enum: [sgv, mbg, cal]
       description: |
         Entry classification:
         - `sgv`: Sensor Glucose Value (CGM reading)
         - `mbg`: Meter Blood Glucose (fingerstick)
         - `cal`: Calibration record
+
+        Open: these are the known values, not a closed list. Nightscout stores
+        any string here: API v1 refuses only a `type` that is not a string
+        (cgm-remote-monitor `lib/server/entries.js`) and API v3 does not check
+        it. A reader must accept a value it does not know.
+      examples: [sgv, mbg, cal]
       x-aid-source: externals/cgm-remote-monitor/lib/api3/swagger.yaml
 
     Direction:

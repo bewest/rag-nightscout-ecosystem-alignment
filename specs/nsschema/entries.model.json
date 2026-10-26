@@ -680,7 +680,7 @@
     "sensitivity_why": "values survived cross-site corroboration, so they are shared vocabulary",
     "tier": "universal",
     "tier_reason": "all 11 sites, 100.0% of documents",
-    "description": "Entry classification:\n- `sgv`: Sensor Glucose Value (CGM reading)\n- `mbg`: Meter Blood Glucose (fingerstick)\n- `cal`: Calibration record",
+    "description": "Entry classification:\n- `sgv`: Sensor Glucose Value (CGM reading)\n- `mbg`: Meter Blood Glucose (fingerstick)\n- `cal`: Calibration record\n\nOpen: these are the known values, not a closed list. Nightscout stores\nany string here: API v1 refuses only a `type` that is not a string\n(cgm-remote-monitor `lib/server/entries.js`) and API v3 does not check\nit. A reader must accept a value it does not know.",
     "evidence": {
      "docs_present": 896589,
      "doc_frequency": 1.0,
@@ -689,8 +689,7 @@
       "string": 896589
      }
     },
-    "enum": [
-     "cal",
+    "observed_values": [
      "mbg",
      "sgv"
     ],
