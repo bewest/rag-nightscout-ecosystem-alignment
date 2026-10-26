@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 295 |
+| items | 296 |
 | runnable gates | 353 |
-| explicit `no-gate:` markers | 334 |
+| explicit `no-gate:` markers | 335 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 334 of the 687 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 335 of the 688 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 61 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `not-started` | 62 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 7 | BFQ-178, ID-CONVENTIONS, BFQ-191, BFQ-195, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY |
 | `gate-not-met` | 5 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR |
 | `ready-to-push` | 4 | P0-C-REMEDIATE, ID-SIMPLE-MATCH, T30-AUTH, WS-LAB |
@@ -131,6 +131,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-180** BF-180 - a careportal temp target on an mmol/L site is converted to mg/dL twice when the hidden BG field holds a value
 - **BFQ-181** BF-181 - one future srvModified pins the shared write clock ahead, across restarts
 - **BFQ-183** BF-183 - the API v3 storage socket logs the supplied credential on a failed authorization
+- **BFQ-196** BF-196 to BF-199 - API v1 error paths and the README's read window, found by PR #8858's route audit
 - **BFQ-184** BF-184 - API v3 /status apiPermissions reports only wildcard permissions
 - **BFQ-186** BF-186 - API v3 logs a whole record when a client's identifier differs from the computed one
 - **BFQ-187** BF-187 - an entries pattern segment over the braces parser's input limit answers 500, not 400
@@ -2587,7 +2588,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 138 items
+`parcel: register-open` &mdash; 139 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2704,6 +2705,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-181` | BF-181 - one future srvModified pins the shared write clock ahead, across restarts | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-182` | BF-182 - on cut 3 (driver 7), boot against MongoDB 4.2 or older retries forever with no HTTP server | `merged-upstream` | `chore/compose-mongodb6` | major | 2 run + 1 no-gate |
 | `BFQ-183` | BF-183 - the API v3 storage socket logs the supplied credential on a failed authorization | `merged-upstream` | `bf/183-storage-socket-log-redaction` | patch | 1 run + 1 no-gate |
+| `BFQ-196` | BF-196 to BF-199 - API v1 error paths and the README's read window, found by PR #8858's route audit | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-184` | BF-184 - API v3 /status apiPermissions reports only wildcard permissions | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-185` | BF-185 - the stress test tier leaves devicestatus documents that break api3.search in a later run | `merged-upstream` | `ci/edge-diagonal-matrix` | n/a | 1 run + 1 no-gate |
 | `BFQ-186` | BF-186 - API v3 logs a whole record when a client's identifier differs from the computed one | `merged-upstream` | `bf/16.0.0-record-identity` | patch | 2 run + 1 no-gate |
@@ -6325,6 +6327,36 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** 2026-10-26, 12:15:29Z: merged with cut 4. AndyLow91 merged #8847 (head 35fc8167) into dev as e34efdef (gh pr view 8847); the fix is 54115e95 ("Stop logging storage subscription credentials"), cherry-picked from f6704b8a. Merged is not released. 2026-10-25: reproduced live on dev b29f1bf7 (MongoDB 8.0.34) and fixed as f6704b8a on local bf/183-storage-socket-log-redaction (one commit on dev, not pushed), for cut 4: the alarm socket's redacted wording. tests/api3.storage-logging.test.js 5 passing, its 4 rejection cases red when reverted. The 2 security.test.js failures in that lane's test:affected selection are BF-189 and also occur with dev's file. Filed 2026-10-25 by session f4. The same two paths in lib/api3/alarmSocket.js are redacted on dev; cut 4 changes them in alarmSocket.js only. Mechanism only in the public repository.
+
+### `BFQ-196` &mdash; BF-196 to BF-199 - API v1 error paths and the README's read window, found by PR #8858's route audit
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@c08cbe03` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-196`, `BF-197`, `BF-198`, `BF-199` |
+
+**Blast radius.** lib/api/notifications-api.js (install sendJSONStatus on the router), lib/api/entries/index.js echo_query (check the storage name), lib/api/profile, food and activity delete-by-id callbacks (answer the storage error), and one README sentence. Server-side and documentation only; one themed PR.
+
+**What an operator sees.** Small corrections to how Nightscout's older API (v1) answers some mistakes: an app without permission to acknowledge an alarm is told "unauthorized" instead of getting a server error, a mistyped debug address gets "not found", and deleting a profile, food or activity record reports a database failure instead of reporting success. The README's description of how many days a read covers is corrected from two to four. Nothing that works today changes.
+
+**Why `patch`.** error answers become accurate status codes; no successful response changes shape
+
+**Gates.**
+
+- **NO GATE** &mdash; Reproduced 2026-10-26 on the PR #8858 branch d46ef808 by its route audit (325 requests per run, held outside the repository): notifications/ack without a credential -> 500, echo/notastore -> 500, the echo query's $gte at now - 345600000 ms. BF-198 is read. A test per route would assert 401, 404 and a non-200 on a storage fault; control: c08cbe03 fails each.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-10-26 by session -b7 from the route audit behind PR #8858 (API documents for 16.0.0), which documents each behaviour as it is. All four read on v15.0.9 c6a0d8ed. Bundle into one PR, or add to an open API v1 fixes PR of the same theme.
 
 ### `BFQ-184` &mdash; BF-184 - API v3 /status apiPermissions reports only wildcard permissions
 
