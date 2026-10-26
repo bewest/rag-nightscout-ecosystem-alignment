@@ -3020,7 +3020,7 @@
 
 
 <h1 id="static-site-mkdocs-material">Static site (MkDocs Material)<a class="headerlink" href="#static-site-mkdocs-material" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>1dbb0c08d</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>a26f4b5fa</code>.</em></p>
 <p><em>Contributor-facing.</em> Builds a browsable copy of this repository's
 documentation. It is deployed only by the maintainer, from a local build, on the
 <code>gh-pages</code> branch (see <a href="#publishing">Publishing</a>). Every page carries
@@ -3189,6 +3189,9 @@ the reader needs before trusting the page, and optionally <code>see:</code>, a t
   banner at the top;</li>
 <li>loads the Redoc runtime (2.4.0) from jsDelivr with its integrity hash, and no
   Google fonts.</li>
+<li>adds a <strong>Schemas</strong> group naming every schema in <code>components.schemas</code>, built
+  into a temporary copy beside the source (Redoc otherwise draws a schema only
+  where an operation refers to it, so a schemas-only file showed nothing).</li>
 </ul>
 <p>The build fails when an API page's banner does not carry the status in
 <code>pages.yaml</code>. To render: <code>tools/site/.venv/bin/python tools/site/render_apis.py
