@@ -330,7 +330,7 @@
      },
      "dia": {
       "type": "number",
-      "description": "Duration of Insulin Action in HOURS.",
+      "description": "Duration of Insulin Action in HOURS, as written to the profile",
       "x-sensitivity": "descriptive",
       "x-data-category": "therapy-setting",
       "minimum": 2,
