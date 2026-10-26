@@ -31,28 +31,28 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 269 |
-| runnable gates | 336 |
-| explicit `no-gate:` markers | 291 |
+| items | 275 |
+| runnable gates | 338 |
+| explicit `no-gate:` markers | 297 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 291 of the 627 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 297 of the 635 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 68 | RT-JSDOM-REST, RT-BUNDLE-THEME-SPLIT, RT-BOOT-INDEX-AWAIT, ID-SIMPLE-MATCH, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-159, BFQ-160, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
-| `in-progress` | 7 | RT-REBASE, ID-CONVENTIONS, BFQ-46, BFQ-ENV, BFQ-156, OID-LAB, LOOP-ID-REPLY |
+| `not-started` | 72 | RT-JSDOM-REST, RT-BUNDLE-THEME-SPLIT, RT-BOOT-INDEX-AWAIT, ID-SIMPLE-MATCH, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-159, BFQ-160, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-179, BFQ-181, BFQ-183, BFQ-184, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `in-progress` | 10 | RT-REBASE, ID-CONVENTIONS, BFQ-46, BFQ-ENV, BFQ-152, BFQ-156, BFQ-180, BFQ-182, OID-LAB, LOOP-ID-REPLY |
 | `gate-not-met` | 6 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 21 | RT-TEST-TIERS, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, WC-STEP-PATCH, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-154 |
 | `in-flight-upstream` | 3 | RT-2, BFQ-72, BFQ-161 |
 | `merged-upstream` | 12 | BFQ-177, RT-D3-SUITE, RT-CONNECT-TEARDOWN, RT-1, BFQ-09, BFQ-158, BFQ-157, BFQ-163, BFQ-172, BFQ-173, BFQ-174, BFQ-176 |
 | `released` | 89 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
-| `needs-decision` | 13 | T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, BFQ-95, ADV-XSS-META, ADV-CONFIG, BFQ-152, DEPENDABOT-CONFIG, BFQ-164 |
+| `needs-decision` | 12 | T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164 |
 | `done` | 39 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
-| `unsettled` | 2 | A7A-7, BFQ-175 |
-| `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
+| `unsettled` | 1 | A7A-7 |
+| `closed` | 4 | BFQ-71, BFQ-41, BFQ-175, BFQ-141 |
 | `answered` | 3 | RT-D3, RT-VERSION, RT-PROPAGATION |
 
 ### Reaches an operator on today's release
@@ -128,7 +128,10 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-172** BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819 proposed), a known issue of 15.0.9
 - **BFQ-173** BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units, a known issue of 15.0.9
 - **BFQ-174** BF-174 - the bolus calculator's profile picker is ignored; every value comes from the active profile, a known issue of 15.0.9
-- **BFQ-175** BF-175 - temp targets are converted from mmol/L only when units is exactly 'mmol' (candidate)
+- **BFQ-180** BF-180 - a careportal temp target on an mmol/L site is converted to mg/dL twice when the hidden BG field holds a value
+- **BFQ-181** BF-181 - one future srvModified pins the shared write clock ahead, across restarts
+- **BFQ-183** BF-183 - the API v3 storage socket logs the supplied credential on a failed authorization
+- **BFQ-184** BF-184 - API v3 /status apiPermissions reports only wildcard permissions
 - **RT-PR-8815** #8815 - a bearer token whose subject was deleted is refused instead of stopping the server (awss1i; BF-171, fixes #8225), merged for 15.0.9
 - **BFQ-134** BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 - **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
@@ -2346,7 +2349,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 120 items
+`parcel: register-open` &mdash; 126 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2433,7 +2436,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-151` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (brace expansion has no bound), for 15.0.9 | `released` | `bf/braces-expansion-cap` | patch | 1 run + 1 no-gate |
 | `BFQ-73` | BF-73 - error responses carry a stack trace and server paths in production, for 15.0.9 | `released` | `bf/production-error-handler` | patch | 1 run + 1 no-gate |
 | `BFQ-153` | BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 style refresh) | `released` | `bf/dependency-refresh-2026-10` | patch | 1 run + 1 no-gate |
-| `BFQ-152` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
+| `BFQ-152` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission | `in-progress` | `bf/16.0.0-v3-settings-read-scope` | minor | 1 run + 1 no-gate |
 | `DEPENDABOT-CONFIG` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev | `needs-decision` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-154` | BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed release | `blocked` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-155` | BF-155 - a failed storage read on GET /api/v1/activity ends the server process, for 15.0.9 | `released` | `bf/activity-read-error` | patch | 1 run + 1 no-gate |
@@ -2455,8 +2458,14 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-172` | BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819 proposed), a known issue of 15.0.9 | `merged-upstream` | `javier-erro:#8819` | patch | 1 run + 1 no-gate |
 | `BFQ-173` | BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units, a known issue of 15.0.9 | `merged-upstream` | `bf/boluscalc-profile-units` | patch | 1 run + 1 no-gate |
 | `BFQ-174` | BF-174 - the bolus calculator's profile picker is ignored; every value comes from the active profile, a known issue of 15.0.9 | `merged-upstream` | `bf/profile-spec-honoured` | patch | 1 run + 1 no-gate |
-| `BFQ-175` | BF-175 - temp targets are converted from mmol/L only when units is exactly 'mmol' (candidate) | `unsettled` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-175` | BF-175 - temp targets are converted from mmol/L only when units is exactly 'mmol' (candidate) | `closed` | `-` | n/a | 0 run + 1 no-gate |
 | `BFQ-176` | BF-176 - axios is only a devDependency and lodash is undeclared, so a production install of dev (16.0.0 line, cut 1 merged) stops at boot when IMPORT_CONFIG is set | `merged-upstream` | `bf/axios-runtime-dependency` | patch | 2 run + 1 no-gate |
+| `BFQ-179` | BF-179 - postinstall runs webpack, now a devDependency, so a production install of dev fails (dev b29f1bf7, cut 2) | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-180` | BF-180 - a careportal temp target on an mmol/L site is converted to mg/dL twice when the hidden BG field holds a value | `in-progress` | `bf/16.0.0-client-alarms` | patch | 0 run + 1 no-gate |
+| `BFQ-181` | BF-181 - one future srvModified pins the shared write clock ahead, across restarts | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-182` | BF-182 - on cut 3 (driver 7), boot against MongoDB 4.2 or older retries forever with no HTTP server | `in-progress` | `wip/cut3-onto-16.0.0` | major | 1 run + 1 no-gate |
+| `BFQ-183` | BF-183 - the API v3 storage socket logs the supplied credential on a failed authorization | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-184` | BF-184 - API v3 /status apiPermissions reports only wildcard permissions | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `released` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -3554,7 +3563,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/remedial/bf41-future-reading-2026-09-23.md`
 
-**Notes.** 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Question for the maintainer: a notice for readings that arrive dated ahead of the server clock by more than a tolerance, or the status quo? (The 2026-10-13 decision that alarm timing itself is unchanged is recorded on records/rt- propagation-merge 4f083622f, not yet on main.) 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9. Long-standing, and an uploader sending future-dated data is visible to the site operator to fix. Stays a known issue. Open, needs a design decision; 15.0.9 carries it as a known issue. Filed 2026-09-23 from the BF-41 measurement (F7/F8) when BF-41 was closed. One option is a notice for readings that arrive already ahead of the clock (evidence section 5, option 3). BF-44 (BFQ-MINIMED) is a shipping source of forward skew.
+**Notes.** 2026-10-25: the premise "v1 entries store no server-receipt time" no longer holds on dev b29f1bf7: every live entries write path stores srvModified from the server clock at receipt, and a client-sent value is replaced or refused (measured, MongoDB 8.0.34; on 15.0.9 read-derived). Caveat: one stored future srvModified pins the clock ahead (BF-181, BFQ-181). Stays needs-decision. Decision 2026-10-25 (maintainer): verify srvModified first, before choosing a design. 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Question for the maintainer: a notice for readings that arrive dated ahead of the server clock by more than a tolerance, or the status quo? (The 2026-10-13 decision that alarm timing itself is unchanged is recorded on records/rt- propagation-merge 4f083622f, not yet on main.) 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9. Long-standing, and an uploader sending future-dated data is visible to the site operator to fix. Stays a known issue. Open, needs a design decision; 15.0.9 carries it as a known issue. Filed 2026-09-23 from the BF-41 measurement (F7/F8) when BF-41 was closed. One option is a notice for readings that arrive already ahead of the clock (evidence section 5, option 3). BF-44 (BFQ-MINIMED) is a shipping source of forward skew.
 
 ### `BFQ-96` &mdash; BF-96 - the headless test fixture's bundle cache key is an un-normalised path
 
@@ -5092,31 +5101,33 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `needs-decision` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
-| base | `official/dev@50bc1084` |
-| worktree | `-` |
-| semver | `n/a` |
+| branch | `bf/16.0.0-v3-settings-read-scope` |
+| base | `official/dev@b29f1bf7` |
+| worktree | `externals/cgm-remote-monitor-official` |
+| semver | `minor` |
 | review | maintainer |
 | ships to operators today | **yes** |
 | register | `BF-152` |
 
-**Blast radius.** lib/api3/generic/read/operation.js (or a per-collection permission map shared by search, history and read), if the decision is to gate.
+**Blast radius.** Step 1 (06ba6201, local, not pushed): an opt-in setting API3_SETTINGS_STRICT_READ_ENABLED, default off, that makes API v3 read by identifier of settings demand api:settings:admin, as search and history do. Default behaviour unchanged.
 
-**What an operator sees.** Not yet decided. If changed, apps that read their own saved settings from Nightscout may need a token with more permissions.
+**What an operator sees.** Nothing changes unless you turn it on. A new optional setting, API3_SETTINGS_STRICT_READ_ENABLED, lets you require full (admin) access before an app can read a saved app-settings document from Nightscout. If you turn it on, an AndroidAPS 4.0 follower that uses a read-only token can no longer load its settings from Nightscout; a token made by the AndroidAPS master phone already has the access it needs.
 
-**Why `n/a`.** undecided until the contract question is answered; gating read behind admin would break AAPSClient followers that use read-only tokens
+**Why `minor`.** a new opt-in setting, default off; a strict default later would be a separate, breaking step on the calendar
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official cat-file -e 06ba6201^{commit}`
+  - step 1's commit exists in the shared clone; red if the local branch is lost before it is pushed (a rebase changes the id, and this gate must then name the new one)
 - **NO GATE** &mdash; A decision item. Reproduced 2026-10-01 on v15.0.8 and dev 3014f883: search and history 403, read by identifier 200, readable and denied. AndroidAPS's AAPSClient reads its running configuration by identifier (plugins/sync nsclientV3 LoadSettingsRunner).
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Question (for the maintainer, with the AndroidAPS developers): is API v3 settings meant to be readable with a follower's read token, or admin-only? 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9. Needs more research on AndroidAPS's use of settings first. 2026-10-02: the private fork of GHSA-25pr has a fix by Ruben Sutton (code2344, 28d1efa6, on v15.0.8): a shared requiredReadPermission that makes read by identifier and lastModified demand api:settings:admin, as search and history do. That is the gating choice, which breaks AAPSClient followers with read tokens; it is not taken until the AndroidAPS question is answered. After 15.0.9. The question for the AndroidAPS developers: is settings meant to be readable by a follower's read token (then search and history are the inconsistent side), or admin-only (then AAPSClient needs a token change first)?
+**Notes.** 2026-10-25 (maintainer decision): a staged ladder. (1) an opt-in, admin-only settings read in 16.x; (2) ask the AndroidAPS developers about a narrower scope; (3) a strict default later on the calendar. Step 1 is on local branch bf/16.0.0-v3-settings-read-scope 06ba6201 over dev b29f1bf7, not pushed: API3_SETTINGS_STRICT_READ_ENABLED, default off; integration 1999/1/0, unit 1218, red controls failed for the right reasons. Step 2 is the combined note to the AndroidAPS developers (with BF-164), drafted, not sent. Corrections, measured or read 2026-10-25: AAPSClient's v3 settings read exists only in AndroidAPS 4.0.0 (beta1, rc1, dev), not in released 3.4.2.6; tokens made by the AndroidAPS master (role aaps-client) carry api:settings:admin; *:*:read implies api:settings:read and api:settings:read:<x> under shiro-trie (measured), so a narrower scope needs a new verb. 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Question (for the maintainer, with the AndroidAPS developers): is API v3 settings meant to be readable with a follower's read token, or admin-only? 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9. Needs more research on AndroidAPS's use of settings first. 2026-10-02: the private fork of GHSA-25pr has a fix by Ruben Sutton (code2344, 28d1efa6, on v15.0.8): a shared requiredReadPermission that makes read by identifier and lastModified demand api:settings:admin, as search and history do. That is the gating choice, which breaks AAPSClient followers with read tokens; it is not taken until the AndroidAPS question is answered. After 15.0.9. The question for the AndroidAPS developers: is settings meant to be readable by a follower's read token (then search and history are the inconsistent side), or admin-only (then AAPSClient needs a token change first)?
 
 ### `DEPENDABOT-CONFIG` &mdash; Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev
 
@@ -5490,7 +5501,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
 
-**Notes.** Filed 2026-10-07 from the WRITE-CONTRACT write matrix. Present on 15.0.8 too. Overlaps BF-122's mechanism paragraph, whose fix covered history only. Either a narrow fix on dev ahead of WRITE-CONTRACT or item 5 of WRITE-CONTRACT; not decided. AndroidAPS NSClientV3's reliance on the socket is read, not run. Reclassified 2026-10-12 (maintainer): a behaviour question, not a fix. The AndroidAPS authors indicate the v3-only emission may be intended (v3 validates what it accepts). Next: a lab run timing when AndroidAPS NSClientV3 in websocket mode receives a v1-written carb, and one question to the AndroidAPS authors on whether broadcasting non-v3 writes would help or harm. No dev fix until both are in.
+**Notes.** 2026-10-25 (maintainer decision): a lab run plus one combined note to the AndroidAPS developers (with BF-152); no code change yet. Stays needs-decision. Lab, 2026-10-25 (dev b29f1bf7, two real servers, nightscout-connect 0.1.0, MongoDB 8.0.34; a client following AndroidAPS's websocket mode as read): with the socket up, v1 (careportal), main-socket dbAdd and connector writes were never received in 45 s; on reconnect they arrived through catch-up history, unless a v3 write in the same collection landed first, because a pushed frame sets AndroidAPS's history cursor to its srvModified (ws/NsFrameHandler.kt:105-111), and the earlier non-v3 record is then delivered only by a full sync. AndroidAPS does not poll while connected. The v3 control arrived in 0.01-0.05 s. The 2026-10-12 reading "changes when AndroidAPS sees a v1 record, not whether" is contradicted for websocket-mode AndroidAPS; reach re-graded: careportal, v1 and connector records can be missed. The note to the AndroidAPS developers is drafted, not sent. Filed 2026-10-07 from the WRITE-CONTRACT write matrix. Present on 15.0.8 too. Overlaps BF-122's mechanism paragraph, whose fix covered history only. Either a narrow fix on dev ahead of WRITE-CONTRACT or item 5 of WRITE-CONTRACT; not decided. AndroidAPS NSClientV3's reliance on the socket is read, not run. Reclassified 2026-10-12 (maintainer): a behaviour question, not a fix. The AndroidAPS authors indicate the v3-only emission may be intended (v3 validates what it accepts). Next: a lab run timing when AndroidAPS NSClientV3 in websocket mode receives a v1-written carb, and one question to the AndroidAPS authors on whether broadcasting non-v3 writes would help or harm. No dev fix until both are in.
 
 ### `BFQ-165` &mdash; BF-165 - a treatment re-send matched by its fallback key is answered without _id
 
@@ -5786,21 +5797,21 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `unsettled` |
+| state (claimed) | `closed` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `official/dev@04d435eb` |
 | worktree | `-` |
-| semver | `patch` |
+| semver | `n/a` |
 | review | maintainer |
-| ships to operators today | **yes** |
+| ships to operators today | no (pre-release) |
 | register | `BF-175` |
 
 **Blast radius.** lib/data/ddata.js convertTempTargetTreatmentUnites (:455-485 on dev 04d435eb, :320 on v15.0.8): read the units with the normalisation BF-124's and BF-157's fixes use.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
-**Why `patch`.** if it is a defect, the fix normalises a units spelling; no API shape changes
+**Why `n/a`.** closed 2026-10-25 as not a defect; no change
 
 **Gates.**
 
@@ -5810,7 +5821,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Filed 2026-10-21 from the BF-157 work, as a candidate. The comparison is exact (units == 'mmol'), so 'mmol/L' does not take that branch; the fallback that follows converts any target below 20 whatever the units say, which covers every ordinary mmol/L target. Whether any record escapes both is not established, so unsettled.
+**Notes.** Closed 2026-10-25, not a defect (register BF-175, session f4's measurement on dev b29f1bf7, Node v22.23.4, in process): 51 temp targets through ddata.processTreatments, 14 wrong, each needing either mmol/L spelled other than mmol with both targets at or above 20, or a target declared mg/dL below 20. By reading no client sends either: AndroidAPS sends mg/dl within 72-180.16, Trio no units (mg/dL, or mmol/L below 20, which the fallback converts), nightguard mg/dl, the careportal mmol or mg/dl capped at 18 mmol/L; Loop, xDrip+ and nightscout-connect write no temp targets. The converted value feeds only the chart's temp-target bars and tooltip. The careportal flow showed a separate defect, BF-180 (BFQ-180). Filed 2026-10-21 from the BF-157 work, as a candidate. The comparison is exact (units == 'mmol'), so 'mmol/L' does not take that branch; the fallback that follows converts any target below 20 whatever the units say, which covers every ordinary mmol/L target. Whether any record escapes both is not established, so unsettled.
 
 ### `BFQ-176` &mdash; BF-176 - axios is only a devDependency and lodash is undeclared, so a production install of dev (16.0.0 line, cut 1 merged) stops at boot when IMPORT_CONFIG is set
 
@@ -5845,6 +5856,188 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** 2026-10-25: #8834 merged into dev at 17:44:48Z as 93f152bd (head f3d73f43; gh pr view 8834). dev no longer has the IMPORT_CONFIG boot crash. The window on dev was eb72a1d3 (16:29:06Z, the merge of #8828) to 93f152bd (17:44:48Z). dev's Docker image was published in that window: push run 40211895500 on eb72a1d3 ran Publish to Docker Hub at 17:14:58Z to 17:15:18Z, so the dev image published then carries the crash. Push run 40217943528 on 93f152bd published the next dev image at 17:53:06Z to 17:53:31Z. The push run on a20469dc (#8835) failed in two Firefox browser cells and skipped publishing; the push run on 2bc298b9 (#8838, run 40227267487) passed every cell and published the dev image at 19:48:15Z. Merged to dev, not released. The gate now reads official/dev; webpack joined its development-guard allowlist the same day for cut 2 (RT-2), and the control gained a stray require('webpack') outside the guard. 2026-10-25, 17:28Z: the maintainer pushed bf/axios-runtime-dependency f3d73f43 and opened #8834 ("axios and lodash are runtime dependencies (IMPORT_CONFIG boot crash on 16.0.0 dev)") against dev; open, checked with gh pr view 8834. 2026-10-25, later: measured by the BF-176 session (Node 24.22.1, npm 11.19.1, MongoDB 7.0.43). Crash confirmed on dev eb72a1d3: with IMPORT_CONFIG set, the Dockerfile's install commands and npm ci --omit=dev exit 1 with "Cannot find module 'axios'" at bootevent.js:114; unset, both boot; full npm ci with it set boots with the imported settings. bf/axios- runtime-dependency is now f3d73f43 (43ed462a plus a merge of dev eb72a1d3; 0 behind, 2 ahead, 3 files; not pushed), where every arm boots with the settings applied. Tests with TZ=UTC: branch 3384/3/0, dev 3379/3/0; tests/dependency- axios.test.js 30 passing, 4 failing with dev's package.json. runtime-requires- declared on dev: 41 checked, 2 failing (axios, lodash); on the branch 0 failing. The gate control gains dev eb72a1d3 as a negative (ee7a3cb49, merged into this records branch). The paragraph below said these were pending. 2026-10-25: the exposure moved from cut 1 only to dev and the 16.0.0 line. #8828 (cut 1) merged into dev as eb72a1d3 before this fix went to dev, so dev now carries the condition BF-176 predicted for cut 1: on eb72a1d3 package.json still lists axios ^0.34.0 only under devDependencies and declares no lodash (read with git show official/dev:package.json). No release carries it (ships_to_operators_today stays false; 15.0.9 boots, see below). dev's push CI run 40211895500 published the dev Docker image, so anyone running the dev image with IMPORT_CONFIG set is exposed. A peer session is confirming the boot failure on eb72a1d3 and merging dev into bf/axios-runtime-dependency; its measurements, the new branch head and the PR number are pending and are not recorded here. The state stays ready-to-push as a claim until that session reports. Filed 2026-10-22 from a colleague's read of package.json, then reproduced. The read hypothesis was that 15.0.x fails; it does not, because minimed-connect-to-nightscout depends on axios and npm hoists that 0.34.0 copy to node_modules/axios in every production install (npm ls axios --omit=dev). Cut 1 (RT-1, #8828, 806ff2f0) removes the MiniMed bridge, and its lockfile then marks node_modules/axios dev: true; with IMPORT_CONFIG set, npm ci --omit=dev and the Dockerfile's commands both exit 1 at augmentSettings. Register §1b, kind (b). lodash is covered by the same fix: lib/utils.js requires lodash/escape and lodash is not declared. It is supplied transitively today by node-cache, jsonwebtoken (through @parse/node-apn) and minimed- connect-to-nightscout on 15.0.9 and dev, and by node-cache and jsonwebtoken on cut 1 (read, and verified with npm ls lodash --omit=dev on both installs), so nothing fails today. Route (2026-10-22): a PR to dev from bf/axios-runtime- dependency, and #8828 takes it in its next catch-up merge of dev. The branch conflicts with 806ff2f0 in package.json and package-lock.json (git merge- tree); on cut 1 the resolution also drops the dev flag from node_modules/axios and node_modules/proxy-from-env in the lockfile. Proved on cut 1 by hand: with the axios move applied to 806ff2f0, npm ci --omit=dev plus IMPORT_CONFIG boots and applies the imported settings. Not pushed; PR body drafted outside the repository. Cut 2 already moves axios (d660e272, "axios is a runtime dependency, at dev's ^0.34.0"), found by its tools/validate-pruned-runtime.js. The widened gate on d660e272 still reports lodash undeclared and webpack a devDependency required inside the development guard of lib/server/app.js (:340); both are for cut 2's next catch-up, not for this item.
+
+### `BFQ-179` &mdash; BF-179 - postinstall runs webpack, now a devDependency, so a production install of dev fails (dev b29f1bf7, cut 2)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@b29f1bf7` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | no (pre-release) |
+| register | `BF-179` |
+
+**Blast radius.** package.json scripts.postinstall (:47 on dev b29f1bf7), and possibly the build and packaging path if the prebuilt bundle is shipped instead. Install-time only; no runtime code.
+
+**What an operator sees.** Not in any release. On the development branch (dev), installing Nightscout without its development packages (for example with npm ci --omit=dev, npm install --production or NODE_ENV=production) fails with "webpack: not found", so the site cannot be installed that way. The official Docker image and the Azure deploy script install the development packages first and are not affected. 15.0.9 installs normally.
+
+**Why `patch`.** packaging and install scripts only; no API, setting or stored-data change
+
+**Gates.**
+
+- **NO GATE** &mdash; Reproduced 2026-10-25 by hand (Node v22.23.4): npm ci --omit=dev on dev b29f1bf7 exits 127 "sh: 1: webpack: not found", on v15.0.9 c6a0d8ed exits 0 (control). A full install takes minutes and needs the network, so it is not a queue gate. A static gate would read official/dev's package.json and fail while postinstall runs webpack unguarded with webpack outside dependencies.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-10-25 by session f4 (register §1b, kind b: a defect in a release- train cut). Cut 2 (#8837) moved webpack to devDependencies; postinstall still runs it. Reach of the first-party Dockerfile and bin/azure-deploy.sh is read (they run npm ci --include=dev, then npm prune --omit=dev --ignore-scripts). Fix direction, UNVERIFIED: guard postinstall, or ship the prebuilt bundle.
+
+### `BFQ-180` &mdash; BF-180 - a careportal temp target on an mmol/L site is converted to mg/dL twice when the hidden BG field holds a value
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/16.0.0-client-alarms` |
+| base | `official/dev@b29f1bf7` |
+| worktree | `externals/cgm-remote-monitor-official` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-180` |
+
+**Blast radius.** lib/client/careportal.js filterInputs (:145-161, clear #glucoseValue when the BG field is hidden) and/or lib/client-core/careportal/normalize-treatment.js (:66-70, label the converted targets mg/dl). Browser code, so a rebundle.
+
+**What an operator sees.** If your Nightscout site shows glucose in mmol/L, a temporary target entered in the Careportal could be saved wrongly when a BG value had been typed into the form earlier: Nightscout stores the target in mg/dL numbers but labels it mmol/L, so the chart shows an impossibly high target (about 1785 for a 5.5 target). AndroidAPS ignores such a target without telling you, so the temporary target you set in Nightscout does not reach AndroidAPS. Until a fix is released, check that a temporary target you enter in Nightscout appears as expected in AndroidAPS, or set it in AndroidAPS directly.
+
+**Why `patch`.** stored temp targets get their correct units; no API shape changes
+
+**Gates.**
+
+- **NO GATE** &mdash; Reproduced 2026-10-25 through the real functions (careportal gather and normalisation, v1 prepareData, ddata) on dev b29f1bf7, not in a browser: typed 5.5/5.5 with a leftover glucose 6.1 is stored 99.09 labelled mmol and charted 1785.09. The fix branch has no commit yet; a gate would run that flow and assert the stored units are mg/dl or absent, with the leftover-glucose arm as the red control on b29f1bf7.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-10-25 by session f4 from the BF-175 measurement. AndroidAPS (externals/AndroidAPS 7e1d537d) reads units mmol as mmol/L x18 and drops a temp target outside 72-180.16 mg/dL with a debug log only (NsIncomingDataProcessor.kt:172-179), read, not run. v15.0.9: same code by reading. Fix in progress on the alarms lane's local branch bf/16.0.0-client- alarms (not pushed). Also named in the drafted note to the AndroidAPS developers (with BF-152 and BF-164).
+
+### `BFQ-181` &mdash; BF-181 - one future srvModified pins the shared write clock ahead, across restarts
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@b29f1bf7` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-181` |
+
+**Blast radius.** lib/server/srv-dates.js next() and restore() (BF-144's a28fcecb, in v15.0.9): how far ahead of wall time a stored value may seed the clock, and what to do with an existing future-stamped record.
+
+**What an operator sees.** Nightscout gives every saved record a "last changed" time from the server's clock, and apps that sync from Nightscout use those times to ask for what changed since they last looked. If one record in the database carries a time in the future (for example one saved by an older Nightscout version that accepted the time a phone sent), every later record is stamped just after that future time, even after a restart. What this does to syncing apps such as AndroidAPS has not been measured yet.
+
+**Why `patch`.** server-side stamping only; no API shape changes
+
+**Gates.**
+
+- **NO GATE** &mdash; Reproduced 2026-10-25 with a booted server and MongoDB 8.0.34 (dev b29f1bf7; v15.0.8 92d08342 for the stored value). A gate needs a booted server and a database seeded with a future srvModified, and the decided behaviour first.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-10-25 by session f4 from the BF-95 srvModified lane. +24 h injected: later writes 86,400,000 ms ahead, still after deleting the record and restarting. Upgrade arm: 15.0.8 stored a client-sent srvModified of 2100-01-01 verbatim; dev booted on it stamped new writes at 2100-01-01. Unmeasured: API v3 history cursors such as AndroidAPS's, treatments and devicestatus from 15.0.8, a 15.0.9 boot, a real clock step. No fix prescribed.
+
+### `BFQ-182` &mdash; BF-182 - on cut 3 (driver 7), boot against MongoDB 4.2 or older retries forever with no HTTP server
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `cgm-remote-monitor` |
+| branch | `wip/cut3-onto-16.0.0` |
+| base | `official/chore/compose-mongodb6@ebb690cf` |
+| worktree | `externals/cgm-remote-monitor-official` |
+| semver | `major` |
+| review | maintainer |
+| ships to operators today | no (pre-release) |
+| register | `BF-182` |
+
+**Blast radius.** lib/storage/mongo-storage.js isRetryableConnectionError (:48 on ebb690cf and 72c156fb) and the boot error path: a driver refusal of the server version becomes a fatal boot error instead of a retry. Cut 3 only.
+
+**What an operator sees.** Not in any release. A future Nightscout release with the newer MongoDB driver (cut 3) does not work with MongoDB 4.2 or older. As cut 3 stands, such a site keeps retrying the database connection forever: the website never comes up, uploads fail, followers see no data and server alarms do not run, and only the host's log says why. The fix in progress makes Nightscout stop with an error page that names the problem. Check your MongoDB version before upgrading to a release that includes this change.
+
+**Why `major`.** driver 7 drops MongoDB servers older than 4.4 (cut 3's change); the fix only makes that refusal visible
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official cat-file -e 99fa8b1e^{commit}`
+  - -f8's fix commit on wip/cut3-onto-16.0.0 exists in the shared clone; red if the local branch is lost before it is pushed (a rebase changes the id, and this gate must then name the new one)
+- **NO GATE** &mdash; The defect needs a MongoDB 4.2 container and driver 7: reproduced 2026-10-25 (init() on 72c156fb against 4.2.24 not resolved after 45 s; 4.4.24 connected in 28 ms; driver 5.9.2 against 4.2.24 connected in 32 ms). Not a queue gate.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-10-25 by session f4 from the defaults-calendar lane (C3-2; register §1b, kind b). The maintainer asked for confirmation that compatibility with MongoDB 3.6 to 4.4 holds; a driver x server matrix is running, and the entry claims only 4.2.24 and 4.4.24. -f8's cut 3 agent is adding a fatal boot-error path (99fa8b1e on wip/cut3-onto-16.0.0, local, not pushed, not checked by session f4).
+
+### `BFQ-183` &mdash; BF-183 - the API v3 storage socket logs the supplied credential on a failed authorization
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@b29f1bf7` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-183` |
+
+**Blast radius.** lib/api3/storageSocket.js subscribe, two log lines (:63, :76 on dev b29f1bf7 and v15.0.9): the redaction alarmSocket.js applies. Server-side, no rebundle.
+
+**What an operator sees.** When an app connects to Nightscout's API v3 live-update channel with a wrong or expired access token, Nightscout writes that token into its server log. Anyone who can read your host's logs can see it. Keep access to your hosting logs limited, and replace a token you think was exposed.
+
+**Why `patch`.** log content only
+
+**Gates.**
+
+- **NO GATE** &mdash; Read, not run, on dev b29f1bf7 and v15.0.9 c6a0d8ed. A unit gate would subscribe with a bad token and assert the token string is absent from the captured log; control: b29f1bf7 fails it.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-10-25 by session f4. The same two paths in lib/api3/alarmSocket.js are redacted on dev; cut 4 changes them in alarmSocket.js only. Mechanism only in the public repository.
+
+### `BFQ-184` &mdash; BF-184 - API v3 /status apiPermissions reports only wildcard permissions
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@b29f1bf7` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-184` |
+
+**Blast radius.** lib/api3/specific/status.js: the for...in loop over the collections map (:43) passes keys where permsForCol reads col.colName (:17-31). One function, server-side.
+
+**What an operator sees.** Apps can ask Nightscout's API v3 which collections their access token may read or change. The answer is wrong for tokens limited to particular collections: such a token is reported as having no access at all, although its requests work. Tokens with full access are reported correctly. Nothing about what a token can actually do changes.
+
+**Why `patch`.** the status reply reports the permissions a token already has; no shape change
+
+**Gates.**
+
+- **NO GATE** &mdash; Reproduced 2026-10-25 on dev b29f1bf7 by an in-process probe through the API v3 test fixture (held outside the repository): an api:treatments:read token gets {}, api:*:read gets r everywhere, api:*:* gets crud. A unit gate would assert treatments: r for the first token; control: b29f1bf7 fails it.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-10-25 by session f4 from the API v3 contract lane. Same loop on v15.0.9 and v15.0.8. AndroidAPS works around it (NSAndroidClientImpl.withSettingsRights, read).
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 

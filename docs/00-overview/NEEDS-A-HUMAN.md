@@ -30,14 +30,13 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 18 items
+### Maintainer &mdash; 16 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BFQ-161` | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory  | &mdash; |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
-| `BFQ-152` | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by  | &mdash; |
 | `BFQ-164` | `needs-decision` | BF-164 - writes outside API v3 never reach the v3 storage socket | &mdash; |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
 | `DEPENDABOT-CONFIG` | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts co | &mdash; |
@@ -51,7 +50,6 @@ every item that was `merged-upstream` then is `released`.
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
-| `BFQ-175` | `unsettled` | BF-175 - temp targets are converted from mmol/L only when units is exactly 'mmol | &mdash; |
 
 ### Maintainer + a second human &mdash; 1 item
 

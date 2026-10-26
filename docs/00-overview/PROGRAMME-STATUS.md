@@ -24,10 +24,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 161 | 43 | 11 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 167 | 47 | 9 |
 | **Modernization** | `release-train` | 39 | 8 | 1 |
 | **Multitenant** | `tenancy`, `platform` | 67 | 17 | 9 |
-| | **total** | **269** | **68** | **21** |
+| | **total** | **275** | **72** | **19** |
 
 <!-- END GENERATED: horizons -->
 
@@ -148,7 +148,7 @@ cover more than one `BF-`:
 | `BFQ-146` | `released` | BF-146 - API v3 treatments are held in the server's memory without mills: a late or edited |
 | `BFQ-147` | `released` | BF-147 - two package.json overrides hold ajv and request's form-data inside published advi |
 | `BFQ-149` | `not-started` | BF-149 - the Day to Day report draws a cancelled or replaced temp target or override for i |
-| `BFQ-152` | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier |
+| `BFQ-152` | `in-progress` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier |
 | `BFQ-154` | `blocked` | BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed  |
 | `BFQ-156` | `in-progress` | BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the pro |
 | `BFQ-157` | `merged-upstream` | BF-157 - a treatment's glucose bubble is placed as mg/dL when its units are spelled mmol/L |
@@ -165,7 +165,10 @@ cover more than one `BF-`:
 | `BFQ-172` | `merged-upstream` | BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819  |
 | `BFQ-173` | `merged-upstream` | BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units, a k |
 | `BFQ-174` | `merged-upstream` | BF-174 - the bolus calculator's profile picker is ignored; every value comes from the acti |
-| `BFQ-175` | `unsettled` | BF-175 - temp targets are converted from mmol/L only when units is exactly 'mmol' (candida |
+| `BFQ-180` | `in-progress` | BF-180 - a careportal temp target on an mmol/L site is converted to mg/dL twice when the h |
+| `BFQ-181` | `not-started` | BF-181 - one future srvModified pins the shared write clock ahead, across restarts |
+| `BFQ-183` | `not-started` | BF-183 - the API v3 storage socket logs the supplied credential on a failed authorization |
+| `BFQ-184` | `not-started` | BF-184 - API v3 /status apiPermissions reports only wildcard permissions |
 | `BFQ-40` | `released` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `in-progress` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `released` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -202,7 +205,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 8 | 1 | 4 |  | 3 | 1 | 3 | 15 |  | 1 |  |  | 3 | **39** |
-| `register-open` | 33 | 4 | 1 | 1 | 5 | 2 | 9 | 55 | 6 |  | 1 | 3 |  | **120** |
+| `register-open` | 37 | 7 | 1 | 1 | 5 | 2 | 9 | 55 | 5 |  |  | 4 |  | **126** |
 | `tenancy` | 8 | 1 |  | 1 | 13 |  |  |  | 7 | 3 | 1 |  |  | **34** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  |  | 11 |  |  |  | **19** |
 | `backfix2` |  |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
@@ -242,14 +245,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 234 | 87% |
+| Maintainer | 240 | 87% |
 | SECURITY reviewer | 16 | 6% |
 | Maintainer + a second human | 7 | 3% |
 | SAFETY reviewer | 6 | 2% |
 | Whoever edits it next | 3 | 1% |
 | Unassigned | 2 | 1% |
 | Upstream reviewers | 1 | 0% |
-| **total** | **269** | |
+| **total** | **275** | |
 
 <!-- END GENERATED: reviewer-load -->
 
