@@ -30,26 +30,15 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 30 items
+### Maintainer &mdash; 18 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
-| `BFQ-145` | `in-flight-upstream` | BF-145 - API v3 PATCH and PUT by the shown id miss a record whose identifier is  | #8845 |
-| `BFQ-152` | `in-flight-upstream` | BF-152 - API v3 settings are admin-only through search and history, readable by  | #8845 |
 | `BFQ-161` | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory  | &mdash; |
-| `BFQ-165` | `in-flight-upstream` | BF-165 - a treatment re-send matched by its fallback key is answered without _id | #8845 |
-| `BFQ-166` | `in-flight-upstream` | BF-166 - a profile re-sent with its own _id answers 500 | #8845 |
-| `BFQ-167` | `in-flight-upstream` | BF-167 - devicestatus remove()'s filter is not pinned by any test | #8845 |
-| `BFQ-169` | `in-flight-upstream` | BF-169 - API v3's swagger says clients must not supply identifier, but the serve | #8845 |
-| `BFQ-170` | `in-flight-upstream` | BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent | #8845 |
-| `BFQ-179` | `in-flight-upstream` | BF-179 - postinstall runs webpack, now a devDependency, so a production install  | #8844 |
-| `BFQ-182` | `in-flight-upstream` | BF-182 - on cut 3 (driver 7), boot against MongoDB 4.2 or older retries forever  | #8844 |
-| `BFQ-185` | `in-flight-upstream` | BF-185 - the stress test tier leaves devicestatus documents that break api3.sear | #8843 |
-| `BFQ-186` | `in-flight-upstream` | BF-186 - API v3 logs a whole record when a client's identifier differs from the  | #8845 |
-| `BFQ-192` | `in-flight-upstream` | BF-192 - the populated reports browser test measured a drawn report against an e | #8843 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
+| `BFQ-ENV` | `needs-decision` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies | #8849 |
 | `DEPENDABOT-CONFIG` | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts co | &mdash; |
 | `ID-ABSENT-DECISION` | `needs-decision` | Decide: a write that carries no identifier (and no _id) - keep the time-key fall | &mdash; |
 | `ID-CLIENT-OID-DECISION` | `needs-decision` | Decide: may a client set _id (an ObjectId it creates), and which field wins when | &mdash; |
@@ -60,7 +49,6 @@ every item that was `merged-upstream` then is `released`.
 | `MOD-UNITS-CANONICAL` | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), an | &mdash; |
 | `MOD-WRITE-VALIDATION-READ` | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
-| `MOD-WRITE-VALIDATION` | `ready-to-push` | WRITE_VALIDATION=off|log|reject: opt-in domain validation of Temporary Target wr | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
@@ -89,18 +77,6 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
-| **#8843** | `BFQ-185` | `ci/edge-diagonal-matrix` | BF-185 - the stress test tier leaves devicestatus documents  | Maintainer |
-| **#8843** | `BFQ-192` | `` | BF-192 - the populated reports browser test measured a drawn | Maintainer |
-| **#8844** | `BFQ-179` | `chore/compose-mongodb6` | BF-179 - postinstall runs webpack, now a devDependency, so a | Maintainer |
-| **#8844** | `BFQ-182` | `chore/compose-mongodb6` | BF-182 - on cut 3 (driver 7), boot against MongoDB 4.2 or ol | Maintainer |
-| **#8845** | `BFQ-145` | `bf/16.0.0-record-identity` | BF-145 - API v3 PATCH and PUT by the shown id miss a record  | Maintainer |
-| **#8845** | `BFQ-152` | `bf/16.0.0-record-identity` | BF-152 - API v3 settings are admin-only through search and h | Maintainer |
-| **#8845** | `BFQ-165` | `bf/16.0.0-record-identity` | BF-165 - a treatment re-send matched by its fallback key is  | Maintainer |
-| **#8845** | `BFQ-166` | `bf/16.0.0-record-identity` | BF-166 - a profile re-sent with its own _id answers 500 | Maintainer |
-| **#8845** | `BFQ-167` | `bf/16.0.0-record-identity` | BF-167 - devicestatus remove()'s filter is not pinned by any | Maintainer |
-| **#8845** | `BFQ-169` | `bf/16.0.0-record-identity` | BF-169 - API v3's swagger says clients must not supply ident | Maintainer |
-| **#8845** | `BFQ-170` | `bf/16.0.0-record-identity` | BF-170 - API v3 stores a client's 24-hex body _id as a strin | Maintainer |
-| **#8845** | `BFQ-186` | `bf/16.0.0-record-identity` | BF-186 - API v3 logs a whole record when a client's identifi | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 

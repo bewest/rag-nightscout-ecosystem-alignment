@@ -2556,3 +2556,347 @@ controls:
       run 2026-10-25: official/master c6a0d8ed (15.0.9) does not contain
       #8797's head a4badcc6, and the same command reports it not-an-ancestor (exit 1); the
       gate itself exits 0 against official/dev eb72a1d3.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0d54d072 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0d54d072 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      #8844's head (cut 3) 0d54d072, and the same command reports it
+      not-an-ancestor (exit 1); the gate itself exits 0 against official/dev
+      47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a77cb146 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a77cb146 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      #8605's head (cut 5) a77cb146, and the same command reports it
+      not-an-ancestor (exit 1); the gate itself exits 0 against official/dev
+      47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 35fc8167 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 35fc8167 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      #8847's head (cut 4) 35fc8167, and the same command reports it
+      not-an-ancestor (exit 1); the gate itself exits 0 against official/dev
+      47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 488def62 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 488def62 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain the
+      boot index-await commit 488def62, and the same command reports it
+      not-an-ancestor (exit 1); the gate itself exits 0 against official/dev
+      47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5901961c official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5901961c official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      #8841's head 5901961c, and the same command reports it not-an-ancestor
+      (exit 1); the gate itself exits 0 against official/dev 47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1d63df57 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1d63df57 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      BF-46's code-half commit 1d63df57, and the same command reports it
+      not-an-ancestor (exit 1); the gate itself exits 0 against official/dev
+      47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8e4d30d3 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8e4d30d3 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      BF-48's code-half commit 8e4d30d3, and the same command reports it
+      not-an-ancestor (exit 1); the gate itself exits 0 against official/dev
+      47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8e3717e3 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8e3717e3 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      BF-49's start-up warning 8e3717e3, and the same command reports it
+      not-an-ancestor (exit 1); the gate itself exits 0 against official/dev
+      47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5fb199b3 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5fb199b3 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      BF-92's fix 5fb199b3, and the same command reports it not-an-ancestor
+      (exit 1); the gate itself exits 0 against official/dev 47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 91d9a4db official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 91d9a4db official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      BF-93's fix 91d9a4db, and the same command reports it not-an-ancestor
+      (exit 1); the gate itself exits 0 against official/dev 47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2556b35b official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2556b35b official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      BF-160's fix 2556b35b, and the same command reports it not-an-ancestor
+      (exit 1); the gate itself exits 0 against official/dev 47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bb1ad38e official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bb1ad38e official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      BF-180's fix (the careportal temp target converted once) bb1ad38e, and
+      the same command reports it not-an-ancestor (exit 1); the gate itself
+      exits 0 against official/dev 47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 148db86b official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 148db86b official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      #8842's head, which carries BF-190's fix 5fb199b3, 148db86b, and the
+      same command reports it not-an-ancestor (exit 1); the gate itself exits
+      0 against official/dev 47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 72f3cc09 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 72f3cc09 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      BF-159's token-half fix 72f3cc09, and the same command reports it
+      not-an-ancestor (exit 1); the gate itself exits 0 against official/dev
+      47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor d4566292 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor d4566292 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      BF-145's fix d4566292, and the same command reports it not-an-ancestor
+      (exit 1); the gate itself exits 0 against official/dev 47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0d5edc66 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0d5edc66 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      BF-165's fix 0d5edc66, and the same command reports it not-an-ancestor
+      (exit 1); the gate itself exits 0 against official/dev 47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c62a16c9 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c62a16c9 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      BF-166's fix c62a16c9, and the same command reports it not-an-ancestor
+      (exit 1); the gate itself exits 0 against official/dev 47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0edb1db9 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0edb1db9 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      BF-167's test 0edb1db9, and the same command reports it not-an-ancestor
+      (exit 1); the gate itself exits 0 against official/dev 47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 539856ef official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 539856ef official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      BF-169's swagger text 539856ef, and the same command reports it
+      not-an-ancestor (exit 1); the gate itself exits 0 against official/dev
+      47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b899edc1 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b899edc1 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      BF-170's PATCH refusal (create and PUT: 304827fd) b899edc1, and the same
+      command reports it not-an-ancestor (exit 1); the gate itself exits 0
+      against official/dev 47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b34f6703 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b34f6703 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      BF-186's fix b34f6703, and the same command reports it not-an-ancestor
+      (exit 1); the gate itself exits 0 against official/dev 47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor faffe875 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor faffe875 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain the
+      opt-in API3_SETTINGS_STRICT_READ_ENABLED commit faffe875, and the same
+      command reports it not-an-ancestor (exit 1); the gate itself exits 0
+      against official/dev 47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 200c1361 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 200c1361 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      BF-179's fix 200c1361, and the same command reports it not-an-ancestor
+      (exit 1); the gate itself exits 0 against official/dev 47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8f238fc5 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8f238fc5 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      BF-182's fix 8f238fc5, and the same command reports it not-an-ancestor
+      (exit 1); the gate itself exits 0 against official/dev 47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 54115e95 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 54115e95 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      BF-183's fix 54115e95, and the same command reports it not-an-ancestor
+      (exit 1); the gate itself exits 0 against official/dev 47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a5b569b9 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a5b569b9 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      BF-156's fix a5b569b9, and the same command reports it not-an-ancestor
+      (exit 1); the gate itself exits 0 against official/dev 47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 57717695 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 57717695 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      BF-185's polluter-side fix 57717695, and the same command reports it
+      not-an-ancestor (exit 1); the gate itself exits 0 against official/dev
+      47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0a33b7c7 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0a33b7c7 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      BF-192's fix 0a33b7c7, and the same command reports it not-an-ancestor
+      (exit 1); the gate itself exits 0 against official/dev 47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2b32fe67 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2b32fe67 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      #8730's head 2b32fe67, and the same command reports it not-an-ancestor
+      (exit 1); the gate itself exits 0 against official/dev 47723cda.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official show official/dev:translations/zh_TW.json | grep -F '"ml"' | grep -q '毫升'
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official show refs/triage/pr-8730:translations/zh_TW.json | grep -F '"ml"' | grep -q '毫升'
+    control-kind: static
+    proves: >
+      run 2026-10-26: the same check against refs/triage/pr-8730 (f99c0e54,
+      #8730's 2025-09 head, whose zh_TW ml is 克) exits 1; the gate exits 0
+      against official/dev 47723cda.

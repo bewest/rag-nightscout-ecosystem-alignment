@@ -62,6 +62,9 @@ maintainer, and the AndroidAPS, Loop (NightscoutKit) and Trio developers
 
 ## Notes carried on the item
 
+2026-10-26: #8841 merged (e09bca3b): under WRITE_VALIDATION=reject a known
+temp-target units spelling is stored as mmol or mg/dl (the PR body), which is
+N1 limited to temp targets. The question of other record kinds is unchanged.
 Filed 2026-10-25 by session f4 from the v3-validation lane (design section
 3.4). N1 must stay limited to temp targets until NightscoutKit accepts both
 spellings, or Loop would drop BG Check and Meal Bolus records it reads today.

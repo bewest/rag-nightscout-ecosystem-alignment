@@ -52,34 +52,25 @@ and the suggested order of the next merges, and the
 (`RT-REBASE`, `RT-1`); (2) backfixes that affect dosing or security; (3) other exposure fixes, only
 where no cut or modernization branch already covers them.
 
-What is left, as it stands on 2026-10-25, 19:51Z (`dev` `2bc298b9`, `master` `c6a0d8ed`):
+What is left, as it stands on 2026-10-26, 19:10Z (`dev` `47723cda`, `master` `c6a0d8ed`):
 
-1. **Merged to `dev` on 2026-10-25, none released:** by AndyLow91, #8831 (opt-in `THEME=modern`
-   dashboard), #8825 (`BFQ-173`), #8826 (`BFQ-174`, after #8825 as required), #8827 (`BFQ-157`), #8823
-   (the `BRIDGE_SERVER` mapping, also folded into cut 1), #8819 (`BFQ-172`, javier-erro), #8797
-   (`BFQ-09`), #8816, #8812, #8808 and #8828 (`RT-1`, cut 1); by bewest, #8834 (`BFQ-176`, `93f152bd`),
-   #8835 (`BFQ-163`: `compression`, `follow-redirects`, `source-map-js` and `sanitize-html` 2.18.1,
-   `a20469dc`) and #8838 (test and CI hygiene: `RT-CONNECT-TEARDOWN`, `BFQ-158`, `BFQ-177`,
-   `RT-D3-SUITE`, the edge CI matrix and MongoDB 5.0 through 8.0; `2bc298b9`). 204 commits and 15
-   first-parent commits ahead of `master`. CI on `2bc298b9` passed in every cell and published the `dev`
-   Docker image. The staging PR #8824 (`dev` → `master`) is open at `2bc298b9`, mergeable, review
-   required.
-2. **BF-176 on `dev`, closed:** `dev` had the `IMPORT_CONFIG` boot crash from `eb72a1d3` (16:29Z) to
-   `93f152bd` (17:44Z), and the `dev` Docker image published at 17:15Z carries it; the images published
-   since do not. No release carried it.
-3. **In flight.** Cut 2 is #8837 (`ee94b148`, `RT-2`), open; its CI failed the required check
-   *Run Tests (24, 6)* on `tests/env-runner.test.js`'s nyc child case under coverage, and the fix
-   `bd941200` and a merge of `dev` `2bc298b9` are not pushed yet. Peer session -b7's test tiers
-   (`RT-TEST-TIERS`, local) land after #8837 as one PR. BF-72 and BF-161 are in the private forks of their
-   draft advisories, no fork PR opened yet, each owing a merge of `dev` (`BFQ-72`, `BFQ-161`).
-4. **Not started:** `ID-SIMPLE-MATCH`, `RT-JSDOM-REST`, `RT-BUNDLE-THEME-SPLIT` (the page-bundle budget's
-   option B, for Andy Low) and `RT-BOOT-INDEX-AWAIT` (boot awaits its index creation).
-   `RT-NODE-FLOOR-TESTED` records the edge matrix on `dev`, and its gates still read the cut tips.
+1. **Merged to `dev`, none released:** 34 PRs on 2026-10-25 and 2026-10-26, among them all five
+   modernization cuts (cut 1 #8828, cut 2 #8837, cut 3 #8844, cut 4 #8847, cut 5 #8605), the CI
+   diagonal (#8843), the alarm fixes (#8842), record identity (#8845), opt-in `WRITE_VALIDATION`
+   (#8841) and boot resilience (#8849). 857 commits and 35 first-parent commits ahead of `master`. CI
+   on `47723cda` passed and published the `dev` Docker image. The list, with each PR's register and
+   queue ids, is in [16.0.0 contents](../../releases/cgm-remote-monitor-16.0.0/contents.md#what-is-merged-so-far).
+2. **The staging PR #8824** (`dev` → `master`) is open at `47723cda`, mergeable, review required, and
+   blocked by `master`'s required check `Run Tests (22, 4.4)`, which no `dev` workflow emits.
+3. **In flight.** Draft #8854 (AndyLow91: a shared write step and stored-data contracts, on `dev`
+   `47723cda`). BF-72 and BF-161 are in the private forks of their draft advisories, no fork PR opened
+   yet, each owing a merge of `dev` (`BFQ-72`, `BFQ-161`); BF-191 goes through the maintainer's
+   advisory process.
+4. **Not started:** `ID-SIMPLE-MATCH`, `RT-JSDOM-REST` and `RT-BUNDLE-THEME-SPLIT`.
 5. **Open decisions and settings** are listed with their owners in
-   [16.0.0 contents](../../releases/cgm-remote-monitor-16.0.0/contents.md#open-items-a-releaser-must-settle):
-   whether cut 2 ships in 16.0.0, the scope of BF-161's draft advisory, BF-72's test inputs, BF-95,
-   BF-152 and `DEPENDABOT-CONFIG`; and the maintainer's branch-protection changes for the edge matrix
-   (drop `Run Tests (22, 4.4)` on `master`, move the `(24, 6)` and `(22, 6)` requirements to edge cells).
+   [16.0.0 contents](../../releases/cgm-remote-monitor-16.0.0/contents.md#open-items-a-releaser-must-settle),
+   with the maintainer's branch-protection changes and the live alarm-delivery checks owed before the
+   tag.
 6. The version class of #8772, #8775 and #8780 stays recorded as open in
    [15.0.9 decisions](../../releases/cgm-remote-monitor-15.0.9/decisions.md).
 
@@ -139,22 +130,16 @@ harness cut 1 keeps is retired later under scope B (`RT-JSDOM-REST`, decided 202
 |---:|---|---|---|---|
 | 1 | `ID-SIMPLE-MATCH` | API v1 entries and devicestatus match on identifier like treatments (the simple  | `not-started` | &mdash; |
 | 1 | `MOD-UNITS-CANONICAL` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), an | `needs-decision` | &mdash; |
-| 1 | `MOD-WRITE-VALIDATION` | WRITE_VALIDATION=off|log|reject: opt-in domain validation of Temporary Target wr | `ready-to-push` | &mdash; |
+| 1 | `MOD-WRITE-VALIDATION-READ` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | `needs-decision` | &mdash; |
 | 1 | `OID-STORAGE-HELPER` | One storage-level rule for writes by _id instead of six hand-written copies | `not-started` | &mdash; |
 | 1 | `OID-V3-EDIT-MERGE` | API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an  | `not-started` | &mdash; |
 | 1 | `OID-WS-EDIT-MERGE` | Websocket dbUpdate of a record stored twice by _id edits both copies and leaves  | `not-started` | &mdash; |
-| 1 | `RT-3` | Cuts 3+5 combined - dependency release | `blocked` | &mdash; |
-| 1 | `RT-BOOT-INDEX-AWAIT` | Boot awaits its collection and index creation before it reports ready | `in-progress` | &mdash; |
 | 1 | `RT-BOOTERROR` | BF-63 - the page that reports a boot error crashes on cut 4's boot errors | `gate-not-met` | &mdash; |
 | 1 | `RT-BUNDLE-THEME-SPLIT` | Load the modern theme's client code only when it is chosen (page-bundle budget o | `not-started` | &mdash; |
 | 1 | `RT-CONNECT-PIN-CUTS` | BF-65 - cuts 1-3 ship the leaking connector to upgraders first | `gate-not-met` | &mdash; |
 | 1 | `RT-JSDOM-REST` | Retire the whole-bundle jsdom harness that cut 1 keeps; secure-jsdom stays as th | `not-started` | &mdash; |
 | 1 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | &mdash; |
-| 1 | `RT-PR-8730` | #8730 - Crowdin translation updates, held out of 15.0.9 (BF-132) | `gate-not-met` | &mdash; |
-| 1 | `RT-REBASE` | Catch the cuts up with dev: cuts 1 and 2 merged (#8828, #8837, 2026-10-25); cuts | `in-progress` | &mdash; |
-| 2 | `MOD-WRITE-VALIDATION-READ` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | `needs-decision` | `MOD-WRITE-VALIDATION` |
 | 2 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then ret | `not-started` | `OID-PREVALENCE` |
-| 2 | `RT-5` | Cut 4 - chore/mime-exposure-review, the one to slow down on | `blocked` | `RT-3` |
 
 <!-- END GENERATED: road-release-train -->
 
@@ -191,26 +176,27 @@ Until then, the order below is the order of development, not of release.
 |---:|---|---|---|---|
 | 1 | `A7A-7` | §7a item 7 - the clock question | `unsettled` | &mdash; |
 | 1 | `ID-CONVENTIONS` | Identifier conventions: one URL-form identifier template per record kind and sou | `in-progress` | &mdash; |
+| 1 | `SEAM-REFRESH` | Refresh the seam chain once after 15.0.9, onto the base the release train leaves | `blocked` | &mdash; |
 | 1 | `T30-AUTH` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | `ready-to-push` | &mdash; |
 | 1 | `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | &mdash; |
 | 1 | `T43` | T4.3 - ns-realtime, LISTEN per served tenant | `not-started` | &mdash; |
-| 2 | `SEAM-REFRESH` | Refresh the seam chain once after 15.0.9, onto the base the release train leaves | `blocked` | `RT-REBASE` |
+| 2 | `ID-ABSENT-DECISION` | Decide: a write that carries no identifier (and no _id) - keep the time-key fall | `needs-decision` | `LOOP-ID-REPLY` |
+| 2 | `ID-CLIENT-OID-DECISION` | Decide: may a client set _id (an ObjectId it creates), and which field wins when | `needs-decision` | `LOOP-ID-REPLY` |
+| 2 | `ID-DELETE-REUSE-DECISION` | Decide: after a delete, what does a re-send of the same identifier (or _id) do - | `needs-decision` | `LOOP-ID-REPLY` |
+| 2 | `ID-FORMAT-DECISION` | Decide: the client identifier's format (opaque string with limits; UUID not requ | `needs-decision` | `LOOP-ID-REPLY` |
+| 2 | `ID-SCOPE-DECISION` | Decide: is identifier unique per collection, across collections, and per tenant  | `needs-decision` | `LOOP-ID-REPLY` |
+| 2 | `ID-V3-IMMUTABLE-DECISION` | Decide: on an identifier match, may date, device or eventType change? | `needs-decision` | `LOOP-ID-REPLY` |
 | 2 | `T30-SCHEMA-CONFIG` | T3.0 part 2b - per-tenant configuration table, and where human identity lives | `not-started` | `T30-RESEARCH` |
-| 3 | `ID-ABSENT-DECISION` | Decide: a write that carries no identifier (and no _id) - keep the time-key fall | `needs-decision` | `LOOP-ID-REPLY` |
-| 3 | `ID-CLIENT-OID-DECISION` | Decide: may a client set _id (an ObjectId it creates), and which field wins when | `needs-decision` | `LOOP-ID-REPLY` |
-| 3 | `ID-DELETE-REUSE-DECISION` | Decide: after a delete, what does a re-send of the same identifier (or _id) do - | `needs-decision` | `LOOP-ID-REPLY` |
-| 3 | `ID-FORMAT-DECISION` | Decide: the client identifier's format (opaque string with limits; UUID not requ | `needs-decision` | `LOOP-ID-REPLY` |
-| 3 | `ID-SCOPE-DECISION` | Decide: is identifier unique per collection, across collections, and per tenant  | `needs-decision` | `LOOP-ID-REPLY` |
-| 3 | `ID-V3-IMMUTABLE-DECISION` | Decide: on an identifier match, may date, device or eventType change? | `needs-decision` | `LOOP-ID-REPLY` |
+| 2 | `WC-STEP-PATCH` | Release 1 (patch): one write step for every v1, v3 and socket path, today's beha | `blocked` | `SEAM-REFRESH` |
+| 2 | `WRITE-CONTRACT` | One write step behind the storage interface: _id form, srv dates, soft delete, r | `blocked` | `SEAM-REFRESH` |
+| 3 | `BFQ-CAP02` | CAP-02 - no importer, and no Mongo to PostgreSQL loader | `not-started` | `T30-SCHEMA-CONFIG`, `WRITE-CONTRACT` |
+| 3 | `ID-BATCH-RESULTS` | Release 2 (minor): per-item results in v1 batch replies; one bad item no longer  | `blocked` | `WC-STEP-PATCH` |
+| 3 | `ID-FIRST-MATCH` | Release 2 (minor): identifier-first matching for entries, devicestatus and socke | `blocked` | `WC-STEP-PATCH`, `ID-SIMPLE-MATCH` |
+| 3 | `ID-V1-LOOKUP` | Release 2 (minor): v1 GET and DELETE by any identifier, without the default time | `blocked` | `WC-STEP-PATCH` |
+| 3 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection; empty and null mean  | `blocked` | `WC-STEP-PATCH` |
 | 3 | `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `not-started` | `T30-SCHEMA-CONFIG` |
 | 3 | `T32-REM` | T3.2 remainder - platform.sql carries no config, secret or signing key | `blocked` | `T30-SCHEMA-CONFIG` |
-| 3 | `WC-STEP-PATCH` | Release 1 (patch): one write step for every v1, v3 and socket path, today's beha | `blocked` | `SEAM-REFRESH` |
-| 3 | `WRITE-CONTRACT` | One write step behind the storage interface: _id form, srv dates, soft delete, r | `blocked` | `SEAM-REFRESH` |
-| 4 | `BFQ-CAP02` | CAP-02 - no importer, and no Mongo to PostgreSQL loader | `not-started` | `T30-SCHEMA-CONFIG`, `WRITE-CONTRACT` |
-| 4 | `ID-BATCH-RESULTS` | Release 2 (minor): per-item results in v1 batch replies; one bad item no longer  | `blocked` | `WC-STEP-PATCH` |
-| 4 | `ID-FIRST-MATCH` | Release 2 (minor): identifier-first matching for entries, devicestatus and socke | `blocked` | `WC-STEP-PATCH`, `ID-SIMPLE-MATCH` |
-| 4 | `ID-V1-LOOKUP` | Release 2 (minor): v1 GET and DELETE by any identifier, without the default time | `blocked` | `WC-STEP-PATCH` |
-| 4 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection; empty and null mean  | `blocked` | `WC-STEP-PATCH` |
+| 4 | `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up s | `blocked` | `ID-FIRST-MATCH`, `ID-BATCH-RESULTS`, `ID-V3-IMMUTABLE-DECISION` |
 | 4 | `T30-TENANT-ADMIN` | cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside n | `not-started` | `T30-WIRING` |
 | 4 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | `T30-WIRING` |
 | 4 | `T33-REM` | T3.3 remainder - the shared enclave, and language/levels per tenant | `blocked` | `T30-WIRING` |
@@ -218,7 +204,6 @@ Until then, the order below is the order of development, not of release.
 | 5 | `A7A-3` | §7a item 3 - a per-tenant error boundary | `not-started` | `T44` |
 | 5 | `A7A-4` | §7a item 4 - a health signal for a silent per-tenant outage | `not-started` | `T44` |
 | 5 | `BFQ-66` | BF-66 - the deployment's own tokens fail its own tenant check | `blocked` | `T30-WIRING`, `T31-REM`, `SEAM-REFRESH` |
-| 5 | `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up s | `blocked` | `ID-FIRST-MATCH`, `ID-BATCH-RESULTS`, `ID-V3-IMMUTABLE-DECISION` |
 | 6 | `A7A-GATE` | The alarms-on gate itself - nothing here may be marked done by inference | `blocked` | `T44`, `A7A-3`, `A7A-4`, `A7A-7` |
 
 <!-- END GENERATED: road-tenancy -->

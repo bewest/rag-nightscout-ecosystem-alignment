@@ -1,6 +1,6 @@
 # Nightscout 16.0.0 — testing notes for the release candidate
 
-**Not written yet (2026-10-25, `dev` `2bc298b9`).** No 16.0.0 release candidate is named, so there is no call for
+**Not written yet (2026-10-26, `dev` `47723cda`).** No 16.0.0 release candidate is named, so there is no call for
 testers yet. This file is written when the maintainers name a candidate, in the form of
 [15.0.9's testing notes](../cgm-remote-monitor-15.0.9/testing-notes.md): Part 1 in plain language for
 people who use a site, Part 2 for people who run a site or write tools that use it. Until then the

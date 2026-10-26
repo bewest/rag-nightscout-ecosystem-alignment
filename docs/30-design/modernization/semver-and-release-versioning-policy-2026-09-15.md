@@ -967,6 +967,8 @@ flip. A flag without a planned flip is a permanent setting and is documented as 
 | `API_V1_COUNT_LEADING_NUMBER` | `true`: a v1 `count` with trailing text after a leading number (`count=N?…`, as oref0 rigs send) is read as that number, with `Deprecation`/`Warning` headers and a log line once | `false`: answered `400 Bad count` | not yet planned ("a future release"; the 2026-10-25 defaults calendar draft proposes a major, once oref0 sends valid counts) | #8761, 15.0.9 |
 | `API_V1_COUNT_ZERO_WINDOW` | `true`: `count=0` inside a date window keeps 15.0.8's meaning (no limit on that window), as GluPredKit sends | `false`: `count=0` answers `200 []` | not yet planned (as above, once GluPredKit sends a valid count) | #8761, 15.0.9 |
 | `ALLOW_UNRESTRICTED_FRAME_EMBEDDING` | `true`: the site may be embedded in a frame from another origin | `false`: cross-origin framing refused | not yet planned ("a future release") | `f7481725`, 15.0.8 |
+| `WRITE_VALIDATION` | `off`: Temporary Target writes are not checked, as in 15.0.9; any value other than `log` or `reject` also reads as `off`, without a message (`lib/server/write-validation.js` `parseMode` on `dev` `47723cda`) | `log` (stored, the broken rule logged) or `reject` (400 with a message naming the field) | not yet planned | #8841 (`e09bca3b`), on `dev` for 16.0.0, not released |
+| `API3_SETTINGS_STRICT_READ_ENABLED` | `false`: API v3 read of one `settings` document by identifier needs `api:settings:read`, as in 15.0.9 | `true`: it needs `api:settings:admin`, as search and history already do | a strict default "later on the calendar" (the maintainer's staged ladder, 2026-10-25); no release named | #8845 (`900abf7a`), on `dev` for 16.0.0, not released |
 
 - **One flag, not two.** The throttle keys on the client address that `lib/server/client-ip.js`
   resolves, so it follows `TRUST_PROXY` without a setting of its own. BF-30 is closed only when
@@ -975,6 +977,8 @@ flip. A flag without a planned flip is a permanent setting and is documented as 
 - **The unset default is `dev`'s resolution**, not the modernization branch's (`395f3207` differs in
   four edge cases, BF-88). The cuts keep this unset default too (maintainer, 2026-09-23; `RT-3`).
 - **Added 2026-10-25** from the [defaults calendar draft](../../60-research/modernization/defaults-calendar-2026-10-25.md) §1f: the three transitional settings above were shipping without a registry row. Their stated plan in the release notes is "switch to false in a future release"; no release is named.
+- **Added 2026-10-26:** `WRITE_VALIDATION` (#8841) and `API3_SETTINGS_STRICT_READ_ENABLED` (#8845),
+  both merged to `dev` on 2026-10-26 with their defaults at 15.0.9's behaviour.
 - **Considered and not adopted:** a flag for the BF-47 subject-field allow-list. The maintainer
   ruled the allow-list is the declared schema (2026-09-23).
 

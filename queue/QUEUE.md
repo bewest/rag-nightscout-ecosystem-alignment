@@ -31,25 +31,25 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 288 |
-| runnable gates | 348 |
-| explicit `no-gate:` markers | 310 |
+| items | 289 |
+| runnable gates | 366 |
+| explicit `no-gate:` markers | 318 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 310 of the 658 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 318 of the 684 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 61 | RT-JSDOM-REST, RT-BUNDLE-THEME-SPLIT, ID-SIMPLE-MATCH, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
-| `in-progress` | 17 | BFQ-178, RT-REBASE, RT-BOOT-INDEX-AWAIT, ID-CONVENTIONS, BFQ-46, BFQ-ENV, BFQ-92, BFQ-93, BFQ-156, BFQ-159, BFQ-160, BFQ-180, BFQ-183, BFQ-190, BFQ-191, OID-LAB, LOOP-ID-REPLY |
-| `gate-not-met` | 6 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
-| `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, MOD-WRITE-VALIDATION, WS-LAB |
-| `blocked` | 18 | RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, WC-STEP-PATCH, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
-| `in-flight-upstream` | 14 | BFQ-72, BFQ-145, BFQ-152, BFQ-161, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-179, BFQ-182, BFQ-185, BFQ-186, BFQ-192 |
-| `merged-upstream` | 16 | BFQ-177, RT-D3-SUITE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CONNECT-TEARDOWN, RT-1, RT-2, BFQ-09, BFQ-158, BFQ-137, BFQ-157, BFQ-163, BFQ-172, BFQ-173, BFQ-174, BFQ-176 |
+| `not-started` | 62 | RT-JSDOM-REST, RT-BUNDLE-THEME-SPLIT, ID-SIMPLE-MATCH, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-193, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `in-progress` | 5 | BFQ-178, ID-CONVENTIONS, BFQ-191, OID-LAB, LOOP-ID-REPLY |
+| `gate-not-met` | 5 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR |
+| `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
+| `blocked` | 16 | T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, WC-STEP-PATCH, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
+| `in-flight-upstream` | 2 | BFQ-72, BFQ-161 |
+| `merged-upstream` | 43 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, BFQ-09, BFQ-46, BFQ-92, BFQ-93, BFQ-158, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-192, MOD-WRITE-VALIDATION |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
-| `needs-decision` | 13 | T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
+| `needs-decision` | 14 | T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
 | `done` | 39 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 4 | BFQ-71, BFQ-41, BFQ-175, BFQ-141 |
@@ -137,6 +137,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-188** BF-188 - with no client bundle the server exits at boot with an unexplained module error
 - **BFQ-190** BF-190 - an alarm on a page without a current reading cannot be silenced from the page
 - **BFQ-191** BF-191 - a stored treatment can stop the server process, and keeps doing so after a restart (mechanism only)
+- **BFQ-193** BF-193 - the realtime socket logs every record written through it
 - **RT-PR-8815** #8815 - a bearer token whose subject was deleted is refused instead of stopping the server (awss1i; BF-171, fixes #8225), merged for 15.0.9
 - **BFQ-134** BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 - **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
@@ -1051,20 +1052,20 @@ that costs.
 | `RT-COUNT-COMPAT` | Reads accept the count shapes oref0 and GluPredKit send; 15.0.9 stays a patch | `released` | `bf/count-client-compat` | patch | 0 run + 1 no-gate |
 | `RT-TRUST-ONE-SOURCE` | Every client-address consumer uses one TRUST_PROXY policy compiled from env | `released` | `rt/trust-one-source` | patch | 3 run + 1 no-gate |
 | `RT-LOOP-REMOTE-ADDRESS` | Loop remote commands carry the proxy's address as their sender label | `released` | `rt/trust-one-source` | patch | 2 run + 2 no-gate |
-| `RT-REBASE` | Catch the cuts up with dev: cuts 1 and 2 merged (#8828, #8837, 2026-10-25); cuts 3-5 are far behind and conflict | `in-progress` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review` | n/a | 6 run + 1 no-gate |
+| `RT-REBASE` | Catch the cuts up with dev: cuts 1 and 2 merged (#8828, #8837, 2026-10-25); cuts 3-5 are far behind and conflict | `merged-upstream` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review` | n/a | 2 run + 2 no-gate |
 | `RT-JSDOM-REST` | Retire the whole-bundle jsdom harness that cut 1 keeps; secure-jsdom stays as the middle test tier (scope B) | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `RT-TEST-TIERS` | Test tier map, tier check and inner-loop test selection (test:affected, test:smoke) | `merged-upstream` | `test/tier-map-and-selection` | n/a | 1 run + 1 no-gate |
 | `RT-CI-DIAGONAL` | CI runs the Node x MongoDB diagonal, the no-database tiers on their own, a Tests pass check and seeded test-file order | `merged-upstream` | `ci/edge-diagonal-matrix` | n/a | 1 run + 1 no-gate |
 | `RT-BUNDLE-THEME-SPLIT` | Load the modern theme's client code only when it is chosen (page-bundle budget option B) | `not-started` | `-` | patch | 0 run + 1 no-gate |
-| `RT-BOOT-INDEX-AWAIT` | Boot awaits its collection and index creation before it reports ready | `in-progress` | `bf/16.0.0-boot-resilience` | patch | 1 run + 1 no-gate |
+| `RT-BOOT-INDEX-AWAIT` | Boot awaits its collection and index creation before it reports ready | `merged-upstream` | `bf/16.0.0-boot-resilience` | patch | 2 run + 1 no-gate |
 | `RT-CONNECT-TEARDOWN` | Remove the redundant connector teardown listener in bootevent.js once cut 1 is on dev | `merged-upstream` | `chore/16.0.0-test-ci-hygiene` | patch | 1 run + 1 no-gate |
 | `RT-PROPAGATION` | How the release train reaches dev: merge dev into the cuts, or rebase the cuts onto dev | `answered` | `-` | n/a | 0 run + 1 no-gate |
 | `RT-0` | Release 15.0.9 | `released` | `origin/dev` | minor | 2 run + 2 no-gate |
 | `RT-1` | Cut 1 - chore/retire-jsdom, PR #8828, merged to dev 2026-10-25 (16.0.0) | `merged-upstream` | `chore/retire-jsdom` | major | 2 run + 2 no-gate |
 | `RT-2` | Cut 2 - chore/build-runtime-separation, PR #8837, merged to dev 2026-10-25 (16.0.0) | `merged-upstream` | `chore/build-runtime-separation` | minor | 3 run + 2 no-gate |
-| `RT-3` | Cuts 3+5 combined - dependency release | `blocked` | `chore/nightscout-modernization` | major | 1 run + 2 no-gate |
+| `RT-3` | Cuts 3+5 combined - dependency release | `merged-upstream` | `chore/nightscout-modernization` | major | 1 run + 3 no-gate |
 | `RT-4` | Deprecation release - folded into 15.0.9's release notes (maintainer, 2026-09-23) | `released` | `-` | minor | 1 run + 1 no-gate |
-| `RT-5` | Cut 4 - chore/mime-exposure-review, the one to slow down on | `blocked` | `chore/mime-exposure-review` | major | 2 run + 2 no-gate |
+| `RT-5` | Cut 4 - chore/mime-exposure-review, the one to slow down on | `merged-upstream` | `chore/mime-exposure-review` | major | 2 run + 3 no-gate |
 | `ID-SIMPLE-MATCH` | API v1 entries and devicestatus match on identifier like treatments (the simple contract) | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `RT-CONNECT-PIN-CUTS` | BF-65 - cuts 1-3 ship the leaking connector to upgraders first | `gate-not-met` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6` | patch | 1 run + 1 no-gate |
 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | `chore/compose-mongodb6, chore/mime-exposure-review, chore/nightscout-modernization` | n/a | 2 run + 2 no-gate |
@@ -1072,11 +1073,11 @@ that costs.
 | `BF2-BACKPORT` | Which modernization-only security commits fix a defect that dev has | `released` | `bf2/backports` | n/a | 2 run + 1 no-gate |
 | `RT-PR-8419` | #8419 - tests for Loop push notifications and websockets (je-l), carried into 15.0.9 | `released` | `extend-api-tests` | n/a | 1 run + 1 no-gate |
 | `RT-PR-8530` | #8530 - a 48-hour option in the focus range selector (alanshurafa), carried into 15.0.9 | `released` | `feature/focus-range-48h-upstream` | minor | 1 run + 1 no-gate |
-| `RT-PR-8730` | #8730 - Crowdin translation updates, held out of 15.0.9 (BF-132) | `gate-not-met` | `crowdin_incoming` | patch | 2 run + 1 no-gate |
+| `RT-PR-8730` | #8730 - Crowdin translation updates, held out of 15.0.9 (BF-132) | `merged-upstream` | `crowdin_incoming` | patch | 2 run + 2 no-gate |
 | `RT-PR-8778` | #8778 - API v3 deletes v1 records whose identifier is null or empty (AndyLow91; BF-140), merged for 15.0.9 | `released` | `codex/fix-api3-empty-identifier-delete` | patch | 2 run + 1 no-gate |
 | `RT-PR-8788` | #8788 - the Day to Day report draws an event with a duration on every day it covers (awss1i; BF-148, fixes #8223); merged for 15.0.9 | `released` | `awss1i:wip/daytoday-duration-past-midnight` | patch | 1 run + 1 no-gate |
 | `RT-PR-8790` | #8790 - the Food Editor's food list and quick picks scroll by touch on phones (awss1i; BF-150, fixes #8192), merged for 15.0.9 | `released` | `awss1i:wip/food-editor-touch-scroll` | patch | 1 run + 1 no-gate |
-| `MOD-WRITE-VALIDATION` | WRITE_VALIDATION=off\|log\|reject: opt-in domain validation of Temporary Target writes on API v1 and v3 (draft) | `ready-to-push` | `feat/api3-domain-validation` | minor | 4 run + 1 no-gate |
+| `MOD-WRITE-VALIDATION` | WRITE_VALIDATION=off\|log\|reject: opt-in domain validation of Temporary Target writes on API v1 and v3 (draft) | `merged-upstream` | `feat/api3-domain-validation` | minor | 4 run + 2 no-gate |
 | `MOD-WRITE-VALIDATION-READ` | Flag stored records that break a write-validation rule on API v3 reads (read-side flag, R1/R2) | `needs-decision` | `-` | minor | 0 run + 1 no-gate |
 | `MOD-UNITS-CANONICAL` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), and the conversion constant | `needs-decision` | `-` | major | 0 run + 1 no-gate |
 | `RT-PR-8815` | #8815 - a bearer token whose subject was deleted is refused instead of stopping the server (awss1i; BF-171, fixes #8225), merged for 15.0.9 | `released` | `awss1i:wip/stale-token-crash` | patch | 1 run + 1 no-gate |
@@ -1346,7 +1347,7 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review` |
 | base | `official/dev@04d435eb` |
@@ -1363,26 +1364,19 @@ that costs.
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0d54d072 official/dev`
+  - official/dev contains #8844's head (cut 3) 0d54d072 (merged 2026-10-26 as ad05e140); red if dev is rewritten or the merge is reverted out of history
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/retire-jsdom official/dev`
   - cut 1 is in dev: #8828 merged 2026-10-25 as eb72a1d3, and official/chore/retire-jsdom 12154df9 is its head. Red if the branch moves past what dev took, or the merge leaves dev's history.
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/build-runtime-separation >/dev/null`
-  - cut 2 trial-merges into dev cleanly - FAILS as of 2026-09-24 (origin/dev 153e5658)
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/compose-mongodb6 >/dev/null`
-  - cut 3 trial-merges into dev cleanly - FAILS as of 2026-09-24 (origin/dev 153e5658)
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/mime-exposure-review >/dev/null`
-  - cut 4 trial-merges into dev cleanly - FAILS as of 2026-09-24 (origin/dev 153e5658)
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/nightscout-modernization >/dev/null`
-  - cut 5 trial-merges into dev cleanly - FAILS as of 2026-09-24 (origin/dev 153e5658), nine conflicting paths. Because it is red it cannot show the command is capable of going green; the gate below does that.
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/dev >/dev/null`
-  - Control arm. Merging dev with itself must succeed. If this goes red then merge-tree, the repository or the ref is broken and the five failures above say nothing about the cuts. Deliberately trivial: a control fails only for the reason it names.
 - **NO GATE** &mdash; The sharpest cost is a NON-mechanical conflict and no command can resolve it. dev's 06372e1d adds 56 lines to tests/clock-client.test.js covering the low-and-falling clock concern; cut 1 DELETES that file as part of jsdom retirement (b95ee628), and cut 1's Playwright replacement has ZERO references to concern or falling (positive control: 3 hits on dev). Resolving the conflict the obvious way keeps the production fix and loses its only test, on a screen people read at a glance. The same modify/delete shape covers tests/pluginbase.modern.test.js and tests/profile-sinks.test.js on all four cuts. Nobody has checked what those two cover or whether cut 1's replacements reach it.
+- **NO GATE** &mdash; Retired 2026-10-26: the four trial-merge gates (git merge-tree --write-tree origin/dev origin/<cut> for cuts 2 to 5) and their self-merge control arm. Every cut is now in dev (cut 2 #8837, cut 3 #8844, cut 4 #8847, cut 5 #8605), so each trial merge is clean and can no longer go red for the reason it was written; the ancestry gates replace them: cut 1 above, cut 3 here, cut 4 in RT-5, cut 5 in RT-3.
 
 **Evidence.**
 
 - `docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md`
 - `docs/30-design/modernization/jsdom-harness-test-tiers-2026-10-21.md`
 
-**Notes.** 2026-10-25, 23:49Z: cut 2 merged into dev (#8837, eb44a9c2, head af7ba73a; RT-2); official/chore/build-runtime-separation af7ba73a is 13 behind / 0 ahead of dev b29f1bf7. Cuts 3-5 against official/dev b29f1bf7 (the merge of #8840), reproduced after git fetch official with git rev-list --left-right --count official/dev...<cut> and git merge-tree --write-tree --name-only --no-messages official/dev <cut>: cut 3 official/chore/compose-mongodb6 ebb690cf 532 behind / 63 ahead, 10 conflicting paths; cut 4 official/chore/mime-exposure-review b80aa147 532 / 142, 35; cut 5 official/chore/nightscout-modernization b1bdaca0 (#8605, open) 408 / 240, 47. The ahead counts fell from 222 / 301 / 399 (against 2bc298b9) because cut 2's commits, which cuts 3-5 descend from, are now on dev. A peer session is doing the cut 3-5 catch-up merges on local branches (wip/cut3-onto-16.0.0 and the like), not pushed; their results are that session's to record. 2026-10-25: cut 1 merged into dev (#8828, eb72a1d3, head 12154df9; RT-1). Cuts 2-5 against official/dev eb72a1d3 (git rev-list --left-right --count official/dev...<cut>; git merge-tree --write-tree --name- only --no-messages official/dev <cut>): cut 2 build-runtime-separation b6e8c7cd 459 behind / 159 ahead, 20 conflicting paths; cut 3 compose-mongodb6 ebb690cf 459 / 222, 25; cut 4 mime-exposure-review b80aa147 459 / 301, 43; cut 5 nightscout-modernization b1bdaca0 (#8605) 335 / 399, 42. Cut 2's catch-up is in progress in a peer session on the local wip/cut2-onto-cut1-16.0.0 (RT-2). 2026-10-21, later: cut 1's part is done. The maintainer pushed chore/retire- jsdom as a fast-forward bce12ecc -> 806ff2f0 and opened #8828 to dev (RT-1). dev 04d435eb is merged in as 4b617f78 (a merge, not a rebase; bce12ecc is a first-parent ancestor of 806ff2f0), so cut 1 is 0 behind official/dev and 120 ahead, and merge-tree is clean. On top of the merge: the floor commit dfbb611b (ed21961f), the nine bridge-retirement commits 6671bcd0..6cd5e362 (from rh/cut1-retire-legacy 43df8603..c043fb2d), test and doc fixes 358d2f49, 86473698, 25dcfa7f, deee9793 and 8c117dd4, the option C ports 853b4145, fcd90f26 and 65248bed, #8823 folded in as 42a2729e, and the 16.0.0 version bump 806ff2f0. The cut 1 gate now asks whether cut 1 contains official/dev and passes. Cuts 2-5 remain, measured the same day against official/dev 04d435eb (`git rev-list --left-right --count official/dev...<cut>`; conflicting paths from `git merge-tree --write-tree --name-only`): cut 2 b6e8c7cd 376 behind / 258 ahead, 20 paths; cut 3 ebb690cf 376 / 321, 23; cut 4 b80aa147 376 / 400, 37; cut 5 b1bdaca0 252 / 498, 28. Their four gates still read origin/dev, which is 4bca2ac2 in this checkout; they are red on either ref. Each of cuts 2-5 is renumbered at its catch-up merge (RT-VERSION). 2026-10-21 (post-15.0.9 cycle): measured on official/dev 04d435eb against official/chore/retire-jsdom bce12ecc: cut 1 is 376 commits behind and 99 ahead, merge base 9205ea30, 13 conflicting paths (README.md, azuredeploy.json, lib/plugins/pluginbase.js, lib/server/bootevent.js, lib/server/loop.js, package-lock.json, package.json, tests/browser/chart.source.js, tests/clock-client.test.js, tests/dependency-d3.test.js, tests/loop-server.test.js, tests/pluginbase.modern.test.js, tests/profile-sinks.test.js). 14 dev test files (about 109 cases) depend on the jsdom harness that cut 1 deletes. Maintainer decisions 2026-10-21: (1) option C - cut 1 ports the D3 (BF-103), clock-client and pill-title coverage to tests/browser, keeps the jsdom harness for the rest, and a later cut retires it (RT-JSDOM-REST); (2) the decided Node floor ^22.12 || >=24 (ed21961f on rt/cut1) and the legacy bridge removal (rh/cut1-retire-legacy c043fb2d) come into the cut 1 merge; (3) the connector teardown listener stays in the merge, and its removal is a follow-up. Work is in progress on wip/cut1-onto-15.0.10 (worktree externals/work/crm-cut1-1510), not pushed; the catch-up merge is not committed yet. Cuts 2-5 are not re- measured on 04d435eb. The gates below read origin/dev, which in externals/cgm- remote-monitor-official is still 4bca2ac2. The published cuts are unrebased and far behind dev; the real propagation is done on dev after 15.0.9 is tagged. Measured 2026-09-25 against official/dev e3adc91d: cuts 1-4 are 286 commits behind with 11 / 17 / 19 / 35 conflicting paths; cut 5 is 162 behind and 498 ahead with 25 (`git rev-list --left-right --count official/dev...<cut>`; `git merge-tree --write-tree --name-only official/dev <cut>`). The blast_radius paths are from 2026-09-24. Two local rehearsals exist, neither pushed, and every count in them must be re-measured when the real propagation is done: - rt/cut1..rt/cut4 in externals/work/crm-cuts (2026-09-21, on dev 59430336; tips ed21961f, b5bf7d77, c313f5b1, 95bb6295, which also carry the Node-floor change, RT-NODE-FLOOR-TESTED). - rh/cut1..rh/cut4 and rh/cut35 in externals/work/crm-rh-cuts (2026-09-23, on the 15.0.9 candidate rc/15.0.9-additions-c b9c9828b = dev 74fc6619 + eight additions), recorded in docs/30-design/modernization/cut-rehearsal- on-15.0.9-rc-2026-09-23.md. Each trial-merges clean into its base. rh/cut35 contains cut 4, because cut 5 descends from cut 4. Method, as rehearsed: dev is propagated up the stack (dev into cut 1, cut 1 into cut 2, and so on), so the prefix property is preserved and cut 1's resolutions are inherited. On rt/*, propagation needed 7 conflict resolutions at cut 1, then 9 / 5 / 4, against the 14 / 16 / 18 each would have had against dev directly. Nine of those conflicts were Phase 0 fixes the cuts predate, and taking the cut's side would have reintroduced each: BF-01, BF-07, BF-16 and BF-35, BF-36, plus the BF-04 allowlist and BF-70 pipeline refusal; all were verified present on cut 4 after the merges. Tests on rt/* (Node 24.20.0, mongod 7.0.43): cut 1 348 passing, cut 2 357, cut 3 324, cut 4 310, zero failures (later cuts remove suites). Cut 1's ported browser coverage was ablated: removing dev's 06372e1d takes it from 21 passing to 12 passing / 9 failing. Still owed at the real propagation: - The coverage of tests/pluginbase.modern.test.js and tests/profile-sinks.test.js, both deleted by cut 1's jsdom retirement, has not been audited against cut 1's Playwright replacements (12 and 6 it() cases unaccounted for). Only clock-client's was audited, because it had a named production fix behind it (see the no-gate). - The cut 5 tip carries only two thirds of BF-07: b1bdaca0 keeps getDataRef in lib/server/cache.js and both lib/data/dataloader.js callers but reverted lib/api/entries/index.js to getData (origin/dev has 7 occurrences under lib/, b1bdaca0 has 6). The rehearsals do not copy that. Worth raising against e3b22034 upstream. - The connector pin moves to the exact npm 0.1.0 pin dev has (P0-PIN, RT-CONNECT- PIN-CUTS). rt/cut4 resolved the old pin fork (dev's 234d47c8 vs cut 4's c962a13f) to connector b77e5bb7, whose commits are all in 0.1.0. - Each cut is renumbered when it is rebased (RT-VERSION), and cut 5's client-ip.js takes 15.0.9's TRUST_PROXY behaviour (RT-3). Release-readiness §5's "each costs zero rebase work today" was false when written: the cut tips date to 2026-09-05/06 and dev's tip to 2026-09-09; "0 commits behind dev" was true of the stack tip only, because of one commit, 0a4109f6.
+**Notes.** 2026-10-26: merged; every cut is in dev. AndyLow91 merged cut 3 #8844 (head 0d54d072) as ad05e140 at 10:59:10Z, cut 4 #8847 (head 35fc8167) as e34efdef at 12:15:29Z and cut 5 #8605 (head a77cb146) as 47723cda at 17:32:44Z (gh pr view). Cut 3's and cut 4's merged heads do not contain session -f8's 2026-10-26 catch-up merges 76b19fb0 and 8bf6c9b2 (git merge-base --is-ancestor exits 1): AndyLow91 merged dev into cut 3 himself (831c32fc) and added 0d54d072. Those two merges reached dev through cut 5, whose head a77cb146 contains 98d2f9a0, which contains both. Merged is not released: no release carries any cut after cut 2 (16.0.0). 2026-10-25, 23:49Z: cut 2 merged into dev (#8837, eb44a9c2, head af7ba73a; RT-2); official/chore/build-runtime- separation af7ba73a is 13 behind / 0 ahead of dev b29f1bf7. Cuts 3-5 against official/dev b29f1bf7 (the merge of #8840), reproduced after git fetch official with git rev-list --left-right --count official/dev...<cut> and git merge-tree --write-tree --name-only --no-messages official/dev <cut>: cut 3 official/chore/compose-mongodb6 ebb690cf 532 behind / 63 ahead, 10 conflicting paths; cut 4 official/chore/mime-exposure-review b80aa147 532 / 142, 35; cut 5 official/chore/nightscout-modernization b1bdaca0 (#8605, open) 408 / 240, 47. The ahead counts fell from 222 / 301 / 399 (against 2bc298b9) because cut 2's commits, which cuts 3-5 descend from, are now on dev. A peer session is doing the cut 3-5 catch-up merges on local branches (wip/cut3-onto-16.0.0 and the like), not pushed; their results are that session's to record. 2026-10-25: cut 1 merged into dev (#8828, eb72a1d3, head 12154df9; RT-1). Cuts 2-5 against official/dev eb72a1d3 (git rev-list --left-right --count official/dev...<cut>; git merge-tree --write-tree --name-only --no-messages official/dev <cut>): cut 2 build-runtime-separation b6e8c7cd 459 behind / 159 ahead, 20 conflicting paths; cut 3 compose-mongodb6 ebb690cf 459 / 222, 25; cut 4 mime-exposure- review b80aa147 459 / 301, 43; cut 5 nightscout-modernization b1bdaca0 (#8605) 335 / 399, 42. Cut 2's catch-up is in progress in a peer session on the local wip/cut2-onto-cut1-16.0.0 (RT-2). 2026-10-21, later: cut 1's part is done. The maintainer pushed chore/retire-jsdom as a fast-forward bce12ecc -> 806ff2f0 and opened #8828 to dev (RT-1). dev 04d435eb is merged in as 4b617f78 (a merge, not a rebase; bce12ecc is a first-parent ancestor of 806ff2f0), so cut 1 is 0 behind official/dev and 120 ahead, and merge-tree is clean. On top of the merge: the floor commit dfbb611b (ed21961f), the nine bridge-retirement commits 6671bcd0..6cd5e362 (from rh/cut1-retire-legacy 43df8603..c043fb2d), test and doc fixes 358d2f49, 86473698, 25dcfa7f, deee9793 and 8c117dd4, the option C ports 853b4145, fcd90f26 and 65248bed, #8823 folded in as 42a2729e, and the 16.0.0 version bump 806ff2f0. The cut 1 gate now asks whether cut 1 contains official/dev and passes. Cuts 2-5 remain, measured the same day against official/dev 04d435eb (`git rev-list --left-right --count official/dev...<cut>`; conflicting paths from `git merge-tree --write-tree --name-only`): cut 2 b6e8c7cd 376 behind / 258 ahead, 20 paths; cut 3 ebb690cf 376 / 321, 23; cut 4 b80aa147 376 / 400, 37; cut 5 b1bdaca0 252 / 498, 28. Their four gates still read origin/dev, which is 4bca2ac2 in this checkout; they are red on either ref. Each of cuts 2-5 is renumbered at its catch-up merge (RT-VERSION). 2026-10-21 (post-15.0.9 cycle): measured on official/dev 04d435eb against official/chore/retire-jsdom bce12ecc: cut 1 is 376 commits behind and 99 ahead, merge base 9205ea30, 13 conflicting paths (README.md, azuredeploy.json, lib/plugins/pluginbase.js, lib/server/bootevent.js, lib/server/loop.js, package-lock.json, package.json, tests/browser/chart.source.js, tests/clock-client.test.js, tests/dependency-d3.test.js, tests/loop-server.test.js, tests/pluginbase.modern.test.js, tests/profile-sinks.test.js). 14 dev test files (about 109 cases) depend on the jsdom harness that cut 1 deletes. Maintainer decisions 2026-10-21: (1) option C - cut 1 ports the D3 (BF-103), clock-client and pill-title coverage to tests/browser, keeps the jsdom harness for the rest, and a later cut retires it (RT-JSDOM-REST); (2) the decided Node floor ^22.12 || >=24 (ed21961f on rt/cut1) and the legacy bridge removal (rh/cut1-retire-legacy c043fb2d) come into the cut 1 merge; (3) the connector teardown listener stays in the merge, and its removal is a follow-up. Work is in progress on wip/cut1-onto-15.0.10 (worktree externals/work/crm-cut1-1510), not pushed; the catch-up merge is not committed yet. Cuts 2-5 are not re- measured on 04d435eb. The gates below read origin/dev, which in externals/cgm- remote-monitor-official is still 4bca2ac2. The published cuts are unrebased and far behind dev; the real propagation is done on dev after 15.0.9 is tagged. Measured 2026-09-25 against official/dev e3adc91d: cuts 1-4 are 286 commits behind with 11 / 17 / 19 / 35 conflicting paths; cut 5 is 162 behind and 498 ahead with 25 (`git rev-list --left-right --count official/dev...<cut>`; `git merge-tree --write-tree --name-only official/dev <cut>`). The blast_radius paths are from 2026-09-24. Two local rehearsals exist, neither pushed, and every count in them must be re-measured when the real propagation is done: - rt/cut1..rt/cut4 in externals/work/crm-cuts (2026-09-21, on dev 59430336; tips ed21961f, b5bf7d77, c313f5b1, 95bb6295, which also carry the Node-floor change, RT-NODE-FLOOR-TESTED). - rh/cut1..rh/cut4 and rh/cut35 in externals/work/crm-rh-cuts (2026-09-23, on the 15.0.9 candidate rc/15.0.9-additions-c b9c9828b = dev 74fc6619 + eight additions), recorded in docs/30-design/modernization/cut-rehearsal- on-15.0.9-rc-2026-09-23.md. Each trial-merges clean into its base. rh/cut35 contains cut 4, because cut 5 descends from cut 4. Method, as rehearsed: dev is propagated up the stack (dev into cut 1, cut 1 into cut 2, and so on), so the prefix property is preserved and cut 1's resolutions are inherited. On rt/*, propagation needed 7 conflict resolutions at cut 1, then 9 / 5 / 4, against the 14 / 16 / 18 each would have had against dev directly. Nine of those conflicts were Phase 0 fixes the cuts predate, and taking the cut's side would have reintroduced each: BF-01, BF-07, BF-16 and BF-35, BF-36, plus the BF-04 allowlist and BF-70 pipeline refusal; all were verified present on cut 4 after the merges. Tests on rt/* (Node 24.20.0, mongod 7.0.43): cut 1 348 passing, cut 2 357, cut 3 324, cut 4 310, zero failures (later cuts remove suites). Cut 1's ported browser coverage was ablated: removing dev's 06372e1d takes it from 21 passing to 12 passing / 9 failing. Still owed at the real propagation: - The coverage of tests/pluginbase.modern.test.js and tests/profile-sinks.test.js, both deleted by cut 1's jsdom retirement, has not been audited against cut 1's Playwright replacements (12 and 6 it() cases unaccounted for). Only clock-client's was audited, because it had a named production fix behind it (see the no-gate). - The cut 5 tip carries only two thirds of BF-07: b1bdaca0 keeps getDataRef in lib/server/cache.js and both lib/data/dataloader.js callers but reverted lib/api/entries/index.js to getData (origin/dev has 7 occurrences under lib/, b1bdaca0 has 6). The rehearsals do not copy that. Worth raising against e3b22034 upstream. - The connector pin moves to the exact npm 0.1.0 pin dev has (P0-PIN, RT-CONNECT- PIN-CUTS). rt/cut4 resolved the old pin fork (dev's 234d47c8 vs cut 4's c962a13f) to connector b77e5bb7, whose commits are all in 0.1.0. - Each cut is renumbered when it is rebased (RT-VERSION), and cut 5's client-ip.js takes 15.0.9's TRUST_PROXY behaviour (RT-3). Release-readiness §5's "each costs zero rebase work today" was false when written: the cut tips date to 2026-09-05/06 and dev's tip to 2026-09-09; "0 commits behind dev" was true of the stack tip only, because of one commit, 0a4109f6.
 
 ### `RT-JSDOM-REST` &mdash; Retire the whole-bundle jsdom harness that cut 1 keeps; secure-jsdom stays as the middle test tier (scope B)
 
@@ -1508,7 +1502,7 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-boot-resilience` |
 | base | `official/dev@b29f1bf7` |
@@ -1524,6 +1518,8 @@ that costs.
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 488def62 official/dev`
+  - official/dev contains the boot index-await commit 488def62 (merged 2026-10-26 as 3b2e1a68); red if dev is rewritten or the merge is reverted out of history
 - `[static]` `git -C externals/cgm-remote-monitor-official cat-file -e 488def62^{commit}`
   - the boot-await commit on bf/16.0.0-boot-resilience exists in the shared clone; red if the local branch is lost before it is pushed (a rebase changes the id, and this gate must then name the new one)
 - **NO GATE** &mdash; The behaviour gate needs MongoDB: tests/boot-index-ready.test.js (integration) drops the database, boots, and checks that every data, API v3 and authorization index exists and no build is still running when boot calls back; with both boot stages calling next() without waiting, 3 of 5 fail ("ns does not exist: testdb.entries"). Reported by the lane: npm run test:all passes on the branch head 8e3717e3 (integration 2003/0/1, MongoDB 8.0.34).
@@ -1532,7 +1528,7 @@ that costs.
 
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 
-**Notes.** 2026-10-25: in progress as 488def62 on local bf/16.0.0-boot-resilience (head 0675e91e after merging dev 428b20b7, not pushed; session f4's resilience lane, themed with BF-156, BF-46, BF-48 and BF-49). ensureIndexes returns a promise that never rejects; one createIndexes per collection, with a per-index fallback; the setupAuthorization and ensureIndexes boot stages wait at most 20 s (INDEX_WAIT_MS), then log a warning and continue; boot also asks for API v3's indexes on its six collections. Measured on MongoDB 8.0.34 (lane): boot on a dropped database 3.2 to 4.3 s (was 0.2 to 1 s) and the first write after it 2 to 4 ms; an indexed database still boots in about 0.2 s. Open for review: whether 20 s is the right cap. Filed 2026-10-25 from #8838's cab8896f, which gave the API3 SEARCH before hook a 30 s timeout. Measured there on MongoDB 7.0.43: on an empty database the first role insert in authSubject took 4.8 to 7.2 s behind the collections and indexes boot requests without awaiting them; once they exist it takes about 2 ms; boot itself 0.2 to 0.4 s. The test fix is merged (dev 2bc298b9); the product fix is this item.
+**Notes.** 2026-10-26, 12:43:22Z: merged. AndyLow91 merged #8849 (bf/16.0.0-boot- resilience, head 0772cb47) into dev as 3b2e1a68 (gh pr view 8849); 17 files, +843/-60 against its first parent. 488def62 is this item's commit; the PR also carries BF-156 (a5b569b9), BF-46 (1d63df57), BF-48 (8e4d30d3) and BF-49's start-up warning (8e3717e3). Open in the PR body: BF-49's alias and dead settings keys (BFQ-ENV), and a read-derived BF-156 follow-up on the cached API v3 collection. CI: push run 40324716298 passed and published at 12:53:51Z. 2026-10-25: in progress as 488def62 on local bf/16.0.0-boot-resilience (head 0675e91e after merging dev 428b20b7, not pushed; session f4's resilience lane, themed with BF-156, BF-46, BF-48 and BF-49). ensureIndexes returns a promise that never rejects; one createIndexes per collection, with a per-index fallback; the setupAuthorization and ensureIndexes boot stages wait at most 20 s (INDEX_WAIT_MS), then log a warning and continue; boot also asks for API v3's indexes on its six collections. Measured on MongoDB 8.0.34 (lane): boot on a dropped database 3.2 to 4.3 s (was 0.2 to 1 s) and the first write after it 2 to 4 ms; an indexed database still boots in about 0.2 s. Open for review: whether 20 s is the right cap. Filed 2026-10-25 from #8838's cab8896f, which gave the API3 SEARCH before hook a 30 s timeout. Measured there on MongoDB 7.0.43: on an empty database the first role insert in authSubject took 4.8 to 7.2 s behind the collections and indexes boot requests without awaiting them; once they exist it takes about 2 ms; boot itself 0.2 to 0.4 s. The test fix is merged (dev 2bc298b9); the product fix is this item.
 
 ### `RT-CONNECT-TEARDOWN` &mdash; Remove the redundant connector teardown listener in bootevent.js once cut 1 is on dev
 
@@ -1705,7 +1701,7 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `blocked` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `chore/nightscout-modernization` |
 | base | `chore/build-runtime-separation` |
@@ -1723,17 +1719,18 @@ that costs.
 
 **Gates.**
 
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/nightscout-modernization >/dev/null`
-  - cut 5 trial-merges into dev cleanly. FAILS as of 2026-09-24 against origin/dev 153e5658: nine conflicting paths (see RT-REBASE).
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a77cb146 official/dev`
+  - official/dev contains #8605's head (cut 5) a77cb146 (merged 2026-10-26 as 47723cda); red if dev is rewritten or the merge is reverted out of history
 - **NO GATE** &mdash; Express 4->5 and Helmet 4->8 are classified major on dependency version numbers and diff size, not on any measured contract break. Nobody has run a contract test against the route surface.
 - **NO GATE** &mdash; Combining cuts 3 and 5 skips cut 4 in the middle of a LINEAR stack. Cut 5 is a descendant of cut 4, so "3+5 without 4" is not a prefix and the parcel-as-prefix property the whole plan rests on does not hold for this step. Nobody has measured what that costs.
+- **NO GATE** &mdash; Retired 2026-10-26: the trial-merge gate (git merge-tree --write-tree origin/dev origin/chore/nightscout-modernization). Cut 5 is in dev (#8605, 47723cda), so the trial merge is clean and cannot go red for the reason it was written; the ancestry gate above replaces it.
 
 **Evidence.**
 
 - `docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md`
 - `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`
 
-**Notes.** 2026-10-25: cut 2 merged (RT-2, #8837, dev eb44a9c2), so cuts 3-5 are next; blocks_on's RT-2 is met, and the state is left to the session doing the catch- up. Against dev b29f1bf7, #8605's b1bdaca0 is 408 behind / 240 ahead with 47 conflicting paths (RT-REBASE, measured 2026-10-25, 23:49Z); its catch-up merge is in progress in a peer session, not pushed. Blocked on cut 2 (RT-2). PR #8605 (cut 5, head b1bdaca0) is open; it is 51 behind dev 153e5658 and 498 ahead, with nine conflicting paths (RT-REBASE, 2026-09-24). Decisions: - BF-88, 2026-09-23 (maintainer): with TRUST_PROXY unset the cuts keep 15.0.9's resolution (forwarded-for, 8b975b41), not 395f3207's fixed-precedence normalisation; when cut 5 is rebased its four tests/client-ip.test.js expectations take 15.0.9's values and forwarded-for stays a dependency, as in the cut rehearsal. No flag for the other normalisation. Also to carry at the rebase, separate from BF-88: cut 5's client-ip.js (b1bdaca0) refuses the hop counts and true that #8754 accepts, and #8754's handling of a forwarded address with a port (explicit TRUST_PROXY). §5's commits column sums to 554 against a 495-commit stack (GT2). Counted as modernization work, cut 5 is 95, and 95 + 400 = 495.
+**Notes.** 2026-10-26, 17:32:44Z: merged. AndyLow91 merged #8605 (cut 5, head a77cb146, base dev) into dev as 47723cda, the dev head (gh pr view 8605). Diff against its first parent 09d0def8: 204 files, +59400/-1515 (git diff --shortstat 47723cda^1 47723cda). Its last commits: 246f2274 (merge of dev 09d0def8), 57342518 (the historical Flot pie comparison out of required CI), 94278235 (Swagger analytics opt-out regression), ad56423d (CORS preflight answers 200 with the text OK again, res.sendStatus(200)), f4abce3c (browser jobs get 15 minutes; the Firefox job on dev 09d0def8 was cancelled at the 10-minute limit) and a77cb146 (HOME for the Firefox date-comparison probe). It contains session -f8's catch-up chain 98d2f9a0. CI on 47723cda: push run 40369632641 passed all 16 jobs and published the dev image at 17:42:36Z; pull_request run 40369639616 passed (gh run view). Cuts 3 and 5 shipped in the order 3, 4, 5, not combined as this item's title says. 2026-10-25: cut 2 merged (RT-2, #8837, dev eb44a9c2), so cuts 3-5 are next; blocks_on's RT-2 is met, and the state is left to the session doing the catch-up. Against dev b29f1bf7, #8605's b1bdaca0 is 408 behind / 240 ahead with 47 conflicting paths (RT-REBASE, measured 2026-10-25, 23:49Z); its catch-up merge is in progress in a peer session, not pushed. Blocked on cut 2 (RT-2). PR #8605 (cut 5, head b1bdaca0) is open; it is 51 behind dev 153e5658 and 498 ahead, with nine conflicting paths (RT- REBASE, 2026-09-24). Decisions: - BF-88, 2026-09-23 (maintainer): with TRUST_PROXY unset the cuts keep 15.0.9's resolution (forwarded-for, 8b975b41), not 395f3207's fixed-precedence normalisation; when cut 5 is rebased its four tests/client-ip.test.js expectations take 15.0.9's values and forwarded-for stays a dependency, as in the cut rehearsal. No flag for the other normalisation. Also to carry at the rebase, separate from BF-88: cut 5's client-ip.js (b1bdaca0) refuses the hop counts and true that #8754 accepts, and #8754's handling of a forwarded address with a port (explicit TRUST_PROXY). §5's commits column sums to 554 against a 495-commit stack (GT2). Counted as modernization work, cut 5 is 95, and 95 + 400 = 495.
 
 ### `RT-4` &mdash; Deprecation release - folded into 15.0.9's release notes (maintainer, 2026-09-23)
 
@@ -1770,7 +1767,7 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `blocked` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `chore/mime-exposure-review` |
 | base | `chore/compose-mongodb6` |
@@ -1788,19 +1785,20 @@ that costs.
 
 **Gates.**
 
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/mime-exposure-review >/dev/null`
-  - trial-merges into dev cleanly - FAILS as of 2026-09-24 (origin/dev 153e5658), see RT-REBASE
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 35fc8167 official/dev`
+  - official/dev contains #8847's head (cut 4) 35fc8167 (merged 2026-10-26 as e34efdef); red if dev is rewritten or the merge is reverted out of history
 - `[static]` `node tools/queue/gates/cut4-total-outage.js`
   - Decision A (2026-09-23): runs both legacy shims in bootevent.js order over six env shapes with the ENABLE rule modelled. FAILS unless every shape that stops the site names a fix, names no release number, and boots once that fix is applied as written. Ref from QUEUE_GATE_REF, default rh/cut1-retire-legacy (where the removal now lives).
 - **NO GATE** &mdash; "No real Dexcom account or live database has been used and no live migration is claimed" - the cut's own evidence document. No gate can substitute for a real migration, and nothing in this repository may use real credentials (rule 0).
 - **NO GATE** &mdash; Cut 4 deletes bridgeUseLegacy and the log line naming it, so DEXCOM_BRIDGE_USE_LEGACY becomes accepted-and-ignored. Credentials are still migrated so ingestion continues; only the operator's expressed intent is discarded silently. Nothing checks for accepted-and-ignored settings.
+- **NO GATE** &mdash; Retired 2026-10-26: the trial-merge gate (git merge-tree --write-tree origin/dev origin/chore/mime-exposure-review). Cut 4 is in dev (#8847, e34efdef), so the trial merge is clean and cannot go red for the reason it was written; the ancestry gate above replaces it.
 
 **Evidence.**
 
 - `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`
 - `docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md`
 
-**Notes.** 2026-10-25: cut 2 merged (RT-2, #8837, dev eb44a9c2), so cuts 3-5 are next. Against dev b29f1bf7, official/chore/mime-exposure-review b80aa147 is 532 behind / 142 ahead with 35 conflicting paths, and cut 3 (compose-mongodb6 ebb690cf) 532 / 63 with 10 (RT-REBASE, measured 2026-10-25, 23:49Z); the catch-up merges are in progress in a peer session, not pushed. Last on the adopted train, after RT-3 (policy §8.3). The legacy bridge removal has moved to cut 1 (RT-1), so cut 4's remainder is trusted proxies, DOMPurify, Moment, MIME, webpack and ESLint; a trial merge of the rehearsal rh/cut4 into the lifted cut 1 conflicts only in legacy files and manifests. The published cut 4 is 175 commits behind dev 153e5658 with 22 conflicting paths (RT-REBASE, 2026-09-24). Decisions: - 2026-09-23 (maintainer): BF-61's hard stop is intended. MMCONNECT_* is usually the primary data source, so a misconfigured one shows the error page naming the fix. Under that decision the named fix must boot (CONNECT_COUNTRY_CODE alone does not, unless connect is in ENABLE), the messages must not name a release number, and cut4-total-outage.js passes only when each stopping shape names a fix that boots. All three are done on rh/cut1-retire-legacy c043fb2d, where the gate is green (it is red on rh/cut4). - 2026-09-23 (maintainer): deprecate and remove mmconnect as early as possible (it does not work and carries deprecated dependencies); RT-4's separate release is dropped. If a Connect migration misbehaves, the symptom is that a user's glucose data stops arriving: a data-availability failure for someone managing diabetes, which is why this cut is the one to slow down on.
+**Notes.** 2026-10-26, 12:15:29Z: merged. AndyLow91 merged #8847 (cut 4, head 35fc8167, retargeted to dev after cut 3 merged) into dev as e34efdef (gh pr view 8847); 135 files, +5981/-1286 against its first parent 900abf7a. It carries BF-183's fix as 54115e95 (BFQ-183). With TRUST_PROXY unset, address resolution is 15.0.9's (BF-88; the PR body). CI: push run 40321153797 passed and published at 12:24:54Z; pull_request run 40321160053 passed. The legacy bridge removal this item was written for shipped in cut 1 (#8828). 2026-10-25: cut 2 merged (RT-2, #8837, dev eb44a9c2), so cuts 3-5 are next. Against dev b29f1bf7, official/chore/mime-exposure-review b80aa147 is 532 behind / 142 ahead with 35 conflicting paths, and cut 3 (compose-mongodb6 ebb690cf) 532 / 63 with 10 (RT- REBASE, measured 2026-10-25, 23:49Z); the catch-up merges are in progress in a peer session, not pushed. Last on the adopted train, after RT-3 (policy §8.3). The legacy bridge removal has moved to cut 1 (RT-1), so cut 4's remainder is trusted proxies, DOMPurify, Moment, MIME, webpack and ESLint; a trial merge of the rehearsal rh/cut4 into the lifted cut 1 conflicts only in legacy files and manifests. The published cut 4 is 175 commits behind dev 153e5658 with 22 conflicting paths (RT-REBASE, 2026-09-24). Decisions: - 2026-09-23 (maintainer): BF-61's hard stop is intended. MMCONNECT_* is usually the primary data source, so a misconfigured one shows the error page naming the fix. Under that decision the named fix must boot (CONNECT_COUNTRY_CODE alone does not, unless connect is in ENABLE), the messages must not name a release number, and cut4-total-outage.js passes only when each stopping shape names a fix that boots. All three are done on rh/cut1-retire-legacy c043fb2d, where the gate is green (it is red on rh/cut4). - 2026-09-23 (maintainer): deprecate and remove mmconnect as early as possible (it does not work and carries deprecated dependencies); RT-4's separate release is dropped. If a Connect migration misbehaves, the symptom is that a user's glucose data stops arriving: a data-availability failure for someone managing diabetes, which is why this cut is the one to slow down on.
 
 ### `ID-SIMPLE-MATCH` &mdash; API v1 entries and devicestatus match on identifier like treatments (the simple contract)
 
@@ -2035,7 +2033,7 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `gate-not-met` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `crowdin_incoming` |
 | base | `origin/dev@4f705217` |
@@ -2052,17 +2050,18 @@ that costs.
 
 **Gates.**
 
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev refs/triage/pr-8730 >/dev/null`
-  - #8730's head merges into origin/dev without conflict. Needs `git -C externals/cgm-remote-monitor-official fetch official pull/8730/head:refs/triage/pr-8730` first.
-- `[static]` `git -C externals/cgm-remote-monitor-official show refs/triage/pr-8730:translations/zh_TW.json | grep -F '"ml"' | grep -q '毫升'`
-  - FAILS today (BF-132): #8730's zh_TW "ml" is 克 (grams), where dev has 毫升 (millilitres). Goes green when Crowdin carries dev's strings. Needs a fresh fetch of pull/8730/head.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2b32fe67 official/dev`
+  - official/dev contains #8730's head 2b32fe67 (merged 2026-10-26 as 89b7ebdd); red if dev is rewritten or the merge is reverted out of history
+- `[static]` `git -C externals/cgm-remote-monitor-official show official/dev:translations/zh_TW.json | grep -F '"ml"' | grep -q '毫升'`
+  - dev's zh_TW "ml" is 毫升 (millilitres) after #8730 merged, so the merge kept dev's corrected string (BF-132); red if a translation sync reverts it to 克 (grams)
 - **NO GATE** &mdash; The other three reverted strings are caught by tests/language.test.js in a combined run (4 fail on the 2026-09-25 pre-flight, tree dd51bb8a).
+- **NO GATE** &mdash; Retired 2026-10-26: the trial merge of refs/triage/pr-8730 into origin/dev and the zh_TW check on refs/triage/pr-8730 (f99c0e54, the head that reverted dev's strings). #8730 merged from a later head, 2b32fe67, so both read a head that never reached dev; the two gates above read what dev holds.
 
 **Evidence.**
 
 - `docs/60-research/remedial/github-triage-2026-09-25.md`
 
-**Notes.** 2026-09-25 - HELD OUT of 15.0.9 (maintainer). A reconciled branch keeping dev's corrected strings is being prepared as an option (i18n/crowdin-8730-reconciled), with Crowdin correction steps. 2026-09-25 - NOT MERGEABLE AS IS (BF-132): the release-candidate pre-flight showed #8730 reverts dev's corrected translations (zh_TW ml -> grams, Carbs, sv_SE Days with food, a Russian status line; 4 language tests fail). Needs Crowdin corrected and a re-sync. Recommended to the maintainer: take it out of 15.0.9. Opened by the Crowdin integration (sulkaharo), last updated 2026-09-21. Decided 2026-09-25 (maintainer): carry into 15.0.9. Translations changed after it was opened are not in it.
+**Notes.** 2026-10-26, 15:31:40Z: merged. AndyLow91 merged #8730 (crowdin_incoming, head 2b32fe67) into dev as 89b7ebdd (gh pr view 8730); 33 files, +111/-12 against its first parent. BF-132 does not reach dev: every line the merge removes from translations/ is an English placeholder that it replaces with a translation (read from git diff 89b7ebdd^1 89b7ebdd -- translations), and zh_TW "ml" is 毫升 on dev. CI: the push run 40350206994 failed one job, Tests without a database (22.23.4), on "Development watch policy preserves configured ignores and application watching through two restart cycles" (an assertion in tools/probe- development-watch.py; not a translation test), so Tests pass failed and no image was published from 89b7ebdd; the pull_request run 40350218559 passed. A new Crowdin PR, #8855, opened 2026-10-26 18:52Z. 2026-09-25 - HELD OUT of 15.0.9 (maintainer). A reconciled branch keeping dev's corrected strings is being prepared as an option (i18n/crowdin-8730-reconciled), with Crowdin correction steps. 2026-09-25 - NOT MERGEABLE AS IS (BF-132): the release- candidate pre-flight showed #8730 reverts dev's corrected translations (zh_TW ml -> grams, Carbs, sv_SE Days with food, a Russian status line; 4 language tests fail). Needs Crowdin corrected and a re-sync. Recommended to the maintainer: take it out of 15.0.9. Opened by the Crowdin integration (sulkaharo), last updated 2026-09-21. Decided 2026-09-25 (maintainer): carry into 15.0.9. Translations changed after it was opened are not in it.
 
 ### `RT-PR-8778` &mdash; #8778 - API v3 deletes v1 records whose identifier is null or empty (AndyLow91; BF-140), merged for 15.0.9
 
@@ -2168,7 +2167,7 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `feat/api3-domain-validation` |
 | base | `official/dev@b29f1bf7` |
@@ -2184,10 +2183,11 @@ that costs.
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5901961c official/dev`
+  - official/dev contains #8841's head 5901961c (merged 2026-10-26 as e09bca3b); red if dev is rewritten or the merge is reverted out of history
 - `[static]` `git -C externals/cgm-remote-monitor-official cat-file -e 90fd47d0^{commit}`
   - the branch head exists in the shared clone; red if the local branch is lost before it is pushed (a rebase changes the id, and this gate must then name the new one)
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev feat/api3-domain-validation >/dev/null`
-  - Merges into official/dev with no conflict.
+- **NO GATE** &mdash; Retired 2026-10-26: the trial merge of the local feat/api3-domain-validation into official/dev. #8841 merged from 5901961c, AndyLow91's commit on top of the local head, and the local branch is not the merged head, so the trial merge now conflicts for a reason unrelated to the work; the ancestry gate above replaces it.
 - `[static]` `git -C externals/cgm-remote-monitor-official grep -q "readENV('WRITE_VALIDATION', 'off')" feat/api3-domain-validation -- lib/server/env.js`
   - The default is off on the branch (D1); red if a later commit changes the default, which the decided ladder keeps for a major.
 - `[unit]` `cd externals/work/crm-v3validate-1600 && npx mocha --timeout 10000 --exit tests/write-validation.test.js`
@@ -2200,7 +2200,7 @@ that costs.
 - `docs/60-research/remedial/upload-refusal-client-behaviour-2026-10-25.md`
 - `docs/30-design/modernization/write-path-checks-alignment-2026-10-25.md`
 
-**Notes.** Filed 2026-10-25 by session f4 from the v3-validation lane. Draft: local branch feat/api3-domain-validation a2e5fe49 (e8125d89, 6e842c07, a2e5fe49) over dev b29f1bf7; head 90fd47d0 after merging dev 428b20b7, not pushed. Decided 2026-10-25 (maintainer): D1 the setting shape; D2 a v1 batch under reject stores its valid items, keeps one object per item in order with refused slots without _id plus a refused member and a Warning 299 header, and answers 400 when every item is refused; D4 a double-labelled record is refused with a message naming the field and the units to send. Open: D5 (N1 or N2 and the conversion constant, MOD-UNITS-CANONICAL), D6 (thresholds 30 mmol/L and 20 mg/dL). Making reject the default is blocked on a refusal the person can see (clients that read refused, or a Nightscout-side notice), not on a date. ready-to-push means the gates pass and the next step is a human push of a draft PR. How this check and the existing write-path checks converge on the write step's refused outcome: the maintainer note docs/30-design/modernization/write-path-checks-alignment-2026-10-25.md (2026-10-25).
+**Notes.** 2026-10-26, 10:23:14Z: merged. AndyLow91 merged #8841 (feat/api3-domain- validation, head 5901961c) into dev as e09bca3b (gh pr view 8841); 11 files, +918/-11 against its first parent 207a8352. His 5901961c ("validate effective Temporary Target updates") is on top of this item's commits e8125d89, 6e842c07 and a2e5fe49. WRITE_VALIDATION stays off by default. Open in the PR body: socket dbAdd and dbUpdate are not covered (draft #8854 extends the rules to socket add, update and unset), a refusal the person can see, whether to normalise units beyond temp targets, and the plausibility thresholds (30 mmol/L, 20 mg/dL). CI: push run 40307014804 passed and published at 10:32:31Z. Filed 2026-10-25 by session f4 from the v3-validation lane. Draft: local branch feat/api3-domain-validation a2e5fe49 (e8125d89, 6e842c07, a2e5fe49) over dev b29f1bf7; head 90fd47d0 after merging dev 428b20b7, not pushed. Decided 2026-10-25 (maintainer): D1 the setting shape; D2 a v1 batch under reject stores its valid items, keeps one object per item in order with refused slots without _id plus a refused member and a Warning 299 header, and answers 400 when every item is refused; D4 a double-labelled record is refused with a message naming the field and the units to send. Open: D5 (N1 or N2 and the conversion constant, MOD-UNITS-CANONICAL), D6 (thresholds 30 mmol/L and 20 mg/dL). Making reject the default is blocked on a refusal the person can see (clients that read refused, or a Nightscout-side notice), not on a date. ready-to-push means the gates pass and the next step is a human push of a draft PR. How this check and the existing write-path checks converge on the write step's refused outcome: the maintainer note docs/30-design/modernization/write-path-checks-alignment-2026-10-25.md (2026-10-25).
 
 ### `MOD-WRITE-VALIDATION-READ` &mdash; Flag stored records that break a write-validation rule on API v3 reads (read-side flag, R1/R2)
 
@@ -2229,7 +2229,7 @@ that costs.
 
 - `docs/60-research/modernization/write-validation-design-2026-10-25.md`
 
-**Notes.** Filed 2026-10-25 by session f4 from the v3-validation lane (design section 3.3). Hiding or migrating stored records is not recommended: it would diverge from what uploaders sent and move every rewritten record into every v3 history cursor.
+**Notes.** 2026-10-26: MOD-WRITE-VALIDATION merged (#8841, e09bca3b). Draft #8854 adds a read-side inspection in a different shape: lib/storage/read-contract.js and a Nightscout-Data-Warnings header on API v3 responses, not behind WRITE_VALIDATION (read from its diff, 880b7369). The decision this item waits on is unchanged. Filed 2026-10-25 by session f4 from the v3-validation lane (design section 3.3). Hiding or migrating stored records is not recommended: it would diverge from what uploaders sent and move every rewritten record into every v3 history cursor.
 
 ### `MOD-UNITS-CANONICAL` &mdash; Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), and the conversion constant
 
@@ -2257,7 +2257,7 @@ that costs.
 
 - `docs/60-research/modernization/write-validation-design-2026-10-25.md`
 
-**Notes.** Filed 2026-10-25 by session f4 from the v3-validation lane (design section 3.4). N1 must stay limited to temp targets until NightscoutKit accepts both spellings, or Loop would drop BG Check and Meal Bolus records it reads today.
+**Notes.** 2026-10-26: #8841 merged (e09bca3b): under WRITE_VALIDATION=reject a known temp-target units spelling is stored as mmol or mg/dl (the PR body), which is N1 limited to temp targets. The question of other record kinds is unchanged. Filed 2026-10-25 by session f4 from the v3-validation lane (design section 3.4). N1 must stay limited to temp targets until NightscoutKit accepts both spellings, or Loop would drop BG Check and Meal Bolus records it reads today.
 
 ### `RT-PR-8815` &mdash; #8815 - a bearer token whose subject was deleted is refused instead of stopping the server (awss1i; BF-171, fixes #8225), merged for 15.0.9
 
@@ -2487,7 +2487,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 135 items
+`parcel: register-open` &mdash; 136 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2520,13 +2520,13 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-87` | BF-87 - the root qs override holds the connector below its range and pins the server's query parser | `released` | `bf/qs-6.16` | patch | 3 run + 1 no-gate |
 | `BFQ-CONNECTOR` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override | `gate-not-met` | `-` | patch | 1 run + 2 no-gate |
 | `BFQ-MINIMED` | BF-44, BF-45, BF-85 - MiniMed ingestion divergences and the CareLink zero reading | `not-started` | `-` | minor | 0 run + 3 no-gate |
-| `BFQ-46` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data | `in-progress` | `bf/16.0.0-boot-resilience` | minor | 1 run + 1 no-gate |
+| `BFQ-46` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data | `merged-upstream` | `bf/16.0.0-boot-resilience` | minor | 1 run + 2 no-gate |
 | `BFQ-47` | BF-47 - an ordinary subject edit destroys stored fields, on today's release | `released` | `bf2/subject-edit-keeps-fields` | major | 3 run + 1 no-gate |
-| `BFQ-ENV` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies | `in-progress` | `bf/16.0.0-boot-resilience` | minor | 4 run + 2 no-gate |
+| `BFQ-ENV` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies | `needs-decision` | `bf/16.0.0-boot-resilience` | minor | 5 run + 3 no-gate |
 | `BFQ-52` | BF-52 - an age reminder whose 20-minute window passed without a check was never sent | `blocked` | `bf3/age-push-once` | patch | 2 run + 1 no-gate |
 | `BFQ-90` | BF-90 - an alarm at a page with no reading throws in the client | `released` | `bf3/alarm-no-reading` | patch | 1 run + 2 no-gate |
-| `BFQ-92` | BF-92 - a page with no glucose reading never presents a server alarm, including device alarms | `in-progress` | `bf/16.0.0-client-alarms` | minor | 0 run + 1 no-gate |
-| `BFQ-93` | BF-93 - food changes never reach an open page | `in-progress` | `bf/16.0.0-client-alarms` | patch | 0 run + 1 no-gate |
+| `BFQ-92` | BF-92 - a page with no glucose reading never presents a server alarm, including device alarms | `merged-upstream` | `bf/16.0.0-client-alarms` | minor | 1 run + 1 no-gate |
+| `BFQ-93` | BF-93 - food changes never reach an open page | `merged-upstream` | `bf/16.0.0-client-alarms` | patch | 1 run + 1 no-gate |
 | `BFQ-94` | BF-94 - a kept profile instance can return a temp basal that has been replaced | `released` | `bf/profile-temp-cache` | patch | 0 run + 1 no-gate |
 | `BFQ-95` | BF-95 - an uploader clock running ahead delays the stale-data alarm | `needs-decision` | `-` | minor | 0 run + 1 no-gate |
 | `BFQ-96` | BF-96 - the headless test fixture's bundle cache key is an un-normalised path | `not-started` | `-` | n/a | 0 run + 1 no-gate |
@@ -2569,50 +2569,51 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-136` | BF-136 - API v3 refuses an AndroidAPS write that lands on a record written through v1 (Field app cannot be modified), and AndroidAPS drops it | `released` | `bf/api3-app-field-v1-records` | patch | 1 run + 3 no-gate |
 | `BFQ-80` | BF-80 - an alarm viewer with no credential is held by the failed-login delay of its address (the cost of BF-75's fix) | `released` | `bf/alarm-anonymous-no-delay` | patch | 1 run + 2 no-gate |
 | `BFQ-137` | BF-137 - with more than one IFTTT Maker key, an alarm's Maker calls run out of order and a failed key is not retried | `merged-upstream` | `-` | patch | 1 run |
-| `BFQ-145` | BF-145 - API v3 PATCH and PUT by the shown id miss a record whose identifier is null, "" or 0 | `in-flight-upstream` | `bf/16.0.0-record-identity` | patch | 0 run + 1 no-gate |
+| `BFQ-145` | BF-145 - API v3 PATCH and PUT by the shown id miss a record whose identifier is null, "" or 0 | `merged-upstream` | `bf/16.0.0-record-identity` | patch | 1 run + 1 no-gate |
 | `BFQ-147` | BF-147 - two package.json overrides hold ajv and request's form-data inside published advisory ranges | `released` | `bf/override-advisory-pins` | patch | 0 run + 1 no-gate |
 | `BFQ-149` | BF-149 - the Day to Day report draws a cancelled or replaced temp target or override for its whole entered duration | `not-started` | `-` | patch | 1 run + 1 no-gate |
 | `BFQ-151` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (brace expansion has no bound), for 15.0.9 | `released` | `bf/braces-expansion-cap` | patch | 1 run + 1 no-gate |
 | `BFQ-73` | BF-73 - error responses carry a stack trace and server paths in production, for 15.0.9 | `released` | `bf/production-error-handler` | patch | 1 run + 1 no-gate |
 | `BFQ-153` | BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 style refresh) | `released` | `bf/dependency-refresh-2026-10` | patch | 1 run + 1 no-gate |
-| `BFQ-152` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission | `in-flight-upstream` | `bf/16.0.0-record-identity` | minor | 1 run + 1 no-gate |
+| `BFQ-152` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission | `merged-upstream` | `bf/16.0.0-record-identity` | minor | 2 run + 1 no-gate |
 | `DEPENDABOT-CONFIG` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev | `needs-decision` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-154` | BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed release | `blocked` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-155` | BF-155 - a failed storage read on GET /api/v1/activity ends the server process, for 15.0.9 | `released` | `bf/activity-read-error` | patch | 1 run + 1 no-gate |
-| `BFQ-156` | BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the process | `in-progress` | `bf/16.0.0-boot-resilience` | patch | 0 run + 1 no-gate |
+| `BFQ-156` | BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the process | `merged-upstream` | `bf/16.0.0-boot-resilience` | patch | 1 run + 1 no-gate |
 | `BFQ-CONFIG-DOCS` | bf/config-docs-truth - documentation for BF-46, BF-48, BF-49, BF-74, BF-78, BF-81 and the fixes for BF-50, BF-51, for 15.0.9 | `released` | `bf/config-docs-truth` | patch | 1 run + 1 no-gate |
 | `BFQ-157` | BF-157 - a treatment's glucose bubble is placed as mg/dL when its units are spelled mmol/L | `merged-upstream` | `bf/treatment-bubble-units` | patch | 1 run + 1 no-gate |
-| `BFQ-159` | BF-159 - the main page sometimes leaves for the Profile Editor while a profile exists, without the token | `in-progress` | `bf/16.0.0-client-alarms` | patch | 0 run + 1 no-gate |
-| `BFQ-160` | BF-160 - the clock designer's link target is written with curly quotes | `in-progress` | `bf/16.0.0-client-alarms` | patch | 0 run + 1 no-gate |
+| `BFQ-159` | BF-159 - the main page sometimes leaves for the Profile Editor while a profile exists, without the token | `merged-upstream` | `bf/16.0.0-client-alarms` | patch | 1 run + 1 no-gate |
+| `BFQ-160` | BF-160 - the clock designer's link target is written with curly quotes | `merged-upstream` | `bf/16.0.0-client-alarms` | patch | 1 run + 1 no-gate |
 | `BFQ-161` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes | `in-flight-upstream` | `bf/entries-pattern-limit` | patch | 1 run + 1 no-gate |
 | `BFQ-162` | BF-162 - an explicit TRUST_PROXY address list reaches proxy-addr 2.0.7, inside a critical advisory fixed in 2.0.8 | `released` | `bf/proxy-addr-2.0.8` | patch | 0 run + 1 no-gate |
 | `BFQ-163` | BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in 1.8.2 | `merged-upstream` | `deps/16.0.0-security-refresh` | patch | 1 run + 1 no-gate |
 | `BFQ-164` | BF-164 - writes outside API v3 never reach the v3 storage socket | `blocked` | `-` | minor | 0 run + 1 no-gate |
-| `BFQ-165` | BF-165 - a treatment re-send matched by its fallback key is answered without _id | `in-flight-upstream` | `bf/16.0.0-record-identity` | patch | 0 run + 1 no-gate |
-| `BFQ-166` | BF-166 - a profile re-sent with its own _id answers 500 | `in-flight-upstream` | `bf/16.0.0-record-identity` | patch | 0 run + 1 no-gate |
-| `BFQ-167` | BF-167 - devicestatus remove()'s filter is not pinned by any test | `in-flight-upstream` | `bf/16.0.0-record-identity` | n/a | 0 run + 1 no-gate |
+| `BFQ-165` | BF-165 - a treatment re-send matched by its fallback key is answered without _id | `merged-upstream` | `bf/16.0.0-record-identity` | patch | 1 run + 1 no-gate |
+| `BFQ-166` | BF-166 - a profile re-sent with its own _id answers 500 | `merged-upstream` | `bf/16.0.0-record-identity` | patch | 1 run + 1 no-gate |
+| `BFQ-167` | BF-167 - devicestatus remove()'s filter is not pinned by any test | `merged-upstream` | `bf/16.0.0-record-identity` | n/a | 1 run + 1 no-gate |
 | `BFQ-168` | BF-168 - the context chart's window sometimes cannot be dragged back to now | `released` | `bf/brush-extent` | patch | 2 run + 1 no-gate |
-| `BFQ-169` | BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a client-supplied one | `in-flight-upstream` | `bf/16.0.0-record-identity` | patch | 0 run + 1 no-gate |
-| `BFQ-170` | BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent | `in-flight-upstream` | `bf/16.0.0-record-identity` | minor | 0 run + 1 no-gate |
+| `BFQ-169` | BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a client-supplied one | `merged-upstream` | `bf/16.0.0-record-identity` | patch | 1 run + 1 no-gate |
+| `BFQ-170` | BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent | `merged-upstream` | `bf/16.0.0-record-identity` | minor | 1 run + 1 no-gate |
 | `BFQ-172` | BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819 proposed), a known issue of 15.0.9 | `merged-upstream` | `javier-erro:#8819` | patch | 1 run + 1 no-gate |
 | `BFQ-173` | BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units, a known issue of 15.0.9 | `merged-upstream` | `bf/boluscalc-profile-units` | patch | 1 run + 1 no-gate |
 | `BFQ-174` | BF-174 - the bolus calculator's profile picker is ignored; every value comes from the active profile, a known issue of 15.0.9 | `merged-upstream` | `bf/profile-spec-honoured` | patch | 1 run + 1 no-gate |
 | `BFQ-175` | BF-175 - temp targets are converted from mmol/L only when units is exactly 'mmol' (candidate) | `closed` | `-` | n/a | 0 run + 1 no-gate |
 | `BFQ-176` | BF-176 - axios is only a devDependency and lodash is undeclared, so a production install of dev (16.0.0 line, cut 1 merged) stops at boot when IMPORT_CONFIG is set | `merged-upstream` | `bf/axios-runtime-dependency` | patch | 2 run + 1 no-gate |
-| `BFQ-179` | BF-179 - postinstall runs webpack, now a devDependency, so a production install of dev fails (dev b29f1bf7, cut 2) | `in-flight-upstream` | `chore/compose-mongodb6` | patch | 0 run + 1 no-gate |
-| `BFQ-180` | BF-180 - a careportal temp target on an mmol/L site is converted to mg/dL twice when the hidden BG field holds a value | `in-progress` | `bf/16.0.0-client-alarms` | patch | 0 run + 1 no-gate |
+| `BFQ-179` | BF-179 - postinstall runs webpack, now a devDependency, so a production install of dev fails (dev b29f1bf7, cut 2) | `merged-upstream` | `chore/compose-mongodb6` | patch | 1 run + 1 no-gate |
+| `BFQ-180` | BF-180 - a careportal temp target on an mmol/L site is converted to mg/dL twice when the hidden BG field holds a value | `merged-upstream` | `bf/16.0.0-client-alarms` | patch | 1 run + 1 no-gate |
 | `BFQ-181` | BF-181 - one future srvModified pins the shared write clock ahead, across restarts | `not-started` | `-` | patch | 0 run + 1 no-gate |
-| `BFQ-182` | BF-182 - on cut 3 (driver 7), boot against MongoDB 4.2 or older retries forever with no HTTP server | `in-flight-upstream` | `chore/compose-mongodb6` | major | 1 run + 1 no-gate |
-| `BFQ-183` | BF-183 - the API v3 storage socket logs the supplied credential on a failed authorization | `in-progress` | `bf/183-storage-socket-log-redaction` | patch | 0 run + 1 no-gate |
+| `BFQ-182` | BF-182 - on cut 3 (driver 7), boot against MongoDB 4.2 or older retries forever with no HTTP server | `merged-upstream` | `chore/compose-mongodb6` | major | 2 run + 1 no-gate |
+| `BFQ-183` | BF-183 - the API v3 storage socket logs the supplied credential on a failed authorization | `merged-upstream` | `bf/183-storage-socket-log-redaction` | patch | 1 run + 1 no-gate |
 | `BFQ-184` | BF-184 - API v3 /status apiPermissions reports only wildcard permissions | `not-started` | `-` | patch | 0 run + 1 no-gate |
-| `BFQ-185` | BF-185 - the stress test tier leaves devicestatus documents that break api3.search in a later run | `in-flight-upstream` | `ci/edge-diagonal-matrix` | n/a | 0 run + 1 no-gate |
-| `BFQ-186` | BF-186 - API v3 logs a whole record when a client's identifier differs from the computed one | `in-flight-upstream` | `bf/16.0.0-record-identity` | patch | 1 run + 1 no-gate |
+| `BFQ-185` | BF-185 - the stress test tier leaves devicestatus documents that break api3.search in a later run | `merged-upstream` | `ci/edge-diagonal-matrix` | n/a | 1 run + 1 no-gate |
+| `BFQ-186` | BF-186 - API v3 logs a whole record when a client's identifier differs from the computed one | `merged-upstream` | `bf/16.0.0-record-identity` | patch | 2 run + 1 no-gate |
 | `BFQ-187` | BF-187 - an entries pattern segment over the braces parser's input limit answers 500, not 400 | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-188` | BF-188 - with no client bundle the server exits at boot with an unexplained module error | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-189` | BF-189 - tests/security.test.js (API_SECRET) fails depending on file order | `not-started` | `-` | n/a | 0 run + 1 no-gate |
-| `BFQ-190` | BF-190 - an alarm on a page without a current reading cannot be silenced from the page | `in-progress` | `bf/16.0.0-client-alarms` | patch | 1 run + 1 no-gate |
+| `BFQ-190` | BF-190 - an alarm on a page without a current reading cannot be silenced from the page | `merged-upstream` | `bf/16.0.0-client-alarms` | patch | 2 run + 1 no-gate |
 | `BFQ-191` | BF-191 - a stored treatment can stop the server process, and keeps doing so after a restart (mechanism only) | `in-progress` | `-` | n/a | 0 run + 1 no-gate |
-| `BFQ-192` | BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression) | `in-flight-upstream` | `-` | n/a | 0 run + 1 no-gate |
+| `BFQ-192` | BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression) | `merged-upstream` | `-` | n/a | 1 run + 1 no-gate |
+| `BFQ-193` | BF-193 - the realtime socket logs every record written through it | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `released` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -3442,7 +3443,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-boot-resilience` |
 | base | `official/dev@b29f1bf7` |
@@ -3460,15 +3461,16 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `node tools/queue/gates/config-surface-census.js --arm api3`
-  - FAILS today on both arms. Ten API3_* names (four flags plus API3_AUTOPRUNE_ for six collections) are absent from README.md and from lib/server/env.js, and the autoprune path calls storage.deleteManyOr without awaiting the result. Controls come out the other way through the identical lookup - MONGO_CONNECTION and DISPLAY_UNITS are found in both files - so "not found" means absent rather than a broken grep, and the call sites are confirmed present before their names are reported on.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1d63df57 official/dev`
+  - official/dev contains BF-46's code-half commit 1d63df57 (merged 2026-10-26 as 3b2e1a68); red if dev is rewritten or the merge is reverted out of history
+- **NO GATE** &mdash; Retired 2026-10-26: the census arm (node tools/queue/gates/config-surface-census.js --arm api3) measured the defect by its pre-fix shape. On official/dev 47723cda its precondition fails (setENVTruthy no longer reads process.env, because #8849 moved the reads into env.js), so it reports BAD while measuring nothing, and its autoprune check reads a call that #8849 now awaits. The ancestry gate above measures the merged fix; a re-authored census would check env.api3 instead.
 - **NO GATE** &mdash; The deletion path is read-derived, not executed. Nobody has run API3_AUTOPRUNE_ENTRIES against a database and watched rows go. Doing so needs MongoDB and a corpus that can be destroyed; the right instrument is a rehearsal harness with a restore, not a gate.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-25: the code half is fixed as 1d63df57 on local bf/16.0.0-boot- resilience (head 0675e91e after merging dev 428b20b7, not pushed): the API v3 settings and CI are read in env.js into env.api3 with the same parsing (not trimmed), and lib/api3 no longer reads process.env; tests/env.api3.test.js is red with trimming added. The branch moves from bf/config-docs-truth, whose documentation half shipped in 15.0.9 (#8799). The census gate below still looks for README entries and an awaited deleteManyOr; read its arm against the branch before trusting a red. 2026-10-02: gate defect found by -d4's agent: config-surface-census.js's api3 arm (:138-142) accepts only `await self.storage.deleteManyOr`, so it stays red on a correct .then/.catch fix (bf/autoprune-promise). 2026-10-02 (maintainer, relayed by session -d4): the documentation half goes into 15.0.9 as BFQ-CONFIG-DOCS (bf/config-docs-truth); the code half, routing the API3_* variables through env.js, is after 15.0.9 and stays here. BF-156 (autoprune result) is carried in the BF-46 known issue of 15.0.9. 2026-10-02: documentation half on bf/config-docs-truth c102d98f with BFQ-ENV (README documents the API v3 settings; swagger text corrected, including a DEVICESTATUS=60 autoprune default the code never had). The code half stays open. BF-156 (autoprune result never handled) was found while doing it. 2026-10-02 (maintainer, relayed by session -d4): a known issue of 15.0.9, named in its release notes and contents (by -d4), and the documentation of the API3_* variables is updated. A local branch is being prepared by -d4's agent in externals/work/crm-bf46-env off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Kept out of BFQ-ENV deliberately. The other three are a documentation and plumbing residue; this one irreversibly deletes a person's glucose history through a name nobody can look up, with the result unawaited. A reviewer should not have to find it inside a batch whose other members are a README typo and a dead settings key.
+**Notes.** 2026-10-26: merged (the code half) in #8849, merge 3b2e1a68 at 12:43:22Z (gh pr view 8849); the documentation half was released in 15.0.9 (#8799). Merged is not released. 2026-10-25: the code half is fixed as 1d63df57 on local bf/16.0.0-boot-resilience (head 0675e91e after merging dev 428b20b7, not pushed): the API v3 settings and CI are read in env.js into env.api3 with the same parsing (not trimmed), and lib/api3 no longer reads process.env; tests/env.api3.test.js is red with trimming added. The branch moves from bf/config-docs-truth, whose documentation half shipped in 15.0.9 (#8799). The census gate below still looks for README entries and an awaited deleteManyOr; read its arm against the branch before trusting a red. 2026-10-02: gate defect found by -d4's agent: config-surface-census.js's api3 arm (:138-142) accepts only `await self.storage.deleteManyOr`, so it stays red on a correct .then/.catch fix (bf/autoprune-promise). 2026-10-02 (maintainer, relayed by session -d4): the documentation half goes into 15.0.9 as BFQ-CONFIG-DOCS (bf/config-docs-truth); the code half, routing the API3_* variables through env.js, is after 15.0.9 and stays here. BF-156 (autoprune result) is carried in the BF-46 known issue of 15.0.9. 2026-10-02: documentation half on bf/config-docs-truth c102d98f with BFQ-ENV (README documents the API v3 settings; swagger text corrected, including a DEVICESTATUS=60 autoprune default the code never had). The code half stays open. BF-156 (autoprune result never handled) was found while doing it. 2026-10-02 (maintainer, relayed by session -d4): a known issue of 15.0.9, named in its release notes and contents (by -d4), and the documentation of the API3_* variables is updated. A local branch is being prepared by -d4's agent in externals/work/crm-bf46-env off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Kept out of BFQ-ENV deliberately. The other three are a documentation and plumbing residue; this one irreversibly deletes a person's glucose history through a name nobody can look up, with the result unawaited. A reviewer should not have to find it inside a batch whose other members are a README typo and a dead settings key.
 
 ### `BFQ-47` &mdash; BF-47 - an ordinary subject edit destroys stored fields, on today's release
 
@@ -3512,7 +3514,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `needs-decision` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-boot-resilience` |
 | base | `official/dev@b29f1bf7` |
@@ -3530,8 +3532,11 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `node tools/queue/gates/config-surface-census.js --arm webhook`
-  - BF-48. FAILS today - WEBHOOK_PROTOCOL, _HOST, _PORT and _PATH are in neither README.md nor env.js, while the call site reading process.env.WEBHOOK_* is confirmed present first, so a green result could not come from the plugin having been renamed.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8e4d30d3 official/dev`
+  - official/dev contains BF-48's code-half commit 8e4d30d3 (merged 2026-10-26 as 3b2e1a68); red if dev is rewritten or the merge is reverted out of history
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8e3717e3 official/dev`
+  - official/dev contains BF-49's start-up warning 8e3717e3 (merged 2026-10-26 as 3b2e1a68); red if dev is rewritten or the merge is reverted out of history
+- **NO GATE** &mdash; Retired 2026-10-26: the webhook census arm (node tools/queue/gates/config-surface-census.js --arm webhook) first confirms that lib/plugins/webhook.js reads process.env.WEBHOOK_*; #8849 moved those reads into env.js (8e4d30d3), so on official/dev 47723cda the arm reports that it is measuring nothing. The BF-48 ancestry gate above measures the merged fix.
 - `[static]` `node tools/queue/gates/config-surface-census.js --arm hsts`
   - BF-49. Executes lib/settings.js and records the env names its own nameFromKey asks for, rather than grepping for a spelling - the defect is that two spellings exist, so a gate hardcoding one could not detect a third. FAILS on SECURE_HSTS_HEADER_INCLUDE_SUBDOMAINS. The control is inside the same family: 4 of the 5 generated security names are read by env.js, so the miss is a divergence and not a broken compare.
 - `[static]` `node tools/queue/gates/config-surface-census.js --arm readme`
@@ -3545,7 +3550,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-25: on local bf/16.0.0-boot-resilience (head 0675e91e after merging dev 428b20b7, not pushed): BF-48 fixed as 8e4d30d3 (WEBHOOK_* read in env.js into env.webhook, passed as ctx.webhook); BF-49 partly fixed as 8e3717e3 (a start-up warning when the unread SECURE_HSTS_HEADER_INCLUDE_SUBDOMAINS is set; the alias and the five dead settings keys are open decisions). BF-50 and BF-51 were fixed by #8799 and released in 15.0.9; their gates here are stale. 2026-10-02 (maintainer, relayed by session -d4): BF-50 and BF-51 and the documentation half of BF-48 and BF-49 go into 15.0.9 as BFQ-CONFIG-DOCS; after 15.0.9 here: env.js routing for WEBHOOK_*, the HSTS alias, and reconciling the Azure template's Node ~22 with cut 1's ~24. 2026-10-02 (session -d4's agent): bf/config-docs-truth c102d98f, five commits (one per id: BF-46, 48, 49, 50, 51) on dev ca6fcfaf, README.md +33/-4, azuredeploy.json, lib/api3/swagger.yaml and swagger.json; no .js change; full suite 3534/0/4 (Node 24.15.0, MongoDB 7.0.43); not pushed; PR body reports/phase0-pr-bodies/config-docs-truth.md. The config-surface-census gate: readme (BF-50) and azure (BF-51) arms red -> green; api3 (BF-46), webhook (BF-48) and hsts (BF-49) stay red until the code half (env.js routing or an alias) is done. Gate defect: the hsts arm reads lib/settings.js from the main clone's working tree whatever --ref says. 2026-10-02 (maintainer, relayed by session -d4): correct the information for BF-48 to BF-51. Prepared with BFQ-46 by -d4's agent in externals/work/crm- bf46-env off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Batched because it is one piece of work with one runnable gate in four arms - make the configuration surface tell the truth - and because a reviewer reading any one of them alone would ask about the other three. Split it back by arm if the documentation half lands separately from the plumbing half. BF-46 is deliberately not batched here; see that item.
+**Notes.** 2026-10-26: BF-48's code half (8e4d30d3) and BF-49's start-up warning (8e3717e3) merged in #8849 (merge 3b2e1a68, 12:43:22Z; gh pr view 8849). BF-50 and BF-51 were released in 15.0.9. What is left is two maintainer decisions from #8849's open items: whether SECURE_HSTS_HEADER_INCLUDE_SUBDOMAINS becomes an alias of SECURE_HSTS_HEADER_INCLUDESUBDOMAINS (it would turn includeSubDomains on for sites that set the underscored name today; proposed: announce now, alias in a later major), and what to do with the five settings keys nothing reads, which are served to clients. 2026-10-25: on local bf/16.0.0-boot-resilience (head 0675e91e after merging dev 428b20b7, not pushed): BF-48 fixed as 8e4d30d3 (WEBHOOK_* read in env.js into env.webhook, passed as ctx.webhook); BF-49 partly fixed as 8e3717e3 (a start-up warning when the unread SECURE_HSTS_HEADER_INCLUDE_SUBDOMAINS is set; the alias and the five dead settings keys are open decisions). BF-50 and BF-51 were fixed by #8799 and released in 15.0.9; their gates here are stale. 2026-10-02 (maintainer, relayed by session -d4): BF-50 and BF-51 and the documentation half of BF-48 and BF-49 go into 15.0.9 as BFQ-CONFIG-DOCS; after 15.0.9 here: env.js routing for WEBHOOK_*, the HSTS alias, and reconciling the Azure template's Node ~22 with cut 1's ~24. 2026-10-02 (session -d4's agent): bf/config-docs-truth c102d98f, five commits (one per id: BF-46, 48, 49, 50, 51) on dev ca6fcfaf, README.md +33/-4, azuredeploy.json, lib/api3/swagger.yaml and swagger.json; no .js change; full suite 3534/0/4 (Node 24.15.0, MongoDB 7.0.43); not pushed; PR body reports/phase0-pr-bodies/config-docs-truth.md. The config-surface-census gate: readme (BF-50) and azure (BF-51) arms red -> green; api3 (BF-46), webhook (BF-48) and hsts (BF-49) stay red until the code half (env.js routing or an alias) is done. Gate defect: the hsts arm reads lib/settings.js from the main clone's working tree whatever --ref says. 2026-10-02 (maintainer, relayed by session -d4): correct the information for BF-48 to BF-51. Prepared with BFQ-46 by -d4's agent in externals/work/crm- bf46-env off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Batched because it is one piece of work with one runnable gate in four arms - make the configuration surface tell the truth - and because a reviewer reading any one of them alone would ask about the other three. Split it back by arm if the documentation half lands separately from the plumbing half. BF-46 is deliberately not batched here; see that item.
 
 ### `BFQ-52` &mdash; BF-52 - an age reminder whose 20-minute window passed without a check was never sent
 
@@ -3624,7 +3629,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-client-alarms` |
 | base | `official/dev@b29f1bf7` |
@@ -3642,6 +3647,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5fb199b3 official/dev`
+  - official/dev contains BF-92's fix 5fb199b3 (merged 2026-10-26 as 85e5108a); red if dev is rewritten or the merge is reverted out of history
 - **NO GATE** &mdash; Measured in a real browser, not by a queue gate: tools/review/probes/alarm-no-reading-browser.js with --reading none and --reading present, on 15.0.8, dev and bf3/alarm-no-reading (evidence section 4). It needs two booted instances and MongoDB. A unit gate would be the headless test's "still does not sound with no reading" invariant inverted for non-glucose alarms, per the maintainer's 2026-09-23 position; it does not exist yet.
 
 **Evidence.**
@@ -3649,13 +3656,13 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/remedial/bf90-alarm-no-reading-2026-09-23.md`
 
-**Notes.** 2026-10-25: fixed as 5fb199b3 on local bf/16.0.0-client-alarms (head b7bf55e8 after merging dev 428b20b7, not pushed; session f4's alarms lane): a non- glucose alarm is presented on a page with no reading when either local alarm setting for its level is on. Reproduced again on a real server in Chromium; tests/browser/server-alarms.test.js and tests/client.alarm-no-reading.test.js; browser 556/0 on Node 24.22.1 and 22.23.4, unit 1223, dom 164, integration 1994/1 (lane). The same commit fixes BF-190 (BFQ-190). Decision notes: the glucose/non-glucose group rule is kept; gating on pages with a reading is unchanged (staged-ladder follow-up). Open, no branch; it ships in a later release, not 15.0.9, paired with BFQ-52, and 15.0.9 carries it as a known issue. Filed 2026-09-23 from the BF-90 work. Safety-relevant - graded high in the register if unintended. Reproduced with ordinary pump-status uploads and PUMP_ENABLE_ALERTS=true; no server decision was forced. Decisions: - 2026-09-23 (maintainer): non-glucose alarms (pump, loop, age) should present on a page with no reading; not in 15.0.9.
+**Notes.** 2026-10-26, 10:33:08Z: merged. AndyLow91 merged #8842 (bf/16.0.0-client- alarms, head 148db86b) into dev as 85e5108a (gh pr view 8842); 16 files, +455/-28 against its first parent. The same commit fixes BF-190 (BFQ-190). Open in the PR body: on a page with a reading, a non-glucose alarm is still gated by the high or low setting on the reading's side (a decision, not changed here). CI: push run 40308300225 passed and published at 10:42:51Z. Merged is not released. 2026-10-25: fixed as 5fb199b3 on local bf/16.0.0-client-alarms (head b7bf55e8 after merging dev 428b20b7, not pushed; session f4's alarms lane): a non-glucose alarm is presented on a page with no reading when either local alarm setting for its level is on. Reproduced again on a real server in Chromium; tests/browser/server-alarms.test.js and tests/client.alarm-no-reading.test.js; browser 556/0 on Node 24.22.1 and 22.23.4, unit 1223, dom 164, integration 1994/1 (lane). The same commit fixes BF-190 (BFQ-190). Decision notes: the glucose/non-glucose group rule is kept; gating on pages with a reading is unchanged (staged-ladder follow-up). Open, no branch; it ships in a later release, not 15.0.9, paired with BFQ-52, and 15.0.9 carries it as a known issue. Filed 2026-09-23 from the BF-90 work. Safety-relevant - graded high in the register if unintended. Reproduced with ordinary pump-status uploads and PUMP_ENABLE_ALERTS=true; no server decision was forced. Decisions: - 2026-09-23 (maintainer): non-glucose alarms (pump, loop, age) should present on a page with no reading; not in 15.0.9.
 
 ### `BFQ-93` &mdash; BF-93 - food changes never reach an open page
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-client-alarms` |
 | base | `official/dev@b29f1bf7` |
@@ -3673,6 +3680,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 91d9a4db official/dev`
+  - official/dev contains BF-93's fix 91d9a4db (merged 2026-10-26 as 85e5108a); red if dev is rewritten or the merge is reverted out of history
 - **NO GATE** &mdash; Measured in a real browser, not by a queue gate: tools/review/probes/quickpick-rebuild-browser.js, the arm "a pick added while the page is open reaches the page by broadcast", on 15.0.8, dev and bf3/quickpick-rebuild (evidence section 4). A unit gate would call calcdelta with a changed food array and assert the delta carries it; it does not exist yet.
 
 **Evidence.**
@@ -3680,7 +3689,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/remedial/bf69-quickpick-rebuild-2026-09-23.md`
 
-**Notes.** 2026-10-25: fixed as 91d9a4db on local bf/16.0.0-client-alarms (head b7bf55e8 after merging dev 428b20b7, not pushed): food in the broadcast delta, and v1 food writes emit data-received; tests/data.calcdelta.test.js and tests/api.food.test.js red when reverted. 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Deferred until after 15.0.9 (2026-10-02); the fix the item names (food in calcdelta's broadcast delta) is a patch with no branch yet, so not-started. 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9. dev 74942ec6 still leaves food out of calcdelta's compressibleArrays (lib/data/calcdelta.js:106); #8756 (BF-69) only rebuilds the quick-pick chooser when the drawer opens. Filed 2026-09-23 from the BF-69 work (evidence section 8.1). An edited carb total on an existing quick pick takes the same path and was not run separately.
+**Notes.** 2026-10-26, 10:33:08Z: merged. AndyLow91 merged #8842 (bf/16.0.0-client- alarms, head 148db86b) into dev as 85e5108a (gh pr view 8842); 16 files, +455/-28 against its first parent. CI: push run 40308300225 passed and published at 10:42:51Z. Merged is not released. 2026-10-25: fixed as 91d9a4db on local bf/16.0.0-client-alarms (head b7bf55e8 after merging dev 428b20b7, not pushed): food in the broadcast delta, and v1 food writes emit data- received; tests/data.calcdelta.test.js and tests/api.food.test.js red when reverted. 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Deferred until after 15.0.9 (2026-10-02); the fix the item names (food in calcdelta's broadcast delta) is a patch with no branch yet, so not-started. 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9. dev 74942ec6 still leaves food out of calcdelta's compressibleArrays (lib/data/calcdelta.js:106); #8756 (BF-69) only rebuilds the quick-pick chooser when the drawer opens. Filed 2026-09-23 from the BF-69 work (evidence section 8.1). An edited carb total on an existing quick pick takes the same path and was not run separately.
 
 ### `BFQ-94` &mdash; BF-94 - a kept profile instance can return a temp basal that has been replaced
 
@@ -5086,7 +5095,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-record-identity` |
 | base | `official/dev@b29f1bf7` |
@@ -5104,13 +5113,15 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor d4566292 official/dev`
+  - official/dev contains BF-145's fix d4566292 (merged 2026-10-26 as 900abf7a); red if dev is rewritten or the merge is reverted out of history
 - **NO GATE** &mdash; Measured on a booted server (PATCH/PUT arm of tools/lab/triage-2026-09/api3-empty-identifier-delete.js) on v15.0.8 92d08342, dev ce7d754a and 1c3aeb8c: PATCH 404, PUT 201 with two records, for identifier null, "" and 0. Needs a tree with node_modules and MongoDB, so not a queue gate.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). 2026-10-25: fixed as d4566292 on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane): identifyingFilter shares filterForEveryForm's no-own-identifier clause; PATCH 404 to 200, PUT's second record to a replace, a v3 POST with such a record's _id as identifier deduplicates. Filed 2026-09-26 from the BF-142 fix work; after 15.0.9 by the maintainer's decision (2026-09-26). Not a regression from 15.0.8.
+**Notes.** 2026-10-26, 11:34:16Z: merged. AndyLow91 merged #8845 (bf/16.0.0-record- identity, head 50219945) into dev as 900abf7a (gh pr view 8845); 25 files, +1314/-107 against its first parent. CI: push run 40316054930 passed and published at 11:43:24Z. Merged is not released. 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). 2026-10-25: fixed as d4566292 on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane): identifyingFilter shares filterForEveryForm's no-own-identifier clause; PATCH 404 to 200, PUT's second record to a replace, a v3 POST with such a record's _id as identifier deduplicates. Filed 2026-09-26 from the BF-142 fix work; after 15.0.9 by the maintainer's decision (2026-09-26). Not a regression from 15.0.8.
 
 ### `BFQ-147` &mdash; BF-147 - two package.json overrides hold ajv and request's form-data inside published advisory ranges
 
@@ -5276,7 +5287,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-record-identity` |
 | base | `official/dev@b29f1bf7` |
@@ -5294,6 +5305,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor faffe875 official/dev`
+  - official/dev contains the opt-in API3_SETTINGS_STRICT_READ_ENABLED commit faffe875 (merged 2026-10-26 as 900abf7a); red if dev is rewritten or the merge is reverted out of history
 - `[static]` `git -C externals/cgm-remote-monitor-official cat-file -e faffe875^{commit}`
   - step 1's commit (cherry-pick faffe875 on bf/16.0.0-record-identity, PR #8845) exists in the shared clone; red if it is lost before it is pushed (a rebase changes the id, and this gate must then name the new one)
 - **NO GATE** &mdash; A decision item. Reproduced 2026-10-01 on v15.0.8 and dev 3014f883: search and history 403, read by identifier 200, readable and denied. AndroidAPS's AAPSClient reads its running configuration by identifier (plugins/sync nsclientV3 LoadSettingsRunner).
@@ -5303,7 +5316,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/60-research/remedial/aaps-websocket-delivery-lab-2026-10-25.md`
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-25, later: folded into PR #8845 to dev (bf/16.0.0-record-identity) as cherry-pick faffe875 of 06ba6201, pending push; the branch bf/16.0.0-v3-settings-read-scope will not be pushed. The setting name API3_SETTINGS_STRICT_READ_ENABLED is confirmed. 2026-10-25, later: head 06ba6201 confirmed; the setting name API3_SETTINGS_STRICT_READ_ENABLED is confirmed by the maintainer. Write-up of the AndroidAPS findings: docs/60-research/remedial/aaps-websocket-delivery-lab-2026-10-25.md section 3. 2026-10-25 (maintainer decision): a staged ladder. (1) an opt-in, admin-only settings read in 16.x; (2) ask the AndroidAPS developers about a narrower scope; (3) a strict default later on the calendar. Step 1 is on local branch bf/16.0.0-v3-settings-read-scope 06ba6201 over dev b29f1bf7, not pushed: API3_SETTINGS_STRICT_READ_ENABLED, default off; integration 1999/1/0, unit 1218, red controls failed for the right reasons. Step 2 is the combined note to the AndroidAPS developers (with BF-164), drafted, not sent. Corrections, measured or read 2026-10-25: AAPSClient's v3 settings read exists only in AndroidAPS 4.0.0 (beta1, rc1, dev), not in released 3.4.2.6; tokens made by the AndroidAPS master (role aaps-client) carry api:settings:admin; *:*:read implies api:settings:read and api:settings:read:<x> under shiro-trie (measured), so a narrower scope needs a new verb. 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Question (for the maintainer, with the AndroidAPS developers): is API v3 settings meant to be readable with a follower's read token, or admin-only? 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9. Needs more research on AndroidAPS's use of settings first. 2026-10-02: the private fork of GHSA-25pr has a fix by Ruben Sutton (code2344, 28d1efa6, on v15.0.8): a shared requiredReadPermission that makes read by identifier and lastModified demand api:settings:admin, as search and history do. That is the gating choice, which breaks AAPSClient followers with read tokens; it is not taken until the AndroidAPS question is answered. After 15.0.9. The question for the AndroidAPS developers: is settings meant to be readable by a follower's read token (then search and history are the inconsistent side), or admin-only (then AAPSClient needs a token change first)?
+**Notes.** 2026-10-26, 11:34:16Z: merged. AndyLow91 merged #8845 (bf/16.0.0-record- identity, head 50219945) into dev as 900abf7a (gh pr view 8845); 25 files, +1314/-107 against its first parent. This is step 1 of the maintainer's staged ladder (opt-in, default off). Steps 2 (the question to the AndroidAPS developers about a narrower scope) and 3 (a strict default later on the calendar) are not started. CI: push run 40316054930 passed and published at 11:43:24Z. Merged is not released. 2026-10-25, later: folded into PR #8845 to dev (bf/16.0.0-record-identity) as cherry-pick faffe875 of 06ba6201, pending push; the branch bf/16.0.0-v3-settings-read-scope will not be pushed. The setting name API3_SETTINGS_STRICT_READ_ENABLED is confirmed. 2026-10-25, later: head 06ba6201 confirmed; the setting name API3_SETTINGS_STRICT_READ_ENABLED is confirmed by the maintainer. Write-up of the AndroidAPS findings: docs/60-research/remedial/aaps-websocket-delivery- lab-2026-10-25.md section 3. 2026-10-25 (maintainer decision): a staged ladder. (1) an opt-in, admin-only settings read in 16.x; (2) ask the AndroidAPS developers about a narrower scope; (3) a strict default later on the calendar. Step 1 is on local branch bf/16.0.0-v3-settings-read-scope 06ba6201 over dev b29f1bf7, not pushed: API3_SETTINGS_STRICT_READ_ENABLED, default off; integration 1999/1/0, unit 1218, red controls failed for the right reasons. Step 2 is the combined note to the AndroidAPS developers (with BF-164), drafted, not sent. Corrections, measured or read 2026-10-25: AAPSClient's v3 settings read exists only in AndroidAPS 4.0.0 (beta1, rc1, dev), not in released 3.4.2.6; tokens made by the AndroidAPS master (role aaps-client) carry api:settings:admin; *:*:read implies api:settings:read and api:settings:read:<x> under shiro-trie (measured), so a narrower scope needs a new verb. 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Question (for the maintainer, with the AndroidAPS developers): is API v3 settings meant to be readable with a follower's read token, or admin-only? 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9. Needs more research on AndroidAPS's use of settings first. 2026-10-02: the private fork of GHSA-25pr has a fix by Ruben Sutton (code2344, 28d1efa6, on v15.0.8): a shared requiredReadPermission that makes read by identifier and lastModified demand api:settings:admin, as search and history do. That is the gating choice, which breaks AAPSClient followers with read tokens; it is not taken until the AndroidAPS question is answered. After 15.0.9. The question for the AndroidAPS developers: is settings meant to be readable by a follower's read token (then search and history are the inconsistent side), or admin-only (then AAPSClient needs a token change first)?
 
 ### `DEPENDABOT-CONFIG` &mdash; Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev
 
@@ -5402,7 +5415,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-boot-resilience` |
 | base | `official/dev@b29f1bf7` |
@@ -5420,13 +5433,15 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a5b569b9 official/dev`
+  - official/dev contains BF-156's fix a5b569b9 (merged 2026-10-26 as 3b2e1a68); red if dev is rewritten or the merge is reverted out of history
 - **NO GATE** &mdash; Reproduced 2026-10-02 in-process by session -d4's agent (real Collection and CachedCollectionStorage, a fake storage layer): the callback never runs and a rejected delete exits the process. Read on dev ca6fcfaf (collection.js:157) and v15.0.8 (:149).
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-25: re-applied to current dev as a5b569b9 on local bf/16.0.0-boot- resilience (head 0675e91e after merging dev 428b20b7, not pushed); tests/api3.autoprune.test.js, 2 of 3 red with dev's collection.js. Follow-up, read not measured: the cached collection invalidates at most 1000 ids per deleteManyOr while the delete removes every match. 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. bf/autoprune-promise is still 8e4f7dce on dev ca6fcfaf and does not contain dev 04d435eb: before it is ready to push it owes a merge of dev and a full-suite re-run; the 1000-id cache invalidation question in the notes below is still unmeasured. 2026-10-02 (session -d4's agent): bf/autoprune-promise 8e4f7dce, one commit on dev ca6fcfaf (lib/api3/generic/collection.js +11/-10, the returned promise handled with .then/.catch; new tests/api3.autoprune.test.js, 3 tests), not pushed. The deleted count is logged; a failed delete is logged and the process keeps running; nextAutoPrune still advances hourly after a failure. Break-its: the unfixed code fails both behaviour tests, dropping only .catch gives an unhandled rejection, deletedCount for deleted fails the log test, advancing only on success fails the throttle test; outside mocha the unfixed code exits 1. Full suite 3537/0/4 (dev 3534/0/4). No other callback-style calls to async API v3 storage methods. PR body: reports/phase0-pr-bodies/autoprune- promise.md. Not measured, read only: the cached collection looks up at most 1000 ids to invalidate while the delete removes every match (mongoCachedCollection/index.js :119-124); worth a check before this merges. 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9, and carried in 15.0.9's BF-46 known issue. A fix branch, bf/autoprune-promise, is being prepared by -d4 in externals/work/crm-bf156 for the next release. Filed 2026-10-02. Whether it goes into 15.0.9 is being put to the maintainer by session -d4; not in RT-0's blocks_on until decided.
+**Notes.** 2026-10-26, 12:43:22Z: merged. AndyLow91 merged #8849 (head 0772cb47) into dev as 3b2e1a68 (gh pr view 8849). Read-derived follow-up in the PR body, not measured: the cached API v3 collection invalidates at most 1000 ids per deleteManyOr while the delete removes every match. Merged is not released. 2026-10-25: re-applied to current dev as a5b569b9 on local bf/16.0.0-boot- resilience (head 0675e91e after merging dev 428b20b7, not pushed); tests/api3.autoprune.test.js, 2 of 3 red with dev's collection.js. Follow-up, read not measured: the cached collection invalidates at most 1000 ids per deleteManyOr while the delete removes every match. 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. bf/autoprune-promise is still 8e4f7dce on dev ca6fcfaf and does not contain dev 04d435eb: before it is ready to push it owes a merge of dev and a full-suite re-run; the 1000-id cache invalidation question in the notes below is still unmeasured. 2026-10-02 (session -d4's agent): bf/autoprune-promise 8e4f7dce, one commit on dev ca6fcfaf (lib/api3/generic/collection.js +11/-10, the returned promise handled with .then/.catch; new tests/api3.autoprune.test.js, 3 tests), not pushed. The deleted count is logged; a failed delete is logged and the process keeps running; nextAutoPrune still advances hourly after a failure. Break-its: the unfixed code fails both behaviour tests, dropping only .catch gives an unhandled rejection, deletedCount for deleted fails the log test, advancing only on success fails the throttle test; outside mocha the unfixed code exits 1. Full suite 3537/0/4 (dev 3534/0/4). No other callback-style calls to async API v3 storage methods. PR body: reports/phase0-pr-bodies/autoprune- promise.md. Not measured, read only: the cached collection looks up at most 1000 ids to invalidate while the delete removes every match (mongoCachedCollection/index.js :119-124); worth a check before this merges. 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9, and carried in 15.0.9's BF-46 known issue. A fix branch, bf/autoprune-promise, is being prepared by -d4 in externals/work/crm-bf156 for the next release. Filed 2026-10-02. Whether it goes into 15.0.9 is being put to the maintainer by session -d4; not in RT-0's blocks_on until decided.
 
 ### `BFQ-CONFIG-DOCS` &mdash; bf/config-docs-truth - documentation for BF-46, BF-48, BF-49, BF-74, BF-78, BF-81 and the fixes for BF-50, BF-51, for 15.0.9
 
@@ -5497,7 +5512,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-client-alarms` |
 | base | `official/dev@b29f1bf7` |
@@ -5515,6 +5530,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 72f3cc09 official/dev`
+  - official/dev contains BF-159's token-half fix 72f3cc09 (merged 2026-10-26 as 85e5108a); red if dev is rewritten or the merge is reverted out of history
 - **NO GATE** &mdash; Seen, not isolated: 5 of 10 automated loads redirected (tools/lab/triage-2026-09/results-bf124/, dev 74942ec6 and BF-124's branch). A gate would load the page repeatedly with a profile in effect and count redirects; the token loss needs a run on a denied site.
 
 **Evidence.**
@@ -5522,13 +5539,13 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/triage-2026-09/results-bf124/browser-probe.js`
 
-**Notes.** 2026-10-25: partly fixed. The token half is reproduced and fixed as 72f3cc09 on local bf/16.0.0-client-alarms (head b7bf55e8 after merging dev 428b20b7, not pushed): the redirect keeps ?token= (tests/browser/profile- redirect.test.js). The intermittent redirect did not reproduce: 0 of 29 loads on b29f1bf7 with a profile in effect. Split the race into its own item if it is seen again. Filed 2026-10-03 from session -d4's BF-124 and BF-127 browser runs. After 15.0.9 (maintainer, 2026-10-03). The same check is at renderer.js:1072 on v15.0.8; whether 15.0.8 shows the redirect as often is not measured.
+**Notes.** 2026-10-26, 10:33:08Z: merged. AndyLow91 merged #8842 (bf/16.0.0-client- alarms, head 148db86b) into dev as 85e5108a (gh pr view 8842); 16 files, +455/-28 against its first parent. Only the token half is merged. The intermittent redirect while a profile exists did not reproduce (0 of 29 loads, #8842's body); it gets its own item if it is seen again. CI: push run 40308300225 passed and published at 10:42:51Z. Merged is not released. 2026-10-25: partly fixed. The token half is reproduced and fixed as 72f3cc09 on local bf/16.0.0-client-alarms (head b7bf55e8 after merging dev 428b20b7, not pushed): the redirect keeps ?token= (tests/browser/profile- redirect.test.js). The intermittent redirect did not reproduce: 0 of 29 loads on b29f1bf7 with a profile in effect. Split the race into its own item if it is seen again. Filed 2026-10-03 from session -d4's BF-124 and BF-127 browser runs. After 15.0.9 (maintainer, 2026-10-03). The same check is at renderer.js:1072 on v15.0.8; whether 15.0.8 shows the redirect as often is not measured.
 
 ### `BFQ-160` &mdash; BF-160 - the clock designer's link target is written with curly quotes
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-client-alarms` |
 | base | `official/dev@b29f1bf7` |
@@ -5546,13 +5563,15 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2556b35b official/dev`
+  - official/dev contains BF-160's fix 2556b35b (merged 2026-10-26 as 85e5108a); red if dev is rewritten or the merge is reverted out of history
 - **NO GATE** &mdash; Read, not run: the curly quotes are in the file on dev 68262e86 and v15.0.8. A gate would grep the attribute for straight quotes.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-25: fixed as 2556b35b on local bf/16.0.0-client-alarms (over dev b29f1bf7, not pushed); tests/browser/clock-client.test.js red when reverted. Filed 2026-10-03 from session -d4's BF-127 work. After 15.0.9 (maintainer, 2026-10-03). PR #8802 edits the same file (the link's href), so a fix should go on top of it once it merges.
+**Notes.** 2026-10-26, 10:33:08Z: merged. AndyLow91 merged #8842 (bf/16.0.0-client- alarms, head 148db86b) into dev as 85e5108a (gh pr view 8842); 16 files, +455/-28 against its first parent. CI: push run 40308300225 passed and published at 10:42:51Z. Merged is not released. 2026-10-25: fixed as 2556b35b on local bf/16.0.0-client-alarms (over dev b29f1bf7, not pushed); tests/browser/clock-client.test.js red when reverted. Filed 2026-10-03 from session -d4's BF-127 work. After 15.0.9 (maintainer, 2026-10-03). PR #8802 edits the same file (the link's href), so a fix should go on top of it once it merges.
 
 ### `BFQ-161` &mdash; BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes
 
@@ -5685,7 +5704,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-record-identity` |
 | base | `official/dev@b29f1bf7` |
@@ -5703,6 +5722,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0d5edc66 official/dev`
+  - official/dev contains BF-165's fix 0d5edc66 (merged 2026-10-26 as 900abf7a); red if dev is rewritten or the merge is reverted out of history
 - **NO GATE** &mdash; Reproduced: matrix cells treatments v1 resend-identity and treatments inproc resend-identity answer 200 with one document without _id. A gate asserts the _id is present; control: 43289dde fails it.
 
 **Evidence.**
@@ -5710,13 +5731,13 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
 
-**Notes.** 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). 2026-10-25: fixed as 0d5edc66 on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane): a fallback-key match is answered with the stored _id (one indexed findOne per unmatched item), and data-update carries it. Semver: the write- contract spec's U6 says minor; 16.0.0 is a major either way. Filed 2026-10-07 from the WRITE-CONTRACT write matrix. Present on 15.0.8 too. NightscoutKit's 'NA' handling is read, not run.
+**Notes.** 2026-10-26, 11:34:16Z: merged. AndyLow91 merged #8845 (bf/16.0.0-record- identity, head 50219945) into dev as 900abf7a (gh pr view 8845); 25 files, +1314/-107 against its first parent. CI: push run 40316054930 passed and published at 11:43:24Z. Merged is not released. 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). 2026-10-25: fixed as 0d5edc66 on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane): a fallback-key match is answered with the stored _id (one indexed findOne per unmatched item), and data-update carries it. Semver: the write-contract spec's U6 says minor; 16.0.0 is a major either way. Filed 2026-10-07 from the WRITE-CONTRACT write matrix. Present on 15.0.8 too. NightscoutKit's 'NA' handling is read, not run.
 
 ### `BFQ-166` &mdash; BF-166 - a profile re-sent with its own _id answers 500
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-record-identity` |
 | base | `official/dev@b29f1bf7` |
@@ -5734,6 +5755,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c62a16c9 official/dev`
+  - official/dev contains BF-166's fix c62a16c9 (merged 2026-10-26 as 900abf7a); red if dev is rewritten or the merge is reverted out of history
 - **NO GATE** &mdash; Reproduced: profile v1 resend-hex answers 500, profile inproc resend-hex a duplicate-key error. A gate asserts 200 and one stored record; control: 43289dde fails it.
 
 **Evidence.**
@@ -5741,13 +5764,13 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
 
-**Notes.** 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). 2026-10-25: fixed as c62a16c9 on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane), implementing the decided write-contract Q1 merge (2026-10-12): a profile re-sent with a stored _id is merged into it and answered 200 with that _id; an identical re-send writes nothing; Q1b (null deletes a field) is not implemented and stays unconfirmed. Evidence, reported by the lane: write- contract matrix b29f1bf7 against 26191780, 42 of 336 cells differ, 40 intended and 2 in the racy cache field. Filed 2026-10-07 from the WRITE-CONTRACT write matrix. Present on 15.0.8 too. BF-116 fixed the same shape for devicestatus.
+**Notes.** 2026-10-26, 11:34:16Z: merged. AndyLow91 merged #8845 (bf/16.0.0-record- identity, head 50219945) into dev as 900abf7a (gh pr view 8845); 25 files, +1314/-107 against its first parent. AndyLow91 added 50219945 ("Require update permission for profile POST merges") on top. CI: push run 40316054930 passed and published at 11:43:24Z. Merged is not released. 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). 2026-10-25: fixed as c62a16c9 on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane), implementing the decided write-contract Q1 merge (2026-10-12): a profile re-sent with a stored _id is merged into it and answered 200 with that _id; an identical re-send writes nothing; Q1b (null deletes a field) is not implemented and stays unconfirmed. Evidence, reported by the lane: write-contract matrix b29f1bf7 against 26191780, 42 of 336 cells differ, 40 intended and 2 in the racy cache field. Filed 2026-10-07 from the WRITE-CONTRACT write matrix. Present on 15.0.8 too. BF-116 fixed the same shape for devicestatus.
 
 ### `BFQ-167` &mdash; BF-167 - devicestatus remove()'s filter is not pinned by any test
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-record-identity` |
 | base | `official/dev@b29f1bf7` |
@@ -5765,6 +5788,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0edb1db9 official/dev`
+  - official/dev contains BF-167's test 0edb1db9 (merged 2026-10-26 as 900abf7a); red if dev is rewritten or the merge is reverted out of history
 - **NO GATE** &mdash; Reproduced by tools/lab/seam-propagation/ds-remove-softdeleted.js: deletedCount 2 as shipped, 1 with stored_query_for swapped for query_for, while the suite stays 3564/0. The fix's proof is that same swap turning the new test red.
 
 **Evidence.**
@@ -5772,7 +5797,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md`
 
-**Notes.** 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). 2026-10-25: fixed as 0edb1db9 on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane) (test only). Filed 2026-10-07 from the seam propagation rehearsal. Register §1b, kind (c): behaviour is correct today.
+**Notes.** 2026-10-26, 11:34:16Z: merged. AndyLow91 merged #8845 (bf/16.0.0-record- identity, head 50219945) into dev as 900abf7a (gh pr view 8845); 25 files, +1314/-107 against its first parent. CI: push run 40316054930 passed and published at 11:43:24Z. Merged is not released. 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). 2026-10-25: fixed as 0edb1db9 on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane) (test only). Filed 2026-10-07 from the seam propagation rehearsal. Register §1b, kind (c): behaviour is correct today.
 
 ### `BFQ-168` &mdash; BF-168 - the context chart's window sometimes cannot be dragged back to now
 
@@ -5814,7 +5839,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-record-identity` |
 | base | `official/dev@b29f1bf7` |
@@ -5832,19 +5857,21 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 539856ef official/dev`
+  - official/dev contains BF-169's swagger text 539856ef (merged 2026-10-26 as 900abf7a); red if dev is rewritten or the merge is reverted out of history
 - **NO GATE** &mdash; Filed only. Reproduced 2026-10-17 by running resolveIdentifier from lib/api3/shared/operationTools.js at 15.0.8 and fade2299: a client-supplied identifier is kept (one console.warn), and one is computed only when none is sent. A fix's gate greps both swagger files for "The client should not create the identifier"; control: fade2299 still has it.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). 2026-10-25: fixed as a1ab22b6 and 539856ef (rewritten from 26191780) on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane), per the D20 two-id rule: identifier is the client's sync identity, kept as sent and not required to be a UUID; _id is the server's storage key. The maintainer lifted the pairing with ID-SIMPLE- MATCH, which stays a separate item. Filed 2026-10-17 while checking the Loop maintainers' proposal that Nightscout accept a client-supplied identifier. The text "this field is immutable by the client (it cannot be updated or patched)" is accurate for PUT and PATCH and stays; only the "should not create ... the server automatically assigns it" sentence is wrong. lib/api3/doc/ and README.md do not repeat it (read at fade2299). Decided by the maintainer 2026-10-17: ships with ID-SIMPLE-MATCH, in the same PR, on dev after cut 1's rebase; not in 15.0.9. A docs-only change is a patch and could ride a re-cut 15.0.9 candidate if the RC is re-cut for another reason; that is the one exception worth weighing, not a plan.
+**Notes.** 2026-10-26, 11:34:16Z: merged. AndyLow91 merged #8845 (bf/16.0.0-record- identity, head 50219945) into dev as 900abf7a (gh pr view 8845); 25 files, +1314/-107 against its first parent. CI: push run 40316054930 passed and published at 11:43:24Z. Merged is not released. 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). 2026-10-25: fixed as a1ab22b6 and 539856ef (rewritten from 26191780) on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane), per the D20 two-id rule: identifier is the client's sync identity, kept as sent and not required to be a UUID; _id is the server's storage key. The maintainer lifted the pairing with ID-SIMPLE-MATCH, which stays a separate item. Filed 2026-10-17 while checking the Loop maintainers' proposal that Nightscout accept a client-supplied identifier. The text "this field is immutable by the client (it cannot be updated or patched)" is accurate for PUT and PATCH and stays; only the "should not create ... the server automatically assigns it" sentence is wrong. lib/api3/doc/ and README.md do not repeat it (read at fade2299). Decided by the maintainer 2026-10-17: ships with ID-SIMPLE-MATCH, in the same PR, on dev after cut 1's rebase; not in 15.0.9. A docs-only change is a patch and could ride a re-cut 15.0.9 candidate if the RC is re-cut for another reason; that is the one exception worth weighing, not a plan.
 
 ### `BFQ-170` &mdash; BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-record-identity` |
 | base | `official/dev@b29f1bf7` |
@@ -5862,6 +5889,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b899edc1 official/dev`
+  - official/dev contains BF-170's PATCH refusal (create and PUT: 304827fd) b899edc1 (merged 2026-10-26 as 900abf7a); red if dev is rewritten or the merge is reverted out of history
 - **NO GATE** &mdash; Filed only. Reproduced over HTTP by tools/lab/record-identity (results/record-identity-2026-10-18.md), cases "v3 treatments POST: 24-hex _id in body, no identifier" and "v3 treatments POST: identifier + 24-hex _id in body": stored _id:string=sent on 15.0.8 92d08342 and fade2299. A fix's gate is those two cells reading _id:oid=sent (option a) or 400 with nothing stored (option b) on the fix build, with fade2299 as the red control; the write-contract matrix cells <col> v3 resend-hex and v3 resend-upper cover the other collections.
 
 **Evidence.**
@@ -5870,7 +5899,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `tools/lab/record-identity/results/record-identity-2026-10-18.md`
 - `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
 
-**Notes.** 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). 2026-10-25: decided (maintainer): API v3 rejects a client-supplied _id, amending identity rule I2 for API v3 only. Fixed on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane): 304827fd (create and PUT answer 400) and b899edc1, rewritten from 108592de (PATCH answers 400 with "Field _id cannot be modified by the client" instead of 500; maintainer, option 1). External survey (read): no API v3 client sends _id (AndroidAPS dev and 3.4.2.6, nightscout-librelink- up bff2317; nightscout-connect has no API v3 output; Nocturne does not write to Nightscout's API v3). Record-identity lab, reported by the lane: 60 cases, 4 intended differences. Candidate C1 of the write-contract note (section 7), filed 2026-10-18. On 15.0.8 a v1 find[_id] for the record misses it (query.js converts to an ObjectId); on dev v1 matches both forms (object-id-forms matchEitherForm), except an upper-case string asked for in lower case. Both read, not measured. No corpus client sends _id to v3; the Loop reply's rule 1 says a client ObjectId _id holds over v1 only. Natural vehicle for option (a): OID-STORAGE-HELPER, one storage-level rule for writes by _id, which would give v3 create the same toStoredId conversion v1 uses. C2 (a {"$oid": ...} body _id answers 500 on v3) is the same code path. ID-CLIENT-OID-DECISION's answer (may a client set _id) bears on whether option (b) is acceptable.
+**Notes.** 2026-10-26, 11:34:16Z: merged. AndyLow91 merged #8845 (bf/16.0.0-record- identity, head 50219945) into dev as 900abf7a (gh pr view 8845); 25 files, +1314/-107 against its first parent. CI: push run 40316054930 passed and published at 11:43:24Z. Merged is not released. 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). 2026-10-25: decided (maintainer): API v3 rejects a client-supplied _id, amending identity rule I2 for API v3 only. Fixed on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane): 304827fd (create and PUT answer 400) and b899edc1, rewritten from 108592de (PATCH answers 400 with "Field _id cannot be modified by the client" instead of 500; maintainer, option 1). External survey (read): no API v3 client sends _id (AndroidAPS dev and 3.4.2.6, nightscout-librelink-up bff2317; nightscout- connect has no API v3 output; Nocturne does not write to Nightscout's API v3). Record-identity lab, reported by the lane: 60 cases, 4 intended differences. Candidate C1 of the write-contract note (section 7), filed 2026-10-18. On 15.0.8 a v1 find[_id] for the record misses it (query.js converts to an ObjectId); on dev v1 matches both forms (object-id-forms matchEitherForm), except an upper-case string asked for in lower case. Both read, not measured. No corpus client sends _id to v3; the Loop reply's rule 1 says a client ObjectId _id holds over v1 only. Natural vehicle for option (a): OID-STORAGE- HELPER, one storage-level rule for writes by _id, which would give v3 create the same toStoredId conversion v1 uses. C2 (a {"$oid": ...} body _id answers 500 on v3) is the same code path. ID-CLIENT-OID-DECISION's answer (may a client set _id) bears on whether option (b) is acceptable.
 
 ### `BFQ-172` &mdash; BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819 proposed), a known issue of 15.0.9
 
@@ -6038,7 +6067,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `chore/compose-mongodb6` |
 | base | `official/dev@b29f1bf7` |
@@ -6056,19 +6085,21 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 200c1361 official/dev`
+  - official/dev contains BF-179's fix 200c1361 (merged 2026-10-26 as ad05e140); red if dev is rewritten or the merge is reverted out of history
 - **NO GATE** &mdash; Reproduced 2026-10-25 by hand (Node v22.23.4): npm ci --omit=dev on dev b29f1bf7 exits 127 "sh: 1: webpack: not found", on v15.0.9 c6a0d8ed exits 0 (control). A full install takes minutes and needs the network, so it is not a queue gate. A static gate would read official/dev's package.json and fail while postinstall runs webpack unguarded with webpack outside dependencies.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-25: cherry-picked onto cut 3 as 200c1361 and in PR #8844 to dev (session -f8's cut 3, chore/compose-mongodb6, head 200c1361). 2026-10-25: fixed as 1cf70838 on local bf/179-omit-dev-install (one commit on dev b29f1bf7, not pushed); to be cherry-picked onto cut 3 by session -f8. postinstall runs bin/postinstall.js: build when the tools are installed, keep an existing bundle with a warning when they are not, otherwise exit 1 naming npm ci --include=dev then npm prune --omit=dev --ignore-scripts. Measured (lane): npm ci --omit=dev exits 1 with that message; npm ci builds the 16 bundle files byte-identical to dev's; docker build gives the same bundle. Decisions for the maintainer: keep-prebuilt vs always fail, and the 16.0.0 release-note line. The boot error with no bundle at all is BF-188. Filed 2026-10-25 by session f4 (register §1b, kind b: a defect in a release-train cut). Cut 2 (#8837) moved webpack to devDependencies; postinstall still runs it. Reach of the first-party Dockerfile and bin/azure-deploy.sh is read (they run npm ci --include=dev, then npm prune --omit=dev --ignore-scripts). Fix direction, UNVERIFIED: guard postinstall, or ship the prebuilt bundle.
+**Notes.** 2026-10-26, 10:59:10Z: merged with cut 3. AndyLow91 merged #8844 (head 0d54d072) into dev as ad05e140 (gh pr view 8844); his 0d54d072 ("Require every page bundle in prebuilt postinstall fallback") is on top of 200c1361. CI: push run 40311624772 passed and published at 11:09:23Z. BF-179 never reached a release; 15.0.9 builds its bundle on a production install. 2026-10-25: cherry- picked onto cut 3 as 200c1361 and in PR #8844 to dev (session -f8's cut 3, chore/compose-mongodb6, head 200c1361). 2026-10-25: fixed as 1cf70838 on local bf/179-omit-dev-install (one commit on dev b29f1bf7, not pushed); to be cherry-picked onto cut 3 by session -f8. postinstall runs bin/postinstall.js: build when the tools are installed, keep an existing bundle with a warning when they are not, otherwise exit 1 naming npm ci --include=dev then npm prune --omit=dev --ignore-scripts. Measured (lane): npm ci --omit=dev exits 1 with that message; npm ci builds the 16 bundle files byte-identical to dev's; docker build gives the same bundle. Decisions for the maintainer: keep- prebuilt vs always fail, and the 16.0.0 release-note line. The boot error with no bundle at all is BF-188. Filed 2026-10-25 by session f4 (register §1b, kind b: a defect in a release-train cut). Cut 2 (#8837) moved webpack to devDependencies; postinstall still runs it. Reach of the first-party Dockerfile and bin/azure-deploy.sh is read (they run npm ci --include=dev, then npm prune --omit=dev --ignore-scripts). Fix direction, UNVERIFIED: guard postinstall, or ship the prebuilt bundle.
 
 ### `BFQ-180` &mdash; BF-180 - a careportal temp target on an mmol/L site is converted to mg/dL twice when the hidden BG field holds a value
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-client-alarms` |
 | base | `official/dev@b29f1bf7` |
@@ -6086,13 +6117,15 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bb1ad38e official/dev`
+  - official/dev contains BF-180's fix (the careportal temp target converted once) bb1ad38e (merged 2026-10-26 as 85e5108a); red if dev is rewritten or the merge is reverted out of history
 - **NO GATE** &mdash; Reproduced 2026-10-25 through the real functions (careportal gather and normalisation, v1 prepareData, ddata) on dev b29f1bf7, not in a browser: typed 5.5/5.5 with a leftover glucose 6.1 is stored 99.09 labelled mmol and charted 1785.09. The fix branch has no commit yet; a gate would run that flow and assert the stored units are mg/dl or absent, with the leftover-glucose arm as the red control on b29f1bf7.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-25, later: fixed as bb1ad38e on local bf/16.0.0-client-alarms (head b7bf55e8 after merging dev 428b20b7, not pushed): the careportal clears the hidden glucose field and labels converted targets mg/dl. Reproduced in a real browser on dev b29f1bf7 and v15.0.9 c6a0d8ed (1785.09 charted). Severity set to medium in the register: silently ignored by AndroidAPS, charted far off- scale. Filed 2026-10-25 by session f4 from the BF-175 measurement. AndroidAPS (externals/AndroidAPS 7e1d537d) reads units mmol as mmol/L x18 and drops a temp target outside 72-180.16 mg/dL with a debug log only (NsIncomingDataProcessor.kt:172-179), read, not run. v15.0.9: same code by reading. Fix in progress on the alarms lane's local branch bf/16.0.0-client- alarms (not pushed). Also named in the drafted note to the AndroidAPS developers (with BF-152 and BF-164).
+**Notes.** 2026-10-26, 10:33:08Z: merged. AndyLow91 merged #8842 (bf/16.0.0-client- alarms, head 148db86b) into dev as 85e5108a (gh pr view 8842); 16 files, +455/-28 against its first parent. CI: push run 40308300225 passed and published at 10:42:51Z. Merged is not released. 2026-10-25, later: fixed as bb1ad38e on local bf/16.0.0-client-alarms (head b7bf55e8 after merging dev 428b20b7, not pushed): the careportal clears the hidden glucose field and labels converted targets mg/dl. Reproduced in a real browser on dev b29f1bf7 and v15.0.9 c6a0d8ed (1785.09 charted). Severity set to medium in the register: silently ignored by AndroidAPS, charted far off-scale. Filed 2026-10-25 by session f4 from the BF-175 measurement. AndroidAPS (externals/AndroidAPS 7e1d537d) reads units mmol as mmol/L x18 and drops a temp target outside 72-180.16 mg/dL with a debug log only (NsIncomingDataProcessor.kt:172-179), read, not run. v15.0.9: same code by reading. Fix in progress on the alarms lane's local branch bf/16.0.0-client- alarms (not pushed). Also named in the drafted note to the AndroidAPS developers (with BF-152 and BF-164).
 
 ### `BFQ-181` &mdash; BF-181 - one future srvModified pins the shared write clock ahead, across restarts
 
@@ -6128,7 +6161,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `chore/compose-mongodb6` |
 | base | `official/chore/compose-mongodb6@ebb690cf` |
@@ -6146,6 +6179,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8f238fc5 official/dev`
+  - official/dev contains BF-182's fix 8f238fc5 (merged 2026-10-26 as ad05e140); red if dev is rewritten or the merge is reverted out of history
 - `[static]` `git -C externals/cgm-remote-monitor-official cat-file -e 99fa8b1e^{commit}`
   - -f8's fix commit on wip/cut3-onto-16.0.0 exists in the shared clone; red if the local branch is lost before it is pushed (a rebase changes the id, and this gate must then name the new one)
 - **NO GATE** &mdash; The defect needs a MongoDB 4.2 container and driver 7: reproduced 2026-10-25 (init() on 72c156fb against 4.2.24 not resolved after 45 s; 4.4.24 connected in 28 ms; driver 5.9.2 against 4.2.24 connected in 32 ms). Not a queue gate.
@@ -6155,13 +6190,13 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/60-research/modernization/mongodb-server-compat-matrix-2026-10-25.md`
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-25: fix 8f238fc5 in PR #8844 to dev (session -f8's cut 3, chore/compose-mongodb6, head 200c1361). 2026-10-25: the driver x server matrix is done (docs/60-research/modernization/mongodb-server-compat- matrix-2026-10-25.md): driver 7.7.0 refuses 3.6.23, 4.0.28 and 4.2.24; 4.4.24 to 8.0.34 boot and pass integration 2013/0/1; with the fix (7b636ce6 on wip/cut3-onto-16.0.0, the rebased form of 99fa8b1e) refused servers get the boot error page (HTTP 500 at 32 to 50 s, process alive, no retry). Decision (maintainer): driver 7 in 16.0.0, MongoDB 4.4 or newer required to start. Filed 2026-10-25 by session f4 from the defaults-calendar lane (C3-2; register §1b, kind b). The maintainer asked for confirmation that compatibility with MongoDB 3.6 to 4.4 holds; a driver x server matrix is running, and the entry claims only 4.2.24 and 4.4.24. -f8's cut 3 agent is adding a fatal boot-error path (99fa8b1e on wip/cut3-onto-16.0.0, local, not pushed, not checked by session f4).
+**Notes.** 2026-10-26, 10:59:10Z: merged with cut 3 (#8844, merge ad05e140, head 0d54d072; gh pr view 8844). Driver 7 and its boot error page arrive in dev together, so dev never carried the endless retry. MongoDB 4.4 or newer is required to start (maintainer, 2026-10-25). 2026-10-25: fix 8f238fc5 in PR #8844 to dev (session -f8's cut 3, chore/compose-mongodb6, head 200c1361). 2026-10-25: the driver x server matrix is done (docs/60-research/modernization/mongodb-server-compat-matrix-2026-10-25.md): driver 7.7.0 refuses 3.6.23, 4.0.28 and 4.2.24; 4.4.24 to 8.0.34 boot and pass integration 2013/0/1; with the fix (7b636ce6 on wip/cut3-onto-16.0.0, the rebased form of 99fa8b1e) refused servers get the boot error page (HTTP 500 at 32 to 50 s, process alive, no retry). Decision (maintainer): driver 7 in 16.0.0, MongoDB 4.4 or newer required to start. Filed 2026-10-25 by session f4 from the defaults-calendar lane (C3-2; register §1b, kind b). The maintainer asked for confirmation that compatibility with MongoDB 3.6 to 4.4 holds; a driver x server matrix is running, and the entry claims only 4.2.24 and 4.4.24. -f8's cut 3 agent is adding a fatal boot-error path (99fa8b1e on wip/cut3-onto-16.0.0, local, not pushed, not checked by session f4).
 
 ### `BFQ-183` &mdash; BF-183 - the API v3 storage socket logs the supplied credential on a failed authorization
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/183-storage-socket-log-redaction` |
 | base | `official/dev@b29f1bf7` |
@@ -6179,13 +6214,15 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 54115e95 official/dev`
+  - official/dev contains BF-183's fix 54115e95 (merged 2026-10-26 as e34efdef); red if dev is rewritten or the merge is reverted out of history
 - **NO GATE** &mdash; Read, not run, on dev b29f1bf7 and v15.0.9 c6a0d8ed. A unit gate would subscribe with a bad token and assert the token string is absent from the captured log; control: b29f1bf7 fails it.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-25: reproduced live on dev b29f1bf7 (MongoDB 8.0.34) and fixed as f6704b8a on local bf/183-storage-socket-log-redaction (one commit on dev, not pushed), for cut 4: the alarm socket's redacted wording. tests/api3.storage- logging.test.js 5 passing, its 4 rejection cases red when reverted. The 2 security.test.js failures in that lane's test:affected selection are BF-189 and also occur with dev's file. Filed 2026-10-25 by session f4. The same two paths in lib/api3/alarmSocket.js are redacted on dev; cut 4 changes them in alarmSocket.js only. Mechanism only in the public repository.
+**Notes.** 2026-10-26, 12:15:29Z: merged with cut 4. AndyLow91 merged #8847 (head 35fc8167) into dev as e34efdef (gh pr view 8847); the fix is 54115e95 ("Stop logging storage subscription credentials"), cherry-picked from f6704b8a. Merged is not released. 2026-10-25: reproduced live on dev b29f1bf7 (MongoDB 8.0.34) and fixed as f6704b8a on local bf/183-storage-socket-log-redaction (one commit on dev, not pushed), for cut 4: the alarm socket's redacted wording. tests/api3.storage-logging.test.js 5 passing, its 4 rejection cases red when reverted. The 2 security.test.js failures in that lane's test:affected selection are BF-189 and also occur with dev's file. Filed 2026-10-25 by session f4. The same two paths in lib/api3/alarmSocket.js are redacted on dev; cut 4 changes them in alarmSocket.js only. Mechanism only in the public repository.
 
 ### `BFQ-184` &mdash; BF-184 - API v3 /status apiPermissions reports only wildcard permissions
 
@@ -6221,7 +6258,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `ci/edge-diagonal-matrix` |
 | base | `official/dev@b29f1bf7` |
@@ -6239,19 +6276,21 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 57717695 official/dev`
+  - official/dev contains BF-185's polluter-side fix 57717695 (merged 2026-10-26 as 720e60de); red if dev is rewritten or the merge is reverted out of history
 - **NO GATE** &mdash; Reproduced 2026-10-25 on dev b29f1bf7 (test:stress then api3.search, 28 failing, "expected 20 to be 10") and by session -b7 on MongoDB 7.0. The victim-side fix b9b5ef29 on session -b7's local ci/edge-diagonal-matrix passes 151 in the same sequence; the gate is that sequence, control dev b29f1bf7.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-25: both fixes are in PR #8843 to dev (session -b7's CI matrix PR), head 57717695: victim b9b5ef29, polluter 57717695. Filed 2026-10-25 by session f4 from the resilience lane's smoke run. Both sides are fixed on session -b7's local ci/edge-diagonal-matrix: victim b9b5ef29 (api3.search starts empty) and polluter 57717695 (concurrent-writes.test.js afterEach and XX_clean remove devicestatus and entries; the stress tier leaves 0 on MongoDB 7.0). Closes with that PR.
+**Notes.** 2026-10-26, 05:20:27Z: merged. bewest merged #8843 (head 7fd2415e) into dev as 720e60de (gh pr view 8843); both sides of the fix (b9b5ef29, 57717695) are in dev. Test only. 2026-10-25: both fixes are in PR #8843 to dev (session -b7's CI matrix PR), head 57717695: victim b9b5ef29, polluter 57717695. Filed 2026-10-25 by session f4 from the resilience lane's smoke run. Both sides are fixed on session -b7's local ci/edge-diagonal-matrix: victim b9b5ef29 (api3.search starts empty) and polluter 57717695 (concurrent-writes.test.js afterEach and XX_clean remove devicestatus and entries; the stress tier leaves 0 on MongoDB 7.0). Closes with that PR.
 
 ### `BFQ-186` &mdash; BF-186 - API v3 logs a whole record when a client's identifier differs from the computed one
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-record-identity` |
 | base | `official/dev@b29f1bf7` |
@@ -6269,6 +6308,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b34f6703 official/dev`
+  - official/dev contains BF-186's fix b34f6703 (merged 2026-10-26 as 900abf7a); red if dev is rewritten or the merge is reverted out of history
 - `[static]` `git -C externals/cgm-remote-monitor-official cat-file -e b34f6703^{commit}`
   - the fix commit on bf/16.0.0-record-identity exists in the shared clone; red if the local branch is lost before it is pushed (a rebase changes the id, and this gate must then name the new one)
 - **NO GATE** &mdash; Read at dev b29f1bf7 and seen in the identity lane's test output; the branch's red and green runs are the lane's. A unit gate would write a record with its own identifier and assert the record's values are absent from captured console output; control: b29f1bf7 fails it.
@@ -6277,7 +6318,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). Filed 2026-10-25 by session f4 from the identity lane. Fixed as b34f6703 on local bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push). Present on v15.0.9 by reading.
+**Notes.** 2026-10-26, 11:34:16Z: merged. AndyLow91 merged #8845 (bf/16.0.0-record- identity, head 50219945) into dev as 900abf7a (gh pr view 8845); 25 files, +1314/-107 against its first parent. CI: push run 40316054930 passed and published at 11:43:24Z. Merged is not released. 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). Filed 2026-10-25 by session f4 from the identity lane. Fixed as b34f6703 on local bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push). Present on v15.0.9 by reading.
 
 ### `BFQ-187` &mdash; BF-187 - an entries pattern segment over the braces parser's input limit answers 500, not 400
 
@@ -6373,7 +6414,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-client-alarms` |
 | base | `official/dev@b29f1bf7` |
@@ -6391,6 +6432,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 148db86b official/dev`
+  - official/dev contains #8842's head, which carries BF-190's fix 5fb199b3, 148db86b (merged 2026-10-26 as 85e5108a); red if dev is rewritten or the merge is reverted out of history
 - `[static]` `git -C externals/cgm-remote-monitor-official cat-file -e 5fb199b3^{commit}`
   - the fix commit (shared with BF-92) exists in the shared clone; red if the local branch is lost before it is pushed (a rebase changes the id, and this gate must then name the new one)
 - **NO GATE** &mdash; Measured in a real browser with BF-92's change applied: with only the clearCurrentSGV change reverted, tests/browser/server-alarms.test.js shows alarming false, playing 1. The browser tier needs two booted instances and MongoDB.
@@ -6399,7 +6442,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Filed 2026-10-25 by session f4 from the alarms lane. On v15.0.9 probably reachable on a page whose latest reading is more than 15 minutes old (read, not run).
+**Notes.** 2026-10-26, 10:33:08Z: merged. AndyLow91 merged #8842 (bf/16.0.0-client- alarms, head 148db86b) into dev as 85e5108a (gh pr view 8842); 16 files, +455/-28 against its first parent. CI: push run 40308300225 passed and published at 10:42:51Z. Merged is not released. Filed 2026-10-25 by session f4 from the alarms lane. On v15.0.9 probably reachable on a page whose latest reading is more than 15 minutes old (read, not run).
 
 ### `BFQ-191` &mdash; BF-191 - a stored treatment can stop the server process, and keeps doing so after a restart (mechanism only)
 
@@ -6435,7 +6478,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `official/dev@428b20b7` |
@@ -6453,13 +6496,45 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0a33b7c7 official/dev`
+  - official/dev contains BF-192's fix 0a33b7c7 (merged 2026-10-26 as 720e60de); red if dev is rewritten or the merge is reverted out of history
 - **NO GATE** &mdash; The browser tier needs Chromium and MongoDB, so not a queue gate. Measured 2026-10-25 by session -b7: retained heap after load 4.43 MB before #8542 against 6.19 MB after; after one Show 9.24 MB before against 7.18 MB after; after five Shows 9.93 MB before against 7.46 MB after. New reports ceiling 6,800,000 bytes = 1.097 x the maximum of 7 samples (6,181,516 to 6,197,116), recorded in docs/test-specs/page-bundles.md.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-25, corrected by session -b7: NOT a product regression. Since #8542 the reports page draws its first report (AGP plus seven daily charts, 576 readings) as soon as the profile loads, so the populated test measured a drawn report, not an empty form; after Shows the page now retains less than before. Fix in #8843 (local commit 0a33b7c7, pending push by the maintainer, who folded it into #8843): the test waits for the first report (an svg under #pluginchartplaceholders and an empty #info), and the reports ceiling goes 4,850,000 to 6,800,000. Open note: both revisions grow slowly with repeated Shows (about 170 KB per run before, about 70 KB per run after). Filed 2026-10-25 by session f4 (register section 1b) as a budget failure on dev 428b20b7 (session f4's lanes, Node 22.23.4: 6192136 and 6189568 bytes; session -f8, Node 24.22.1: b29f1bf7 ~4.45 MB, 428b20b7 ~6.20 MB, cut 3 12d1f645 ~5.94 MB, cut 4 99b6f68b likewise). Browser CI ran zero tests from #8839 until the runner fix e767ce4e in #8843, which is why dev's CI did not show it.
+**Notes.** 2026-10-26, 05:20:27Z: merged. bewest merged #8843 (head 7fd2415e) into dev as 720e60de (gh pr view 8843), with the reports heap ceiling at 6,800,000 bytes. Test only. 2026-10-25, corrected by session -b7: NOT a product regression. Since #8542 the reports page draws its first report (AGP plus seven daily charts, 576 readings) as soon as the profile loads, so the populated test measured a drawn report, not an empty form; after Shows the page now retains less than before. Fix in #8843 (local commit 0a33b7c7, pending push by the maintainer, who folded it into #8843): the test waits for the first report (an svg under #pluginchartplaceholders and an empty #info), and the reports ceiling goes 4,850,000 to 6,800,000. Open note: both revisions grow slowly with repeated Shows (about 170 KB per run before, about 70 KB per run after). Filed 2026-10-25 by session f4 (register section 1b) as a budget failure on dev 428b20b7 (session f4's lanes, Node 22.23.4: 6192136 and 6189568 bytes; session -f8, Node 24.22.1: b29f1bf7 ~4.45 MB, 428b20b7 ~6.20 MB, cut 3 12d1f645 ~5.94 MB, cut 4 99b6f68b likewise). Browser CI ran zero tests from #8839 until the runner fix e767ce4e in #8843, which is why dev's CI did not show it.
+
+### `BFQ-193` &mdash; BF-193 - the realtime socket logs every record written through it
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@47723cda` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-193` |
+
+**Blast radius.** lib/server/websocket.js: the console.log of the whole data argument at the top of the dbUpdate (:368), dbUpdateUnset (:440), dbAdd (:508) and dbRemove (:827) handlers on dev 47723cda (:816 for dbRemove on v15.0.9). Server-side log content only.
+
+**What an operator sees.** When an app writes to Nightscout over its realtime connection (the socket), the server writes the whole record, including glucose values, insulin and carbohydrate amounts and notes, into its log. Anyone who can read your hosting logs can see it. Keep access to your hosting logs limited.
+
+**Why `patch`.** log content only
+
+**Gates.**
+
+- **NO GATE** &mdash; Read, not run, on dev 47723cda and v15.0.9 c6a0d8ed (a read-only compatibility audit, 2026-10-26). A unit gate would emit dbAdd, dbUpdate, dbUpdateUnset and dbRemove through the socket handler with a record carrying a marker value and assert the marker is absent from captured console output; control: dev 47723cda fails it.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-10-26 from a read-only compatibility audit of dev 47723cda; the socket's counterpart of BF-186, which #8845 fixed for API v3. Fix direction, unverified: log the collection and the record count, not the record.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 
@@ -6703,7 +6778,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/rc-15.0.9-integration-record.md`
 
-**Notes.** The test counts finds on the entries collection for one POST; a find from something else in the same process (a data load after another file's writes, for example) would add one. Fix shape: count only finds whose filter has the $or of sysTime/type the read-back builds, or wait for the bus to settle before posting. Added to #8758's own tests, so it belongs with #8758 if it recurs in the rc run.
+**Notes.** 2026-10-26: peer session -b7 reports one failure of tests/api.entries.repost- with-id.test.js under TEST_SHUFFLE_SEED=303. Not reproduced or verified here; no CI run on the 2026-10-26 dev merges failed on it (gh run view of each push and pull_request run). The test counts finds on the entries collection for one POST; a find from something else in the same process (a data load after another file's writes, for example) would add one. Fix shape: count only finds whose filter has the $or of sysTime/type the read-back builds, or wait for the bus to settle before posting. Added to #8758's own tests, so it belongs with #8758 if it recurs in the rc run.
 
 ### `BFQ-130` &mdash; BF-130 - on #8758, a treatments batch can answer 200 and lose an item that lands on a string-stored copy
 
@@ -7574,7 +7649,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/60-research/remedial/gt1-branch-inventory-2026-09-15.md`
 - `docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md`
 
-**Notes.** 2026-10-21, later: RT-REBASE's cut 1 part is done (#8828), and that part is not what the seam waits on. The seam's base is chore/nightscout-modernization (cut 5, b1bdaca0, 252 behind official/dev 04d435eb and 498 ahead, 28 conflicting paths), which takes dev through the cut chain under RT- PROPAGATION's merge order, so the refresh still waits on RT-REBASE's cut 5 part. blocks_on is unchanged. 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. By the 2026-09-27 timing (refresh once, after the 15.0.9 freeze and the release train's next propagation), it now waits on RT- REBASE, which merges dev into the cuts and chore/nightscout-modernization (RT- PROPAGATION, decided merge); the seam's base is the modernization branch, not yet re-measured against dev 04d435eb. GT1 also found that crm-pool, crm-tenant and crm-write are three separate worktrees all detached at the SAME commit 239f8c25, a mid-chain commit of seam/t1-2-storage-interface, with no branch of their own. Rule 5 - do not repoint a worktree you did not create - so they are recorded, not touched. Timing (maintainer, 2026-09-27; execution plan section 5.1): refresh once, after the 15.0.9 freeze and the release train's next propagation, as the first step of WRITE-CONTRACT. Not now: nothing builds on the seam, and nine of the 19 conflicting paths are files that now call a 15.0.9 write rule (lib/api/entries/index.js, lib/authorization/storage.js, lib/server/{activity, devicestatus, entries, food, profile, query, treatments}.js), so resolving them is re-expressing those rules through the storage interface. Measured 2026-09-27 against dev 295f1177: since dev 59430336 (the dev side of e3b22034) dev has taken 206 commits, 77 in lib/server, lib/api or lib/api3, and 30 files the seam changes have also changed on dev. The chain's first 16 commits (seam/t1-2-e, T1.2 and T1.3, 38 files +1962/-242) carry no tenancy behaviour and trial-merge onto b1bdaca0 with 8 conflicting paths, against 19 for the whole chain. 2026-10-07 rehearsal (docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md): a refresh by rebase must use --rebase-merges --onto <old modernization base>. Open before the real refresh, on either path: (1) the conf.pipeline hook, which BF-70 keeps and the seam's count() refuses, needs a decision; (2) 3 to 5 tests that stub or spy on the raw collection need re-expressing; (3) $exists with an empty operand: dev passes it to MongoDB, the seam's fromMongo reads it as false; (4) bulkUpsert cannot express $setOnInsert/$unset or interleaved deletes (entries create, BF-130), and the AST lacks $not/$type (treatment- fallback-key), all WRITE-CONTRACT inputs. The prefix alone (a2690bd4) inverts $exists, and its suite (2213/0) does not see it; the fix e0564167 is in seam/t2-4-allowlist, so the prefix must not ship without e0564167 or dev's normalizeOperands. Conflict cost: measured for the prefix (rehearsal §5); the full chain is classified only (§4: 19 against the modernization branch = 3 BF-04 supersessions, 2 test, 14 other lib, 0 write-rule; 50 against dev = 11 write-rule, 21 of them the modernization branch's own). Decided by the maintainer 2026-10-12: the conf.pipeline hook on the v1 count path is removed. count() takes a filter only, and a supplied pipeline is an error, as the seam already does. The modernization test "keeps the server-side conf.pipeline hook working" (tests/api-v1-count-pipeline.test.js) is rewritten to assert the refusal. Nothing in the tree supplies one (all three construction sites pass {}); BF-70 kept it as a minimal change, not for a user.
+**Notes.** 2026-10-26: cut 5 merged into dev (#8605, 47723cda; RT-3), and RT-REBASE, which this item is blocked on, is merged-upstream. The base named here, chore/nightscout-modernization b1bdaca0, is therefore an ancestor of dev, and the seam's refresh base is now official/dev. Not re-measured or re-run: the distance from the seam to dev 47723cda and its conflicts are the next session's to measure. The state is left for that session. 2026-10-21, later: RT-REBASE's cut 1 part is done (#8828), and that part is not what the seam waits on. The seam's base is chore/nightscout-modernization (cut 5, b1bdaca0, 252 behind official/dev 04d435eb and 498 ahead, 28 conflicting paths), which takes dev through the cut chain under RT-PROPAGATION's merge order, so the refresh still waits on RT-REBASE's cut 5 part. blocks_on is unchanged. 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. By the 2026-09-27 timing (refresh once, after the 15.0.9 freeze and the release train's next propagation), it now waits on RT-REBASE, which merges dev into the cuts and chore/nightscout-modernization (RT-PROPAGATION, decided merge); the seam's base is the modernization branch, not yet re-measured against dev 04d435eb. GT1 also found that crm-pool, crm-tenant and crm-write are three separate worktrees all detached at the SAME commit 239f8c25, a mid-chain commit of seam/t1-2-storage-interface, with no branch of their own. Rule 5 - do not repoint a worktree you did not create - so they are recorded, not touched. Timing (maintainer, 2026-09-27; execution plan section 5.1): refresh once, after the 15.0.9 freeze and the release train's next propagation, as the first step of WRITE-CONTRACT. Not now: nothing builds on the seam, and nine of the 19 conflicting paths are files that now call a 15.0.9 write rule (lib/api/entries/index.js, lib/authorization/storage.js, lib/server/{activity, devicestatus, entries, food, profile, query, treatments}.js), so resolving them is re-expressing those rules through the storage interface. Measured 2026-09-27 against dev 295f1177: since dev 59430336 (the dev side of e3b22034) dev has taken 206 commits, 77 in lib/server, lib/api or lib/api3, and 30 files the seam changes have also changed on dev. The chain's first 16 commits (seam/t1-2-e, T1.2 and T1.3, 38 files +1962/-242) carry no tenancy behaviour and trial-merge onto b1bdaca0 with 8 conflicting paths, against 19 for the whole chain. 2026-10-07 rehearsal (docs/60-research/tenancy/seam-propagation- rehearsal-2026-10-07.md): a refresh by rebase must use --rebase-merges --onto <old modernization base>. Open before the real refresh, on either path: (1) the conf.pipeline hook, which BF-70 keeps and the seam's count() refuses, needs a decision; (2) 3 to 5 tests that stub or spy on the raw collection need re-expressing; (3) $exists with an empty operand: dev passes it to MongoDB, the seam's fromMongo reads it as false; (4) bulkUpsert cannot express $setOnInsert/$unset or interleaved deletes (entries create, BF-130), and the AST lacks $not/$type (treatment-fallback-key), all WRITE-CONTRACT inputs. The prefix alone (a2690bd4) inverts $exists, and its suite (2213/0) does not see it; the fix e0564167 is in seam/t2-4-allowlist, so the prefix must not ship without e0564167 or dev's normalizeOperands. Conflict cost: measured for the prefix (rehearsal §5); the full chain is classified only (§4: 19 against the modernization branch = 3 BF-04 supersessions, 2 test, 14 other lib, 0 write- rule; 50 against dev = 11 write-rule, 21 of them the modernization branch's own). Decided by the maintainer 2026-10-12: the conf.pipeline hook on the v1 count path is removed. count() takes a filter only, and a supplied pipeline is an error, as the seam already does. The modernization test "keeps the server- side conf.pipeline hook working" (tests/api-v1-count-pipeline.test.js) is rewritten to assert the refusal. Nothing in the tree supplies one (all three construction sites pass {}); BF-70 kept it as a minimal change, not for a user.
 
 ### `WRITE-CONTRACT` &mdash; One write step behind the storage interface: _id form, srv dates, soft delete, re-send identity, one change event
 
@@ -7607,7 +7682,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
 - `tools/qc/write-contract-matrix.js`
 
-**Notes.** Execution plan section 4.1. Absorbs OID-STORAGE-HELPER (the _id rule alone) if that has not landed on dev first; if it has, its helper moves behind the interface here. Under single, the change event carries the runtime-derived copy and replaces the separate emissions the cache, v3 history and the socket consume. Under multi the change feed (D6) is the event. BFQ-CAP02's loader runs imported documents through the same step. Ships to single-tenant operators as its own release, before any Phase 2 work. Spec drafted 2026-10-07 (docs/30-design/tenancy/write-contract-spec-2026-10-07.md), measured on dev 43289dde and 15.0.8 92d08342 with tools/qc/write-contract-matrix.js (336 cells per build; stored state differs between paths in 33 of 66 groups on dev, 47 on 15.0.8; a cross-path re-send without _id is stored twice in 38 of 66 path pairs; six one-line ablations each turn exactly their predicted cells red). Proposes one write(intent) step in lib/storage/write-step.js inside collectionFor, merge-on-match re-sends, one natural key per collection and one event per write; semver minor if merge-on-match is chosen. Its gates G1 to G8 are in spec §5 and replace the no-gate above when the item starts. Needs maintainer decisions Q1 to Q6 (spec §6); Q3's devicestatus key needs an ns- data corpus count of created_at+device collisions first. Found BF-164, BF-165 and BF-166. Still blocked on SEAM-REFRESH. Maintainer decisions 2026-10-12 (spec section 6): Q1 merge on match, every collection and path; Q1b a field sent as null is removed (JSON Merge Patch), to be confirmed by a corpus and client-code measurement of explicit nulls; Q2 keep each path's identical-re- send behaviour (b1: v1, v3 and in-process rewrite, the socket and devicestatus answer unchanged), with the impact on clients to be measured; Q3 entries date+type, devicestatus created_at+device, profile created_at on every path, final once the corpus shows no client collides; Q4 the socket's +-2 s match kept as the socket's explicit near option, C5's missing event fixed, retired on field evidence or decided later; Q5 activity gets server dates and soft delete like the other five; Q6 two releases, the step with today's matrix pinned (patch, gate G1), then the changes (minor). U2 is dropped; U7 (every path reaches the storage socket) is held out of the contract until BF-164's question is answered. Q3 devicestatus re-decided 2026-10-12, after the corpus showed Loop writing 3,078 groups of distinct statuses that share created_at+device: the key identifies identical retries only (unchanged, nothing written); a differing body is a new record, on every path. Loop's upload code is being read to say what the same-key pairs are, for a possible later merge change.
+**Notes.** 2026-10-26: its blocker SEAM-REFRESH can now take dev as its base (cut 5 merged, 47723cda). Draft #8854 (AndyLow91, wip/architecture-data-contracts 880b7369, 1 commit on dev 47723cda, 31 files +934/-45) adds a shared write step (lib/storage/write-step.js, a Proxy over the driver collection with a data-free storage-write-committed event and no consumer yet), a read contract (lib/storage/read-contract.js, an API v3 Nightscout-Data-Warnings header) and a write-boundary check; its body says it is a foundation and not the complete proposed write-intent service. How it relates to the architecture review's open questions Q-A (pull the single write step forward, ahead of multitenancy) and Q-G (sequencing against the release train), and to this item, is for the maintainer and the author; not measured here. Execution plan section 4.1. Absorbs OID-STORAGE-HELPER (the _id rule alone) if that has not landed on dev first; if it has, its helper moves behind the interface here. Under single, the change event carries the runtime-derived copy and replaces the separate emissions the cache, v3 history and the socket consume. Under multi the change feed (D6) is the event. BFQ-CAP02's loader runs imported documents through the same step. Ships to single-tenant operators as its own release, before any Phase 2 work. Spec drafted 2026-10-07 (docs/30-design/tenancy/write-contract- spec-2026-10-07.md), measured on dev 43289dde and 15.0.8 92d08342 with tools/qc/write-contract-matrix.js (336 cells per build; stored state differs between paths in 33 of 66 groups on dev, 47 on 15.0.8; a cross-path re-send without _id is stored twice in 38 of 66 path pairs; six one-line ablations each turn exactly their predicted cells red). Proposes one write(intent) step in lib/storage/write-step.js inside collectionFor, merge-on-match re-sends, one natural key per collection and one event per write; semver minor if merge- on-match is chosen. Its gates G1 to G8 are in spec §5 and replace the no-gate above when the item starts. Needs maintainer decisions Q1 to Q6 (spec §6); Q3's devicestatus key needs an ns-data corpus count of created_at+device collisions first. Found BF-164, BF-165 and BF-166. Still blocked on SEAM- REFRESH. Maintainer decisions 2026-10-12 (spec section 6): Q1 merge on match, every collection and path; Q1b a field sent as null is removed (JSON Merge Patch), to be confirmed by a corpus and client-code measurement of explicit nulls; Q2 keep each path's identical-re-send behaviour (b1: v1, v3 and in- process rewrite, the socket and devicestatus answer unchanged), with the impact on clients to be measured; Q3 entries date+type, devicestatus created_at+device, profile created_at on every path, final once the corpus shows no client collides; Q4 the socket's +-2 s match kept as the socket's explicit near option, C5's missing event fixed, retired on field evidence or decided later; Q5 activity gets server dates and soft delete like the other five; Q6 two releases, the step with today's matrix pinned (patch, gate G1), then the changes (minor). U2 is dropped; U7 (every path reaches the storage socket) is held out of the contract until BF-164's question is answered. Q3 devicestatus re-decided 2026-10-12, after the corpus showed Loop writing 3,078 groups of distinct statuses that share created_at+device: the key identifies identical retries only (unchanged, nothing written); a differing body is a new record, on every path. Loop's upload code is being read to say what the same- key pairs are, for a possible later merge change.
 
 ### `ID-DUP-MEASURE` &mdash; Measure duplicate identifier values across the 12-site ns-data corpus
 
@@ -7791,7 +7866,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md`
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
-**Notes.** Read at the tags: no release up to 15.0.6 converted a client _id on POST (it was passed to MongoDB as sent, so 24-hex values were stored as strings, BF-99..102); only PUT and by-id reads and deletes converted with ObjectID(). MongoDB never required _id to be an ObjectId. Since #8758 (dev) a re-sent 24-hex _id is matched. A client-set _id cannot serve the phone-and-watch case (two devices create two ObjectIds), so identifier is needed either way. Maintainer, 2026-10-18: (2) identifier decides when the two match different records, keeping D20 rule 5's identifier-first order and v1 treatments' behaviour today (lib/server/treatments.js:356-362 at 15.0.8); the reply's earlier _id-first proposal is reversed. (1) still recommended, pending Loop's answer: a client may send an ObjectId it creates as _id over v1 (API v3 stores it as a string, BF-170); any other _id value is not valid (UUID_HANDLING keeps moving a non-24-hex string _id to identifier).
+**Notes.** 2026-10-26: the API v3 half is settled in dev: #8845 (900abf7a) refuses any body _id on API v3 create, PUT and PATCH with 400 (BF-170, BFQ-170). API v1 keeps its legacy _id handling as a version-scoped quirk (#8845's body). The v1 question is unchanged. Read at the tags: no release up to 15.0.6 converted a client _id on POST (it was passed to MongoDB as sent, so 24-hex values were stored as strings, BF-99..102); only PUT and by-id reads and deletes converted with ObjectID(). MongoDB never required _id to be an ObjectId. Since #8758 (dev) a re-sent 24-hex _id is matched. A client-set _id cannot serve the phone-and-watch case (two devices create two ObjectIds), so identifier is needed either way. Maintainer, 2026-10-18: (2) identifier decides when the two match different records, keeping D20 rule 5's identifier-first order and v1 treatments' behaviour today (lib/server/treatments.js:356-362 at 15.0.8); the reply's earlier _id-first proposal is reversed. (1) still recommended, pending Loop's answer: a client may send an ObjectId it creates as _id over v1 (API v3 stores it as a string, BF-170); any other _id value is not valid (UUID_HANDLING keeps moving a non-24-hex string _id to identifier).
 
 ### `ID-ABSENT-DECISION` &mdash; Decide: a write that carries no identifier (and no _id) - keep the time-key fallback, deprecate it, or require identifier?
 

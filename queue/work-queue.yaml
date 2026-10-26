@@ -2815,7 +2815,8 @@ items:
     branch: chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review
     base: official/dev@04d435eb
     worktree: externals/cgm-remote-monitor-official
-    state: in-progress
+    state: merged-upstream
+    pr: [8844, 8847, 8605]
     blast_radius: >
       Measured 2026-09-24 against origin/dev 153e5658. Published cuts
       1-4 (retire-jsdom bce12ecc, build-runtime-separation b6e8c7cd,
@@ -2848,34 +2849,18 @@ items:
     semver_reason: rebase mechanics, not a release
     register: [BF-55, BF-56]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0d54d072 official/dev
+        kind: static
+        describe: >
+          official/dev contains #8844's head (cut 3) 0d54d072 (merged
+          2026-10-26 as ad05e140); red if dev is rewritten or the merge is
+          reverted out of history
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/retire-jsdom official/dev
         kind: static
         describe: >
           cut 1 is in dev: #8828 merged 2026-10-25 as eb72a1d3, and
           official/chore/retire-jsdom 12154df9 is its head. Red if the branch
           moves past what dev took, or the merge leaves dev's history.
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/build-runtime-separation >/dev/null
-        kind: static
-        describe: cut 2 trial-merges into dev cleanly - FAILS as of 2026-09-24 (origin/dev 153e5658)
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/compose-mongodb6 >/dev/null
-        kind: static
-        describe: cut 3 trial-merges into dev cleanly - FAILS as of 2026-09-24 (origin/dev 153e5658)
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/mime-exposure-review >/dev/null
-        kind: static
-        describe: cut 4 trial-merges into dev cleanly - FAILS as of 2026-09-24 (origin/dev 153e5658)
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/nightscout-modernization >/dev/null
-        kind: static
-        describe: >
-          cut 5 trial-merges into dev cleanly - FAILS as of 2026-09-24 (origin/dev
-          153e5658), nine conflicting paths. Because it is red it cannot show the
-          command is capable of going green; the gate below does that.
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/dev >/dev/null
-        kind: static
-        describe: >
-          Control arm. Merging dev with itself must succeed. If this goes red
-          then merge-tree, the repository or the ref is broken and the five
-          failures above say nothing about the cuts. Deliberately trivial: a
-          control fails only for the reason it names.
       - no-gate: >
           The sharpest cost is a NON-mechanical conflict and no command can
           resolve it. dev's 06372e1d adds 56 lines to tests/clock-client.test.js
@@ -2889,11 +2874,30 @@ items:
           The same modify/delete shape covers tests/pluginbase.modern.test.js
           and tests/profile-sinks.test.js on all four cuts. Nobody has checked
           what those two cover or whether cut 1's replacements reach it.
+      - no-gate: >
+          Retired 2026-10-26: the four trial-merge gates (git merge-tree
+          --write-tree origin/dev origin/<cut> for cuts 2 to 5) and their
+          self-merge control arm. Every cut is now in dev (cut 2 #8837, cut 3
+          #8844, cut 4 #8847, cut 5 #8605), so each trial merge is clean and
+          can no longer go red for the reason it was written; the ancestry
+          gates replace them: cut 1 above, cut 3 here, cut 4 in RT-5, cut 5 in
+          RT-3.
     blocks_on: []
     evidence:
       - docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md
       - docs/30-design/modernization/jsdom-harness-test-tiers-2026-10-21.md
     notes: >
+      2026-10-26: merged; every cut is in dev. AndyLow91 merged cut 3 #8844
+      (head 0d54d072) as ad05e140 at 10:59:10Z, cut 4 #8847 (head 35fc8167) as
+      e34efdef at 12:15:29Z and cut 5 #8605 (head a77cb146) as 47723cda at
+      17:32:44Z (gh pr view). Cut 3's and cut 4's merged heads do not contain
+      session -f8's 2026-10-26 catch-up merges 76b19fb0 and 8bf6c9b2 (git
+      merge-base --is-ancestor exits 1): AndyLow91 merged dev into cut 3
+      himself (831c32fc) and added 0d54d072. Those two merges reached dev
+      through cut 5, whose head a77cb146 contains 98d2f9a0, which contains
+      both. Merged is not released: no release carries any cut after cut 2
+      (16.0.0).
+
       2026-10-25, 23:49Z: cut 2 merged into dev (#8837, eb44a9c2, head
       af7ba73a; RT-2); official/chore/build-runtime-separation af7ba73a is
       13 behind / 0 ahead of dev b29f1bf7. Cuts 3-5 against official/dev
@@ -3413,8 +3417,8 @@ items:
     branch: bf/16.0.0-boot-resilience
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-resilience-1600
-    state: in-progress
-    pr: []
+    state: merged-upstream
+    pr: [8849]
     blast_radius: >
       Product code: the boot stages that request collections and indexes
       without awaiting them (lib/server/bootevent.js and the storage
@@ -3430,6 +3434,12 @@ items:
     semver_reason: boot ordering; no API, setting or stored-data shape changes
     register: []
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 488def62 official/dev
+        kind: static
+        describe: >
+          official/dev contains the boot index-await commit 488def62 (merged
+          2026-10-26 as 3b2e1a68); red if dev is rewritten or the merge is
+          reverted out of history
       - run: git -C externals/cgm-remote-monitor-official cat-file -e 488def62^{commit}
         kind: static
         describe: >
@@ -3448,6 +3458,15 @@ items:
     evidence:
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
     notes: >
+      2026-10-26, 12:43:22Z: merged. AndyLow91 merged #8849
+      (bf/16.0.0-boot-resilience, head 0772cb47) into dev as 3b2e1a68 (gh pr
+      view 8849); 17 files, +843/-60 against its first parent. 488def62 is
+      this item's commit; the PR also carries BF-156 (a5b569b9), BF-46
+      (1d63df57), BF-48 (8e4d30d3) and BF-49's start-up warning (8e3717e3).
+      Open in the PR body: BF-49's alias and dead settings keys (BFQ-ENV), and
+      a read-derived BF-156 follow-up on the cached API v3 collection. CI:
+      push run 40324716298 passed and published at 12:53:51Z.
+
       2026-10-25: in progress as 488def62 on local bf/16.0.0-boot-resilience
       (head 0675e91e after merging dev 428b20b7, not pushed; session f4's resilience
       lane, themed with BF-156, BF-46, BF-48 and BF-49). ensureIndexes returns
@@ -4278,7 +4297,7 @@ items:
     branch: chore/nightscout-modernization
     base: chore/build-runtime-separation
     worktree: externals/cgm-remote-monitor-official
-    state: blocked
+    state: merged-upstream
     pr: [8605]
     blast_radius: >
       Cut 3: 63 commits, prod 23 files +294/-54 (MongoDB driver 7,
@@ -4310,11 +4329,12 @@ items:
       measured contract break. Combined, the release is major.
     register: [BF-64, BF-88]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/nightscout-modernization >/dev/null
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a77cb146 official/dev
         kind: static
         describe: >
-          cut 5 trial-merges into dev cleanly. FAILS as of 2026-09-24 against
-          origin/dev 153e5658: nine conflicting paths (see RT-REBASE).
+          official/dev contains #8605's head (cut 5) a77cb146 (merged
+          2026-10-26 as 47723cda); red if dev is rewritten or the merge is
+          reverted out of history
       - no-gate: >
           Express 4->5 and Helmet 4->8 are classified major on dependency version
           numbers and diff size, not on any measured contract break. Nobody has
@@ -4324,11 +4344,32 @@ items:
           Cut 5 is a descendant of cut 4, so "3+5 without 4" is not a prefix and
           the parcel-as-prefix property the whole plan rests on does not hold for
           this step. Nobody has measured what that costs.
+      - no-gate: >
+          Retired 2026-10-26: the trial-merge gate (git merge-tree
+          --write-tree origin/dev origin/chore/nightscout-modernization). Cut
+          5 is in dev (#8605, 47723cda), so the trial merge is clean and
+          cannot go red for the reason it was written; the ancestry gate above
+          replaces it.
     blocks_on: [RT-2]
     evidence:
       - docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
     notes: >
+      2026-10-26, 17:32:44Z: merged. AndyLow91 merged #8605 (cut 5, head
+      a77cb146, base dev) into dev as 47723cda, the dev head (gh pr view
+      8605). Diff against its first parent 09d0def8: 204 files, +59400/-1515
+      (git diff --shortstat 47723cda^1 47723cda). Its last commits: 246f2274
+      (merge of dev 09d0def8), 57342518 (the historical Flot pie comparison
+      out of required CI), 94278235 (Swagger analytics opt-out regression),
+      ad56423d (CORS preflight answers 200 with the text OK again,
+      res.sendStatus(200)), f4abce3c (browser jobs get 15 minutes; the Firefox
+      job on dev 09d0def8 was cancelled at the 10-minute limit) and a77cb146
+      (HOME for the Firefox date-comparison probe). It contains session -f8's
+      catch-up chain 98d2f9a0. CI on 47723cda: push run 40369632641 passed all
+      16 jobs and published the dev image at 17:42:36Z; pull_request run
+      40369639616 passed (gh run view). Cuts 3 and 5 shipped in the order 3,
+      4, 5, not combined as this item's title says.
+
       2026-10-25: cut 2 merged (RT-2, #8837, dev eb44a9c2), so cuts 3-5 are
       next; blocks_on's RT-2 is met, and the state is left to the session
       doing the catch-up. Against dev b29f1bf7, #8605's b1bdaca0 is 408 behind /
@@ -4442,7 +4483,8 @@ items:
     branch: chore/mime-exposure-review
     base: chore/compose-mongodb6
     worktree: externals/cgm-remote-monitor-official
-    state: blocked
+    state: merged-upstream
+    pr: [8847]
     blast_radius: >
       79 commits, prod 66 files +324/-511. DELETES TWO CGM INGESTION PATHS
       (legacy Dexcom Share and MiniMed CareLink), trusted proxies, DOMPurify,
@@ -4479,9 +4521,12 @@ items:
       multi-source CGM ingestion) absent from every summary of the cut.
     register: [BF-61, BF-62]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/mime-exposure-review >/dev/null
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 35fc8167 official/dev
         kind: static
-        describe: trial-merges into dev cleanly - FAILS as of 2026-09-24 (origin/dev 153e5658), see RT-REBASE
+        describe: >
+          official/dev contains #8847's head (cut 4) 35fc8167 (merged
+          2026-10-26 as e34efdef); red if dev is rewritten or the merge is
+          reverted out of history
       - run: node tools/queue/gates/cut4-total-outage.js
         kind: static
         describe: >
@@ -4501,11 +4546,26 @@ items:
           still migrated so ingestion continues; only the operator's expressed
           intent is discarded silently. Nothing checks for accepted-and-ignored
           settings.
+      - no-gate: >
+          Retired 2026-10-26: the trial-merge gate (git merge-tree
+          --write-tree origin/dev origin/chore/mime-exposure-review). Cut 4 is
+          in dev (#8847, e34efdef), so the trial merge is clean and cannot go
+          red for the reason it was written; the ancestry gate above replaces
+          it.
     blocks_on: [RT-3]
     evidence:
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
       - docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md
     notes: >
+      2026-10-26, 12:15:29Z: merged. AndyLow91 merged #8847 (cut 4, head
+      35fc8167, retargeted to dev after cut 3 merged) into dev as e34efdef (gh
+      pr view 8847); 135 files, +5981/-1286 against its first parent 900abf7a.
+      It carries BF-183's fix as 54115e95 (BFQ-183). With TRUST_PROXY unset,
+      address resolution is 15.0.9's (BF-88; the PR body). CI: push run
+      40321153797 passed and published at 12:24:54Z; pull_request run
+      40321160053 passed. The legacy bridge removal this item was written for
+      shipped in cut 1 (#8828).
+
       2026-10-25: cut 2 merged (RT-2, #8837, dev eb44a9c2), so cuts 3-5 are
       next. Against dev b29f1bf7, official/chore/mime-exposure-review
       b80aa147 is 532 behind / 142 ahead with 35 conflicting paths, and cut
@@ -6097,6 +6157,14 @@ items:
       - docs/60-research/remedial/gt1-branch-inventory-2026-09-15.md
       - docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md
     notes: >
+      2026-10-26: cut 5 merged into dev (#8605, 47723cda; RT-3), and
+      RT-REBASE, which this item is blocked on, is merged-upstream. The base
+      named here, chore/nightscout-modernization b1bdaca0, is therefore an
+      ancestor of dev, and the seam's refresh base is now official/dev. Not
+      re-measured or re-run: the distance from the seam to dev 47723cda and
+      its conflicts are the next session's to measure. The state is left for
+      that session.
+
       2026-10-21, later: RT-REBASE's cut 1 part is done (#8828), and that
       part is not what the seam waits on. The seam's base is
       chore/nightscout-modernization (cut 5, b1bdaca0, 252 behind official/dev
@@ -6210,6 +6278,20 @@ items:
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
       - tools/qc/write-contract-matrix.js
     notes: >
+      2026-10-26: its blocker SEAM-REFRESH can now take dev as its base (cut 5
+      merged, 47723cda). Draft #8854 (AndyLow91,
+      wip/architecture-data-contracts 880b7369, 1 commit on dev 47723cda, 31
+      files +934/-45) adds a shared write step (lib/storage/write-step.js, a
+      Proxy over the driver collection with a data-free
+      storage-write-committed event and no consumer yet), a read contract
+      (lib/storage/read-contract.js, an API v3 Nightscout-Data-Warnings
+      header) and a write-boundary check; its body says it is a foundation and
+      not the complete proposed write-intent service. How it relates to the
+      architecture review's open questions Q-A (pull the single write step
+      forward, ahead of multitenancy) and Q-G (sequencing against the release
+      train), and to this item, is for the maintainer and the author; not
+      measured here.
+
       Execution plan section 4.1. Absorbs OID-STORAGE-HELPER (the _id rule
       alone) if that has not landed on dev first; if it has, its helper
       moves behind the interface here. Under single, the change event
@@ -6572,6 +6654,11 @@ items:
       - docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: >
+      2026-10-26: the API v3 half is settled in dev: #8845 (900abf7a) refuses
+      any body _id on API v3 create, PUT and PATCH with 400 (BF-170, BFQ-170).
+      API v1 keeps its legacy _id handling as a version-scoped quirk (#8845's
+      body). The v1 question is unchanged.
+
       Read at the tags: no release up to 15.0.6 converted a client _id on
       POST (it was passed to MongoDB as sent, so 24-hex values were stored
       as strings, BF-99..102); only PUT and by-id reads and deletes
@@ -8211,7 +8298,8 @@ items:
     branch: bf/16.0.0-boot-resilience
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-resilience-1600
-    state: in-progress
+    state: merged-upstream
+    pr: [8849]
     ships_to_operators_today: true
     blast_radius: >
       lib/api3/index.js:24-38 setENVTruthy and its call sites at :70-76, plus
@@ -8237,17 +8325,21 @@ items:
       working; a surface appears.
     register: [BF-46]
     gates:
-      - run: node tools/queue/gates/config-surface-census.js --arm api3
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1d63df57 official/dev
         kind: static
         describe: >
-          FAILS today on both arms. Ten API3_* names (four flags plus
-          API3_AUTOPRUNE_ for six collections) are absent from README.md and
-          from lib/server/env.js, and the autoprune path calls
-          storage.deleteManyOr without awaiting the result. Controls come out
-          the other way through the identical lookup - MONGO_CONNECTION and
-          DISPLAY_UNITS are found in both files - so "not found" means absent
-          rather than a broken grep, and the call sites are confirmed present
-          before their names are reported on.
+          official/dev contains BF-46's code-half commit 1d63df57 (merged
+          2026-10-26 as 3b2e1a68); red if dev is rewritten or the merge is
+          reverted out of history
+      - no-gate: >
+          Retired 2026-10-26: the census arm (node
+          tools/queue/gates/config-surface-census.js --arm api3) measured the
+          defect by its pre-fix shape. On official/dev 47723cda its
+          precondition fails (setENVTruthy no longer reads process.env,
+          because #8849 moved the reads into env.js), so it reports BAD while
+          measuring nothing, and its autoprune check reads a call that #8849
+          now awaits. The ancestry gate above measures the merged fix; a
+          re-authored census would check env.api3 instead.
       - no-gate: >
           The deletion path is read-derived, not executed. Nobody has run
           API3_AUTOPRUNE_ENTRIES against a database and watched rows go. Doing
@@ -8257,6 +8349,10 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-26: merged (the code half) in #8849, merge 3b2e1a68 at 12:43:22Z
+      (gh pr view 8849); the documentation half was released in 15.0.9
+      (#8799). Merged is not released.
+
       2026-10-25: the code half is fixed as 1d63df57 on local
       bf/16.0.0-boot-resilience (head 0675e91e after merging dev 428b20b7, not pushed):
       the API v3 settings and CI are read in env.js into env.api3 with the
@@ -8396,7 +8492,8 @@ items:
     branch: bf/16.0.0-boot-resilience
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-resilience-1600
-    state: in-progress
+    state: needs-decision
+    pr: [8849]
     ships_to_operators_today: true
     blast_radius: >
       lib/plugins/webhook.js:36-39, lib/settings.js:48-49 against
@@ -8421,13 +8518,25 @@ items:
       change for those deployments even though it is a repair.
     register: [BF-48, BF-49, BF-50, BF-51]
     gates:
-      - run: node tools/queue/gates/config-surface-census.js --arm webhook
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8e4d30d3 official/dev
         kind: static
         describe: >
-          BF-48. FAILS today - WEBHOOK_PROTOCOL, _HOST, _PORT and _PATH are in
-          neither README.md nor env.js, while the call site reading
-          process.env.WEBHOOK_* is confirmed present first, so a green result
-          could not come from the plugin having been renamed.
+          official/dev contains BF-48's code-half commit 8e4d30d3 (merged
+          2026-10-26 as 3b2e1a68); red if dev is rewritten or the merge is
+          reverted out of history
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8e3717e3 official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-49's start-up warning 8e3717e3 (merged
+          2026-10-26 as 3b2e1a68); red if dev is rewritten or the merge is
+          reverted out of history
+      - no-gate: >
+          Retired 2026-10-26: the webhook census arm (node
+          tools/queue/gates/config-surface-census.js --arm webhook) first
+          confirms that lib/plugins/webhook.js reads process.env.WEBHOOK_*;
+          #8849 moved those reads into env.js (8e4d30d3), so on official/dev
+          47723cda the arm reports that it is measuring nothing. The BF-48
+          ancestry gate above measures the merged fix.
       - run: node tools/queue/gates/config-surface-census.js --arm hsts
         kind: static
         describe: >
@@ -8467,6 +8576,16 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-26: BF-48's code half (8e4d30d3) and BF-49's start-up warning
+      (8e3717e3) merged in #8849 (merge 3b2e1a68, 12:43:22Z; gh pr view 8849).
+      BF-50 and BF-51 were released in 15.0.9. What is left is two maintainer
+      decisions from #8849's open items: whether
+      SECURE_HSTS_HEADER_INCLUDE_SUBDOMAINS becomes an alias of
+      SECURE_HSTS_HEADER_INCLUDESUBDOMAINS (it would turn includeSubDomains on
+      for sites that set the underscored name today; proposed: announce now,
+      alias in a later major), and what to do with the five settings keys
+      nothing reads, which are served to clients.
+
       2026-10-25: on local bf/16.0.0-boot-resilience (head 0675e91e after merging dev 428b20b7, not pushed): BF-48 fixed as 8e4d30d3 (WEBHOOK_* read in env.js
       into env.webhook, passed as ctx.webhook); BF-49 partly fixed as 8e3717e3
       (a start-up warning when the unread
@@ -8692,7 +8811,8 @@ items:
     branch: bf/16.0.0-client-alarms
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-alarms-1600
-    state: in-progress
+    state: merged-upstream
+    pr: [8842]
     ships_to_operators_today: true
     blast_radius: >
       lib/client/index.js:1196-1204 (isAlarmForHigh, isAlarmForLow, both
@@ -8723,6 +8843,12 @@ items:
       patch.
     register: [BF-92]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5fb199b3 official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-92's fix 5fb199b3 (merged 2026-10-26 as
+          85e5108a); red if dev is rewritten or the merge is reverted out of
+          history
       - no-gate: >
           Measured in a real browser, not by a queue gate:
           tools/review/probes/alarm-no-reading-browser.js with --reading none and
@@ -8736,6 +8862,14 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/bf90-alarm-no-reading-2026-09-23.md
     notes: >
+      2026-10-26, 10:33:08Z: merged. AndyLow91 merged #8842
+      (bf/16.0.0-client-alarms, head 148db86b) into dev as 85e5108a (gh pr
+      view 8842); 16 files, +455/-28 against its first parent. The same commit
+      fixes BF-190 (BFQ-190). Open in the PR body: on a page with a reading, a
+      non-glucose alarm is still gated by the high or low setting on the
+      reading's side (a decision, not changed here). CI: push run 40308300225
+      passed and published at 10:42:51Z. Merged is not released.
+
       2026-10-25: fixed as 5fb199b3 on local bf/16.0.0-client-alarms (head b7bf55e8 after merging dev 428b20b7, not pushed; session f4's alarms lane): a
       non-glucose alarm is presented on a page with no reading when either
       local alarm setting for its level is on. Reproduced again on a real
@@ -8765,7 +8899,8 @@ items:
     branch: bf/16.0.0-client-alarms
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-alarms-1600
-    state: in-progress
+    state: merged-upstream
+    pr: [8842]
     ships_to_operators_today: true
     blast_radius: >
       lib/data/calcdelta.js - compressArrays covers sgvs, treatments, mbgs, cals
@@ -8789,6 +8924,12 @@ items:
       setting moves.
     register: [BF-93]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 91d9a4db official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-93's fix 91d9a4db (merged 2026-10-26 as
+          85e5108a); red if dev is rewritten or the merge is reverted out of
+          history
       - no-gate: >
           Measured in a real browser, not by a queue gate:
           tools/review/probes/quickpick-rebuild-browser.js, the arm "a pick added
@@ -8801,6 +8942,11 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/bf69-quickpick-rebuild-2026-09-23.md
     notes: >
+      2026-10-26, 10:33:08Z: merged. AndyLow91 merged #8842
+      (bf/16.0.0-client-alarms, head 148db86b) into dev as 85e5108a (gh pr
+      view 8842); 16 files, +455/-28 against its first parent. CI: push run
+      40308300225 passed and published at 10:42:51Z. Merged is not released.
+
       2026-10-25: fixed as 91d9a4db on local bf/16.0.0-client-alarms (head b7bf55e8 after merging dev 428b20b7, not pushed): food in the broadcast delta,
       and v1 food writes emit data-received; tests/data.calcdelta.test.js and
       tests/api.food.test.js red when reverted.
@@ -13236,7 +13382,7 @@ items:
     branch: bf/16.0.0-record-identity
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-identity-1600
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8845]
     ships_to_operators_today: true
     blast_radius: >
@@ -13255,6 +13401,12 @@ items:
     semver_reason: a v3 lookup that matched nothing finds the record GET already shows
     register: [BF-145]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor d4566292 official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-145's fix d4566292 (merged 2026-10-26 as
+          900abf7a); red if dev is rewritten or the merge is reverted out of
+          history
       - no-gate: >
           Measured on a booted server (PATCH/PUT arm of
           tools/lab/triage-2026-09/api3-empty-identifier-delete.js) on
@@ -13265,6 +13417,11 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-26, 11:34:16Z: merged. AndyLow91 merged #8845
+      (bf/16.0.0-record-identity, head 50219945) into dev as 900abf7a (gh pr
+      view 8845); 25 files, +1314/-107 against its first parent. CI: push run
+      40316054930 passed and published at 11:43:24Z. Merged is not released.
+
       2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity;
       the remote shows 539856ef; head bf37858e after merging dev 428b20b7,
       pending push).
@@ -13322,7 +13479,7 @@ items:
     repo: cgm-remote-monitor
     branch: crowdin_incoming
     base: origin/dev@4f705217
-    state: gate-not-met
+    state: merged-upstream
     pr: [8730]
     blast_radius: >
       Translations only: 32 files under translations/, +518/-454. Head
@@ -13335,25 +13492,44 @@ items:
     semver_reason: translation text only
     register: [BF-132]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev refs/triage/pr-8730 >/dev/null
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2b32fe67 official/dev
         kind: static
         describe: >
-          #8730's head merges into origin/dev without conflict. Needs
-          `git -C externals/cgm-remote-monitor-official fetch official
-          pull/8730/head:refs/triage/pr-8730` first.
-      - run: git -C externals/cgm-remote-monitor-official show refs/triage/pr-8730:translations/zh_TW.json | grep -F '"ml"' | grep -q '毫升'
+          official/dev contains #8730's head 2b32fe67 (merged 2026-10-26 as
+          89b7ebdd); red if dev is rewritten or the merge is reverted out of
+          history
+      - run: git -C externals/cgm-remote-monitor-official show official/dev:translations/zh_TW.json | grep -F '"ml"' | grep -q '毫升'
         kind: static
         describe: >
-          FAILS today (BF-132): #8730's zh_TW "ml" is 克 (grams), where dev
-          has 毫升 (millilitres). Goes green when Crowdin carries dev's
-          strings. Needs a fresh fetch of pull/8730/head.
+          dev's zh_TW "ml" is 毫升 (millilitres) after #8730 merged, so the
+          merge kept dev's corrected string (BF-132); red if a translation
+          sync reverts it to 克 (grams)
       - no-gate: >
           The other three reverted strings are caught by tests/language.test.js
           in a combined run (4 fail on the 2026-09-25 pre-flight, tree dd51bb8a).
+      - no-gate: >
+          Retired 2026-10-26: the trial merge of refs/triage/pr-8730 into
+          origin/dev and the zh_TW check on refs/triage/pr-8730 (f99c0e54, the
+          head that reverted dev's strings). #8730 merged from a later head,
+          2b32fe67, so both read a head that never reached dev; the two gates
+          above read what dev holds.
     blocks_on: []
     evidence:
       - docs/60-research/remedial/github-triage-2026-09-25.md
     notes: >
+      2026-10-26, 15:31:40Z: merged. AndyLow91 merged #8730 (crowdin_incoming,
+      head 2b32fe67) into dev as 89b7ebdd (gh pr view 8730); 33 files,
+      +111/-12 against its first parent. BF-132 does not reach dev: every line
+      the merge removes from translations/ is an English placeholder that it
+      replaces with a translation (read from git diff 89b7ebdd^1 89b7ebdd --
+      translations), and zh_TW "ml" is 毫升 on dev. CI: the push run 40350206994
+      failed one job, Tests without a database (22.23.4), on "Development
+      watch policy preserves configured ignores and application watching
+      through two restart cycles" (an assertion in
+      tools/probe-development-watch.py; not a translation test), so Tests pass
+      failed and no image was published from 89b7ebdd; the pull_request run
+      40350218559 passed. A new Crowdin PR, #8855, opened 2026-10-26 18:52Z.
+
       2026-09-25 - HELD OUT of 15.0.9 (maintainer). A reconciled branch keeping
       dev's corrected strings is being prepared as an option
       (i18n/crowdin-8730-reconciled), with Crowdin correction steps.
@@ -13802,7 +13978,7 @@ items:
     branch: bf/16.0.0-record-identity
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-identity-1600
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8845]
     ships_to_operators_today: true
     blast_radius: >
@@ -13823,6 +13999,12 @@ items:
     semver_reason: a new opt-in setting, default off; a strict default later would be a separate, breaking step on the calendar
     register: [BF-152]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor faffe875 official/dev
+        kind: static
+        describe: >
+          official/dev contains the opt-in API3_SETTINGS_STRICT_READ_ENABLED
+          commit faffe875 (merged 2026-10-26 as 900abf7a); red if dev is
+          rewritten or the merge is reverted out of history
       - run: git -C externals/cgm-remote-monitor-official cat-file -e faffe875^{commit}
         kind: static
         describe: >
@@ -13839,6 +14021,14 @@ items:
       - docs/60-research/remedial/aaps-websocket-delivery-lab-2026-10-25.md
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-26, 11:34:16Z: merged. AndyLow91 merged #8845
+      (bf/16.0.0-record-identity, head 50219945) into dev as 900abf7a (gh pr
+      view 8845); 25 files, +1314/-107 against its first parent. This is step
+      1 of the maintainer's staged ladder (opt-in, default off). Steps 2 (the
+      question to the AndroidAPS developers about a narrower scope) and 3 (a
+      strict default later on the calendar) are not started. CI: push run
+      40316054930 passed and published at 11:43:24Z. Merged is not released.
+
       2026-10-25, later: folded into PR #8845 to dev (bf/16.0.0-record-identity)
       as cherry-pick faffe875 of 06ba6201, pending push; the branch
       bf/16.0.0-v3-settings-read-scope will not be pushed. The setting name
@@ -14037,8 +14227,8 @@ items:
     branch: bf/16.0.0-boot-resilience
     worktree: externals/work/crm-resilience-1600
     base: official/dev@b29f1bf7
-    state: in-progress
-    pr: []
+    state: merged-upstream
+    pr: [8849]
     ships_to_operators_today: true
     blast_radius: >
       lib/api3/generic/collection.js autoPrune: await or .then/.catch the
@@ -14052,6 +14242,12 @@ items:
     semver_reason: a background task's result is handled
     register: [BF-156]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a5b569b9 official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-156's fix a5b569b9 (merged 2026-10-26 as
+          3b2e1a68); red if dev is rewritten or the merge is reverted out of
+          history
       - no-gate: >
           Reproduced 2026-10-02 in-process by session -d4's agent (real
           Collection and CachedCollectionStorage, a fake storage layer): the
@@ -14061,6 +14257,12 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-26, 12:43:22Z: merged. AndyLow91 merged #8849 (head 0772cb47)
+      into dev as 3b2e1a68 (gh pr view 8849). Read-derived follow-up in the PR
+      body, not measured: the cached API v3 collection invalidates at most
+      1000 ids per deleteManyOr while the delete removes every match. Merged
+      is not released.
+
       2026-10-25: re-applied to current dev as a5b569b9 on local
       bf/16.0.0-boot-resilience (head 0675e91e after merging dev 428b20b7, not pushed);
       tests/api3.autoprune.test.js, 2 of 3 red with dev's collection.js.
@@ -14217,8 +14419,8 @@ items:
     branch: bf/16.0.0-client-alarms
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-alarms-1600
-    state: in-progress
-    pr: []
+    state: merged-upstream
+    pr: [8842]
     ships_to_operators_today: true
     blast_radius: >
       lib/client/renderer.js:1103-1111, the basal-render check that sends the
@@ -14234,6 +14436,12 @@ items:
     semver_reason: a client-side load-order fix
     register: [BF-159]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 72f3cc09 official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-159's token-half fix 72f3cc09 (merged
+          2026-10-26 as 85e5108a); red if dev is rewritten or the merge is
+          reverted out of history
       - no-gate: >
           Seen, not isolated: 5 of 10 automated loads redirected
           (tools/lab/triage-2026-09/results-bf124/, dev 74942ec6 and BF-124's
@@ -14244,6 +14452,14 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/results-bf124/browser-probe.js
     notes: >
+      2026-10-26, 10:33:08Z: merged. AndyLow91 merged #8842
+      (bf/16.0.0-client-alarms, head 148db86b) into dev as 85e5108a (gh pr
+      view 8842); 16 files, +455/-28 against its first parent. Only the token
+      half is merged. The intermittent redirect while a profile exists did not
+      reproduce (0 of 29 loads, #8842's body); it gets its own item if it is
+      seen again. CI: push run 40308300225 passed and published at 10:42:51Z.
+      Merged is not released.
+
       2026-10-25: partly fixed. The token half is reproduced and fixed as
       72f3cc09 on local bf/16.0.0-client-alarms (head b7bf55e8 after merging
       dev 428b20b7, not pushed): the redirect keeps ?token=
@@ -14261,8 +14477,8 @@ items:
     branch: bf/16.0.0-client-alarms
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-alarms-1600
-    state: in-progress
-    pr: []
+    state: merged-upstream
+    pr: [8842]
     ships_to_operators_today: true
     blast_radius: >
       views/clockviews/clock-config.html:27, one attribute: straight quotes
@@ -14275,6 +14491,12 @@ items:
     semver_reason: markup fix
     register: [BF-160]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2556b35b official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-160's fix 2556b35b (merged 2026-10-26 as
+          85e5108a); red if dev is rewritten or the merge is reverted out of
+          history
       - no-gate: >
           Read, not run: the curly quotes are in the file on dev 68262e86 and
           v15.0.8. A gate would grep the attribute for straight quotes.
@@ -14282,6 +14504,11 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-26, 10:33:08Z: merged. AndyLow91 merged #8842
+      (bf/16.0.0-client-alarms, head 148db86b) into dev as 85e5108a (gh pr
+      view 8842); 16 files, +455/-28 against its first parent. CI: push run
+      40308300225 passed and published at 10:42:51Z. Merged is not released.
+
       2026-10-25: fixed as 2556b35b on local bf/16.0.0-client-alarms (over dev
       b29f1bf7, not pushed); tests/browser/clock-client.test.js red when
       reverted.
@@ -14615,7 +14842,7 @@ items:
     branch: bf/16.0.0-record-identity
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-identity-1600
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8845]
     ships_to_operators_today: true
     blast_radius: >
@@ -14628,6 +14855,12 @@ items:
     semver_reason: the reply gains the field a client already expects
     register: [BF-165]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0d5edc66 official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-165's fix 0d5edc66 (merged 2026-10-26 as
+          900abf7a); red if dev is rewritten or the merge is reverted out of
+          history
       - no-gate: >
           Reproduced: matrix cells treatments v1 resend-identity and
           treatments inproc resend-identity answer 200 with one document
@@ -14638,6 +14871,11 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
     notes: >
+      2026-10-26, 11:34:16Z: merged. AndyLow91 merged #8845
+      (bf/16.0.0-record-identity, head 50219945) into dev as 900abf7a (gh pr
+      view 8845); 25 files, +1314/-107 against its first parent. CI: push run
+      40316054930 passed and published at 11:43:24Z. Merged is not released.
+
       2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity;
       the remote shows 539856ef; head bf37858e after merging dev 428b20b7,
       pending push).
@@ -14656,7 +14894,7 @@ items:
     branch: bf/16.0.0-record-identity
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-identity-1600
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8845]
     ships_to_operators_today: true
     blast_radius: >
@@ -14667,6 +14905,12 @@ items:
     semver_reason: a retried write stops failing; nothing stored changes
     register: [BF-166]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c62a16c9 official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-166's fix c62a16c9 (merged 2026-10-26 as
+          900abf7a); red if dev is rewritten or the merge is reverted out of
+          history
       - no-gate: >
           Reproduced: profile v1 resend-hex answers 500, profile inproc
           resend-hex a duplicate-key error. A gate asserts 200 and one stored
@@ -14676,6 +14920,13 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
     notes: >
+      2026-10-26, 11:34:16Z: merged. AndyLow91 merged #8845
+      (bf/16.0.0-record-identity, head 50219945) into dev as 900abf7a (gh pr
+      view 8845); 25 files, +1314/-107 against its first parent. AndyLow91
+      added 50219945 ("Require update permission for profile POST merges") on
+      top. CI: push run 40316054930 passed and published at 11:43:24Z. Merged
+      is not released.
+
       2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity;
       the remote shows 539856ef; head bf37858e after merging dev 428b20b7,
       pending push).
@@ -14697,7 +14948,7 @@ items:
     branch: bf/16.0.0-record-identity
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-identity-1600
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8845]
     ships_to_operators_today: false
     blast_radius: >
@@ -14709,6 +14960,12 @@ items:
     semver_reason: test only
     register: [BF-167]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0edb1db9 official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-167's test 0edb1db9 (merged 2026-10-26 as
+          900abf7a); red if dev is rewritten or the merge is reverted out of
+          history
       - no-gate: >
           Reproduced by tools/lab/seam-propagation/ds-remove-softdeleted.js:
           deletedCount 2 as shipped, 1 with stored_query_for swapped for
@@ -14719,6 +14976,11 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md
     notes: >
+      2026-10-26, 11:34:16Z: merged. AndyLow91 merged #8845
+      (bf/16.0.0-record-identity, head 50219945) into dev as 900abf7a (gh pr
+      view 8845); 25 files, +1314/-107 against its first parent. CI: push run
+      40316054930 passed and published at 11:43:24Z. Merged is not released.
+
       2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity;
       the remote shows 539856ef; head bf37858e after merging dev 428b20b7,
       pending push).
@@ -14798,7 +15060,7 @@ items:
     branch: bf/16.0.0-record-identity
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-identity-1600
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8845]
     ships_to_operators_today: true
     blast_radius: >
@@ -14811,6 +15073,12 @@ items:
     semver_reason: API documentation corrected to match shipped behaviour; nothing a client receives changes
     register: [BF-169]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 539856ef official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-169's swagger text 539856ef (merged
+          2026-10-26 as 900abf7a); red if dev is rewritten or the merge is
+          reverted out of history
       - no-gate: >
           Filed only. Reproduced 2026-10-17 by running resolveIdentifier from
           lib/api3/shared/operationTools.js at 15.0.8 and fade2299: a
@@ -14822,6 +15090,11 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-26, 11:34:16Z: merged. AndyLow91 merged #8845
+      (bf/16.0.0-record-identity, head 50219945) into dev as 900abf7a (gh pr
+      view 8845); 25 files, +1314/-107 against its first parent. CI: push run
+      40316054930 passed and published at 11:43:24Z. Merged is not released.
+
       2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity;
       the remote shows 539856ef; head bf37858e after merging dev 428b20b7,
       pending push).
@@ -14852,7 +15125,7 @@ items:
     branch: bf/16.0.0-record-identity
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-identity-1600
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8845]
     ships_to_operators_today: true
     blast_radius: >
@@ -14871,6 +15144,12 @@ items:
       The number follows the option the maintainer picks.
     register: [BF-170]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b899edc1 official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-170's PATCH refusal (create and PUT:
+          304827fd) b899edc1 (merged 2026-10-26 as 900abf7a); red if dev is
+          rewritten or the merge is reverted out of history
       - no-gate: >
           Filed only. Reproduced over HTTP by tools/lab/record-identity
           (results/record-identity-2026-10-18.md), cases "v3 treatments POST:
@@ -14887,6 +15166,11 @@ items:
       - tools/lab/record-identity/results/record-identity-2026-10-18.md
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
     notes: >
+      2026-10-26, 11:34:16Z: merged. AndyLow91 merged #8845
+      (bf/16.0.0-record-identity, head 50219945) into dev as 900abf7a (gh pr
+      view 8845); 25 files, +1314/-107 against its first parent. CI: push run
+      40316054930 passed and published at 11:43:24Z. Merged is not released.
+
       2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity;
       the remote shows 539856ef; head bf37858e after merging dev 428b20b7,
       pending push).
@@ -15326,7 +15610,7 @@ items:
     branch: chore/compose-mongodb6
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-bf179
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8844]
     ships_to_operators_today: false
     blast_radius: >
@@ -15346,6 +15630,12 @@ items:
     semver_reason: packaging and install scripts only; no API, setting or stored-data change
     register: [BF-179]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 200c1361 official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-179's fix 200c1361 (merged 2026-10-26 as
+          ad05e140); red if dev is rewritten or the merge is reverted out of
+          history
       - no-gate: >
           Reproduced 2026-10-25 by hand (Node v22.23.4): npm ci --omit=dev on
           dev b29f1bf7 exits 127 "sh: 1: webpack: not found", on v15.0.9
@@ -15357,6 +15647,13 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-26, 10:59:10Z: merged with cut 3. AndyLow91 merged #8844 (head
+      0d54d072) into dev as ad05e140 (gh pr view 8844); his 0d54d072 ("Require
+      every page bundle in prebuilt postinstall fallback") is on top of
+      200c1361. CI: push run 40311624772 passed and published at 11:09:23Z.
+      BF-179 never reached a release; 15.0.9 builds its bundle on a production
+      install.
+
       2026-10-25: cherry-picked onto cut 3 as 200c1361 and in PR #8844 to dev
       (session -f8's cut 3, chore/compose-mongodb6, head 200c1361).
 
@@ -15385,8 +15682,8 @@ items:
     branch: bf/16.0.0-client-alarms
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-alarms-1600
-    state: in-progress
-    pr: []
+    state: merged-upstream
+    pr: [8842]
     ships_to_operators_today: true
     blast_radius: >
       lib/client/careportal.js filterInputs (:145-161, clear #glucoseValue
@@ -15408,6 +15705,12 @@ items:
     semver_reason: stored temp targets get their correct units; no API shape changes
     register: [BF-180]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bb1ad38e official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-180's fix (the careportal temp target
+          converted once) bb1ad38e (merged 2026-10-26 as 85e5108a); red if dev
+          is rewritten or the merge is reverted out of history
       - no-gate: >
           Reproduced 2026-10-25 through the real functions (careportal gather
           and normalisation, v1 prepareData, ddata) on dev b29f1bf7, not in a
@@ -15420,6 +15723,11 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-26, 10:33:08Z: merged. AndyLow91 merged #8842
+      (bf/16.0.0-client-alarms, head 148db86b) into dev as 85e5108a (gh pr
+      view 8842); 16 files, +455/-28 against its first parent. CI: push run
+      40308300225 passed and published at 10:42:51Z. Merged is not released.
+
       2026-10-25, later: fixed as bb1ad38e on local bf/16.0.0-client-alarms
       (head b7bf55e8 after merging dev 428b20b7, not pushed): the careportal clears the
       hidden glucose field and labels converted targets mg/dl. Reproduced in a
@@ -15486,7 +15794,7 @@ items:
     branch: chore/compose-mongodb6
     base: official/chore/compose-mongodb6@ebb690cf
     worktree: externals/cgm-remote-monitor-official
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8844]
     ships_to_operators_today: false
     blast_radius: >
@@ -15510,6 +15818,12 @@ items:
       fix only makes that refusal visible
     register: [BF-182]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8f238fc5 official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-182's fix 8f238fc5 (merged 2026-10-26 as
+          ad05e140); red if dev is rewritten or the merge is reverted out of
+          history
       - run: git -C externals/cgm-remote-monitor-official cat-file -e 99fa8b1e^{commit}
         kind: static
         describe: >
@@ -15526,6 +15840,11 @@ items:
       - docs/60-research/modernization/mongodb-server-compat-matrix-2026-10-25.md
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-26, 10:59:10Z: merged with cut 3 (#8844, merge ad05e140, head
+      0d54d072; gh pr view 8844). Driver 7 and its boot error page arrive in
+      dev together, so dev never carried the endless retry. MongoDB 4.4 or
+      newer is required to start (maintainer, 2026-10-25).
+
       2026-10-25: fix 8f238fc5 in PR #8844 to dev (session -f8's cut 3,
       chore/compose-mongodb6, head 200c1361).
 
@@ -15552,8 +15871,8 @@ items:
     branch: bf/183-storage-socket-log-redaction
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-bf183
-    state: in-progress
-    pr: []
+    state: merged-upstream
+    pr: [8847]
     ships_to_operators_today: true
     blast_radius: >
       lib/api3/storageSocket.js subscribe, two log lines (:63, :76 on dev
@@ -15570,6 +15889,12 @@ items:
     semver_reason: log content only
     register: [BF-183]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 54115e95 official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-183's fix 54115e95 (merged 2026-10-26 as
+          e34efdef); red if dev is rewritten or the merge is reverted out of
+          history
       - no-gate: >
           Read, not run, on dev b29f1bf7 and v15.0.9 c6a0d8ed. A unit gate
           would subscribe with a bad token and assert the token string is
@@ -15578,6 +15903,11 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-26, 12:15:29Z: merged with cut 4. AndyLow91 merged #8847 (head
+      35fc8167) into dev as e34efdef (gh pr view 8847); the fix is 54115e95
+      ("Stop logging storage subscription credentials"), cherry-picked from
+      f6704b8a. Merged is not released.
+
       2026-10-25: reproduced live on dev b29f1bf7 (MongoDB 8.0.34) and fixed
       as f6704b8a on local bf/183-storage-socket-log-redaction (one commit on
       dev, not pushed), for cut 4: the alarm socket's redacted wording.
@@ -15634,7 +15964,7 @@ items:
     repo: cgm-remote-monitor
     branch: ci/edge-diagonal-matrix
     base: official/dev@b29f1bf7
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8843]
     ships_to_operators_today: false
     blast_radius: >
@@ -15648,6 +15978,12 @@ items:
     semver_reason: test only
     register: [BF-185]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 57717695 official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-185's polluter-side fix 57717695 (merged
+          2026-10-26 as 720e60de); red if dev is rewritten or the merge is
+          reverted out of history
       - no-gate: >
           Reproduced 2026-10-25 on dev b29f1bf7 (test:stress then api3.search,
           28 failing, "expected 20 to be 10") and by session -b7 on MongoDB
@@ -15658,6 +15994,10 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-26, 05:20:27Z: merged. bewest merged #8843 (head 7fd2415e) into
+      dev as 720e60de (gh pr view 8843); both sides of the fix (b9b5ef29,
+      57717695) are in dev. Test only.
+
       2026-10-25: both fixes are in PR #8843 to dev (session -b7's CI matrix
       PR), head 57717695: victim b9b5ef29, polluter 57717695.
 
@@ -15675,7 +16015,7 @@ items:
     branch: bf/16.0.0-record-identity
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-identity-1600
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8845]
     ships_to_operators_today: true
     blast_radius: >
@@ -15692,6 +16032,12 @@ items:
     semver_reason: log content only
     register: [BF-186]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b34f6703 official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-186's fix b34f6703 (merged 2026-10-26 as
+          900abf7a); red if dev is rewritten or the merge is reverted out of
+          history
       - run: git -C externals/cgm-remote-monitor-official cat-file -e b34f6703^{commit}
         kind: static
         describe: >
@@ -15707,6 +16053,11 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-26, 11:34:16Z: merged. AndyLow91 merged #8845
+      (bf/16.0.0-record-identity, head 50219945) into dev as 900abf7a (gh pr
+      view 8845); 25 files, +1314/-107 against its first parent. CI: push run
+      40316054930 passed and published at 11:43:24Z. Merged is not released.
+
       2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity;
       the remote shows 539856ef; head bf37858e after merging dev 428b20b7,
       pending push).
@@ -15821,8 +16172,8 @@ items:
     branch: bf/16.0.0-client-alarms
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-alarms-1600
-    state: in-progress
-    pr: []
+    state: merged-upstream
+    pr: [8842]
     ships_to_operators_today: true
     blast_radius: >
       lib/client/index.js clearCurrentSGV (:656 on dev b29f1bf7): keep the
@@ -15839,6 +16190,12 @@ items:
     semver_reason: client alarm display; no API change
     register: [BF-190]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 148db86b official/dev
+        kind: static
+        describe: >
+          official/dev contains #8842's head, which carries BF-190's fix
+          5fb199b3, 148db86b (merged 2026-10-26 as 85e5108a); red if dev is
+          rewritten or the merge is reverted out of history
       - run: git -C externals/cgm-remote-monitor-official cat-file -e 5fb199b3^{commit}
         kind: static
         describe: >
@@ -15854,6 +16211,11 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-26, 10:33:08Z: merged. AndyLow91 merged #8842
+      (bf/16.0.0-client-alarms, head 148db86b) into dev as 85e5108a (gh pr
+      view 8842); 16 files, +455/-28 against its first parent. CI: push run
+      40308300225 passed and published at 10:42:51Z. Merged is not released.
+
       Filed 2026-10-25 by session f4 from the alarms lane. On v15.0.9 probably
       reachable on a page whose latest reading is more than 15 minutes old
       (read, not run).
@@ -15909,7 +16271,7 @@ items:
     repo: cgm-remote-monitor
     branch: ""
     base: official/dev@428b20b7
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8843]
     ships_to_operators_today: false
     blast_radius: >
@@ -15922,6 +16284,12 @@ items:
     semver_reason: a test wait and a test ceiling; no API, page or setting change
     register: [BF-192]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0a33b7c7 official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-192's fix 0a33b7c7 (merged 2026-10-26 as
+          720e60de); red if dev is rewritten or the merge is reverted out of
+          history
       - no-gate: >
           The browser tier needs Chromium and MongoDB, so not a queue gate.
           Measured 2026-10-25 by session -b7: retained heap after load 4.43 MB
@@ -15934,6 +16302,10 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-26, 05:20:27Z: merged. bewest merged #8843 (head 7fd2415e) into
+      dev as 720e60de (gh pr view 8843), with the reports heap ceiling at
+      6,800,000 bytes. Test only.
+
       2026-10-25, corrected by session -b7: NOT a product regression. Since
       #8542 the reports page draws its first report (AGP plus seven daily
       charts, 576 readings) as soon as the profile loads, so the populated
@@ -15952,6 +16324,46 @@ items:
       ran zero tests from #8839 until the runner fix e767ce4e in #8843, which
       is why dev's CI did not show it.
 
+  - id: BFQ-193
+    title: "BF-193 - the realtime socket logs every record written through it"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@47723cda
+    state: not-started
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/server/websocket.js: the console.log of the whole data argument at
+      the top of the dbUpdate (:368), dbUpdateUnset (:440), dbAdd (:508) and
+      dbRemove (:827) handlers on dev 47723cda (:816 for dbRemove on v15.0.9).
+      Server-side log content only.
+    review: maintainer
+    operator_visible: >
+      When an app writes to Nightscout over its realtime connection (the
+      socket), the server writes the whole record, including glucose values,
+      insulin and carbohydrate amounts and notes, into its log. Anyone who
+      can read your hosting logs can see it. Keep access to your hosting logs
+      limited.
+    semver: patch
+    semver_reason: log content only
+    register: [BF-193]
+    gates:
+      - no-gate: >
+          Read, not run, on dev 47723cda and v15.0.9 c6a0d8ed (a read-only
+          compatibility audit, 2026-10-26). A unit gate would emit dbAdd,
+          dbUpdate, dbUpdateUnset and dbRemove through the socket handler with
+          a record carrying a marker value and assert the marker is absent from
+          captured console output; control: dev 47723cda fails it.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-10-26 from a read-only compatibility audit of dev 47723cda;
+      the socket's counterpart of BF-186, which #8845 fixed for API v3. Fix
+      direction, unverified: log the collection and the record count, not the
+      record.
+
   - id: MOD-WRITE-VALIDATION
     title: "WRITE_VALIDATION=off|log|reject: opt-in domain validation of Temporary Target writes on API v1 and v3 (draft)"
     parcel: release-train
@@ -15959,8 +16371,8 @@ items:
     branch: feat/api3-domain-validation
     base: official/dev@b29f1bf7
     worktree: externals/work/crm-v3validate-1600
-    state: ready-to-push
-    pr: []
+    state: merged-upstream
+    pr: [8841]
     blast_radius: >
       New lib/server/write-validation.js (pure rules); hooks in
       lib/server/treatments.js create (v1 batch: store valid items, refused
@@ -15982,15 +16394,24 @@ items:
     semver_reason: a new opt-in setting; default behaviour unchanged
     register: []
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5901961c official/dev
+        kind: static
+        describe: >
+          official/dev contains #8841's head 5901961c (merged 2026-10-26 as
+          e09bca3b); red if dev is rewritten or the merge is reverted out of
+          history
       - run: git -C externals/cgm-remote-monitor-official cat-file -e 90fd47d0^{commit}
         kind: static
         describe: >
           the branch head exists in the shared clone; red if the local branch
           is lost before it is pushed (a rebase changes the id, and this gate
           must then name the new one)
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev feat/api3-domain-validation >/dev/null
-        kind: static
-        describe: Merges into official/dev with no conflict.
+      - no-gate: >
+          Retired 2026-10-26: the trial merge of the local
+          feat/api3-domain-validation into official/dev. #8841 merged from
+          5901961c, AndyLow91's commit on top of the local head, and the local
+          branch is not the merged head, so the trial merge now conflicts for
+          a reason unrelated to the work; the ancestry gate above replaces it.
       - run: git -C externals/cgm-remote-monitor-official grep -q "readENV('WRITE_VALIDATION', 'off')" feat/api3-domain-validation -- lib/server/env.js
         kind: static
         describe: >
@@ -16017,6 +16438,17 @@ items:
       - docs/60-research/remedial/upload-refusal-client-behaviour-2026-10-25.md
       - docs/30-design/modernization/write-path-checks-alignment-2026-10-25.md
     notes: >
+      2026-10-26, 10:23:14Z: merged. AndyLow91 merged #8841
+      (feat/api3-domain-validation, head 5901961c) into dev as e09bca3b (gh pr
+      view 8841); 11 files, +918/-11 against its first parent 207a8352. His
+      5901961c ("validate effective Temporary Target updates") is on top of
+      this item's commits e8125d89, 6e842c07 and a2e5fe49. WRITE_VALIDATION
+      stays off by default. Open in the PR body: socket dbAdd and dbUpdate are
+      not covered (draft #8854 extends the rules to socket add, update and
+      unset), a refusal the person can see, whether to normalise units beyond
+      temp targets, and the plausibility thresholds (30 mmol/L, 20 mg/dL). CI:
+      push run 40307014804 passed and published at 10:32:31Z.
+
       Filed 2026-10-25 by session f4 from the v3-validation lane. Draft: local
       branch feat/api3-domain-validation a2e5fe49 (e8125d89, 6e842c07,
       a2e5fe49) over dev b29f1bf7; head 90fd47d0 after merging dev 428b20b7,
@@ -16064,6 +16496,12 @@ items:
     evidence:
       - docs/60-research/modernization/write-validation-design-2026-10-25.md
     notes: >
+      2026-10-26: MOD-WRITE-VALIDATION merged (#8841, e09bca3b). Draft #8854
+      adds a read-side inspection in a different shape:
+      lib/storage/read-contract.js and a Nightscout-Data-Warnings header on
+      API v3 responses, not behind WRITE_VALIDATION (read from its diff,
+      880b7369). The decision this item waits on is unchanged.
+
       Filed 2026-10-25 by session f4 from the v3-validation lane (design
       section 3.3). Hiding or migrating stored records is not recommended:
       it would diverge from what uploaders sent and move every rewritten
@@ -16098,6 +16536,11 @@ items:
     evidence:
       - docs/60-research/modernization/write-validation-design-2026-10-25.md
     notes: >
+      2026-10-26: #8841 merged (e09bca3b): under WRITE_VALIDATION=reject a
+      known temp-target units spelling is stored as mmol or mg/dl (the PR
+      body), which is N1 limited to temp targets. The question of other record
+      kinds is unchanged.
+
       Filed 2026-10-25 by session f4 from the v3-validation lane (design
       section 3.4). N1 must stay limited to temp targets until NightscoutKit
       accepts both spellings, or Loop would drop BG Check and Meal Bolus
@@ -16658,6 +17101,11 @@ items:
     evidence:
       - docs/30-design/remedial/rc-15.0.9-integration-record.md
     notes: >
+      2026-10-26: peer session -b7 reports one failure of
+      tests/api.entries.repost-with-id.test.js under TEST_SHUFFLE_SEED=303.
+      Not reproduced or verified here; no CI run on the 2026-10-26 dev merges
+      failed on it (gh run view of each push and pull_request run).
+
       The test counts finds on the entries collection for one POST; a find
       from something else in the same process (a data load after another
       file's writes, for example) would add one. Fix shape: count only finds

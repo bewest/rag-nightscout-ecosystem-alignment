@@ -65,10 +65,14 @@ maintainer, and the API v3 client developers
 
 ## Notes carried on the item
 
-Filed 2026-10-25 by session f4 from the v3-validation lane (design section
-3.3). Hiding or migrating stored records is not recommended: it would diverge
-from what uploaders sent and move every rewritten record into every v3 history
-cursor.
+2026-10-26: MOD-WRITE-VALIDATION merged (#8841, e09bca3b). Draft #8854 adds a
+read-side inspection in a different shape: lib/storage/read-contract.js and a
+Nightscout-Data-Warnings header on API v3 responses, not behind
+WRITE_VALIDATION (read from its diff, 880b7369). The decision this item waits
+on is unchanged. Filed 2026-10-25 by session f4 from the v3-validation lane
+(design section 3.3). Hiding or migrating stored records is not recommended:
+it would diverge from what uploaders sent and move every rewritten record into
+every v3 history cursor.
 
 ---
 

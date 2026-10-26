@@ -24,10 +24,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 176 | 37 | 20 |
-| **Modernization** | `release-train` | 43 | 7 | 3 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 177 | 38 | 9 |
+| **Modernization** | `release-train` | 43 | 7 | 2 |
 | **Multitenant** | `tenancy`, `platform` | 67 | 17 | 9 |
-| | **total** | **288** | **61** | **32** |
+| | **total** | **289** | **62** | **20** |
 
 <!-- END GENERATED: horizons -->
 
@@ -144,38 +144,39 @@ cover more than one `BF-`:
 | `BFQ-136` | `released` | BF-136 - API v3 refuses an AndroidAPS write that lands on a record written through v1 (Fie |
 | `BFQ-137` | `merged-upstream` | BF-137 - with more than one IFTTT Maker key, an alarm's Maker calls run out of order and a |
 | `BFQ-142` | `released` | BF-142 - API v3 DELETE answers 404 for a record whose stored identifier is 0 or an array,  |
-| `BFQ-145` | `in-flight-upstream` | BF-145 - API v3 PATCH and PUT by the shown id miss a record whose identifier is null, "" o |
+| `BFQ-145` | `merged-upstream` | BF-145 - API v3 PATCH and PUT by the shown id miss a record whose identifier is null, "" o |
 | `BFQ-146` | `released` | BF-146 - API v3 treatments are held in the server's memory without mills: a late or edited |
 | `BFQ-147` | `released` | BF-147 - two package.json overrides hold ajv and request's form-data inside published advi |
 | `BFQ-149` | `not-started` | BF-149 - the Day to Day report draws a cancelled or replaced temp target or override for i |
-| `BFQ-152` | `in-flight-upstream` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier |
+| `BFQ-152` | `merged-upstream` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier |
 | `BFQ-154` | `blocked` | BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed  |
-| `BFQ-156` | `in-progress` | BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the pro |
+| `BFQ-156` | `merged-upstream` | BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the pro |
 | `BFQ-157` | `merged-upstream` | BF-157 - a treatment's glucose bubble is placed as mg/dL when its units are spelled mmol/L |
-| `BFQ-159` | `in-progress` | BF-159 - the main page sometimes leaves for the Profile Editor while a profile exists, wit |
-| `BFQ-160` | `in-progress` | BF-160 - the clock designer's link target is written with curly quotes |
+| `BFQ-159` | `merged-upstream` | BF-159 - the main page sometimes leaves for the Profile Editor while a profile exists, wit |
+| `BFQ-160` | `merged-upstream` | BF-160 - the clock designer's link target is written with curly quotes |
 | `BFQ-161` | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fi |
 | `BFQ-163` | `merged-upstream` | BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in |
 | `BFQ-164` | `blocked` | BF-164 - writes outside API v3 never reach the v3 storage socket |
-| `BFQ-165` | `in-flight-upstream` | BF-165 - a treatment re-send matched by its fallback key is answered without _id |
-| `BFQ-166` | `in-flight-upstream` | BF-166 - a profile re-sent with its own _id answers 500 |
+| `BFQ-165` | `merged-upstream` | BF-165 - a treatment re-send matched by its fallback key is answered without _id |
+| `BFQ-166` | `merged-upstream` | BF-166 - a profile re-sent with its own _id answers 500 |
 | `BFQ-168` | `released` | BF-168 - the context chart's window sometimes cannot be dragged back to now |
-| `BFQ-169` | `in-flight-upstream` | BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a  |
-| `BFQ-170` | `in-flight-upstream` | BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent |
+| `BFQ-169` | `merged-upstream` | BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a  |
+| `BFQ-170` | `merged-upstream` | BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent |
 | `BFQ-172` | `merged-upstream` | BF-172 - the Bolus Wizard Preview mixes the profile's units with the display units (#8819  |
 | `BFQ-173` | `merged-upstream` | BF-173 - the Careportal Bolus Wizard mixes the profile's units with the display units, a k |
 | `BFQ-174` | `merged-upstream` | BF-174 - the bolus calculator's profile picker is ignored; every value comes from the acti |
-| `BFQ-180` | `in-progress` | BF-180 - a careportal temp target on an mmol/L site is converted to mg/dL twice when the h |
+| `BFQ-180` | `merged-upstream` | BF-180 - a careportal temp target on an mmol/L site is converted to mg/dL twice when the h |
 | `BFQ-181` | `not-started` | BF-181 - one future srvModified pins the shared write clock ahead, across restarts |
-| `BFQ-183` | `in-progress` | BF-183 - the API v3 storage socket logs the supplied credential on a failed authorization |
+| `BFQ-183` | `merged-upstream` | BF-183 - the API v3 storage socket logs the supplied credential on a failed authorization |
 | `BFQ-184` | `not-started` | BF-184 - API v3 /status apiPermissions reports only wildcard permissions |
-| `BFQ-186` | `in-flight-upstream` | BF-186 - API v3 logs a whole record when a client's identifier differs from the computed o |
+| `BFQ-186` | `merged-upstream` | BF-186 - API v3 logs a whole record when a client's identifier differs from the computed o |
 | `BFQ-187` | `not-started` | BF-187 - an entries pattern segment over the braces parser's input limit answers 500, not  |
 | `BFQ-188` | `not-started` | BF-188 - with no client bundle the server exits at boot with an unexplained module error |
-| `BFQ-190` | `in-progress` | BF-190 - an alarm on a page without a current reading cannot be silenced from the page |
+| `BFQ-190` | `merged-upstream` | BF-190 - an alarm on a page without a current reading cannot be silenced from the page |
 | `BFQ-191` | `in-progress` | BF-191 - a stored treatment can stop the server process, and keeps doing so after a restar |
+| `BFQ-193` | `not-started` | BF-193 - the realtime socket logs every record written through it |
 | `BFQ-40` | `released` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
-| `BFQ-46` | `in-progress` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
+| `BFQ-46` | `merged-upstream` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `released` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
 | `BFQ-52` | `blocked` | BF-52 - an age reminder whose 20-minute window passed without a check was never sent |
 | `BFQ-67` | `not-started` | BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work |
@@ -185,14 +186,14 @@ cover more than one `BF-`:
 | `BFQ-87` | `released` | BF-87 - the root qs override holds the connector below its range and pins the server's que |
 | `BFQ-90` | `released` | BF-90 - an alarm at a page with no reading throws in the client |
 | `BFQ-91` | `released` | BF-91 - connector capture mode cannot find trace-axios for two sources |
-| `BFQ-92` | `in-progress` | BF-92 - a page with no glucose reading never presents a server alarm, including device ala |
-| `BFQ-93` | `in-progress` | BF-93 - food changes never reach an open page |
+| `BFQ-92` | `merged-upstream` | BF-92 - a page with no glucose reading never presents a server alarm, including device ala |
+| `BFQ-93` | `merged-upstream` | BF-93 - food changes never reach an open page |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
 | `BFQ-98` | `released` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not rep |
 | `BFQ-99` | `released` | bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and str |
 | `BFQ-CAP01` | `not-started` | CAP-01 - Nightscout cannot be served from a sub-path |
 | `BFQ-CONNECTOR` | `gate-not-met` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override |
-| `BFQ-ENV` | `in-progress` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies |
+| `BFQ-ENV` | `needs-decision` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies |
 | `BFQ-MINIMED` | `not-started` | BF-44, BF-45, BF-85 - MiniMed ingestion divergences and the CareLink zero reading |
 | `RT-PR-8815` | `released` | #8815 - a bearer token whose subject was deleted is refused instead of stopping the server |
 
@@ -209,8 +210,8 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `released` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  |  | 17 |  | 1 |  |  |  | **22** |
-| `release-train` | 7 | 2 | 4 | 1 | 2 |  | 6 | 15 | 2 | 1 |  |  | 3 | **43** |
-| `register-open` | 27 | 13 | 1 | 1 | 3 | 14 | 10 | 58 | 4 |  |  | 4 |  | **135** |
+| `release-train` | 7 |  | 3 |  |  |  | 12 | 15 | 2 | 1 |  |  | 3 | **43** |
+| `register-open` | 28 | 3 | 1 | 1 | 3 | 2 | 31 | 58 | 5 |  |  | 4 |  | **136** |
 | `tenancy` | 8 | 1 |  | 1 | 13 |  |  |  | 7 | 3 | 1 |  |  | **34** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  |  | 11 |  |  |  | **19** |
 | `backfix2` |  |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
@@ -250,14 +251,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 252 | 88% |
+| Maintainer | 253 | 88% |
 | SECURITY reviewer | 17 | 6% |
 | Maintainer + a second human | 7 | 2% |
 | SAFETY reviewer | 6 | 2% |
 | Whoever edits it next | 3 | 1% |
 | Unassigned | 2 | 1% |
 | Upstream reviewers | 1 | 0% |
-| **total** | **288** | |
+| **total** | **289** | |
 
 <!-- END GENERATED: reviewer-load -->
 
