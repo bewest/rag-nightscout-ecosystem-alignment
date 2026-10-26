@@ -2029,6 +2029,8 @@
       
         
       
+        
+      
     
     
     
@@ -2221,7 +2223,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>f1119d4cf</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>15705e554</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -3166,6 +3168,11 @@ has none until then.</p>
 <p>As of <code>dev</code> <code>47723cda</code> (2026-10-26). The decisions already made are in <a href="decisions.html">decisions.md</a>.
 Whether cuts 3–5 ship in 16.0.0 is answered: all three are merged into <code>dev</code>, so they ship in 16.0.0
 unless reverted.</p>
+<p><strong>Required before the tag</strong> (maintainer, 2026-10-26, session -66; queue <code>RT-16-RELEASE</code>): (a) a live
+Pushover and APNs delivery check (<code>RT-16-LIVE-ALARMS</code>); (b) a real-rig soak on <code>dev</code> (<code>RT-16-RIG-SOAK</code>);
+(c) the BF-72 and BF-161 fork fixes merged and published with 16.0.0 (<code>BFQ-72</code>, <code>BFQ-161</code>). None is met.
+BF-193 is not a pre-tag requirement; the maintainer asked whether the socket's payload logging is needed
+for debugging, and that question is open.</p>
 <p><strong>Decisions open, with their owner:</strong></p>
 <ol>
 <li><strong>The scope of BF-161's draft advisory</strong> (maintainer): publish it now for BF-151 (released in 15.0.9)
@@ -3204,19 +3211,32 @@ unless reverted.</p>
     2 releases and 180 days for a runtime floor that can stop data arriving; MongoDB 4.4 was deprecated
     in 15.0.9, and 3.6, 4.0 and 4.2 stop serving with 16.0.0 (driver 7, decided 2026-10-25). The
     decision is recorded; a waiver of §5.4's window, with its reason for the release notes, is not.</li>
+<li><strong>BF-194</strong> (maintainer): API v1 removes <code>units</code> from a treatment with no glucose value before
+    <code>WRITE_VALIDATION</code> runs, so a v1 temp target sent in mmol/L is stored with mmol/L numbers and no
+    units and reads as mg/dL, in every mode, on 15.0.9 and <code>dev</code> (reproduced, integration record R15):
+    keep the units, convert, or refuse. Queue <code>BFQ-194</code>.</li>
 </ol>
+<p><strong>Found by R15 (reproduced; no register entry):</strong></p>
+<ul>
+<li><code>npm test</code> and <code>test-ci</code> glob <code>./tests/*.test.js</code> (310 files) while <code>tests/tiers.json</code> maps all 377;
+  the 67 outside the glob are the browser tier (40), <code>tests/client-core/</code> (26) and one harness fixture
+  test. CI runs them through the tier runner; a contributor's local <code>npm test</code> skips the 27 non-browser
+  files that <code>npm run test:all</code> runs.</li>
+<li>After driver 7 refuses MongoDB 4.2, the boot log still prints "Mongo Storage system ready"
+  (<code>lib/server/bootevent.js:208</code>), though the site serves the boot error page.</li>
+<li>API v3 under <code>WRITE_VALIDATION=log</code> logs each bad record twice (<code>validate</code> in
+  <code>lib/api3/generic/create/operation.js</code> and again in <code>create/insert.js</code>).</li>
+<li>API v3 refusals under <code>reject</code> write no log line; API v1 refusals do.</li>
+</ul>
 <p><strong>Repository settings, for the maintainer</strong> (branch protection read 2026-10-26 with <code>gh api
 repos/nightscout/cgm-remote-monitor/branches/&lt;branch&gt;/protection</code>: <code>dev</code> requires <code>Run Tests (24, 6)</code>;
 <code>master</code> requires <code>Run Tests (22, 6)</code>, <code>Run Tests (22, 4.4)</code> and <code>Run Tests (24, 6)</code> and one approving
-review; <code>enforce_admins</code> is off on both). Nothing in a PR changes these:</p>
-<ol>
-<li><code>master</code>: drop the required check <code>Run Tests (22, 4.4)</code>. No workflow on <code>dev</code> emits it, so the staging
-   PR #8824 cannot meet <code>master</code>'s protection until it is dropped.</li>
-<li><code>dev</code> and <code>master</code>: require <em>Tests pass</em>, the job #8843 added to stand for every test job, in place of
-   the individual <code>Run Tests</code> names; the <code>(24, 6)</code> and <code>(22, 6)</code> cells then have no required-check reason
-   to stay.</li>
-<li>Optionally, require the three <em>Browser tests (26, …)</em> jobs, if <em>Tests pass</em> is not adopted.</li>
-</ol>
+review; <code>enforce_admins</code> is off on both). No workflow on <code>dev</code> emits <code>Run Tests (22, 4.4)</code>, so the
+staging PR #8824 cannot meet <code>master</code>'s protection as it stands.</p>
+<p><strong>Proposed, not decided:</strong> <code>master</code> and <code>dev</code> require only the <em>Tests pass</em> check (job <code>tests-pass</code>,
+<code>.github/workflows/main.yml:317</code> on <code>dev</code>, <code>if: always()</code>, needing every test job and the pull-request Docker validation), plus one approving
+review on <code>master</code>. Caveat: <em>Tests pass</em> accepts <code>skipped</code> as well as <code>success</code> from every job it needs
+(<code>main.yml:327-337</code>), so a test job skipped in full would still let it pass.</p>
 <p><strong>Follow-ups filed 2026-10-25:</strong> <code>RT-BUNDLE-THEME-SPLIT</code> (page-bundle budget option B: load the modern
 theme's code only when it is chosen; owner Andy Low or the maintainer; not started). <code>RT-BOOT-INDEX-AWAIT</code>
 merged with #8849.</p>
@@ -3227,7 +3247,7 @@ merged with #8849.</p>
 <li>BF-72 and BF-161 through their advisory forks, each after a merge of <code>dev</code>, published with the
    release that carries them.</li>
 </ol>
-<p><strong>Before the tag:</strong> the live acceptance checks #8605 leaves to the maintainer (Pushover emergency
+<p><strong>Before the tag:</strong> the three requirements above (the live delivery check, the real-rig soak, BF-72 and BF-161), the other live acceptance checks #8605 leaves to the maintainer (Pushover emergency
 delivery, acknowledgement and cancellation; alarm de-duplication over its real window; APNs delivery
 to a phone; production hosting, upgrade and rollback; physical-device accessibility), the call for
 testers (<a href="testing-notes.html">testing-notes.md</a>), the tag message and the release notes (written last,

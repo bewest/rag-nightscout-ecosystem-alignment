@@ -977,6 +977,10 @@
          <lastmod>2026-10-26</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/modernization/pr-8854-alignment-2026-10-26.html</loc>
+         <lastmod>2026-10-26</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.html</loc>
          <lastmod>2026-10-26</lastmod>
     </url>
@@ -1033,6 +1037,10 @@
          <lastmod>2026-10-26</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/next-gen-platform-plan.html</loc>
+         <lastmod>2026-10-26</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/nightscout-devicestatus-profile-fidelity-2026-09-10.html</loc>
          <lastmod>2026-10-26</lastmod>
     </url>
@@ -1070,6 +1078,10 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/guides/add-a-setting.html</loc>
+         <lastmod>2026-10-26</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/guides/hub-implementer.html</loc>
          <lastmod>2026-10-26</lastmod>
     </url>
     <url>
@@ -5185,7 +5197,15 @@
          <lastmod>2026-10-26</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/arch-8854-wip-architecture-data-contracts.html</loc>
+         <lastmod>2026-10-26</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/bfq-161-bf-entries-pattern-limit.html</loc>
+         <lastmod>2026-10-26</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/bfq-194.html</loc>
          <lastmod>2026-10-26</lastmod>
     </url>
     <url>
@@ -5222,6 +5242,10 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/id-scope-decision.html</loc>
+         <lastmod>2026-10-26</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/id-simple-match-feat-v1-identifier-match.html</loc>
          <lastmod>2026-10-26</lastmod>
     </url>
     <url>
