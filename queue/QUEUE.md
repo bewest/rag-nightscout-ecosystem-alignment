@@ -31,25 +31,25 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 289 |
+| items | 293 |
 | runnable gates | 366 |
-| explicit `no-gate:` markers | 318 |
+| explicit `no-gate:` markers | 322 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 318 of the 684 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 322 of the 688 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 62 | RT-JSDOM-REST, RT-BUNDLE-THEME-SPLIT, ID-SIMPLE-MATCH, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-193, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `not-started` | 64 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, ID-SIMPLE-MATCH, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-193, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 5 | BFQ-178, ID-CONVENTIONS, BFQ-191, OID-LAB, LOOP-ID-REPLY |
 | `gate-not-met` | 5 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
-| `blocked` | 16 | T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, WC-STEP-PATCH, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
+| `blocked` | 17 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, WC-STEP-PATCH, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
 | `in-flight-upstream` | 2 | BFQ-72, BFQ-161 |
 | `merged-upstream` | 43 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, BFQ-09, BFQ-46, BFQ-92, BFQ-93, BFQ-158, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-192, MOD-WRITE-VALIDATION |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
-| `needs-decision` | 14 | T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
+| `needs-decision` | 15 | T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-194, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
 | `done` | 39 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 4 | BFQ-71, BFQ-41, BFQ-175, BFQ-141 |
@@ -138,6 +138,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-190** BF-190 - an alarm on a page without a current reading cannot be silenced from the page
 - **BFQ-191** BF-191 - a stored treatment can stop the server process, and keeps doing so after a restart (mechanism only)
 - **BFQ-193** BF-193 - the realtime socket logs every record written through it
+- **BFQ-194** BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL
 - **RT-PR-8815** #8815 - a bearer token whose subject was deleted is refused instead of stopping the server (awss1i; BF-171, fixes #8225), merged for 15.0.9
 - **BFQ-134** BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 - **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
@@ -1035,7 +1036,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 ## Modernization release train
 
-`parcel: release-train` &mdash; 43 items
+`parcel: release-train` &mdash; 46 items
 
 The adopted order (maintainer, 2026-09-15): 15.0.9, then cut 1, then cut 2,
 then cuts 3+5 combined, then a deprecation release, then cut 4. The premise of
@@ -1056,6 +1057,9 @@ that costs.
 | `RT-JSDOM-REST` | Retire the whole-bundle jsdom harness that cut 1 keeps; secure-jsdom stays as the middle test tier (scope B) | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `RT-TEST-TIERS` | Test tier map, tier check and inner-loop test selection (test:affected, test:smoke) | `merged-upstream` | `test/tier-map-and-selection` | n/a | 1 run + 1 no-gate |
 | `RT-CI-DIAGONAL` | CI runs the Node x MongoDB diagonal, the no-database tiers on their own, a Tests pass check and seeded test-file order | `merged-upstream` | `ci/edge-diagonal-matrix` | n/a | 1 run + 1 no-gate |
+| `RT-16-RELEASE` | Release 16.0.0 | `blocked` | `official/dev` | major | 0 run + 1 no-gate |
+| `RT-16-LIVE-ALARMS` | 16.0.0 pre-tag check: live Pushover and APNs delivery on dev | `not-started` | `-` | n/a | 0 run + 1 no-gate |
+| `RT-16-RIG-SOAK` | 16.0.0 pre-tag check: a real-rig soak on dev | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `RT-BUNDLE-THEME-SPLIT` | Load the modern theme's client code only when it is chosen (page-bundle budget option B) | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `RT-BOOT-INDEX-AWAIT` | Boot awaits its collection and index creation before it reports ready | `merged-upstream` | `bf/16.0.0-boot-resilience` | patch | 2 run + 1 no-gate |
 | `RT-CONNECT-TEARDOWN` | Remove the redundant connector teardown listener in bootevent.js once cut 1 is on dev | `merged-upstream` | `chore/16.0.0-test-ci-hygiene` | patch | 1 run + 1 no-gate |
@@ -1468,6 +1472,92 @@ that costs.
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 
 **Notes.** 2026-10-26, 05:20:27Z: merged. bewest merged #8843 into dev as 720e60de (head 7fd2415e; gh pr view 8843). Besides the diagonal, it fixed the browser tier running no tests in CI since #8839 (e767ce4e), BF-192's reports heap ceiling (0a33b7c7, 6.8 MB) and a WebKit fixture (7fd2415e). The cuts take it at their next merge of dev (RT-REBASE). 2026-10-25, night: pushed by the maintainer; #8843 head 7fd2415e, every CI lane passes including Tests pass: Tests without a database (22.23.4, 26); Run Tests (22.23.4, 8.0), (26, 5.0), (24, 6), (22, 6); Maintained MongoDB (26, 8.0.29); browsers chromium, firefox and webkit each 26 files, 554 passing; Docker amd64/arm64, npm 12, CodeQL. Waiting on the maintainer's merge; recommended to merge before cuts 3-5 so their CI runs the browser tier and the shuffled, DST lanes. 2026-10-25, night: #8843 at 0a33b7c7 failed only Browser tests (26, webkit), twice (run and re-run), on the profile-settings treatment editor case: the fixture server 404s /images/report-edit.png and WebKit gives a broken <img> without alt no box, so the edit icon is never visible (20 of 20 local failures in mcr.microsoft.com/playwright: v1.63.0-noble). Our test, not GitHub. Fixed locally in 7fd2415e (the fixture serves static/images PNGs by base name): 5 of 5 on each engine; the whole browser tier on WebKit in that container: 554 passing. Ready to push (fast-forward over 0a33b7c7). 2026-10-25, night: the maintainer chose to fold the BF-192 budget change into #8843 (rather than a separate PR or merging red). Local 0a33b7c7 over e767ce4e, ready to push: page-populated waits for the reports page's first report (svg under #pluginchartplaceholders and an empty #info); heapLimits.reports 4,850,000 -> 6,800,000, 1.097 x the max of seven samples on 428b20b7 (6,181,516 to 6,197,116); spec docs/test-specs/page-bundles.md records it. Evidence it is the screen, not the cost: #8542 draws the first report on load (loadInitialReport -> show()); retained heap loaded 4.43 -> 6.19 MB, after one Show 9.24 -> 7.18 MB, after five 9.93 -> 7.46 MB (b29f1bf7 -> 428b20b7); D3 7.9.0 on both; reports bundle +36 KB; snapshot growth is 576 SVG circles, about 4,000 Dates, DOM 873 -> 2,756 elements. Open: both revisions retain about 170 KB (before) and 70 KB (after) more per further Show. page-populated passes on Chromium and Firefox locally; WebKit could not launch locally (missing libavif16). 2026-10-25, evening: pushed by the maintainer; #8843 head e767ce4e. CI (run on e767ce4e): every lane passes except Browser tests (26, chromium), which runs 26 files, 553 passing, 1 failing: reports retained heap 6189016 > 4850000 (BF-192, filed by session -f4). Firefox 554 passing and WebKit 554 passing, so the browser tier runs again (it printed no "# browser:" line before the fix). No replica-set lanes. Tests pass fails on the Chromium lane, as designed. The heap budget is tools/page-resource-acceptance.js heapLimits.reports (AndyLow91, 79864ce8, from docs/audits/page-startup- baseline.json); #8542 also moved D3 from v5 to v7 (3a4621af). Waiting on the maintainer: raise the budget from a fresh measurement, or slim the reports page. 2026-10-25, evening: local update ready to push at e767ce4e over #8843's 57717695 (fast-forward): replica-set job dropped (Ben: "I thought we decided against need for testing against replicaset?" - the earlier "except replica set" meant drop it, not leave it); fail-fast off; two more order fixes from #8843's first CI run (ar2 after simplealarms' mmol suite, seed 40252793228; both boluscalc quick-pick tests after clock-token-link, seeds 9 and 11); dev 428b20b7 merged in. Session -f8 found browser CI has run zero tests since #8839 (78524be4): git refused the checkout as root in the Playwright container (dubious ownership), listTestFiles ignored git's exit status, the tier had no members and the job passed. Fixed (e767ce4e): listTestFiles throws, run() exits 2 on a git failure or an empty requested tier, the browser job sets system safe.directory; red control in node:24 as root (0 files and exit 0 before, exit 2 after, 319 files with safe.directory) and a new harness test red against the old runner. That exposes dev 428b20b7's page-populated failure on Chromium (reports retained heap 6189888 > 4850000; about 4.45 MB on b29f1bf7; likely #8542), being filed by -f4; the budget-or-page decision is the maintainer's, and #8843 stays red on Chromium until it is made. Local on the merge: all four CI cells and seeds 9 and 11 pass; Chromium browser tier 553 passing, 1 failing (the heap test). 2026-10-25: pushed by the maintainer; PR #8843 to dev at 57717695. GitHub created the diagonal as intended: Run Tests (22.23.4, 8.0), (26, 5.0), (24, 6) and (22, 6); Tests without a database (22.23.4) and (26); Maintained MongoDB (26, 8.0.29). 2026-10-25, later: ready to push at 57717695 (11 commits over dev b29f1bf7, dev unmoved). BF-185 (filed by session -f4 on records/f4-2510, not on main yet, so not in register: above): the stress tier left 10 devicestatus records that API3 SEARCH counted; the victim side is b9b5ef29, the polluter side 57717695. The five shuffled seeds that timed out under load (555, 8, 11, 12, 13) all pass run one at a time on Node 22.23.4 against MongoDB 8.0. Final pass on 57717695 (load average about 8): the no-database tiers on 22.23.4 in America/Los_Angeles and on 26.12.1 with seed 40226791404 (unit 1218, dom 160, dependency 340 + 3 pending, core 316, harness 70); integration and stress on (22.23.4, MongoDB 8.0) with seed 40226791404 and on (26.12.1, MongoDB 5.0) in America/Los_Angeles (1994 + 1 pending, stress 18). Maintainer pushes. 2026-10-25: decided by the maintainer in session -5e ("build the branch with all seven; except replica set"); the decisions row is on records/16.0.0-cuts-2510 (session -f8's 16.0.0 records, landing after cut 5). Local branch ci/edge-diagonal-matrix, 9 commits over dev b29f1bf7 (head b9b5ef29), not pushed, no PR. Measured locally (Node 22.23.4, 24.22.1 and 26.12.1 official tarballs; MongoDB 5.0, 7.0.43 and 8.0 containers): the no-database tiers pass on 22.23.4 in America/Los_Angeles and on 26.12.1 shuffled (core after the wiring fix); the core tier passes under 21 seeds; integration and stress pass in fixed order on (22.23.4, 8.0) and on (26.12.1, 5.0) in America/Los_Angeles. Before the integration fixes seed 40226791404 failed 35 every time; after them 11 of 16 shuffled runs passed and every failure in the other 5 was a timeout while the machine's load average was 26 to 52 on 16 cores; the fixed-order run failed the same way under that load. Serial re-runs of those seeds pending. Coordination: cut 3 to 5 catch- ups (session -f8) keep dev's main.yml, so whichever lands second merges the other's. The answer to "do feature branches need the full suite": keep it on PRs to dev (about 3 minutes per lane, lanes in parallel; selection cannot see cross-file state, which is what the shuffle found); test:affected --since official/dev belongs in the pre-push check.
+
+### `RT-16-RELEASE` &mdash; Release 16.0.0
+
+| | |
+|---|---|
+| state (claimed) | `blocked` |
+| repo | `cgm-remote-monitor` |
+| branch | `official/dev` |
+| base | `official/master` |
+| worktree | `externals/cgm-remote-monitor-official` |
+| semver | `major` |
+| review | maintainer, and at least one human reviewer who is not the author |
+| blocks on | `RT-16-LIVE-ALARMS`, `RT-16-RIG-SOAK`, `BFQ-72`, `BFQ-161` |
+
+**Blast radius.** 16.0.0 is everything in official/master..official/dev: master c6a0d8ed (v15.0.9) to dev 47723cda (merge of #8605), measured 2026-10-26: 857 commits, 35 first-parent commits (34 PR merges and the version bump 04d435eb), 745 files, +123438/-15023 (git rev-list --count, --first-parent --count and git diff --shortstat official/master official/dev). The list is releases/cgm- remote-monitor-16.0.0/contents.md. The staging PR is #8824 (dev to master).
+
+**What an operator sees.** Version 16.0.0 is the next Nightscout release. Nothing in it reaches your site until 16.0.0 is released and your site is updated to it. It needs Node 22.23.4, 24.22.1 or 26.12.1 or newer, and MongoDB 4.4 or newer to start; the legacy Dexcom Share and MiniMed CareLink bridges are removed. Read the release notes before upgrading.
+
+**Why `major`.** the Node and MongoDB floors and the removed legacy bridges (contents.md, Version)
+
+**Gates.**
+
+- **NO GATE** &mdash; A release item: what it waits on is in blocks_on, each with its own gates. The tag itself is the evidence; tools/queue/verification-record.py captures the verification record once, at release time.
+
+**Evidence.**
+
+- `releases/cgm-remote-monitor-16.0.0/contents.md`
+- `releases/cgm-remote-monitor-16.0.0/decisions.md`
+
+**Notes.** Filed 2026-10-26 from the maintainer's pre-tag requirements (session -66, 2026-10-26): before the tag, (a) a live Pushover and APNs delivery check (RT-16-LIVE-ALARMS), (b) a real-rig soak on dev (RT-16-RIG-SOAK), and (c) the BF-72 and BF-161 fork fixes merged and published with 16.0.0 (BFQ-72, BFQ-161). BF-193 is not a pre-tag requirement; whether payload logging is needed for debugging is the maintainer's open question. Other open items a releaser must settle are in contents.md. The generated release-waits view still reads RT-0 (15.0.9), so it does not list these blockers.
+
+### `RT-16-LIVE-ALARMS` &mdash; 16.0.0 pre-tag check: live Pushover and APNs delivery on dev
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@47723cda` |
+| worktree | `externals/cgm-remote-monitor-official` |
+| semver | `n/a` |
+| review | maintainer (real credentials and devices) |
+
+**Blast radius.** Cut 5 (#8605, merged 47723cda) replaces the Pushover SDK with a native HTTPS client, moves notification state to @cacheable/node-cache and APNs to @parse/node-apn 8. Its body leaves live Pushover emergency delivery, acknowledgement and cancellation, de-duplication over the real window, and APNs delivery to a phone to the maintainer as acceptance work; local fixtures do not establish them.
+
+**What an operator sees.** Before 16.0.0 is tagged, someone checks on a real Nightscout site that phone alerts sent through Pushover and Apple push notifications still arrive, can be acknowledged and stop when they should. Until then, keep the alerts on your own devices switched on.
+
+**Why `n/a`.** a release check, not a change
+
+**Gates.**
+
+- **NO GATE** &mdash; Needs real Pushover and Apple credentials and a phone, which this programme does not use (rule 0). Evidence to record: the dev commit, the services checked, and each send, acknowledgement and cancel observed.
+
+**Evidence.**
+
+- `releases/cgm-remote-monitor-16.0.0/contents.md`
+
+**Notes.** Required before the tag (maintainer, 2026-10-26, session -66).
+
+### `RT-16-RIG-SOAK` &mdash; 16.0.0 pre-tag check: a real-rig soak on dev
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@47723cda` |
+| worktree | `externals/cgm-remote-monitor-official` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** dev 47723cda (or the named candidate) run behind real uploaders and followers for a soak period: a closed-loop controller, a CGM uploader and followers, with the 2026-10-26 client replay (integration record R15) as the synthetic baseline.
+
+**What an operator sees.** Before 16.0.0 is tagged, it runs for a while on a real setup with real apps sending and reading data, to catch problems the automated tests cannot.
+
+**Why `n/a`.** a release check, not a change
+
+**Gates.**
+
+- **NO GATE** &mdash; A soak with real devices cannot be a queue gate. Evidence to record: the commit, the apps and versions, the duration, and any failure seen. R15's replay of 67 request shapes is synthetic and does not replace it.
+
+**Evidence.**
+
+- `docs/30-design/remedial/rc-16.0.0-integration-record.md`
+
+**Notes.** Required before the tag (maintainer, 2026-10-26, session -66).
 
 ### `RT-BUNDLE-THEME-SPLIT` &mdash; Load the modern theme's client code only when it is chosen (page-bundle budget option B)
 
@@ -2487,7 +2577,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 136 items
+`parcel: register-open` &mdash; 137 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2614,6 +2704,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-191` | BF-191 - a stored treatment can stop the server process, and keeps doing so after a restart (mechanism only) | `in-progress` | `-` | n/a | 0 run + 1 no-gate |
 | `BFQ-192` | BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression) | `merged-upstream` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-193` | BF-193 - the realtime socket logs every record written through it | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-194` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL | `needs-decision` | `-` | minor | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `released` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -6534,7 +6625,38 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Filed 2026-10-26 from a read-only compatibility audit of dev 47723cda; the socket's counterpart of BF-186, which #8845 fixed for API v3. Fix direction, unverified: log the collection and the record count, not the record.
+**Notes.** 2026-10-26 (maintainer, session -66): not a pre-tag requirement for 16.0.0. The maintainer asked whether the socket's payload logging is needed for debugging; that question is open, so the fix shape is not settled. Filed 2026-10-26 from a read-only compatibility audit of dev 47723cda; the socket's counterpart of BF-186, which #8845 fixed for API v3. Fix direction, unverified: log the collection and the record count, not the record.
+
+### `BFQ-194` &mdash; BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL
+
+| | |
+|---|---|
+| state (claimed) | `needs-decision` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@47723cda` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-194` |
+
+**Blast radius.** lib/server/treatments.js prepareData (:639-643 on dev 47723cda, :566-570 on v15.0.9): the delete of units together with glucose and glucoseType when no glucose is given. API v1 and in-process treatment writes.
+
+**What an operator sees.** If an app sends Nightscout a temporary target in mmol/L through the older API (v1), Nightscout throws away the units and keeps the numbers, so a target of 6.0 mmol/L is stored as 6 and read as 6 mg/dL. Nothing tells you. Check a temporary target on your Nightscout page after setting it from an app, and talk to your care team about how you set targets.
+
+**Why `minor`.** changes what is stored for a write clients already send
+
+**Gates.**
+
+- **NO GATE** &mdash; Reproduced 2026-10-26 by the client replay of integration record R15 against booted servers (v15.0.9 and dev 47723cda, each WRITE_VALIDATION mode). A queue gate would post the record through the v1 handler in-process and assert units survives; control: dev 47723cda fails it. Not written until the fix shape is decided.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/30-design/remedial/rc-16.0.0-integration-record.md`
+
+**Notes.** Filed 2026-10-26 from R15. Needs a maintainer decision: keep units on a record with targets when no glucose is given, convert to mg/dL, or refuse under WRITE_VALIDATION=reject. Related to BF-180 (the careportal path through the same lines, merged in #8842) and MOD-UNITS-CANONICAL.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 

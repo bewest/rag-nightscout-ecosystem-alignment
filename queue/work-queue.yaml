@@ -3368,6 +3368,126 @@ items:
       cross-file state, which is what the shuffle found); test:affected
       --since official/dev belongs in the pre-push check.
 
+  - id: RT-16-RELEASE
+    title: "Release 16.0.0"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: official/dev
+    base: official/master
+    worktree: externals/cgm-remote-monitor-official
+    state: blocked
+    pr: []
+    blast_radius: >
+      16.0.0 is everything in official/master..official/dev: master c6a0d8ed
+      (v15.0.9) to dev 47723cda (merge of #8605), measured 2026-10-26: 857
+      commits, 35 first-parent commits (34 PR merges and the version bump
+      04d435eb), 745 files, +123438/-15023 (git rev-list --count,
+      --first-parent --count and git diff --shortstat official/master
+      official/dev). The list is
+      releases/cgm-remote-monitor-16.0.0/contents.md. The staging PR is #8824
+      (dev to master).
+    review: maintainer, and at least one human reviewer who is not the author
+    operator_visible: >
+      Version 16.0.0 is the next Nightscout release. Nothing in it reaches
+      your site until 16.0.0 is released and your site is updated to it. It
+      needs Node 22.23.4, 24.22.1 or 26.12.1 or newer, and MongoDB 4.4 or
+      newer to start; the legacy Dexcom Share and MiniMed CareLink bridges are
+      removed. Read the release notes before upgrading.
+    semver: major
+    semver_reason: "the Node and MongoDB floors and the removed legacy bridges (contents.md, Version)"
+    register: []
+    gates:
+      - no-gate: >
+          A release item: what it waits on is in blocks_on, each with its own
+          gates. The tag itself is the evidence;
+          tools/queue/verification-record.py captures the verification record
+          once, at release time.
+    blocks_on: [RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, BFQ-72, BFQ-161]
+    evidence:
+      - releases/cgm-remote-monitor-16.0.0/contents.md
+      - releases/cgm-remote-monitor-16.0.0/decisions.md
+    notes: >
+      Filed 2026-10-26 from the maintainer's pre-tag requirements (session
+      -66, 2026-10-26): before the tag, (a) a live Pushover and APNs delivery
+      check (RT-16-LIVE-ALARMS), (b) a real-rig soak on dev (RT-16-RIG-SOAK),
+      and (c) the BF-72 and BF-161 fork fixes merged and published with 16.0.0
+      (BFQ-72, BFQ-161). BF-193 is not a pre-tag requirement; whether payload
+      logging is needed for debugging is the maintainer's open question. Other
+      open items a releaser must settle are in contents.md. The generated
+      release-waits view still reads RT-0 (15.0.9), so it does not list these
+      blockers.
+
+  - id: RT-16-LIVE-ALARMS
+    title: "16.0.0 pre-tag check: live Pushover and APNs delivery on dev"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@47723cda
+    worktree: externals/cgm-remote-monitor-official
+    state: not-started
+    pr: []
+    blast_radius: >
+      Cut 5 (#8605, merged 47723cda) replaces the Pushover SDK with a native
+      HTTPS client, moves notification state to @cacheable/node-cache and APNs
+      to @parse/node-apn 8. Its body leaves live Pushover emergency delivery,
+      acknowledgement and cancellation, de-duplication over the real window,
+      and APNs delivery to a phone to the maintainer as acceptance work; local
+      fixtures do not establish them.
+    review: maintainer (real credentials and devices)
+    operator_visible: >
+      Before 16.0.0 is tagged, someone checks on a real Nightscout site that
+      phone alerts sent through Pushover and Apple push notifications still
+      arrive, can be acknowledged and stop when they should. Until then, keep
+      the alerts on your own devices switched on.
+    semver: n/a
+    semver_reason: a release check, not a change
+    register: []
+    gates:
+      - no-gate: >
+          Needs real Pushover and Apple credentials and a phone, which this
+          programme does not use (rule 0). Evidence to record: the dev commit,
+          the services checked, and each send, acknowledgement and cancel
+          observed.
+    blocks_on: []
+    evidence:
+      - releases/cgm-remote-monitor-16.0.0/contents.md
+    notes: >
+      Required before the tag (maintainer, 2026-10-26, session -66).
+
+  - id: RT-16-RIG-SOAK
+    title: "16.0.0 pre-tag check: a real-rig soak on dev"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@47723cda
+    worktree: externals/cgm-remote-monitor-official
+    state: not-started
+    pr: []
+    blast_radius: >
+      dev 47723cda (or the named candidate) run behind real uploaders and
+      followers for a soak period: a closed-loop controller, a CGM uploader
+      and followers, with the 2026-10-26 client replay (integration record
+      R15) as the synthetic baseline.
+    review: maintainer
+    operator_visible: >
+      Before 16.0.0 is tagged, it runs for a while on a real setup with real
+      apps sending and reading data, to catch problems the automated tests
+      cannot.
+    semver: n/a
+    semver_reason: a release check, not a change
+    register: []
+    gates:
+      - no-gate: >
+          A soak with real devices cannot be a queue gate. Evidence to record:
+          the commit, the apps and versions, the duration, and any failure
+          seen. R15's replay of 67 request shapes is synthetic and does not
+          replace it.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/rc-16.0.0-integration-record.md
+    notes: >
+      Required before the tag (maintainer, 2026-10-26, session -66).
+
   - id: RT-BUNDLE-THEME-SPLIT
     title: "Load the modern theme's client code only when it is chosen (page-bundle budget option B)"
     parcel: release-train
@@ -16359,10 +16479,56 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-26 (maintainer, session -66): not a pre-tag requirement for
+      16.0.0. The maintainer asked whether the socket's payload logging is
+      needed for debugging; that question is open, so the fix shape is not
+      settled.
+
       Filed 2026-10-26 from a read-only compatibility audit of dev 47723cda;
       the socket's counterpart of BF-186, which #8845 fixed for API v3. Fix
       direction, unverified: log the collection and the record count, not the
       record.
+
+  - id: BFQ-194
+    title: "BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@47723cda
+    state: needs-decision
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/server/treatments.js prepareData (:639-643 on dev 47723cda, :566-570
+      on v15.0.9): the delete of units together with glucose and glucoseType
+      when no glucose is given. API v1 and in-process treatment writes.
+    review: maintainer
+    operator_visible: >
+      If an app sends Nightscout a temporary target in mmol/L through the
+      older API (v1), Nightscout throws away the units and keeps the numbers,
+      so a target of 6.0 mmol/L is stored as 6 and read as 6 mg/dL. Nothing
+      tells you. Check a temporary target on your Nightscout page after
+      setting it from an app, and talk to your care team about how you set
+      targets.
+    semver: minor
+    semver_reason: changes what is stored for a write clients already send
+    register: [BF-194]
+    gates:
+      - no-gate: >
+          Reproduced 2026-10-26 by the client replay of integration record R15
+          against booted servers (v15.0.9 and dev 47723cda, each
+          WRITE_VALIDATION mode). A queue gate would post the record through
+          the v1 handler in-process and assert units survives; control: dev
+          47723cda fails it. Not written until the fix shape is decided.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - docs/30-design/remedial/rc-16.0.0-integration-record.md
+    notes: >
+      Filed 2026-10-26 from R15. Needs a maintainer decision: keep units on a
+      record with targets when no glucose is given, convert to mg/dL, or
+      refuse under WRITE_VALIDATION=reject. Related to BF-180 (the careportal
+      path through the same lines, merged in #8842) and MOD-UNITS-CANONICAL.
 
   - id: MOD-WRITE-VALIDATION
     title: "WRITE_VALIDATION=off|log|reject: opt-in domain validation of Temporary Target writes on API v1 and v3 (draft)"
