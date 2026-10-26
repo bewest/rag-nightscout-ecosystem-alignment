@@ -112,7 +112,7 @@ The decisions D1–D20 are in the [execution plan](../tenancy/nightscout-multite
 
 ## 6. Open decisions
 
-Select **Show on the map** on a card to see which items it holds up.
+Select **Show on the map** on a card to see which items it holds up. The #8854 decision has its own [brief](../modernization/pr-8854-alignment-2026-10-26.md).
 
 <!-- chart: decisions -->
 

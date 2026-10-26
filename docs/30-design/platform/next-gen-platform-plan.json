@@ -561,6 +561,37 @@
    ]
   },
   {
+   "id": "D-8854",
+   "short": "#8854 and 16.0.0",
+   "owner": "maintainer with #8854's author; brief: pr-8854-alignment-2026-10-26",
+   "question": "Does #8854 land in 16.0.0, and is it aligned with the write-path plans first? The differences are its event, the socket's [] refusal, the Nightscout-Data-Warnings header and the write-step name.",
+   "holds": [
+    "PR-8854"
+   ],
+   "options": [
+    {
+     "label": "B: aligned first, in 16.0.0 (the maintainer's lean)",
+     "gains": "16.0.0 ships the boundary with nothing client-visible undecided",
+     "risks": "16.0.0 waits for the alignment and a re-run of the 67-shape client replay"
+    },
+    {
+     "label": "D: split; the internal parts in 16.0.0, the header and socket validation decided first",
+     "gains": "the boundary, gates and guards ship without waiting on the header and socket decisions",
+     "risks": "two PRs; the client replay re-run covers the internal parts"
+    },
+    {
+     "label": "A: after the 16.0.0 tag",
+     "gains": "16.0.0 stays the replayed set",
+     "risks": "the writers stay divergent through 16.0.0"
+    },
+    {
+     "label": "C: as is in 16.0.0",
+     "gains": "fastest",
+     "risks": "the header and the socket [] refusal ship as public behaviour in a major"
+    }
+   ]
+  },
+  {
    "id": "D-EVENT",
    "short": "Commit event and socket refusals",
    "owner": "maintainer with #8854's author (Q-A, Q-G)",
