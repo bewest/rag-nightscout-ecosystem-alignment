@@ -30,13 +30,15 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 22 items
+### Maintainer &mdash; 23 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `ARCH-8854` | `in-flight-upstream` | #8854 - shared write boundary, read contract and CI gates; into 16.0.0 after fou | #8854 |
 | `BFQ-161` | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory  | &mdash; |
 | `BFQ-193` | `in-flight-upstream` | BF-193 - the realtime socket and other write paths log every record written thro | #8856 |
+| `BFQ-195` | `in-flight-upstream` | BF-195 - a stale profile is pushed over the socket after a profile re-send | #8859 |
+| `ID-SIMPLE-MATCH` | `in-flight-upstream` | API v1 entries and devicestatus match on identifier like treatments (the simple  | #8859 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-194` | `needs-decision` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/ | &mdash; |
@@ -52,7 +54,6 @@ every item that was `merged-upstream` then is `released`.
 | `MOD-UNITS-CANONICAL` | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), an | &mdash; |
 | `MOD-WRITE-VALIDATION-READ` | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
-| `ID-SIMPLE-MATCH` | `ready-to-push` | API v1 entries and devicestatus match on identifier like treatments (the simple  | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
@@ -83,6 +84,8 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 |---|---|---|---|---|
 | **#8854** | `ARCH-8854` | `wip/architecture-data-contracts` | #8854 - shared write boundary, read contract and CI gates; i | Maintainer |
 | **#8856** | `BFQ-193` | `bf/16.0.0-log-privacy` | BF-193 - the realtime socket and other write paths log every | Maintainer |
+| **#8859** | `BFQ-195` | `bf/16.0.0-null-removes` | BF-195 - a stale profile is pushed over the socket after a p | Maintainer |
+| **#8859** | `ID-SIMPLE-MATCH` | `bf/16.0.0-null-removes` | API v1 entries and devicestatus match on identifier like tre | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 

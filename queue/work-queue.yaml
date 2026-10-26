@@ -3326,7 +3326,8 @@ items:
       2026-10-26, later (maintainer, session -66): BF-193's logging question
       is decided (debug-gated payload logging through DEBUG_LOGGING; BFQ-193,
       draft PR #8856), still not a pre-tag requirement. Q1b is decided for
-      16.0.0 (WRITE-CONTRACT, BFQ-195). Branch protection: master requires
+      16.0.0 (WRITE-CONTRACT, BFQ-195; with ID-SIMPLE-MATCH in draft PR
+      #8859, head fc170a4c). Branch protection: master requires
       only Tests pass and one approving review, decided, the settings change
       owed by the maintainer (contents.md, Repository settings).
 
@@ -4649,13 +4650,15 @@ items:
     title: "API v1 entries and devicestatus match on identifier like treatments (the simple contract)"
     parcel: release-train
     repo: cgm-remote-monitor
-    branch: feat/v1-identifier-match
+    branch: bf/16.0.0-null-removes
     base: official/dev@47723cda
     worktree: externals/work/crm-idmatch
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8859]
     blast_radius: >
-      Small and standalone, one PR to dev with BF-169 (BFQ-169).
+      Built as feat/v1-identifier-match 8d0f9a22; ships inside draft PR #8859
+      (bf/16.0.0-null-removes), the 16.0.0 re-send and merge PR. First
+      scoped as one PR to dev with BF-169 (BFQ-169).
       lib/server/entries.js upsertQueryFor (301-319 at fade2299): match
       identifier first, as treatments do, then sysTime+type. lib/server/devicestatus.js
       create (92-172 at fade2299; insertMany unordered after #8758's
@@ -4677,11 +4680,16 @@ items:
       (RT-VERSION, RT-COUNT-COMPAT), so it cannot go into 15.0.9.
     register: []
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda feat/v1-identifier-match
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda bf/16.0.0-null-removes
         kind: static
         describe: >
-          The branch contains dev 47723cda (cut 5 merged). Red if the branch is
-          rebased off dev or deleted.
+          The PR #8859 branch contains dev 47723cda (cut 5 merged). Red if the
+          branch is rebased off dev or deleted.
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8d0f9a22 bf/16.0.0-null-removes
+        kind: static
+        describe: >
+          This item's commit 8d0f9a22 (built as feat/v1-identifier-match) is
+          on the PR #8859 branch. Red if the branch is rewritten without it.
       - no-gate: >
           Behaviour is measured outside the queue. tools/lab/v3-identifier-immutable's
           "v1 entries: same identifier, date +60 s" cell, run 2026-10-26: stored n=2
@@ -4697,6 +4705,30 @@ items:
       - tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md
       - docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
     notes: >
+      2026-10-26, later: ships inside draft PR #8859 to dev
+      (bf/16.0.0-null-removes, head fc170a4c), opened by the maintainer, with
+      Q1b (913d0895), BF-195 (1bdce62c), a merge of 8d0f9a22 (cf2a2a67:
+      entries find their stored match first, then merge) and the devicestatus
+      rule (b) as fc170a4c (a re-send with a stored identifier writes nothing
+      and the reply carries the stored _id, v1 and v3;
+      lib/api3/generic/create/acknowledge.js). dev is still 47723cda.
+      Measured by session -66 before push: npm test 4374 passing, 3 failing,
+      1 pending, test:all 4702 / 3 / 1, the failures environmental
+      (development-watch ENOSPC, the host's file-watcher limit). With the
+      code reverted 6 of 10 new v1 tests and 5 of 8 new v3 tests fail,
+      controls pass; the devicestatus re-send probe leaves 1 record where dev
+      stored 2, 3, then 4. Two existing expectations changed deliberately
+      (api.crud-by-id matrix v3 devicestatus re-send row;
+      api3.empty-identifier-edit). Trial merge with #8854: one textual
+      conflict (an import line in lib/api3/generic/patch/operation.js, keep
+      both requires) and 4 of #8854's cross-path matrix cells need a 3-line
+      expectation change, applied by whichever PR merges second; with it all
+      405 matrix tests pass. Merges cleanly with #8856. Points for review in
+      the PR body: v3's created_at+device devicestatus fallback still
+      replaces; a deleted status re-sent with its identifier stays deleted;
+      two simultaneous first sends with the same new identifier can both be
+      stored (no unique index).
+
       2026-10-26, later (maintainer, via session -66): (a) D-ID-FALLBACK
       decided: for 16.0.0 a v1 entries re-send whose identifier matches
       nothing still matches on sysTime+type, as today (TEST-ENTRY-UUID-003);
@@ -6401,7 +6433,10 @@ items:
       PATCH); never on v1 or v3 PUT or on any create; applied after v1
       prepareData; dbUpdateUnset kept. It ships ahead of the step, on
       bf/16.0.0-null-removes (in progress) with BF-195's fix (BFQ-195).
-      Spec section 6.1 and section 2.2's set/unset maps updated.
+      Spec section 6.1 and section 2.2's set/unset maps updated. 2026-10-26,
+      later: Q1b (913d0895, lib/server/merge-patch.js) is in draft PR #8859
+      to dev (bf/16.0.0-null-removes, head fc170a4c), opened by the
+      maintainer; this step itself is not built.
 
       Maintainer decisions 2026-10-12 (spec section 6): Q1 merge on match,
       every collection and path; Q1b a field sent as null is removed (JSON
@@ -15071,6 +15106,8 @@ items:
       removes the field; it ships in 16.0.0 on bf/16.0.0-null-removes (in
       progress), which changes tests/api.profiles.resend.test.js:218, the test
       that pins dev's stored null. Until then dev stores null as null.
+      2026-10-26, later: that branch is draft PR #8859 to dev (head
+      fc170a4c), opened by the maintainer.
 
       2026-10-26, 11:34:16Z: merged. AndyLow91 merged #8845
       (bf/16.0.0-record-identity, head 50219945) into dev as 900abf7a (gh pr
@@ -16607,8 +16644,8 @@ items:
     branch: bf/16.0.0-null-removes
     base: official/dev@47723cda
     worktree: externals/work/crm-q1b-fix
-    state: in-progress
-    pr: []
+    state: in-flight-upstream
+    pr: [8859]
     ships_to_operators_today: true
     blast_radius: >
       lib/server/profile.js: the ctx.bus.emit('data-received') at :171 on dev
@@ -16624,17 +16661,41 @@ items:
     semver_reason: a race fixed; what is stored and replied does not change
     register: [BF-195]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda bf/16.0.0-null-removes
+        kind: static
+        describe: >
+          The PR #8859 branch contains dev 47723cda. Red if the branch is
+          rebased off dev or deleted.
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1bdce62c bf/16.0.0-null-removes
+        kind: static
+        describe: >
+          The fix commit 1bdce62c is on the PR #8859 branch. Red if the branch
+          is rewritten without it.
       - no-gate: >
           Reproduced 2026-10-26 by the Q1b study, 2 of 2 runs on dev 47723cda
           and on lab/q1b-null-removes 63c33a0e: a socket client receives the
           earlier profile in dataUpdate after a profile re-send. A queue gate
           would re-send a profile in-process with a socket listener and
           assert the pushed profile is the merged one; control: dev 47723cda
-          fails it. Written with the fix on bf/16.0.0-null-removes.
+          fails it. The fix's test is in draft PR #8859 (bf/16.0.0-null-removes,
+          head fc170a4c); behaviour is measured outside the queue (the suite
+          needs MongoDB): on fc170a4c, measured by session -66, npm test 4374
+          passing, 3 failing, 1 pending and test:all 4702 / 3 / 1, the failures
+          environmental (development-watch ENOSPC, the host's file-watcher
+          limit).
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-26, later: in draft PR #8859 to dev (bf/16.0.0-null-removes,
+      head fc170a4c), opened by the maintainer, as 1bdce62c ("Announce a
+      profile write after it finishes, not when it starts"), with Q1b
+      913d0895, ID-SIMPLE-MATCH (merge cf2a2a67) and the devicestatus rule
+      fc170a4c. Measured by session -66 before push: npm test 4374 / 3 / 1
+      and test:all 4702 / 3 / 1, the failures environmental (ENOSPC file
+      watchers). Merges cleanly with #8856; with #8854 one import-line
+      conflict and a 3-line matrix expectation change (ID-SIMPLE-MATCH).
+
       2026-10-26, later: lands in the one 16.0.0 re-send and merge PR on
       bf/16.0.0-null-removes (Q1b head 1bdce62c; bundle in progress; at
       cf2a2a67 the branch carries 913d0895 for Q1b, 1bdce62c for BF-195 and
