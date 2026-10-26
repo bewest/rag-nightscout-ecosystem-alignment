@@ -2997,6 +2997,10 @@ items:
       - docs/00-overview/ROADMAP.md
       - docs/30-design/modernization/jsdom-harness-test-tiers-2026-10-21.md
     notes: >
+      2026-10-25 (maintainer): start this after the cuts land. Tentatively,
+      both Playwright tests and a secure jsdom harness may be accepted,
+      consistent with the 2026-10-21 scope B. State stays not-started.
+
       2026-10-25: cut 1 is on dev (RT-1, #8828, eb72a1d3), so this can start
       on dev. On eb72a1d3 tests/fixtures/headless.js, benv-loader.js,
       benv-shim.js, secure-jsdom.js and dom-globals.js are all present and
@@ -3143,10 +3147,10 @@ items:
     title: Boot awaits its collection and index creation before it reports ready
     parcel: release-train
     repo: cgm-remote-monitor
-    branch: ""
-    base: official/dev@2bc298b9
-    worktree: externals/cgm-remote-monitor-official
-    state: not-started
+    branch: bf/16.0.0-boot-resilience
+    base: official/dev@b29f1bf7
+    worktree: externals/work/crm-resilience-1600
+    state: in-progress
     pr: []
     blast_radius: >
       Product code: the boot stages that request collections and indexes
@@ -3163,16 +3167,36 @@ items:
     semver_reason: boot ordering; no API, setting or stored-data shape changes
     register: []
     gates:
+      - run: git -C externals/cgm-remote-monitor-official cat-file -e 488def62^{commit}
+        kind: static
+        describe: >
+          the boot-await commit on bf/16.0.0-boot-resilience exists in the
+          shared clone; red if the local branch is lost before it is pushed (a
+          rebase changes the id, and this gate must then name the new one)
       - no-gate: >
-          Not started. Gate to write: with the database dropped before boot,
-          the first authSubject role insert after boot completes in
-          milliseconds rather than seconds, and tests/api3.search.test.js's
-          before hook passes under mocha's default timeout (cab8896f's 30 s
-          allowance reverted as the red control).
+          The behaviour gate needs MongoDB: tests/boot-index-ready.test.js
+          (integration) drops the database, boots, and checks that every data,
+          API v3 and authorization index exists and no build is still running
+          when boot calls back; with both boot stages calling next() without
+          waiting, 3 of 5 fail ("ns does not exist: testdb.entries"). Reported
+          by the lane: npm run test:all passes on the branch head 8e3717e3
+          (integration 2003/0/1, MongoDB 8.0.34).
     blocks_on: []
     evidence:
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
     notes: >
+      2026-10-25: in progress as 488def62 on local bf/16.0.0-boot-resilience
+      (head 8e3717e3 over dev b29f1bf7, not pushed; session f4's resilience
+      lane, themed with BF-156, BF-46, BF-48 and BF-49). ensureIndexes returns
+      a promise that never rejects; one createIndexes per collection, with a
+      per-index fallback; the setupAuthorization and ensureIndexes boot stages
+      wait at most 20 s (INDEX_WAIT_MS), then log a warning and continue; boot
+      also asks for API v3's indexes on its six collections. Measured on
+      MongoDB 8.0.34 (lane): boot on a dropped database 3.2 to 4.3 s (was 0.2
+      to 1 s) and the first write after it 2 to 4 ms; an indexed database
+      still boots in about 0.2 s. Open for review: whether 20 s is the right
+      cap.
+
       Filed 2026-10-25 from #8838's cab8896f, which gave the API3 SEARCH
       before hook a 30 s timeout. Measured there on MongoDB 7.0.43: on an
       empty database the first role insert in authSubject took 4.8 to 7.2 s
@@ -7311,7 +7335,7 @@ items:
     parcel: register-open
     repo: cgm-remote-monitor
     branch: bf/regex-limits
-    base: official/dev@04d435eb
+    base: official/dev@b29f1bf7
     worktree: externals/work/crm-bf72
     state: in-flight-upstream
     pr: []
@@ -7393,6 +7417,10 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: rebased onto dev b29f1bf7; head 532d7d7a on a branch of the
+      advisory's private fork. Decision (maintainer): 16.0.0 only, no 15.0.x
+      backport. Mechanism only in this repository.
+
       2026-10-21, later still: pushed by the maintainer to the private fork
       of GHSA-r3gv as bf/regex-limits 1833ab00. No pull request is open
       inside the fork yet; opening it is the next step, and the fix is
@@ -7872,9 +7900,9 @@ items:
     title: BF-46 - eleven API v3 variables bypass env.js, one family deletes data
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: bf/config-docs-truth
-    base: official/dev@ca6fcfaf
-    worktree: externals/work/crm-bf46-env
+    branch: bf/16.0.0-boot-resilience
+    base: official/dev@b29f1bf7
+    worktree: externals/work/crm-resilience-1600
     state: in-progress
     ships_to_operators_today: true
     blast_radius: >
@@ -7921,6 +7949,16 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: the code half is fixed as 1d63df57 on local
+      bf/16.0.0-boot-resilience (head 8e3717e3 over dev b29f1bf7, not pushed):
+      the API v3 settings and CI are read in env.js into env.api3 with the
+      same parsing (not trimmed), and lib/api3 no longer reads process.env;
+      tests/env.api3.test.js is red with trimming added. The branch moves from
+      bf/config-docs-truth, whose documentation half shipped in 15.0.9
+      (#8799). The census gate below still looks for README entries and an
+      awaited deleteManyOr; read its arm against the branch before trusting a
+      red.
+
       2026-10-02: gate defect found by -d4's agent: config-surface-census.js's
       api3 arm (:138-142) accepts only `await self.storage.deleteManyOr`, so
       it stays red on a correct .then/.catch fix (bf/autoprune-promise).
@@ -8047,9 +8085,9 @@ items:
     title: BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: bf/config-docs-truth
-    base: official/dev@ca6fcfaf
-    worktree: externals/work/crm-bf46-env
+    branch: bf/16.0.0-boot-resilience
+    base: official/dev@b29f1bf7
+    worktree: externals/work/crm-resilience-1600
     state: in-progress
     ships_to_operators_today: true
     blast_radius: >
@@ -8121,6 +8159,14 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: on local bf/16.0.0-boot-resilience (head 8e3717e3 over dev
+      b29f1bf7, not pushed): BF-48 fixed as 8e4d30d3 (WEBHOOK_* read in env.js
+      into env.webhook, passed as ctx.webhook); BF-49 partly fixed as 8e3717e3
+      (a start-up warning when the unread
+      SECURE_HSTS_HEADER_INCLUDE_SUBDOMAINS is set; the alias and the five
+      dead settings keys are open decisions). BF-50 and BF-51 were fixed by
+      #8799 and released in 15.0.9; their gates here are stale.
+
       2026-10-02 (maintainer, relayed by session -d4): BF-50 and BF-51 and
       the documentation half of BF-48 and BF-49 go into 15.0.9 as
       BFQ-CONFIG-DOCS; after 15.0.9 here: env.js routing for WEBHOOK_*, the
@@ -8212,6 +8258,11 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/bf52-age-push-once-2026-09-23.md
     notes: >
+      2026-10-25: stays blocked on the Pushover delivery measurement. The
+      BFQ-92 dependency is met on bf/16.0.0-client-alarms 72f3cc09, and
+      bf3/age-push-once 896629f8 merges cleanly onto it (alarms lane).
+      blocks_on still names BFQ-92 until that branch lands.
+
       Deferred, not in 15.0.9: blocked on BFQ-92, with which it ships in
       a later release. The branch stays prepared at bf3/age-push-once
       896629f8 (one commit on 74fc6619, not pushed). Reproduced red on
@@ -8331,10 +8382,10 @@ items:
     title: BF-92 - a page with no glucose reading never presents a server alarm, including device alarms
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
-    base: origin/dev@74fc6619
-    worktree: externals/cgm-remote-monitor-official
-    state: not-started
+    branch: bf/16.0.0-client-alarms
+    base: official/dev@b29f1bf7
+    worktree: externals/work/crm-alarms-1600
+    state: in-progress
     ships_to_operators_today: true
     blast_radius: >
       lib/client/index.js:1196-1204 (isAlarmForHigh, isAlarmForLow, both
@@ -8378,6 +8429,17 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/bf90-alarm-no-reading-2026-09-23.md
     notes: >
+      2026-10-25: fixed as 5fb199b3 on local bf/16.0.0-client-alarms (head
+      72f3cc09 over dev b29f1bf7, not pushed; session f4's alarms lane): a
+      non-glucose alarm is presented on a page with no reading when either
+      local alarm setting for its level is on. Reproduced again on a real
+      server in Chromium; tests/browser/server-alarms.test.js and
+      tests/client.alarm-no-reading.test.js; browser 556/0 on Node 24.22.1 and
+      22.23.4, unit 1223, dom 164, integration 1994/1 (lane). The same commit
+      fixes BF-190 (BFQ-190). Decision notes: the glucose/non-glucose group
+      rule is kept; gating on pages with a reading is unchanged (staged-ladder
+      follow-up).
+
       Open, no branch; it ships in a later release, not 15.0.9, paired
       with BFQ-52, and 15.0.9 carries it as a known issue. Filed
       2026-09-23 from the BF-90 work. Safety-relevant - graded high in
@@ -8394,10 +8456,10 @@ items:
     title: BF-93 - food changes never reach an open page
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
-    base: origin/dev@74fc6619
-    worktree: externals/cgm-remote-monitor-official
-    state: not-started
+    branch: bf/16.0.0-client-alarms
+    base: official/dev@b29f1bf7
+    worktree: externals/work/crm-alarms-1600
+    state: in-progress
     ships_to_operators_today: true
     blast_radius: >
       lib/data/calcdelta.js - compressArrays covers sgvs, treatments, mbgs, cals
@@ -8433,6 +8495,11 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/bf69-quickpick-rebuild-2026-09-23.md
     notes: >
+      2026-10-25: fixed as 91d9a4db on local bf/16.0.0-client-alarms (head
+      72f3cc09 over dev b29f1bf7, not pushed): food in the broadcast delta,
+      and v1 food writes emit data-received; tests/data.calcdelta.test.js and
+      tests/api.food.test.js red when reverted.
+
       2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on.
       Deferred until after 15.0.9 (2026-10-02); the fix the item names (food
       in calcdelta's broadcast delta) is a patch with no branch yet, so
@@ -10688,7 +10755,7 @@ items:
     branch: bf/profile-object-id
     base: origin/dev@1f9a9d10
     worktree: externals/work/crm-bf-profile-id
-    state: blocked
+    state: released
     ships_to_operators_today: true
     blast_radius: >
       lib/server/profile.js create, save, remove and the find[_id] path, plus
@@ -10712,11 +10779,16 @@ items:
       - no-gate: >
           The new test file passes on the branch and fails 11 of 13 on dev 1f9a9d10 and
           on 15.0.8; a queue gate running it against both trees does not exist yet.
-    blocks_on: [BFQ-102]
+    blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/profile-object-id-2026-09-23.md
     notes: >
+      2026-10-25: released in 15.0.9 (tag v15.0.9, master c6a0d8ed) through
+      #8758 (BFQ-102); the register row already says so. The identity lane
+      confirms it does not reproduce on dev b29f1bf7. This item's own branch
+      was never opened.
+
       Not to be opened: the maintainer chose BFQ-102 for 15.0.9
       (2026-09-23), and this item's fix is carried by #8758
       (bf/object-id-crud 6d120fa2), which is open. The item follows
@@ -10737,7 +10809,7 @@ items:
     branch: bf/object-id-other-collections
     base: origin/dev@1f9a9d10
     worktree: externals/work/crm-bf-object-id
-    state: blocked
+    state: released
     ships_to_operators_today: true
     blast_radius: >
       lib/server/devicestatus.js, food.js and activity.js create, update, remove and
@@ -10755,11 +10827,16 @@ items:
       - no-gate: >
           New tests fail 27 of 31 on dev 1f9a9d10 and pass on the branch; suite
           2432/0/3 on Node 20 and 22. No queue gate runs them yet.
-    blocks_on: [BFQ-102]
+    blocks_on: []
     evidence:
       - docs/60-research/remedial/profile-object-id-2026-09-23.md
       - docs/60-research/remedial/object-id-other-collections-2026-09-23.md
     notes: >
+      2026-10-25: released in 15.0.9 (tag v15.0.9, master c6a0d8ed) through
+      #8758 (BFQ-102); the register row already says so. The identity lane
+      confirms it does not reproduce on dev b29f1bf7. This item's own branch
+      was never opened.
+
       Not to be opened: the maintainer chose BFQ-102 for 15.0.9
       (2026-09-23), and this item's fix is carried by #8758
       (bf/object-id-crud 6d120fa2, as its commit c), which is open. The
@@ -10777,7 +10854,7 @@ items:
     branch: bf/api3-string-id
     base: origin/dev@1f9a9d10
     worktree: externals/work/crm-bf-api3-id
-    state: blocked
+    state: released
     ships_to_operators_today: true
     blast_radius: >
       lib/api3/storage/mongoCollection/utils.js filterForOne and identifyingFilter,
@@ -10793,11 +10870,16 @@ items:
       - no-gate: >
           New v3 route tests fail 9 of 10 on dev and pass on the branch; suite 2411/0/3
           on Node 20 and 22; explain() keeps IXSCAN, no COLLSCAN. No queue gate yet.
-    blocks_on: [BFQ-102]
+    blocks_on: []
     evidence:
       - docs/60-research/remedial/profile-object-id-2026-09-23.md
       - docs/60-research/remedial/object-id-other-collections-2026-09-23.md
     notes: >
+      2026-10-25: released in 15.0.9 (tag v15.0.9, master c6a0d8ed) through
+      #8758 (BFQ-102); the register row already says so. The identity lane
+      confirms it does not reproduce on dev b29f1bf7. This item's own branch
+      was never opened.
+
       Not to be opened: the maintainer chose BFQ-102 for 15.0.9
       (2026-09-23), and this item's fix is carried by #8758
       (bf/object-id-crud 6d120fa2, as its commit e), which is open. The
@@ -12784,9 +12866,10 @@ items:
     parcel: register-open
     repo: cgm-remote-monitor
     branch: ""
-    base: origin/dev@e3adc91d
-    state: not-started
-    pr: []
+    base: official/dev@b29f1bf7
+    worktree: externals/work/crm-alarms-1600
+    state: merged-upstream
+    pr: [8837]
     ships_to_operators_today: true
     blast_radius: >
       lib/plugins/maker.js makeKeyRequests (one callback after every key has
@@ -12806,23 +12889,23 @@ items:
     semver_reason: a bug fix in how several Maker keys are sent; one-key sites are unchanged
     register: [BF-137]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official grep -qF "maker.makeKeyRequest(key, event, eventName, callback);" origin/dev -- lib/plugins/maker.js
-        kind: static
+      - run: 'cd externals/work/crm-alarms-1600 && npx mocha --timeout 10000 --exit tests/maker-delivery.test.js'
+        kind: unit
         describe: >
-          Holds while origin/dev's makeKeyRequests passes the one step
-          callback to every key's request (the mechanism of BF-137). A
-          presence check only, inverted in meaning: it goes RED when that
-          line changes, and must then be replaced by a behaviour gate.
-      - no-gate: >
-          Reproduced in-process 2026-09-25 with two keys against a local
-          stand-in for IFTTT: 6 requests in interleaved order and 4 final
-          callbacks. The script was in a scratch directory and was not
-          retained. The missed retry follows from the 15-minute dedup key
-          (read).
+          dev's own Maker delivery test (from af7ba73a, merged with cut 2,
+          #8837), run in a worktree on dev b29f1bf7 plus the alarms branch;
+          8 passing on 2026-10-25. Replaces the presence check on the old
+          makeKeyRequests line, which went red by design when the fix merged.
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: resolved on dev by af7ba73a ("fix: preserve Maker delivery
+      across recipient failures"), merged with cut 2 (#8837, merge eb44a9c2);
+      not in any release (alarms lane). The old static gate was red by design
+      once the line changed and is replaced by dev's
+      tests/maker-delivery.test.js.
+
       Filed 2026-09-26. Found with BF-125. Live on 15.0.8: lib/plugins/maker.js
       and lib/server/pushnotify.js are identical on v15.0.8 92d08342 and dev
       e3adc91d (async ^0.9.2 on both).
@@ -12834,9 +12917,10 @@ items:
     title: "BF-145 - API v3 PATCH and PUT by the shown id miss a record whose identifier is null, \"\" or 0"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
-    base: origin/dev@699eb5fa
-    state: not-started
+    branch: bf/16.0.0-record-identity
+    base: official/dev@b29f1bf7
+    worktree: externals/work/crm-identity-1600
+    state: in-progress
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -12865,6 +12949,12 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: fixed as d4566292 on bf/16.0.0-record-identity (head
+      26191780 over dev b29f1bf7, not pushed; session f4's identity lane):
+      identifyingFilter shares filterForEveryForm's no-own-identifier clause;
+      PATCH 404 to 200, PUT's second record to a replace, a v3 POST with such
+      a record's _id as identifier deduplicates.
+
       Filed 2026-09-26 from the BF-142 fix work; after 15.0.9 by the
       maintainer's decision (2026-09-26). Not a regression from 15.0.8.
   - id: BFQ-147
@@ -13427,8 +13517,15 @@ items:
           by identifier (plugins/sync nsclientV3 LoadSettingsRunner).
     blocks_on: []
     evidence:
+      - docs/60-research/remedial/aaps-websocket-delivery-lab-2026-10-25.md
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25, later: head 06ba6201 confirmed; the setting name
+      API3_SETTINGS_STRICT_READ_ENABLED is confirmed by the maintainer.
+      Write-up of the AndroidAPS findings:
+      docs/60-research/remedial/aaps-websocket-delivery-lab-2026-10-25.md
+      section 3.
+
       2026-10-25 (maintainer decision): a staged ladder. (1) an opt-in,
       admin-only settings read in 16.x; (2) ask the AndroidAPS developers
       about a narrower scope; (3) a strict default later on the calendar.
@@ -13613,9 +13710,9 @@ items:
     title: "BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the process"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: bf/autoprune-promise
-    worktree: externals/work/crm-bf156
-    base: official/dev@ca6fcfaf
+    branch: bf/16.0.0-boot-resilience
+    worktree: externals/work/crm-resilience-1600
+    base: official/dev@b29f1bf7
     state: in-progress
     pr: []
     ships_to_operators_today: true
@@ -13640,6 +13737,12 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: re-applied to current dev as a5b569b9 on local
+      bf/16.0.0-boot-resilience (head 8e3717e3 over dev b29f1bf7, not pushed);
+      tests/api3.autoprune.test.js, 2 of 3 red with dev's collection.js.
+      Follow-up, read not measured: the cached collection invalidates at most
+      1000 ids per deleteManyOr while the delete removes every match.
+
       2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on.
       bf/autoprune-promise is still 8e4f7dce on dev ca6fcfaf and does not
       contain dev 04d435eb: before it is ready to push it owes a merge of dev
@@ -13787,9 +13890,10 @@ items:
     title: "BF-159 - the main page sometimes leaves for the Profile Editor while a profile exists, without the token"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
-    base: official/dev@68262e86
-    state: not-started
+    branch: bf/16.0.0-client-alarms
+    base: official/dev@b29f1bf7
+    worktree: externals/work/crm-alarms-1600
+    state: in-progress
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -13816,6 +13920,13 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/results-bf124/browser-probe.js
     notes: >
+      2026-10-25: partly fixed. The token half is reproduced and fixed as
+      72f3cc09 on local bf/16.0.0-client-alarms (over dev b29f1bf7, not
+      pushed): the redirect keeps ?token=
+      (tests/browser/profile-redirect.test.js). The intermittent redirect did
+      not reproduce: 0 of 29 loads on b29f1bf7 with a profile in effect. Split
+      the race into its own item if it is seen again.
+
       Filed 2026-10-03 from session -d4's BF-124 and BF-127 browser runs. After
       15.0.9 (maintainer, 2026-10-03). The same check is at renderer.js:1072
       on v15.0.8; whether 15.0.8 shows the redirect as often is not measured.
@@ -13823,9 +13934,10 @@ items:
     title: "BF-160 - the clock designer's link target is written with curly quotes"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
-    base: official/dev@68262e86
-    state: not-started
+    branch: bf/16.0.0-client-alarms
+    base: official/dev@b29f1bf7
+    worktree: externals/work/crm-alarms-1600
+    state: in-progress
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -13846,6 +13958,10 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: fixed as 2556b35b on local bf/16.0.0-client-alarms (over dev
+      b29f1bf7, not pushed); tests/browser/clock-client.test.js red when
+      reverted.
+
       Filed 2026-10-03 from session -d4's BF-127 work. After 15.0.9
       (maintainer, 2026-10-03). PR #8802 edits the same file (the link's
       href), so a fix should go on top of it once it merges.
@@ -13855,7 +13971,7 @@ items:
     repo: cgm-remote-monitor
     branch: bf/entries-pattern-limit
     worktree: externals/work/crm-bf161
-    base: official/dev@04d435eb
+    base: official/dev@b29f1bf7
     state: in-flight-upstream
     pr: []
     ships_to_operators_today: true
@@ -13885,6 +14001,13 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: over HTTP on dev b29f1bf7, Node 22.23.4 and 24.22.1, stack
+      exhaustion did not reproduce; other limits are reached first; the change
+      is hardening. Rebased onto b29f1bf7 as head 0e06a36b on the private
+      fork; 16.0.0 only, no 15.0.x backport (maintainer). An over-long pattern
+      segment answering 500 is filed separately as BF-187 (BFQ-187), mechanism
+      only.
+
       2026-10-21, later still: pushed by the maintainer to the draft
       advisory's private fork as bf/entries-pattern-limit d2c4df9f. No pull
       request is open inside the fork yet; opening it is the next step.
@@ -14108,9 +14231,14 @@ items:
           43289dde, which must fail.
     blocks_on: []
     evidence:
+      - docs/60-research/remedial/aaps-websocket-delivery-lab-2026-10-25.md
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
     notes: >
+      2026-10-25: lab written up in
+      docs/60-research/remedial/aaps-websocket-delivery-lab-2026-10-25.md,
+      with the lab itself in tools/lab/aaps-ws-delivery/.
+
       2026-10-25 (maintainer decision): a lab run plus one combined note to
       the AndroidAPS developers (with BF-152); no code change yet. Stays
       needs-decision. Lab, 2026-10-25 (dev b29f1bf7, two real servers,
@@ -14144,9 +14272,10 @@ items:
     title: "BF-165 - a treatment re-send matched by its fallback key is answered without _id"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
-    base: official/dev@43289dde
-    state: not-started
+    branch: bf/16.0.0-record-identity
+    base: official/dev@b29f1bf7
+    worktree: externals/work/crm-identity-1600
+    state: in-progress
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -14169,15 +14298,22 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
     notes: >
+      2026-10-25: fixed as 0d5edc66 on bf/16.0.0-record-identity (head
+      26191780 over dev b29f1bf7, not pushed; session f4's identity lane): a
+      fallback-key match is answered with the stored _id (one indexed findOne
+      per unmatched item), and data-update carries it. Semver: the
+      write-contract spec's U6 says minor; 16.0.0 is a major either way.
+
       Filed 2026-10-07 from the WRITE-CONTRACT write matrix. Present on 15.0.8
       too. NightscoutKit's 'NA' handling is read, not run.
   - id: BFQ-166
     title: "BF-166 - a profile re-sent with its own _id answers 500"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
-    base: official/dev@43289dde
-    state: not-started
+    branch: bf/16.0.0-record-identity
+    base: official/dev@b29f1bf7
+    worktree: externals/work/crm-identity-1600
+    state: in-progress
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -14197,15 +14333,25 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
     notes: >
+      2026-10-25: fixed as c62a16c9 on bf/16.0.0-record-identity (head
+      26191780 over dev b29f1bf7, not pushed; session f4's identity lane),
+      implementing the decided write-contract Q1 merge (2026-10-12): a profile
+      re-sent with a stored _id is merged into it and answered 200 with that
+      _id; an identical re-send writes nothing; Q1b (null deletes a field) is
+      not implemented and stays unconfirmed. Evidence, reported by the lane:
+      write-contract matrix b29f1bf7 against 26191780, 42 of 336 cells differ,
+      40 intended and 2 in the racy cache field.
+
       Filed 2026-10-07 from the WRITE-CONTRACT write matrix. Present on 15.0.8
       too. BF-116 fixed the same shape for devicestatus.
   - id: BFQ-167
     title: "BF-167 - devicestatus remove()'s filter is not pinned by any test"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
-    base: official/dev@43289dde
-    state: not-started
+    branch: bf/16.0.0-record-identity
+    base: official/dev@b29f1bf7
+    worktree: externals/work/crm-identity-1600
+    state: in-progress
     pr: []
     ships_to_operators_today: false
     blast_radius: >
@@ -14227,6 +14373,10 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md
     notes: >
+      2026-10-25: fixed as 0edb1db9 on bf/16.0.0-record-identity (head
+      26191780 over dev b29f1bf7, not pushed; session f4's identity lane)
+      (test only).
+
       Filed 2026-10-07 from the seam propagation rehearsal. Register §1b, kind
       (c): behaviour is correct today.
   - id: BFQ-168
@@ -14296,9 +14446,10 @@ items:
     title: "BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a client-supplied one"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
-    base: official/dev@fade2299
-    state: not-started
+    branch: bf/16.0.0-record-identity
+    base: official/dev@b29f1bf7
+    worktree: externals/work/crm-identity-1600
+    state: in-progress
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -14318,10 +14469,17 @@ items:
           computed only when none is sent. A fix's gate greps both swagger
           files for "The client should not create the identifier"; control:
           fade2299 still has it.
-    blocks_on: [ID-SIMPLE-MATCH]
+    blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: fixed as a1ab22b6 and 26191780 on bf/16.0.0-record-identity
+      (head 26191780 over dev b29f1bf7, not pushed; session f4's identity
+      lane), per the D20 two-id rule: identifier is the client's sync
+      identity, kept as sent and not required to be a UUID; _id is the
+      server's storage key. The maintainer lifted the pairing with
+      ID-SIMPLE-MATCH, which stays a separate item.
+
       Filed 2026-10-17 while checking the Loop maintainers' proposal that
       Nightscout accept a client-supplied identifier. The text "this field is
       immutable by the client (it cannot be updated or patched)" is accurate
@@ -14338,9 +14496,10 @@ items:
     title: "BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
-    base: official/dev@fade2299
-    state: not-started
+    branch: bf/16.0.0-record-identity
+    base: official/dev@b29f1bf7
+    worktree: externals/work/crm-identity-1600
+    state: in-progress
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -14375,6 +14534,17 @@ items:
       - tools/lab/record-identity/results/record-identity-2026-10-18.md
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
     notes: >
+      2026-10-25: decided (maintainer): API v3 rejects a client-supplied _id,
+      amending identity rule I2 for API v3 only. Fixed on
+      bf/16.0.0-record-identity (head 26191780 over dev b29f1bf7, not pushed;
+      session f4's identity lane): 304827fd (create and PUT answer 400) and
+      108592de (PATCH answers 400 instead of 500; that scope awaits the
+      maintainer's confirmation). External survey (read): no API v3 client
+      sends _id (AndroidAPS dev and 3.4.2.6, nightscout-librelink-up bff2317;
+      nightscout-connect has no API v3 output; Nocturne does not write to
+      Nightscout's API v3). Record-identity lab, reported by the lane: 60
+      cases, 4 intended differences.
+
       Candidate C1 of the write-contract note (section 7), filed 2026-10-18.
       On 15.0.8 a v1 find[_id] for the record misses it (query.js converts to
       an ObjectId); on dev v1 matches both forms (object-id-forms
@@ -14796,9 +14966,10 @@ items:
     title: "BF-179 - postinstall runs webpack, now a devDependency, so a production install of dev fails (dev b29f1bf7, cut 2)"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
+    branch: bf/179-omit-dev-install
     base: official/dev@b29f1bf7
-    state: not-started
+    worktree: externals/work/crm-bf179
+    state: in-progress
     pr: []
     ships_to_operators_today: false
     blast_radius: >
@@ -14829,6 +15000,17 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: fixed as 1cf70838 on local bf/179-omit-dev-install (one
+      commit on dev b29f1bf7, not pushed); to be cherry-picked onto cut 3 by
+      session -f8. postinstall runs bin/postinstall.js: build when the tools
+      are installed, keep an existing bundle with a warning when they are not,
+      otherwise exit 1 naming npm ci --include=dev then npm prune --omit=dev
+      --ignore-scripts. Measured (lane): npm ci --omit=dev exits 1 with that
+      message; npm ci builds the 16 bundle files byte-identical to dev's;
+      docker build gives the same bundle. Decisions for the maintainer:
+      keep-prebuilt vs always fail, and the 16.0.0 release-note line. The boot
+      error with no bundle at all is BF-188.
+
       Filed 2026-10-25 by session f4 (register §1b, kind b: a defect in a
       release-train cut). Cut 2 (#8837) moved webpack to devDependencies;
       postinstall still runs it. Reach of the first-party Dockerfile and
@@ -14842,7 +15024,7 @@ items:
     repo: cgm-remote-monitor
     branch: bf/16.0.0-client-alarms
     base: official/dev@b29f1bf7
-    worktree: externals/cgm-remote-monitor-official
+    worktree: externals/work/crm-alarms-1600
     state: in-progress
     pr: []
     ships_to_operators_today: true
@@ -14878,6 +15060,13 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25, later: fixed as bb1ad38e on local bf/16.0.0-client-alarms
+      (head 72f3cc09 over dev b29f1bf7, not pushed): the careportal clears the
+      hidden glucose field and labels converted targets mg/dl. Reproduced in a
+      real browser on dev b29f1bf7 and v15.0.9 c6a0d8ed (1785.09 charted).
+      Severity set to medium in the register: silently ignored by AndroidAPS,
+      charted far off-scale.
+
       Filed 2026-10-25 by session f4 from the BF-175 measurement. AndroidAPS
       (externals/AndroidAPS 7e1d537d) reads units mmol as mmol/L x18 and
       drops a temp target outside 72-180.16 mg/dL with a debug log only
@@ -14974,8 +15163,18 @@ items:
           connected in 32 ms). Not a queue gate.
     blocks_on: []
     evidence:
+      - docs/60-research/modernization/mongodb-server-compat-matrix-2026-10-25.md
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: the driver x server matrix is done
+      (docs/60-research/modernization/mongodb-server-compat-matrix-2026-10-25.md):
+      driver 7.7.0 refuses 3.6.23, 4.0.28 and 4.2.24; 4.4.24 to 8.0.34 boot
+      and pass integration 2013/0/1; with the fix (7b636ce6 on
+      wip/cut3-onto-16.0.0, the rebased form of 99fa8b1e) refused servers get
+      the boot error page (HTTP 500 at 32 to 50 s, process alive, no retry).
+      Decision (maintainer): driver 7 in 16.0.0, MongoDB 4.4 or newer required
+      to start.
+
       Filed 2026-10-25 by session f4 from the defaults-calendar lane (C3-2;
       register §1b, kind b). The maintainer asked for confirmation that
       compatibility with MongoDB 3.6 to 4.4 holds; a driver x server matrix
@@ -14987,9 +15186,10 @@ items:
     title: "BF-183 - the API v3 storage socket logs the supplied credential on a failed authorization"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
+    branch: bf/183-storage-socket-log-redaction
     base: official/dev@b29f1bf7
-    state: not-started
+    worktree: externals/work/crm-bf183
+    state: in-progress
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -15015,6 +15215,13 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: reproduced live on dev b29f1bf7 (MongoDB 8.0.34) and fixed
+      as f6704b8a on local bf/183-storage-socket-log-redaction (one commit on
+      dev, not pushed), for cut 4: the alarm socket's redacted wording.
+      tests/api3.storage-logging.test.js 5 passing, its 4 rejection cases red
+      when reverted. The 2 security.test.js failures in that lane's
+      test:affected selection are BF-189 and also occur with dev's file.
+
       Filed 2026-10-25 by session f4. The same two paths in
       lib/api3/alarmSocket.js are redacted on dev; cut 4 changes them in
       alarmSocket.js only. Mechanism only in the public repository.
@@ -15064,8 +15271,8 @@ items:
     repo: cgm-remote-monitor
     branch: ci/edge-diagonal-matrix
     base: official/dev@b29f1bf7
-    state: in-progress
-    pr: []
+    state: in-flight-upstream
+    pr: [8843]
     ships_to_operators_today: false
     blast_radius: >
       Tests only: the stress tier (polluter) and tests/api3.search.test.js
@@ -15088,12 +15295,347 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: both fixes are in PR #8843 to dev (session -b7's CI matrix
+      PR), head 57717695: victim b9b5ef29, polluter 57717695.
+
       Filed 2026-10-25 by session f4 from the resilience lane's smoke run.
       Both sides are fixed on session -b7's local ci/edge-diagonal-matrix:
       victim b9b5ef29 (api3.search starts empty) and polluter 57717695
       (concurrent-writes.test.js afterEach and XX_clean remove devicestatus
       and entries; the stress tier leaves 0 on MongoDB 7.0). Closes with
       that PR.
+
+  - id: BFQ-186
+    title: "BF-186 - API v3 logs a whole record when a client's identifier differs from the computed one"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/16.0.0-record-identity
+    base: official/dev@b29f1bf7
+    worktree: externals/work/crm-identity-1600
+    state: in-progress
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/api3/shared/operationTools.js resolveIdentifier: the console.log(doc)
+      after the mismatch warning (:126-127 on dev b29f1bf7, :119-120 on
+      v15.0.9). Server-side log content only.
+    review: maintainer
+    operator_visible: >
+      When an app sends its own record identifier to Nightscout's API v3, the
+      server writes the whole record, including glucose values and treatment
+      amounts, into its log. Anyone who can read your hosting logs can see
+      it. Keep access to your hosting logs limited.
+    semver: patch
+    semver_reason: log content only
+    register: [BF-186]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official cat-file -e b34f6703^{commit}
+        kind: static
+        describe: >
+          the fix commit on bf/16.0.0-record-identity exists in the shared
+          clone; red if the local branch is lost before it is pushed (a rebase
+          changes the id, and this gate must then name the new one)
+      - no-gate: >
+          Read at dev b29f1bf7 and seen in the identity lane's test output; the
+          branch's red and green runs are the lane's. A unit gate would write a
+          record with its own identifier and assert the record's values are
+          absent from captured console output; control: b29f1bf7 fails it.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-10-25 by session f4 from the identity lane. Fixed as b34f6703
+      on local bf/16.0.0-record-identity (head 26191780 over dev b29f1bf7, not
+      pushed). Present on v15.0.9 by reading.
+
+  - id: BFQ-187
+    title: "BF-187 - an entries pattern segment over the braces parser's input limit answers 500, not 400"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@b29f1bf7
+    state: not-started
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/api/entries/index.js count_patterns / prep_patterns on /times,
+      /times/echo and /slice: a length check before braces.parse, answered
+      400. Adjacent to BF-161's advisory branch, so it may ride with it.
+    review: maintainer
+    operator_visible: >
+      A malformed request to one of Nightscout's entries pattern addresses is
+      answered with a server error instead of a request error. The site keeps
+      running and nothing is stored or changed.
+    semver: patch
+    semver_reason: an error status on malformed input changes from 500 to 400
+    register: [BF-187]
+    gates:
+      - no-gate: >
+          Reproduced on dev code by session f4's lane; mechanism only in this
+          repository (adjacent to a private advisory), so the reproducing input
+          is not recorded here. A gate would send an over-long segment and
+          assert 400 and a live server afterwards; control: dev b29f1bf7
+          answers 500.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-10-25 by session f4. Low. v15.0.9 has the same guard by
+      reading. Mechanism only.
+
+  - id: BFQ-188
+    title: "BF-188 - with no client bundle the server exits at boot with an unexplained module error"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@b29f1bf7
+    state: not-started
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/server/app.js resolvePath of node_modules/.cache/_ns_cache/public
+      (:19, :362 on dev b29f1bf7): a boot error that names the missing bundle
+      and the build command.
+    review: maintainer
+    operator_visible: >
+      If Nightscout was installed without building its web page bundle, it
+      stops at start-up with "Cannot find module
+      '/node_modules/.cache/_ns_cache/public'", which does not say what to
+      do. Reinstall with the development packages (npm ci --include=dev) so
+      the bundle is built.
+    semver: patch
+    semver_reason: an error message only
+    register: [BF-188]
+    gates:
+      - no-gate: >
+          Reproduced 2026-10-25 by session f4's cut-fixes lane on
+          bf/179-omit-dev-install 1cf70838 (lib/ as on dev b29f1bf7), booting a
+          tree with no bundle. A gate would boot with the bundle directory
+          absent and assert a message naming the bundle; control: b29f1bf7.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-10-25 by session f4. Low, a clearer-message item. BF-179's
+      fix stops a production-only install with no bundle at install time.
+
+  - id: BFQ-189
+    title: "BF-189 - tests/security.test.js (API_SECRET) fails depending on file order"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@b29f1bf7
+    state: not-started
+    pr: []
+    ships_to_operators_today: false
+    blast_radius: >
+      Tests only: tests/security.test.js and whichever earlier file leaves the
+      state it trips on (not identified).
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: test only
+    register: [BF-189]
+    gates:
+      - no-gate: >
+          Reproduced 2026-10-25 in the BF-183 lane's 38-file selection
+          (test:affected --since official/dev --depth 4) with and without the
+          BF-183 change: 2 failing, "expected 401 to be 'ok'"; passes alone. A
+          gate is that selection; the polluter is still to be found.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-10-25 by session f4 (register §1b). Test only.
+
+  - id: BFQ-190
+    title: "BF-190 - an alarm on a page without a current reading cannot be silenced from the page"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/16.0.0-client-alarms
+    base: official/dev@b29f1bf7
+    worktree: externals/work/crm-alarms-1600
+    state: in-progress
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/client/index.js clearCurrentSGV (:656 on dev b29f1bf7): keep the
+      alarm classes while an alarm is in progress; stopAlarm is the only path
+      that clears them. Browser code, so a rebundle. Ships with BF-92.
+    review: maintainer
+    operator_visible: >
+      If an alarm sounds on a Nightscout page that is not showing a current
+      reading, the page can lose the alarm's colours while the sound keeps
+      playing, and the alarm can then not be silenced from the page. Closing
+      or reloading the page stops it. Keep your phone's or device's own alarms
+      on as well.
+    semver: patch
+    semver_reason: client alarm display; no API change
+    register: [BF-190]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official cat-file -e 5fb199b3^{commit}
+        kind: static
+        describe: >
+          the fix commit (shared with BF-92) exists in the shared clone; red if
+          the local branch is lost before it is pushed (a rebase changes the
+          id, and this gate must then name the new one)
+      - no-gate: >
+          Measured in a real browser with BF-92's change applied: with only the
+          clearCurrentSGV change reverted, tests/browser/server-alarms.test.js
+          shows alarming false, playing 1. The browser tier needs two booted
+          instances and MongoDB.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-10-25 by session f4 from the alarms lane. On v15.0.9 probably
+      reachable on a page whose latest reading is more than 15 minutes old
+      (read, not run).
+
+  - id: MOD-WRITE-VALIDATION
+    title: "WRITE_VALIDATION=off|log|reject: opt-in domain validation of Temporary Target writes on API v1 and v3 (draft)"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: feat/api3-domain-validation
+    base: official/dev@b29f1bf7
+    worktree: externals/work/crm-v3validate-1600
+    state: ready-to-push
+    pr: []
+    blast_radius: >
+      New lib/server/write-validation.js (pure rules); hooks in
+      lib/server/treatments.js create (v1 batch: store valid items, refused
+      slots in place), lib/api3/shared/operationTools.js validateDomain (v3
+      create, PUT, PATCH on the merged record), lib/api/treatments/index.js
+      (400 mapping), lib/server/env.js (the setting). Default off: no
+      behaviour change. Socket dbAdd/dbUpdate not covered.
+    review: maintainer, and the AndroidAPS, Loop and Trio developers on the refusal shape
+    operator_visible: >
+      A new optional setting, WRITE_VALIDATION. Nothing changes unless you set
+      it. With log, Nightscout stores temporary targets as today and writes a
+      log line when one breaks a rule that holds for every app (for example a
+      low target above the high target, or mg/dL numbers labelled mmol/L).
+      With reject, it refuses such a temporary target; most apps that upload
+      to Nightscout do not show you that refusal and lose the record, so
+      reject is for operators who accept that. This is not medical advice;
+      talk to your care team about how you set temporary targets.
+    semver: minor
+    semver_reason: a new opt-in setting; default behaviour unchanged
+    register: []
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official cat-file -e a2e5fe49^{commit}
+        kind: static
+        describe: >
+          the branch head exists in the shared clone; red if the local branch
+          is lost before it is pushed (a rebase changes the id, and this gate
+          must then name the new one)
+      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev feat/api3-domain-validation >/dev/null
+        kind: static
+        describe: Merges into official/dev with no conflict.
+      - run: git -C externals/cgm-remote-monitor-official grep -q "readENV('WRITE_VALIDATION', 'off')" feat/api3-domain-validation -- lib/server/env.js
+        kind: static
+        describe: >
+          The default is off on the branch (D1); red if a later commit changes
+          the default, which the decided ladder keeps for a major.
+      - run: 'cd externals/work/crm-v3validate-1600 && npx mocha --timeout 10000 --exit tests/write-validation.test.js'
+        kind: unit
+        describe: >
+          The rule edges and that no refusal message contains the two 400
+          texts AndroidAPS string-matches; 10 passing on 2026-10-25. Control
+          (lane): a message containing "cannot be modified by the client"
+          fails it.
+      - no-gate: >
+          The integration test tests/api.treatments-write-validation.test.js
+          (22 passing on the branch, MongoDB 8.0.34) needs MongoDB. Its red
+          controls, reported by the lane: on dev's lib/ 12 of the first 20
+          fail (expected 400, got 201/200); all-or-nothing batches fail the
+          mixed-batch case; leaving refusal objects out fails on the reply
+          length Loop needs; the default set to reject fails the 5 default-off
+          cases.
+    blocks_on: []
+    evidence:
+      - docs/60-research/modernization/write-validation-design-2026-10-25.md
+      - docs/60-research/remedial/upload-refusal-client-behaviour-2026-10-25.md
+    notes: >
+      Filed 2026-10-25 by session f4 from the v3-validation lane. Draft: local
+      branch feat/api3-domain-validation a2e5fe49 (e8125d89, 6e842c07,
+      a2e5fe49) over dev b29f1bf7, not pushed. Decided 2026-10-25
+      (maintainer): D1 the setting shape; D2 a v1 batch under reject stores
+      its valid items, keeps one object per item in order with refused slots
+      without _id plus a refused member and a Warning 299 header, and answers
+      400 when every item is refused; D4 a double-labelled record is refused
+      with a message naming the field and the units to send. Open: D5 (N1 or
+      N2 and the conversion constant, MOD-UNITS-CANONICAL), D6 (thresholds 30
+      mmol/L and 20 mg/dL). Making reject the default is blocked on a refusal
+      the person can see (clients that read refused, or a Nightscout-side
+      notice), not on a date. ready-to-push means the gates pass and the next
+      step is a human push of a draft PR.
+
+  - id: MOD-WRITE-VALIDATION-READ
+    title: "Flag stored records that break a write-validation rule on API v3 reads (read-side flag, R1/R2)"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@b29f1bf7
+    state: needs-decision
+    pr: []
+    blast_radius: >
+      API v3 read, search and history: a computed validation member on a
+      record that breaks a rule (not stored); optionally a report page
+      listing such records. No migration.
+    review: maintainer, and the API v3 client developers
+    operator_visible: >
+      Nothing yet. If adopted, apps reading from Nightscout's API v3 could be
+      told that a stored record breaks a rule, and a report could list such
+      records so you can correct them.
+    semver: minor
+    semver_reason: an added response member on API v3 reads
+    register: []
+    gates:
+      - no-gate: >
+          A decision item: whether to flag on read (R1) and report (R2), after
+          the write-side log step has soaked. Not started.
+    blocks_on: [MOD-WRITE-VALIDATION]
+    evidence:
+      - docs/60-research/modernization/write-validation-design-2026-10-25.md
+    notes: >
+      Filed 2026-10-25 by session f4 from the v3-validation lane (design
+      section 3.3). Hiding or migrating stored records is not recommended:
+      it would diverge from what uploaders sent and move every rewritten
+      record into every v3 history cursor.
+
+  - id: MOD-UNITS-CANONICAL
+    title: "Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), and the conversion constant"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@b29f1bf7
+    state: needs-decision
+    pr: []
+    blast_radius: >
+      N1: units spelling normalised for temp targets under WRITE_VALIDATION
+      (already in the draft for reject). N2: stored targetTop/targetBottom in
+      mg/dL with the originals kept; a stored-value change for every client.
+    review: maintainer, and the AndroidAPS, Loop (NightscoutKit) and Trio developers
+    operator_visible: >
+      Nothing yet. A decision about how Nightscout stores glucose units on
+      temporary targets, so that every app reads them the same way.
+    semver: major
+    semver_reason: N2 changes stored values; N1 alone, limited to temp targets, would be minor
+    register: []
+    gates:
+      - no-gate: >
+          A decision item (design D5). The spelling sets differ by client
+          (AndroidAPS mmol and mg/dl, NightscoutKit mmol/L and mg/dL, Trio no
+          units on temp targets), and the constant differs (18, 18.016,
+          18.01559). Not started.
+    blocks_on: []
+    evidence:
+      - docs/60-research/modernization/write-validation-design-2026-10-25.md
+    notes: >
+      Filed 2026-10-25 by session f4 from the v3-validation lane (design
+      section 3.4). N1 must stay limited to temp targets until NightscoutKit
+      accepts both spellings, or Loop would drop BG Check and Meal Bolus
+      records it reads today.
 
   - id: RT-PR-8815
     title: "#8815 - a bearer token whose subject was deleted is refused instead of stopping the server (awss1i; BF-171, fixes #8225), merged for 15.0.9"
@@ -15472,6 +16014,11 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-25: the identity lane dropped this refactor from
+      bf/16.0.0-record-identity; profile keeps its own merge path (BF-166,
+      c62a16c9). The drift this item names is still there for the other
+      collections.
+
       Re-send behaviour differs by collection today: devicestatus and
       profile create keep the legacy string and collide; treatments, food
       and activity move it to an ObjectId. #8758's 336-cell matrix is the
