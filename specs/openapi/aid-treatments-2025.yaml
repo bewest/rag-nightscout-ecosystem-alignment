@@ -49,6 +49,11 @@ info:
 servers:
   - url: /api/v3
 
+# The scheme Nightscout API v3 declares for every operation
+# (cgm-remote-monitor lib/api3/swagger.yaml, securitySchemes.jwtoken).
+security:
+  - jwtoken: []
+
 paths:
   /treatments:
     get:
@@ -70,6 +75,17 @@ paths:
                   $ref: '#/components/schemas/Treatment'
 
 components:
+  securitySchemes:
+    jwtoken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT obtained from /api/v2/authorization/request/{accessToken},
+        sent as `Authorization: Bearer <jwt>`. Mirrors
+        cgm-remote-monitor lib/api3/swagger.yaml. API v3 skips this
+        check when the server sets API3_SECURITY_ENABLE=false.
+
   parameters:
     createdAtFilter:
       name: created_at$gte
