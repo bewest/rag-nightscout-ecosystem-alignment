@@ -19551,7 +19551,7 @@ items:
     branch: feat/registration-catalogue
     base: origin/dev
     state: in-progress
-    pr: []
+    pr: [8857]
     blast_radius: >
       Single-tenant first (maintainer, 2026-10-16). Built on origin/dev,
       which has no TENANCY_MODE, no storage interface and no tenant scope:

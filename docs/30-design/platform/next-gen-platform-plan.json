@@ -264,7 +264,7 @@
    "phase": "now",
    "state": "progress",
    "short": "v1 identifier match",
-   "title": "API v1 entries and devicestatus match a re-sent record on identifier, as v1 treatments already do; ships in the 16.0.0 re-send and merge contract PR with the null-removes rule and BF-195",
+   "title": "API v1 entries and devicestatus match a re-sent record on identifier. Decided 2026-10-26: entries keep the time-key fallback in 16.0.0; a devicestatus re-send with a stored identifier writes nothing and replies with the stored _id (v1 and v3); ships in the 16.0.0 re-send and merge contract PR with the null-removes rule and BF-195",
    "ref": "feat/v1-identifier-match (8d0f9a22), joining bf/16.0.0-null-removes",
    "where": "lib/server/entries.js, lib/server/devicestatus.js",
    "check": "lab cell: same identifier twice stored n=2 on dev, n=1 on the branch; 18 cases with red controls",
