@@ -1,0 +1,134 @@
+# Next-gen platform: one write path, four tracks
+
+*Contributor-facing. Living plan, current at cgm-remote-monitor dev `47723cda` (2026-10-26) and draft [#8854](https://github.com/nightscout/cgm-remote-monitor/pull/8854) at `880b7369`. Status: proposed; the decisions in §6 are open.*
+
+The interactive version, with the dependency map, is the site page [nightscout-next-gen-platform.html](../../../site/pages/nightscout-next-gen-platform.html).
+
+This plan covers the work that follows the 16.0.0 modernization:
+
+- storage behind one write path;
+- the client and server identifiers Loop asked to separate;
+- controller registration, from a read-only catalogue to typed writes;
+- hosted multitenancy.
+
+It names each piece of work, what it needs first, where it goes in the code, and the check that pins it.
+
+## 1. Where things stand
+
+| | on dev `47723cda` | in review or on a branch | not started |
+|---|---|---|---|
+| Storage | `WRITE_VALIDATION` (#8841), called from treatments and API v3. No storage interface, no `TENANCY_MODE`. | #8854 (draft): one write boundary for the six v1 modules, the socket and API v3; a 336-cell CRUD matrix; an AST gate over eight adapter files. The September seam chain (`seam/*`, `65ce54b9`, 51 commits, local). | write(intent), backend-neutral store, PostgreSQL on dev |
+| Identity | `identifier` is the client's, `_id` the server's; API v3 refuses a client `_id` (#8845: BF-169, BF-170) | `feat/v1-identifier-match` (ID-SIMPLE-MATCH) | identifier-first on every path, unique index |
+| Registration | nothing in code; dev carries an older proposal schema, `docs/proposals/schemas/controller-instance-registration.schema.json` | specs and 1,661 tests in this repository; `feat/registration-catalogue` (slice 0) | submit, instances, typed writes |
+| Tenancy | nothing | tenant resolution, admin plane, per-tenant contexts and sockets, change feed, credential schema (old chain only) | per-tenant config, tenant-scoped auth, hosted lab |
+
+## 2. Why the tracks meet at the write step
+
+Every track changes what happens when a record is written:
+
+| track | what it needs from the write step |
+|---|---|
+| Identity | a single place that matches a re-sent record on `identifier` first, then on the time key, for v1, v3 and the socket alike |
+| Registration | a single place that applies a controller's declared schema to its typed writes, and leaves unregistered writers byte-identical |
+| Validation | a single place for #8841's rules, so the socket and the v1 modules are not checked separately |
+| Tenancy | a single place that carries the tenant binding, so no path can write without one |
+
+Draft #8854 builds that place as a boundary at the driver call, and its own follow-up list asks for the rest "in measured slices". The plan below adds those slices one at a time. Each one is pinned by #8854's matrix and by this repository's write-contract matrix (`tools/qc/write-contract-matrix.js`, four paths: v1, v3, socket, in-process). Reviewers read one boundary, and each track adds its rule to it.
+
+## 3. The map
+
+<!-- chart: map -->
+
+## 4. The storage seam: three ways to reach dev
+
+<!-- chart: options -->
+
+What a #8854-first path keeps compatible:
+
+| | must hold | pinned by |
+|---|---|---|
+| Backward | the `_id` forms: ObjectId, upper- and lower-case hex, UUID, and `UUID_HANDLING` moving a non-hex `_id` to `identifier` | #8854's matrix rows; `tests/identity-matrix.test.js` |
+| Backward | the API v3 create and deduplication reply (`status`, `identifier`, `isDeduplication`, `lastModified`), and AndroidAPS's string-matched refusal texts | `tests/write-validation.test.js`; the v3 suites |
+| Backward | Loop's `syncIdentifier` and Trio's `id` stored and returned untouched | write-contract matrix |
+| Backward | v1 treatment upsert on `created_at` + `eventType` | write-contract matrix |
+| Forward | two mature backends (D2–D4): the step calls a backend-neutral interface, not a driver Collection | ST-IFACE |
+| Forward | the closed query operator set (D8) as a filter AST | ST-IFACE, the mingo differential |
+| Forward | write origin, then a tenant binding, in the step's context | ST-CONTEXT, TEN-RESOLVE |
+| Forward | one commit fact the change feed (D6) can carry | ST-EVENT (decision D-EVENT) |
+
+The September chain stays useful as reference. Its filter AST (`4f753ab9`), `fromMongo` bridge (`68ffbd66`), `bulkUpsert` mode split, PostgreSQL backend (`983ff64f`, `7cc03cda`) and tenant scope binding are the starting points for ST-IFACE, ST-PG and TEN-RESOLVE. They are not merged as they stand.
+
+## 5. The tracks in detail
+
+### 5.1 Storage
+
+| item | builds | needs | check |
+|---|---|---|---|
+| PR-8854 | the boundary, read contract, data diagnostics, `--fail-zero` | dev | 336-cell matrix equal to dev; AST gate with bypass controls |
+| ST-MATCH | identifier, fallback-key and server-date matching moved into the step | PR-8854 | no matrix cell changes |
+| ST-EVENT | the commit event's granularity and contents | PR-8854, D-EVENT | each stored record named once per write |
+| ST-CONTEXT | write origin (live or backfill) in the step's context | PR-8854 | AST gate refuses an adapter without an origin |
+| WC-STEP-PATCH | write(intent) -> WriteResult.items[]; BF-165's `_id` in every reply | the three above, D-Q1B | [write-contract spec](../tenancy/write-contract-spec-2026-10-07.md) G1 |
+| ST-IFACE | backend-neutral store under the step, filter AST | WC-STEP-PATCH | the 3,000-filter differential against mingo |
+| ST-PG | PostgreSQL with row-level security, entries first | ST-IFACE | the backend-selectable suite on both stores |
+
+### 5.2 Identity
+
+| item | builds | needs | check |
+|---|---|---|---|
+| ID-SIMPLE-MATCH | v1 entries and devicestatus match on `identifier`, as treatments do | #8845 | one record after two sends; red control on dev |
+| SPEC-ID-AMEND | identity I2 and §6 amended for API v3's refusal of a client `_id` (BF-170); a conformance case for the mandatory identifier on registered instances | #8845 | `tools/nsschema` cases |
+| ID-FIRST-MATCH | identifier-first on every collection and path | ID-SIMPLE-MATCH, WC-STEP-PATCH, D-LOOP-ID | write-contract matrix |
+| ID-BATCH | per-item results in v1 batch replies | WC-STEP-PATCH | one bad item no longer refuses the batch |
+| ID-UNIQUE-INDEX | partial unique index on `identifier` | the two above | 0 duplicates measured across the 12-site corpus (ID-DUP-MEASURE) |
+
+The rules are in the [identity specification](spec/identity.md) and the [identifier conventions](identifier-conventions.md). The conversation with the Loop maintainers is recorded in [upstream-asks-loop-identifier](upstream-asks-loop-identifier/README.md).
+
+### 5.3 Registration
+
+| slice | builds | needs | check |
+|---|---|---|---|
+| REG-S0 | capability document and catalogue, read-only, flag off by default | specs | schema validation; flag off is byte-identical to dev |
+| REG-S1 | submit, etag, retire; MongoDB store; single mode | REG-S0 | negotiation conformance cases against a booted server |
+| REG-S2 | definitions, leased instances, channels and roles | REG-S1 | instance conformance cases |
+| REG-S5 | owner actions on a single-tenant site with `API_SECRET` | REG-S1, REG-S2 | owner-action conformance cases |
+| REG-S3 | typed writes and read selection | REG-S2, WC-STEP-PATCH, SPEC-ID-AMEND | unregistered writers byte-identical |
+| REG-S4 | projected views for older readers | REG-S3 | projection cases |
+| HUB-REG-CRM-SEAM | registrations under tenant scope | REG-S2, ST-PG, T30-WIRING | per-mode cases (SPEC-REG-MODES) |
+
+Slices S0, S1, S2 and S5 need no storage work and go straight to dev; S5 comes before S3 because only S3 waits on the write step. The [hub implementer's guide](guides/hub-implementer.md) maps each slice to modules on dev. The [controller guide](guides/new-controller.md) is the same flow from the controller author's side.
+
+### 5.4 Tenancy
+
+| item | builds | needs |
+|---|---|---|
+| T30-RESEARCH | the tenant-owner configuration surface (277 settings classified) | D-T30 |
+| T30-SCHEMA-CONFIG | the per-tenant settings table (D15) | T30-RESEARCH |
+| TEN-RESOLVE | tenant resolution and the platform admin interface (D7, D10, D16) | ST-CONTEXT, T30-SCHEMA-CONFIG |
+| T30-WIRING | tenant-scoped API keys and per-tenant signing keys (D13, D14) | TEN-RESOLVE |
+| TEN-LAB | two tenants on PostgreSQL in a Docker Compose lab, isolation checked with a control | ST-PG, T30-WIRING |
+
+The decisions D1–D20 are in the [execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md). Single-tenant on MongoDB stays first-class (D1, D4). Every tenancy item ships behind `TENANCY_MODE=multi`.
+
+## 6. Open decisions
+
+Select **Show on the map** on a card to see which items it holds up.
+
+<!-- chart: decisions -->
+
+## 7. How the work moves
+
+- **Pull requests.** Each slice is one PR to dev, or a child PR to an integration branch when a track has several slices in flight, the way #8605 carried 109 children. Dev is merged into the branch, not rebased. A PR's merge records that the merged tree matches the reviewed tree.
+- **What pins behaviour.** #8854's CRUD matrix and this repository's write-contract matrix. A slice that changes no behaviour changes no cell. A slice that changes behaviour lists the cells it changes and why.
+- **Red controls.** Every new test is shown failing against the code it guards before the change, with the original symptom.
+- **Conformance.** The registration and identity cases in `specs/sync/conformance/` run against a booted server by a harness in this repository (D12), reported case by case as passed, mapped or not applicable.
+- **Agents.** Agents build slices in their own worktrees, run the checks and hand back a branch, a PR body and the push commands. They never push. Maintainers push, open, review and merge.
+- **Records.** Each landed slice updates its queue item (`queue/work-queue.yaml`) and this plan's data file, and the page is re-rendered.
+
+## 8. Sources
+
+- cgm-remote-monitor dev `47723cda`; draft #8854 `880b7369` and its `docs/architecture/data-contracts.md`.
+- [Storage seam interface](../tenancy/nightscout-storage-seam-interface-2026-09-14.md), [write-contract spec](../tenancy/write-contract-spec-2026-10-07.md), [execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).
+- [Registration specification](spec/registration.md), [identity specification](spec/identity.md), [records specification](spec/records.md).
+- Nocturne `970031f6`. Tenant scope is an `ITenantScoped` marker with row-level security. It keeps a sync key (tenant, data source, sync identifier) and a single record-changed seam proposed in its issue #2130. Its API v3 serves `identifier` equal to `_id` (issue #1932).
+- Controllers, read at AndroidAPS dev `325e5623`, NightscoutKit `6efa02d4`, Trio dev `7ff1f777e`, xDrip+ `c42cf55c`. AndroidAPS is the only API v3 client and keeps the server's `identifier`. Loop sends `syncIdentifier`, and Trio sends `id`.

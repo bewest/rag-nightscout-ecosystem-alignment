@@ -1,0 +1,741 @@
+{
+ "measured": "2026-10-26 against cgm-remote-monitor dev 47723cda and draft #8854 880b7369",
+ "tracks": [
+  {
+   "id": "storage",
+   "label": "Storage",
+   "sub": "one write path",
+   "color": "--s1"
+  },
+  {
+   "id": "identity",
+   "label": "Identity",
+   "sub": "identifier and _id",
+   "color": "--s2"
+  },
+  {
+   "id": "registration",
+   "label": "Registration",
+   "sub": "catalogue to typed writes",
+   "color": "--s3"
+  },
+  {
+   "id": "tenancy",
+   "label": "Tenancy",
+   "sub": "hosted, many sites",
+   "color": "--s4"
+  }
+ ],
+ "phases": [
+  {
+   "id": "dev",
+   "label": "Done or on dev"
+  },
+  {
+   "id": "now",
+   "label": "Now, against dev"
+  },
+  {
+   "id": "boundary",
+   "label": "On the write boundary"
+  },
+  {
+   "id": "intent",
+   "label": "On write(intent)"
+  },
+  {
+   "id": "multi",
+   "label": "Multi mode"
+  }
+ ],
+ "states": [
+  {
+   "id": "done",
+   "label": "done",
+   "mark": "✓",
+   "style": "done",
+   "means": "merged to dev, or finished in this repository"
+  },
+  {
+   "id": "review",
+   "label": "in review",
+   "mark": "◐",
+   "style": "review",
+   "means": "a pull request is open"
+  },
+  {
+   "id": "progress",
+   "label": "in progress",
+   "mark": "▶",
+   "style": "review",
+   "means": "a branch exists and is being built"
+  },
+  {
+   "id": "planned",
+   "label": "planned",
+   "mark": "○",
+   "style": "planned",
+   "means": "scoped, not started"
+  },
+  {
+   "id": "decision",
+   "label": "needs decision",
+   "mark": "?",
+   "style": "decision",
+   "means": "waiting on a maintainer decision below"
+  }
+ ],
+ "items": [
+  {
+   "id": "DEV-8841",
+   "track": "storage",
+   "phase": "dev",
+   "state": "done",
+   "short": "WRITE_VALIDATION",
+   "title": "Domain rules on the write paths, opt-in (WRITE_VALIDATION off, log or reject); treatments and API v3 call it",
+   "ref": "#8841",
+   "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8841",
+   "where": "lib/server/write-validation.js",
+   "check": "tests/write-validation.test.js"
+  },
+  {
+   "id": "PR-8854",
+   "track": "storage",
+   "phase": "now",
+   "state": "review",
+   "short": "Shared write boundary",
+   "title": "Every v1/internal module, the socket and API v3 write through lib/storage/write-step.js; read contract and data diagnostics; zero-test runs fail",
+   "ref": "#8854 (draft, 880b7369)",
+   "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8854",
+   "where": "lib/storage/write-step.js, lib/storage/read-contract.js, scripts/check-write-boundary.js",
+   "check": "tests/api.crud-by-id.matrix.test.js (336 cells pinned to dev) and the boundary AST gate",
+   "depends": [
+    "DEV-8841"
+   ]
+  },
+  {
+   "id": "ST-MATCH",
+   "track": "storage",
+   "phase": "boundary",
+   "state": "planned",
+   "short": "Matching behind the step",
+   "title": "Move identifier, fallback-key and server-date matching from the six adapters into the write step, behaviour pinned by the matrix",
+   "where": "lib/storage/write-step.js; lib/server/{entries,treatments,devicestatus,profile,food,activity}.js",
+   "check": "#8854's matrix and tools/qc/write-contract-matrix.js: no cell changes",
+   "depends": [
+    "PR-8854"
+   ]
+  },
+  {
+   "id": "ST-EVENT",
+   "track": "storage",
+   "phase": "boundary",
+   "state": "decision",
+   "short": "Commit event contents",
+   "title": "The storage-write-committed event: per call or per driver operation, and whether it carries _id and identifier (internal only)",
+   "where": "lib/storage/write-step.js",
+   "check": "a test per path that the event names every stored record once",
+   "depends": [
+    "PR-8854"
+   ]
+  },
+  {
+   "id": "ST-CONTEXT",
+   "track": "storage",
+   "phase": "boundary",
+   "state": "planned",
+   "short": "Origin in the context",
+   "title": "Add the write origin (live or backfill) to the step's context {name, source, env, bus}, leaving room for a tenant binding",
+   "where": "lib/storage/write-step.js",
+   "check": "every adapter passes an origin; the AST gate refuses one that does not",
+   "depends": [
+    "PR-8854"
+   ]
+  },
+  {
+   "id": "WC-STEP-PATCH",
+   "track": "storage",
+   "phase": "intent",
+   "state": "planned",
+   "short": "write(intent)",
+   "title": "One write(intent) -> WriteResult.items[] for every v1, v3 and socket path, today's behaviour pinned; BF-165's _id in every reply",
+   "spec": [
+    {
+     "label": "write contract spec",
+     "href": "../tenancy/write-contract-spec-2026-10-07.md"
+    }
+   ],
+   "check": "write-contract spec G1: every matrix cell equal to dev except BF-165's two",
+   "depends": [
+    "ST-MATCH",
+    "ST-EVENT",
+    "ST-CONTEXT"
+   ]
+  },
+  {
+   "id": "ST-IFACE",
+   "track": "storage",
+   "phase": "intent",
+   "state": "planned",
+   "short": "Backend-neutral store",
+   "title": "The step calls a backend-neutral storage interface with the filter AST instead of the driver Collection; MongoDB adapter only",
+   "spec": [
+    {
+     "label": "storage seam interface",
+     "href": "../tenancy/nightscout-storage-seam-interface-2026-09-14.md"
+    }
+   ],
+   "where": "lib/storage/ (reference: old chain 4f753ab9 filter AST, 68ffbd66 fromMongo)",
+   "check": "the 3,000-filter differential against mingo, re-run on dev",
+   "depends": [
+    "WC-STEP-PATCH"
+   ]
+  },
+  {
+   "id": "ST-PG",
+   "track": "storage",
+   "phase": "multi",
+   "state": "planned",
+   "short": "PostgreSQL backend",
+   "title": "PostgreSQL with row-level security behind the same interface, entries first (D3)",
+   "where": "lib/storage/postgres-storage.js (reference: old chain 983ff64f, 7cc03cda)",
+   "check": "the backend-selectable suite run on both stores",
+   "depends": [
+    "ST-IFACE"
+   ]
+  },
+  {
+   "id": "DEV-8845",
+   "track": "identity",
+   "phase": "dev",
+   "state": "done",
+   "short": "Two ids, one rule",
+   "title": "identifier is the client's sync identity, _id the server's storage key; API v3 refuses a client _id (BF-169, BF-170)",
+   "ref": "#8845",
+   "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8845",
+   "spec": [
+    {
+     "label": "identity spec",
+     "href": "spec/identity.md"
+    },
+    {
+     "label": "identifier conventions",
+     "href": "identifier-conventions.md"
+    }
+   ],
+   "check": "tests/identity-matrix.test.js"
+  },
+  {
+   "id": "ID-SIMPLE-MATCH",
+   "track": "identity",
+   "phase": "now",
+   "state": "progress",
+   "short": "v1 identifier match",
+   "title": "API v1 entries and devicestatus match a re-sent record on identifier, as v1 treatments already do",
+   "ref": "feat/v1-identifier-match",
+   "where": "lib/server/entries.js, lib/server/devicestatus.js",
+   "check": "same identifier twice stores one record; red control against dev",
+   "depends": [
+    "DEV-8845"
+   ]
+  },
+  {
+   "id": "SPEC-ID-AMEND",
+   "track": "identity",
+   "phase": "now",
+   "state": "planned",
+   "short": "Identity spec after #8845",
+   "title": "Amend identity I2 and §6 for API v3's refusal of a client _id (BF-170), and add a case for the mandatory identifier on registered instances",
+   "spec": [
+    {
+     "label": "identity spec",
+     "href": "spec/identity.md"
+    }
+   ],
+   "check": "tools/nsschema cases; the reference function refuses a typed write with no identifier",
+   "depends": [
+    "DEV-8845"
+   ]
+  },
+  {
+   "id": "ID-FIRST-MATCH",
+   "track": "identity",
+   "phase": "intent",
+   "state": "decision",
+   "short": "Identifier-first everywhere",
+   "title": "Identifier-first matching on every collection and path, inside the write step",
+   "check": "write-contract matrix rows for identifier re-sends",
+   "depends": [
+    "ID-SIMPLE-MATCH",
+    "WC-STEP-PATCH"
+   ]
+  },
+  {
+   "id": "ID-BATCH",
+   "track": "identity",
+   "phase": "intent",
+   "state": "planned",
+   "short": "Per-item batch results",
+   "title": "Per-item results in v1 batch replies, so one bad item no longer refuses the batch",
+   "depends": [
+    "WC-STEP-PATCH"
+   ]
+  },
+  {
+   "id": "ID-UNIQUE-INDEX",
+   "track": "identity",
+   "phase": "intent",
+   "state": "planned",
+   "short": "Unique identifier index",
+   "title": "Partial unique index on identifier, retry-as-update on a duplicate key",
+   "check": "ID-DUP-MEASURE found 0 duplicates in the 12-site corpus",
+   "depends": [
+    "ID-FIRST-MATCH",
+    "ID-BATCH"
+   ]
+  },
+  {
+   "id": "REG-SPECS",
+   "track": "registration",
+   "phase": "dev",
+   "state": "done",
+   "short": "Registration specs",
+   "title": "Grammar, negotiation, definitions and instances, quirks, commands; well-known registrations for AndroidAPS, Loop and Trio",
+   "spec": [
+    {
+     "label": "registration spec",
+     "href": "spec/registration.md"
+    },
+    {
+     "label": "controller guide",
+     "href": "guides/new-controller.md"
+    }
+   ],
+   "check": "tools/nsschema: 1,661 tests"
+  },
+  {
+   "id": "REG-S0",
+   "track": "registration",
+   "phase": "now",
+   "state": "progress",
+   "short": "Catalogue, read-only",
+   "title": "GET /.well-known/nightscout/sync and /.well-known/nightscout/controllers serving the shipped catalogue, behind a flag that is off by default",
+   "ref": "feat/registration-catalogue",
+   "spec": [
+    {
+     "label": "registration §4",
+     "href": "spec/registration.md#4-the-capability-document"
+    }
+   ],
+   "check": "the capability document validates against specs/sync/hub-capabilities.schema.json; flag off is byte-identical to dev",
+   "depends": [
+    "REG-SPECS"
+   ]
+  },
+  {
+   "id": "REG-S1",
+   "track": "registration",
+   "phase": "now",
+   "state": "planned",
+   "short": "Submit and store",
+   "title": "The product resource: submit, etag, retire; MongoDB collections; single mode with API_SECRET or a subject's token",
+   "spec": [
+    {
+     "label": "registration §5",
+     "href": "spec/registration.md#5-the-product-resource"
+    }
+   ],
+   "check": "the negotiation conformance cases run against a booted server",
+   "depends": [
+    "REG-S0"
+   ]
+  },
+  {
+   "id": "REG-S2",
+   "track": "registration",
+   "phase": "now",
+   "state": "planned",
+   "short": "Instances and leases",
+   "title": "Content-addressed definitions and leased instances; channels, roles and provenance",
+   "spec": [
+    {
+     "label": "registration §7–§9",
+     "href": "spec/registration.md#7-definitions"
+    }
+   ],
+   "check": "the instance conformance cases",
+   "depends": [
+    "REG-S1"
+   ]
+  },
+  {
+   "id": "REG-S5",
+   "track": "registration",
+   "phase": "now",
+   "state": "planned",
+   "short": "Owner actions",
+   "title": "The owner's actions on a single-tenant site with API_SECRET: retire, block, release, transfer, pin versions, list instances",
+   "spec": [
+    {
+     "label": "registration §15",
+     "href": "spec/registration.md#15-binding-credentials-and-the-owner"
+    }
+   ],
+   "check": "the owner-action conformance cases (31)",
+   "depends": [
+    "REG-S1",
+    "REG-S2"
+   ]
+  },
+  {
+   "id": "REG-S3",
+   "track": "registration",
+   "phase": "intent",
+   "state": "planned",
+   "short": "Typed writes",
+   "title": "Typed writes and read selection for accepted elements, applied by the write step",
+   "spec": [
+    {
+     "label": "registration §11–§12",
+     "href": "spec/registration.md#11-typed-writes-and-attribution"
+    }
+   ],
+   "check": "unregistered writers byte-identical (write-contract matrix)",
+   "depends": [
+    "REG-S2",
+    "WC-STEP-PATCH",
+    "SPEC-ID-AMEND"
+   ]
+  },
+  {
+   "id": "REG-S4",
+   "track": "registration",
+   "phase": "intent",
+   "state": "planned",
+   "short": "Projected views",
+   "title": "Hub-projected read-only views of typed records for older readers",
+   "spec": [
+    {
+     "label": "registration §13",
+     "href": "spec/registration.md#13-projected-views-for-older-readers"
+    }
+   ],
+   "depends": [
+    "REG-S3"
+   ]
+  },
+  {
+   "id": "REG-PROPOSE",
+   "track": "registration",
+   "phase": "boundary",
+   "state": "decision",
+   "short": "Propose to Nocturne, AIDs",
+   "title": "Propose the grammar and negotiation to Nocturne and the open-source AID controllers as a shared contract",
+   "depends": [
+    "REG-S0"
+   ]
+  },
+  {
+   "id": "HUB-REG-CRM-SEAM",
+   "track": "registration",
+   "phase": "multi",
+   "state": "planned",
+   "short": "Registration per tenant",
+   "title": "The registration store under tenant scope; owner actions on ns-tenant-admin",
+   "depends": [
+    "REG-S2",
+    "ST-PG",
+    "T30-WIRING"
+   ]
+  },
+  {
+   "id": "T30-DONE",
+   "track": "tenancy",
+   "phase": "dev",
+   "state": "done",
+   "short": "Proofs and credential schema",
+   "title": "Auth-plane research, the Ory proof with a control, per-tenant credential schema (on the old seam chain, not on dev)",
+   "spec": [
+    {
+     "label": "execution plan",
+     "href": "../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md"
+    }
+   ]
+  },
+  {
+   "id": "T30-RESEARCH",
+   "track": "tenancy",
+   "phase": "now",
+   "state": "decision",
+   "short": "Tenant config surface",
+   "title": "Which of 277 settings a tenant owner may change, which the hoster pins, which are secrets",
+   "spec": [
+    {
+     "label": "config surface",
+     "href": "../tenancy/tenant-owner-config-surface-2026-09-15.md"
+    }
+   ]
+  },
+  {
+   "id": "T30-SCHEMA-CONFIG",
+   "track": "tenancy",
+   "phase": "boundary",
+   "state": "planned",
+   "short": "Per-tenant config table",
+   "title": "The per-tenant settings table, read by hosted entrypoints instead of the environment (D15)",
+   "depends": [
+    "T30-RESEARCH",
+    "T30-DONE"
+   ]
+  },
+  {
+   "id": "TEN-RESOLVE",
+   "track": "tenancy",
+   "phase": "multi",
+   "state": "planned",
+   "short": "Tenant resolution",
+   "title": "A request resolves to a tenant or is refused; platform admin on its own interface (reference: old chain T3.1, T3.2)",
+   "depends": [
+    "ST-CONTEXT",
+    "T30-SCHEMA-CONFIG"
+   ]
+  },
+  {
+   "id": "T30-WIRING",
+   "track": "tenancy",
+   "phase": "multi",
+   "state": "planned",
+   "short": "Tenant-scoped auth",
+   "title": "Tenant-scoped API keys and per-tenant JWT signing keys (D13, D14)",
+   "depends": [
+    "TEN-RESOLVE"
+   ]
+  },
+  {
+   "id": "TEN-LAB",
+   "track": "tenancy",
+   "phase": "multi",
+   "state": "planned",
+   "short": "Two-tenant lab",
+   "title": "A Docker Compose lab: two tenants on PostgreSQL, isolation checked with a control, uploaders and a follower app against each",
+   "depends": [
+    "ST-PG",
+    "T30-WIRING"
+   ]
+  }
+ ],
+ "decisions": [
+  {
+   "id": "D-SEAM",
+   "short": "How the seam reaches dev",
+   "owner": "maintainer; leaning to build on #8854 (2026-10-26)",
+   "question": "Bring the September seam chain to dev by replaying it, by re-deriving it, or by building on #8854's boundary in slices?",
+   "holds": [
+    "ST-MATCH",
+    "ST-CONTEXT"
+   ],
+   "options": [
+    {
+     "label": "Build on #8854 in slices",
+     "recommended": true,
+     "gains": "one boundary that the co-maintainer wrote and the follow-up list already names; slices fit the merge-dev-in, child-PR workflow; dev's #8845 and #8841 rules stay where they are",
+     "risks": "the seam's filter AST, PostgreSQL backend and red controls are rebuilt rather than reused; #8854's open contract questions gate the later slices"
+    },
+    {
+     "label": "Replay the old chain",
+     "gains": "reuses September's commits and their tests",
+     "risks": "30 conflicting paths in one merge; 14 internal merges; two parts already on dev in another form; a second boundary beside #8854"
+    },
+    {
+     "label": "Re-derive without #8854",
+     "gains": "a clean design from the specs",
+     "risks": "duplicates #8854's slot and its gate; the most new review"
+    }
+   ]
+  },
+  {
+   "id": "D-EVENT",
+   "short": "Commit event and socket refusals",
+   "owner": "maintainer with #8854's author (Q-A, Q-G)",
+   "question": "One event per call carrying the stored records, or one per driver operation with counts only; and does a socket refusal acknowledge [] for the whole batch?",
+   "holds": [
+    "ST-EVENT"
+   ],
+   "options": [
+    {
+     "label": "Per call, with _id and identifier (internal)",
+     "gains": "one fact per write for caches, the change feed (T4) and a future tenant broadcast",
+     "risks": "changes #8854's contract; payload must stay off public channels"
+    },
+    {
+     "label": "Per driver operation, counts only (as drafted)",
+     "gains": "no change to the draft",
+     "risks": "the change feed cannot name records from it"
+    }
+   ]
+  },
+  {
+   "id": "D-Q1B",
+   "short": "Does null remove a field",
+   "owner": "maintainer",
+   "question": "On a merge, does an explicit null remove the field (identity §3, sync-transport T2, write contract §6.1) or store null (#8845 on dev)?",
+   "holds": [
+    "WC-STEP-PATCH"
+   ],
+   "options": [
+    {
+     "label": "Null removes the field",
+     "gains": "matches three written specs and the 2026-10-12 decision",
+     "risks": "changes what dev stores today"
+    },
+    {
+     "label": "Null stores null",
+     "gains": "matches dev as shipped in #8845",
+     "risks": "three specs are amended"
+    }
+   ]
+  },
+  {
+   "id": "D-LOOP-ID",
+   "short": "The Loop identifier reply",
+   "owner": "maintainer (send channel, timing)",
+   "question": "Send the reply to the Loop maintainers, then settle format, client _id, absent identifier, re-send after delete, scope and immutability (six ID-*-DECISION items).",
+   "holds": [
+    "ID-FIRST-MATCH"
+   ],
+   "options": [
+    {
+     "label": "Send after ID-SIMPLE-MATCH is a PR",
+     "recommended": true,
+     "gains": "the reply can point at a working change",
+     "risks": "a few days later"
+    },
+    {
+     "label": "Send now",
+     "gains": "earliest answer from Loop",
+     "risks": "asks about behaviour not yet built"
+    }
+   ]
+  },
+  {
+   "id": "D-REG-FLAG",
+   "short": "Registration flag and catalogue home",
+   "owner": "maintainer",
+   "question": "What the off-by-default setting is called, where the vendored catalogue lives in cgm-remote-monitor, and what happens to docs/proposals/schemas/controller-instance-registration.schema.json on dev.",
+   "holds": [
+    "REG-S0"
+   ],
+   "options": [
+    {
+     "label": "Proposal in the slice's PR body",
+     "recommended": true,
+     "gains": "decided with the code in view",
+     "risks": "none beyond review time"
+    }
+   ]
+  },
+  {
+   "id": "D-T30",
+   "short": "Tenant config surface",
+   "owner": "maintainer",
+   "question": "Approve the DECISION sections of the tenant-owner configuration surface (what a tenant may set, what the hoster pins).",
+   "holds": [
+    "T30-RESEARCH"
+   ],
+   "options": [
+    {
+     "label": "Walk through the sections",
+     "recommended": true,
+     "gains": "unblocks the config table and every hosted entrypoint",
+     "risks": "the census was taken on the old chain and is re-measured on dev first"
+    }
+   ]
+  },
+  {
+   "id": "D-NOCTURNE-ID",
+   "short": "identifier on Nocturne",
+   "owner": "Nocturne maintainers, with ours",
+   "question": "Nocturne's API v3 serves identifier equal to _id and ignores a client identifier (its issue #1932); cgm-remote-monitor dev keeps the client's. Which does the shared contract say?",
+   "holds": [
+    "REG-PROPOSE"
+   ],
+   "options": [
+    {
+     "label": "Client identifier kept, as dev does",
+     "gains": "one rule across hubs for controllers",
+     "risks": "Nocturne changes its v3 surface"
+    },
+    {
+     "label": "Hub-specific, declared in the capability document",
+     "gains": "no change for Nocturne",
+     "risks": "controllers branch per hub"
+    }
+   ]
+  }
+ ],
+ "seam_options": [
+  {
+   "label": "Build on #8854 in slices",
+   "pick": "leaning",
+   "summary": "Take Andy's write boundary as the base; move matching, events and the backend-neutral store behind it one measured slice at a time; the old chain is reference.",
+   "facts": [
+    [
+     "Base",
+     "draft #8854 (880b7369) on dev 47723cda"
+    ],
+    [
+     "Already in place",
+     "one boundary for six v1 modules, socket and API v3; 336-cell matrix; AST gate"
+    ],
+    [
+     "Reused from the old chain",
+     "filter AST, fromMongo bridge, bulkUpsert modes, the 3,000-filter differential (as reference)"
+    ],
+    [
+     "Review shape",
+     "child PRs of 2-25 files, dev merged in, as #8605's 109 children were"
+    ]
+   ]
+  },
+  {
+   "label": "Replay the old chain",
+   "summary": "Cherry-pick the 51 September commits onto dev and split them into a stack.",
+   "facts": [
+    [
+     "Distance",
+     "51 commits ahead, 678 behind; merge base 0a4109f6 (2026-09-09)"
+    ],
+    [
+     "One merge",
+     "30 conflicting paths"
+    ],
+    [
+     "Per commit",
+     "0-3 files for most; 14 for the operator allowlist dev already has"
+    ],
+    [
+     "Dev since then",
+     "treatments +161/-38, websocket +161/-62, query +219/-23"
+    ]
+   ]
+  },
+  {
+   "label": "Re-derive without #8854",
+   "summary": "Write the interface and the step fresh from the specs on dev.",
+   "facts": [
+    [
+     "Base",
+     "dev 47723cda"
+    ],
+    [
+     "Overlap",
+     "the same eight adapter files #8854 gates"
+    ],
+    [
+     "Reused",
+     "specs and tests only"
+    ]
+   ]
+  }
+ ]
+}
