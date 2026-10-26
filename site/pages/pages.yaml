@@ -153,12 +153,13 @@ pages:
   api-nightscout-v4-proposed.html:
     kind: living
     sources: [specs/openapi/proposed/nightscout-v4.yaml]
-    source_commit: 037ceb416
+    source_commit: 595e4f392
     render: tools/site/render_apis.py
     api:
       status: proposed
       note: >-
-        The API v4 surface the platform specifications define: discovery, controller registration and
-        instances, commands and proposals, and statistics reads. Each operation names its listener and
-        whether it is served in pull request #8857, specified only, or still open.
+        The API v4 surface the platform specifications define: discovery, per-tenant controller
+        registration, instances on one flat root, commands and proposals, and statistics reads matching
+        Nocturne's (maintainer decisions, 2026-10-26). Each operation names its listener and whether it
+        is served in pull request #8857, specified only, or still open.
       see: docs/30-design/platform/v4-surface-and-nocturne-2026-10-26.md
