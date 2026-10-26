@@ -2366,7 +2366,7 @@
 
 
 <h1 id="roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order">Roadmap for cgm-remote-monitor: what comes next, and in what order<a class="headerlink" href="#roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-25 at <code>7dfb7346a</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>f1119d4cf</code>.</em></p>
 <p><em>What this is: a map of the work ahead (contributor-facing). Read after <a href="PROGRAMME-STATUS.html">programme
 status</a>; leads to <a href="NEEDS-A-HUMAN.html">work waiting on a person</a>. Prepared for the
 Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 and §2 dated
@@ -2429,34 +2429,25 @@ and the suggested order of the next merges, and the
 <p><strong>Priorities for the next cycle</strong> (maintainer, 2026-10-21): (1) modernization, cut 1 first
 (<code>RT-REBASE</code>, <code>RT-1</code>); (2) backfixes that affect dosing or security; (3) other exposure fixes, only
 where no cut or modernization branch already covers them.</p>
-<p>What is left, as it stands on 2026-10-25, 19:51Z (<code>dev</code> <code>2bc298b9</code>, <code>master</code> <code>c6a0d8ed</code>):</p>
+<p>What is left, as it stands on 2026-10-26, 19:10Z (<code>dev</code> <code>47723cda</code>, <code>master</code> <code>c6a0d8ed</code>):</p>
 <ol>
-<li><strong>Merged to <code>dev</code> on 2026-10-25, none released:</strong> by AndyLow91, #8831 (opt-in <code>THEME=modern</code>
-   dashboard), #8825 (<code>BFQ-173</code>), #8826 (<code>BFQ-174</code>, after #8825 as required), #8827 (<code>BFQ-157</code>), #8823
-   (the <code>BRIDGE_SERVER</code> mapping, also folded into cut 1), #8819 (<code>BFQ-172</code>, javier-erro), #8797
-   (<code>BFQ-09</code>), #8816, #8812, #8808 and #8828 (<code>RT-1</code>, cut 1); by bewest, #8834 (<code>BFQ-176</code>, <code>93f152bd</code>),
-   #8835 (<code>BFQ-163</code>: <code>compression</code>, <code>follow-redirects</code>, <code>source-map-js</code> and <code>sanitize-html</code> 2.18.1,
-   <code>a20469dc</code>) and #8838 (test and CI hygiene: <code>RT-CONNECT-TEARDOWN</code>, <code>BFQ-158</code>, <code>BFQ-177</code>,
-   <code>RT-D3-SUITE</code>, the edge CI matrix and MongoDB 5.0 through 8.0; <code>2bc298b9</code>). 204 commits and 15
-   first-parent commits ahead of <code>master</code>. CI on <code>2bc298b9</code> passed in every cell and published the <code>dev</code>
-   Docker image. The staging PR #8824 (<code>dev</code> → <code>master</code>) is open at <code>2bc298b9</code>, mergeable, review
-   required.</li>
-<li><strong>BF-176 on <code>dev</code>, closed:</strong> <code>dev</code> had the <code>IMPORT_CONFIG</code> boot crash from <code>eb72a1d3</code> (16:29Z) to
-   <code>93f152bd</code> (17:44Z), and the <code>dev</code> Docker image published at 17:15Z carries it; the images published
-   since do not. No release carried it.</li>
-<li><strong>In flight.</strong> Cut 2 is #8837 (<code>ee94b148</code>, <code>RT-2</code>), open; its CI failed the required check
-   <em>Run Tests (24, 6)</em> on <code>tests/env-runner.test.js</code>'s nyc child case under coverage, and the fix
-   <code>bd941200</code> and a merge of <code>dev</code> <code>2bc298b9</code> are not pushed yet. Peer session -b7's test tiers
-   (<code>RT-TEST-TIERS</code>, local) land after #8837 as one PR. BF-72 and BF-161 are in the private forks of their
-   draft advisories, no fork PR opened yet, each owing a merge of <code>dev</code> (<code>BFQ-72</code>, <code>BFQ-161</code>).</li>
-<li><strong>Not started:</strong> <code>ID-SIMPLE-MATCH</code>, <code>RT-JSDOM-REST</code>, <code>RT-BUNDLE-THEME-SPLIT</code> (the page-bundle budget's
-   option B, for Andy Low) and <code>RT-BOOT-INDEX-AWAIT</code> (boot awaits its index creation).
-   <code>RT-NODE-FLOOR-TESTED</code> records the edge matrix on <code>dev</code>, and its gates still read the cut tips.</li>
+<li><strong>Merged to <code>dev</code>, none released:</strong> 34 PRs on 2026-10-25 and 2026-10-26, among them all five
+   modernization cuts (cut 1 #8828, cut 2 #8837, cut 3 #8844, cut 4 #8847, cut 5 #8605), the CI
+   diagonal (#8843), the alarm fixes (#8842), record identity (#8845), opt-in <code>WRITE_VALIDATION</code>
+   (#8841) and boot resilience (#8849). 857 commits and 35 first-parent commits ahead of <code>master</code>. CI
+   on <code>47723cda</code> passed and published the <code>dev</code> Docker image. The list, with each PR's register and
+   queue ids, is in <a href="../../releases/cgm-remote-monitor-16.0.0/contents.html#what-is-merged-so-far">16.0.0 contents</a>.</li>
+<li><strong>The staging PR #8824</strong> (<code>dev</code> → <code>master</code>) is open at <code>47723cda</code>, mergeable, review required, and
+   blocked by <code>master</code>'s required check <code>Run Tests (22, 4.4)</code>, which no <code>dev</code> workflow emits.</li>
+<li><strong>In flight.</strong> Draft #8854 (AndyLow91: a shared write step and stored-data contracts, on <code>dev</code>
+   <code>47723cda</code>). BF-72 and BF-161 are in the private forks of their draft advisories, no fork PR opened
+   yet, each owing a merge of <code>dev</code> (<code>BFQ-72</code>, <code>BFQ-161</code>); BF-191 goes through the maintainer's
+   advisory process.</li>
+<li><strong>Not started:</strong> <code>ID-SIMPLE-MATCH</code>, <code>RT-JSDOM-REST</code> and <code>RT-BUNDLE-THEME-SPLIT</code>.</li>
 <li><strong>Open decisions and settings</strong> are listed with their owners in
-   <a href="../../releases/cgm-remote-monitor-16.0.0/contents.html#open-items-a-releaser-must-settle">16.0.0 contents</a>:
-   whether cut 2 ships in 16.0.0, the scope of BF-161's draft advisory, BF-72's test inputs, BF-95,
-   BF-152 and <code>DEPENDABOT-CONFIG</code>; and the maintainer's branch-protection changes for the edge matrix
-   (drop <code>Run Tests (22, 4.4)</code> on <code>master</code>, move the <code>(24, 6)</code> and <code>(22, 6)</code> requirements to edge cells).</li>
+   <a href="../../releases/cgm-remote-monitor-16.0.0/contents.html#open-items-a-releaser-must-settle">16.0.0 contents</a>,
+   with the maintainer's branch-protection changes and the live alarm-delivery checks owed before the
+   tag.</li>
 <li>The version class of #8772, #8775 and #8780 stays recorded as open in
    <a href="../../releases/cgm-remote-monitor-15.0.9/decisions.html">15.0.9 decisions</a>.</li>
 </ol>
@@ -2604,10 +2595,10 @@ harness cut 1 keeps is retired later under scope B (<code>RT-JSDOM-REST</code>, 
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
-<td><code>MOD-WRITE-VALIDATION</code></td>
-<td>WRITE_VALIDATION=off</td>
-<td>log</td>
-<td>reject: opt-in domain validation of Temporary Target wr</td>
+<td><code>MOD-WRITE-VALIDATION-READ</code></td>
+<td>Flag stored records that break a write-validation rule on API v3 reads (read-sid</td>
+<td><code>needs-decision</code></td>
+<td>&mdash;</td>
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
@@ -2632,20 +2623,6 @@ harness cut 1 keeps is retired later under scope B (<code>RT-JSDOM-REST</code>, 
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
-<td><code>RT-2</code></td>
-<td>Cut 2 - chore/build-runtime-separation</td>
-<td><code>in-flight-upstream</code></td>
-<td>&mdash;</td>
-</tr>
-<tr>
-<td style="text-align: right;">1</td>
-<td><code>RT-BOOT-INDEX-AWAIT</code></td>
-<td>Boot awaits its collection and index creation before it reports ready</td>
-<td><code>in-progress</code></td>
-<td>&mdash;</td>
-</tr>
-<tr>
-<td style="text-align: right;">1</td>
 <td><code>RT-BOOTERROR</code></td>
 <td>BF-63 - the page that reports a boot error crashes on cut 4's boot errors</td>
 <td><code>gate-not-met</code></td>
@@ -2653,9 +2630,9 @@ harness cut 1 keeps is retired later under scope B (<code>RT-JSDOM-REST</code>, 
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
-<td><code>RT-CI-DIAGONAL</code></td>
-<td>CI runs the Node x MongoDB diagonal, the no-database tiers on their own, a Tests</td>
-<td><code>in-flight-upstream</code></td>
+<td><code>RT-BUNDLE-THEME-SPLIT</code></td>
+<td>Load the modern theme's client code only when it is chosen (page-bundle budget o</td>
+<td><code>not-started</code></td>
 <td>&mdash;</td>
 </tr>
 <tr>
@@ -2680,53 +2657,11 @@ harness cut 1 keeps is retired later under scope B (<code>RT-JSDOM-REST</code>, 
 <td>&mdash;</td>
 </tr>
 <tr>
-<td style="text-align: right;">1</td>
-<td><code>RT-PR-8730</code></td>
-<td>#8730 - Crowdin translation updates, held out of 15.0.9 (BF-132)</td>
-<td><code>gate-not-met</code></td>
-<td>&mdash;</td>
-</tr>
-<tr>
-<td style="text-align: right;">1</td>
-<td><code>RT-REBASE</code></td>
-<td>Catch the cuts up with dev: cut 1 merged (#8828, 2026-10-25); cuts 2-5 are far b</td>
-<td><code>in-progress</code></td>
-<td>&mdash;</td>
-</tr>
-<tr>
-<td style="text-align: right;">2</td>
-<td><code>MOD-WRITE-VALIDATION-READ</code></td>
-<td>Flag stored records that break a write-validation rule on API v3 reads (read-sid</td>
-<td><code>needs-decision</code></td>
-<td><code>MOD-WRITE-VALIDATION</code></td>
-</tr>
-<tr>
 <td style="text-align: right;">2</td>
 <td><code>OID-MIGRATION</code></td>
 <td>Opt-in migration that stores every string _id as the ObjectId it names, then ret</td>
 <td><code>not-started</code></td>
 <td><code>OID-PREVALENCE</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">2</td>
-<td><code>RT-3</code></td>
-<td>Cuts 3+5 combined - dependency release</td>
-<td><code>blocked</code></td>
-<td><code>RT-2</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">2</td>
-<td><code>RT-BUNDLE-THEME-SPLIT</code></td>
-<td>Load the modern theme's client code only when it is chosen (page-bundle budget o</td>
-<td><code>not-started</code></td>
-<td><code>RT-2</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">3</td>
-<td><code>RT-5</code></td>
-<td>Cut 4 - chore/mime-exposure-review, the one to slow down on</td>
-<td><code>blocked</code></td>
-<td><code>RT-3</code></td>
 </tr>
 </tbody>
 </table>
@@ -2786,6 +2721,13 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
+<td><code>SEAM-REFRESH</code></td>
+<td>Refresh the seam chain once after 15.0.9, onto the base the release train leaves</td>
+<td><code>blocked</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
 <td><code>T30-AUTH</code></td>
 <td>The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i</td>
 <td><code>ready-to-push</code></td>
@@ -2807,10 +2749,45 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
-<td><code>SEAM-REFRESH</code></td>
-<td>Refresh the seam chain once after 15.0.9, onto the base the release train leaves</td>
-<td><code>blocked</code></td>
-<td><code>RT-REBASE</code></td>
+<td><code>ID-ABSENT-DECISION</code></td>
+<td>Decide: a write that carries no identifier (and no _id) - keep the time-key fall</td>
+<td><code>needs-decision</code></td>
+<td><code>LOOP-ID-REPLY</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td><code>ID-CLIENT-OID-DECISION</code></td>
+<td>Decide: may a client set _id (an ObjectId it creates), and which field wins when</td>
+<td><code>needs-decision</code></td>
+<td><code>LOOP-ID-REPLY</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td><code>ID-DELETE-REUSE-DECISION</code></td>
+<td>Decide: after a delete, what does a re-send of the same identifier (or _id) do -</td>
+<td><code>needs-decision</code></td>
+<td><code>LOOP-ID-REPLY</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td><code>ID-FORMAT-DECISION</code></td>
+<td>Decide: the client identifier's format (opaque string with limits; UUID not requ</td>
+<td><code>needs-decision</code></td>
+<td><code>LOOP-ID-REPLY</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td><code>ID-SCOPE-DECISION</code></td>
+<td>Decide: is identifier unique per collection, across collections, and per tenant</td>
+<td><code>needs-decision</code></td>
+<td><code>LOOP-ID-REPLY</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td><code>ID-V3-IMMUTABLE-DECISION</code></td>
+<td>Decide: on an identifier match, may date, device or eventType change?</td>
+<td><code>needs-decision</code></td>
+<td><code>LOOP-ID-REPLY</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
@@ -2820,46 +2797,53 @@ Until then, the order below is the order of development, not of release.</p>
 <td><code>T30-RESEARCH</code></td>
 </tr>
 <tr>
-<td style="text-align: right;">3</td>
-<td><code>ID-ABSENT-DECISION</code></td>
-<td>Decide: a write that carries no identifier (and no _id) - keep the time-key fall</td>
-<td><code>needs-decision</code></td>
-<td><code>LOOP-ID-REPLY</code></td>
+<td style="text-align: right;">2</td>
+<td><code>WC-STEP-PATCH</code></td>
+<td>Release 1 (patch): one write step for every v1, v3 and socket path, today's beha</td>
+<td><code>blocked</code></td>
+<td><code>SEAM-REFRESH</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td><code>WRITE-CONTRACT</code></td>
+<td>One write step behind the storage interface: _id form, srv dates, soft delete, r</td>
+<td><code>blocked</code></td>
+<td><code>SEAM-REFRESH</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
-<td><code>ID-CLIENT-OID-DECISION</code></td>
-<td>Decide: may a client set _id (an ObjectId it creates), and which field wins when</td>
-<td><code>needs-decision</code></td>
-<td><code>LOOP-ID-REPLY</code></td>
+<td><code>BFQ-CAP02</code></td>
+<td>CAP-02 - no importer, and no Mongo to PostgreSQL loader</td>
+<td><code>not-started</code></td>
+<td><code>T30-SCHEMA-CONFIG</code>, <code>WRITE-CONTRACT</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
-<td><code>ID-DELETE-REUSE-DECISION</code></td>
-<td>Decide: after a delete, what does a re-send of the same identifier (or _id) do -</td>
-<td><code>needs-decision</code></td>
-<td><code>LOOP-ID-REPLY</code></td>
+<td><code>ID-BATCH-RESULTS</code></td>
+<td>Release 2 (minor): per-item results in v1 batch replies; one bad item no longer</td>
+<td><code>blocked</code></td>
+<td><code>WC-STEP-PATCH</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
-<td><code>ID-FORMAT-DECISION</code></td>
-<td>Decide: the client identifier's format (opaque string with limits; UUID not requ</td>
-<td><code>needs-decision</code></td>
-<td><code>LOOP-ID-REPLY</code></td>
+<td><code>ID-FIRST-MATCH</code></td>
+<td>Release 2 (minor): identifier-first matching for entries, devicestatus and socke</td>
+<td><code>blocked</code></td>
+<td><code>WC-STEP-PATCH</code>, <code>ID-SIMPLE-MATCH</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
-<td><code>ID-SCOPE-DECISION</code></td>
-<td>Decide: is identifier unique per collection, across collections, and per tenant</td>
-<td><code>needs-decision</code></td>
-<td><code>LOOP-ID-REPLY</code></td>
+<td><code>ID-V1-LOOKUP</code></td>
+<td>Release 2 (minor): v1 GET and DELETE by any identifier, without the default time</td>
+<td><code>blocked</code></td>
+<td><code>WC-STEP-PATCH</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
-<td><code>ID-V3-IMMUTABLE-DECISION</code></td>
-<td>Decide: on an identifier match, may date, device or eventType change?</td>
-<td><code>needs-decision</code></td>
-<td><code>LOOP-ID-REPLY</code></td>
+<td><code>ID-VALIDATE</code></td>
+<td>Release 2 (minor): validate identifier on every collection; empty and null mean</td>
+<td><code>blocked</code></td>
+<td><code>WC-STEP-PATCH</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
@@ -2876,53 +2860,11 @@ Until then, the order below is the order of development, not of release.</p>
 <td><code>T30-SCHEMA-CONFIG</code></td>
 </tr>
 <tr>
-<td style="text-align: right;">3</td>
-<td><code>WC-STEP-PATCH</code></td>
-<td>Release 1 (patch): one write step for every v1, v3 and socket path, today's beha</td>
-<td><code>blocked</code></td>
-<td><code>SEAM-REFRESH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">3</td>
-<td><code>WRITE-CONTRACT</code></td>
-<td>One write step behind the storage interface: _id form, srv dates, soft delete, r</td>
-<td><code>blocked</code></td>
-<td><code>SEAM-REFRESH</code></td>
-</tr>
-<tr>
 <td style="text-align: right;">4</td>
-<td><code>BFQ-CAP02</code></td>
-<td>CAP-02 - no importer, and no Mongo to PostgreSQL loader</td>
-<td><code>not-started</code></td>
-<td><code>T30-SCHEMA-CONFIG</code>, <code>WRITE-CONTRACT</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">4</td>
-<td><code>ID-BATCH-RESULTS</code></td>
-<td>Release 2 (minor): per-item results in v1 batch replies; one bad item no longer</td>
+<td><code>ID-UNIQUE-INDEX</code></td>
+<td>Partial unique index on identifier, retry-as-update on duplicate key, start-up s</td>
 <td><code>blocked</code></td>
-<td><code>WC-STEP-PATCH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">4</td>
-<td><code>ID-FIRST-MATCH</code></td>
-<td>Release 2 (minor): identifier-first matching for entries, devicestatus and socke</td>
-<td><code>blocked</code></td>
-<td><code>WC-STEP-PATCH</code>, <code>ID-SIMPLE-MATCH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">4</td>
-<td><code>ID-V1-LOOKUP</code></td>
-<td>Release 2 (minor): v1 GET and DELETE by any identifier, without the default time</td>
-<td><code>blocked</code></td>
-<td><code>WC-STEP-PATCH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">4</td>
-<td><code>ID-VALIDATE</code></td>
-<td>Release 2 (minor): validate identifier on every collection; empty and null mean</td>
-<td><code>blocked</code></td>
-<td><code>WC-STEP-PATCH</code></td>
+<td><code>ID-FIRST-MATCH</code>, <code>ID-BATCH-RESULTS</code>, <code>ID-V3-IMMUTABLE-DECISION</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">4</td>
@@ -2972,13 +2914,6 @@ Until then, the order below is the order of development, not of release.</p>
 <td>BF-66 - the deployment's own tokens fail its own tenant check</td>
 <td><code>blocked</code></td>
 <td><code>T30-WIRING</code>, <code>T31-REM</code>, <code>SEAM-REFRESH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">5</td>
-<td><code>ID-UNIQUE-INDEX</code></td>
-<td>Partial unique index on identifier, retry-as-update on duplicate key, start-up s</td>
-<td><code>blocked</code></td>
-<td><code>ID-FIRST-MATCH</code>, <code>ID-BATCH-RESULTS</code>, <code>ID-V3-IMMUTABLE-DECISION</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">6</td>

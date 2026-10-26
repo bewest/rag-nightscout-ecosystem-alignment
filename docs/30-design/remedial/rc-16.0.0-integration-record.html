@@ -4593,7 +4593,7 @@
 
 
 <h1 id="1600-integration-record">16.0.0 integration record<a class="headerlink" href="#1600-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-25 at <code>793a3c078</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>f1119d4cf</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 16.0.0 candidate is assembled and
 tested, in the form of the <a href="rc-15.0.9-integration-record.html">15.0.9 integration record</a>. Item state is
 in <code>queue/work-queue.yaml</code>; defect facts are in the <a href="nightscout-backfix-register.html">backfix register</a>;
@@ -4603,13 +4603,15 @@ decisions are in <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.
 BF-161 are live on the shipping release (15.0.9), so this record describes them by mechanism only.
 No verification record is captured until release time
 (<a href="../../../releases/VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>).</em></p>
-<p><strong>Where the candidate stands, 2026-10-25, 19:51Z.</strong> <code>dev</code> is <code>2bc298b9</code> (the merge of #8838; tree
-<code>2b9ee5c7</code>; package version 16.0.0; <code>engines.node</code> <code>^22.23.4 || ^24.22.1 || &gt;=26.12.1</code>), 204 commits and
-15 first-parent commits (14 PR merges and the version bump <code>04d435eb</code>) ahead of <code>master</code> <code>c6a0d8ed</code>
-(= <code>v15.0.9</code>); 192 files, +13540/−5507 (<code>git rev-list --count</code>, <code>--first-parent --count</code> and <code>git diff
---shortstat</code> <code>official/master official/dev</code>). After cut 1 (#8828, <code>eb72a1d3</code>) came #8834 (<code>93f152bd</code>),</p>
-<h1 id="8835-a20469dc-and-8838-2bc298b9-the-staging-pr-is-8824-open-head-2bc298b9-review">8835 (<code>a20469dc</code>) and #8838 (<code>2bc298b9</code>). The staging PR is #8824 (open, head <code>2bc298b9</code>, review<a class="headerlink" href="#8835-a20469dc-and-8838-2bc298b9-the-staging-pr-is-8824-open-head-2bc298b9-review" title="Permanent link">&para;</a></h1>
-<p>required). Cut 2 is #8837, open. There is no 16.0.0 tag and no release candidate is named yet.</p>
+<p><strong>Where the candidate stands, 2026-10-26, 19:10Z.</strong> <code>dev</code> is <code>47723cda</code> (the merge of #8605, cut 5; tree
+<code>200a1c00</code>; package version 16.0.0; <code>engines.node</code> <code>^22.23.4 || ^24.22.1 || &gt;=26.12.1</code>), 857 commits and
+35 first-parent commits (34 PR merges and the version bump <code>04d435eb</code>) ahead of <code>master</code> <code>c6a0d8ed</code>
+(= <code>v15.0.9</code>); 745 files, +123438/−15023 (<code>git rev-list --count</code>, <code>--first-parent --count</code> and <code>git diff
+--shortstat</code> <code>official/master official/dev</code>). Every modernization cut is merged: cut 1 #8828, cut 2</p>
+<h1 id="8837-2026-10-25-cut-3-8844-cut-4-8847-and-cut-5-8605-2026-10-26-the-merge-list-is-in-the">8837 (2026-10-25), cut 3 #8844, cut 4 #8847 and cut 5 #8605 (2026-10-26); the merge list is in the<a class="headerlink" href="#8837-2026-10-25-cut-3-8844-cut-4-8847-and-cut-5-8605-2026-10-26-the-merge-list-is-in-the" title="Permanent link">&para;</a></h1>
+<p>release <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">contents</a>. The staging PR is #8824
+(open, head <code>47723cda</code>, review required; <code>master</code> still requires <code>Run Tests (22, 4.4)</code>, which <code>dev</code> no
+longer emits). There is no 16.0.0 tag and no release candidate is named yet.</p>
 <p>Each entry gives the commit, the runtime and the counts as passing / pending / failing, and says who
 ran it. <strong>Reproduced</strong> entries were run by a programme session; CI entries are read from GitHub run
 metadata.</p>
@@ -5068,6 +5070,211 @@ the merge <code>2bc298b9</code>: <code>push</code> run 40227267487 and <code>pul
 the edge matrix (Node 22.23.4 and 26 × MongoDB 5.0 and 8.0, the required (24, 6), (22, 6) and (22, 4.4),
 and Node 26 × Chromium, Firefox and WebKit), and the push run published the <code>dev</code> image at 19:48:15Z.
 Read from GitHub.</p>
+<h3 id="r13--dev-ci-on-the-evening-merges-5de8505d-to-b29f1bf7-2026-10-25">R13 · <code>dev</code> CI on the evening merges, <code>5de8505d</code> to <code>b29f1bf7</code> (2026-10-25)<a class="headerlink" href="#r13--dev-ci-on-the-evening-merges-5de8505d-to-b29f1bf7-2026-10-25" title="Permanent link">&para;</a></h3>
+<p>Read from GitHub (<code>gh run list --commit &lt;sha&gt;</code>, <code>gh run view &lt;id&gt; --json jobs</code>). Every run passed on
+attempt 1, and every push run published <code>dev</code>'s image:</p>
+<table>
+<thead>
+<tr>
+<th>merge</th>
+<th>PR</th>
+<th>push run</th>
+<th>published</th>
+<th><code>pull_request</code> run</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>5de8505d</code></td>
+<td>#8836</td>
+<td>40228940119</td>
+<td>20:10:00Z</td>
+<td>40228945177</td>
+</tr>
+<tr>
+<td><code>fd3792e5</code></td>
+<td>#8833</td>
+<td>40229498194</td>
+<td>20:17:31Z</td>
+<td>40229504230</td>
+</tr>
+<tr>
+<td><code>eb44a9c2</code></td>
+<td>#8837 (cut 2)</td>
+<td>40235686217</td>
+<td>21:37:57Z</td>
+<td>40235686899</td>
+</tr>
+<tr>
+<td><code>78524be4</code></td>
+<td>#8839</td>
+<td>40237888969</td>
+<td>22:02:54Z</td>
+<td>40237893345</td>
+</tr>
+<tr>
+<td><code>b29f1bf7</code></td>
+<td>#8840</td>
+<td>40241375688</td>
+<td>22:47:04Z</td>
+<td>40241381245</td>
+</tr>
+</tbody>
+</table>
+<p>From <code>eb44a9c2</code> on, a push run has 20 jobs: Run Tests (22.23.4 and 26 × 5.0 and 8.0, plus (24, 6) and
+(22, 6)), Maintained MongoDB (22.23.4 and 26 × 8.0.29), Replica set (22.23.4 and 26 × 5.0.32 and
+8.0.29), Browser tests (26 × Chromium, Firefox, WebKit), the npm 12 install, two Docker builds, the
+publish, and a skipped Docker validation. CodeQL passed on every merge. The PR heads' own runs: #8836
+<code>df2f37ab</code> run 40228187718 failed <em>Browser tests (26, firefox)</em> on attempt 1 (the legacy-reports wait
+below) and passed on attempt 2; #8833 <code>9ac9d534</code>, #8837 <code>af7ba73a</code> and #8839 <code>ad8a73e2</code> passed on
+attempt 1; #8840 <code>5be6f217</code> (a fork PR) waited for approval on attempt 1 and passed on attempt 2. The
+PR authors' local runs are in their PR bodies and in the release
+<a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">contents</a>; none was re-run by this programme.</p>
+<h3 id="r14--dev-ci-on-the-2026-10-26-merges-428b20b7-to-47723cda">R14 · <code>dev</code> CI on the 2026-10-26 merges, <code>428b20b7</code> to <code>47723cda</code><a class="headerlink" href="#r14--dev-ci-on-the-2026-10-26-merges-428b20b7-to-47723cda" title="Permanent link">&para;</a></h3>
+<p>Read from GitHub (<code>gh run list --branch dev</code>, <code>gh run view &lt;id&gt; --json jobs</code>, <code>--log-failed</code> for the
+failures); none of these trees was run locally. Since #8843 a push run has 16 jobs: <em>Run Tests</em> (22.23.4,
+8.0), (26, 5.0), (24, 6), (22, 6); <em>Tests without a database</em> (22.23.4), (26); <em>Maintained MongoDB</em> (26,
+8.0.29); <em>Browser tests</em> (26 × Chromium, Firefox, WebKit); the npm 12 install; <em>Tests pass</em>; two Docker
+builds; the publish; and a skipped Docker validation. Every run is attempt 1.</p>
+<table>
+<thead>
+<tr>
+<th>merge</th>
+<th>PR</th>
+<th>push run</th>
+<th>push result</th>
+<th>published</th>
+<th><code>pull_request</code> run</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>428b20b7</code></td>
+<td>#8542</td>
+<td>40253951622</td>
+<td>passed (20 jobs, before #8843)</td>
+<td>01:28:41Z</td>
+<td>40253954877 passed</td>
+</tr>
+<tr>
+<td><code>720e60de</code></td>
+<td>#8843</td>
+<td>40273692991</td>
+<td>tests passed; build and publish skipped (fixed by #8848)</td>
+<td>—</td>
+<td>40273696980 <strong>failed</strong>: <em>Browser tests (26, chromium)</em>, "Complete page template startup recovers the actual reports page after two failed bundle downloads", 30 s timeout</td>
+</tr>
+<tr>
+<td><code>1f10cd9d</code></td>
+<td>#8848</td>
+<td>40277667345</td>
+<td>passed</td>
+<td>06:12:33Z</td>
+<td>40277675414 passed</td>
+</tr>
+<tr>
+<td><code>207a8352</code></td>
+<td>#8850</td>
+<td>40279435759</td>
+<td>passed</td>
+<td>06:31:52Z</td>
+<td>40279441497 passed</td>
+</tr>
+<tr>
+<td><code>e09bca3b</code></td>
+<td>#8841</td>
+<td>40307014804</td>
+<td>passed</td>
+<td>10:32:31Z</td>
+<td>40307022078 passed</td>
+</tr>
+<tr>
+<td><code>85e5108a</code></td>
+<td>#8842</td>
+<td>40308300225</td>
+<td>passed</td>
+<td>10:42:51Z</td>
+<td>40308307713 passed</td>
+</tr>
+<tr>
+<td><code>ad05e140</code></td>
+<td>#8844 (cut 3)</td>
+<td>40311624772</td>
+<td>passed</td>
+<td>11:09:23Z</td>
+<td>40311630365 passed</td>
+</tr>
+<tr>
+<td><code>900abf7a</code></td>
+<td>#8845</td>
+<td>40316054930</td>
+<td>passed</td>
+<td>11:43:24Z</td>
+<td>40316065497 passed</td>
+</tr>
+<tr>
+<td><code>e34efdef</code></td>
+<td>#8847 (cut 4)</td>
+<td>40321153797</td>
+<td>passed</td>
+<td>12:24:54Z</td>
+<td>40321160053 passed</td>
+</tr>
+<tr>
+<td><code>3b2e1a68</code></td>
+<td>#8849</td>
+<td>40324716298</td>
+<td>passed</td>
+<td>12:53:51Z</td>
+<td>40324723654 passed</td>
+</tr>
+<tr>
+<td><code>a911cdb2</code></td>
+<td>#8852</td>
+<td>40331300874</td>
+<td>passed</td>
+<td>13:40:19Z</td>
+<td>40331310517 passed</td>
+</tr>
+<tr>
+<td><code>43050723</code></td>
+<td>#8851</td>
+<td>40341516221</td>
+<td>passed</td>
+<td>14:50:24Z</td>
+<td>40341527670 passed</td>
+</tr>
+<tr>
+<td><code>89b7ebdd</code></td>
+<td>#8730</td>
+<td>40350206994</td>
+<td><strong>failed</strong>: <em>Tests without a database (22.23.4)</em>, 1339 passing, 1 failing, "Development watch policy preserves configured ignores and application watching through two restart cycles"</td>
+<td>—</td>
+<td>40350218559 passed</td>
+</tr>
+<tr>
+<td><code>09d0def8</code></td>
+<td>#8555</td>
+<td>40356902994</td>
+<td><strong>failed</strong>: <em>Browser tests (26, firefox)</em> cancelled at the 10-minute job limit</td>
+<td>—</td>
+<td>40356915065 passed</td>
+</tr>
+<tr>
+<td><code>47723cda</code></td>
+<td>#8605 (cut 5)</td>
+<td>40369632641</td>
+<td>passed</td>
+<td>17:42:36Z</td>
+<td>40369639616 passed</td>
+</tr>
+</tbody>
+</table>
+<p>CodeQL passed on every push and <code>pull_request</code> event of these merges. The Chromium job on <code>47723cda</code>
+lists 40 browser test files and 650 passing. Cut 5's <code>f4abce3c</code> raised browser jobs' limit to 15 minutes;
+Firefox took 8m12s (push) and 10m40s (<code>pull_request</code>) on <code>47723cda</code>. Docker Hub reports <code>latest_dev</code>
+updated 2026-10-26 17:42:32Z, and the tag <code>dev_47723cda10cc0504d548f4a90d07a60540cca4a4</code> exists
+(<code>hub.docker.com/v2/repositories/nightscout/cgm-remote-monitor/tags/&lt;tag&gt;</code>, HTTP 200).</p>
 <h2 id="known-test-defects-on-dev">Known test defects on <code>dev</code><a class="headerlink" href="#known-test-defects-on-dev" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5080,8 +5287,8 @@ Read from GitHub.</p>
 <tbody>
 <tr>
 <td>Firefox legacy-reports wait</td>
-<td><code>tests/browser/legacy-reports.test.js</code> "should produce some html" timed out at its fixed 30 s wait in Firefox cells of the CI runs on <code>93f152bd</code> and <code>a20469dc</code> (R9, R10); it passed on <code>2bc298b9</code>. Cut 2 replaces the wait with a progress-aware one</td>
-<td><code>RT-2</code></td>
+<td><code>tests/browser/legacy-reports.test.js</code> "should produce some html" timed out at its fixed 30 s wait in Firefox cells of the CI runs on <code>93f152bd</code> and <code>a20469dc</code> (R9, R10), and on #8836's head <code>df2f37ab</code> (R13). Since cut 2 merged (<code>eb44a9c2</code>) <code>dev</code> uses the progress-aware wait, and the Firefox cell passed on each of the five evening merges, one run each (R13)</td>
+<td><code>RT-2</code> (merged-upstream)</td>
 </tr>
 <tr>
 <td>BF-177</td>
@@ -5095,13 +5302,18 @@ Read from GitHub.</p>
 </tr>
 <tr>
 <td>API3 SEARCH hook timeout</td>
-<td>fixed on <code>dev</code> by #8838 (<code>cab8896f</code>, R12): a 30 s hook timeout. The cause, boot not awaiting its index creation, is a product follow-up</td>
-<td><code>RT-BOOT-INDEX-AWAIT</code> (not started)</td>
+<td>fixed on <code>dev</code> by #8838 (<code>cab8896f</code>, R12): a 30 s hook timeout. The cause, boot not awaiting its index creation, is fixed by #8849 (<code>488def62</code>, merged 2026-10-26)</td>
+<td><code>RT-BOOT-INDEX-AWAIT</code> (merged-upstream)</td>
 </tr>
 <tr>
 <td>duplicated block</td>
 <td>removed on <code>dev</code> by #8838 (<code>879ab51e</code>), 37 → 22 cases</td>
 <td>—</td>
+</tr>
+<tr>
+<td>intermittents seen on 2026-10-26</td>
+<td>the development watch policy test, the Firefox job limit and the page-startup reports recovery (R14), and a peer-reported <code>api.entries.repost-with-id</code> failure under <code>TEST_SHUFFLE_SEED=303</code> (not verified); none reproduced locally</td>
+<td><code>TEST-FLAKE-REPOST-FIND-COUNT</code> (the last); no item for the others</td>
 </tr>
 </tbody>
 </table>
@@ -5116,14 +5328,9 @@ Read from GitHub.</p>
 </thead>
 <tbody>
 <tr>
-<td>cut 2 after <code>bd941200</code> and the merge of <code>dev</code> <code>2bc298b9</code></td>
-<td><code>wip/cut2-onto-cut1-16.0.0</code> (peer session), then #8837</td>
-<td><code>npm test</code> with coverage as <code>test-ci</code> runs it, the browser suite on three engines, CI green on the required checks</td>
-</tr>
-<tr>
-<td>the test tiers</td>
-<td><code>test/tier-map-and-selection</code> rebased onto <code>dev</code> after #8837</td>
-<td><code>node scripts/test-tiers.js check</code>, with the five planted defects as the red control</td>
+<td>the test tier check's red control</td>
+<td><code>dev</code> since #8839</td>
+<td><code>node scripts/test-tiers.js check</code>, with the five planted defects as the red control (not run on the merged tree)</td>
 </tr>
 <tr>
 <td>the release candidate</td>
@@ -5138,7 +5345,7 @@ Read from GitHub.</p>
 </tbody>
 </table>
 <hr />
-<p><em>Draft, 2026-10-25. Requires maintainer review before it is relied upon.</em></p>
+<p><em>Draft, 2026-10-26. Requires maintainer review before it is relied upon.</em></p>
 
 
 

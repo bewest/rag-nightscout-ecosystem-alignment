@@ -5888,7 +5888,7 @@
 
 
 <h1 id="semver-and-release-versioning-policy--cgm-remote-monitor-and-nightscout-connect">Semver and release versioning policy — cgm-remote-monitor and nightscout-connect<a class="headerlink" href="#semver-and-release-versioning-policy--cgm-remote-monitor-and-nightscout-connect" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-25 at <code>b1ec05bca</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>f1119d4cf</code>.</em></p>
 <p><em>Contributor- and maintainer-facing. Full technical depth is intended. Operator-facing text
 derived from this document has its own rules — §5.6.</em></p>
 <p><strong>Status: living document.</strong> Three parts with different standing:</p>
@@ -5922,7 +5922,7 @@ is 498 commits and 82 first-parent merges.</p>
 (where the two disagree, this document is the later position);
 <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html">15.0.9 contents</a>;
 <a href="../remedial/nightscout-backfix-register.html">backfix register</a> (defect facts);
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/eef949f476a1ab317524e1e42d5c91a655947708/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> (item state);
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f1119d4cf9375c2d13b4c696d807312cadf6cff4/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> (item state);
 <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>
 (decisions D1–D17, cited here by number).</p>
 <hr />
@@ -6983,6 +6983,20 @@ flip. A flag without a planned flip is a permanent setting and is documented as 
 <td>not yet planned ("a future release")</td>
 <td><code>f7481725</code>, 15.0.8</td>
 </tr>
+<tr>
+<td><code>WRITE_VALIDATION</code></td>
+<td><code>off</code>: Temporary Target writes are not checked, as in 15.0.9; any value other than <code>log</code> or <code>reject</code> also reads as <code>off</code>, without a message (<code>lib/server/write-validation.js</code> <code>parseMode</code> on <code>dev</code> <code>47723cda</code>)</td>
+<td><code>log</code> (stored, the broken rule logged) or <code>reject</code> (400 with a message naming the field)</td>
+<td>not yet planned</td>
+<td>#8841 (<code>e09bca3b</code>), on <code>dev</code> for 16.0.0, not released</td>
+</tr>
+<tr>
+<td><code>API3_SETTINGS_STRICT_READ_ENABLED</code></td>
+<td><code>false</code>: API v3 read of one <code>settings</code> document by identifier needs <code>api:settings:read</code>, as in 15.0.9</td>
+<td><code>true</code>: it needs <code>api:settings:admin</code>, as search and history already do</td>
+<td>a strict default "later on the calendar" (the maintainer's staged ladder, 2026-10-25); no release named</td>
+<td>#8845 (<code>900abf7a</code>), on <code>dev</code> for 16.0.0, not released</td>
+</tr>
 </tbody>
 </table>
 <ul>
@@ -6993,6 +7007,8 @@ flip. A flag without a planned flip is a permanent setting and is documented as 
 <li><strong>The unset default is <code>dev</code>'s resolution</strong>, not the modernization branch's (<code>395f3207</code> differs in
   four edge cases, BF-88). The cuts keep this unset default too (maintainer, 2026-09-23; <code>RT-3</code>).</li>
 <li><strong>Added 2026-10-25</strong> from the <a href="../../60-research/modernization/defaults-calendar-2026-10-25.html">defaults calendar draft</a> §1f: the three transitional settings above were shipping without a registry row. Their stated plan in the release notes is "switch to false in a future release"; no release is named.</li>
+<li><strong>Added 2026-10-26:</strong> <code>WRITE_VALIDATION</code> (#8841) and <code>API3_SETTINGS_STRICT_READ_ENABLED</code> (#8845),
+  both merged to <code>dev</code> on 2026-10-26 with their defaults at 15.0.9's behaviour.</li>
 <li><strong>Considered and not adopted:</strong> a flag for the BF-47 subject-field allow-list. The maintainer
   ruled the allow-list is the declared schema (2026-09-23).</li>
 </ul>

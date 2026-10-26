@@ -1100,6 +1100,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#api-v3-and-the-write-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API v3 and the write contract
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#query-layer" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2237,6 +2248,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#api-v3-and-the-write-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API v3 and the write contract
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#query-layer" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2287,9 +2309,9 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-25 at <code>793a3c078</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>f1119d4cf</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
-<code>dev</code> <code>2bc298b9</code> (2026-10-25). Each row states the decision as it stands, with its date and who made
+<code>dev</code> <code>47723cda</code> (2026-10-26). Each row states the decision as it stands, with its date and who made
 it. Item state is in <code>queue/work-queue.yaml</code>; what 16.0.0 contains and what is still open is in
 <a href="contents.html">contents.md</a>; the test evidence is in the
 <a href="../../docs/30-design/remedial/rc-16.0.0-integration-record.html">16.0.0 integration record</a>. BF-72 and
@@ -2310,7 +2332,7 @@ public.</em></p>
 <td><strong>Priorities for the cycle</strong>: (1) modernization, cut 1 first, then cut 2; (2) backfixes that affect dosing or security; (3) other exposure fixes, only where no cut or modernization branch already covers them</td>
 <td>maintainer, 2026-10-21</td>
 <td><code>RT-REBASE</code>, <code>RT-1</code>, <code>RT-2</code></td>
-<td>cut 1 merged 2026-10-25; cut 2 is #8837, open</td>
+<td>every cut is on <code>dev</code>: cut 1 (#8828) and cut 2 (#8837, <code>eb44a9c2</code>) on 2026-10-25; cut 3 (#8844, <code>ad05e140</code>), cut 4 (#8847, <code>e34efdef</code>) and cut 5 (#8605, <code>47723cda</code>) on 2026-10-26 (<code>RT-REBASE</code>, <code>RT-5</code>, <code>RT-3</code>); none released</td>
 </tr>
 <tr>
 <td><strong>The next release is 16.0.0, and cut 1 lands on <code>dev</code> now</strong>; 15.0.10 is not released as a separate patch</td>
@@ -2340,12 +2362,24 @@ public.</em></p>
 <td><strong>PR bundling: changes go to <code>dev</code> in reasonably sized themed PRs</strong>, not one or two commits per PR</td>
 <td>maintainer, 2026-10-25</td>
 <td><code>BFQ-163</code>, <code>RT-CONNECT-TEARDOWN</code>, <code>BFQ-158</code>, <code>BFQ-177</code>, <code>RT-D3-SUITE</code>, <code>RT-TEST-TIERS</code></td>
-<td>applied: <code>sanitize-html</code> 2.18.1 went into #8835 with the dependency refresh; the test and CI follow-ups went together as #8838; the test tiers go as one PR after cut 2</td>
+<td>applied: <code>sanitize-html</code> 2.18.1 went into #8835 with the dependency refresh; the test and CI follow-ups went together as #8838; the test tiers went as one PR after cut 2 (#8839, merged 2026-10-25)</td>
 </tr>
 <tr>
 <td><strong>The later 2026-10-25 merges to <code>dev</code></strong>: #8834 (<code>93f152bd</code>), #8835 (<code>a20469dc</code>) and #8838 (<code>2bc298b9</code>)</td>
 <td>bewest, 2026-10-25</td>
 <td><code>BFQ-176</code>, <code>BFQ-163</code>, the #8838 items</td>
+<td>merged; not released</td>
+</tr>
+<tr>
+<td><strong>The evening 2026-10-25 merges to <code>dev</code></strong>: #8836 (<code>5de8505d</code>), #8833 (<code>fd3792e5</code>), #8837 (<code>eb44a9c2</code>, cut 2), #8839 (<code>78524be4</code>) and #8840 (<code>b29f1bf7</code>), with AndyLow91's own commits on #8837 (<code>2efd78ac</code>, <code>af7ba73a</code>), #8839 (<code>90e2cfde</code>, <code>ad8a73e2</code>) and #8840 (<code>a383f0f9</code>, <code>5be6f217</code>) (contents, What is merged so far)</td>
+<td>AndyLow91, 2026-10-25</td>
+<td><code>RT-2</code>, <code>RT-TEST-TIERS</code></td>
+<td>merged; not released</td>
+</tr>
+<tr>
+<td><strong>The 2026-10-26 merges to <code>dev</code></strong>: #8542 (<code>428b20b7</code>), #8843 (<code>720e60de</code>), #8848 (<code>1f10cd9d</code>), #8850 (<code>207a8352</code>), #8841 (<code>e09bca3b</code>), #8842 (<code>85e5108a</code>), cut 3 #8844 (<code>ad05e140</code>), #8845 (<code>900abf7a</code>), cut 4 #8847 (<code>e34efdef</code>), #8849 (<code>3b2e1a68</code>), #8852 (<code>a911cdb2</code>), #8851 (<code>43050723</code>), #8730 (<code>89b7ebdd</code>), #8555 (<code>09d0def8</code>) and cut 5 #8605 (<code>47723cda</code>), with AndyLow91's own commits on #8841 (<code>5901961c</code>), #8845 (<code>50219945</code>) and cut 3 (<code>831c32fc</code>, <code>0d54d072</code>) (contents, What is merged so far)</td>
+<td>AndyLow91, 2026-10-26, except #8843, #8848 and #8850 (bewest)</td>
+<td>the items in contents</td>
 <td>merged; not released</td>
 </tr>
 </tbody>
@@ -2408,7 +2442,7 @@ public.</em></p>
 <td><strong>MongoDB 4.4 leaves the test matrix</strong>, except one Node 22 × MongoDB 4.4 cell kept as the existing required check until branch protection is updated (<code>36fa3121</code>)</td>
 <td>MongoDB 4.4 deprecated in 15.0.9 (maintainer, 2026-09-23); the cell kept by AndyLow91, 2026-10-25</td>
 <td><code>RT-1</code></td>
-<td>on <code>dev</code>, kept by #8838; the settings change is the maintainer's (contents, Repository settings)</td>
+<td>kept by #8838, then removed by AndyLow91's #8833 (<code>fd3792e5</code>, 2026-10-25; the row below); <code>master</code>'s required check is the maintainer's to drop (contents, Repository settings)</td>
 </tr>
 <tr>
 <td><strong>The MongoDB edges are 5.0 and 8.0</strong>, and the README states 5.0 through 8.0, widened after the full suite passed on MongoDB 8.0.29</td>
@@ -2417,10 +2451,71 @@ public.</em></p>
 <td>on <code>dev</code> since #8838 (<code>039be646</code>): README, <code>docs/runtime-upgrade.md</code> and the architecture overview; <code>npm test</code> 3409 / 3 / 0 on Node 22.23.4 and 26.12.1 against 8.0.29 (the PR's runs)</td>
 </tr>
 <tr>
+<td><strong>MongoDB driver 7 ships in 16.0.0 (cut 3), so MongoDB 3.6, 4.0 and 4.2 are dropped and 4.4 or newer is required to start</strong>; cut 3 keeps the BF-182 boot error page, whose text states only the server's reported version and the driver's minimum; the release notes say plainly that 4.4 or newer is required and what an affected site sees. The supported and tested range stays 5.0 through 8.0 (the row above); 4.4 starts but is outside it</td>
+<td>maintainer, 2026-10-25, relayed via session -f4, after the driver × server matrix</td>
+<td><code>RT-REBASE</code> (cut 3), BF-182</td>
+<td>On <code>dev</code> since cut 3, #8844 (<code>ad05e140</code>, 2026-10-26), with BF-182's boot error page (<code>8f238fc5</code>); <code>docker-compose.yml</code> starts <code>mongo:6.0.27</code>. Matrix (<a href="../../docs/60-research/modernization/mongodb-server-compat-matrix-2026-10-25.html">mongodb-server-compat-matrix-2026-10-25</a>; session -f4's runs, read-derived; integration tier per cell): driver 7.7.0 on cut 3 refuses 3.6, 4.0 and 4.2 at its wire-version floor 9 ("requires at least 9 (MongoDB 4.4)"), and with the BF-182 commit the site answers the boot error page (HTTP 500 after 32–50 s, process alive, no retry loop); on 4.4, 5.0, 6.0, 7.0 and 8.0 it starts and runs 2013 / 0 / 1. <code>dev</code>, on driver 5.9.2, starts on 3.6 through 8.0 (1993 / 0 / 1 each) with no version warning. Before BF-182, cut 3 retried server selection indefinitely on 4.2 and never served</td>
+</tr>
+<tr>
 <td><strong>CI tests the edges only</strong>: Node at the floor <code>22.23.4</code> and the ceiling <code>'26'</code> (with <code>check-latest</code>); MongoDB <code>'5.0'</code> and <code>'8.0'</code>, each crossed with both Node edges; browsers, all three engines on Node 26; cells whose names branch protection requires are kept until the settings change</td>
 <td>maintainer, 2026-10-25</td>
 <td><code>RT-2</code>, #8838, <code>RT-NODE-FLOOR-TESTED</code></td>
-<td>on <code>dev</code> since #8838 (<code>29e8a36b</code>, <code>039be646</code>): 31 test and browser cells → 10, about 81 runner-minutes less per run; cut 2's own <code>maintained-mongo</code> and <code>replica-test</code> jobs follow it (<code>a7eb6942</code>, <code>bdb6c733</code>)</td>
+<td>on <code>dev</code> since #8838 (<code>29e8a36b</code>, <code>039be646</code>): 31 test and browser cells → 10, about 81 runner-minutes less per run; cut 2's own <code>maintained-mongo</code> and <code>replica-test</code> jobs follow it (<code>a7eb6942</code>, <code>bdb6c733</code>). On <code>b29f1bf7</code> the push run has 20 jobs (the rows below)</td>
+</tr>
+<tr>
+<td><strong>CI runs the Node × MongoDB diagonal on pull requests and pushes</strong>, superseding the full cross of edges above for those runs: <em>Run Tests</em> runs the integration and stress tiers on (22.23.4, 8.0) and (26, 5.0); a new <em>Tests without a database</em> job runs the unit, dom, dependency, core and harness tiers on Node 22.23.4 and 26 with no MongoDB; <code>maintained-mongo</code> runs only the newest pair (26, 8.0.29); each diagonal cell carries one setting at its non-default value, <code>TZ=America/Los_Angeles</code> or test-file order shuffled by <code>TEST_SHUFFLE_SEED</code> from the run id (printed, so a run can be replayed), without adding a cell; a <em>Tests pass</em> job can become the only check branch protection requires, and the (24, 6) and (22, 6) cells stay until that settings change; a weekly workflow dispatches the extended run (every pair) on <code>dev</code>, effective once it is on <code>master</code>. the replica-set job is dropped from CI and its validator stays in <code>tools/</code> for manual runs (<code>docs/test-specs/mongodb-replica-set.md</code>); the test and no-database matrices run with <code>fail-fast: false</code></td>
+<td>maintainer, 2026-10-25 ("build the branch with all seven; except replica set", clarified the same day to mean dropping the replica-set job), relayed via session -5e</td>
+<td><code>RT-CI-DIAGONAL</code></td>
+<td>#8843 to <code>dev</code> (branch <code>ci/edge-diagonal-matrix</code>), merged 2026-10-26 as <code>720e60de</code> (head <code>7fd2415e</code>); it also fixed the browser tier running no tests in CI (<code>e767ce4e</code>), BF-192 (<code>0a33b7c7</code>, reports heap ceiling 6.8 MB) and a WebKit fixture (<code>7fd2415e</code>, a 404 report edit icon). Its first CI run found three more order-dependent tests (ar2 after simplealarms; both boluscalc quick-pick tests after clock-token-link), fixed locally by session -5e. Shuffling found order-dependent tests on <code>dev</code>: the core tier failed 4–36 tests under each of 8 seeds (a <code>require.cache</code> stub leaked by the loop and openaps plugin-wiring tests), fixed on the branch and passing under 21 seeds; integration under seed 40226791404 fails 35 (33 API3 SEARCH from stray devicestatus records, 2 API_SECRET), being traced. Unshuffled, every cell passes locally (session -5e's runs, read-derived)</td>
+</tr>
+<tr>
+<td><strong>The <code>Run Tests (22, 4.4)</code> cell is removed</strong>; <code>(24, 6)</code> and <code>(22, 6)</code> stay as transitional lanes for the required-check names; <code>master</code>'s requirement of <code>(22, 4.4)</code> is for an administrator to remove before the next release PR into <code>master</code></td>
+<td>AndyLow91, 2026-10-25 (#8833)</td>
+<td><code>RT-1</code></td>
+<td>on <code>dev</code> since <code>fd3792e5</code>. <code>master</code> still requires the check (<code>gh api repos/nightscout/cgm-remote-monitor/branches/master/protection</code>, read 2026-10-26: <code>Run Tests (22, 6)</code>, <code>(22, 4.4)</code> and <code>(24, 6)</code>), so #8824 cannot satisfy it until the setting changes</td>
+</tr>
+<tr>
+<td><strong>CI hardening</strong>: every action reference pinned to a commit SHA; superseded <code>pull_request</code> runs cancelled; publishing waits for all test jobs; a manual extended mode (all six Node selectors on both MongoDB edges and every browser) that never publishes</td>
+<td>AndyLow91, 2026-10-25 (#8836)</td>
+<td>—</td>
+<td>on <code>dev</code> since <code>5de8505d</code>; cut 2 adds its maintained-MongoDB and replica-set jobs to the publish gate (#8837's body)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="api-v3-and-the-write-contract">API v3 and the write contract<a class="headerlink" href="#api-v3-and-the-write-contract" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>decision</th>
+<th>who, when</th>
+<th>queue</th>
+<th>as it stands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>API v3 refuses a client-supplied body <code>_id</code> with 400 on create, PUT and PATCH (BF-170), amending identity rule I2 for API v3 only</strong>; API v1 keeps its legacy <code>_id</code> handling as a version-scoped quirk</td>
+<td>maintainer, 2026-10-25, relayed via session -f4</td>
+<td><code>BFQ-170</code></td>
+<td>on <code>dev</code> since #8845 (<code>900abf7a</code>, 2026-10-26; <code>304827fd</code>, <code>b899edc1</code>); the 400 message names <code>identifier</code> and matches neither 400 text AndroidAPS string-matches (#8845's body)</td>
+</tr>
+<tr>
+<td><strong><code>WRITE_VALIDATION=off\|log\|reject</code>, default <code>off</code> (D1); under <code>reject</code> an API v1 batch stores the valid items and reports the refused ones, one reply object per item in order, a refused object without <code>_id</code> and with a <code>refused</code> member, and a <code>Warning: 299</code> header (D2); a refused record gets a message naming the field and the units to send (D4)</strong></td>
+<td>maintainer, 2026-10-25, relayed via session -f4 (<a href="../../docs/60-research/modernization/write-validation-design-2026-10-25.html">write-validation design</a> §5)</td>
+<td><code>MOD-WRITE-VALIDATION</code></td>
+<td>on <code>dev</code> since #8841 (<code>e09bca3b</code>, 2026-10-26), Temporary Targets only, API v1 and v3; the socket's <code>dbAdd</code>/<code>dbUpdate</code> are not covered (#8841's open items); any value other than <code>log</code> or <code>reject</code> reads as <code>off</code> without a message (<code>parseMode</code>)</td>
+</tr>
+<tr>
+<td><strong>BF-152: a staged ladder</strong>: an opt-in admin-only API v3 settings read by identifier in 16.x, named <code>API3_SETTINGS_STRICT_READ_ENABLED</code> (default off); a question to the AndroidAPS developers about a narrower scope; a strict default later on the calendar</td>
+<td>maintainer, 2026-10-25, relayed via session -f4</td>
+<td><code>BFQ-152</code></td>
+<td>step 1 on <code>dev</code> since #8845 (<code>faffe875</code>, 2026-10-26); steps 2 and 3 not started; registry row in the versioning policy §5.7</td>
+</tr>
+<tr>
+<td><strong>BF-164 "plan C"</strong>: <code>/storage</code> stays API v3-only for now; records from the other write paths are announced only after write checks (log mode) cover every path, and then only records that pass the type checks</td>
+<td>maintainer, 2026-10-25, relayed via session -f4</td>
+<td><code>BFQ-164</code></td>
+<td>blocked (queue); waits on write checks covering every path (<code>MOD-WRITE-VALIDATION</code> covers Temporary Targets on API v1 and v3); not in #8845 (its body)</td>
 </tr>
 </tbody>
 </table>
@@ -2439,7 +2534,7 @@ public.</em></p>
 <td><strong>Cut 2 keeps its <code>queryLeaves</code> walker instead of the <code>traverse</code> package</strong> when it takes <code>dev</code>'s query rules (the operator allowlist, path-aware value coercion, <code>$exists</code> operands, the two forms of <code>$in</code>/<code>$nin</code> id lists); <code>lib/utils/query-leaves.js</code> passes each leaf's key path, which the coercion rules read</td>
 <td>maintainer, 2026-10-22 ("keep queryLeaves"); implemented on cut 2 in <code>948a142e</code> (2026-10-21) and given its own tests in <code>32978210</code></td>
 <td><code>RT-2</code></td>
-<td><code>dev</code> still uses <code>traverse</code> (<code>^0.6.6</code>); it changes when cut 2 (#8837) merges. Checked against cut 1's <code>traverse</code>-based <code>lib/server/query.js</code> on 50,000 generated and 20 edge queries: 0 differences (#8837's body)</td>
+<td>on <code>dev</code> since #8837 (<code>eb44a9c2</code>): <code>lib/server/query.js:6</code> requires <code>../utils/query-leaves</code>, and <code>traverse</code> is not in <code>package.json</code> (<code>git grep</code> on <code>b29f1bf7</code>). Checked against cut 1's <code>traverse</code>-based <code>lib/server/query.js</code> on 50,000 generated and 20 edge queries: 0 differences (#8837's body)</td>
 </tr>
 </tbody>
 </table>
@@ -2465,6 +2560,18 @@ public.</em></p>
 <td>maintainer, 2026-10-21</td>
 <td><code>BFQ-72</code>, <code>BFQ-161</code></td>
 <td>both branches pushed to the forks on 2026-10-21; no fork PR opened yet; both owe a merge of <code>dev</code> <code>eb72a1d3</code></td>
+</tr>
+<tr>
+<td><strong>Legacy query-string authentication is kept</strong>: the page moves its own credentials to headers, but <code>token</code> and <code>secret</code> in a URL stay accepted for existing clients and shared links; their exposure is reduced (redacted logs, <code>Referrer-Policy: no-referrer</code>, <code>Cache-Control: no-store</code>) and documented for reverse proxies and CDNs, with no CodeQL dismissal</td>
+<td>AndyLow91, 2026-10-25 (#8836)</td>
+<td>—</td>
+<td>on <code>dev</code> since <code>5de8505d</code></td>
+</tr>
+<tr>
+<td><strong>The <code>node-forge</code> advisory stays open</strong>: <code>@parse/node-apn</code> requires <code>node-forge</code> 1.4.0, which has no patched release for GHSA-86w9-cpqp-85rv; APNs is not replaced, and the PR claims no zero-advisory <code>npm audit</code></td>
+<td>AndyLow91, 2026-10-25 (#8836)</td>
+<td>—</td>
+<td>the one chain left in the PR body's <code>npm audit</code> (affected-package entries, full and <code>--omit=dev</code>: 23 and 16 before, 2 after; read-derived)</td>
 </tr>
 <tr>
 <td><strong>BF-161's limit</strong>: a nesting depth of 10, answered 400 before the pattern is parsed or expanded; the deepest intended use nests 1 level</td>
@@ -2495,7 +2602,7 @@ public.</em></p>
 <td><strong>The runtime-requires gate's allowlist rule</strong>: every literal <code>require</code> in <code>server.js</code>, <code>bin/*.js</code> and <code>lib/</code> (except the browser-only <code>lib/client</code>, <code>lib/report</code> and <code>lib/report_plugins</code>) must be under <code>dependencies</code>; <code>webpack</code>, <code>webpack-dev-middleware</code> and <code>webpack-hot-middleware</code> are allowed only inside <code>lib/server/app.js</code>'s <code>NODE_ENV === 'development'</code> block</td>
 <td>the preparing session, 2026-10-22, as a conventional default for the maintainer to review; <code>webpack</code> added 2026-10-25, because cut 2 makes it a devDependency required at <code>lib/server/app.js:340</code> inside that block</td>
 <td><code>BFQ-176</code>, <code>RT-2</code> (<code>tools/queue/gates/runtime-requires-declared.js</code>)</td>
-<td><code>dev</code> <code>2bc298b9</code> 41 checked, 0 failing; cut 2 <code>ee94b148</code> 32 checked, 0 failing; its control refuses <code>v15.0.9</code>, <code>eb72a1d3</code> and a stray <code>webpack-hot-middleware</code> or <code>webpack</code> require outside the guard</td>
+<td><code>dev</code> <code>2bc298b9</code> 41 checked, 0 failing; cut 2 <code>ee94b148</code> 32 checked, 0 failing (cut 2 is now on <code>dev</code>; not re-run on <code>b29f1bf7</code>); its control refuses <code>v15.0.9</code>, <code>eb72a1d3</code> and a stray <code>webpack-hot-middleware</code> or <code>webpack</code> require outside the guard</td>
 </tr>
 <tr>
 <td><strong>The lockfile refresh is redone on <code>dev</code> for 16.0.0</strong>: session -40's <code>wip/15.0.10-lockfile-refresh</code> <code>dbc4519f</code> was never pushed; the refresh is <code>deps/16.0.0-security-refresh</code> (<code>compression</code>, <code>follow-redirects</code>, <code>source-map-js</code>)</td>
@@ -2513,7 +2620,7 @@ public.</em></p>
 <td><strong>Page-bundle budget option A</strong>: <code>ee94b148</code> keeps the earlier allowances, app 349000 and total 417000 gzip bytes, over the measurement on <code>b8ff91cb</code> (341123 and 412296, against 334513 and 405305 on <code>62a9476f</code>; the growth is #8831's modern theme, which every page loads in <code>bundle.app.js</code>)</td>
 <td>maintainer, 2026-10-25</td>
 <td><code>RT-2</code></td>
-<td>in #8837</td>
+<td>on <code>dev</code> since #8837 (<code>eb44a9c2</code>)</td>
 </tr>
 <tr>
 <td><strong>Page-bundle budget option B as a follow-up</strong>: load the modern theme's code only when it is chosen, as a bundle or chunk of its own</td>
@@ -2524,7 +2631,7 @@ public.</em></p>
 </tbody>
 </table>
 <hr />
-<p><em>Draft, 2026-10-25. Requires maintainer review before it is relied upon.</em></p>
+<p><em>Draft, 2026-10-26. Requires maintainer review before it is relied upon.</em></p>
 
 
 
