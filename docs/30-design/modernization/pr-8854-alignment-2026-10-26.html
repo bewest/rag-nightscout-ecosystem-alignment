@@ -4834,7 +4834,7 @@
 <p>Not part of #8854. Raised by its follow-up 5 ("agree <code>_id</code> versus <code>identifier</code> precedence with client authors").</p>
 <ul>
 <li><strong>On dev</strong>, since #8845 (BF-169, BF-170): <code>identifier</code> is the client's sync identity, <code>_id</code> the server's key, and API v3 refuses a client <code>_id</code>.</li>
-<li><strong>On Nocturne</strong> <code>970031f6</code>, API v3 serves <code>identifier</code> and <code>_id</code> as the same 24-hex value (<code>Controllers/V3/BaseV3Controller.cs:260-273</code>), and its issue #1932 records that a client identifier is ignored.</li>
+<li><strong>On Nocturne</strong> <code>970031f6</code>, re-checked at <code>36d5ef4a2</code> (2026-10-26), API v3 serves <code>identifier</code> and <code>_id</code> as the same 24-hex value (<code>Controllers/V3/BaseV3Controller.cs:262-270</code> at <code>36d5ef4a2</code>). Its open issue #1932 records that a client identifier is ignored on all three collections. This concerns the v3 surface Nocturne serves, not its write-back to Nightscout, which since <code>8a12bc163</code> (2026-09-27) sends a legacy id or a UUID's 24-hex prefix.</li>
 <li>AndroidAPS, the only API v3 client, stores the server's <code>identifier</code> and works against both.</li>
 <li><strong>Next phases:</strong> controllers that send their own <code>identifier</code> (the Loop proposal; registered instances, where it is mandatory) would get different results from the two hubs.</li>
 <li><strong>Who:</strong> a shared-contract question for Nocturne's maintainers and ours. Nothing changes in #8854.</li>
@@ -4914,7 +4914,7 @@
 <tr>
 <td>backward</td>
 <td>Loop's <code>syncIdentifier</code> and Trio's <code>id</code> stored and returned untouched</td>
-<td>the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a184c08093a95c6b2cc5908f3f285b77da686f1f/tools/qc/write-contract-matrix.js">write-contract matrix</a></td>
+<td>the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c28aba4f88e344b0aae4ad95fe218b747f34577f/tools/qc/write-contract-matrix.js">write-contract matrix</a></td>
 </tr>
 <tr>
 <td>forward</td>
