@@ -73,6 +73,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Treatment'
+        '401':
+          description: |
+            Missing or bad access token or JWT (cgm-remote-monitor
+            lib/api3/const.json, MSG.HTTP_401_*).
 
 components:
   securitySchemes:
