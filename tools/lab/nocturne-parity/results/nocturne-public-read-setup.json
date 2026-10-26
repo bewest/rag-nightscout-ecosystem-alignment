@@ -1,0 +1,1 @@
+{"publicDirectPermissions":["glucose.read","treatments.read","devices.read","heartrate.read","stepcount.read","food.read","reports.read","alerts.read"],"limitTo24Hours":false}

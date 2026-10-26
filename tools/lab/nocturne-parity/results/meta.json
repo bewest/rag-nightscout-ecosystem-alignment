@@ -1,0 +1,7 @@
+{
+ "crm": {"commit": "d46ef808995cee266b034d6ca5a99da49c7a21df", "what": "pull request #8858 head: dev c08cbe03 plus accurate API documents; NODE_ENV=production, API_SECRET set, two servers: AUTH_DEFAULT_ROLES=denied and =readable, MongoDB 7"},
+ "noc": {"commit": "89dcaf1dd0c4dc7e35104a9cb557ccba2b097d1c", "what": "main 2026-10-26; Release build, alert library from crates/; set up in Development, measured in ASPNETCORE_ENVIRONMENT=Production, PostgreSQL 17.6, one tenant at the apex"},
+ "probeSha256": "356afba7d02a3cb01351f6a3edca3269faa64f12dd7a5dc0736997bfc0c9b6e8",
+ "sha256": {"probe.js": "356afba7d02a3cb01351f6a3edca3269faa64f12dd7a5dc0736997bfc0c9b6e8", "ops.js": "ae3b9fcd0b0e89f96bb4a56e37626570b846f427d605c3656a93e94480601053", "docdiff.js": "06a307e71d4e879b83c2fa4eda54ba83c34522c7face364296078eace0c4bb94"},
+ "node": "v24.22.1", "dotnet": "10.0.113"
+}
