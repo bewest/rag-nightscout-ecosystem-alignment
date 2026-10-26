@@ -176,8 +176,9 @@ for private drafts. Every page needs an entry in `site/pages/pages.yaml`:
 An OpenAPI file is published as a living page rendered by
 `tools/site/render_apis.py` with Redoc. Its `pages.yaml` entry has exactly one
 source (the OpenAPI file) and an `api:` block: a `status` (`current`,
-`de-facto`, `proposed`, `draft-pr` or `superseded`) and a one-sentence `note`
-the reader needs before trusting the page. The script:
+`de-facto`, `proposed`, `draft-pr` or `superseded`), a one-sentence `note`
+the reader needs before trusting the page, and optionally `see:`, a tracked
+`.md` page (such as the design that replaces the file) the banner links to. The script:
 
 - refuses to render a source with uncommitted changes, or one that fails
   `redocly lint` (Redocly CLI 1.34.0, recommended rules; warnings are printed);

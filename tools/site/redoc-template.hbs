@@ -19,6 +19,7 @@
 <body>
   <div class="api-status" data-site-banner="api-status" data-api-status="{{templateOptions.status}}">
     <strong>{{templateOptions.statusLabel}}</strong>{{templateOptions.note}}
+    {{#if templateOptions.seeUrl}}See <a href="{{templateOptions.seeUrl}}">{{templateOptions.seeLabel}}</a>.{{/if}}
     Rendered from <a href="{{templateOptions.sourceUrl}}"><code>{{templateOptions.source}}</code></a>
     at {{templateOptions.sourceCommit}}.
   </div>

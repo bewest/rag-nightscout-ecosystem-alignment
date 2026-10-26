@@ -14,7 +14,8 @@
 #
 # API reference pages (render: tools/site/render_apis.py) are living pages with
 # one OpenAPI source and an `api:` block: `status` (current, de-facto, proposed,
-# draft-pr or superseded) and a one-sentence `note`. The page must show an
+# draft-pr or superseded), a one-sentence `note`, and optionally `see:` (a
+# tracked .md page the banner links to). The page must show an
 # element with data-site-banner="api-status" whose data-api-status matches.
 pages:
   nightscout-ecosystem-programme.html:
@@ -51,4 +52,5 @@ pages:
       note: >-
         Describes the remote-commands queue of cgm-remote-monitor pull request #7791, which is not
         merged and is in no release. The project's current design for commands is the platform
-        commands specification (docs/30-design/platform/spec/commands.md).
+        commands specification.
+      see: docs/30-design/platform/spec/commands.md

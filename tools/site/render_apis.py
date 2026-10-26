@@ -8,6 +8,8 @@ carries an `api:` block:
     api:
       status: current | de-facto | proposed | draft-pr | superseded
       note: one sentence a reader needs before trusting the page
+      see: optional tracked .md path the banner links to (e.g. the design that
+           replaces a superseded file), opened on the site
 
 For each page the script lints the source with the pinned Redocly CLI and
 refuses to render on any lint error (warnings are printed), then builds the
@@ -83,6 +85,9 @@ def render(name: str, entry: dict) -> str:
     if lint.returncode != 0:
         raise SystemExit(f"{name}: {src} fails lint; not rendered")
 
+    see = api.get("see")
+    if see and (not see.endswith(".md") or not git("ls-files", "--", see)):
+        raise SystemExit(f"{name}: api.see must be a tracked .md file, got {see!r}")
     out = PAGES / name
     opts = {
         "status": status,
@@ -91,9 +96,12 @@ def render(name: str, entry: dict) -> str:
         "source": src,
         "sourceUrl": f"{GITHUB_REPO}/blob/{commit}/{src}",
         "sourceCommit": commit,
+        # the site keeps the repo layout and builds page.md as page.html; pages sit two levels down
+        "seeUrl": "../../" + see[:-3] + ".html" if see else "",
+        "seeLabel": see or "",
     }
     args = ["build-docs", src, "-o", str(out), "-t", str(TEMPLATE), "--disableGoogleFont"]
-    args += [f"--templateOptions.{k}={v}" for k, v in opts.items()]
+    args += [f"--templateOptions.{k}={v}" for k, v in opts.items() if v]
     built = npx(*args)
     if built.returncode != 0:
         raise SystemExit(f"{name}: build-docs failed:\n{built.stdout}\n{built.stderr}")
