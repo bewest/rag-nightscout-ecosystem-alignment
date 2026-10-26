@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf8" />
+  <meta name="robots" content="noindex, nofollow">
+  <title>{{title}}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { padding: 0; margin: 0; }
+    .api-status { font: 14px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif; padding: 10px 16px;
+                  border-bottom: 1px solid rgba(127,127,127,.35); background: #fff8e1; color: #3e2f00; }
+    .api-status strong { text-transform: uppercase; letter-spacing: .04em; margin-right: .5em; }
+    .api-status a { color: inherit; }
+  </style>
+  {{{redocHead}}}
+</head>
+
+<body>
+  <div class="api-status" data-site-banner="api-status" data-api-status="{{templateOptions.status}}">
+    <strong>{{templateOptions.statusLabel}}</strong>{{templateOptions.note}}
+    Rendered from <a href="{{templateOptions.sourceUrl}}"><code>{{templateOptions.source}}</code></a>
+    at {{templateOptions.sourceCommit}}.
+  </div>
+  {{{redocHTML}}}
+</body>
+
+</html>

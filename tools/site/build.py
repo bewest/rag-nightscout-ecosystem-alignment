@@ -64,6 +64,8 @@ PAGES_BAR = ('<nav aria-label="Site" style="font:13px/1.4 system-ui,-apple-syste
              'padding:8px 16px;border-bottom:1px solid rgba(127,127,127,.35)">'
              '<a href="../../index.html">Site home</a> &middot; <a href="index.html">All pages</a></nav>')
 AXES = {"disclosure", "health-data", "consent", "correspondence", "noise"}
+# API reference pages (tools/site/render_apis.py) must show one of these.
+API_STATUS = {"current", "de-facto", "proposed", "draft-pr", "superseded"}
 # Tabs: top-level folders with at least this many staged pages+images get a
 # tab of their own; smaller ones are grouped under "More".
 TAB_MIN = 20
@@ -818,6 +820,14 @@ def check_pages_manifest(site: "Site") -> dict:
                                   f"re-render the page and move source_commit forward")
                 elif r.returncode != 0:
                     errors.append(f"{name}: source_commit {commit} is not a commit here")
+            if e.get("render") == "tools/site/render_apis.py":
+                status = (e.get("api") or {}).get("status")
+                if status not in API_STATUS:
+                    errors.append(f"{name}: api.status must be one of {', '.join(sorted(API_STATUS))}")
+                m = re.search(r'<[^>]*data-site-banner="api-status"[^>]*>', html)
+                if not m or f'data-api-status="{status}"' not in m.group(0):
+                    errors.append(f'{name}: no data-site-banner="api-status" element with '
+                                  f'data-api-status="{status}"; re-render with tools/site/render_apis.py')
         else:
             errors.append(f"{name}: kind must be snapshot or living")
     if errors:

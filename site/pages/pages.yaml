@@ -11,6 +11,11 @@
 #                    rendered at). The build fails, naming the page and source,
 #                    if any source changed between source_commit and HEAD:
 #                    re-render the page, then move source_commit forward.
+#
+# API reference pages (render: tools/site/render_apis.py) are living pages with
+# one OpenAPI source and an `api:` block: `status` (current, de-facto, proposed,
+# draft-pr or superseded) and a one-sentence `note`. The page must show an
+# element with data-site-banner="api-status" whose data-api-status matches.
 pages:
   nightscout-ecosystem-programme.html:
     kind: living
@@ -36,3 +41,14 @@ pages:
     sources: [docs/30-design/platform/next-gen-platform-plan.md, docs/30-design/platform/next-gen-platform-plan.json]
     source_commit: 17345a279
     render: tools/site/render_nextgen.py
+  api-aid-commands-2025.html:
+    kind: living
+    sources: [specs/openapi/aid-commands-2025.yaml]
+    source_commit: 635934af3
+    render: tools/site/render_apis.py
+    api:
+      status: draft-pr
+      note: >-
+        Describes the remote-commands queue of cgm-remote-monitor pull request #7791, which is not
+        merged and is in no release. The project's current design for commands is the platform
+        commands specification (docs/30-design/platform/spec/commands.md).

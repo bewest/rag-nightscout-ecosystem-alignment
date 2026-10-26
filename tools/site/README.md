@@ -171,6 +171,27 @@ for private drafts. Every page needs an entry in `site/pages/pages.yaml`:
   `tools/site/.venv/bin/python tools/site/render_programme.py`), check it, and
   move `source_commit` to the commit that last changed the source.
 
+### API reference pages (Redoc)
+
+An OpenAPI file is published as a living page rendered by
+`tools/site/render_apis.py` with Redoc. Its `pages.yaml` entry has exactly one
+source (the OpenAPI file) and an `api:` block: a `status` (`current`,
+`de-facto`, `proposed`, `draft-pr` or `superseded`) and a one-sentence `note`
+the reader needs before trusting the page. The script:
+
+- refuses to render a source with uncommitted changes, or one that fails
+  `redocly lint` (Redocly CLI 1.34.0, recommended rules; warnings are printed);
+- builds the page with `tools/site/redoc-template.hbs`, which puts the status,
+  the note, and a link to the source at the commit that last changed it in a
+  banner at the top;
+- loads the Redoc runtime (2.4.0) from jsDelivr with its integrity hash, and no
+  Google fonts.
+
+The build fails when an API page's banner does not carry the status in
+`pages.yaml`. To render: `tools/site/.venv/bin/python tools/site/render_apis.py
+[NAME.html]` (needs node/npx; network on first run), then move `source_commit`
+to the commit it prints.
+
 ## Publishing
 
 `make site-publish` refuses unless the working tree is clean, `HEAD` is on a
