@@ -5656,7 +5656,7 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>cd0f3e2e8</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>b4f7d9eb1</code>.</em></p>
 <p><em>Contributor-facing. Living plan, current at cgm-remote-monitor dev <code>47723cda</code> (2026-10-26) and <a href="https://github.com/nightscout/cgm-remote-monitor/pull/8854">#8854</a> at <code>fa22d573</code>; #8854 merged to dev 2026-10-26 as <code>c08cbe03</code>, and ST-FILTER is being built on dev <code>7ad3a67f</code>. Status: proposed; the decisions in §6 are open.</em></p>
 <p>The interactive version, with the dependency map, is the site page <a href="../../../site/pages/nightscout-next-gen-platform.html">nightscout-next-gen-platform.html</a>.</p>
 <p>This plan covers the work that follows the 16.0.0 modernization:</p>
@@ -5935,7 +5935,7 @@
 </tr>
 <tr>
 <td>REG-S2</td>
-<td>definitions, leased instances, channels and roles</td>
+<td>definitions, leased instances, channels and roles; instances on one flat root, <code>/api/v4/instances/{instanceId}</code> (decided 2026-10-26)</td>
 <td>REG-S1</td>
 <td>instance conformance cases</td>
 </tr>
@@ -5965,7 +5965,7 @@
 </tr>
 </tbody>
 </table>
-<p>Slices S0, S1, S2 and S5 need no storage work and go to dev together as one single-tenant registration PR; S5 comes before S3 because only S3 waits on the write step. S0, S1 and the product half of S5 are in draft <a href="https://github.com/nightscout/cgm-remote-monitor/pull/8857">#8857</a> at <code>6c67ddfc</code>. Of the 186 cases, 28 pass, 16 are mapped and 0 fail; the rest wait for later slices. S2 and the instance half of S5 are being added to the same PR. Decided 2026-10-26: one holder document per (scope, channel, role) keeps each role to one live instance. The <a href="guides/hub-implementer.html">hub implementer's guide</a> maps each slice to modules on dev. The <a href="guides/new-controller.html">controller guide</a> is the same flow from the controller author's side.</p>
+<p>Slices S0, S1, S2 and S5 need no storage work and go to dev together as one single-tenant registration PR; S5 comes before S3 because only S3 waits on the write step. S0, S1, S2 and S5 are in draft <a href="https://github.com/nightscout/cgm-remote-monitor/pull/8857">#8857</a> at <code>6a5355e2</code>, which has dev <code>7ad3a67f</code> merged in. Instances sit on one flat root, <code>/api/v4/instances/{instanceId}</code>, with the product named in the body (decided 2026-10-26). Of the 186 cases, 35 pass, 88 are mapped and 0 fail (measured at <code>3be98536</code>); the rest wait for later slices. Decided 2026-10-26: one holder document per (scope, channel, role) keeps each role to one live instance. The <a href="guides/hub-implementer.html">hub implementer's guide</a> maps each slice to modules on dev. The <a href="guides/new-controller.html">controller guide</a> is the same flow from the controller author's side.</p>
 <h3 id="54-tenancy">5.4 Tenancy<a class="headerlink" href="#54-tenancy" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -5976,6 +5976,16 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>PLAT-ENTRY</td>
+<td>one executable, <code>bin/nightscout.js</code>: <code>single</code> (today's server, every old start path unchanged) and the operator tools; image ENTRYPOINT and HEALTHCHECK (D21)</td>
+<td>dev</td>
+</tr>
+<tr>
+<td>PLAT-SERVE</td>
+<td><code>nightscout serve &lt;roles&gt;</code>: hosted roles carved from <code>bootevent</code>, <code>api</code> first, each listener bound separately (D5, D7, D16)</td>
+<td>PLAT-ENTRY, ST-READS</td>
+</tr>
 <tr>
 <td>T30-RESEARCH</td>
 <td>the tenant-owner configuration surface (277 settings classified)</td>
@@ -5989,7 +5999,7 @@
 <tr>
 <td>TEN-RESOLVE</td>
 <td>tenant resolution and the platform admin interface (D7, D10, D16)</td>
-<td>ST-HARNESS, T30-SCHEMA-CONFIG</td>
+<td>ST-HARNESS, T30-SCHEMA-CONFIG, PLAT-SERVE</td>
 </tr>
 <tr>
 <td>T30-WIRING</td>
@@ -6003,11 +6013,12 @@
 </tr>
 </tbody>
 </table>
-<p>The decisions D1–D20 are in the <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a>. Single-tenant on MongoDB stays first-class (D1, D4). Every tenancy item ships behind <code>TENANCY_MODE=multi</code>.</p>
+<p>The decisions D1–D21 are in the <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a>. Single-tenant on MongoDB stays first-class (D1, D4). Every tenancy item ships behind <code>TENANCY_MODE=multi</code>.</p>
 <h2 id="6-open-decisions">6. Open decisions<a class="headerlink" href="#6-open-decisions" title="Permanent link">&para;</a></h2>
 <p>Select <strong>Show on the map</strong> on a card to see which items it holds up.</p>
 <p>Decided 2026-10-26: an explicit null removes a field on merge-on-match, API v3 PATCH and the socket's <code>dbUpdate</code> (RFC 7386; <a href="../tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-10-12">write contract §6.1</a>), never on PUT or create, and devicestatus never merges; in 16.0.0, in one shared merge helper.</p>
 <p>Decided 2026-10-26 (D-ID-FALLBACK): for 16.0.0 a v1 entries re-send whose identifier matches nothing still matches on <code>sysTime</code>+<code>type</code>, as today (TEST-ENTRY-UUID-003); treatments never fall back; revisited once identifiers are common. A devicestatus re-send whose identifier is stored writes nothing and is answered with the stored <code>_id</code>, on v1 and v3.</p>
+<p>Decided 2026-10-26 (D21): Nightscout starts through one executable. <code>nightscout single</code> is today's server, hosted roles are <code>nightscout serve &lt;roles&gt;</code>, and operator tools are subcommands of the same dispatcher, as Consul, node-multienv and Ory do it. Still open: whether serving every role in one process is part of the multi target.</p>
 <p>Decided 2026-10-26: #8854 lands in 16.0.0 after four alignment conditions (outcome B in its <a href="../modernization/pr-8854-alignment-2026-10-26.html">brief</a>): a per-item socket reply or no socket validation yet, the data-warnings header off or held, the commit event marked internal and unstable, and a separate name for the intent layer.</p>
 <!-- chart: decisions -->
 

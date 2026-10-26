@@ -3073,6 +3073,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#212-d21--one-entrypoint-serve--maintainer-2026-10-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.12 D21 — one entrypoint, serve &lt;roles&gt; (maintainer, 2026-10-26)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -5456,6 +5467,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#212-d21--one-entrypoint-serve--maintainer-2026-10-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.12 D21 — one entrypoint, serve &lt;roles&gt; (maintainer, 2026-10-26)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -5568,14 +5590,14 @@
 
 
 <h1 id="multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs">Multitenancy execution plan: decisions, tasks, and the context each one needs<a class="headerlink" href="#multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>dc029db33</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>4f4a2766e</code>.</em></p>
 <p><em>Contributor- and maintainer-facing.</em></p>
-<p><strong>Status: living document — the decision record.</strong> Decisions D1–D20 are the maintainer's
-(2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16) and are all <strong>adopted</strong>, except <strong>D17 row 2</strong>
+<p><strong>Status: living document — the decision record.</strong> Decisions D1–D21 are the maintainer's
+(2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16, D21 on 2026-10-26) and are all <strong>adopted</strong>, except <strong>D17 row 2</strong>
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is <strong>adopted in principle,
 gated</strong> on the edge's production conditions and the compliance question (<code>T30-ORY-PROOF</code> held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. <strong>Item state lives
-in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/12cb019cd3a127ca02b20381b03225e75e38e322/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
+in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/089e0847cf99dd2917367efc6c9c13f603a58050/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
 <a href="../../../queue/QUEUE.html"><code>queue/QUEUE.md</code></a>, measured by <code>make queue-status</code>); defect facts live
 in the <a href="../remedial/nightscout-backfix-register.html">backfix register</a>. Measured facts below name
 their date and commit.</p>
@@ -5794,7 +5816,7 @@ preference.</p>
 </tr>
 <tr>
 <td><strong>D5</strong></td>
-<td><strong>Four hosted entrypoints over one core</strong> — <code>api</code> (stateless), <code>evaluator</code> (change-driven), <code>realtime</code> (fan-out), <code>vcpool</code> — plus <code>single</code> unchanged. The split is also a configuration-source split (D15)</td>
+<td><strong>Four hosted entrypoints over one core</strong> — <code>api</code> (stateless), <code>evaluator</code> (change-driven), <code>realtime</code> (fan-out), <code>vcpool</code> — plus <code>single</code> unchanged. The split is also a configuration-source split (D15). <em>(packaged by D21 as <code>nightscout serve &lt;roles&gt;</code>, 2026-10-26)</em></td>
 <td>{C} §2, {DB} §6</td>
 </tr>
 <tr>
@@ -5871,6 +5893,11 @@ preference.</p>
 <td><strong>D20</strong></td>
 <td><strong>Quirks are scoped to the versions that produce them, and identity has two fields under one rule.</strong> A quirk names the <code>(vendor, product, versions)</code> it affects, for stored documents and for declarations alike; versions released before registration get their mapping from the catalogue, newer versions declare it themselves, the hub records each mapping it applies, and a quirk moves to historical and then retired as measurement shows the affected versions gone. <code>identifier</code> is the sync identity the client assigns; <code>_id</code> is the storage key the hub assigns and returns; in single-tenant legacy mode <code>_id</code> is an ObjectId. <em>(amended 2026-10-16: every legacy surface serves 24-hex <code>_id</code> values; the opaque option is dropped — §2.6.3 walk-through)</em></td>
 <td>maintainer, 2026-10-16 — §2.6.3</td>
+</tr>
+<tr>
+<td><strong>D21</strong></td>
+<td><strong>One executable, and roles are served by <code>nightscout serve &lt;roles&gt;</code>.</strong> <code>bin/nightscout.js</code> (Node, not a shell script) is the container <code>ENTRYPOINT</code> and dispatches subcommands, as Consul and node-multienv's <code>start_container.sh</code> do. <code>nightscout single</code> is today's server, and every existing way of starting it (<code>Procfile</code>, <code>npm start</code>, <code>server.js</code>, iisnode's <code>web.config</code>, <code>start.sh</code>, the image's <code>CMD</code>) stays equal to it (D1). Hosted roles — D5's <code>api</code>, <code>evaluator</code>, <code>realtime</code>, <code>vcpool</code> and D16's <code>tenant-admin</code> and <code>admin</code> — are started as <code>nightscout serve &lt;role&gt;[,&lt;role&gt;…]</code>; several roles may share one process, and each listener has its own bind address, so <code>admin</code> stays off the consumer interface (D7), as Ory's <code>serve public|admin|all</code> does. Subcommands an operator runs against a deployed site (<code>diagnose data</code>, <code>healthcheck</code>, <code>version</code>, <code>env</code>, later <code>migrate</code>) live in the same dispatcher; developer tooling stays in <code>scripts/</code>. The dispatcher selects the bootstrap and keeps D15's split. Reorganising the repository into packages ({C} §3) is a separate, later track. <strong>Open:</strong> whether a composed <code>serve</code> of every role is part of the multi target or only a small-hoster convenience</td>
+<td>maintainer, 2026-10-26 — §2.12</td>
 </tr>
 </tbody>
 </table>
@@ -6945,6 +6972,86 @@ recommendation: <strong>two fields with different owners, never merged into one.
 notification), the text is user-facing. It must say plainly which party to contact and for what,
 and it must not suggest that contacting anyone replaces the person's own care team when the
 problem concerns their therapy rather than the software.</p>
+<h3 id="212-d21--one-entrypoint-serve--maintainer-2026-10-26">2.12 D21 — one entrypoint, <code>serve &lt;roles&gt;</code> (maintainer, 2026-10-26)<a class="headerlink" href="#212-d21--one-entrypoint-serve--maintainer-2026-10-26" title="Permanent link">&para;</a></h3>
+<p>D5 decided the roles and D16 the listeners; neither said how an operator starts one. The
+components document sketched one <code>bin/</code> script per role ({C} §3). D21 replaces that sketch
+with one executable and a subcommand per role, the pattern Consul uses for its agent and tools,
+node-multienv uses in <code>start_container.sh</code> (<code>multienv</code>, <code>resolver</code>, <code>runner</code>, <code>inspector</code>, …),
+and Ory uses to turn its public and admin listeners on and off (<code>serve public</code>, <code>serve admin</code>,
+<code>serve all</code>).</p>
+<table>
+<thead>
+<tr>
+<th>subcommand</th>
+<th>what it runs</th>
+<th>configuration (D15)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>nightscout single</code></td>
+<td>today's server: one process, <code>ctx.ddata</code>, the cache, every listener</td>
+<td>the process environment</td>
+</tr>
+<tr>
+<td><code>nightscout serve api</code></td>
+<td>express and storage; no bus, no <code>ddata</code></td>
+<td>per-tenant, from the database</td>
+</tr>
+<tr>
+<td><code>nightscout serve evaluator</code></td>
+<td>change feed, plugins, notifications; no express</td>
+<td>per-tenant, from the database</td>
+</tr>
+<tr>
+<td><code>nightscout serve realtime</code></td>
+<td>socket.io and the change feed; no storage writes</td>
+<td>per-tenant, from the database</td>
+</tr>
+<tr>
+<td><code>nightscout serve vcpool</code></td>
+<td>connector actors and the egress proxy</td>
+<td>per-tenant, from the database</td>
+</tr>
+<tr>
+<td><code>nightscout serve tenant-admin</code></td>
+<td>the tenant owner's configuration listener (D16)</td>
+<td>per-tenant, from the database</td>
+</tr>
+<tr>
+<td><code>nightscout serve admin</code></td>
+<td>the platform operator's listener, on its own interface (D7)</td>
+<td>the deployment's own settings</td>
+</tr>
+<tr>
+<td><code>nightscout serve api,realtime</code></td>
+<td>several roles in one process, each listener on its own bind address</td>
+<td>as each role</td>
+</tr>
+<tr>
+<td><code>nightscout diagnose data</code>, <code>healthcheck</code>, <code>version</code>, <code>env</code></td>
+<td>operator tools against a deployed site</td>
+<td>as <code>single</code>, or as the role named</td>
+</tr>
+</tbody>
+</table>
+<p>Rules that follow:</p>
+<ol>
+<li><strong>No start path changes.</strong> <code>node lib/server/server.js</code> stays the implementation of <code>single</code>;
+   the dispatcher <code>require()</code>s it in-process (no child process, so <code>SIGTERM</code> reaches the server
+   directly). A test boots the app both ways and compares them.</li>
+<li><strong>Listeners are named and bound separately.</strong> A role that serves HTTP takes its own address
+   and port; <code>admin</code> refuses to share the consumer listener's address.</li>
+<li><strong>A subcommand is something an operator runs against a deployed site.</strong> Build, test and
+   analysis scripts stay in <code>scripts/</code> and <code>package.json</code>.</li>
+<li><strong>An unknown subcommand prints the list and exits with status 64</strong> (<code>EX_USAGE</code>); <code>help</code> lists
+   the subcommands with one line each.</li>
+<li><strong>The image's healthcheck is <code>nightscout healthcheck</code></strong>, so the image needs no curl.</li>
+</ol>
+<p>Work items: PLAT-ENTRY (the dispatcher with <code>single</code> and the operator tools, no behaviour
+change) and PLAT-SERVE (the hosted roles, carved one at a time from <code>bootevent</code>'s factory chain,
+starting with <code>api</code>) in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/089e0847cf99dd2917367efc6c9c13f603a58050/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> and the
+<a href="../platform/next-gen-platform-plan.html">next-gen platform plan</a> §5.4.</p>
 <h2 id="3-d8--the-query-surface">3. D8 — the query surface<a class="headerlink" href="#3-d8--the-query-surface" title="Permanent link">&para;</a></h2>
 <h3 id="31-v3-is-closed-v1-is-open">3.1 v3 is closed, v1 is open<a class="headerlink" href="#31-v3-is-closed-v1-is-open" title="Permanent link">&para;</a></h3>
 <table>
