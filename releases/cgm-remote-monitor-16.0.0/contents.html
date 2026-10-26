@@ -2221,10 +2221,10 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-25 at <code>40c2f40b5</code>.</em></p>
+<p><em>Living document, last changed 2026-10-25 at <code>a19c3e036</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
-Measured 2026-10-25 against <code>official/dev</code> <code>eb72a1d3</code> (the merge of #8828) and <code>official/master</code>
+Measured 2026-10-25 (to 19:51Z) against <code>official/dev</code> <code>2bc298b9</code> (the merge of #8838) and <code>official/master</code>
 <code>c6a0d8ed</code> (= <code>v15.0.9</code>, the shipping release), in <code>externals/cgm-remote-monitor-official</code> after
 <code>git fetch official</code>, with <code>gh pr view</code> and <code>gh run view</code> for PR and CI state.</p>
 <blockquote>
@@ -2266,19 +2266,19 @@ for testers is <a href="testing-notes.html">testing-notes.md</a> (not written ye
 </tr>
 <tr>
 <td><code>dev</code> head</td>
-<td><code>eb72a1d3</code> (merge of #8828, 2026-10-25 16:29:06Z, by AndyLow91), tree <code>9444a472</code></td>
+<td><code>2bc298b9</code> (merge of #8838, 2026-10-25 19:42:01Z, by bewest), tree <code>2b9ee5c7</code></td>
 </tr>
 <tr>
 <td>Commits on <code>dev</code></td>
-<td>183 — <code>git rev-list --count official/master..official/dev</code></td>
+<td>204 — <code>git rev-list --count official/master..official/dev</code></td>
 </tr>
 <tr>
 <td>First-parent commits on <code>dev</code></td>
-<td>12 — <code>git rev-list --first-parent --count official/master..official/dev</code>: 11 PR merges and the cycle's version bump <code>04d435eb</code> (<code>git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'</code> prints 1)</td>
+<td>15 — <code>git rev-list --first-parent --count official/master..official/dev</code>: 14 PR merges and the cycle's version bump <code>04d435eb</code></td>
 </tr>
 <tr>
 <td>Diff on <code>dev</code></td>
-<td>187 files, +13205/−5425 — <code>git diff --shortstat official/master official/dev</code></td>
+<td>192 files, +13540/−5507 — <code>git diff --shortstat official/master official/dev</code></td>
 </tr>
 <tr>
 <td><code>package.json</code> version</td>
@@ -2297,12 +2297,20 @@ for testers is <a href="testing-notes.html">testing-notes.md</a> (not written ye
 <td><code>nightscout-connect</code> exactly <code>0.1.0</code>, as in 15.0.9</td>
 </tr>
 <tr>
-<td>Staging PR</td>
-<td>#8824 (<code>dev</code> → <code>master</code>, "new dev branch post 15.0.9 release"): open, head <code>eb72a1d3</code>, mergeable, <code>reviewDecision</code> <code>REVIEW_REQUIRED</code>; 72 checks passed, 3 skipped — <code>gh pr view 8824</code>, <code>gh pr checks 8824</code></td>
+<td>Supported MongoDB</td>
+<td>5.0 through 8.0 (<code>README.md</code> on <code>dev</code>, from #8838's <code>039be646</code>); 4.4 and earlier unsupported</td>
 </tr>
 <tr>
-<td>CI on <code>eb72a1d3</code></td>
-<td><code>pull_request</code> run 40211897810 and <code>push</code> run 40211895500: every test and browser cell passed; the push run's <em>Publish to Docker Hub</em> passed, so <code>dev</code>'s image is published; CodeQL passed on both events — <code>gh run view &lt;id&gt; --json jobs</code></td>
+<td>Staging PR</td>
+<td>#8824 (<code>dev</code> → <code>master</code>, "new dev branch post 15.0.9 release"): open, head <code>2bc298b9</code>, mergeable, <code>reviewDecision</code> <code>REVIEW_REQUIRED</code>; 30 checks passed, 3 skipped — <code>gh pr view 8824</code>, <code>gh pr checks 8824</code></td>
+</tr>
+<tr>
+<td>CI on <code>2bc298b9</code></td>
+<td><code>push</code> run 40227267487 and <code>pull_request</code> run 40227271881 passed every cell of the edge matrix (below); the push run's <em>Publish to Docker Hub</em> passed at 19:48:15Z, so <code>dev</code>'s published image is <code>2bc298b9</code>'s; CodeQL passed on both events — <code>gh run view &lt;id&gt; --json jobs</code></td>
+</tr>
+<tr>
+<td>CI on the merges before it</td>
+<td><code>eb72a1d3</code> push run 40211895500 published an image at 17:15:18Z (it carries BF-176); <code>93f152bd</code> push run 40217943528 published one at 17:53:31Z (BF-176 fixed); <code>a20469dc</code> push run 40219064024 failed <em>Browser tests</em> (24.22.1, firefox) and (26, firefox) and skipped publishing; the <code>pull_request</code> runs of <code>93f152bd</code> and <code>a20469dc</code> each failed one Firefox cell. Each Firefox failure is <code>tests/browser/legacy-reports.test.js</code> "should produce some html", <code>page.waitForFunction: Timeout 30000ms exceeded</code> with the report still loading (454 passing, 1 failing)</td>
 </tr>
 </tbody>
 </table>
@@ -2310,11 +2318,12 @@ for testers is <a href="testing-notes.html">testing-notes.md</a> (not written ye
 <p>Every figure below is labelled. <strong>reproduced</strong>: something was executed and the output observed.
 <strong>read-derived</strong>: read from source, a PR body or CI metadata. Commit counts, SHAs, PR states, CI
 results and the conflict counts are reproduced with the commands shown. No test suite was run on
-<code>eb72a1d3</code> by this session; the runs reported on it are the dependency refresh session's and the
-BF-176 session's (see <a href="#in-flight-for-this-release">In flight</a> and the integration record). No live site, vendor account or Docker image was run.</p>
+<code>dev</code> by this session; the runs reported are the PR authors' and peer sessions', read from the PR
+bodies (see the integration record). No live site, vendor account or Docker image was run.</p>
 <h2 id="what-is-merged-so-far">What is merged so far<a class="headerlink" href="#what-is-merged-so-far" title="Permanent link">&para;</a></h2>
 <p>Merge SHAs: <code>git log --first-parent --format='%h %ad %an %s' --date=iso official/master..official/dev</code>.
-Every merge below was made by AndyLow91 on 2026-10-25. Register ids refer to the
+Every merge below was made on 2026-10-25: the first eleven by AndyLow91, #8834, #8835 and #8838 by
+bewest. Register ids refer to the
 <a href="../../docs/30-design/remedial/nightscout-backfix-register.html">backfix register</a>.</p>
 <table>
 <thead>
@@ -2440,6 +2449,36 @@ Every merge below was made by AndyLow91 on 2026-10-25. Register ids refer to the
 <td><code>RT-1</code></td>
 <td>cut 1: retire jsdom (option C), the enforced Node floor, removal of the legacy Dexcom Share and MiniMed CareLink bridges, version 16.0.0</td>
 </tr>
+<tr>
+<td>#8834</td>
+<td>17:44:48</td>
+<td><code>93f152bd</code></td>
+<td><code>f3d73f43</code></td>
+<td>bewest</td>
+<td>BF-176</td>
+<td><code>BFQ-176</code></td>
+<td><code>axios</code> <code>^0.34.0</code> and <code>lodash</code> <code>4.18.1</code> are runtime dependencies: a production install with <code>IMPORT_CONFIG</code> boots again</td>
+</tr>
+<tr>
+<td>#8835</td>
+<td>17:59:06</td>
+<td><code>a20469dc</code></td>
+<td><code>477d5200</code></td>
+<td>bewest</td>
+<td>BF-163</td>
+<td><code>BFQ-163</code></td>
+<td><code>compression</code> 1.8.2, <code>follow-redirects</code> 1.16.1, <code>source-map-js</code> 1.2.2 (<code>feb3944c</code>, <code>ad458fa0</code>, <code>341b843a</code>) and <code>sanitize-html</code> 2.18.1 (<code>0293d640</code> the bump, <code>1eb986ad</code> <code>tests/purifier.corpus.test.js</code> pinning the stored text of 35 inputs), and a merge of <code>dev</code> <code>93f152bd</code> (<code>477d5200</code>)</td>
+</tr>
+<tr>
+<td>#8838</td>
+<td>19:42:01</td>
+<td><code>2bc298b9</code></td>
+<td><code>039be646</code></td>
+<td>bewest</td>
+<td>BF-158, BF-177</td>
+<td><code>RT-CONNECT-TEARDOWN</code>, <code>BFQ-158</code>, <code>BFQ-177</code>, <code>RT-D3-SUITE</code></td>
+<td>test and CI hygiene, 10 commits (below)</td>
+</tr>
 </tbody>
 </table>
 <p>Before merging, AndyLow91 merged <code>dev</code> into most branches and added commits of his own (read with
@@ -2459,19 +2498,31 @@ Every merge below was made by AndyLow91 on 2026-10-25. Register ids refer to the
   <code>24.22.1</code>), the <code>dev</code> catch-up merge <code>43eb6066</code>, <code>36fa3121</code> (keeps a Node 22 × MongoDB 4.4 test
   cell), <code>76c73056</code> and <code>13507b38</code> (CI) and <code>12154df9</code> (a bounded Firefox month-report test).</li>
 </ul>
-<p>None of these merged trees was re-run locally by this programme; each PR's own CI passed.</p>
+<h1 id="8838s-ten-commits-on-dev-a20469dc-38049fe6-the-redundant-connector-teardown-listener">8838's ten commits, on <code>dev</code> <code>a20469dc</code>: <code>38049fe6</code> (the redundant connector teardown listener<a class="headerlink" href="#8838s-ten-commits-on-dev-a20469dc-38049fe6-the-redundant-connector-teardown-listener" title="Permanent link">&para;</a></h1>
+<p>removed, <code>RT-CONNECT-TEARDOWN</code>), <code>fb0e1217</code> (BF-158: the count=0 block isolated from records other
+files leave, plus the runtime-cache flush found by peer session -b7), <code>89d19b5b</code> (BF-177: the test's
+time-zone stand-in is a UTC profile; the report is verified correct by running it), <code>879ab51e</code> (the
+duplicated <code>BRIDGE_SERVER mapping</code> block removed, 37 → 22 cases), <code>e45041c6</code> (stale Node floor text in
+<code>docs/test-specs</code>), <code>f7856a44</code> (<code>RT-D3-SUITE</code>: two treatment-drag clamp browser tests), <code>29e8a36b</code> (the
+CI edge matrix, 31 → 10 test and browser cells, about 81 runner-minutes less per run), <code>cab8896f</code> (the
+API3 SEARCH hook's timeout: on an empty database the first insert waits on boot's unawaited index
+creation; the product fix is <code>RT-BOOT-INDEX-AWAIT</code>), <code>aa7438ee</code> (Babel checked against the engines
+floors) and <code>039be646</code> (MongoDB 5.0 and 8.0 as the CI edges, and the docs).</p>
+<p>None of these merged trees was re-run locally by this programme. The merged trees' CI is in
+<a href="#identity">Identity</a>.</p>
 <h2 id="merge-state">Merge state<a class="headerlink" href="#merge-state" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>#8823 merged twice, without duplicated code</strong> (reproduced). It was folded into cut 1 as
   <code>42a2729e</code> and also merged on its own as <code>4c1a5f1a</code> before #8828. On <code>eb72a1d3</code>, <code>git grep
   bridgeServerToConnect official/dev</code> finds one definition, in <code>lib/server/bridge-connect-compat.js</code>,
-  and that file is byte-identical to <code>806ff2f0</code>'s (compared by hash). <code>tests/bridge-connect-compat.test.js</code>
-  carries the <code>describe('BRIDGE_SERVER mapping')</code> block twice (lines 127–182 and 184–239, identical),
-  so those cases run twice: a test-only clean-up.</li>
-<li><strong>Cuts 2–5 against <code>eb72a1d3</code></strong> (reproduced; <code>git rev-list --left-right --count official/dev...&lt;cut&gt;</code>
-  and <code>git merge-tree --write-tree --name-only --no-messages official/dev &lt;cut&gt;</code>): cut 2 <code>b6e8c7cd</code> 459
-  behind / 159 ahead, 20 conflicting paths; cut 3 <code>ebb690cf</code> 459 / 222, 25; cut 4 <code>b80aa147</code> 459 / 301,
-  43; cut 5 <code>b1bdaca0</code> (#8605) 335 / 399, 42. Cut 2's catch-up is in progress (below).</li>
+  and that file is byte-identical to <code>806ff2f0</code>'s (compared by hash). The test block that ran twice
+  was removed by #8838 (<code>879ab51e</code>); on <code>2bc298b9</code> <code>tests/bridge-connect-compat.test.js</code> has one
+  <code>describe('BRIDGE_SERVER mapping')</code>.</li>
+<li><strong>Cuts 2–5 against <code>2bc298b9</code></strong> (reproduced; <code>git rev-list --left-right --count official/dev...&lt;cut&gt;</code>
+  and <code>git merge-tree --write-tree --name-only --no-messages official/dev &lt;cut&gt;</code>): cut 2
+  <code>official/chore/build-runtime-separation</code> <code>ee94b148</code> (#8837) 11 behind / 185 ahead, merges cleanly; the
+  published cut 2 <code>b6e8c7cd</code>, 21 conflicting paths; cut 3 <code>ebb690cf</code> 480 / 222, 26; cut 4 <code>b80aa147</code>
+  480 / 301, 44; cut 5 <code>b1bdaca0</code> (#8605) 356 / 399, 43.</li>
 </ul>
 <h2 id="version-1600-major">Version: 16.0.0, major<a class="headerlink" href="#version-1600-major" title="Permanent link">&para;</a></h2>
 <p>Decided by the maintainer on 2026-10-21 (<code>RT-VERSION</code> answered). Surfaces touched (versioning policy
@@ -2486,12 +2537,11 @@ Every merge below was made by AndyLow91 on 2026-10-25. Register ids refer to the
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> S4 stored document shape</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> S5 Node or MongoDB runtime floor, <strong>major</strong>: <code>lib/server/runtime-policy.js</code> reads <code>engines.node</code>
   and exits at boot outside <code>^22.23.4 || ^24.22.1 || &gt;=26.12.1</code>, which stops Node 20, 21, 23 and 25,
-  and 22.0–22.23.3, 24.0–24.22.0 and 26.0–26.12.0. The test matrix on <code>dev</code> is Node 22.23.4, 22,
-  24.22.1, 24, 26.12.1 and 26 × MongoDB 5.0 and 6.0, plus one Node 22 × MongoDB 4.4 cell that
-  <code>36fa3121</code> keeps as "the existing required check until branch protection is updated separately";
-  browser tests run on the same six Node versions × Chromium, Firefox and WebKit (read from
-  <code>.github/workflows/main.yml</code>). MongoDB 4.4 was deprecated in 15.0.9; no server check that refuses it
-  was found</li>
+  and 22.0–22.23.3, 24.0–24.22.0 and 26.0–26.12.0. The README states MongoDB 5.0 through 8.0 (#8838);
+  4.4 and earlier are unsupported, and no server check that refuses them was found. The test matrix on
+  <code>dev</code> (#8838, the edge policy) is Node 22.23.4 and 26 × MongoDB 5.0 and 8.0, plus the cells branch
+  protection requires, (24, 6), (22, 6) and (22, 4.4); browser tests run on Node 26 × Chromium, Firefox
+  and WebKit (read from <code>.github/workflows/main.yml</code>)</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> S6 an ingestion path, <strong>major</strong>: the legacy Dexcom Share bridge and MiniMed CareLink
   (mmconnect) are removed; Dexcom Share data comes in through <code>nightscout-connect</code></li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> S7 alarms or notifications: #8816 changes how long a snooze lasts on a page that is not signed
@@ -2504,7 +2554,7 @@ Every merge below was made by AndyLow91 on 2026-10-25. Register ids refer to the
 <p><strong>Classification:</strong> MAJOR, because of S5 and S6 (cut 1). <strong>Directory name says:</strong> 16.0.0.
 <strong>Settled?</strong> Yes, by the maintainer, 2026-10-21.</p>
 <h2 id="in-flight-for-this-release">In flight for this release<a class="headerlink" href="#in-flight-for-this-release" title="Permanent link">&para;</a></h2>
-<p>Branch heads as of 2026-10-25. The maintainer opened #8834 and #8835 against <code>dev</code> at 17:28Z; the rest are not open as PRs to <code>dev</code>.</p>
+<p>Branch heads as of 2026-10-25, 19:51Z.</p>
 <table>
 <thead>
 <tr>
@@ -2518,52 +2568,10 @@ Every merge below was made by AndyLow91 on 2026-10-25. Register ids refer to the
 <tbody>
 <tr>
 <td>cut 2: page bundles and the build/runtime split</td>
-<td><code>wip/cut2-onto-cut1-16.0.0</code> (local), catching <code>chore/build-runtime-separation</code> up with <code>dev</code> <code>eb72a1d3</code></td>
-<td>pending (peer session)</td>
-<td>in progress; <code>official/chore/build-runtime-separation</code> is still <code>b6e8c7cd</code></td>
-<td><code>RT-2</code>, <code>RT-REBASE</code></td>
-</tr>
-<tr>
-<td>BF-176 fix: <code>axios</code> and <code>lodash</code> declared as runtime dependencies</td>
-<td><code>bf/axios-runtime-dependency</code>, <strong>#8834</strong> to <code>dev</code></td>
-<td><code>f3d73f43</code> (<code>43ed462a</code> plus a merge of <code>eb72a1d3</code>; 0 behind, 2 ahead, 3 files)</td>
-<td>open PR</td>
-<td><code>BFQ-176</code></td>
-</tr>
-<tr>
-<td>dependency refresh: <code>compression</code> 1.8.2, <code>follow-redirects</code> 1.16.1, <code>source-map-js</code> 1.2.2</td>
-<td><code>deps/16.0.0-security-refresh</code>, <strong>#8835</strong> to <code>dev</code></td>
-<td><code>341b843a</code> (0 behind <code>eb72a1d3</code>, 3 ahead, merges cleanly)</td>
-<td>open PR</td>
-<td><code>BFQ-163</code></td>
-</tr>
-<tr>
-<td><code>sanitize-html</code> 2.18, its own PR to <code>dev</code> (maintainer: integrate as quickly as possible)</td>
-<td><code>deps/sanitize-html-2.18</code> (peer session)</td>
-<td>pending</td>
-<td>in progress</td>
-<td><code>BFQ-163</code></td>
-</tr>
-<tr>
-<td>BF-72: a caller-supplied regular expression can hold the database for minutes</td>
-<td><code>bf/regex-limits</code>, in the private fork of its draft advisory</td>
-<td><code>1833ab00</code> on <code>dev</code> <code>04d435eb</code></td>
-<td>in the fork; no fork PR opened yet; owes a merge of <code>dev</code> <code>eb72a1d3</code></td>
-<td><code>BFQ-72</code></td>
-</tr>
-<tr>
-<td>BF-161: a deeply nested pattern on three query endpoints makes that request fail</td>
-<td><code>bf/entries-pattern-limit</code>, in the private fork of its draft advisory</td>
-<td><code>d2c4df9f</code> on <code>dev</code> <code>04d435eb</code></td>
-<td>in the fork; no fork PR opened yet; owes a merge of <code>dev</code> <code>eb72a1d3</code></td>
-<td><code>BFQ-161</code></td>
-</tr>
-<tr>
-<td>BF-158: the count=0 tests assume an empty database</td>
-<td>none found locally or on <code>official</code> on 2026-10-25</td>
-<td>—</td>
-<td>not started</td>
-<td><code>BFQ-158</code></td>
+<td><code>chore/build-runtime-separation</code>, <strong>#8837</strong> to <code>dev</code> (opened 19:22Z)</td>
+<td><code>ee94b148</code>; the fix <code>bd941200</code> and a merge of <code>dev</code> <code>2bc298b9</code> are on <code>wip/cut2-onto-cut1-16.0.0</code> (local, peer session), not pushed</td>
+<td>open PR; its CI failed the required check (below)</td>
+<td><code>RT-2</code></td>
 </tr>
 <tr>
 <td>test tier map, tier check and inner-loop selection (<code>test:affected</code>, <code>test:smoke</code>)</td>
@@ -2572,6 +2580,20 @@ Every merge below was made by AndyLow91 on 2026-10-25. Register ids refer to the
 <td>open draft; lands after #8837 (cut 2) and #8838 (test and CI hygiene), rebased onto that <code>dev</code></td>
 <td><code>RT-TEST-TIERS</code></td>
 </tr>
+<tr>
+<td>BF-72: a caller-supplied regular expression can hold the database for minutes</td>
+<td><code>bf/regex-limits</code>, in the private fork of its draft advisory</td>
+<td><code>1833ab00</code> on <code>dev</code> <code>04d435eb</code></td>
+<td>in the fork; no fork PR opened yet; owes a merge of <code>dev</code></td>
+<td><code>BFQ-72</code></td>
+</tr>
+<tr>
+<td>BF-161: a deeply nested pattern on three query endpoints makes that request fail</td>
+<td><code>bf/entries-pattern-limit</code>, in the private fork of its draft advisory</td>
+<td><code>d2c4df9f</code> on <code>dev</code> <code>04d435eb</code></td>
+<td>in the fork; no fork PR opened yet; owes a merge of <code>dev</code></td>
+<td><code>BFQ-161</code></td>
+</tr>
 </tbody>
 </table>
 <p>BF-72's fix, by mechanism: a length cap on every pattern and a time limit on every query whose filter
@@ -2579,15 +2601,36 @@ holds a regular expression, generated ones included; a refusal check for caller-
 only behind <code>QUERY_REGEX_REFUSE_UNSAFE</code>, default off. BF-161's fix: a nesting-depth limit checked
 before the pattern is parsed or expanded. Both keep the intended uses in the maintainer's public gist
 <code>dbe590ab</code> working, and each is published with the release that carries it.</p>
-<p>The dependency refresh, as its session reports it (read-derived here; not re-run): <code>feb3944c</code> moves
-<code>compression</code> to 1.8.2 (the <code>package.json</code> range raised to <code>^1.8.2</code>), <code>ad458fa0</code> pins
-<code>follow-redirects</code> 1.16.1 by override, <code>341b843a</code> moves <code>source-map-js</code> to 1.2.2, and only those three
-lockfile entries change. <code>npm test</code> is 3378 passing / 3 pending / 1 failing on both <code>dev</code> <code>eb72a1d3</code> and
-the branch, and the Chromium browser suite 455 passing on both (Node 24.22.1, npm 11.19.1, MongoDB
-7.0.43). <code>npm audit</code> at 2026-10-25 17:13Z: <code>dev</code> 23 findings (8 high, 1 critical), the branch 18 (3
-high, 1 critical); with <code>--omit=dev</code>, 16 and 11. A reading a minute earlier gave 20 on <code>dev</code>: a change
-in the advisory data, not in the tree. That branch leaves <code>sanitize-html</code> at 2.17.5; 2.18 is its own
-PR (row above, and open item 2).</p>
+<p><strong>Cut 2, #8837</strong> (read from the PR body and <code>git log</code>; the runs are the preparing session's). The
+branch is a fast-forward of the published <code>b6e8c7cd</code>: 26 first-parent commits on top of it, 185
+commits ahead of <code>dev</code> <code>a20469dc</code>. It merges <code>dev</code> three times: <code>04a7968d</code> (<code>eb72a1d3</code>, 9 conflicting
+paths), <code>dd2e0cfd</code> (<code>93f152bd</code>, #8834) and <code>94242483</code> (<code>a20469dc</code>, #8835). The follow-ups are
+<code>14ba4686</code> (the narrowed D3 surface gains <code>bisector</code>, <code>curveBasis</code> and <code>curveMonotoneX</code>, which #8831's
+modern chart needs; without them the production main page with <code>THEME=modern</code> threw while drawing the
+trend), <code>17a9d48a</code>, <code>4354fac3</code>, <code>1e9ea6f6</code>, <code>ba32eca4</code>, the CI edge commits <code>a7eb6942</code>, <code>bdb6c733</code> and
+<code>b8ff91cb</code>, and <code>ee94b148</code>, the page-bundle budget (decided, option A). Tests on <code>ee94b148</code> (Node 24.22.1,
+<code>TZ=UTC</code>): <code>npm test</code> 3691 / 4 / 0, Chromium 540 / 0, budget 9 / 9. Earlier, on <code>b8ff91cb</code> (host zone
+America/Los_Angeles): Node 22.23.4, 24.22.1 and 26.12.1 each 3542 / 4 / 4 (the 4: the two budget
+cases, the BF-177 test and the API3 hook timeout, both fixed by #8838 since); Firefox 540 / 0.
+<code>queryLeaves</code> was verified against <code>traverse</code> on 50,000 generated and 20 edge queries: 0 differences.</p>
+<p><strong>#8837's CI</strong> (reproduced from GitHub run metadata): run 40225696687 on <code>ee94b148</code>, attempts 1 and 2,
+failed the required check <em>Run Tests (24, 6)</em> and <em>Maintained MongoDB (26, 8.0.29)</em>, each 3690 passing,
+1 failing: <code>tests/env-runner.test.js</code> "Native env runner process contract passes file values through
+nyc into a Mocha child" exceeded its 10 s timeout. The case's inner nyc instruments all of <code>lib/</code>
+(<code>.nycrc</code> <code>all: true</code>) under <code>test-ci</code>'s outer nyc; the local runs, without coverage, did not see it.
+The fix is <code>bd941200</code> (peer session: <code>--all=false</code> on the inner nyc, plus
+<code>docs/test-specs/env-runner.md</code>), on <code>wip/cut2-onto-cut1-16.0.0</code>, not pushed; cut 2 also merges <code>dev</code>
+<code>2bc298b9</code> before its next push.</p>
+<p><strong><code>sanitize-html</code> 2.18.1 (#8835)</strong> (read from the PR body). The update was bundled into #8835 on the
+maintainer's direction (themed PRs). Against 2.17.5, <code>npm audit</code> listed four <code>sanitize-html</code> advisories
+and against 2.18.1 none: GHSA-x3q4-9hxx-gx8m, GHSA-cv27-6wvh-8x7j, GHSA-jxwj-j7wr-gfrw and
+GHSA-g8qq-57p8-ggw5 (totals 23 → 22, and 16 → 15 with <code>--omit=dev</code>, npm 11.19.1, 17:27:34Z and
+17:30:04Z). GHSA-374f-7chj-9948 never applied: its range is <code>&gt;=2.17.7 &lt;2.18.0</code>, and <code>dev</code> locked 2.17.5.
+2.18.1 brings the htmlparser2 12, domhandler 6, domutils 4, domelementtype 3 and dom-serializer 3
+majors, all reached only through <code>sanitize-html</code>; it declares <code>node &gt;=22.12.0</code>, inside the 16.0.0
+floor. Of the 35 inputs in <code>tests/purifier.corpus.test.js</code>, 34 are stored identically; the one change
+is listed under <a href="#for-the-release-notes">For the release notes</a>. The combined head <code>477d5200</code> ran
+3422 / 3 / 0 (Node 24.22.1, MongoDB 7.0.43, <code>TZ=UTC</code>).</p>
 <h2 id="known-defects-on-dev-now">Known defects on <code>dev</code> now<a class="headerlink" href="#known-defects-on-dev-now" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -2600,25 +2643,17 @@ PR (row above, and open item 2).</p>
 </thead>
 <tbody>
 <tr>
-<td>BF-176</td>
-<td>a production install (<code>npm ci --omit=dev</code>, the Dockerfile's commands) stops at boot with <code>Cannot find module 'axios'</code> (<code>bootevent.js:114</code>) when <code>IMPORT_CONFIG</code> is set; <code>lodash</code> is undeclared and supplied transitively</td>
-<td>moved from cut 1 only to <code>dev</code> and the 16.0.0 line, because #8828 merged before the fix; <strong>reproduced</strong> on <code>eb72a1d3</code> by the BF-176 session (Node 24.22.1, npm 11.19.1, MongoDB 7.0.43; unset, both installs boot; full <code>npm ci</code> boots with the settings applied); <code>dev</code>'s Docker image is published; no release carries it</td>
-<td><code>BFQ-176</code></td>
-</tr>
-<tr>
-<td>BF-177</td>
-<td><code>tests/glucosedistribution.test.js:116</code>, "includes the first selected interval when earlier hours are excluded", added by <code>ba5f7f4b</code> (#8812's head commit), passes with <code>TZ=UTC</code> and fails with <code>TZ=America/Los_Angeles</code> ("expected '213.5' to be '117.5'"; deps refresh session's run); CI runs in UTC. The test's stand-in for the profile's time zone uses the machine's zone</td>
-<td>test only: the report applies the profile's time zone as intended (read-derived, not run in a browser)</td>
-<td><code>BFQ-177</code></td>
-</tr>
-<tr>
-<td>duplicated test block</td>
-<td>the <code>BRIDGE_SERVER mapping</code> cases run twice (see Merge state)</td>
-<td>none</td>
-<td>—</td>
+<td>Firefox legacy-reports wait</td>
+<td><code>tests/browser/legacy-reports.test.js</code> "should produce some html" timed out at its fixed 30 s wait (<code>12154df9</code>) in one or two Firefox cells of the CI runs on <code>93f152bd</code> (<code>pull_request</code>) and <code>a20469dc</code> (both events); the push run on <code>a20469dc</code> therefore skipped the Docker publish. It passed on <code>2bc298b9</code>. Cut 2 replaces the fixed wait with a progress-aware one (fails after 15 s with no completed request, 60 s ceiling)</td>
+<td>test only; no register entry filed</td>
+<td><code>RT-2</code></td>
 </tr>
 </tbody>
 </table>
+<p><strong>BF-176, the window.</strong> <code>dev</code> carried the <code>IMPORT_CONFIG</code> boot crash from <code>eb72a1d3</code> (16:29:06Z, #8828)
+to <code>93f152bd</code> (17:44:48Z, #8834). <code>dev</code>'s Docker image was published in between, by push run
+40211895500 at 17:15:18Z, so a <code>dev</code> image pulled from then until the next publish (17:53:31Z, from
+<code>93f152bd</code>) stops at boot when <code>IMPORT_CONFIG</code> is set. No release carried it.</p>
 <h1 id="8831s-pr-body-read-also-reports-that-npm-run-testdependencies-stops-at-an-existing-npm-ls">8831's PR body (read) also reports that <code>npm run test:dependencies</code> stops at an existing <code>npm ls</code><a class="headerlink" href="#8831s-pr-body-read-also-reports-that-npm-run-testdependencies-stops-at-an-existing-npm-ls" title="Permanent link">&para;</a></h1>
 <p>error about the <code>axios</code> override on <code>master</code>, and that nine COB, IAGE and SAGE tests fail in the
 Europe/London DST fall-back hour and pass in UTC; neither was measured here.</p>
@@ -2631,19 +2666,12 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then.</p>
 <h2 id="open-items-a-releaser-must-settle">Open items a releaser must settle<a class="headerlink" href="#open-items-a-releaser-must-settle" title="Permanent link">&para;</a></h2>
-<p>As of <code>dev</code> <code>eb72a1d3</code> (2026-10-25). The decisions already made are in <a href="decisions.html">decisions.md</a>.</p>
+<p>As of <code>dev</code> <code>2bc298b9</code> (2026-10-25). The decisions already made are in <a href="decisions.html">decisions.md</a>.</p>
 <p><strong>Decisions open, with their owner:</strong></p>
 <ol>
 <li><strong>Whether cut 2 ships in 16.0.0 or as its own release</strong> (maintainers). The versioning policy §8.3
-   leaves open whether the cuts ship separately or combined.</li>
-<li><strong><code>sanitize-html</code> 2.18's stored-output difference</strong> (maintainer, when its PR is open). The maintainer
-   asks for 2.18 to be integrated as quickly as possible, as its own PR (<code>deps/sanitize-html-2.18</code>, in
-   flight). Reported by the deps refresh session: 2.17.6 and later need the htmlparser2 12, domhandler 6,
-   domutils 4, dom-serializer 3 and domelementtype 3 majors, and 1 of 35 purifier inputs is stored
-   differently (a malformed <code>textarea</code> sequence is stored as an <code>img</code> element with <code>src="x"</code> instead of
-   the empty string; the event handler is still stripped). The Node 20 reason given for the pin at
-   <code>lib/server/purifier.js:38</code> no longer applies under the 16.0.0 floor. The three <code>sanitize-html</code>
-   advisories named in the 15.0.9 triage stay open until it merges.</li>
+   leaves open whether the cuts ship separately or combined; #8837 targets <code>dev</code>, and its body says it
+   ships in 16.0.0.</li>
 <li><strong>The scope of BF-161's draft advisory</strong> (maintainer): publish it now for BF-151 (released in 15.0.9)
    with BF-161 as a follow-up, or extend it to include BF-161 and publish it with the release that
    carries the fix. Packet: <a href="../../reports/reviewer-packets/bfq-161-bf-entries-pattern-limit.html">bfq-161</a>.</li>
@@ -2651,40 +2679,76 @@ has none until then.</p>
    are to be rebuilt in code before anything is published. Packet:
    <a href="../../reports/reviewer-packets/bfq-72-bf-regex-limits.html">bfq-72</a>.</li>
 <li><strong>BF-95</strong> (maintainer): a notice for readings that arrive dated ahead of the server clock, or the
-   status quo. Packet: <a href="../../reports/reviewer-packets/bfq-95.html">bfq-95</a>.</li>
+   status quo. Packet: <a href="../../reports/reviewer-packets/bfq-95.html">bfq-95</a>. 2026-10-25 (maintainer): verify
+   <code>srvModified</code> first; on <code>dev</code> it is now a server receipt time on every live path (caveat BF-181).</li>
 <li><strong>BF-152</strong> (maintainer, with the AndroidAPS developers): is API v3 <code>settings</code> meant to be readable
-   with a follower's read token, or admin-only? Packet: <a href="../../reports/reviewer-packets/bfq-152.html">bfq-152</a>.</li>
+   with a follower's read token, or admin-only? <strong>Decided 2026-10-25</strong>: a staged ladder, an opt-in
+   admin-only settings read in 16.x (<code>API3_SETTINGS_STRICT_READ_ENABLED</code>, default off; cherry-pick
+   <code>faffe875</code> of <code>06ba6201</code> in PR #8845 to <code>dev</code>, pending push), a question to the AndroidAPS developers
+   about a narrower scope, and a strict default later on the calendar. Queue <code>BFQ-152</code> (<code>in-flight-upstream</code>).</li>
 <li><strong>Dependabot configuration</strong> (maintainer): version updates targeting <code>dev</code>, dismissing alerts that
    are fixed on <code>dev</code> or not reachable, or releasing more often. Packet:
    <a href="../../reports/reviewer-packets/dependabot-config.html">dependabot-config</a>.</li>
-<li><strong>Branch protection's required check</strong> (maintainers): <code>36fa3121</code> keeps the Node 22 × MongoDB 4.4
-   cell only because it is a required check.</li>
 </ol>
-<p><strong>Suggested order of the next merges to <code>dev</code></strong> (a suggestion for the maintainers, not a decision):</p>
+<p><strong>Repository settings, for the maintainer</strong> (from #8838's body; branch protection read 2026-10-25:
+<code>dev</code> requires <code>Run Tests (24, 6)</code>; <code>master</code> requires <code>Run Tests (22, 6)</code>, <code>Run Tests (22, 4.4)</code> and
+<code>Run Tests (24, 6)</code>; no rulesets). Nothing in a PR changes these:</p>
 <ol>
-<li>The BF-176 fix, #8834 (<code>BFQ-176</code>): <code>dev</code> and its published image carry the boot crash; packaging only.
-   Packet: <a href="../../reports/reviewer-packets/bfq-176-bf-axios-runtime-dependency.html">bfq-176</a>.</li>
-<li>The dependency refresh, #8835, and <code>sanitize-html</code> 2.18 (<code>BFQ-163</code>), before cut 2, whose catch-up then takes
-   the lockfile changes in one merge.</li>
-<li>Cut 2 (<code>RT-2</code>), once its catch-up merge of <code>dev</code> is pushed.</li>
-<li>The follow-ups cut 1 unblocked, each its own PR: <code>RT-CONNECT-TEARDOWN</code>, <code>RT-D3-SUITE</code>, <code>BFQ-158</code>,
-   <code>BFQ-177</code>, <code>RT-JSDOM-REST</code> (scope B), and <code>ID-SIMPLE-MATCH</code> with BF-169, which
-   touches <code>lib/server/entries.js</code>, a file cut 2 also changes, so after cut 2.</li>
+<li><code>master</code>: drop the required check <code>Run Tests (22, 4.4)</code>; MongoDB 4.4 is unsupported and the cell
+   exists only for this check. Then delete its <code>include</code> entry.</li>
+<li><code>dev</code> and <code>master</code>: move the <code>Run Tests (24, 6)</code> and <code>Run Tests (22, 6)</code> requirements to edge cells
+   (for example <code>Run Tests (22.23.4, 8.0)</code> and <code>Run Tests (26, 8.0)</code>, and <code>(22.23.4, 5.0)</code> and
+   <code>(26, 5.0)</code> if the MongoDB floor should also gate merges), then delete those <code>include</code> entries.</li>
+<li>Optionally, require <code>Browser tests (26, chromium)</code>, <code>(26, firefox)</code> and <code>(26, webkit)</code>, whose names
+   are now stable.</li>
+</ol>
+<p><strong>Follow-ups filed 2026-10-25:</strong> <code>RT-BUNDLE-THEME-SPLIT</code> (page-bundle budget option B: load the modern
+theme's code only when it is chosen; owner Andy Low or the maintainer; not started) and
+<code>RT-BOOT-INDEX-AWAIT</code> (boot awaits its collection and index creation, the cause of the API3 hook
+timeout; a product change; not started).</p>
+<p><strong>Merge order</strong> (a suggestion for the maintainers, not a decision): #8837 and #8838 in either order (a
+<code>git merge-tree</code> of the two was clean); #8838 merged first. Then:</p>
+<ol>
+<li>Cut 2, #8837 (<code>RT-2</code>), once <code>bd941200</code> and its merge of <code>dev</code> <code>2bc298b9</code> are pushed and its CI passes.</li>
+<li>Peer session -b7's test tiers (<code>RT-TEST-TIERS</code>), rebased onto that <code>dev</code>, as one PR.</li>
+<li>The other follow-ups, each in a themed PR: <code>RT-JSDOM-REST</code> (scope B), <code>ID-SIMPLE-MATCH</code> with BF-169
+   (it touches <code>lib/server/entries.js</code>, which cut 2 also changes), <code>RT-BUNDLE-THEME-SPLIT</code> and
+   <code>RT-BOOT-INDEX-AWAIT</code>.</li>
 <li>BF-72 and BF-161 through their advisory forks, each after a merge of <code>dev</code>, published with the
    release that carries them.</li>
 </ol>
 <p><strong>Before the tag:</strong> the call for testers (<a href="testing-notes.html">testing-notes.md</a>), the tag message and the
-release notes, which must name the Node floor and the message the server prints when it refuses to
-start, the bridge removal and the known issues; a full run on the candidate in the integration record;
-the verification record capture; the reconciliation in <a href="../index.html">releases/README.md</a>.</p>
+release notes (written last, from the list below), a full run on the candidate in the integration
+record, the verification record capture, the reconciliation in <a href="../index.html">releases/README.md</a>.</p>
+<h2 id="for-the-release-notes">For the release notes<a class="headerlink" href="#for-the-release-notes" title="Permanent link">&para;</a></h2>
+<p>A draft list of what the release notes must say; the notes themselves are written last, once the
+candidate is named.</p>
+<ul>
+<li>The Node floor <code>^22.23.4 || ^24.22.1 || &gt;=26.12.1</code>, and the message the server prints when it refuses
+  to start.</li>
+<li>The legacy Dexcom Share and MiniMed CareLink bridges are removed; leftover bridge settings stop the
+  site with a page naming the replacements; Dexcom Share data comes in through <code>nightscout-connect</code>.</li>
+<li>MongoDB 5.0 through 8.0 are supported; 4.4 and earlier are not.</li>
+<li>The opt-in <code>THEME=modern</code> dashboard (#8831).</li>
+<li>The Bolus Wizard Preview and Careportal Bolus Wizard unit fixes (BF-172, BF-173) and the profile
+  picker (BF-174); BF-09 (the socket's duplicate check keeps zero temps, cancels and zero amounts); #8816's snooze; #8812 and #8808's report figures.</li>
+<li>One stored-text change from <code>sanitize-html</code> 2.18.1 (#8835): a malformed empty
+  <code>&lt;textarea&gt;&lt;/textarea/&gt;</code> followed by an image with an event handler is now stored as the image tag
+  without its handler (<code>&lt;img src="x" /&gt;</code>), where 2.17.5 stored nothing (the empty string). The other 34
+  corpus inputs are stored identically.</li>
+<li>If cut 2 ships in 16.0.0: page bundles, build and runtime separated (<code>npm ci</code> with development
+  dependencies, then prune), no late minification, <code>DEBUG_MINIFY</code> without effect, the load-failure
+  panel, and a third-party plugin that hooks into the page to be tested before upgrading.</li>
+<li>The known issues at the tag.</li>
+</ul>
 <h2 id="what-a-reviewer-must-verify-before-this-is-relied-on">What a reviewer must verify before this is relied on<a class="headerlink" href="#what-a-reviewer-must-verify-before-this-is-relied-on" title="Permanent link">&para;</a></h2>
 <ol>
 <li>That AndyLow91's <code>b20a710b</code> and <code>bbca2892</code> give the results of the 2026-10-21 reproductions for all
    four unit combinations (BF-172, BF-173); the merged trees were not re-run here.</li>
 <li>Which advisory is the 1 critical in the 2026-10-25 <code>npm audit</code> on both <code>dev</code> and the refresh
    branch; this file does not name it.</li>
-<li>BF-177's reading that the glucose distribution report, not only its test, is right outside UTC
-   (read-derived).</li>
+<li>That the PR-body figures recorded here for #8835, #8837 and #8838 match a re-run; none was re-run
+   by this programme.</li>
 </ol>
 <hr />
 <p><em>Draft, 2026-10-25. Prepared locally; nothing pushed, tagged, merged or published by this programme.

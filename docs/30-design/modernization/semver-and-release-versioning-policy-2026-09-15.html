@@ -16,7 +16,7 @@
         <link rel="prev" href="jsdom-harness-test-tiers-2026-10-21.html">
       
       
-        <link rel="next" href="../platform/index.html">
+        <link rel="next" href="write-path-checks-alignment-2026-10-25.html">
       
       
         
@@ -2249,6 +2249,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -2301,6 +2305,34 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-remote-monitor-architecture-review-2026-10-25.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor architecture review: the patterns behind recent defects, as decision questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
               
             
               
@@ -3082,6 +3114,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="write-path-checks-alignment-2026-10-25.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aligning the write-path checks in cgm-remote-monitor: an addendum to the write contract
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -5826,7 +5886,7 @@
 
 
 <h1 id="semver-and-release-versioning-policy--cgm-remote-monitor-and-nightscout-connect">Semver and release versioning policy — cgm-remote-monitor and nightscout-connect<a class="headerlink" href="#semver-and-release-versioning-policy--cgm-remote-monitor-and-nightscout-connect" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-25 at <code>d9d475733</code>.</em></p>
+<p><em>Living document, last changed 2026-10-25 at <code>b1ec05bca</code>.</em></p>
 <p><em>Contributor- and maintainer-facing. Full technical depth is intended. Operator-facing text
 derived from this document has its own rules — §5.6.</em></p>
 <p><strong>Status: living document.</strong> Three parts with different standing:</p>
@@ -5860,7 +5920,7 @@ is 498 commits and 82 first-parent merges.</p>
 (where the two disagree, this document is the later position);
 <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html">15.0.9 contents</a>;
 <a href="../remedial/nightscout-backfix-register.html">backfix register</a> (defect facts);
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/40c2f40b5491e7d18c1131da3f4fecc5dcfd3883/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> (item state);
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9d6a2c078408808d7579d86373c04fa64f2043d4/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> (item state);
 <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>
 (decisions D1–D17, cited here by number).</p>
 <hr />
@@ -6900,6 +6960,27 @@ flip. A flag without a planned flip is a permanent setting and is documented as 
 <td>not yet planned</td>
 <td>#8754 (<code>bf2/auth-hardening</code>), 15.0.9</td>
 </tr>
+<tr>
+<td><code>API_V1_COUNT_LEADING_NUMBER</code></td>
+<td><code>true</code>: a v1 <code>count</code> with trailing text after a leading number (<code>count=N?…</code>, as oref0 rigs send) is read as that number, with <code>Deprecation</code>/<code>Warning</code> headers and a log line once</td>
+<td><code>false</code>: answered <code>400 Bad count</code></td>
+<td>not yet planned ("a future release"; the 2026-10-25 defaults calendar draft proposes a major, once oref0 sends valid counts)</td>
+<td>#8761, 15.0.9</td>
+</tr>
+<tr>
+<td><code>API_V1_COUNT_ZERO_WINDOW</code></td>
+<td><code>true</code>: <code>count=0</code> inside a date window keeps 15.0.8's meaning (no limit on that window), as GluPredKit sends</td>
+<td><code>false</code>: <code>count=0</code> answers <code>200 []</code></td>
+<td>not yet planned (as above, once GluPredKit sends a valid count)</td>
+<td>#8761, 15.0.9</td>
+</tr>
+<tr>
+<td><code>ALLOW_UNRESTRICTED_FRAME_EMBEDDING</code></td>
+<td><code>true</code>: the site may be embedded in a frame from another origin</td>
+<td><code>false</code>: cross-origin framing refused</td>
+<td>not yet planned ("a future release")</td>
+<td><code>f7481725</code>, 15.0.8</td>
+</tr>
 </tbody>
 </table>
 <ul>
@@ -6909,6 +6990,7 @@ flip. A flag without a planned flip is a permanent setting and is documented as 
   protect against guessing passwords or tokens.</li>
 <li><strong>The unset default is <code>dev</code>'s resolution</strong>, not the modernization branch's (<code>395f3207</code> differs in
   four edge cases, BF-88). The cuts keep this unset default too (maintainer, 2026-09-23; <code>RT-3</code>).</li>
+<li><strong>Added 2026-10-25</strong> from the <a href="../../60-research/modernization/defaults-calendar-2026-10-25.html">defaults calendar draft</a> §1f: the three transitional settings above were shipping without a registry row. Their stated plan in the release notes is "switch to false in a future release"; no release is named.</li>
 <li><strong>Considered and not adopted:</strong> a flag for the BF-47 subject-field allow-list. The maintainer
   ruled the allow-list is the declared schema (2026-09-23).</li>
 </ul>

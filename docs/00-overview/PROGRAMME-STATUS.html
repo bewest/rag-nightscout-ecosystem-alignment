@@ -2256,7 +2256,7 @@
 
 
 <h1 id="programme-status--cgm-remote-monitor">Programme status — cgm-remote-monitor<a class="headerlink" href="#programme-status--cgm-remote-monitor" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-25 at <code>dda680fe7</code>.</em></p>
+<p><em>Living document, last changed 2026-10-25 at <code>23aedcc08</code>.</em></p>
 <p><em>What this is: a record (contributor-facing; technical throughout). Read after the
 <a href="mission.html">mission</a>; leads to the <a href="ROADMAP.html">roadmap</a>. Prepared for the Nightscout project;
 proposed for Nightscout Foundation stewardship.
@@ -2288,16 +2288,16 @@ current and the prose is stale.</p>
 <tr>
 <td><strong>Remedial</strong></td>
 <td><code>phase0</code>, <code>register-open</code>, <code>docs-truth</code></td>
-<td style="text-align: right;">161</td>
-<td style="text-align: right;">45</td>
-<td style="text-align: right;">13</td>
+<td style="text-align: right;">176</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">20</td>
 </tr>
 <tr>
 <td><strong>Modernization</strong></td>
 <td><code>release-train</code></td>
-<td style="text-align: right;">37</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">0</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">4</td>
 </tr>
 <tr>
 <td><strong>Multitenant</strong></td>
@@ -2309,9 +2309,9 @@ current and the prose is stale.</p>
 <tr>
 <td></td>
 <td><strong>total</strong></td>
-<td style="text-align: right;"><strong>267</strong></td>
-<td style="text-align: right;"><strong>70</strong></td>
-<td style="text-align: right;"><strong>22</strong></td>
+<td style="text-align: right;"><strong>287</strong></td>
+<td style="text-align: right;"><strong>61</strong></td>
+<td style="text-align: right;"><strong>33</strong></td>
 </tr>
 </tbody>
 </table>
@@ -2464,12 +2464,12 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-100</code></td>
-<td><code>blocked</code></td>
+<td><code>released</code></td>
 <td>BF-100 - devicestatus, food and activity store a hex _id as a string</td>
 </tr>
 <tr>
 <td><code>BFQ-101</code></td>
-<td><code>blocked</code></td>
+<td><code>released</code></td>
 <td>BF-101 - API v3 id filters miss records stored with a string _id</td>
 </tr>
 <tr>
@@ -2584,7 +2584,7 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-137</code></td>
-<td><code>not-started</code></td>
+<td><code>merged-upstream</code></td>
 <td>BF-137 - with more than one IFTTT Maker key, an alarm's Maker calls run out of order and a</td>
 </tr>
 <tr>
@@ -2594,7 +2594,7 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-145</code></td>
-<td><code>not-started</code></td>
+<td><code>in-flight-upstream</code></td>
 <td>BF-145 - API v3 PATCH and PUT by the shown id miss a record whose identifier is null, "" o</td>
 </tr>
 <tr>
@@ -2614,7 +2614,7 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-152</code></td>
-<td><code>needs-decision</code></td>
+<td><code>in-flight-upstream</code></td>
 <td>BF-152 - API v3 settings are admin-only through search and history, readable by identifier</td>
 </tr>
 <tr>
@@ -2634,12 +2634,12 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-159</code></td>
-<td><code>not-started</code></td>
+<td><code>in-progress</code></td>
 <td>BF-159 - the main page sometimes leaves for the Profile Editor while a profile exists, wit</td>
 </tr>
 <tr>
 <td><code>BFQ-160</code></td>
-<td><code>not-started</code></td>
+<td><code>in-progress</code></td>
 <td>BF-160 - the clock designer's link target is written with curly quotes</td>
 </tr>
 <tr>
@@ -2649,22 +2649,22 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-163</code></td>
-<td><code>in-flight-upstream</code></td>
+<td><code>merged-upstream</code></td>
 <td>BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in</td>
 </tr>
 <tr>
 <td><code>BFQ-164</code></td>
-<td><code>needs-decision</code></td>
+<td><code>blocked</code></td>
 <td>BF-164 - writes outside API v3 never reach the v3 storage socket</td>
 </tr>
 <tr>
 <td><code>BFQ-165</code></td>
-<td><code>not-started</code></td>
+<td><code>in-flight-upstream</code></td>
 <td>BF-165 - a treatment re-send matched by its fallback key is answered without _id</td>
 </tr>
 <tr>
 <td><code>BFQ-166</code></td>
-<td><code>not-started</code></td>
+<td><code>in-flight-upstream</code></td>
 <td>BF-166 - a profile re-sent with its own _id answers 500</td>
 </tr>
 <tr>
@@ -2674,12 +2674,12 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-169</code></td>
-<td><code>not-started</code></td>
+<td><code>in-flight-upstream</code></td>
 <td>BF-169 - API v3's swagger says clients must not supply identifier, but the server keeps a</td>
 </tr>
 <tr>
 <td><code>BFQ-170</code></td>
-<td><code>not-started</code></td>
+<td><code>in-flight-upstream</code></td>
 <td>BF-170 - API v3 stores a client's 24-hex body _id as a string, in the case sent</td>
 </tr>
 <tr>
@@ -2698,9 +2698,49 @@ cover more than one <code>BF-</code>:</p>
 <td>BF-174 - the bolus calculator's profile picker is ignored; every value comes from the acti</td>
 </tr>
 <tr>
-<td><code>BFQ-175</code></td>
-<td><code>unsettled</code></td>
-<td>BF-175 - temp targets are converted from mmol/L only when units is exactly 'mmol' (candida</td>
+<td><code>BFQ-180</code></td>
+<td><code>in-progress</code></td>
+<td>BF-180 - a careportal temp target on an mmol/L site is converted to mg/dL twice when the h</td>
+</tr>
+<tr>
+<td><code>BFQ-181</code></td>
+<td><code>not-started</code></td>
+<td>BF-181 - one future srvModified pins the shared write clock ahead, across restarts</td>
+</tr>
+<tr>
+<td><code>BFQ-183</code></td>
+<td><code>in-progress</code></td>
+<td>BF-183 - the API v3 storage socket logs the supplied credential on a failed authorization</td>
+</tr>
+<tr>
+<td><code>BFQ-184</code></td>
+<td><code>not-started</code></td>
+<td>BF-184 - API v3 /status apiPermissions reports only wildcard permissions</td>
+</tr>
+<tr>
+<td><code>BFQ-186</code></td>
+<td><code>in-flight-upstream</code></td>
+<td>BF-186 - API v3 logs a whole record when a client's identifier differs from the computed o</td>
+</tr>
+<tr>
+<td><code>BFQ-187</code></td>
+<td><code>not-started</code></td>
+<td>BF-187 - an entries pattern segment over the braces parser's input limit answers 500, not</td>
+</tr>
+<tr>
+<td><code>BFQ-188</code></td>
+<td><code>not-started</code></td>
+<td>BF-188 - with no client bundle the server exits at boot with an unexplained module error</td>
+</tr>
+<tr>
+<td><code>BFQ-190</code></td>
+<td><code>in-progress</code></td>
+<td>BF-190 - an alarm on a page without a current reading cannot be silenced from the page</td>
+</tr>
+<tr>
+<td><code>BFQ-191</code></td>
+<td><code>in-progress</code></td>
+<td>BF-191 - a stored treatment can stop the server process, and keeps doing so after a restar</td>
 </tr>
 <tr>
 <td><code>BFQ-40</code></td>
@@ -2759,12 +2799,12 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-92</code></td>
-<td><code>not-started</code></td>
+<td><code>in-progress</code></td>
 <td>BF-92 - a page with no glucose reading never presents a server alarm, including device ala</td>
 </tr>
 <tr>
 <td><code>BFQ-93</code></td>
-<td><code>not-started</code></td>
+<td><code>in-progress</code></td>
 <td>BF-93 - food changes never reach an open page</td>
 </tr>
 <tr>
@@ -2779,7 +2819,7 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>BFQ-99</code></td>
-<td><code>blocked</code></td>
+<td><code>released</code></td>
 <td>bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and str</td>
 </tr>
 <tr>
@@ -2856,37 +2896,37 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>release-train</code></td>
-<td>8</td>
+<td>7</td>
 <td>2</td>
 <td>4</td>
-<td></td>
-<td>3</td>
-<td></td>
 <td>1</td>
+<td>3</td>
+<td>1</td>
+<td>3</td>
 <td>15</td>
-<td></td>
+<td>2</td>
 <td>1</td>
 <td></td>
 <td></td>
 <td>3</td>
-<td><strong>37</strong></td>
+<td><strong>42</strong></td>
 </tr>
 <tr>
 <td><code>register-open</code></td>
-<td>35</td>
-<td>4</td>
+<td>27</td>
+<td>13</td>
 <td>1</td>
-<td>1</td>
-<td>5</td>
-<td>4</td>
-<td>5</td>
-<td>55</td>
-<td>6</td>
-<td></td>
 <td>1</td>
 <td>3</td>
+<td>14</td>
+<td>10</td>
+<td>58</td>
+<td>4</td>
 <td></td>
-<td><strong>120</strong></td>
+<td></td>
+<td>4</td>
+<td></td>
+<td><strong>135</strong></td>
 </tr>
 <tr>
 <td><code>tenancy</code></td>
@@ -2995,18 +3035,18 @@ each cut needs a reviewer other than its author before it reaches <code>dev</cod
 <tbody>
 <tr>
 <td>Maintainer</td>
-<td style="text-align: right;">232</td>
+<td style="text-align: right;">251</td>
 <td style="text-align: right;">87%</td>
 </tr>
 <tr>
 <td>SECURITY reviewer</td>
-<td style="text-align: right;">16</td>
+<td style="text-align: right;">17</td>
 <td style="text-align: right;">6%</td>
 </tr>
 <tr>
 <td>Maintainer + a second human</td>
 <td style="text-align: right;">7</td>
-<td style="text-align: right;">3%</td>
+<td style="text-align: right;">2%</td>
 </tr>
 <tr>
 <td>SAFETY reviewer</td>
@@ -3030,7 +3070,7 @@ each cut needs a reviewer other than its author before it reaches <code>dev</cod
 </tr>
 <tr>
 <td><strong>total</strong></td>
-<td style="text-align: right;"><strong>267</strong></td>
+<td style="text-align: right;"><strong>287</strong></td>
 <td style="text-align: right;"></td>
 </tr>
 </tbody>

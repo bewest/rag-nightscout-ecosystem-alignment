@@ -2287,9 +2287,9 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-25 at <code>b8e1382d0</code>.</em></p>
+<p><em>Living document, last changed 2026-10-25 at <code>793a3c078</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
-<code>dev</code> <code>eb72a1d3</code> (2026-10-25). Each row states the decision as it stands, with its date and who made
+<code>dev</code> <code>2bc298b9</code> (2026-10-25). Each row states the decision as it stands, with its date and who made
 it. Item state is in <code>queue/work-queue.yaml</code>; what 16.0.0 contains and what is still open is in
 <a href="contents.html">contents.md</a>; the test evidence is in the
 <a href="../../docs/30-design/remedial/rc-16.0.0-integration-record.html">16.0.0 integration record</a>. BF-72 and
@@ -2310,7 +2310,7 @@ public.</em></p>
 <td><strong>Priorities for the cycle</strong>: (1) modernization, cut 1 first, then cut 2; (2) backfixes that affect dosing or security; (3) other exposure fixes, only where no cut or modernization branch already covers them</td>
 <td>maintainer, 2026-10-21</td>
 <td><code>RT-REBASE</code>, <code>RT-1</code>, <code>RT-2</code></td>
-<td>cut 1 merged 2026-10-25; cut 2 in progress</td>
+<td>cut 1 merged 2026-10-25; cut 2 is #8837, open</td>
 </tr>
 <tr>
 <td><strong>The next release is 16.0.0, and cut 1 lands on <code>dev</code> now</strong>; 15.0.10 is not released as a separate patch</td>
@@ -2334,6 +2334,18 @@ public.</em></p>
 <td><strong>The 2026-10-25 merges to <code>dev</code></strong>: #8831, #8825, #8826, #8827, #8823, #8819, #8797, #8816, #8812, #8808 and #8828, with AndyLow91's own commits on #8825 (<code>b20a710b</code>), #8819 (<code>bbca2892</code>) and #8828 (contents, What is merged so far)</td>
 <td>AndyLow91, 2026-10-25</td>
 <td>the items in contents</td>
+<td>merged; not released</td>
+</tr>
+<tr>
+<td><strong>PR bundling: changes go to <code>dev</code> in reasonably sized themed PRs</strong>, not one or two commits per PR</td>
+<td>maintainer, 2026-10-25</td>
+<td><code>BFQ-163</code>, <code>RT-CONNECT-TEARDOWN</code>, <code>BFQ-158</code>, <code>BFQ-177</code>, <code>RT-D3-SUITE</code>, <code>RT-TEST-TIERS</code></td>
+<td>applied: <code>sanitize-html</code> 2.18.1 went into #8835 with the dependency refresh; the test and CI follow-ups went together as #8838; the test tiers go as one PR after cut 2</td>
+</tr>
+<tr>
+<td><strong>The later 2026-10-25 merges to <code>dev</code></strong>: #8834 (<code>93f152bd</code>), #8835 (<code>a20469dc</code>) and #8838 (<code>2bc298b9</code>)</td>
+<td>bewest, 2026-10-25</td>
+<td><code>BFQ-176</code>, <code>BFQ-163</code>, the #8838 items</td>
 <td>merged; not released</td>
 </tr>
 </tbody>
@@ -2365,7 +2377,7 @@ public.</em></p>
 <td><strong>The connector teardown listener stays in the cut 1 merge</strong>; its removal is a follow-up</td>
 <td>maintainer, 2026-10-21</td>
 <td><code>RT-CONNECT-TEARDOWN</code></td>
-<td>not started; the listener is <code>lib/server/bootevent.js:393</code> on <code>eb72a1d3</code></td>
+<td>removed by #8838 (<code>38049fe6</code>), merged 2026-10-25</td>
 </tr>
 </tbody>
 </table>
@@ -2390,13 +2402,25 @@ public.</em></p>
 <td><strong>The floor is raised to <code>^22.23.4 \|\| ^24.22.1 \|\| &gt;=26.12.1</code></strong> for the Node Brotli security patches (<code>6a146a4c</code>, "require Node Brotli security patches"), superseding <code>^22.12 \|\| &gt;=24</code>; the Docker image is pinned to <code>node:24.22.1-alpine</code> (<code>32489dc5</code>) and CI tests the exact floors 22.23.4, 24.22.1 and 26.12.1 beside the latest 22, 24 and 26</td>
 <td>AndyLow91, 2026-10-25, on the cut 1 branch before the merge</td>
 <td><code>RT-1</code></td>
-<td>on <code>dev</code>. Node 25 and 26.0–26.12.0 are now outside the range as well</td>
+<td>on <code>dev</code>. Node 25 and 26.0–26.12.0 are now outside the range as well. CI's exact-floor cells were narrowed to the edges by the row below</td>
 </tr>
 <tr>
 <td><strong>MongoDB 4.4 leaves the test matrix</strong>, except one Node 22 × MongoDB 4.4 cell kept as the existing required check until branch protection is updated (<code>36fa3121</code>)</td>
 <td>MongoDB 4.4 deprecated in 15.0.9 (maintainer, 2026-09-23); the cell kept by AndyLow91, 2026-10-25</td>
 <td><code>RT-1</code></td>
-<td>on <code>dev</code>; branch protection is open item 8 in contents</td>
+<td>on <code>dev</code>, kept by #8838; the settings change is the maintainer's (contents, Repository settings)</td>
+</tr>
+<tr>
+<td><strong>The MongoDB edges are 5.0 and 8.0</strong>, and the README states 5.0 through 8.0, widened after the full suite passed on MongoDB 8.0.29</td>
+<td>maintainer, 2026-10-25</td>
+<td><code>RT-2</code>, #8838</td>
+<td>on <code>dev</code> since #8838 (<code>039be646</code>): README, <code>docs/runtime-upgrade.md</code> and the architecture overview; <code>npm test</code> 3409 / 3 / 0 on Node 22.23.4 and 26.12.1 against 8.0.29 (the PR's runs)</td>
+</tr>
+<tr>
+<td><strong>CI tests the edges only</strong>: Node at the floor <code>22.23.4</code> and the ceiling <code>'26'</code> (with <code>check-latest</code>); MongoDB <code>'5.0'</code> and <code>'8.0'</code>, each crossed with both Node edges; browsers, all three engines on Node 26; cells whose names branch protection requires are kept until the settings change</td>
+<td>maintainer, 2026-10-25</td>
+<td><code>RT-2</code>, #8838, <code>RT-NODE-FLOOR-TESTED</code></td>
+<td>on <code>dev</code> since #8838 (<code>29e8a36b</code>, <code>039be646</code>): 31 test and browser cells → 10, about 81 runner-minutes less per run; cut 2's own <code>maintained-mongo</code> and <code>replica-test</code> jobs follow it (<code>a7eb6942</code>, <code>bdb6c733</code>)</td>
 </tr>
 </tbody>
 </table>
@@ -2415,7 +2439,7 @@ public.</em></p>
 <td><strong>Cut 2 keeps its <code>queryLeaves</code> walker instead of the <code>traverse</code> package</strong> when it takes <code>dev</code>'s query rules (the operator allowlist, path-aware value coercion, <code>$exists</code> operands, the two forms of <code>$in</code>/<code>$nin</code> id lists); <code>lib/utils/query-leaves.js</code> passes each leaf's key path, which the coercion rules read</td>
 <td>maintainer, 2026-10-22 ("keep queryLeaves"); implemented on cut 2 in <code>948a142e</code> (2026-10-21) and given its own tests in <code>32978210</code></td>
 <td><code>RT-2</code></td>
-<td><code>dev</code> still uses <code>traverse</code> (<code>^0.6.6</code>); it changes when cut 2 merges</td>
+<td><code>dev</code> still uses <code>traverse</code> (<code>^0.6.6</code>); it changes when cut 2 (#8837) merges. Checked against cut 1's <code>traverse</code>-based <code>lib/server/query.js</code> on 50,000 generated and 20 edge queries: 0 differences (#8837's body)</td>
 </tr>
 </tbody>
 </table>
@@ -2465,25 +2489,37 @@ public.</em></p>
 <td><strong>BF-176 goes to <code>dev</code> as its own PR</strong>, with <code>axios</code> moved to <code>dependencies</code> at <code>^0.34.0</code> and <code>lodash</code> declared as exactly <code>4.18.1</code>, the version its existing override pins (a caret range fails with <code>EOVERRIDE</code>; the overrides block is unchanged); cut 1 was to take it in its next catch-up</td>
 <td>maintainer, 2026-10-22 (a PR to <code>dev</code> as well; lodash declared in the same commit); the exact <code>4.18.1</code> pin chosen by the preparing session as a default for review, because a caret range fails with <code>EOVERRIDE</code></td>
 <td><code>BFQ-176</code></td>
-<td>#8828 merged first, so <code>dev</code> carries the defect; the branch, merged with <code>eb72a1d3</code> as <code>f3d73f43</code>, is #8834 (opened 2026-10-25)</td>
+<td>#8828 merged first, so <code>dev</code> carried the defect from <code>eb72a1d3</code> (16:29Z) to #8834's merge <code>93f152bd</code> (17:44:48Z), and <code>dev</code>'s Docker image published at 17:15Z carries it; merged 2026-10-25</td>
 </tr>
 <tr>
-<td><strong>The runtime-requires gate's allowlist rule</strong>: every literal <code>require</code> in <code>server.js</code>, <code>bin/*.js</code> and <code>lib/</code> (except the browser-only <code>lib/client</code>, <code>lib/report</code> and <code>lib/report_plugins</code>) must be under <code>dependencies</code>; <code>webpack-dev-middleware</code> and <code>webpack-hot-middleware</code> are allowed only inside <code>lib/server/app.js</code>'s <code>NODE_ENV === 'development'</code> block</td>
-<td>the preparing session, 2026-10-22, as a conventional default for the maintainer to review (the allowlist covers the two development-only middlewares, each only inside the <code>NODE_ENV === 'development'</code> block)</td>
-<td><code>BFQ-176</code> (<code>tools/queue/gates/runtime-requires-declared.js</code>)</td>
-<td>its control refuses <code>v15.0.9</code> and a stray <code>require</code> outside the guard</td>
+<td><strong>The runtime-requires gate's allowlist rule</strong>: every literal <code>require</code> in <code>server.js</code>, <code>bin/*.js</code> and <code>lib/</code> (except the browser-only <code>lib/client</code>, <code>lib/report</code> and <code>lib/report_plugins</code>) must be under <code>dependencies</code>; <code>webpack</code>, <code>webpack-dev-middleware</code> and <code>webpack-hot-middleware</code> are allowed only inside <code>lib/server/app.js</code>'s <code>NODE_ENV === 'development'</code> block</td>
+<td>the preparing session, 2026-10-22, as a conventional default for the maintainer to review; <code>webpack</code> added 2026-10-25, because cut 2 makes it a devDependency required at <code>lib/server/app.js:340</code> inside that block</td>
+<td><code>BFQ-176</code>, <code>RT-2</code> (<code>tools/queue/gates/runtime-requires-declared.js</code>)</td>
+<td><code>dev</code> <code>2bc298b9</code> 41 checked, 0 failing; cut 2 <code>ee94b148</code> 32 checked, 0 failing; its control refuses <code>v15.0.9</code>, <code>eb72a1d3</code> and a stray <code>webpack-hot-middleware</code> or <code>webpack</code> require outside the guard</td>
 </tr>
 <tr>
 <td><strong>The lockfile refresh is redone on <code>dev</code> for 16.0.0</strong>: session -40's <code>wip/15.0.10-lockfile-refresh</code> <code>dbc4519f</code> was never pushed; the refresh is <code>deps/16.0.0-security-refresh</code> (<code>compression</code>, <code>follow-redirects</code>, <code>source-map-js</code>)</td>
 <td>2026-10-25</td>
 <td><code>BFQ-163</code></td>
-<td><code>341b843a</code>, #8835 (opened 2026-10-25)</td>
+<td>merged as #8835 (<code>a20469dc</code>), 2026-10-25</td>
 </tr>
 <tr>
-<td><strong><code>sanitize-html</code> 2.18 goes to <code>dev</code> as its own PR for 16.0.0, integrated as quickly as possible</strong></td>
+<td><strong><code>sanitize-html</code> 2.18 goes to <code>dev</code> for 16.0.0, integrated as quickly as possible</strong>, bundled into the dependency refresh PR (themed PRs) rather than a PR of its own</td>
 <td>maintainer, 2026-10-25</td>
 <td><code>BFQ-163</code></td>
-<td><code>deps/sanitize-html-2.18</code>, in flight; the stored-output difference is contents open item 2</td>
+<td>merged as 2.18.1 in #8835 (<code>0293d640</code>, <code>1eb986ad</code>); closes GHSA-x3q4, GHSA-cv27, GHSA-jxwj and GHSA-g8qq (GHSA-374f never applied to 2.17.5); its one stored-text change is in contents, For the release notes</td>
+</tr>
+<tr>
+<td><strong>Page-bundle budget option A</strong>: <code>ee94b148</code> keeps the earlier allowances, app 349000 and total 417000 gzip bytes, over the measurement on <code>b8ff91cb</code> (341123 and 412296, against 334513 and 405305 on <code>62a9476f</code>; the growth is #8831's modern theme, which every page loads in <code>bundle.app.js</code>)</td>
+<td>maintainer, 2026-10-25</td>
+<td><code>RT-2</code></td>
+<td>in #8837</td>
+</tr>
+<tr>
+<td><strong>Page-bundle budget option B as a follow-up</strong>: load the modern theme's code only when it is chosen, as a bundle or chunk of its own</td>
+<td>maintainer, 2026-10-25, for Andy Low</td>
+<td><code>RT-BUNDLE-THEME-SPLIT</code></td>
+<td>not started; owner Andy Low or the maintainer</td>
 </tr>
 </tbody>
 </table>
