@@ -304,7 +304,7 @@ Read 2026-10-26, 19:10Z. Every cut is merged ([Merge state](#merge-state)).
 | BF-72: a caller-supplied regular expression can hold the database for minutes | `bf/regex-limits`, in the private fork of its draft advisory | `1833ab00` on `dev` `04d435eb` | in the fork; no fork PR opened yet; owes a merge of `dev` | `BFQ-72` |
 | BF-161: a deeply nested pattern on three query endpoints makes that request fail | `bf/entries-pattern-limit`, in the private fork of its draft advisory | `d2c4df9f` on `dev` `04d435eb` | in the fork; no fork PR opened yet; owes a merge of `dev` | `BFQ-161` |
 | BF-191: a stored treatment can stop the server process, and keeps doing so after a restart | private, through the maintainer's advisory process | — | open in the register | `BFQ-191` |
-| BF-193: write paths log whole records | `bf/16.0.0-log-privacy` (local) | `8ae43eb4`, one commit on `dev` `47723cda` | ready to push, not pushed | `BFQ-193` |
+| BF-193: write paths log whole records | `bf/16.0.0-log-privacy`, **draft #8856** (the maintainer, base `dev`) | `8ae43eb4`, one commit on `dev` `47723cda` | draft PR opened 2026-10-26 | `BFQ-193` |
 | the re-send and merge contract: `ID-SIMPLE-MATCH`, Q1b (a `null` in an update removes the field), BF-195 (a stale profile pushed over the socket after a re-send) and the devicestatus `identifier` rule, one PR | `bf/16.0.0-null-removes` (local) | `cf2a2a67` on `dev` `47723cda`: Q1b `913d0895`, BF-195 `1bdce62c`, `ID-SIMPLE-MATCH` `8d0f9a22` merged (read from `git log`) | in progress; the devicestatus `identifier` rule is not yet on it (`8d0f9a22` replaces a stored status's fields; v3 still replaces) | `ID-SIMPLE-MATCH`, `WRITE-CONTRACT`, `BFQ-195` |
 
 **#8854** (read from its body and `git diff --stat official/dev...refs/triage/pr-8854`, 31 files,
@@ -487,7 +487,7 @@ unless reverted.
 Pushover and APNs delivery check (`RT-16-LIVE-ALARMS`); (b) a real-rig soak on `dev` (`RT-16-RIG-SOAK`);
 (c) the BF-72 and BF-161 fork fixes merged and published with 16.0.0 (`BFQ-72`, `BFQ-161`). None is met.
 BF-193 is not a pre-tag requirement; its fix shape is decided (debug-gated payload logging through
-`DEBUG_LOGGING`, [decisions](decisions.md)) and is ready to push as `bf/16.0.0-log-privacy` `8ae43eb4`.
+`DEBUG_LOGGING`, [decisions](decisions.md)) and is in draft PR #8856 (`bf/16.0.0-log-privacy` `8ae43eb4`).
 
 **Decisions open, with their owner:**
 

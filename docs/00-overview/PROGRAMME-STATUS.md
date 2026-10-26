@@ -174,7 +174,7 @@ cover more than one `BF-`:
 | `BFQ-188` | `not-started` | BF-188 - with no client bundle the server exits at boot with an unexplained module error |
 | `BFQ-190` | `merged-upstream` | BF-190 - an alarm on a page without a current reading cannot be silenced from the page |
 | `BFQ-191` | `in-progress` | BF-191 - a stored treatment can stop the server process, and keeps doing so after a restar |
-| `BFQ-193` | `ready-to-push` | BF-193 - the realtime socket and other write paths log every record written through them |
+| `BFQ-193` | `in-flight-upstream` | BF-193 - the realtime socket and other write paths log every record written through them |
 | `BFQ-194` | `needs-decision` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets  |
 | `BFQ-195` | `in-progress` | BF-195 - a stale profile is pushed over the socket after a profile re-send |
 | `BFQ-40` | `released` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
@@ -213,7 +213,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 8 |  | 3 | 1 | 1 | 1 | 12 | 15 | 2 | 1 |  |  | 3 | **47** |
-| `register-open` | 27 | 4 | 1 | 2 | 3 | 2 | 31 | 58 | 6 |  |  | 4 |  | **138** |
+| `register-open` | 27 | 4 | 1 | 1 | 3 | 3 | 31 | 58 | 6 |  |  | 4 |  | **138** |
 | `tenancy` | 8 | 1 |  | 1 | 13 |  |  |  | 7 | 3 | 1 |  |  | **34** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  |  | 11 |  |  |  | **19** |
 | `backfix2` |  |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |

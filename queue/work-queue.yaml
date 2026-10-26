@@ -3324,8 +3324,8 @@ items:
       - releases/cgm-remote-monitor-16.0.0/decisions.md
     notes: >
       2026-10-26, later (maintainer, session -66): BF-193's logging question
-      is decided (debug-gated payload logging through DEBUG_LOGGING; BFQ-193
-      ready to push), still not a pre-tag requirement. Q1b is decided for
+      is decided (debug-gated payload logging through DEBUG_LOGGING; BFQ-193,
+      draft PR #8856), still not a pre-tag requirement. Q1b is decided for
       16.0.0 (WRITE-CONTRACT, BFQ-195). Branch protection: master requires
       only Tests pass and one approving review, decided, the settings change
       owed by the maintainer (contents.md, Repository settings).
@@ -16483,8 +16483,8 @@ items:
     branch: bf/16.0.0-log-privacy
     base: official/dev@47723cda
     worktree: externals/work/crm-bf193
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8856]
     ships_to_operators_today: true
     blast_radius: >
       Log content only. New helper recordForLog in lib/server/log-privacy.js
@@ -16533,6 +16533,9 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-26, later: draft PR #8856 to dev (bf/16.0.0-log-privacy, head
+      8ae43eb4), opened by the maintainer.
+
       2026-10-26, later (maintainer): BF-193 stays its own PR, separate from
       the 16.0.0 re-send and merge bundle.
 
