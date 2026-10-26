@@ -143,20 +143,18 @@ harness cut 1 keeps is retired later under scope B (`RT-JSDOM-REST`, decided 202
 | 1 | `OID-STORAGE-HELPER` | One storage-level rule for writes by _id instead of six hand-written copies | `not-started` | &mdash; |
 | 1 | `OID-V3-EDIT-MERGE` | API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an  | `not-started` | &mdash; |
 | 1 | `OID-WS-EDIT-MERGE` | Websocket dbUpdate of a record stored twice by _id edits both copies and leaves  | `not-started` | &mdash; |
-| 1 | `RT-2` | Cut 2 - chore/build-runtime-separation | `in-flight-upstream` | &mdash; |
+| 1 | `RT-3` | Cuts 3+5 combined - dependency release | `blocked` | &mdash; |
 | 1 | `RT-BOOT-INDEX-AWAIT` | Boot awaits its collection and index creation before it reports ready | `in-progress` | &mdash; |
 | 1 | `RT-BOOTERROR` | BF-63 - the page that reports a boot error crashes on cut 4's boot errors | `gate-not-met` | &mdash; |
-| 1 | `RT-CI-DIAGONAL` | CI runs the Node x MongoDB diagonal, the no-database tiers on their own, a Tests | `in-flight-upstream` | &mdash; |
+| 1 | `RT-BUNDLE-THEME-SPLIT` | Load the modern theme's client code only when it is chosen (page-bundle budget o | `not-started` | &mdash; |
 | 1 | `RT-CONNECT-PIN-CUTS` | BF-65 - cuts 1-3 ship the leaking connector to upgraders first | `gate-not-met` | &mdash; |
 | 1 | `RT-JSDOM-REST` | Retire the whole-bundle jsdom harness that cut 1 keeps; secure-jsdom stays as th | `not-started` | &mdash; |
 | 1 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | &mdash; |
 | 1 | `RT-PR-8730` | #8730 - Crowdin translation updates, held out of 15.0.9 (BF-132) | `gate-not-met` | &mdash; |
-| 1 | `RT-REBASE` | Catch the cuts up with dev: cut 1 merged (#8828, 2026-10-25); cuts 2-5 are far b | `in-progress` | &mdash; |
+| 1 | `RT-REBASE` | Catch the cuts up with dev: cuts 1 and 2 merged (#8828, #8837, 2026-10-25); cuts | `in-progress` | &mdash; |
 | 2 | `MOD-WRITE-VALIDATION-READ` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | `needs-decision` | `MOD-WRITE-VALIDATION` |
 | 2 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then ret | `not-started` | `OID-PREVALENCE` |
-| 2 | `RT-3` | Cuts 3+5 combined - dependency release | `blocked` | `RT-2` |
-| 2 | `RT-BUNDLE-THEME-SPLIT` | Load the modern theme's client code only when it is chosen (page-bundle budget o | `not-started` | `RT-2` |
-| 3 | `RT-5` | Cut 4 - chore/mime-exposure-review, the one to slow down on | `blocked` | `RT-3` |
+| 2 | `RT-5` | Cut 4 - chore/mime-exposure-review, the one to slow down on | `blocked` | `RT-3` |
 
 <!-- END GENERATED: road-release-train -->
 

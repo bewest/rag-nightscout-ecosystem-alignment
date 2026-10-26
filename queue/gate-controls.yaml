@@ -793,6 +793,39 @@ controls:
       gate itself exits 0 against official/dev eb72a1d3.
 
   - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor af7ba73a official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor af7ba73a official/master
+    control-kind: static
+    proves: >
+      run 2026-10-25: official/master c6a0d8ed (15.0.9) does not contain
+      #8837's head af7ba73a (cut 2), and the same command reports it not-an-ancestor (exit 1); the
+      gate itself exits 0 against official/dev b29f1bf7.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7fd2415e official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7fd2415e official/master
+    control-kind: static
+    proves: >
+      run 2026-10-26: official/master c6a0d8ed (15.0.9) does not contain
+      #8843's head 7fd2415e (the CI diagonal), and the same command reports it not-an-ancestor (exit 1);
+      the gate itself exits 0 against official/dev 720e60de.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ad8a73e2 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ad8a73e2 official/master
+    control-kind: static
+    proves: >
+      run 2026-10-25: official/master c6a0d8ed (15.0.9) does not contain
+      #8839's head ad8a73e2 (the test tiers), and the same command reports it not-an-ancestor (exit 1);
+      the gate itself exits 0 against official/dev b29f1bf7.
+
+  - gate: |-
       git -C externals/cgm-remote-monitor-official show origin/chore/compose-mongodb6:.github/workflows/main.yml | grep -q "'22.23.2'" && git -C externals/cgm-remote-monitor-official show origin/chore/compose-mongodb6:.github/workflows/main.yml | grep -q "'24.20.0'"
     cwd: .
     control: |-
@@ -2487,18 +2520,6 @@ controls:
       run 2026-10-25: official/master c6a0d8ed (15.0.9) does not contain
       f7856a44 (#8838, RT-D3-SUITE), and the same command reports it not-an-ancestor (exit
       1); the gate itself exits 0 against official/dev 2bc298b9.
-
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev official/chore/build-runtime-separation >/dev/null
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev b6e8c7cd >/dev/null
-    control-kind: static
-    proves: >
-      the same trial merge with the published cut 2 b6e8c7cd, before its
-      catch-up merges of dev, which conflicts with dev (20 paths against
-      eb72a1d3; 21 against 2bc298b9, measured 2026-10-25), exits 1. b6e8c7cd
-      is a commit id, so the control cannot go stale when the branch moves.
 
   - gate: |-
       NODE_FLOOR_REF=official/chore/build-runtime-separation node tools/queue/gates/node-floor-consistency.js
