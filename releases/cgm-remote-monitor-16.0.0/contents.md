@@ -235,7 +235,7 @@ Branch heads as of 2026-10-26, 05:00Z (cut rows); 2026-10-25, 23:49Z (others). C
 |---|---|---|---|---|
 | cut 3: MongoDB driver 7, maintained jQuery UI widgets, native help tooltips, Compose `mongo:6.0.27`; BF-179 and BF-182 folded in | `chore/compose-mongodb6`, **#8844** to `dev` | `12d1f645` (dev `428b20b7` merged in) | open; pushed 2026-10-25/26; see [Modernization cuts: handoff](#modernization-cuts-handoff) | `RT-REBASE` |
 | cut 4: trusted proxies through one module, `mime-types`, moment-timezone 0.6, csv, semver 7, ESLint 10, webpack 5.110; BF-183 folded in | `chore/mime-exposure-review`, **#8847** (draft, based on `chore/compose-mongodb6`) | `99b6f68b` | open draft; pushed 2026-10-26 | `RT-5` |
-| cut 5: Express 5, Helmet 8, Pushover native client, notification caches, APNs 8, EJS 6, axios 1, Flot 4, Swagger UI 5 | `chore/nightscout-modernization`, **#8605** (AndyLow91) | catch-up in progress on local `wip/cut5-onto-16.0.0`; published head `b1bdaca0` | in progress | `RT-3` |
+| cut 5: Express 5, Helmet 8, Pushover native client, notification caches, APNs 8, EJS 6, axios 1, Flot 4, Swagger UI 5 | `chore/nightscout-modernization`, **#8605** (AndyLow91, base `dev`; retarget to `chore/mime-exposure-review` suggested) | `506cc41b` (fast-forward of `b1bdaca0`) | open; updated 2026-10-26 | `RT-3` |
 | BF-72: a caller-supplied regular expression can hold the database for minutes | `bf/regex-limits`, in the private fork of its draft advisory | `1833ab00` on `dev` `04d435eb` | in the fork; no fork PR opened yet; owes a merge of `dev` | `BFQ-72` |
 | BF-161: a deeply nested pattern on three query endpoints makes that request fail | `bf/entries-pattern-limit`, in the private fork of its draft advisory | `d2c4df9f` on `dev` `04d435eb` | in the fork; no fork PR opened yet; owes a merge of `dev` | `BFQ-161` |
 
@@ -301,13 +301,18 @@ test fail; with `TRUST_PROXY` unset, 15.0.9's address resolution (BF-88).
 |---|---|---|---|
 | 3 | `12d1f645` (#8844) | BF-182 (boot error page when driver 7 refuses the server), BF-179 (production-only install explains itself) | `npm test` 3838 / 0 / 4 on MongoDB 5.0.33, 7.0.43 and 8.0.34 at `8f238fc5`; 3877 / 0 / 4 on 8.0.34 at `12d1f645`; Chromium 579 / 1 and Firefox 580 / 0 at `12d1f645` (the 1: BF-192, from `dev`); the budget moves to 6.8 MB with #8843; MongoDB 4.2.24 gets the boot error page, 4.4.24 connects |
 | 4 | `99b6f68b` (#8847) | BF-183 (storage socket stops logging subscription credentials) | `npm test` 3887 / 0 / 4 on 5.0.33 and 8.0.34, and on 8.0.34 in America/Los_Angeles, at `32a3c0ac`; 3921 / 0 / 4 on 5.0.33 at `99b6f68b`; Chromium 591 / 1 (BF-192); `TRUST_PROXY` unset behind a TLS proxy answers 200, and 307-to-itself with cut 4's original default |
-| 5 | in progress | — | — |
+| 5 | `506cc41b` (#8605) | — | `npm test` 4045 / 0 / 3 on MongoDB 5.0.33 and 8.0.34, and on 8.0.34 in America/Los_Angeles; Chromium 638 / 1 (BF-192) and Firefox 639 / 0; reverting BF-70's refusal, the operator allowlist, Express 5 query preservation, a Pushover status check or the notification cache's expiry each fails its test; `TRUST_PROXY` unset behind a TLS proxy answers 200, 307-to-itself with the old default |
 
 Found by the merges and fixed on the branches: bson 7 `ObjectId`s carry own fields, so cut 2's query
 walker walked into them (cut 3, `5aa1e749`); `git` merged `dev`'s alarm-socket body into cut 4's
 handler signature, so every access-token alarm subscription would have thrown (cut 4, in the merge
 commit; the September rehearsal hit the same); two API sub-apps called a `compileTrust` that `dev`'s
-`client-ip.js` does not export, so the server would not boot (cut 4).
+`client-ip.js` does not export, so the server would not boot (cut 4). In cut 5, the merge deleted dev tests
+without a conflict where cut 5 had moved them (the profile editor defaults and empty-name tests, the
+chart-container height race and six quick-pick tests), all restored; body-parser 2.3.0 failed dev's
+HTTP middleware probe under Express 5 (lockfile 2.4.0, floor enforced by the dependency test); dev's
+ajv 8 and `mocha.diff` overrides were below cut 5's majors; and the jsdom shim's `atob` recursed once
+entities 8 loaded.
 
 **Remaining work, cut 3:** the modern theme's tooltip palette does not style the native tooltip;
 `views/index.html` and the service worker still load `css/jquery.tooltips.css`;
@@ -319,6 +324,15 @@ schema-utils ^4.6.0 and npm kept 4.3.3 (postinstall failed); the `terser-webpack
 longer matches anything; the Firefox editor-time probe step lacks `HOME: /root`, and the lint step's
 condition was fixed, both to be confirmed in CI; the spring-gap basal selection is an open discrepancy
 in `tests/timezone-modernization.test.js`.
+
+**Remaining work, cut 5:** live checks this programme cannot do without real credentials: a
+Pushover emergency alarm's send, acknowledgement and cancel (the native client posts the cancel; whether
+the old GET was ever accepted is unknown), notification de-duplication and receipts over a real
+15-minute window, a Loop APNs remote command to a phone, and IFTTT Maker under Express 5; the CORS
+preflight now answers `200` as JSON instead of the text `OK` (`res.sendStatus(200)` would restore it);
+`js-yaml` is declared as a devDependency so webpack-cli 7's optional peer resolves; the
+`istanbul-lib-processinfo.uuid` override no longer applies; dev's `TRUST_PROXY` notes still compare
+against cut 5's unadopted `395f3207`.
 
 **Across the cuts:** WebKit and the Node 22.23.4 floor were not run locally (CI runs them, but see the
 browser row in [Known defects](#known-defects-on-dev-now)); BF-07's `getDataRef` caller in
