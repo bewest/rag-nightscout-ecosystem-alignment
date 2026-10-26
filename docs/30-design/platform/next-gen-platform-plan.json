@@ -350,10 +350,10 @@
    "id": "REG-S0",
    "track": "registration",
    "phase": "now",
-   "state": "done",
+   "state": "review",
    "short": "Catalogue, read-only",
    "title": "GET /.well-known/nightscout/sync and /.well-known/nightscout/controllers serving the shipped catalogue, behind CONTROLLER_REGISTRATION, off by default; built, part of the single-tenant registration PR",
-   "ref": "feat/registration-catalogue (6d17aedc, local)",
+   "ref": "#8857 (draft, 6c67ddfc)",
    "spec": [
     {
      "label": "registration §4",
@@ -363,13 +363,14 @@
    "check": "4 conformance cases pass, 184 not applicable by name; flag off is byte-identical to dev",
    "depends": [
     "REG-SPECS"
-   ]
+   ],
+   "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8857"
   },
   {
    "id": "REG-S1",
    "track": "registration",
    "phase": "now",
-   "state": "done",
+   "state": "review",
    "short": "Submit and store",
    "title": "The product resource: submit, etag, retire; MongoDB collections; single mode with API_SECRET or a subject's token",
    "spec": [
@@ -382,13 +383,14 @@
    "depends": [
     "REG-S0"
    ],
-   "ref": "feat/registration-catalogue (67071573, local)"
+   "ref": "#8857 (draft, 6c67ddfc)",
+   "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8857"
   },
   {
    "id": "REG-S2",
    "track": "registration",
    "phase": "now",
-   "state": "decision",
+   "state": "progress",
    "short": "Instances and leases",
    "title": "Content-addressed definitions and leased instances; channels, roles and provenance",
    "spec": [
@@ -400,7 +402,8 @@
    "check": "the instance conformance cases",
    "depends": [
     "REG-S1"
-   ]
+   ],
+   "ref": "in progress for #8857: one holder document per (scope, channel, role)"
   },
   {
    "id": "REG-S5",
@@ -420,7 +423,8 @@
     "REG-S1",
     "REG-S2"
    ],
-   "ref": "feat/registration-catalogue (6c67ddfc, local): product half"
+   "ref": "#8857: product half at 6c67ddfc; instance half in progress",
+   "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8857"
   },
   {
    "id": "REG-S3",
@@ -560,33 +564,6 @@
   }
  ],
  "decisions": [
-  {
-   "id": "D-REG-EXCL",
-   "short": "How one holder per role is enforced",
-   "owner": "maintainer",
-   "question": "Registration S2 grants each (channel, role) to one live device instance. Two instance documents can each be granted it under a per-instance conditional update, so racing claimants are not stopped. Which storage mechanism holds the invariant on MongoDB (and later PostgreSQL)?",
-   "holds": [
-    "REG-S2"
-   ],
-   "options": [
-    {
-     "label": "A holder document per (scope, channel, role)",
-     "recommended": true,
-     "gains": "one document decides each grant; claim, renewal, expiry, block, retire and rebind each become one conditional write on it; maps to a primary key on PostgreSQL",
-     "risks": "a second collection whose holders must be voided when a product is blocked or retired or rebound"
-    },
-    {
-     "label": "A partial unique index on live instances",
-     "gains": "no extra collection",
-     "risks": "lease expiry is time-based, which an index filter cannot express; an expired holder blocks the role until something sweeps it"
-    },
-    {
-     "label": "A per-product lock document around each grant",
-     "gains": "simple to reason about",
-     "risks": "serialises every instance write of a product; a lost lock needs its own expiry"
-    }
-   ]
-  },
   {
    "id": "D-SEAM",
    "short": "How the seam reaches dev",
