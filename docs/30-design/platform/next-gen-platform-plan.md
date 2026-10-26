@@ -98,7 +98,7 @@ The rules are in the [identity specification](spec/identity.md) and the [identif
 |---|---|---|---|
 | REG-S0 | capability document and catalogue, read-only, flag off by default (built) | specs | schema validation; flag off is byte-identical to dev |
 | REG-S1 | submit, etag, retire; MongoDB store; single mode (built: 25 of 32 cases pass, 6 mapped, 1 not applicable) | REG-S0 | negotiation conformance cases against a booted server |
-| REG-S2 | definitions, leased instances, channels and roles | REG-S1 | instance conformance cases |
+| REG-S2 | definitions, leased instances, channels and roles; instances on one flat root, `/api/v4/instances/{instanceId}` (decided 2026-10-26) | REG-S1 | instance conformance cases |
 | REG-S5 | owner actions on a single-tenant site with `API_SECRET` | REG-S1, REG-S2 | owner-action conformance cases |
 | REG-S3 | typed writes and read selection | REG-S2, WC-STEP-PATCH, SPEC-ID-AMEND | unregistered writers byte-identical |
 | REG-S4 | projected views for older readers | REG-S3 | projection cases |

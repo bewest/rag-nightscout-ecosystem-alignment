@@ -394,7 +394,7 @@
    "phase": "now",
    "state": "review",
    "short": "Instances and leases",
-   "title": "Content-addressed definitions and leased instances; channels, roles and provenance",
+   "title": "Content-addressed definitions and leased instances; channels, roles and provenance. Instances on one flat root (maintainer, 2026-10-26): PUT and DELETE /api/v4/instances/:instanceId with the product named in the body, GET /api/v4/instances for the owner's listing; the per-product instance routes are removed, not aliased",
    "spec": [
     {
      "label": "registration §7–§9",
@@ -405,7 +405,7 @@
    "depends": [
     "REG-S1"
    ],
-   "ref": "#8857 (draft, 3be98536): one holder document per (scope, channel, role); conformance 35 passed, 88 mapped, 0 failed",
+   "ref": "#8857 (draft, 3be98536): one holder document per (scope, channel, role); conformance 35 passed, 88 mapped, 0 failed. Flat-instances head 6a5355e2 built and gated (npm test 4472 passing, 0 failing, 3 pending, with dev 7ad3a67f merged in); the maintainer pushes it as a fast-forward",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8857"
   },
   {
@@ -426,7 +426,7 @@
     "REG-S1",
     "REG-S2"
    ],
-   "ref": "#8857 (draft, 3be98536): product and instance halves",
+   "ref": "#8857 (draft, 3be98536): product and instance halves; the instance listing moves to GET /api/v4/instances at 6a5355e2",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8857"
   },
   {
