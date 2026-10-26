@@ -55,6 +55,13 @@ info:
 
     Fields carry `x-aid-evidence` pointing at the census record that
     justifies them. Re-derive with `make schema`.
+
+    ## Not in this file
+
+    `EntryExtended` (`sourceCalibration`, `sensorId`, `transmitterId`, and a
+    copy of `trendRate`, which `Entry` declares) was a 2026 proposal; none of
+    its other fields appears in the 2026-04 corpus. It moved to
+    `aid-alignment-extensions.yaml` on 2026-10-26.
     
   contact:
     name: AID Alignment Workspace
@@ -435,44 +442,3 @@ components:
           type: boolean
           default: false
           description: Lock document permanently (HTTP 422 on modify attempts)
-
-    # Extension schemas for 2026 alignment
-    EntryExtended:
-      allOf:
-        - $ref: '#/components/schemas/Entry'
-        - type: object
-          properties:
-            sourceCalibration:
-              type: string
-              description: |
-                2026 Extension: Calibration algorithm used.
-                Addresses GAP-CGM-001 (calibration provenance not tracked).
-              enum:
-                - native
-                - xdrip_native
-                - xdrip_oop
-                - libre_oop
-                - g6_native
-              x-aid-2026: true
-              x-aid-gap: GAP-CGM-001
-            sensorId:
-              type: string
-              description: |
-                2026 Extension: Unique sensor session identifier.
-                Enables grouping readings by sensor session.
-              x-aid-2026: true
-              x-aid-gap: GAP-CGM-002
-            transmitterId:
-              type: string
-              description: |
-                2026 Extension: CGM transmitter identifier.
-                For Dexcom G6/G7, Libre with transmitter.
-              x-aid-2026: true
-              x-aid-gap: GAP-CGM-003
-            trendRate:
-              type: number
-              description: |
-                2026 Extension: Numeric rate of change (mg/dL/min).
-                More precise than direction string.
-              x-aid-2026: true
-              x-aid-gap: GAP-ENTRY-003

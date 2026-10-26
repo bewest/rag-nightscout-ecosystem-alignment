@@ -154,6 +154,12 @@ components:
           description: |
             ID of override this one superseded.
             Creates linked list of override history.
+            Also declared on `Override` in `aid-treatments-2025.yaml` until
+            2026-10-26, when it moved here.
+          x-aid-superseded-by: >-
+            state-intent S3 (`supersedes` is declared once per intent kind, not
+            carried per record) and A7 (supersession by start),
+            docs/30-design/platform/spec/state-intent.md
         supersededBy:
           type: string
           description: ID of override that superseded this one
@@ -597,6 +603,124 @@ components:
           type: string
           enum: [mg/dL, mmol/L]
           default: mg/dL
+
+    # =========================================================================
+    # MOVED FROM THE DE FACTO 2025 SPECS (2026-10-26)
+    # =========================================================================
+
+    EntryExtended:
+      description: |
+        Moved from `aid-entries-2025.yaml` on 2026-10-26: a 2026 proposal, not
+        part of the de facto `entries` document.
+      x-aid-superseded-by: >-
+        records R1 (a reading decomposes to the SensorGlucose primitive) and
+        registration G2 (a writer's own fields are typed extension declarations),
+        docs/30-design/platform/spec/
+      allOf:
+        - $ref: 'aid-entries-2025.yaml#/components/schemas/Entry'
+        - type: object
+          properties:
+            sourceCalibration:
+              type: string
+              description: |
+                2026 Extension: Calibration algorithm used.
+                Addresses GAP-CGM-001 (calibration provenance not tracked).
+              enum:
+                - native
+                - xdrip_native
+                - xdrip_oop
+                - libre_oop
+                - g6_native
+              x-aid-2026: true
+              x-aid-gap: GAP-CGM-001
+            sensorId:
+              type: string
+              description: |
+                2026 Extension: Unique sensor session identifier.
+                Enables grouping readings by sensor session.
+              x-aid-2026: true
+              x-aid-gap: GAP-CGM-002
+            transmitterId:
+              type: string
+              description: |
+                2026 Extension: CGM transmitter identifier.
+                For Dexcom G6/G7, Libre with transmitter.
+              x-aid-2026: true
+              x-aid-gap: GAP-CGM-003
+            trendRate:
+              type: number
+              description: |
+                2026 Extension: Numeric rate of change (mg/dL/min).
+                More precise than direction string.
+              x-aid-2026: true
+              x-aid-gap: GAP-ENTRY-003
+
+    ProfileExtended:
+      description: |
+        Moved from `aid-profile-2025.yaml` on 2026-10-26: a 2026 proposal, not
+        part of the de facto `profile` document.
+      x-aid-superseded-by: >-
+        records R5 (settings are an effective-dated snapshot) and state-intent S2
+        and S8 (each intent kind is declared, with its initiators),
+        docs/30-design/platform/spec/
+      allOf:
+        - $ref: 'aid-profile-2025.yaml#/components/schemas/Profile'
+        - type: object
+          description: |
+            2026 Extension: Enhanced profile model with intent tracking.
+            Addresses GAP-002 and Profile Model Evolution proposal.
+          properties:
+            intent:
+              type: string
+              enum:
+                - switch
+                - percentage_adjustment
+                - time_shift
+                - temporary_modification
+              description: |
+                2026 Extension: Semantic intent of profile change.
+                Addresses ProfileSwitch vs Override confusion.
+              x-aid-2026: true
+              x-aid-gap: GAP-002
+            baseProfile:
+              type: string
+              description: |
+                2026 Extension: Name of base profile being modified.
+                Distinguishes modified profile from new profile.
+              x-aid-2026: true
+            modifiers:
+              type: object
+              description: |
+                2026 Extension: Active modifiers on base profile.
+              x-aid-2026: true
+              properties:
+                percentage:
+                  type: integer
+                  description: Percentage adjustment (100 = normal)
+                timeShiftHours:
+                  type: integer
+                  description: Schedule shift in hours
+                targetOverride:
+                  type: object
+                  properties:
+                    low:
+                      type: number
+                    high:
+                      type: number
+                isfMultiplier:
+                  type: number
+                  description: ISF adjustment multiplier
+            source:
+              type: string
+              enum: [prescribed, user, controller, caregiver]
+              description: |
+                2026 Extension: Who set this profile.
+              x-aid-2026: true
+            authority:
+              type: string
+              description: |
+                2026 Extension: System with authority over profile.
+              x-aid-2026: true
 
     # =========================================================================
     # COMPOSITE: FULL ALIGNED TREATMENT

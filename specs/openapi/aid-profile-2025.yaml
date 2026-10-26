@@ -66,6 +66,12 @@ info:
     Fields carry `x-aid-evidence` pointing at the census record that
     justifies them. Re-derive with `make schema`.
 
+    ## Not in this file
+
+    `ProfileExtended` (`intent`, `baseProfile`, `modifiers`, `source`,
+    `authority`) was a 2026 proposal; none of its fields appears in the
+    2026-04 corpus. It moved to `aid-alignment-extensions.yaml` on 2026-10-26.
+
   contact:
     name: AID Alignment Workspace
   license:
@@ -542,66 +548,3 @@ components:
         created_at:
           type: string
           format: date-time
-
-    # =========================================================================
-    # 2026 EXTENSION: PROFILE MODEL EVOLUTION
-    # =========================================================================
-    ProfileExtended:
-      allOf:
-        - $ref: '#/components/schemas/Profile'
-        - type: object
-          description: |
-            2026 Extension: Enhanced profile model with intent tracking.
-            Addresses GAP-002 and Profile Model Evolution proposal.
-          properties:
-            intent:
-              type: string
-              enum:
-                - switch
-                - percentage_adjustment
-                - time_shift
-                - temporary_modification
-              description: |
-                2026 Extension: Semantic intent of profile change.
-                Addresses ProfileSwitch vs Override confusion.
-              x-aid-2026: true
-              x-aid-gap: GAP-002
-            baseProfile:
-              type: string
-              description: |
-                2026 Extension: Name of base profile being modified.
-                Distinguishes modified profile from new profile.
-              x-aid-2026: true
-            modifiers:
-              type: object
-              description: |
-                2026 Extension: Active modifiers on base profile.
-              x-aid-2026: true
-              properties:
-                percentage:
-                  type: integer
-                  description: Percentage adjustment (100 = normal)
-                timeShiftHours:
-                  type: integer
-                  description: Schedule shift in hours
-                targetOverride:
-                  type: object
-                  properties:
-                    low:
-                      type: number
-                    high:
-                      type: number
-                isfMultiplier:
-                  type: number
-                  description: ISF adjustment multiplier
-            source:
-              type: string
-              enum: [prescribed, user, controller, caregiver]
-              description: |
-                2026 Extension: Who set this profile.
-              x-aid-2026: true
-            authority:
-              type: string
-              description: |
-                2026 Extension: System with authority over profile.
-              x-aid-2026: true

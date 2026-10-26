@@ -65,6 +65,12 @@ info:
     Fields carry `x-aid-evidence` pointing at the census record that
     justifies them. Re-derive with `make schema`.
 
+    ## Not in this file
+
+    `Override.supersedes` was a 2026 proposal; it appears in no document of
+    the 2026-04 corpus. It moved to `aid-alignment-extensions.yaml`
+    (`OverrideLifecycle.supersedes`) on 2026-10-26.
+
   contact:
     name: AID Alignment Workspace
   license:
@@ -594,13 +600,6 @@ components:
                 Loop: overallInsulinNeedsScaleFactor
                 AAPS: Uses profile percentage instead
                 Trio: Uses oref1 profile percentage
-            supersedes:
-              type: string
-              description: |
-                2026 Extension: ID of override this supersedes.
-                Addresses GAP-001 (override supersession tracking).
-              x-aid-2026: true
-              x-aid-gap: GAP-001
 
     # SMB-specific identification helper
     SMBIdentification:
