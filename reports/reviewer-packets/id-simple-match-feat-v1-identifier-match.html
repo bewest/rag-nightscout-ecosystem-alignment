@@ -1638,6 +1638,8 @@
       
         
       
+        
+      
     
     
     
@@ -1735,6 +1737,34 @@
     
   
     Bfq 161 bf entries pattern limit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bfq-193-bf-16-0-0-log-privacy.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bfq 193 bf 16 0 0 log privacy
   
 
     
@@ -3154,7 +3184,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-26 at <code>7552b87f1</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>4fcb76f23</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3206,8 +3236,10 @@ simple contract)</strong></p>
 lib/server/entries.js upsertQueryFor (301-319 at fade2299): match identifier
 first, as treatments do, then sysTime+type. lib/server/devicestatus.js create
 (92-172 at fade2299; insertMany unordered after #8758's withoutStoredIds at
-57-90): a status carrying identifier is upserted on it, the rest are inserted
-as today. Tests for both. No change to treatments, API v3 or the websocket.</p>
+57-90): a status whose identifier is already stored writes nothing and is
+answered with the stored _id (decided 2026-10-26; 8d0f9a22 replaces the stored
+status's fields, so the bundle changes it), the rest are inserted as today.
+Tests for both. No change to treatments, API v3 or the websocket.</p>
 <h2 id="why-that-semver">Why that semver<a class="headerlink" href="#why-that-semver" title="Permanent link">&para;</a></h2>
 <p>Versioning policy section 2, question 10: the same write stores a different
 set of records (a re-send that today adds a second entry or devicestatus
@@ -3245,7 +3277,22 @@ off dev or deleted.</p>
 <li><a href="../../docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.html"><code>docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md</code></a></li>
 </ul>
 <h2 id="notes-carried-on-the-item">Notes carried on the item<a class="headerlink" href="#notes-carried-on-the-item" title="Permanent link">&para;</a></h2>
-<p>2026-10-26: built as feat/v1-identifier-match 8d0f9a22 (one commit over dev
+<p>2026-10-26, later (maintainer, via session -66): (a) D-ID-FALLBACK decided:
+for 16.0.0 a v1 entries re-send whose identifier matches nothing still matches
+on sysTime+type, as today (TEST-ENTRY-UUID-003); treatments never fall back;
+to be revisited once identifiers are common. (b) A devicestatus re-send whose
+identifier is already stored writes nothing (no merge, no new record, no
+srvModified change) and the reply carries the stored _id, on API v1 and v3;
+v3, which today replaces and moves srvModified, is aligned in the same PR. (c)
+This item ships in one 16.0.0 re-send and merge PR with Q1b, BF-195 and (b),
+on bf/16.0.0-null-removes (Q1b head 1bdce62c; bundle in progress). Evidence
+for (b): the devicestatus study of 2026-10-26, reproduced on dev 47723cda and
+8d0f9a22; client survey read-derived: no client sends an identifier on any
+devicestatus path (Loop's remote overrides travel as treatments and push
+notifications). 2026-10-26: carries the API v1 half of ID-CLIENT-OID-DECISION
+(the Loop reply's simple contract: whether a client may create its own
+ObjectId as _id over v1); the API v3 half is decided (BF-170, identity I2).
+2026-10-26: built as feat/v1-identifier-match 8d0f9a22 (one commit over dev
 47723cda; lib/server/entries.js +84/-8, lib/server/devicestatus.js +97, two
 test files), not pushed. A re-sent identifier updates the stored record; an
 identifier miss still falls back to sysTime+type for entries (status quo,

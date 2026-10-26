@@ -5833,7 +5833,7 @@
 </tr>
 <tr>
 <td>SPEC-ID-AMEND</td>
-<td>identity I2 and §6 amended for API v3's refusal of a client <code>_id</code> (BF-170); a conformance case for the mandatory identifier on registered instances</td>
+<td>a conformance case for the mandatory identifier on registered instances; identity I2 and §6 state API v3's refusal of a client <code>_id</code> (BF-170)</td>
 <td>#8845</td>
 <td><code>tools/nsschema</code> cases</td>
 </tr>
@@ -5954,7 +5954,8 @@
 <p>The decisions D1–D20 are in the <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a>. Single-tenant on MongoDB stays first-class (D1, D4). Every tenancy item ships behind <code>TENANCY_MODE=multi</code>.</p>
 <h2 id="6-open-decisions">6. Open decisions<a class="headerlink" href="#6-open-decisions" title="Permanent link">&para;</a></h2>
 <p>Select <strong>Show on the map</strong> on a card to see which items it holds up.</p>
-<p>Decided 2026-10-26: an explicit null removes a field on merge-on-match and API v3 PATCH (RFC 7386), never on PUT or create, and devicestatus never merges; in 16.0.0, in one shared merge helper.</p>
+<p>Decided 2026-10-26: an explicit null removes a field on merge-on-match, API v3 PATCH and the socket's <code>dbUpdate</code> (RFC 7386; <a href="../tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-10-12">write contract §6.1</a>), never on PUT or create, and devicestatus never merges; in 16.0.0, in one shared merge helper.</p>
+<p>Decided 2026-10-26 (D-ID-FALLBACK): for 16.0.0 a v1 entries re-send whose identifier matches nothing still matches on <code>sysTime</code>+<code>type</code>, as today (TEST-ENTRY-UUID-003); treatments never fall back; revisited once identifiers are common. A devicestatus re-send whose identifier is stored writes nothing and is answered with the stored <code>_id</code>, on v1 and v3.</p>
 <p>Decided 2026-10-26: #8854 lands in 16.0.0 after four alignment conditions (outcome B in its <a href="../modernization/pr-8854-alignment-2026-10-26.html">brief</a>): a per-item socket reply or no socket validation yet, the data-warnings header off or held, the commit event marked internal and unstable, and a separate name for the intent layer.</p>
 <!-- chart: decisions -->
 

@@ -3099,7 +3099,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-26 at <code>a121b57ec</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>3e609f77d</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3138,19 +3138,19 @@
 <tbody>
 <tr>
 <td>items</td>
-<td>294</td>
+<td>295</td>
 </tr>
 <tr>
 <td>runnable gates</td>
-<td>367</td>
+<td>353</td>
 </tr>
 <tr>
 <td>explicit <code>no-gate:</code> markers</td>
-<td>323</td>
+<td>334</td>
 </tr>
 </tbody>
 </table>
-<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 323 of the 690 gate slots in this queue are in that state.</p>
+<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 334 of the 687 gate slots in this queue are in that state.</p>
 <h3 id="claimed-state-not-a-measurement----run-make-queue-status">Claimed state (NOT a measurement -- run <code>make queue-status</code>)<a class="headerlink" href="#claimed-state-not-a-measurement----run-make-queue-status" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3163,13 +3163,13 @@
 <tbody>
 <tr>
 <td><code>not-started</code></td>
-<td>62</td>
-<td>RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-193, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS</td>
+<td>61</td>
+<td>RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS</td>
 </tr>
 <tr>
 <td><code>in-progress</code></td>
-<td>6</td>
-<td>BFQ-178, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY</td>
+<td>7</td>
+<td>BFQ-178, ID-CONVENTIONS, BFQ-191, BFQ-195, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY</td>
 </tr>
 <tr>
 <td><code>gate-not-met</code></td>
@@ -3188,8 +3188,8 @@
 </tr>
 <tr>
 <td><code>in-flight-upstream</code></td>
-<td>3</td>
-<td>ARCH-8854, BFQ-72, BFQ-161</td>
+<td>4</td>
+<td>ARCH-8854, BFQ-72, BFQ-161, BFQ-193</td>
 </tr>
 <tr>
 <td><code>merged-upstream</code></td>
@@ -3309,8 +3309,9 @@
 <li><strong>BFQ-188</strong> BF-188 - with no client bundle the server exits at boot with an unexplained module error</li>
 <li><strong>BFQ-190</strong> BF-190 - an alarm on a page without a current reading cannot be silenced from the page</li>
 <li><strong>BFQ-191</strong> BF-191 - a stored treatment can stop the server process, and keeps doing so after a restart (mechanism only)</li>
-<li><strong>BFQ-193</strong> BF-193 - the realtime socket logs every record written through it</li>
+<li><strong>BFQ-193</strong> BF-193 - the realtime socket and other write paths log every record written through them</li>
 <li><strong>BFQ-194</strong> BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL</li>
+<li><strong>BFQ-195</strong> BF-195 - a stale profile is pushed over the socket after a profile re-send</li>
 <li><strong>RT-PR-8815</strong> #8815 - a bearer token whose subject was deleted is refused instead of stopping the server (awss1i; BF-171, fixes #8225), merged for 15.0.9</li>
 <li><strong>BFQ-134</strong> BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open</li>
 <li><strong>BFQ-129</strong> BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500</li>
@@ -3347,7 +3348,7 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <td><code>released</code></td>
 <td><code>bf/alarms</code></td>
 <td>minor</td>
-<td>9 run + 3 no-gate</td>
+<td>5 run + 4 no-gate</td>
 </tr>
 <tr>
 <td><code>P0-B</code></td>
@@ -3363,7 +3364,7 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <td><code>released</code></td>
 <td><code>bf/auth</code></td>
 <td>major</td>
-<td>4 run + 3 no-gate</td>
+<td>3 run + 4 no-gate</td>
 </tr>
 <tr>
 <td><code>P0-J</code></td>
@@ -3371,7 +3372,7 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <td><code>released</code></td>
 <td><code>bf/throttle</code></td>
 <td>patch</td>
-<td>5 run + 2 no-gate</td>
+<td>5 run + 3 no-gate</td>
 </tr>
 <tr>
 <td><code>P0-C-REMEDIATE</code></td>
@@ -3387,7 +3388,7 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <td><code>released</code></td>
 <td><code>bf/coercion</code></td>
 <td>minor</td>
-<td>7 run + 1 no-gate</td>
+<td>5 run + 2 no-gate</td>
 </tr>
 <tr>
 <td><code>P0-E</code></td>
@@ -3395,7 +3396,7 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <td><code>released</code></td>
 <td><code>bf/reads</code></td>
 <td>major</td>
-<td>10 run + 5 no-gate</td>
+<td>6 run + 6 no-gate</td>
 </tr>
 <tr>
 <td><code>P0-F</code></td>
@@ -3411,7 +3412,7 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <td><code>released</code></td>
 <td><code>bf/food</code></td>
 <td>minor</td>
-<td>6 run + 1 no-gate</td>
+<td>5 run + 2 no-gate</td>
 </tr>
 <tr>
 <td><code>P0-H</code></td>
@@ -3419,7 +3420,7 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <td><code>released</code></td>
 <td><code>bf/merge</code></td>
 <td>patch</td>
-<td>5 run + 2 no-gate</td>
+<td>5 run + 3 no-gate</td>
 </tr>
 <tr>
 <td><code>P0-I</code></td>
@@ -3427,7 +3428,7 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <td><code>released</code></td>
 <td><code>bf/parms</code></td>
 <td>patch</td>
-<td>6 run + 1 no-gate</td>
+<td>5 run + 2 no-gate</td>
 </tr>
 <tr>
 <td><code>P0-K</code></td>
@@ -3435,7 +3436,7 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <td><code>released</code></td>
 <td><code>bf/operators</code></td>
 <td>minor</td>
-<td>7 run + 2 no-gate</td>
+<td>4 run + 3 no-gate</td>
 </tr>
 <tr>
 <td><code>P0-TAG</code></td>
@@ -3467,7 +3468,7 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <td><code>released</code></td>
 <td><code>bf/connect-pin-0.1.0-exact</code></td>
 <td>n/a</td>
-<td>2 run</td>
+<td>2 run + 1 no-gate</td>
 </tr>
 <tr>
 <td><code>P0-PUBLISH</code></td>
@@ -3571,17 +3572,10 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <li>Containment: this tip is an ancestor of origin/dev, so the fix is in dev (PR #8739, merged 2026-09-20) and cannot silently leave it. An upstream revert or force-push turns it red.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/alarms &gt;/dev/null</code></li>
 <li>trial-merge into origin/dev is conflict-free</li>
-<li><code>[unit]</code> <em>(cwd: <code>externals/work/crm-bf-alarms</code>)</em> <code>TEST=insulinage npm run test-single</code></li>
-<li>BF-28, measured. 5 passing. Ablated: with lib/plugins/insulinage.js put back to origin/dev the same file gives 3 passing / 2 failing. Database-free: re-run with the mongo URL pointed at a dead port, still 5 passing.</li>
-<li><code>[unit]</code> <em>(cwd: <code>externals/work/crm-bf-alarms</code>)</em> <code>TEST=plugins npm run test-single</code></li>
-<li>BF-29, measured. 13 passing. Ablated: with lib/plugins/index.js put back to origin/dev the same file gives 5 passing / 8 failing. Database-free.</li>
-<li><code>[integration]</code> <em>(cwd: <code>externals/work/crm-bf-alarms</code>)</em> <code>TEST=api.alexa npm run test-single</code></li>
-<li>BF-31, the branch's own test for the locale removal. 4 passing, measured 2026-09-16. Needs a mongod on port 27034 (named by crm-bf-alarms' my.test.env). Ablated: lib/api/alexa/index.js restored to origin/dev gives 3 passing / 1 failing.</li>
-<li><code>[integration]</code> <em>(cwd: <code>externals/work/crm-bf-alarms</code>)</em> <code>TEST=api.googlehome npm run test-single</code></li>
-<li>BF-31's sibling. 2 passing, measured 2026-09-16 on the same mongod. Ablated: lib/api/googlehome/index.js restored to origin/dev gives 1 passing / 1 failing.</li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7a5561f4 official/master</code></li>
+<li>official/master (the released 15.0.9 and later) contains 7a5561f4 (#8739's merge). Red if master is rewritten without it.</li>
+<li><strong>NO GATE</strong> &mdash; The branch-level test gates that ran in externals/work/crm-bf-alarms were retired on 2026-10-26: that worktree was removed after the fix was released in 15.0.9. Every test file those gates named is on official/master (checked 2026-10-26), so the released tree's suite carries them; the containment gate above replaces the gates.</li>
 <li><strong>NO GATE</strong> &mdash; <code>npm run test:unit</code> is not a gate here because it asserts less than it looks like. It resolves to a 44-file brace list, it needs MongoDB (verifyauth x4 and API_SECRET x2 fail without it even on pristine dev), and tests/api.alexa.test.js and tests/api.googlehome.test.js - two of the four files this branch adds - are in neither local script. CI's <code>test-ci</code> runs all 159 files and does cover them; a gate that mirrors the local script is weaker than CI, not equal to it.</li>
-<li><code>[static]</code> <code>test -f externals/work/crm-bf-alarms/node_modules/.cache/_ns_cache/public/js/bundle.app.js</code></li>
-<li>The worktree has its client bundle. Without it the suite shows an extra test failure that looks like a defect and is not. This tests a LOCAL build product, not the branch: it goes red in any fresh worktree or after <code>npm ci</code>, and <code>npm run bundle</code> in that worktree clears it.</li>
 <li><strong>NO GATE</strong> &mdash; Nothing exercises the ENABLE warning through a booted plugin registry. GT4 had to hand-reconstruct the plugin-name list to test it, and a reconstructed registry is not the registry. Needs a boot-level test.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5dcf783fdbb20188c378d79121dcbe860425eede origin/dev</code></li>
 <li>containment: the measured tip of bf/alarms is in origin/dev, so the merge carried it. Holds after the branch moves or is deleted; reads local remote-tracking refs, so fetch origin first.</li>
@@ -3718,10 +3712,9 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <li>bf/auth ships inside PR #8754 (bf2/auth-hardening, queue BF2-AUTH): its tip is contained in #8754's head, or in origin/dev once #8754 merges. Needs <code>git -C externals/cgm-remote-monitor-official fetch origin</code> first.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/auth &gt;/dev/null</code></li>
 <li>trial-merge into origin/dev is conflict-free</li>
-<li><code>[static]</code> <em>(cwd: <code>externals/work/crm-bf-auth</code>)</em> <code>grep -nE "console\\.log\\('Loading',[[:space:]]*opts\\)" lib/authorization/storage.js &amp;&amp; exit 1 || exit 0</code></li>
-<li>Regression guard for BF-05's sibling: a per-request debug print of request-derived values, <code>console.log('Loading',opts)</code> in storage.js. The pattern is whitespace-tolerant on purpose - the code has no space after the comma, and a pattern requiring one never matches, which makes the gate pass on a false property. Do not narrow it. Green because commit 56ed29d2 removed the line from bf/auth (maintainer's choice, 2026-09-16), not because the pattern was weakened.</li>
-<li><code>[integration]</code> <em>(cwd: <code>externals/work/crm-bf-auth</code>)</em> <code>TEST=authsubjects npm run test-single</code></li>
-<li>BF-17. Not in either local script. 8 passing with MongoDB; 1 passing / 7 failing with the fix ablated.</li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ce82f0cd official/master</code></li>
+<li>official/master (the released 15.0.9 and later) contains ce82f0cd (bf/auth's content commit, shipped through #8754). Red if master is rewritten without it.</li>
+<li><strong>NO GATE</strong> &mdash; The branch-level test gates that ran in externals/work/crm-bf-auth were retired on 2026-10-26: that worktree was removed after the fix was released in 15.0.9. Every test file those gates named is on official/master (checked 2026-10-26), so the released tree's suite carries them; the containment gate above replaces the gates.</li>
 <li><strong>NO GATE</strong> &mdash; <code>npm run test:unit</code> is not evidence for this branch: its 44-file brace list contains neither of the two test files bf/auth adds, so the suite could pass in full with every one of these fixes reverted.</li>
 <li><strong>NO GATE</strong> &mdash; Nothing here checks that plaintext tokens ALREADY written into existing databases get cleaned up, and nothing will: the code fix does not remove them, there is no migration, and by decision (2026-09-16) there is no detector script. What is measured is next door - P0-C-REMEDIATE's gate checks that this branch's PR body and the release notes tell an operator the truth about it, including that a rename is not a rotation. Read that item before signing this one off.</li>
 <li><strong>NO GATE</strong> &mdash; One conflict with PR #8605 remains and it is this branch's own - lib/authorization/storage.js, which the modernization branch also narrows, for different reasons. Measured 2026-09-16: bf/auth against origin/chore/nightscout-modernization conflicts in that one file and nothing else (the four other conflicts were the BF-30 peer plumbing, which is why that half became P0-J). Not gated, because resolving it is a merge somebody has to sit down and do, and which side wins depends on whether the allow-list lands at all.</li>
@@ -3787,8 +3780,9 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <li>The property this branch exists for - it merges clean with PR #8605. With the peer-address plumbing included it conflicted in five files (index.js, storage.js, alarmSocket.js, security.js, websocket.js). Non-vacuity, reproduced 2026-09-16: the identical command against bf/auth, which narrows storage.js, CONFLICTS - so this is not passing because merge-tree always passes.</li>
 <li><code>[static]</code> <code>sh -c 'git -C externals/cgm-remote-monitor-official grep -qI peer-address bf/throttle &amp;&amp; exit 1 || exit 0'</code></li>
 <li>lib/server/peer-address.js is NOT on this branch and nothing references it. A tracking gate against the obvious regression - re-adding that module re-creates the four-file conflict with #8605, and it would look like a harmless improvement to anyone who had not measured it.</li>
-<li><code>[integration]</code> <em>(cwd: <code>externals/work/crm-bf-throttle</code>)</em> <code>TEST=authdelay npm run test-single</code></li>
-<li>The branch's own test, 11 passing, measured 2026-09-16 and again at a0823c4f on 2026-09-21. Needs MongoDB - this worktree names 27031. It is in neither local brace list, so a green <code>npm run test:unit</code> is no evidence for any of this. Ablated: lib/authorization/delaylist.js and lib/authorization/index.js restored to origin/dev give 3 passing / 8 failing. It includes the test that PINS THE REMAINING WEAKNESS - <code>does NOT yet throttle a guess that varies both the secret and the address</code> - which asserts the gap rather than pretending it is closed, and which should be INVERTED into a positive assertion when the TRUST_PROXY boundary lands. A red here can be mongod having died (BF-10) rather than the branch; check the server before reading it as a regression.</li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 435419ce official/master</code></li>
+<li>official/master (the released 15.0.9 and later) contains 435419ce (bf/throttle's content commit, shipped through #8754). Red if master is rewritten without it.</li>
+<li><strong>NO GATE</strong> &mdash; The branch-level test gates that ran in externals/work/crm-bf-throttle were retired on 2026-10-26: that worktree was removed after the fix was released in 15.0.9. Every test file those gates named is on official/master (checked 2026-10-26), so the released tree's suite carries them; the containment gate above replaces the gates.</li>
 <li><strong>NO GATE</strong> &mdash; Nothing measures the boot warning's words. init() logs that the throttle is keyed on an address the caller may control, and that restricting access at the proxy is what helps today. That text IS the notification half of the maintainer's compatibility decision, and it is prose - the same shape as P0-C-REMEDIATE, where prose needed a gate to stay correct. A real gate would check that the message names no setting that does not exist on this branch, and that it never claims the throttle protects against credential guessing.</li>
 <li><strong>NO GATE</strong> &mdash; THE ADDRESS KEY IS STILL CALLER-CONTROLLED, DELIBERATELY. This branch does not close BF-30. It makes the control cheap for legitimate clients, bounds the list, stops retaining the credentials people tried, adds a second key, and says so out loud. An attacker who varies both the credential and the forwarded header is throttled by neither key. Closing it needs the TRUST_PROXY boundary from PR #8605, after which data.ip is an address the caller cannot choose and this file needs no edit. BF-30 MUST NOT BE READ AS FIXED on the strength of this item.</li>
 </ul>
@@ -3914,12 +3908,9 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <li>Containment: this tip is an ancestor of origin/dev, so the fix is in dev (PR #8737, merged 2026-09-18) and cannot silently leave it. An upstream revert or force-push turns it red.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/coercion &gt;/dev/null</code></li>
 <li>trial-merge into origin/dev is conflict-free</li>
-<li><code>[unit]</code> <em>(cwd: <code>externals/work/crm-bf-coercion</code>)</em> <code>TEST=query.operands npm run test-single</code></li>
-<li>BF-40's own test, 12 cases, on the second commit. In neither local brace list (GT1), so a green <code>npm run test:unit</code> is not evidence for it. Ablated three ways with each break confirmed to land: removing the call fails 6, mapping "" to false fails exactly the test pinning that decision, adding $regex to the reader map fails exactly the $regex test.</li>
-<li><code>[unit]</code> <em>(cwd: <code>externals/work/crm-bf-coercion</code>)</em> <code>TEST=query npm run test-single</code></li>
-<li>29 passing, database-free (measured against a dead mongo port). Ablated behaviourally: reverting ONLY lib/server/query.js and keeping the new table gives 24 passing / 4 failing on assertions ("expected '1.5' to be 1.5"). (Running the file against pristine dev fails at module resolution, which is not a behavioural control.)</li>
-<li><code>[static]</code> <code>T=$(mktemp -d) &amp;&amp; trap 'rm -rf "$T"' EXIT &amp;&amp; python3 -m tools.nsschema.emit.coercion_emit --bundle "$T/emitted.json" &gt;/dev/null &amp;&amp; diff -q "$T/emitted.json" externals/work/crm-bf-coercion/lib/server/query-coercion.json</code></li>
-<li>The coercion table vendored into the branch is byte-identical to what the emitter produces today, so the branch is not shipping a stale generated file ("emit, then check the emission"). <code>coercion_emit --drift</code> is not usable as a gate: it returns 0 unconditionally (it exited 0 while printing "DRIFT vs the shipping walkers: 157 disagreements") and compares against a hardcoded transcription of origin/dev's walkers, so it says nothing about bf/coercion.</li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b7234753 official/master</code></li>
+<li>official/master (the released 15.0.9 and later) contains b7234753 (the fix commit merged by #8737). Red if master is rewritten without it.</li>
+<li><strong>NO GATE</strong> &mdash; The branch-level test gates that ran in externals/work/crm-bf-coercion were retired on 2026-10-26: that worktree was removed after the fix was released in 15.0.9. Every test file those gates named is on official/master (checked 2026-10-26), so the released tree's suite carries them; the containment gate above replaces the gates.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b72347538ba29f965c531bdd47f81dc52d895a13 origin/dev</code></li>
 <li>containment: the measured tip of bf/coercion is in origin/dev, so the merge carried it. Holds after the branch moves or is deleted; reads local remote-tracking refs, so fetch origin first.</li>
 <li><strong>NO GATE</strong> &mdash; Review and merge state of PR #8737 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.</li>
@@ -3986,16 +3977,9 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <li>trial-merge into origin/dev is conflict-free</li>
 <li><code>[static]</code> <code>node tools/queue/gates/bf-reads-read-contract.js</code></li>
 <li>The database-free half of the branch's behaviour, driven through the four pure modules the six fixes live in: parseCount/hasCount/applyCount, the dotted-?fields= projector, the _id tiebreak in the v3 sort chain, and the count path's use of query_for with nothing printed. 8 assertions. Built-in negative control: <code>--rev origin/dev</code> runs the identical assertions against dev materialised from the object database and gives 4 failing. (A branch-has-a-commit check is not a substitute: it passes for origin/dev, origin/master and bf/alarms too.)</li>
-<li><code>[integration]</code> <em>(cwd: <code>externals/work/crm-bf-reads</code>)</em> <code>TEST=api.count-parameter npm run test-single</code></li>
-<li>BF-13/BF-33, 13 passing. Needs MongoDB: pointed at a dead port it goes to 0 passing / 1 failing, timing out in the before-all hook. It is fast only because a mongod is listening on crm-bf-reads' port 27032.</li>
-<li><code>[integration]</code> <em>(cwd: <code>externals/work/crm-bf-reads</code>)</em> <code>TEST=api.count-where npm run test-single</code></li>
-<li>BF-01, 5 passing. Needs MongoDB.</li>
-<li><code>[integration]</code> <em>(cwd: <code>externals/work/crm-bf-reads</code>)</em> <code>TEST=api3.fields npm run test-single</code></li>
-<li>BF-15, 6 passing. Needs MongoDB (5 of 6 survive without it).</li>
-<li><code>[integration]</code> <em>(cwd: <code>externals/work/crm-bf-reads</code>)</em> <code>TEST=api3.limit npm run test-single</code></li>
-<li>BF-33, 8 passing. Needs MongoDB.</li>
-<li><code>[integration]</code> <em>(cwd: <code>externals/work/crm-bf-reads</code>)</em> <code>TEST=api3.paging npm run test-single</code></li>
-<li>BF-14, 3 passing. Needs MongoDB.</li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2ecfeb53 official/master</code></li>
+<li>official/master (the released 15.0.9 and later) contains 2ecfeb53 (the fix commit merged by #8738). Red if master is rewritten without it.</li>
+<li><strong>NO GATE</strong> &mdash; The branch-level test gates that ran in externals/work/crm-bf-reads were retired on 2026-10-26: that worktree was removed after the fix was released in 15.0.9. Every test file those gates named is on official/master (checked 2026-10-26), so the released tree's suite carries them; the containment gate above replaces the gates.</li>
 <li><strong>NO GATE</strong> &mdash; <code>npm run test:unit</code> is not a gate here: not one of the five test files this branch adds is in its 44-file brace list - all five are api<em>/api3</em> and match test:integration's glob - so the suite could pass in full with every fix reverted.</li>
 <li><strong>NO GATE</strong> &mdash; The ordering constraint inside the branch (BF-05's commit must follow BF-01's) is not machine-checked. The two commits are 3b588098 and 4772b983 on the current tip; any gate quoting other SHAs is stale. A real gate would assert the relative order of the two by subject line, and nobody has written it.</li>
 <li><strong>NO GATE</strong> &mdash; The CHANGELOG on this branch lists read routes only, while the ?count= validator covers writes too. Nothing checks a release note against the code it describes.</li>
@@ -4128,10 +4112,9 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <li>Containment: this tip is an ancestor of origin/dev, so the fix (PR #8735, merged 2026-09-20) is in dev and cannot silently leave it. An upstream revert or force-push turns it red.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/food &gt;/dev/null</code></li>
 <li>trial-merge into origin/dev is conflict-free</li>
-<li><code>[unit]</code> <em>(cwd: <code>externals/work/crm-bf-food</code>)</em> <code>TEST=boluscalc.quickpick npm run test-single</code></li>
-<li>BF-35's own test, 11 cases. The file is in NEITHER the test:unit nor the test:integration brace list (GT1), so a green <code>npm run test:unit</code> on this branch is not evidence that BF-35's fix works; it is named explicitly here for that reason.</li>
-<li><code>[integration]</code> <em>(cwd: <code>externals/work/crm-bf-food</code>)</em> <code>TEST=api.food.quickpicks npm run test-single</code></li>
-<li>BF-16 over the real HTTP path; needs MongoDB</li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 73495331 official/master</code></li>
+<li>official/master (the released 15.0.9 and later) contains 73495331 (the fix commit merged by #8735). Red if master is rewritten without it.</li>
+<li><strong>NO GATE</strong> &mdash; The branch-level test gates that ran in externals/work/crm-bf-food were retired on 2026-10-26: that worktree was removed after the fix was released in 15.0.9. Every test file those gates named is on official/master (checked 2026-10-26), so the released tree's suite carries them; the containment gate above replaces the gates.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 73495331e68c4cda3a63e8c047387bdf404b89b0 origin/dev</code></li>
 <li>containment: the measured tip of bf/food is in origin/dev, so the merge carried it. Holds after the branch moves or is deleted; reads local remote-tracking refs, so fetch origin first.</li>
 <li><strong>NO GATE</strong> &mdash; Review and merge state of PR #8735 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.</li>
@@ -4195,8 +4178,9 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <li>Containment: this tip is an ancestor of origin/dev, so the fix (PR #8734, merged 2026-09-18) is in dev and cannot silently leave it. An upstream revert or force-push turns it red.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/merge &gt;/dev/null</code></li>
 <li>trial-merge into origin/dev is conflict-free</li>
-<li><code>[unit]</code> <em>(cwd: <code>externals/work/crm-bf-merge</code>)</em> <code>TEST=receiveddata.merge npm run test-single</code></li>
-<li>in NEITHER local brace list (GT1). Named here so the gate actually runs the file that proves the fix.</li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b06c6faf official/master</code></li>
+<li>official/master (the released 15.0.9 and later) contains b06c6faf (the fix commit merged by #8734). Red if master is rewritten without it.</li>
+<li><strong>NO GATE</strong> &mdash; The branch-level test gates that ran in externals/work/crm-bf-merge were retired on 2026-10-26: that worktree was removed after the fix was released in 15.0.9. Every test file those gates named is on official/master (checked 2026-10-26), so the released tree's suite carries them; the containment gate above replaces the gates.</li>
 <li><strong>NO GATE</strong> &mdash; <code>dataUpdate</code> still has no try/catch, so the NEXT throw from anywhere in the merge path has the same effect. This branch fixes one throw, not the missing boundary. No test asserts the boundary exists because it does not.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b06c6faf882ebd84d627468c75dade0fe1fd01a1 origin/dev</code></li>
 <li>containment: the measured tip of bf/merge is in origin/dev, so the merge carried it. Holds after the branch moves or is deleted; reads local remote-tracking refs, so fetch origin first.</li>
@@ -4261,10 +4245,9 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <li>Containment: this tip is an ancestor of origin/dev, so the fix (PR #8736, merged 2026-09-20) is in dev and cannot silently leave it. An upstream revert or force-push turns it red.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/parms &gt;/dev/null</code></li>
 <li>trial-merge into origin/dev is conflict-free</li>
-<li><code>[unit]</code> <em>(cwd: <code>externals/work/crm-bf-parms</code>)</em> <code>TEST=browser-utils.queryparms npm run test-single</code></li>
-<li>BF-37 and BF-39; in NEITHER local brace list (GT1)</li>
-<li><code>[unit]</code> <em>(cwd: <code>externals/work/crm-bf-parms</code>)</em> <code>TEST=language npm run test-single</code></li>
-<li>BF-38. Non-vacuous by GT1's control - 1 failing when the fix is removed from pristine dev code.</li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor eb0bc918 official/master</code></li>
+<li>official/master (the released 15.0.9 and later) contains eb0bc918 (the fix commit merged by #8736). Red if master is rewritten without it.</li>
+<li><strong>NO GATE</strong> &mdash; The branch-level test gates that ran in externals/work/crm-bf-parms were retired on 2026-10-26: that worktree was removed after the fix was released in 15.0.9. Every test file those gates named is on official/master (checked 2026-10-26), so the released tree's suite carries them; the containment gate above replaces the gates.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor eb0bc918036a7802a0b88156e9722f45fd9107f3 origin/dev</code></li>
 <li>containment: the measured tip of bf/parms is in origin/dev, so the merge carried it. Holds after the branch moves or is deleted; reads local remote-tracking refs, so fetch origin first.</li>
 <li><strong>NO GATE</strong> &mdash; Review and merge state of PR #8736 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.</li>
@@ -4326,14 +4309,9 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <ul>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/operators origin/dev</code></li>
 <li>Containment: this tip is an ancestor of origin/dev, so the fix (PR #8743, merged 2026-09-18) is in dev and cannot silently leave it. An upstream revert or force-push turns it red.</li>
-<li><code>[unit]</code> <em>(cwd: <code>externals/work/crm-bf-operators</code>)</em> <code>TEST=mongo-query-javascript npm run test-single</code></li>
-<li>BF-04, the JavaScript half. 23 passing, 49 ms, no database. ABLATED on the dev merge - commenting out the create() call gives 7 failing, confirmed applied by grep before the run. The allowlist also refuses $where, as an unlisted operator with the generic message, so the 7 are the cases asserting the SPECIFIC JavaScript wording: this guard is mostly about the message, not the refusal.</li>
-<li><code>[unit]</code> <em>(cwd: <code>externals/work/crm-bf-operators</code>)</em> <code>TEST=api-v1-operator-allowlist npm run test-single</code></li>
-<li>BF-04, the allowlist. 63 passing + 16 pending without a database; the 16 are the end-to-end section, which is the only place the ALLOWED operators are proved to still SELECT rather than merely to pass the guard. ABLATED two ways, both confirmed applied by grep - removing the create() call gives 14 failing, making refuse() return instead of throwing gives 35.</li>
-<li><code>[unit]</code> <em>(cwd: <code>externals/work/crm-bf-operators</code>)</em> <code>TEST=api-v1-count-pipeline npm run test-single</code></li>
-<li>BF-70. 8 passing, 30 ms, no database. ABLATED - restoring the two lines the commit changes gives 3 failing.</li>
-<li><code>[integration]</code> <em>(cwd: <code>externals/work/crm-bf-operators</code>)</em> <code>TEST=api-v1-operator-allowlist npm run test-single</code></li>
-<li>the same file with CUSTOMCONNSTR_mongo set - 79 passing, mongod 7.0 on port 27018, measured on the dev merge 9745cae2. This is the run that matters: without a database the end-to-end section skips and the suite proves only that refusals refuse.</li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1a36f023 official/master</code></li>
+<li>official/master (the released 15.0.9 and later) contains 1a36f023 (#8743's merge). Red if master is rewritten without it.</li>
+<li><strong>NO GATE</strong> &mdash; The branch-level test gates that ran in externals/work/crm-bf-operators were retired on 2026-10-26: that worktree was removed after the fix was released in 15.0.9. Every test file those gates named is on official/master (checked 2026-10-26), so the released tree's suite carries them; the containment gate above replaces the gates.</li>
 <li><strong>NO GATE</strong> &mdash; The strongest control this branch has is not runnable from here. The BF-70 reproduction extracts a seeded value over unauthenticated HTTP on a8888f0d and extracts nothing on 52b7b640 - same machine, same database, same session, same unmodified probe. It is deliberately NOT committed: this repository is public and the defect is live on the shipping release, and a gate that ran it would have to carry it. Held outside version control; see the register's BF-70 detail before reconstructing it.</li>
 <li><strong>NO GATE</strong> &mdash; <code>npm test</code> over the whole suite is 2223 passing / 3 pending / 0 failing on the dev merge 9745cae2 with a live mongod. Not a gate because it needs a database on a port other sessions share, and because a whole-suite number says nothing about WHICH assertion covers this branch - the three TEST= gates above do.</li>
 <li><code>[network]</code> <em>(cwd: <code>.</code>)</em> <code>git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/operators | grep -q .</code></li>
@@ -4586,8 +4564,9 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <ul>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show origin/dev:package-lock.json | python3 -c "import json,sys; e=json.load(sys.stdin)['packages']['node_modules/nightscout-connect']; sys.exit(0 if e.get('version')=='0.1.0' and e.get('resolved','').startswith('https://registry.npmjs.org/') else 1)"</code></li>
 <li>the lockfile resolves nightscout-connect 0.1.0 from the npm registry.</li>
-<li><code>[network]</code> <em>(cwd: <code>externals/work/crm-connect-pin-0.1.0-exact</code>)</em> <code>npm ci --dry-run --ignore-scripts</code></li>
-<li>npm ci resolves against the registry. --ignore-scripts because the dry run still runs postinstall (a webpack bundle), which fails in a worktree with no node_modules and says nothing about the lockfile.</li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 153e5658 official/master</code></li>
+<li>official/master (the released 15.0.9 and later) contains 153e5658 (#8762's merge). Red if master is rewritten without it.</li>
+<li><strong>NO GATE</strong> &mdash; The branch-level test gates that ran in externals/work/crm-connect-pin-0.1.0-exact were retired on 2026-10-26: that worktree was removed after the fix was released in 15.0.9. Every test file those gates named is on official/master (checked 2026-10-26), so the released tree's suite carries them; the containment gate above replaces the gates.</li>
 </ul>
 <p><strong>Evidence.</strong></p>
 <ul>
@@ -6058,7 +6037,7 @@ that costs.</p>
 <li><code>releases/cgm-remote-monitor-16.0.0/contents.md</code></li>
 <li><code>releases/cgm-remote-monitor-16.0.0/decisions.md</code></li>
 </ul>
-<p><strong>Notes.</strong> Filed 2026-10-26 from the maintainer's pre-tag requirements (session -66, 2026-10-26): before the tag, (a) a live Pushover and APNs delivery check (RT-16-LIVE-ALARMS), (b) a real-rig soak on dev (RT-16-RIG-SOAK), and (c) the BF-72 and BF-161 fork fixes merged and published with 16.0.0 (BFQ-72, BFQ-161). BF-193 is not a pre-tag requirement; whether payload logging is needed for debugging is the maintainer's open question. Other open items a releaser must settle are in contents.md. The generated release-waits view still reads RT-0 (15.0.9), so it does not list these blockers.</p>
+<p><strong>Notes.</strong> 2026-10-26, later (maintainer, session -66): BF-193's logging question is decided (debug-gated payload logging through DEBUG_LOGGING; BFQ-193, draft PR #8856), still not a pre-tag requirement. Q1b is decided for 16.0.0 (WRITE- CONTRACT, BFQ-195). Branch protection: master requires only Tests pass and one approving review, decided, the settings change owed by the maintainer (contents.md, Repository settings). Filed 2026-10-26 from the maintainer's pre-tag requirements (session -66, 2026-10-26): before the tag, (a) a live Pushover and APNs delivery check (RT-16-LIVE-ALARMS), (b) a real-rig soak on dev (RT-16-RIG-SOAK), and (c) the BF-72 and BF-161 fork fixes merged and published with 16.0.0 (BFQ-72, BFQ-161). BF-193 is not a pre-tag requirement; whether payload logging is needed for debugging is the maintainer's open question. Other open items a releaser must settle are in contents.md. The generated release-waits view still reads RT-0 (15.0.9), so it does not list these blockers.</p>
 <h3 id="rt-16-live-alarms--1600-pre-tag-check-live-pushover-and-apns-delivery-on-dev"><code>RT-16-LIVE-ALARMS</code> &mdash; 16.0.0 pre-tag check: live Pushover and APNs delivery on dev<a class="headerlink" href="#rt-16-live-alarms--1600-pre-tag-check-live-pushover-and-apns-delivery-on-dev" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -6785,7 +6764,7 @@ that costs.</p>
 </tr>
 </tbody>
 </table>
-<p><strong>Blast radius.</strong> Small and standalone, one PR to dev with BF-169 (BFQ-169). lib/server/entries.js upsertQueryFor (301-319 at fade2299): match identifier first, as treatments do, then sysTime+type. lib/server/devicestatus.js create (92-172 at fade2299; insertMany unordered after #8758's withoutStoredIds at 57-90): a status carrying identifier is upserted on it, the rest are inserted as today. Tests for both. No change to treatments, API v3 or the websocket.</p>
+<p><strong>Blast radius.</strong> Small and standalone, one PR to dev with BF-169 (BFQ-169). lib/server/entries.js upsertQueryFor (301-319 at fade2299): match identifier first, as treatments do, then sysTime+type. lib/server/devicestatus.js create (92-172 at fade2299; insertMany unordered after #8758's withoutStoredIds at 57-90): a status whose identifier is already stored writes nothing and is answered with the stored _id (decided 2026-10-26; 8d0f9a22 replaces the stored status's fields, so the bundle changes it), the rest are inserted as today. Tests for both. No change to treatments, API v3 or the websocket.</p>
 <p><strong>What an operator sees.</strong> An app that labels each glucose reading or loop status with its own id can send it again without a second copy being stored.</p>
 <p><strong>Why <code>minor</code>.</strong> Versioning policy section 2, question 10: the same write stores a different set of records (a re-send that today adds a second entry or devicestatus becomes a match on the stored one). By rule R3 one minor row makes the release a minor, and 15.0.9 is decided as a patch (RT-VERSION, RT-COUNT-COMPAT), so it cannot go into 15.0.9.</p>
 <p><strong>Gates.</strong></p>
@@ -6800,7 +6779,7 @@ that costs.</p>
 <li><code>tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md</code></li>
 <li><code>docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-26: built as feat/v1-identifier-match 8d0f9a22 (one commit over dev 47723cda; lib/server/entries.js +84/-8, lib/server/devicestatus.js +97, two test files), not pushed. A re-sent identifier updates the stored record; an identifier miss still falls back to sysTime+type for entries (status quo, TEST-ENTRY-UUID-003 pins it), unlike v1 treatments, which never fall back; that choice is the maintainer's (next-gen plan decision D-ID-FALLBACK). identifier decides over a conflicting _id. upsertQueryFor is at entries.js:308 on 47723cda. Draft PR body and push commands are in the lane report. 2026-10-25: RT-1 merged (#8828, dev eb72a1d3), so this item is no longer blocked and can go to dev. Neither lib/server/entries.js nor lib/server/devicestatus.js changed between fade2299 and eb72a1d3 (git diff --name-only fade2299 official/dev -- both files prints nothing), so the line numbers above still hold. Cut 2 changes entries.js, so landing before cut 2's catch-up adds to that merge (RT-2). 2026-10-21, later: cut 1's catch-up merge is done (RT-REBASE's cut 1 part; 806ff2f0 contains dev 04d435eb), so blocks_on moves from RT-REBASE to RT-1: this lands on dev after #8828 merges, which is the maintainer's 2026-10-17 order. Cut 1 still touches neither lib/server/entries.js nor lib/server/devicestatus.js (<code>git diff --name-only official/dev official/chore/retire-jsdom</code> on 806ff2f0 lists neither). 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Still waits on cut 1's catch-up merge (RT-REBASE, in progress). Decided by the maintainer 2026-10-17: not in 15.0.9; lands on dev after cut 1's rebase, with BFQ-169. 15.0.9 is dev as it stands at fade2299 (releases/cgm-remote- monitor-15.0.9/contents.md), and any merge to dev moves the head off the candidate whose re-approval RT-0 owes. blocks_on names RT-REBASE because no separate item marks cut 1's catch-up merge done; only cut 1's part is needed (RT-1 blocks on the same two). Why after the rebase: RT-REBASE records that each further merge to dev raises the cuts' catch-up cost. Cuts 2-5 already change both files this item touches: <code>git diff --name-only $(git merge-base fade2299 &lt;cut&gt;) &lt;cut&gt; -- lib/server/entries.js lib/server/devicestatus.js</code> lists entries.js on cut 2 and both files on cuts 3, 4 and 5 (measured 2026-10-17); cut 1 touches neither. Landing after the catch-up merge keeps this change out of that merge's conflicts. The tenancy item ID-FIRST-MATCH absorbs this rule into the write step once WC-STEP-PATCH exists (it blocks on this item). Background: the simple contract in the Loop reply (LOOP-ID-REPLY) - _id an ObjectId or absent; identifier when _id is absent; the time key when neither.</p>
+<p><strong>Notes.</strong> 2026-10-26, later (maintainer, via session -66): (a) D-ID-FALLBACK decided: for 16.0.0 a v1 entries re-send whose identifier matches nothing still matches on sysTime+type, as today (TEST-ENTRY-UUID-003); treatments never fall back; to be revisited once identifiers are common. (b) A devicestatus re-send whose identifier is already stored writes nothing (no merge, no new record, no srvModified change) and the reply carries the stored _id, on API v1 and v3; v3, which today replaces and moves srvModified, is aligned in the same PR. (c) This item ships in one 16.0.0 re-send and merge PR with Q1b, BF-195 and (b), on bf/16.0.0-null-removes (Q1b head 1bdce62c; bundle in progress). Evidence for (b): the devicestatus study of 2026-10-26, reproduced on dev 47723cda and 8d0f9a22; client survey read-derived: no client sends an identifier on any devicestatus path (Loop's remote overrides travel as treatments and push notifications). 2026-10-26: carries the API v1 half of ID-CLIENT-OID-DECISION (the Loop reply's simple contract: whether a client may create its own ObjectId as _id over v1); the API v3 half is decided (BF-170, identity I2). 2026-10-26: built as feat/v1-identifier-match 8d0f9a22 (one commit over dev 47723cda; lib/server/entries.js +84/-8, lib/server/devicestatus.js +97, two test files), not pushed. A re-sent identifier updates the stored record; an identifier miss still falls back to sysTime+type for entries (status quo, TEST-ENTRY-UUID-003 pins it), unlike v1 treatments, which never fall back; that choice is the maintainer's (next-gen plan decision D-ID-FALLBACK). identifier decides over a conflicting _id. upsertQueryFor is at entries.js:308 on 47723cda. Draft PR body and push commands are in the lane report. 2026-10-25: RT-1 merged (#8828, dev eb72a1d3), so this item is no longer blocked and can go to dev. Neither lib/server/entries.js nor lib/server/devicestatus.js changed between fade2299 and eb72a1d3 (git diff --name-only fade2299 official/dev -- both files prints nothing), so the line numbers above still hold. Cut 2 changes entries.js, so landing before cut 2's catch-up adds to that merge (RT-2). 2026-10-21, later: cut 1's catch-up merge is done (RT-REBASE's cut 1 part; 806ff2f0 contains dev 04d435eb), so blocks_on moves from RT-REBASE to RT-1: this lands on dev after #8828 merges, which is the maintainer's 2026-10-17 order. Cut 1 still touches neither lib/server/entries.js nor lib/server/devicestatus.js (<code>git diff --name-only official/dev official/chore/retire-jsdom</code> on 806ff2f0 lists neither). 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Still waits on cut 1's catch-up merge (RT-REBASE, in progress). Decided by the maintainer 2026-10-17: not in 15.0.9; lands on dev after cut 1's rebase, with BFQ-169. 15.0.9 is dev as it stands at fade2299 (releases/cgm-remote- monitor-15.0.9/contents.md), and any merge to dev moves the head off the candidate whose re-approval RT-0 owes. blocks_on names RT-REBASE because no separate item marks cut 1's catch-up merge done; only cut 1's part is needed (RT-1 blocks on the same two). Why after the rebase: RT-REBASE records that each further merge to dev raises the cuts' catch-up cost. Cuts 2-5 already change both files this item touches: <code>git diff --name-only $(git merge-base fade2299 &lt;cut&gt;) &lt;cut&gt; -- lib/server/entries.js lib/server/devicestatus.js</code> lists entries.js on cut 2 and both files on cuts 3, 4 and 5 (measured 2026-10-17); cut 1 touches neither. Landing after the catch-up merge keeps this change out of that merge's conflicts. The tenancy item ID-FIRST-MATCH absorbs this rule into the write step once WC-STEP-PATCH exists (it blocks on this item). Background: the simple contract in the Loop reply (LOOP-ID-REPLY) - _id an ObjectId or absent; identifier when _id is absent; the time key when neither.</p>
 <h3 id="arch-8854--8854---shared-write-boundary-read-contract-and-ci-gates-into-1600-after-four-alignment-conditions-outcome-b"><code>ARCH-8854</code> &mdash; #8854 - shared write boundary, read contract and CI gates; into 16.0.0 after four alignment conditions (outcome B)<a class="headerlink" href="#arch-8854--8854---shared-write-boundary-read-contract-and-ci-gates-into-1600-after-four-alignment-conditions-outcome-b" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -8061,7 +8040,7 @@ that costs.</p>
 <p><strong>Notes.</strong> Follow-up to BF-110/BF-117, queued 2026-09-25 at the maintainer's request. Editing both copies is not wrong for what is shown (both carry the edit), but the pair never becomes one record, so reads that list treatments keep showing two. The fix shape: update the ObjectId copy (converting a string-only record to its ObjectId, as dbAdd does), then delete the string forms, as the v1 treatments PUT does; the renderer's split-drag path (dbUpdate then dbAdd) must still see the edited _id. Best done with OID-V3-EDIT-MERGE and OID-STORAGE- HELPER, which would give v1, v3 and the websocket one rule for writes by _id. Decisions: - 2026-09-26 (maintainer): after 15.0.9.</p>
 <hr />
 <h2 id="open-backfix-register-entries">Open backfix-register entries<a class="headerlink" href="#open-backfix-register-entries" title="Permanent link">&para;</a></h2>
-<p><code>parcel: register-open</code> &mdash; 137 items</p>
+<p><code>parcel: register-open</code> &mdash; 138 items</p>
 <p>The §1 / §1b distinction is preserved in <code>ships_to_operators_today</code>. That
 distinction is the only thing that makes the register mean anything - widening
 §1's criterion would destroy it.</p>
@@ -9023,11 +9002,11 @@ distinction is the only thing that makes the register mean anything - widening
 </tr>
 <tr>
 <td><code>BFQ-193</code></td>
-<td>BF-193 - the realtime socket logs every record written through it</td>
-<td><code>not-started</code></td>
-<td><code>-</code></td>
+<td>BF-193 - the realtime socket and other write paths log every record written through them</td>
+<td><code>in-flight-upstream</code></td>
+<td><code>bf/16.0.0-log-privacy</code></td>
 <td>patch</td>
-<td>0 run + 1 no-gate</td>
+<td>2 run + 1 no-gate</td>
 </tr>
 <tr>
 <td><code>BFQ-194</code></td>
@@ -9035,6 +9014,14 @@ distinction is the only thing that makes the register mean anything - widening
 <td><code>needs-decision</code></td>
 <td><code>-</code></td>
 <td>minor</td>
+<td>0 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>BFQ-195</code></td>
+<td>BF-195 - a stale profile is pushed over the socket after a profile re-send</td>
+<td><code>in-progress</code></td>
+<td><code>bf/16.0.0-null-removes</code></td>
+<td>patch</td>
 <td>0 run + 1 no-gate</td>
 </tr>
 <tr>
@@ -15119,7 +15106,7 @@ distinction is the only thing that makes the register mean anything - widening
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 <li><code>docs/30-design/tenancy/write-contract-spec-2026-10-07.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-26, 11:34:16Z: merged. AndyLow91 merged #8845 (bf/16.0.0-record- identity, head 50219945) into dev as 900abf7a (gh pr view 8845); 25 files, +1314/-107 against its first parent. AndyLow91 added 50219945 ("Require update permission for profile POST merges") on top. CI: push run 40316054930 passed and published at 11:43:24Z. Merged is not released. 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record-identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). 2026-10-25: fixed as c62a16c9 on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane), implementing the decided write-contract Q1 merge (2026-10-12): a profile re-sent with a stored _id is merged into it and answered 200 with that _id; an identical re-send writes nothing; Q1b (null deletes a field) is not implemented and stays unconfirmed. Evidence, reported by the lane: write-contract matrix b29f1bf7 against 26191780, 42 of 336 cells differ, 40 intended and 2 in the racy cache field. Filed 2026-10-07 from the WRITE-CONTRACT write matrix. Present on 15.0.8 too. BF-116 fixed the same shape for devicestatus.</p>
+<p><strong>Notes.</strong> 2026-10-26: Q1b is decided (maintainer): on a merge on match a null removes the field; it ships in 16.0.0 on bf/16.0.0-null-removes (in progress), which changes tests/api.profiles.resend.test.js:218, the test that pins dev's stored null. Until then dev stores null as null. 2026-10-26, 11:34:16Z: merged. AndyLow91 merged #8845 (bf/16.0.0-record-identity, head 50219945) into dev as 900abf7a (gh pr view 8845); 25 files, +1314/-107 against its first parent. AndyLow91 added 50219945 ("Require update permission for profile POST merges") on top. CI: push run 40316054930 passed and published at 11:43:24Z. Merged is not released. 2026-10-25, later: in PR #8845 to dev (branch bf/16.0.0-record- identity; the remote shows 539856ef; head bf37858e after merging dev 428b20b7, pending push). 2026-10-25: fixed as c62a16c9 on bf/16.0.0-record-identity (PR #8845, head bf37858e after merging dev 428b20b7, pending push; session f4's identity lane), implementing the decided write-contract Q1 merge (2026-10-12): a profile re-sent with a stored _id is merged into it and answered 200 with that _id; an identical re-send writes nothing; Q1b (null deletes a field) is not implemented and stays unconfirmed. Evidence, reported by the lane: write- contract matrix b29f1bf7 against 26191780, 42 of 336 cells differ, 40 intended and 2 in the racy cache field. Filed 2026-10-07 from the WRITE-CONTRACT write matrix. Present on 15.0.8 too. BF-116 fixed the same shape for devicestatus.</p>
 <h3 id="bfq-167--bf-167---devicestatus-removes-filter-is-not-pinned-by-any-test"><code>BFQ-167</code> &mdash; BF-167 - devicestatus remove()'s filter is not pinned by any test<a class="headerlink" href="#bfq-167--bf-167---devicestatus-removes-filter-is-not-pinned-by-any-test" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -16532,7 +16519,7 @@ distinction is the only thing that makes the register mean anything - widening
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 </ul>
 <p><strong>Notes.</strong> 2026-10-26, 05:20:27Z: merged. bewest merged #8843 (head 7fd2415e) into dev as 720e60de (gh pr view 8843), with the reports heap ceiling at 6,800,000 bytes. Test only. 2026-10-25, corrected by session -b7: NOT a product regression. Since #8542 the reports page draws its first report (AGP plus seven daily charts, 576 readings) as soon as the profile loads, so the populated test measured a drawn report, not an empty form; after Shows the page now retains less than before. Fix in #8843 (local commit 0a33b7c7, pending push by the maintainer, who folded it into #8843): the test waits for the first report (an svg under #pluginchartplaceholders and an empty #info), and the reports ceiling goes 4,850,000 to 6,800,000. Open note: both revisions grow slowly with repeated Shows (about 170 KB per run before, about 70 KB per run after). Filed 2026-10-25 by session f4 (register section 1b) as a budget failure on dev 428b20b7 (session f4's lanes, Node 22.23.4: 6192136 and 6189568 bytes; session -f8, Node 24.22.1: b29f1bf7 ~4.45 MB, 428b20b7 ~6.20 MB, cut 3 12d1f645 ~5.94 MB, cut 4 99b6f68b likewise). Browser CI ran zero tests from #8839 until the runner fix e767ce4e in #8843, which is why dev's CI did not show it.</p>
-<h3 id="bfq-193--bf-193---the-realtime-socket-logs-every-record-written-through-it"><code>BFQ-193</code> &mdash; BF-193 - the realtime socket logs every record written through it<a class="headerlink" href="#bfq-193--bf-193---the-realtime-socket-logs-every-record-written-through-it" title="Permanent link">&para;</a></h3>
+<h3 id="bfq-193--bf-193---the-realtime-socket-and-other-write-paths-log-every-record-written-through-them"><code>BFQ-193</code> &mdash; BF-193 - the realtime socket and other write paths log every record written through them<a class="headerlink" href="#bfq-193--bf-193---the-realtime-socket-and-other-write-paths-log-every-record-written-through-them" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -16543,7 +16530,7 @@ distinction is the only thing that makes the register mean anything - widening
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>not-started</code></td>
+<td><code>in-flight-upstream</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -16551,7 +16538,7 @@ distinction is the only thing that makes the register mean anything - widening
 </tr>
 <tr>
 <td>branch</td>
-<td><code>-</code></td>
+<td><code>bf/16.0.0-log-privacy</code></td>
 </tr>
 <tr>
 <td>base</td>
@@ -16559,7 +16546,7 @@ distinction is the only thing that makes the register mean anything - widening
 </tr>
 <tr>
 <td>worktree</td>
-<td><code>-</code></td>
+<td><code>externals/work/crm-bf193</code></td>
 </tr>
 <tr>
 <td>semver</td>
@@ -16579,18 +16566,22 @@ distinction is the only thing that makes the register mean anything - widening
 </tr>
 </tbody>
 </table>
-<p><strong>Blast radius.</strong> lib/server/websocket.js: the console.log of the whole data argument at the top of the dbUpdate (:368), dbUpdateUnset (:440), dbAdd (:508) and dbRemove (:827) handlers on dev 47723cda (:816 for dbRemove on v15.0.9). Server-side log content only.</p>
-<p><strong>What an operator sees.</strong> When an app writes to Nightscout over its realtime connection (the socket), the server writes the whole record, including glucose values, insulin and carbohydrate amounts and notes, into its log. Anyone who can read your hosting logs can see it. Keep access to your hosting logs limited.</p>
-<p><strong>Why <code>patch</code>.</strong> log content only</p>
+<p><strong>Blast radius.</strong> Log content only. New helper recordForLog in lib/server/log-privacy.js (with debugLogging(env), credentialSpellings and redactText shared with errorForLog). Call sites: lib/server/websocket.js (the dbUpdate, dbUpdateUnset, dbAdd and dbRemove entry lines, the two Got results lines and nine refusal lines in checkConditions; the per-write line moves after the request is accepted), lib/api/treatments/index.js (v1 POST, line 146, and PUT), lib/api/profile/index.js, lib/api/activity/index.js, lib/server/profile.js, lib/data/treatmenttocurve.js, lib/profilefunctions.js and the treatmentnotify and loop plugins (through sbx.debugLogging). README's DEBUG_LOGGING entry. No new setting.</p>
+<p><strong>What an operator sees.</strong> Nightscout's server log no longer contains the records apps send it (glucose values, insulin and carbohydrate amounts, notes). Each write is logged as a short summary instead. To see the records while troubleshooting, set DEBUG_LOGGING=true and restart; debug logs then contain health data, so turn it off again afterwards and keep access to your hosting logs limited. Anything that reads the old log lines sees a new format.</p>
+<p><strong>Why <code>patch</code>.</strong> log content and log line text only; no API, stored data or setting change</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><strong>NO GATE</strong> &mdash; Read, not run, on dev 47723cda and v15.0.9 c6a0d8ed (a read-only compatibility audit, 2026-10-26). A unit gate would emit dbAdd, dbUpdate, dbUpdateUnset and dbRemove through the socket handler with a record carrying a marker value and assert the marker is absent from captured console output; control: dev 47723cda fails it.</li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda bf/16.0.0-log-privacy</code></li>
+<li>The fix branch contains dev 47723cda. Red if the branch is rebased off dev or deleted.</li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae43eb4 bf/16.0.0-log-privacy</code></li>
+<li>The fix commit 8ae43eb4 is on the branch. Red if the branch is rewritten without it.</li>
+<li><strong>NO GATE</strong> &mdash; Behaviour is measured outside the queue (the suite needs MongoDB). 2026-10-26 on 8ae43eb4, Node 22.23.4: npm test 4289 passing, 1 failing, 3 pending, the failure environmental (tests/development-watch.test.js, ENOSPC on file watchers); npm run test:all 4617 / 1 / 3, the same failure. The new test fails 6 of 7 cases with the source reverted. Trial merge with #8854 fa22d573 clean.</li>
 </ul>
 <p><strong>Evidence.</strong></p>
 <ul>
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-26 (maintainer, session -66): not a pre-tag requirement for 16.0.0. The maintainer asked whether the socket's payload logging is needed for debugging; that question is open, so the fix shape is not settled. Filed 2026-10-26 from a read-only compatibility audit of dev 47723cda; the socket's counterpart of BF-186, which #8845 fixed for API v3. Fix direction, unverified: log the collection and the record count, not the record.</p>
+<p><strong>Notes.</strong> 2026-10-26, later: draft PR #8856 to dev (bf/16.0.0-log-privacy, head 8ae43eb4), opened by the maintainer. 2026-10-26, later (maintainer): BF-193 stays its own PR, separate from the 16.0.0 re-send and merge bundle. 2026-10-26: decided by the maintainer (session -66): debug-gated payload logging through one gate, the existing DEBUG_LOGGING (env.debug.logging), no new setting, using recordForLog in lib/server/log-privacy.js. The summary (operation, collection, client, ref, eventType or item count) is always logged; the payload only with debug on; refusal lines are bounded (8192 characters) and redacted. Built as bf/16.0.0-log-privacy 8ae43eb4, one commit on dev 47723cda, not pushed. Not a pre-tag requirement for 16.0.0 (maintainer, 2026-10-26). Release note: set DEBUG_LOGGING=true to see the records clients send; debug logs then contain health data. Follow-up, read-derived and unverified, not filed as an id: storage error lines that log whole MongoDB error objects (lib/server/treatments.js:173, 284 and 452, lib/server/entries.js:208 on dev 47723cda) may include the document that failed to write; the branch does not cover them. Filed 2026-10-26 from a read- only compatibility audit of dev 47723cda; the socket's counterpart of BF-186, which #8845 fixed for API v3.</p>
 <h3 id="bfq-194--bf-194---api-v1-drops-the-units-of-a-temp-target-with-no-glucose-value-so-mmoll-targets-read-as-mgdl"><code>BFQ-194</code> &mdash; BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL<a class="headerlink" href="#bfq-194--bf-194---api-v1-drops-the-units-of-a-temp-target-with-no-glucose-value-so-mmoll-targets-read-as-mgdl" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -16651,6 +16642,65 @@ distinction is the only thing that makes the register mean anything - widening
 <li><code>docs/30-design/remedial/rc-16.0.0-integration-record.md</code></li>
 </ul>
 <p><strong>Notes.</strong> Filed 2026-10-26 from R15. Needs a maintainer decision: keep units on a record with targets when no glucose is given, convert to mg/dL, or refuse under WRITE_VALIDATION=reject. Related to BF-180 (the careportal path through the same lines, merged in #8842) and MOD-UNITS-CANONICAL.</p>
+<h3 id="bfq-195--bf-195---a-stale-profile-is-pushed-over-the-socket-after-a-profile-re-send"><code>BFQ-195</code> &mdash; BF-195 - a stale profile is pushed over the socket after a profile re-send<a class="headerlink" href="#bfq-195--bf-195---a-stale-profile-is-pushed-over-the-socket-after-a-profile-re-send" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>in-progress</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>bf/16.0.0-null-removes</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>official/dev@47723cda</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>externals/work/crm-q1b-fix</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>patch</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer</td>
+</tr>
+<tr>
+<td>ships to operators today</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-195</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> lib/server/profile.js: the ctx.bus.emit('data-received') at :171 on dev 47723cda (:90 on v15.0.9), which runs before the merge write of a re-sent profile finishes. The socket's dataUpdate and the data reload it drives. Lands with the Q1b change on the same branch.</p>
+<p><strong>What an operator sees.</strong> After an app sends a profile again, a Nightscout page or follower app that is connected at that moment can briefly show the profile as it was before, until the next data update. The saved profile is correct.</p>
+<p><strong>Why <code>patch</code>.</strong> a race fixed; what is stored and replied does not change</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; Reproduced 2026-10-26 by the Q1b study, 2 of 2 runs on dev 47723cda and on lab/q1b-null-removes 63c33a0e: a socket client receives the earlier profile in dataUpdate after a profile re-send. A queue gate would re-send a profile in-process with a socket listener and assert the pushed profile is the merged one; control: dev 47723cda fails it. Written with the fix on bf/16.0.0-null-removes.</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
+</ul>
+<p><strong>Notes.</strong> 2026-10-26, later: lands in the one 16.0.0 re-send and merge PR on bf/16.0.0-null-removes (Q1b head 1bdce62c; bundle in progress; at cf2a2a67 the branch carries 913d0895 for Q1b, 1bdce62c for BF-195 and a merge of 8d0f9a22, read from git log, not measured here) with Q1b, ID-SIMPLE-MATCH and the devicestatus identifier re-send rule (maintainer, 2026-10-26). 2026-10-26: id allocated by session -66 and filed from the Q1b study. Fix direction, unverified: emit data-received once the write has completed. To land with Q1b (a null in an update removes the field, decided by the maintainer 2026-10-26, for 16.0.0) on bf/16.0.0-null-removes, in progress (the branch is at dev 47723cda).</p>
 <h3 id="bfq-134--bf-134---every-loop-remote-command-leaves-an-apns-connection-and-a-heartbeat-timer-open"><code>BFQ-134</code> &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open<a class="headerlink" href="#bfq-134--bf-134---every-loop-remote-command-leaves-an-apns-connection-and-a-heartbeat-timer-open" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -17866,7 +17916,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 </tr>
 <tr>
 <td><code>ID-CLIENT-OID-DECISION</code></td>
-<td>Decide: may a client set _id (an ObjectId it creates), and which field wins when identifier and _id match different records?</td>
+<td>Decide: may a client set _id (an ObjectId it creates) over API v1? (API v3 decided: refused, BF-170)</td>
 <td><code>needs-decision</code></td>
 <td><code>-</code></td>
 <td>n/a</td>
@@ -18979,7 +19029,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>docs/30-design/tenancy/write-contract-spec-2026-10-07.md</code></li>
 <li><code>tools/qc/write-contract-matrix.js</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-26: its blocker SEAM-REFRESH can now take dev as its base (cut 5 merged, 47723cda). Draft #8854 (AndyLow91, wip/architecture-data-contracts 880b7369, 1 commit on dev 47723cda, 31 files +934/-45) adds a shared write step (lib/storage/write-step.js, a Proxy over the driver collection with a data-free storage-write-committed event and no consumer yet), a read contract (lib/storage/read-contract.js, an API v3 Nightscout-Data-Warnings header) and a write-boundary check; its body says it is a foundation and not the complete proposed write-intent service. How it relates to the architecture review's open questions Q-A (pull the single write step forward, ahead of multitenancy) and Q-G (sequencing against the release train), and to this item, is for the maintainer and the author; not measured here. Execution plan section 4.1. Absorbs OID-STORAGE-HELPER (the _id rule alone) if that has not landed on dev first; if it has, its helper moves behind the interface here. Under single, the change event carries the runtime-derived copy and replaces the separate emissions the cache, v3 history and the socket consume. Under multi the change feed (D6) is the event. BFQ-CAP02's loader runs imported documents through the same step. Ships to single-tenant operators as its own release, before any Phase 2 work. Spec drafted 2026-10-07 (docs/30-design/tenancy/write-contract- spec-2026-10-07.md), measured on dev 43289dde and 15.0.8 92d08342 with tools/qc/write-contract-matrix.js (336 cells per build; stored state differs between paths in 33 of 66 groups on dev, 47 on 15.0.8; a cross-path re-send without _id is stored twice in 38 of 66 path pairs; six one-line ablations each turn exactly their predicted cells red). Proposes one write(intent) step in lib/storage/write-step.js inside collectionFor, merge-on-match re-sends, one natural key per collection and one event per write; semver minor if merge- on-match is chosen. Its gates G1 to G8 are in spec §5 and replace the no-gate above when the item starts. Needs maintainer decisions Q1 to Q6 (spec §6); Q3's devicestatus key needs an ns-data corpus count of created_at+device collisions first. Found BF-164, BF-165 and BF-166. Still blocked on SEAM- REFRESH. Maintainer decisions 2026-10-12 (spec section 6): Q1 merge on match, every collection and path; Q1b a field sent as null is removed (JSON Merge Patch), to be confirmed by a corpus and client-code measurement of explicit nulls; Q2 keep each path's identical-re-send behaviour (b1: v1, v3 and in- process rewrite, the socket and devicestatus answer unchanged), with the impact on clients to be measured; Q3 entries date+type, devicestatus created_at+device, profile created_at on every path, final once the corpus shows no client collides; Q4 the socket's +-2 s match kept as the socket's explicit near option, C5's missing event fixed, retired on field evidence or decided later; Q5 activity gets server dates and soft delete like the other five; Q6 two releases, the step with today's matrix pinned (patch, gate G1), then the changes (minor). U2 is dropped; U7 (every path reaches the storage socket) is held out of the contract until BF-164's question is answered. Q3 devicestatus re-decided 2026-10-12, after the corpus showed Loop writing 3,078 groups of distinct statuses that share created_at+device: the key identifies identical retries only (unchanged, nothing written); a differing body is a new record, on every path. Loop's upload code is being read to say what the same- key pairs are, for a possible later merge change.</p>
+<p><strong>Notes.</strong> 2026-10-26: its blocker SEAM-REFRESH can now take dev as its base (cut 5 merged, 47723cda). Draft #8854 (AndyLow91, wip/architecture-data-contracts 880b7369, 1 commit on dev 47723cda, 31 files +934/-45) adds a shared write step (lib/storage/write-step.js, a Proxy over the driver collection with a data-free storage-write-committed event and no consumer yet), a read contract (lib/storage/read-contract.js, an API v3 Nightscout-Data-Warnings header) and a write-boundary check; its body says it is a foundation and not the complete proposed write-intent service. How it relates to the architecture review's open questions Q-A (pull the single write step forward, ahead of multitenancy) and Q-G (sequencing against the release train), and to this item, is for the maintainer and the author; not measured here. Execution plan section 4.1. Absorbs OID-STORAGE-HELPER (the _id rule alone) if that has not landed on dev first; if it has, its helper moves behind the interface here. Under single, the change event carries the runtime-derived copy and replaces the separate emissions the cache, v3 history and the socket consume. Under multi the change feed (D6) is the event. BFQ-CAP02's loader runs imported documents through the same step. Ships to single-tenant operators as its own release, before any Phase 2 work. Spec drafted 2026-10-07 (docs/30-design/tenancy/write-contract- spec-2026-10-07.md), measured on dev 43289dde and 15.0.8 92d08342 with tools/qc/write-contract-matrix.js (336 cells per build; stored state differs between paths in 33 of 66 groups on dev, 47 on 15.0.8; a cross-path re-send without _id is stored twice in 38 of 66 path pairs; six one-line ablations each turn exactly their predicted cells red). Proposes one write(intent) step in lib/storage/write-step.js inside collectionFor, merge-on-match re-sends, one natural key per collection and one event per write; semver minor if merge- on-match is chosen. Its gates G1 to G8 are in spec §5 and replace the no-gate above when the item starts. Needs maintainer decisions Q1 to Q6 (spec §6); Q3's devicestatus key needs an ns-data corpus count of created_at+device collisions first. Found BF-164, BF-165 and BF-166. Still blocked on SEAM- REFRESH. 2026-10-26 (maintainer, session -66): Q1b decided for 16.0.0. A null in an update removes the field (RFC 7386, recursive, arrays replaced whole) on a merge on match for treatments, entries, profile, food and activity, on API v3 PATCH and on the socket's dbUpdate (aligned with PATCH); never on v1 or v3 PUT or on any create; applied after v1 prepareData; dbUpdateUnset kept. It ships ahead of the step, on bf/16.0.0-null-removes (in progress) with BF-195's fix (BFQ-195). Spec section 6.1 and section 2.2's set/unset maps updated. Maintainer decisions 2026-10-12 (spec section 6): Q1 merge on match, every collection and path; Q1b a field sent as null is removed (JSON Merge Patch), to be confirmed by a corpus and client-code measurement of explicit nulls; Q2 keep each path's identical-re-send behaviour (b1: v1, v3 and in-process rewrite, the socket and devicestatus answer unchanged), with the impact on clients to be measured; Q3 entries date+type, devicestatus created_at+device, profile created_at on every path, final once the corpus shows no client collides; Q4 the socket's +-2 s match kept as the socket's explicit near option, C5's missing event fixed, retired on field evidence or decided later; Q5 activity gets server dates and soft delete like the other five; Q6 two releases, the step with today's matrix pinned (patch, gate G1), then the changes (minor). U2 is dropped; U7 (every path reaches the storage socket) is held out of the contract until BF-164's question is answered. Q3 devicestatus re-decided 2026-10-12, after the corpus showed Loop writing 3,078 groups of distinct statuses that share created_at+device: the key identifies identical retries only (unchanged, nothing written); a differing body is a new record, on every path. Loop's upload code is being read to say what the same-key pairs are, for a possible later merge change.</p>
 <h3 id="id-dup-measure--measure-duplicate-identifier-values-across-the-12-site-ns-data-corpus"><code>ID-DUP-MEASURE</code> &mdash; Measure duplicate identifier values across the 12-site ns-data corpus<a class="headerlink" href="#id-dup-measure--measure-duplicate-identifier-values-across-the-12-site-ns-data-corpus" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -19264,7 +19314,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>docs/60-research/tenancy/identifier-format-2026-10-17.md</code></li>
 </ul>
 <p><strong>Notes.</strong> Today: v1 recognises only UUID-shaped values as identifiers in by-id routes (UUID_RE, case-insensitive, lib/server/query.js:12 at dev fade2299), while stored identifiers are compared exactly, so Loop's upper-case override UUIDs match only themselves. API v3 computes uuid.v5(device_date[<em>eventType], "NightscoutRocks!") when none is sent (lib/api3/shared/operationTools.js:6, 106). A random UUID cannot serve the phone-and-watch case, where both devices must derive the same value; AndroidAPS keys on pump event ids. Not required: changing an existing client's identifiers, which would break matching against records it already stored. 2026-10-17: the rewritten Loop reply states only "a string, UUID recommended" and lists the limit, character set and case under "later, only if needed"; decide when a client or ID-VALIDATE needs it. Maintainer, 2026-10-18 (decided): identifier is opaque to the server and follows one rule in every collection, plus a published conventions table per record kind so apps converge on one value (docs/30-design/platform/identifier- conventions.md, ID-CONVENTIONS). URL syntax: <scheme>://<segment>/<segment>. Things that exist outside the app (sensor readings, pump events) use a source scheme with the manufacturer as the scheme and the model as the first segment (dexcom://g7/<serial>/<offset>, dexcom://g6/<transmitterId>/<time>, abbott://libre3/<serial>/<lifeCount>); things created in an app (manual carbs, boluses, overrides, temporary targets) use an app scheme (loop://carbs/<uuid>). A controller may use one format of its own across collections (loop://carbs/<uuid>, loop://tempbasal/<syncId>, loop://override/<uuid>, loop://devicestatus/<uuid>): unique per collection, within the limits, stable across re-sends; a registered instance declares it. The kind segment separates the measured Loop Suspend Pump + Temp Basal pairs that share one syncIdentifier (identifier-duplicates §2.2: 9 of the 13 shared values). The '/' question, measured 2026-10-18 (identifier-format §3.4, url- identifier-probes.js; 15.0.8 92d08342 and dev fade2299, mongo:7 7.0.43, no proxy, same result at both): a URL-form identifier is stored exactly; percent- encoded as one path segment (%3A, %2F) it works on v3 GET, PATCH, PUT, PUT- create and DELETE; raw '/' in the path is 404; v3 ?identifier$eq= and v1 find[identifier]= find it; v1 DELETE by it deletes nothing (UUID_RE). So C3 becomes [A-Za-z0-9.</em>~:/-] and clients must percent-encode the identifier in v3 paths. Still open: the 256 limit and the rest of C1-C8 as written in the conventions page §2, reverse proxies and %2F (not measured), the UUIDv5 client namespace, and whether the client developers accept the templates.</p>
-<h3 id="id-client-oid-decision--decide-may-a-client-set-_id-an-objectid-it-creates-and-which-field-wins-when-identifier-and-_id-match-different-records"><code>ID-CLIENT-OID-DECISION</code> &mdash; Decide: may a client set _id (an ObjectId it creates), and which field wins when identifier and _id match different records?<a class="headerlink" href="#id-client-oid-decision--decide-may-a-client-set-_id-an-objectid-it-creates-and-which-field-wins-when-identifier-and-_id-match-different-records" title="Permanent link">&para;</a></h3>
+<h3 id="id-client-oid-decision--decide-may-a-client-set-_id-an-objectid-it-creates-over-api-v1-api-v3-decided-refused-bf-170"><code>ID-CLIENT-OID-DECISION</code> &mdash; Decide: may a client set _id (an ObjectId it creates) over API v1? (API v3 decided: refused, BF-170)<a class="headerlink" href="#id-client-oid-decision--decide-may-a-client-set-_id-an-objectid-it-creates-over-api-v1-api-v3-decided-refused-bf-170" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -19319,7 +19369,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md</code></li>
 <li><code>docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-26: the API v3 half is settled in dev: #8845 (900abf7a) refuses any body _id on API v3 create, PUT and PATCH with 400 (BF-170, BFQ-170). API v1 keeps its legacy _id handling as a version-scoped quirk (#8845's body). The v1 question is unchanged. Read at the tags: no release up to 15.0.6 converted a client _id on POST (it was passed to MongoDB as sent, so 24-hex values were stored as strings, BF-99..102); only PUT and by-id reads and deletes converted with ObjectID(). MongoDB never required _id to be an ObjectId. Since #8758 (dev) a re-sent 24-hex _id is matched. A client-set _id cannot serve the phone-and-watch case (two devices create two ObjectIds), so identifier is needed either way. Maintainer, 2026-10-18: (2) identifier decides when the two match different records, keeping D20 rule 5's identifier-first order and v1 treatments' behaviour today (lib/server/treatments.js:356-362 at 15.0.8); the reply's earlier _id-first proposal is reversed. (1) still recommended, pending Loop's answer: a client may send an ObjectId it creates as _id over v1 (API v3 stores it as a string, BF-170); any other _id value is not valid (UUID_HANDLING keeps moving a non-24-hex string _id to identifier).</p>
+<p><strong>Notes.</strong> 2026-10-26: identity rule I2 is amended (docs/30-design/platform/spec/identity.md): on API v3 a client-supplied _id is refused with 400, with no quirk (maintainer, 2026-10-25, BF-170, merged in #8845); on API v1 the I9 quirk stays. The tie-break (2) was decided on 2026-10-18 (identifier decides). What is left is question (1) for API v1 only: whether the Loop reply's simple contract recommends a client-created ObjectId as _id over v1. That half stays with ID-SIMPLE-MATCH and waits on Loop's answer (LOOP-ID-REPLY). 2026-10-26, earlier: the API v3 half is settled in dev: #8845 (900abf7a) refuses any body _id on API v3 create, PUT and PATCH with 400 (BF-170, BFQ-170). API v1 keeps its legacy _id handling as a version- scoped quirk (#8845's body). The v1 question is unchanged. Read at the tags: no release up to 15.0.6 converted a client _id on POST (it was passed to MongoDB as sent, so 24-hex values were stored as strings, BF-99..102); only PUT and by-id reads and deletes converted with ObjectID(). MongoDB never required _id to be an ObjectId. Since #8758 (dev) a re-sent 24-hex _id is matched. A client-set _id cannot serve the phone-and-watch case (two devices create two ObjectIds), so identifier is needed either way. Maintainer, 2026-10-18: (2) identifier decides when the two match different records, keeping D20 rule 5's identifier-first order and v1 treatments' behaviour today (lib/server/treatments.js:356-362 at 15.0.8); the reply's earlier _id-first proposal is reversed. (1) still recommended, pending Loop's answer: a client may send an ObjectId it creates as _id over v1 (API v3 stores it as a string, BF-170); any other _id value is not valid (UUID_HANDLING keeps moving a non-24-hex string _id to identifier).</p>
 <h3 id="id-absent-decision--decide-a-write-that-carries-no-identifier-and-no-_id---keep-the-time-key-fallback-deprecate-it-or-require-identifier"><code>ID-ABSENT-DECISION</code> &mdash; Decide: a write that carries no identifier (and no _id) - keep the time-key fallback, deprecate it, or require identifier?<a class="headerlink" href="#id-absent-decision--decide-a-write-that-carries-no-identifier-and-no-_id---keep-the-time-key-fallback-deprecate-it-or-require-identifier" title="Permanent link">&para;</a></h3>
 <table>
 <thead>

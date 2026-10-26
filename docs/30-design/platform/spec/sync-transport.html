@@ -5853,7 +5853,7 @@
 
 
 <h1 id="l4-sync-transport-how-writes-are-matched-ordered-and-delivered-over-rest-and-the-socket-and-at-what-cost">L4 Sync transport: how writes are matched, ordered and delivered over REST and the socket, and at what cost<a class="headerlink" href="#l4-sync-transport-how-writes-are-matched-ordered-and-delivered-over-rest-and-the-socket-and-at-what-cost" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>baa67a88f</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>4fcb76f23</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>df621fa7</code> (2026-10-18). Layer L4 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>; how a re-send is
 matched is in the <a href="identity.html">identity specification</a> §3. Decisions: the
@@ -5911,8 +5911,8 @@ checked by one.</p>
 </tr>
 <tr>
 <td>T2</td>
-<td><strong>Re-send outcomes.</strong> For treatments, entries, profile, food and activity, a re-send that matches a stored record merges into it (JSON Merge Patch: a field sent as <code>null</code> is removed); an explicit update (v1 <code>PUT</code>, v3 <code>PUT</code>) replaces. An identical re-send keeps each path's behaviour today: rewritten on API v1, v3 and in-process, answered unchanged on the socket. For devicestatus, a re-send with the same <code>created_at</code> and <code>device</code> is a retry only when its body is identical, answered unchanged; a differing body is a new record. The socket keeps its ±2 s similar-treatment match as an explicit option. <code>activity</code> gets server dates and soft delete like the other collections. The step ships first with today's behaviour pinned (a patch), then these changes (a minor).</td>
-<td>decided 2026-10-12; devicestatus reopened the same day, because Loop writes distinct statuses that share <code>created_at</code> and <code>device</code></td>
+<td><strong>Re-send outcomes.</strong> For treatments, entries, profile, food and activity, a re-send that matches a stored record merges into it; an explicit update (v1 <code>PUT</code>, v3 <code>PUT</code>) replaces. <strong>A <code>null</code> in an update removes the field</strong> (JSON Merge Patch, RFC 7386, recursive, arrays replaced whole) on a merge on match, on an API v3 <code>PATCH</code> and on the socket's <code>dbUpdate</code>, which follows <code>PATCH</code>; never on a replace (v1 or v3 <code>PUT</code>) or on any create, which store a <code>null</code> as sent. On API v1 it runs after <code>prepareData</code>; <code>dbUpdateUnset</code> stays (identity §3). An identical re-send keeps each path's behaviour today: rewritten on API v1, v3 and in-process, answered unchanged on the socket. For devicestatus, a re-send whose <code>identifier</code> is already stored writes nothing (no merge, no new record, no <code>srvModified</code> change) and is answered with the stored <code>_id</code>, on API v1 and v3 (decided 2026-10-26); a re-send with the same <code>created_at</code> and <code>device</code> is a retry only when its body is identical, answered unchanged; a differing body is a new record. The socket keeps its ±2 s similar-treatment match as an explicit option. <code>activity</code> gets server dates and soft delete like the other collections. The step ships first with today's behaviour pinned (a patch), then these changes (a minor).</td>
+<td>decided 2026-10-12; devicestatus reopened the same day, because Loop writes distinct statuses that share <code>created_at</code> and <code>device</code>; the <code>null</code> rule and its scope decided 2026-10-26, for 16.0.0 (write contract Q1b)</td>
 </tr>
 <tr>
 <td>T3</td>

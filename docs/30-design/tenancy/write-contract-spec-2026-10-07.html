@@ -5247,7 +5247,8 @@
 <p>Record as of 2026-10-07. A point-in-time document; it is not kept up to date.</p>
 </div>
 <p><em>Contributor-facing.</em> <strong>Snapshot, 2026-10-07. Status: draft specification for queue <code>WRITE-CONTRACT</code>;
-the maintainer decided §6 on 2026-10-12 (§6.1), with Q1b and Q3 to be confirmed by measurement.</strong> Nothing here is implemented. Measured against
+the maintainer decided §6 on 2026-10-12 (§6.1), with Q3 to be confirmed by measurement; Q1b, the
+<code>null</code> rule, is decided with its scope as of 2026-10-26 (§6.1) and ships in 16.0.0.</strong> Nothing here is implemented. Measured against
 <code>cgm-remote-monitor</code> <code>official/dev</code> <code>43289dde</code> (the merge of #8806) and <code>official/master</code> <code>92d08342</code>
 (tag <code>15.0.8</code>); the as-built storage interface is <code>seam/t1-2-storage-interface</code> <code>81a1f6ce</code>. The
 decisions this builds on are in the
@@ -5299,7 +5300,7 @@ above, Node 22.23.2, MongoDB 7.0.43. <strong>[R]</strong> read: from source at t
 <hr />
 <h2 id="1-the-matrix-measured">1. The matrix, measured<a class="headerlink" href="#1-the-matrix-measured" title="Permanent link">&para;</a></h2>
 <h3 id="11-how-it-was-measured">1.1 How it was measured<a class="headerlink" href="#11-how-it-was-measured" title="Permanent link">&para;</a></h3>
-<p>The harness is <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/e8fdb79f748e50bd2e6852255ec54e26ad666306/tools/qc/write-contract-matrix.js"><code>tools/qc/write-contract-matrix.js</code></a>.
+<p>The harness is <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c42508a7facc11b59ac50ab27691ee6dc4b2546d/tools/qc/write-contract-matrix.js"><code>tools/qc/write-contract-matrix.js</code></a>.
 Per execution plan rule 4 it exercises the shipping modules, not a copy: it boots the build in
 its own process from the worktree named by <code>WC_WORKTREE</code>, exactly as <code>lib/server/server.js</code> does
 (<code>bootevent</code>, <code>app</code>, an HTTP listener, <code>websocket</code>), with every module <code>require()</code>d by path from
@@ -5320,8 +5321,8 @@ socket forwards) and the cache itself.</p>
 <li><strong>Builds:</strong> detached worktrees <code>externals/work/crm-wc-spec</code> at <code>43289dde</code> and
   <code>externals/work/crm-wc-1508</code> at <code>92d08342</code>, each after <code>npm ci</code>; <code>git status --porcelain -- lib</code>
   empty on both (recorded in each result file's <code>dirty_lib</code>).</li>
-<li><strong>Results:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/e8fdb79f748e50bd2e6852255ec54e26ad666306/tools/qc/results/write-contract-matrix/dev-43289dde.json"><code>dev-43289dde.json</code></a>,
-  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/e8fdb79f748e50bd2e6852255ec54e26ad666306/tools/qc/results/write-contract-matrix/v15.0.8-92d08342.json"><code>v15.0.8-92d08342.json</code></a>.
+<li><strong>Results:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c42508a7facc11b59ac50ab27691ee6dc4b2546d/tools/qc/results/write-contract-matrix/dev-43289dde.json"><code>dev-43289dde.json</code></a>,
+  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c42508a7facc11b59ac50ab27691ee6dc4b2546d/tools/qc/results/write-contract-matrix/v15.0.8-92d08342.json"><code>v15.0.8-92d08342.json</code></a>.
   The tables below are generated from them with <code>--compact</code>, <code>--divergence</code> and the cross-path
   listing (§8).</li>
 <li><strong>Liveness:</strong> <code>GET /api/v1/status.json</code> answered 200 before and after every measured step; a
@@ -6239,9 +6240,9 @@ devicestatus no longer collides (it answers 200, BF-116).</p>
 <h3 id="17-non-vacuity">1.7 Non-vacuity<a class="headerlink" href="#17-non-vacuity" title="Permanent link">&para;</a></h3>
 <p>Each rule column was broken in one place and the matrix re-run on the identical setup; the clean
 run is the positive control, and the restored file must reproduce it.
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/e8fdb79f748e50bd2e6852255ec54e26ad666306/tools/qc/write-contract-ablate.sh"><code>tools/qc/write-contract-ablate.sh</code></a> runs all six on
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c42508a7facc11b59ac50ab27691ee6dc4b2546d/tools/qc/write-contract-ablate.sh"><code>tools/qc/write-contract-ablate.sh</code></a> runs all six on
 a detached worktree of <code>43289dde</code>
-(<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/e8fdb79f748e50bd2e6852255ec54e26ad666306/tools/qc/results/write-contract-matrix/ablations-43289dde.txt">log</a>); every break
+(<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c42508a7facc11b59ac50ab27691ee6dc4b2546d/tools/qc/results/write-contract-matrix/ablations-43289dde.txt">log</a>); every break
 changed exactly the cells listed and every revert matched the clean run.</p>
 <table>
 <thead>
@@ -6346,6 +6347,12 @@ That is what makes "every write from every path" checkable (gate G2).</p>
 <a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a><span class="w">  </span><span class="nx">activity</span><span class="o">:</span><span class="w">     </span><span class="p">{</span><span class="w"> </span><span class="nx">keys</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">'_id'</span><span class="p">],</span><span class="w"> </span><span class="nx">onMatch</span><span class="o">:</span><span class="w"> </span><span class="s1">'merge'</span><span class="p">,</span><span class="w"> </span><span class="nx">v3</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">}</span>
 <a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a><span class="p">};</span>
 </code></pre></div>
+<p><em>(Q1b, decided 2026-10-26, §6.1: in <code>patch</code>, a field sent as <code>null</code> goes to <code>unset</code>, a <code>null</code>
+inside a nested object as its dotted path, and every other field to <code>set</code>; an array is one <code>set</code>
+value, replaced whole. A merge on match builds the same two maps from the re-sent document, on
+API v1 after <code>prepareData</code>, and the socket's <code>dbUpdate</code> builds them as <code>patch</code> does. <code>update</code> (a
+replace) and <code>create</code> take no <code>unset</code> from a <code>null</code>: it is stored as sent. The socket's
+<code>dbUpdateUnset</code> keeps naming the fields to remove.)</em></p>
 <p>The natural keys and <code>onMatch</code> above are the recommendation, not decided: §6 Q1–Q3. <code>clientIdentity</code>
 is <code>treatment-fallback-key</code>'s <code>CLIENT_IDS</code> with its "a write without identity matches only a record
 without identity" rule (BF-121, BF-141).</p>
@@ -6475,7 +6482,7 @@ except where a replay cell is cited; the server behaviour is the matrix above.</
 <tr>
 <td>U1</td>
 <td>D1, D2: v3 keeps a client hex <code>_id</code> as a string; <code>{$oid}</code> 400/refused/500 depending on path</td>
-<td>every path stores the ObjectId; <code>{$oid}</code> accepted everywhere the route accepts an <code>_id</code></td>
+<td>every path stores the ObjectId; <code>{$oid}</code> accepted everywhere the route accepts an <code>_id</code>. <em>(Corrected for API v3: v3 refuses a client <code>_id</code> with 400, decided 2026-10-25 as BF-170, merged in #8845; <a href="../platform/spec/identity.html#1-rules">identity I2</a>.)</em></td>
 <td>one form per id, which <code>OID-MIGRATION</code> assumes</td>
 <td>none in the corpus: AndroidAPS never sends <code>_id</code> to v3 (clients-8758 Q3); no client in the survey sends <code>{$oid}</code>. <code>mongoexport</code> writes it, which is why <code>dropEmptyId</code> accepts it (<code>object-id-forms.js</code> header [R])</td>
 </tr>
@@ -6696,8 +6703,8 @@ cell changed". Recommended: (a). Independently, U7 (C4) is live on 15.0.8 and co
 </tr>
 <tr>
 <td>Q1b</td>
-<td>added: under merge, a field sent as <code>null</code> is removed (JSON Merge Patch, RFC 7386). Today every path stores <code>null</code> as <code>null</code> (<code>$set</code>: <code>lib/server/entries.js:143</code>, <code>lib/api3/storage/mongoCollection/modify.js:71</code> on <code>dev</code> <code>fade2299</code> [R])</td>
-<td>measured 2026-10-12 (<a href="../../60-research/tenancy/write-contract-null-and-keys-2026-10-12.html">null and keys</a>): tconnectsync, oref0, nightscout-connect and cgmsim-lib send explicit nulls over v1; treatment nulls are stripped before storage, devicestatus nulls are stored, so an identical retry from those clients removes those keys (no non-null value lost unless another writer set one); release note</td>
+<td><strong>decided 2026-10-26 (maintainer), for 16.0.0: a <code>null</code> in an update removes the field</strong> (JSON Merge Patch, RFC 7386: recursive; an array is replaced whole). Scope: a merge on match (a re-send that matches a stored record) for treatments, entries, profile, food and activity; an API v3 <code>PATCH</code>; the socket's <code>dbUpdate</code>, aligned with <code>PATCH</code>. Never on a replace (v1 or v3 <code>PUT</code>) or on any create, which store a <code>null</code> as sent. On API v1 it applies after <code>prepareData</code>. <code>dbUpdateUnset</code> is kept. The <code>set</code>/<code>unset</code> maps are in §2.2. The recursion is accepted with its consequence (maintainer, 2026-10-26): a profile re-send whose <code>store</code> leaves out a named profile keeps it, and removal takes <code>store: {"&lt;name&gt;": null}</code> or a <code>PUT</code> (the profile editor uses <code>PUT</code>); the same nested merge applies to v3 <code>PATCH</code> and socket <code>dbUpdate</code>. devicestatus never merges (Q3 (i): an identical body is unchanged, a differing body is a new record), so a stored devicestatus <code>null</code> is never removed by a re-send. On <code>dev</code> <code>47723cda</code> every path stores <code>null</code> as <code>null</code> (<code>$set</code>) [R]; the rule ships in 16.0.0 ahead of the step (Q6), built on branch <code>bf/16.0.0-null-removes</code> (in progress) with BF-195's fix</td>
+<td>evidence, 2026-10-26: the Q1b study, reproduced on <code>v15.0.9</code> <code>c6a0d8ed</code>, <code>dev</code> <code>47723cda</code> and lab branch <code>lab/q1b-null-removes</code> <code>63c33a0e</code>, with the client survey read-derived. No client sends <code>null</code> to mean "clear this field". The clients that send <code>null</code> incidentally (Nocturne, nightscout-connect, tconnectsync, oref0, cgmsim-lib) send it on create or replace paths, which the rule leaves alone. Loop, xDrip+, xDrip4iOS, the profile editor and the report editor clear a field by leaving it out of a replace, which is why <code>PUT</code> is exempt. One test pins <code>dev</code>'s stored <code>null</code> (<code>tests/api.profiles.resend.test.js:218</code>). The 2026-10-12 client measurement is in <a href="../../60-research/tenancy/write-contract-null-and-keys-2026-10-12.html">null and keys</a>. Release note: what a merge stores changes</td>
 </tr>
 <tr>
 <td>Q2</td>
@@ -6706,7 +6713,7 @@ cell changed". Recommended: (a). Independently, U7 (C4) is live on 15.0.8 and co
 </tr>
 <tr>
 <td>Q3</td>
-<td>(a) entries <code>date</code>+<code>type</code> and profile <code>created_at</code>, on every path. <strong>devicestatus, re-decided 2026-10-12: (i) identical retries only</strong>: the same <code>created_at</code>+<code>device</code> with an identical body is a retry, answered unchanged; a differing body is a new record, on every path (v3 stops replacing on that key)</td>
+<td>(a) entries <code>date</code>+<code>type</code> and profile <code>created_at</code>, on every path. <strong>devicestatus, re-decided 2026-10-12: (i) identical retries only</strong>: the same <code>created_at</code>+<code>device</code> with an identical body is a retry, answered unchanged; a differing body is a new record, on every path (v3 stops replacing on that key). <strong>devicestatus by <code>identifier</code>, decided 2026-10-26 (maintainer), for 16.0.0:</strong> a re-send whose <code>identifier</code> is already stored writes nothing (no merge, no new record, no <code>srvModified</code> change) and the reply carries the stored <code>_id</code>, on API v1 and v3; on <code>dev</code> <code>47723cda</code> v1 stores a second record and v3 replaces and moves <code>srvModified</code>, and both change in one 16.0.0 re-send and merge PR (branch <code>bf/16.0.0-null-removes</code>, with <code>ID-SIMPLE-MATCH</code>, Q1b and BF-195). Evidence: the devicestatus study of 2026-10-26, reproduced on <code>dev</code> <code>47723cda</code> and <code>feat/v1-identifier-match</code> <code>8d0f9a22</code>; client survey read-derived: no client sends an <code>identifier</code> on any devicestatus path (Loop's remote overrides travel as treatments and push notifications)</td>
 <td><strong>devicestatus reopened</strong> 2026-10-12: Loop writes 3,078 groups (14,757 documents) of distinct statuses sharing <code>created_at</code>+<code>device</code> at 11 of 12 corpus sites, so merge on that key would fold them; entries <code>date</code>+<code>type</code> showed no instant mismatch with <code>sysTime</code> (0 ≥ 1 s), but matches only a re-send repeating <code>date</code> to the millisecond</td>
 </tr>
 <tr>

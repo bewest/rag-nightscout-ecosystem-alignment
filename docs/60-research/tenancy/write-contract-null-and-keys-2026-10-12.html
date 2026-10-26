@@ -7520,7 +7520,12 @@
 <p class="admonition-title">Record</p>
 <p>Record as of 2026-10-12. A point-in-time document; it is not kept up to date.</p>
 </div>
-<p><em>Contributor-facing.</em> <strong>Snapshot, 2026-10-12.</strong> Input to the maintainer decisions in
+<p><em>Contributor-facing.</em> <strong>Snapshot, 2026-10-12. Status: superseded for Q1b by the maintainer's
+decision of 2026-10-26, which sets the <code>null</code> rule's scope (merge on match, API v3 <code>PATCH</code> and the
+socket's <code>dbUpdate</code>; never a replace or a create) and ships it in 16.0.0; the current rule is in
+the <a href="../../30-design/tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-10-12">write contract §6.1</a>
+and <a href="../../30-design/platform/spec/identity.html#3-match-order-per-collection">identity §3</a>. §1.3's
+devicestatus case does not arise: under Q3 (i) a devicestatus re-send is never merged.</strong> Input to the maintainer decisions in
 <a href="../../30-design/tenancy/write-contract-spec-2026-10-07.html#6-decisions-for-the-maintainer">write-contract spec §6</a>
 after the 2026-10-12 choices: Q1 = (a) merge on match; Q1b = (ii) under merge a JSON <code>null</code> deletes
 the field (RFC 7386); Q2 = (b) an identical re-send keeps today's rewrite. Three questions:</p>
@@ -7533,7 +7538,7 @@ the field (RFC 7386); Q2 = (b) an identical re-send keeps today's rewrite. Three
    content is unchanged but whose <code>srvModified</code> is new? (§3)</li>
 </ol>
 <p>Marks: <strong>[M]</strong> measured, by the script and output named, in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/e8fdb79f748e50bd2e6852255ec54e26ad666306/docs/60-research/tenancy/write-contract-null-and-keys-2026-10-12"><code>write-contract-null-and-keys-2026-10-12/</code></a>.
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/c42508a7facc11b59ac50ab27691ee6dc4b2546d/docs/60-research/tenancy/write-contract-null-and-keys-2026-10-12"><code>write-contract-null-and-keys-2026-10-12/</code></a>.
 <strong>[R]</strong> read, from source at <code>path:line@commit</code>, not run. Paths for client sources are relative to
 <code>externals/&lt;repo&gt;/</code>. Most client reads were made by two read-only sub-agents; the citations marked
 <em>(checked)</em> were re-read for this document, the rest were not.</p>

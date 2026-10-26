@@ -5809,7 +5809,7 @@
 
 
 <h1 id="platform-glossary-the-terms-the-eight-specifications-share-and-where-each-is-defined">Platform glossary: the terms the eight specifications share, and where each is defined<a class="headerlink" href="#platform-glossary-the-terms-the-eight-specifications-share-and-where-each-is-defined" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>baa67a88f</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>9ea0af8cd</code>.</em></p>
 <p><em>Contributor-facing. Living, current at <code>main</code> <code>5a9a49cc</code> (2026-10-18). Each term links to where
 it is specified; the definition here is a summary, and the linked section is the authority. Therapy
 terms (profile, override, temporary target) are in the <a href="../../../10-domain/glossary.html">domain glossary</a>.
@@ -5967,7 +5967,8 @@ deciding <code>_id</code> form, target, outcome (insert, merge, replace, unchang
 one change event. <a href="../../tenancy/write-contract-spec-2026-10-07.html#2-the-proposed-write-step">WC §2</a>.</p>
 <p><strong>Re-send rule.</strong> A re-send that matches a stored record stores no second copy and is answered with
 the stored ids. A differing re-send merges into the match (JSON Merge Patch: a <code>null</code> removes the
-field); an explicit update replaces. An identical re-send is rewritten on API v1, v3 and in-process
+field, as on an API v3 <code>PATCH</code> and a socket <code>dbUpdate</code>; a create or a replace stores a <code>null</code> as
+sent); an explicit update replaces. An identical re-send is rewritten on API v1, v3 and in-process
 and answered unchanged on the socket and for devicestatus (decided 2026-10-12, <a href="../../tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-10-12">WC §6.1</a>). Match order: <a href="identity.html#3-match-order-per-collection">identity §3</a>.</p>
 <p><strong>Etag, precondition.</strong> <code>sha256:</code> over the canonical JSON of a resource's content, state and
 binding. Creates send <code>If-None-Match: *</code>; updates send <code>If-Match</code>. A missing precondition is 428 and

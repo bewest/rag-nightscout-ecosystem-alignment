@@ -2311,7 +2311,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>15705e554</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>3e609f77d</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>47723cda</code> (2026-10-26). Each row states the decision as it stands, with its date and who made
 it. Item state is in <code>queue/work-queue.yaml</code>; what 16.0.0 contains and what is still open is in
@@ -2386,7 +2386,7 @@ public.</em></p>
 </tr>
 </tbody>
 </table>
-<p>| <strong>Required before the 16.0.0 tag</strong>: (a) a live Pushover and APNs delivery check; (b) a real-rig soak on <code>dev</code>; (c) the BF-72 and BF-161 fork fixes merged and published with 16.0.0. BF-193 (the socket's payload logging) is not a pre-tag requirement; whether that logging is needed for debugging is the maintainer's open question | maintainer, 2026-10-26 (session -66) | <code>RT-16-RELEASE</code> (blocks on <code>RT-16-LIVE-ALARMS</code>, <code>RT-16-RIG-SOAK</code>, <code>BFQ-72</code>, <code>BFQ-161</code>), <code>BFQ-193</code> | none of the three met: (a) and (b) not started; BF-72 and BF-161 are in the advisory forks with no fork PR |</p>
+<p>| <strong>Required before the 16.0.0 tag</strong>: (a) a live Pushover and APNs delivery check; (b) a real-rig soak on <code>dev</code>; (c) the BF-72 and BF-161 fork fixes merged and published with 16.0.0. BF-193 (the socket's payload logging) is not a pre-tag requirement; its logging question is decided (the BF-193 row below) | maintainer, 2026-10-26 (session -66) | <code>RT-16-RELEASE</code> (blocks on <code>RT-16-LIVE-ALARMS</code>, <code>RT-16-RIG-SOAK</code>, <code>BFQ-72</code>, <code>BFQ-161</code>), <code>BFQ-193</code> | none of the three met: (a) and (b) not started; BF-72 and BF-161 are in the advisory forks with no fork PR |</p>
 <h2 id="tests-and-the-jsdom-harness">Tests and the jsdom harness<a class="headerlink" href="#tests-and-the-jsdom-harness" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -2478,6 +2478,12 @@ public.</em></p>
 <td>on <code>dev</code> since <code>fd3792e5</code>. <code>master</code> still requires the check (<code>gh api repos/nightscout/cgm-remote-monitor/branches/master/protection</code>, read 2026-10-26: <code>Run Tests (22, 6)</code>, <code>(22, 4.4)</code> and <code>(24, 6)</code>), so #8824 cannot satisfy it until the setting changes</td>
 </tr>
 <tr>
+<td><strong>Branch protection: <code>master</code> requires only the <em>Tests pass</em> check and one approving review</strong></td>
+<td>maintainer, 2026-10-26, relayed via session -66; applied by the maintainer</td>
+<td>—</td>
+<td>decided; the settings change is owed (contents, Repository settings)</td>
+</tr>
+<tr>
 <td><strong>CI hardening</strong>: every action reference pinned to a commit SHA; superseded <code>pull_request</code> runs cancelled; publishing waits for all test jobs; a manual extended mode (all six Node selectors on both MongoDB edges and every browser) that never publishes</td>
 <td>AndyLow91, 2026-10-25 (#8836)</td>
 <td>—</td>
@@ -2519,6 +2525,48 @@ public.</em></p>
 <td>maintainer, 2026-10-25, relayed via session -f4</td>
 <td><code>BFQ-164</code></td>
 <td>blocked (queue); waits on write checks covering every path (<code>MOD-WRITE-VALIDATION</code> covers Temporary Targets on API v1 and v3); not in #8845 (its body)</td>
+</tr>
+<tr>
+<td><strong>Write contract Q1b: a <code>null</code> in an update removes the field, in 16.0.0.</strong> Scope: a merge on match (a re-send matching a stored record) for treatments, entries, profile, food and activity; API v3 <code>PATCH</code>; the socket's <code>dbUpdate</code>, aligned with <code>PATCH</code>. Never on v1 or v3 <code>PUT</code> (replace) or on any create. Applied after v1 <code>prepareData</code>; recursive per RFC 7386, arrays replaced whole; <code>dbUpdateUnset</code> kept</td>
+<td>maintainer, 2026-10-26, relayed via session -66, after the Q1b study (reproduced on <code>v15.0.9</code> <code>c6a0d8ed</code>, <code>dev</code> <code>47723cda</code> and <code>lab/q1b-null-removes</code> <code>63c33a0e</code>; client survey read-derived: no client sends <code>null</code> to mean "clear", the incidental senders do so on create or replace paths, and Loop, xDrip+, xDrip4iOS, the profile editor and the report editor clear by omitting fields from a replace)</td>
+<td><code>WRITE-CONTRACT</code>, <code>BFQ-195</code></td>
+<td>not on <code>dev</code>: <code>dev</code> <code>47723cda</code> stores a <code>null</code> as <code>null</code> on every path (<code>tests/api.profiles.resend.test.js:218</code> pins it); built on <code>bf/16.0.0-null-removes</code> (in progress) with BF-195's fix. Specs: <a href="../../docs/30-design/platform/spec/identity.html#3-match-order-per-collection">identity §3</a>, <a href="../../docs/30-design/platform/spec/sync-transport.html#2-the-write-path">sync-transport T2</a>, <a href="../../docs/30-design/tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-10-12">write contract §6.1</a></td>
+</tr>
+<tr>
+<td><strong>BF-195 lands with Q1b</strong>: the profile path's <code>data-received</code> is emitted after the merge write completes, so the socket does not push the profile as it was before a re-send</td>
+<td>session -66, 2026-10-26, with the maintainer's Q1b decision</td>
+<td><code>BFQ-195</code></td>
+<td>open; reproduced 2 of 2 on <code>dev</code> <code>47723cda</code> and the lab branch; fix in progress on <code>bf/16.0.0-null-removes</code></td>
+</tr>
+<tr>
+<td><strong>The Q1b merge is recursive (RFC 7386), accepted with its consequence</strong>: a profile re-send whose <code>store</code> leaves out a named profile keeps it; removal takes <code>store: {"&lt;name&gt;": null}</code> or a <code>PUT</code> (the profile editor uses <code>PUT</code>). The same nested merge applies to API v3 <code>PATCH</code> and socket <code>dbUpdate</code></td>
+<td>maintainer, 2026-10-26, relayed via session -66</td>
+<td><code>WRITE-CONTRACT</code></td>
+<td>with Q1b on <code>bf/16.0.0-null-removes</code></td>
+</tr>
+<tr>
+<td><strong>A devicestatus re-send whose <code>identifier</code> is already stored writes nothing</strong>: no merge, no new record, no <code>srvModified</code> change; the reply carries the stored <code>_id</code>; on API v1 and v3, with v3 (which today replaces and moves <code>srvModified</code>) aligned in the same PR</td>
+<td>maintainer, 2026-10-26, relayed via session -66, after the devicestatus study (reproduced on <code>dev</code> <code>47723cda</code> and <code>feat/v1-identifier-match</code> <code>8d0f9a22</code>; client survey read-derived: no client sends an <code>identifier</code> on any devicestatus path; Loop's remote overrides travel as treatments and push notifications)</td>
+<td><code>ID-SIMPLE-MATCH</code>, <code>WRITE-CONTRACT</code></td>
+<td>not on <code>dev</code>; in the re-send and merge PR below</td>
+</tr>
+<tr>
+<td><strong>D-ID-FALLBACK: the entries fallback stays for 16.0.0</strong>: a v1 entries re-send whose <code>identifier</code> matches nothing still matches on <code>sysTime</code>+<code>type</code>, as today (TEST-ENTRY-UUID-003); treatments never fall back; revisited once identifiers are common</td>
+<td>maintainer, 2026-10-26, relayed via session -66</td>
+<td><code>ID-SIMPLE-MATCH</code></td>
+<td>as built on <code>feat/v1-identifier-match</code> <code>8d0f9a22</code></td>
+</tr>
+<tr>
+<td><strong>One 16.0.0 re-send and merge PR</strong> bundles <code>ID-SIMPLE-MATCH</code> (<code>8d0f9a22</code>), Q1b, BF-195 and the devicestatus <code>identifier</code> rule, on <code>bf/16.0.0-null-removes</code>; <strong>BF-193 stays its own PR</strong></td>
+<td>maintainer, 2026-10-26, relayed via session -66</td>
+<td><code>ID-SIMPLE-MATCH</code>, <code>WRITE-CONTRACT</code>, <code>BFQ-195</code>, <code>BFQ-193</code></td>
+<td>bundle in progress (Q1b head <code>1bdce62c</code>); BF-193 is draft PR #8856 (<code>8ae43eb4</code>)</td>
+</tr>
+<tr>
+<td><strong>#8854 is outcome B: in 16.0.0, aligned first</strong>, after four conditions: (1) under <code>reject</code> the socket answers per item, or socket validation waits; (2) <code>Nightscout-Data-Warnings</code> off by default or held; (3) <code>storage-write-committed</code> internal and unstable; (4) a separate name for this repository's <code>write(intent)</code> layer. The client replay is re-run on the merged tree</td>
+<td>maintainer, 2026-10-26, relayed via session -66; <a href="https://github.com/nightscout/cgm-remote-monitor/pull/8854#issuecomment-6425769549">posted on #8854</a></td>
+<td><code>ARCH-8854</code></td>
+<td>draft #8854 open; <a href="../../docs/30-design/modernization/pr-8854-alignment-2026-10-26.html">brief</a></td>
 </tr>
 </tbody>
 </table>
@@ -2581,6 +2629,12 @@ public.</em></p>
 <td>prepared 2026-10-21; the value awaits the maintainer's confirmation</td>
 <td><code>BFQ-161</code></td>
 <td><code>bf/entries-pattern-limit</code> <code>d2c4df9f</code>, semver patch</td>
+</tr>
+<tr>
+<td><strong>BF-193: debug-gated payload logging through one gate.</strong> The gate is the existing <code>DEBUG_LOGGING</code> (<code>env.debug.logging</code>), with no new setting, through the helper <code>recordForLog</code> in <code>lib/server/log-privacy.js</code>. The summary (operation, collection, client, record reference, <code>eventType</code> or item count) is always logged; the record only with debug on; refusal lines are bounded and redacted. Not a pre-tag requirement</td>
+<td>maintainer, 2026-10-26, relayed via session -66</td>
+<td><code>BFQ-193</code></td>
+<td>draft PR #8856, <code>bf/16.0.0-log-privacy</code> <code>8ae43eb4</code> (one commit on <code>dev</code> <code>47723cda</code>): <code>npm test</code> 4289 / 1 / 3 and <code>test:all</code> 4617 / 1 / 3, the 1 environmental (<code>ENOSPC</code> file watchers); the new test fails 6 of 7 with the source reverted; trial merge with #8854 <code>fa22d573</code> clean; semver patch</td>
 </tr>
 </tbody>
 </table>

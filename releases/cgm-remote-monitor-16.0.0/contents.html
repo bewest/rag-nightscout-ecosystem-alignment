@@ -2223,7 +2223,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>15705e554</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>3e609f77d</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -2905,8 +2905,8 @@ runtime Docker image.</p>
 <td>shared persistence and stored-data contracts</td>
 <td><code>wip/architecture-data-contracts</code>, <strong>draft #8854</strong> (AndyLow91, base <code>dev</code>)</td>
 <td><code>880b7369</code>, one commit on <code>dev</code> <code>47723cda</code></td>
-<td>open draft, mergeable; every check on its head passed</td>
-<td><code>WRITE-CONTRACT</code>, <code>MOD-WRITE-VALIDATION-READ</code> (related)</td>
+<td>open draft, mergeable; every check on its head passed. Decided 2026-10-26: in 16.0.0 after four alignment conditions (outcome B, <a href="decisions.html">decisions</a>)</td>
+<td><code>ARCH-8854</code>, <code>WRITE-CONTRACT</code>, <code>MOD-WRITE-VALIDATION-READ</code> (related)</td>
 </tr>
 <tr>
 <td>Crowdin translations</td>
@@ -2935,6 +2935,20 @@ runtime Docker image.</p>
 <td>—</td>
 <td>open in the register</td>
 <td><code>BFQ-191</code></td>
+</tr>
+<tr>
+<td>BF-193: write paths log whole records</td>
+<td><code>bf/16.0.0-log-privacy</code>, <strong>draft #8856</strong> (the maintainer, base <code>dev</code>)</td>
+<td><code>8ae43eb4</code>, one commit on <code>dev</code> <code>47723cda</code></td>
+<td>draft PR opened 2026-10-26</td>
+<td><code>BFQ-193</code></td>
+</tr>
+<tr>
+<td>the re-send and merge contract: <code>ID-SIMPLE-MATCH</code>, Q1b (a <code>null</code> in an update removes the field), BF-195 (a stale profile pushed over the socket after a re-send) and the devicestatus <code>identifier</code> rule, one PR</td>
+<td><code>bf/16.0.0-null-removes</code> (local)</td>
+<td><code>cf2a2a67</code> on <code>dev</code> <code>47723cda</code>: Q1b <code>913d0895</code>, BF-195 <code>1bdce62c</code>, <code>ID-SIMPLE-MATCH</code> <code>8d0f9a22</code> merged (read from <code>git log</code>)</td>
+<td>in progress; the devicestatus <code>identifier</code> rule is not yet on it (<code>8d0f9a22</code> replaces a stored status's fields; v3 still replaces)</td>
+<td><code>ID-SIMPLE-MATCH</code>, <code>WRITE-CONTRACT</code>, <code>BFQ-195</code></td>
 </tr>
 </tbody>
 </table>
@@ -3171,8 +3185,8 @@ unless reverted.</p>
 <p><strong>Required before the tag</strong> (maintainer, 2026-10-26, session -66; queue <code>RT-16-RELEASE</code>): (a) a live
 Pushover and APNs delivery check (<code>RT-16-LIVE-ALARMS</code>); (b) a real-rig soak on <code>dev</code> (<code>RT-16-RIG-SOAK</code>);
 (c) the BF-72 and BF-161 fork fixes merged and published with 16.0.0 (<code>BFQ-72</code>, <code>BFQ-161</code>). None is met.
-BF-193 is not a pre-tag requirement; the maintainer asked whether the socket's payload logging is needed
-for debugging, and that question is open.</p>
+BF-193 is not a pre-tag requirement; its fix shape is decided (debug-gated payload logging through
+<code>DEBUG_LOGGING</code>, <a href="decisions.html">decisions</a>) and is in draft PR #8856 (<code>bf/16.0.0-log-privacy</code> <code>8ae43eb4</code>).</p>
 <p><strong>Decisions open, with their owner:</strong></p>
 <ol>
 <li><strong>The scope of BF-161's draft advisory</strong> (maintainer): publish it now for BF-151 (released in 15.0.9)
@@ -3187,13 +3201,6 @@ for debugging, and that question is open.</p>
 <li><strong>Dependabot configuration</strong> (maintainer): version updates targeting <code>dev</code>, dismissing alerts that
    are fixed on <code>dev</code> or not reachable, or releasing more often. Packet:
    <a href="../../reports/reviewer-packets/dependabot-config.html">dependabot-config</a>.</li>
-<li><strong>Write contract Q1b</strong> (maintainer): the spec (<code>docs/30-design/platform/spec/identity.md:68</code>; write
-   contract §6, Q1b "to be confirmed by measurement") says a field sent as <code>null</code> under merge is removed
-   (JSON Merge Patch), while #8845 stores it as <code>null</code> (its body: Q1b "is not confirmed and is not
-   implemented"). The two disagree until Q1b is confirmed or the spec changes.</li>
-<li><strong>#8854 against the architecture review's Q-A and Q-G</strong> (maintainer, with AndyLow91): the draft
-   builds a shared write step on <code>dev</code> now; whether that is Q-A's "pull the single write step forward"
-   and how it sequences against the release train (Q-G) is not recorded.</li>
 <li><strong>BF-49's alias and dead settings keys</strong> (maintainer; #8849's open items, <code>BFQ-ENV</code>): whether
    <code>SECURE_HSTS_HEADER_INCLUDE_SUBDOMAINS</code> becomes an alias, and what to do with the five settings keys
    nothing reads.</li>
@@ -3233,9 +3240,10 @@ repos/nightscout/cgm-remote-monitor/branches/&lt;branch&gt;/protection</code>: <
 <code>master</code> requires <code>Run Tests (22, 6)</code>, <code>Run Tests (22, 4.4)</code> and <code>Run Tests (24, 6)</code> and one approving
 review; <code>enforce_admins</code> is off on both). No workflow on <code>dev</code> emits <code>Run Tests (22, 4.4)</code>, so the
 staging PR #8824 cannot meet <code>master</code>'s protection as it stands.</p>
-<p><strong>Proposed, not decided:</strong> <code>master</code> and <code>dev</code> require only the <em>Tests pass</em> check (job <code>tests-pass</code>,
-<code>.github/workflows/main.yml:317</code> on <code>dev</code>, <code>if: always()</code>, needing every test job and the pull-request Docker validation), plus one approving
-review on <code>master</code>. Caveat: <em>Tests pass</em> accepts <code>skipped</code> as well as <code>success</code> from every job it needs
+<p><strong>Decided, settings change owed</strong> (maintainer, 2026-10-26, relayed via session -66; applied by the
+maintainer): <code>master</code> requires only the <em>Tests pass</em> check (job <code>tests-pass</code>, <code>.github/workflows/main.yml:317</code>
+on <code>dev</code>, <code>if: always()</code>, needing every test job and the pull-request Docker validation) and one
+approving review. The decision as relayed names <code>master</code>; <code>dev</code>'s required check is not part of it. Caveat: <em>Tests pass</em> accepts <code>skipped</code> as well as <code>success</code> from every job it needs
 (<code>main.yml:327-337</code>), so a test job skipped in full would still let it pass.</p>
 <p><strong>Follow-ups filed 2026-10-25:</strong> <code>RT-BUNDLE-THEME-SPLIT</code> (page-bundle budget option B: load the modern
 theme's code only when it is chosen; owner Andy Low or the maintainer; not started). <code>RT-BOOT-INDEX-AWAIT</code>
@@ -3271,7 +3279,7 @@ candidate is named.</p>
   Dockerfile and <code>azure-deploy.sh</code> install dev dependencies and are not affected.</li>
 <li>Docker Compose starts <code>mongo:6.0.27</code> instead of <code>mongo:5.0.32</code> (cut 3): for an existing Compose
   deployment this is a database major-version upgrade (<code>docs/runtime-upgrade.md</code>).</li>
-<li>Express 5 and Helmet 8 (cut 5), and the query-string array limit (above, open item 10).</li>
+<li>Express 5 and Helmet 8 (cut 5), and the query-string array limit (above, open item 8).</li>
 <li>The opt-in <code>THEME=modern</code> dashboard (#8831) and the opt-in <code>SHOW_SECONDS</code> clock (#8555).</li>
 <li>The opt-in <code>WRITE_VALIDATION</code> for Temporary Targets (#8841), what <code>log</code> and <code>reject</code> do, that most
   uploaders lose a refused record without showing an error, and that an unrecognised value means <code>off</code>.</li>
@@ -3280,6 +3288,18 @@ candidate is named.</p>
 <li>Record identity (#8845): API v3 refuses a client body <code>_id</code> with 400 (BF-170); API v3 PATCH, PUT and
   POST reach a record with an empty stored identifier (BF-145); a v1 re-send is answered with the stored
   <code>_id</code> (BF-165); a profile re-sent with its <code>_id</code> is merged instead of failing (BF-166).</li>
+<li>A <code>null</code> in an update removes the field (write contract Q1b, decided 2026-10-26; with BF-195's fix): what
+  is stored changes for a re-send that matches a stored treatment, entry, profile, food or activity record, for
+  an API v3 <code>PATCH</code> and for a socket <code>dbUpdate</code>, where 15.0.9 stores the <code>null</code>. A create and a replace (v1 or v3
+  <code>PUT</code>) still store a <code>null</code> as sent. Arrays are replaced whole. The merge is nested: a profile re-sent with
+  part of its <code>store</code> keeps the named profiles it leaves out; to remove one, send <code>store: {"&lt;name&gt;": null}</code> or
+  replace the profile with <code>PUT</code> (as the profile editor does).</li>
+<li>A device status re-sent with an <code>identifier</code> that is already stored is not stored again and does not change
+  the stored record (no new <code>srvModified</code>); the reply carries the stored <code>_id</code>, on API v1 and v3. API v1
+  entries and device status match a re-send on <code>identifier</code>, as treatments do; an entry whose <code>identifier</code>
+  matches nothing still matches on its time and type.</li>
+<li>Quieter server logs (BF-193): each write is logged as a summary, not the record. Set <code>DEBUG_LOGGING=true</code> to
+  see the records clients send; debug logs then contain health data. Log lines change text.</li>
 <li>API v1 profile uploads (#8852): malformed entries and binary bodies answer 400, and a batch is capped at
   10,000 records, as on the other bounded v1 upload routes.</li>
 <li>BF-92 (#8842): a page showing <code>---</code> now presents device and other non-glucose alarms (a MINOR change

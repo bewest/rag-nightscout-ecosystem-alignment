@@ -5386,7 +5386,7 @@
 
 
 <h1 id="implementing-registration-in-cgm-remote-monitor-where-each-slice-goes-in-what-order-and-how-it-is-checked">Implementing registration in cgm-remote-monitor: where each slice goes, in what order, and how it is checked<a class="headerlink" href="#implementing-registration-in-cgm-remote-monitor-where-each-slice-goes-in-what-order-and-how-it-is-checked" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>c496d839b</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>9ea0af8cd</code>.</em></p>
 <p><em>Contributor-facing. Living guide, current at <code>main</code> <code>f1119d4c</code> (2026-10-26) and cgm-remote-monitor <code>official/dev</code> <code>47723cda</code> (the merge of #8605). Uses the <a href="../index.html">platform specifications</a>; terms are in the <a href="../spec/glossary.html">glossary</a>. Status: the specifications are proposed and not implemented; this guide plans <code>HUB-REG-CRM</code> and its backlog. Every module path that is not on <code>dev</code> is marked proposed, and every route and permission name is a proposal, as the specifications say.</em></p>
 <p>This guide is the hub-side companion of <a href="new-controller.html">bring a new controller onto a hub</a> and
 <a href="add-a-setting.html">add a setting in your next release</a>. Those tell a controller author what to send.
@@ -6123,12 +6123,12 @@ check is the cause.</p>
 <h2 id="7-where-the-specifications-and-dev-differ">7. Where the specifications and <code>dev</code> differ<a class="headerlink" href="#7-where-the-specifications-and-dev-differ" title="Permanent link">&para;</a></h2>
 <p>Measured at <code>47723cda</code> (and <code>65ce54b9</code> for item 6); each is reported to the specification's owner rather than worked around.</p>
 <ol>
-<li><strong>API v3 and <code>_id</code>.</strong> <a href="../spec/identity.html#1-rules">Identity I2</a> says API v1 and v3 serve a 24-hex
-   <code>_id</code> and keep a client's 24-hex <code>_id</code> as that ObjectId. Since #8845, API v3 refuses a body <code>_id</code>
-   with 400 (<code>lib/api3/shared/operationTools.js:197-203</code>) and its reads drop <code>_id</code>
-   (<code>lib/api3/storage/mongoCollection/utils.js:10-16</code>, applied by <code>find.js:19-24</code>). So I8's "every
-   read of that projection carries the same <code>_id</code>" holds on API v1 only. Identity §6 is read at
-   <code>fade2299</code>, before #8845.</li>
+<li><strong>API v3 reads and <code>_id</code>.</strong> <a href="../spec/identity.html#1-rules">Identity I2</a> says API v1 and v3 serve a
+   24-hex <code>_id</code>, and that API v3 refuses a client <code>_id</code> with 400, as <code>dev</code> does since #8845
+   (<code>lib/api3/shared/operationTools.js:197-203</code>). API v3's reads drop <code>_id</code>
+   (<code>lib/api3/storage/mongoCollection/utils.js:10-16</code>, applied by <code>find.js:19-24</code>), so on <code>dev</code> I2's
+   "v3 serves a 24-hex <code>_id</code>" and I8's "every read of that projection carries the same <code>_id</code>" hold on
+   API v1 only.</li>
 <li><strong>A typed write with no <code>identifier</code>.</strong> The decision that <code>identifier</code> is mandatory for
    registered instances has no case, and <code>instances.write</code> accepts a typed write that carries no
    record id (<code>tools/nsschema/instances.py:1009</code>). None of the five <code>instances/typed-write-*.yaml</code>

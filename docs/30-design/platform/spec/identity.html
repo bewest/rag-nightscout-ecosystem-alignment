@@ -5809,12 +5809,15 @@
 
 
 <h1 id="l0-identity-how-records-definitions-instances-and-subjects-are-named">L0 Identity: how records, definitions, instances and subjects are named<a class="headerlink" href="#l0-identity-how-records-definitions-instances-and-subjects-are-named" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>b9be1bed7</code>.</em></p>
-<p><em>Contributor-facing. Living specification, current at <code>main</code> <code>5a9a49cc</code> (2026-10-18). Layer L0 of
-the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. Status:
-specified, not implemented; §6, today's behaviour, is evidenced. Decisions:
-<a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">D20</a>
-and the <a href="../../tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-10-12">write contract's §6.1</a>.
+<p><em>Living document, last changed 2026-10-26 at <code>4fcb76f23</code>.</em></p>
+<p><em>Contributor-facing. Living specification, current at 2026-10-26 (cgm-remote-monitor <code>dev</code>
+<code>47723cda</code>). Layer L0 of the <a href="../index.html">platform index</a>; terms are in the
+<a href="glossary.html">glossary</a>. Status: specified, not implemented; §6, today's behaviour, is evidenced.
+Decisions:
+<a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">D20</a>,
+the <a href="../../tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-10-12">write contract's §6.1</a>
+and the <a href="../../../../releases/cgm-remote-monitor-16.0.0/decisions.html">16.0.0 decisions</a> (I2 on API
+v3, BF-170; the null rule of §3, Q1b).
 Queue: <code>SPEC-ID</code>.</em></p>
 <p><em>Specification 1 of 8 in the <a href="../index.html#reading-order">reading order</a>; every other specification uses these ids. Expect rules I1–I9, the contract ids, the match order per collection, the <code>identifier</code> format, today's behaviour in cgm-remote-monitor, and the conformance cases.</em></p>
 <p>This page defines how records, definitions, instances and subjects are identified, and how a hub
@@ -5835,7 +5838,7 @@ ids; none of them redefines one.</p>
 </tr>
 <tr>
 <td>I2</td>
-<td><strong><code>_id</code> is 24 hex on every legacy surface.</strong> API v1 and v3 serve a 24-hex <code>_id</code> that the hub assigns, on MongoDB and PostgreSQL alike. A client <code>_id</code> that is 24 hex, in either case, or <code>{"$oid": …}</code>, is kept as that ObjectId in lower case. A client <code>_id</code> that is any other string is never stored as <code>_id</code>; it is handled by the quirks registry (I9). A hub's own newer APIs may use other ids.</td>
+<td><strong><code>_id</code> is 24 hex on every legacy surface.</strong> API v1 and v3 serve a 24-hex <code>_id</code> that the hub assigns, on MongoDB and PostgreSQL alike. <strong>On API v1</strong>, a client <code>_id</code> that is 24 hex, in either case, or <code>{"$oid": …}</code>, is kept as that ObjectId in lower case, and a client <code>_id</code> that is any other string is never stored as <code>_id</code>; it is handled by the quirks registry (I9). <strong>On API v3</strong>, a client-supplied <code>_id</code> in the body of a create, <code>PUT</code> or <code>PATCH</code> is refused with HTTP 400, whatever its form, and no quirk applies: a v3 client names its records by <code>identifier</code> (maintainer, 2026-10-25; BF-170). A hub's own newer APIs may use other ids.</td>
 </tr>
 <tr>
 <td>I3</td>
@@ -5851,7 +5854,7 @@ ids; none of them redefines one.</p>
 </tr>
 <tr>
 <td>I6</td>
-<td><strong>One identifier names one record</strong> per collection, for as long as the record is stored, and is compared exactly: case-sensitive, with no trimming or normalisation.</td>
+<td><strong>One identifier names one record</strong> per collection, for as long as the record is stored, and is compared exactly: case-sensitive, with no trimming or normalisation. For devicestatus, a re-send whose <code>identifier</code> is already stored writes nothing (no merge, no new record, no <code>srvModified</code> change) and is answered with the stored <code>_id</code>, on API v1 and v3 alike (maintainer, 2026-10-26; §3).</td>
 </tr>
 <tr>
 <td>I7</td>
@@ -5951,7 +5954,7 @@ first that resolves wins.</p>
 <tr>
 <td>devicestatus</td>
 <td><code>identifier</code>, <code>_id</code>, <code>NSCLIENT_ID</code>, <code>created_at</code> + <code>device</code> for an identical body only</td>
-<td>an identical body is unchanged; a differing body is a new record</td>
+<td>an <code>identifier</code> match is unchanged whatever the body: nothing is written, no <code>srvModified</code> changes, and the reply carries the stored <code>_id</code>; on the other keys an identical body is unchanged and a differing body is a new record</td>
 </tr>
 <tr>
 <td>profile</td>
@@ -5971,8 +5974,19 @@ first that resolves wins.</p>
 </tbody>
 </table>
 <ul>
-<li><em>Merge</em> follows JSON Merge Patch (RFC 7386): a field sent as <code>null</code> is removed. An explicit
-  update (v1 <code>PUT</code>, v3 <code>PUT</code>) replaces.</li>
+<li><em>Merge</em> follows JSON Merge Patch (RFC 7386): a field sent as <code>null</code> is removed from the stored
+  record. The rule is recursive (a <code>null</code> inside a nested object removes that nested field) and
+  an array is replaced whole, never merged element by element. It applies to a merge on match (a
+  re-send that matches a stored record, in the collections above whose outcome is merge), to an
+  API v3 <code>PATCH</code>, and to the socket's <code>dbUpdate</code>, which follows <code>PATCH</code>. It never applies to a
+  replace (v1 <code>PUT</code>, v3 <code>PUT</code>), which stores the document as sent, or to any create, which stores
+  a <code>null</code> as sent. On API v1 it runs after <code>prepareData</code>, so a field that <code>prepareData</code> removes or
+  rewrites never reaches it. The socket's <code>dbUpdateUnset</code> stays as the explicit removal of named
+  fields (maintainer, 2026-10-26; write contract Q1b; ships in 16.0.0).</li>
+<li>Because the merge is recursive, a profile re-send whose <code>store</code> leaves out a named profile keeps
+  that stored profile; removing it takes <code>store: {"&lt;name&gt;": null}</code> or a replace (<code>PUT</code>, which the
+  profile editor uses). The same nested merge applies to an API v3 <code>PATCH</code> and a socket
+  <code>dbUpdate</code> (maintainer, 2026-10-26, accepted with this consequence).</li>
 <li><em>Client identity</em> is <code>treatment-fallback-key</code>'s client ids, with its rule that a write without
   identity matches only a stored record without identity.</li>
 <li>The devicestatus natural key matches identical retries only, because Loop writes distinct
@@ -6047,8 +6061,8 @@ uses today's v1 by-<code>_id</code> routes needs a UUID (§6).</p>
 </tr>
 <tr>
 <td><code>ID-CLIENT-OID-DECISION</code></td>
-<td>may a client create its own ObjectId as <code>_id</code>; when <code>identifier</code> and <code>_id</code> match different records, which wins?</td>
-<td>I2 keeps a client 24-hex <code>_id</code>. The <a href="../upstream-asks-loop-identifier/index.html#the-simple-contract">Loop reply's simple contract</a> proposes that <code>_id</code> wins, which differs from I5's identifier-first order and from v1 treatments today</td>
+<td>may a client create its own ObjectId as <code>_id</code> over API v1?</td>
+<td>the API v3 half is decided: I2 refuses a client <code>_id</code> on v3 (maintainer, 2026-10-25, BF-170). When <code>identifier</code> and <code>_id</code> match different records, <code>identifier</code> decides (maintainer, 2026-10-18), as I5 orders it. Open: whether the v1 half of the <a href="../upstream-asks-loop-identifier/index.html#the-simple-contract">Loop reply's simple contract</a> (a client-created ObjectId as <code>_id</code>) is recommended, which waits on Loop's answer and is carried by <code>ID-SIMPLE-MATCH</code></td>
 </tr>
 <tr>
 <td><code>ID-V3-IMMUTABLE-DECISION</code></td>
@@ -6095,6 +6109,17 @@ uses today's v1 by-<code>_id</code> routes needs a UUID (§6).</p>
 <li><strong>API v3</strong> keeps a client <code>identifier</code>. When none is sent it computes a UUID v5 over the device,
   date and, for treatments, <code>eventType</code> (<code>lib/api3/shared/operationTools.js:6</code>, <code>:106</code>). It
   refuses a re-send whose <code>date</code>, <code>device</code> or <code>eventType</code> differs (400, reproduced).</li>
+<li><strong>API v3 and a body <code>_id</code></strong> (<code>dev</code> <code>47723cda</code>, since #8845): create, <code>PUT</code> and <code>PATCH</code> refuse a
+  client-supplied <code>_id</code> with 400 (<code>lib/api3/shared/operationTools.js:197-203</code>, read), as I2 states.
+  On <code>v15.0.9</code> a 24-hex body <code>_id</code> is stored as a string (BF-170, reproduced). v3 reads do not
+  return <code>_id</code> (<code>lib/api3/storage/mongoCollection/utils.js:10-16</code>, read).</li>
+<li><strong>A devicestatus re-send with a stored <code>identifier</code></strong> (<code>dev</code> <code>47723cda</code>): API v1 stores a second
+  record (no identifier match) and API v3 replaces the stored record and moves its <code>srvModified</code>
+  (reproduced, the devicestatus study of 2026-10-26). I6's rule is built for 16.0.0 with
+  <code>ID-SIMPLE-MATCH</code> on branch <code>bf/16.0.0-null-removes</code>.</li>
+<li><strong>A <code>null</code> in an update</strong> (<code>dev</code> <code>47723cda</code>): a merge on match stores a field sent as <code>null</code> as
+  <code>null</code> (<code>$set</code>), on every path, and <code>tests/api.profiles.resend.test.js:218</code> pins that. §3's
+  removal is built for 16.0.0 on branch <code>bf/16.0.0-null-removes</code> (in progress), with BF-195's fix.</li>
 <li><strong><code>UUID_HANDLING</code></strong> (default on) moves a non-24-hex string <code>_id</code> to <code>identifier</code> on treatments and
   entries, as I9 describes (<code>lib/server/treatments.js:394-411</code>, <code>lib/server/entries.js:267-284</code> at
   official <code>a8888f0d</code>).</li>
@@ -6200,7 +6225,7 @@ are not a hub.</p>
 </tr>
 </tbody>
 </table>
-<p>Not covered by a case: I7 across two instances (<code>typed-write-resend-same-ids</code> re-sends from one
+<p>Not covered by a case: I2's API v3 refusal (the carrier cases do not name an API version); I7 across two instances (<code>typed-write-resend-same-ids</code> re-sends from one
 instance); §3's per-collection keys, which the write contract's gates measure against
 cgm-remote-monitor rather than a reference function; and §4's format, until it is decided.</p>
 
