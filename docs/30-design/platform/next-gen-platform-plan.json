@@ -112,7 +112,7 @@
    "state": "review",
    "short": "Shared write boundary",
    "title": "Every v1/internal module, the socket and API v3 write through lib/storage/write-step.js; read contract and data diagnostics; zero-test runs fail. Decided 2026-10-26: lands in 16.0.0 after four alignment conditions (outcome B)",
-   "ref": "#8854 (fa22d573, out of draft)",
+   "ref": "#8854 (37cdde50, out of draft; measured at fa22d573)",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8854",
    "where": "lib/storage/write-step.js, lib/storage/validated-update.js, lib/storage/read-contract.js, scripts/check-write-boundary.js",
    "check": "0 of 336 write-contract cells changed (re-measured at fa22d573); its own 430 tests and boundary gate",
@@ -262,15 +262,16 @@
    "id": "ID-SIMPLE-MATCH",
    "track": "identity",
    "phase": "now",
-   "state": "progress",
+   "state": "review",
    "short": "v1 identifier match",
-   "title": "API v1 entries and devicestatus match a re-sent record on identifier. Decided 2026-10-26: entries keep the time-key fallback in 16.0.0; a devicestatus re-send with a stored identifier writes nothing and replies with the stored _id (v1 and v3); ships in the 16.0.0 re-send and merge contract PR with the null-removes rule and BF-195",
-   "ref": "feat/v1-identifier-match (8d0f9a22), joining bf/16.0.0-null-removes",
+   "title": "API v1 entries and devicestatus match a re-sent record on identifier. Decided 2026-10-26: entries keep the time-key fallback in 16.0.0; a devicestatus re-send with a stored identifier writes nothing and replies with the stored _id (v1 and v3); ships in the 16.0.0 re-send and merge contract PR #8859 with the null-removes rule and BF-195",
+   "ref": "#8859 (draft, fc170a4c; carries 8d0f9a22 unchanged)",
    "where": "lib/server/entries.js, lib/server/devicestatus.js",
    "check": "lab cell: same identifier twice stored n=2 on dev, n=1 on the branch; 18 cases with red controls",
    "depends": [
     "DEV-8845"
-   ]
+   ],
+   "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8859"
   },
   {
    "id": "SPEC-ID-AMEND",
@@ -390,7 +391,7 @@
    "id": "REG-S2",
    "track": "registration",
    "phase": "now",
-   "state": "progress",
+   "state": "ready",
    "short": "Instances and leases",
    "title": "Content-addressed definitions and leased instances; channels, roles and provenance",
    "spec": [
@@ -403,15 +404,16 @@
    "depends": [
     "REG-S1"
    ],
-   "ref": "in progress for #8857: one holder document per (scope, channel, role)"
+   "ref": "feat/registration-catalogue 3be98536 for #8857: one holder document per (scope, channel, role); conformance 35 passed, 88 mapped, 0 failed",
+   "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8857"
   },
   {
    "id": "REG-S5",
    "track": "registration",
    "phase": "now",
-   "state": "progress",
+   "state": "ready",
    "short": "Owner actions",
-   "title": "The owner's actions on a single-tenant site with API_SECRET: retire, block, release, transfer and free-namespaces built; pins, transfer-role and the instance listing wait for S2",
+   "title": "The owner's actions on a single-tenant site with API_SECRET: retire, block, release, transfer, free-namespaces, pins, transfer-role and the instance listing",
    "spec": [
     {
      "label": "registration §15",
@@ -423,7 +425,7 @@
     "REG-S1",
     "REG-S2"
    ],
-   "ref": "#8857: product half at 6c67ddfc; instance half in progress",
+   "ref": "#8857: product half at 6c67ddfc; instance half ready at 3be98536",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8857"
   },
   {

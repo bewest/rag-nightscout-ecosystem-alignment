@@ -18,7 +18,7 @@ It names each piece of work, what it needs first, where it goes in the code, and
 | | on dev `47723cda` | in review or on a branch | not started |
 |---|---|---|---|
 | Storage | `WRITE_VALIDATION` (#8841), called from treatments and API v3. No storage interface, no `TENANCY_MODE`. | #8854 (draft): one write boundary for the six v1 modules, the socket and API v3; a 336-cell CRUD matrix; an AST gate over eight adapter files. The September seam chain (`seam/*`, `65ce54b9`, 51 commits, local). | write(intent), backend-neutral store, PostgreSQL on dev |
-| Identity | `identifier` is the client's, `_id` the server's; API v3 refuses a client `_id` (#8845: BF-169, BF-170) | `feat/v1-identifier-match` (ID-SIMPLE-MATCH) | identifier-first on every path, unique index |
+| Identity | `identifier` is the client's, `_id` the server's; API v3 refuses a client `_id` (#8845: BF-169, BF-170) | [#8859](https://github.com/nightscout/cgm-remote-monitor/pull/8859) (ID-SIMPLE-MATCH) | identifier-first on every path, unique index |
 | Registration | nothing in code; dev carries an older proposal schema, `docs/proposals/schemas/controller-instance-registration.schema.json` | specs and 1,661 tests in this repository; `feat/registration-catalogue` (slice 0) | submit, instances, typed writes |
 | Tenancy | nothing | tenant resolution, admin plane, per-tenant contexts and sockets, change feed, credential schema (old chain only) | per-tenant config, tenant-scoped auth, hosted lab |
 
