@@ -5716,7 +5716,7 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-27 at <code>4d80093c1</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>be692a344</code>.</em></p>
 <p><em>Contributor-facing. Living plan, current at cgm-remote-monitor dev <code>8dbb60c2</code> (2026-10-27). #8854 merged to dev 2026-10-26 as <code>c08cbe03</code>; the seam slices, the one executable and registration are open as drafts #8861, #8863, #8865, #8862 and #8857. Status: proposed; the decisions in §6 are open. Which release each item goes in is proposed in <a href="release-allocation-2026-10-27.html">release allocation</a> (2026-10-27).</em></p>
 <p>The interactive version, with the dependency map, is the site page <a href="../../../site/pages/nightscout-next-gen-platform.html">nightscout-next-gen-platform.html</a>.</p>
 <p>This plan covers the work that follows the 16.0.0 modernization:</p>
@@ -5907,6 +5907,18 @@
 <td>each stored record named once per write</td>
 </tr>
 <tr>
+<td>ST-COUNT-ONEPATH</td>
+<td>API v1 count only through the interface: <code>lib/server/aggregate.js</code> loses its constructor pipeline hook and no-store path (decided 2026-10-27, before the 16.0.0 tag)</td>
+<td>ST-WRITES</td>
+<td>no client-visible change; the BF-70 refusal and the find guard keep their tests</td>
+</tr>
+<tr>
+<td>ST-V3-DECOUPLE</td>
+<td>API v3 without API v1's modules, the socket and the cache, so <code>serve api</code> serves it alone (adopted 2026-10-27, M3)</td>
+<td>ST-WRITES, PLAT-SERVE</td>
+<td><code>serve api</code> passes the API v3 suites (485 pass, 81 fail at #8865 <code>1dafe2a5</code>); <code>single</code> unchanged</td>
+</tr>
+<tr>
 <td>WC-STEP-PATCH</td>
 <td>slice 4: <code>write(intent)</code> -&gt; WriteResult.items[] above the interface; matching, server dates, the null-removes rule and validation move into it; compare-and-set behind an adapter method</td>
 <td>ST-WRITES, ST-EVENT</td>
@@ -5917,6 +5929,12 @@
 <td>slice 5: backend-selectable harness, backend selection, tenant scope</td>
 <td>WC-STEP-PATCH</td>
 <td><code>NS_TEST_BACKEND</code> controls</td>
+</tr>
+<tr>
+<td>ST-VIEWS</td>
+<td>computed views from bounded queries, without a resident <code>ddata</code>: page, socket <code>dataUpdate</code>, plugins, alarms (adopted 2026-10-27, M4)</td>
+<td>ST-READS</td>
+<td>each view equal to today's on the corpus fixtures; alarms per the execution plan §7b</td>
 </tr>
 <tr>
 <td>ST-PG</td>
@@ -6059,7 +6077,7 @@
 <tr>
 <td>TEN-RESOLVE</td>
 <td>tenant resolution and the platform admin interface (D7, D10, D16)</td>
-<td>ST-HARNESS, T30-SCHEMA-CONFIG, PLAT-SERVE</td>
+<td>ST-HARNESS, T30-SCHEMA-CONFIG, PLAT-SERVE, ST-V3-DECOUPLE</td>
 </tr>
 <tr>
 <td>T30-WIRING</td>
@@ -6069,7 +6087,7 @@
 <tr>
 <td>TEN-LAB</td>
 <td>two tenants on PostgreSQL in a Docker Compose lab, isolation checked with a control</td>
-<td>ST-PG, T30-WIRING</td>
+<td>ST-PG, T30-WIRING, ST-VIEWS</td>
 </tr>
 </tbody>
 </table>
