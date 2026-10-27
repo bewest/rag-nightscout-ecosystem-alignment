@@ -3165,7 +3165,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-27 at <code>6793843e0</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>82fcf27e7</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3208,7 +3208,7 @@
 </tr>
 <tr>
 <td>runnable gates</td>
-<td>365</td>
+<td>366</td>
 </tr>
 <tr>
 <td>explicit <code>no-gate:</code> markers</td>
@@ -3216,7 +3216,7 @@
 </tr>
 </tbody>
 </table>
-<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 342 of the 707 gate slots in this queue are in that state.</p>
+<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 342 of the 708 gate slots in this queue are in that state.</p>
 <h3 id="claimed-state-not-a-measurement----run-make-queue-status">Claimed state (NOT a measurement -- run <code>make queue-status</code>)<a class="headerlink" href="#claimed-state-not-a-measurement----run-make-queue-status" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3234,8 +3234,8 @@
 </tr>
 <tr>
 <td><code>in-progress</code></td>
-<td>7</td>
-<td>BFQ-178, ID-CONVENTIONS, BFQ-191, BFQ-202, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY</td>
+<td>6</td>
+<td>BFQ-178, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY</td>
 </tr>
 <tr>
 <td><code>gate-not-met</code></td>
@@ -3244,8 +3244,8 @@
 </tr>
 <tr>
 <td><code>ready-to-push</code></td>
-<td>4</td>
-<td>P0-C-REMEDIATE, T30-AUTH, BFQ-200, WS-LAB</td>
+<td>3</td>
+<td>P0-C-REMEDIATE, T30-AUTH, WS-LAB</td>
 </tr>
 <tr>
 <td><code>blocked</code></td>
@@ -3254,13 +3254,13 @@
 </tr>
 <tr>
 <td><code>in-flight-upstream</code></td>
-<td>11</td>
-<td>RT-CI-FLAKES-8DBB60C2, ID-SIMPLE-MATCH, BFQ-72, BFQ-161, BFQ-201, BFQ-193, BFQ-195, ST-FILTER-READS, ST-WRITES, PLAT-ENTRY, PLAT-SERVE</td>
+<td>8</td>
+<td>BFQ-72, BFQ-161, BFQ-193, BFQ-200, ST-FILTER-READS, ST-WRITES, PLAT-ENTRY, PLAT-SERVE</td>
 </tr>
 <tr>
 <td><code>merged-upstream</code></td>
-<td>46</td>
-<td>BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-192, MOD-WRITE-VALIDATION</td>
+<td>51</td>
+<td>BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-192, BFQ-195, MOD-WRITE-VALIDATION</td>
 </tr>
 <tr>
 <td><code>released</code></td>
@@ -5111,7 +5111,7 @@ that costs.</p>
 <tr>
 <td><code>RT-CI-FLAKES-8DBB60C2</code></td>
 <td>dev 8dbb60c2's red CI: a concurrent-writes timestamp collision and the WebKit reports-page race</td>
-<td><code>in-flight-upstream</code></td>
+<td><code>merged-upstream</code></td>
 <td><code>test/16.0.0-ci-flakes</code></td>
 <td>n/a</td>
 <td>3 run + 1 no-gate</td>
@@ -5207,7 +5207,7 @@ that costs.</p>
 <tr>
 <td><code>ID-SIMPLE-MATCH</code></td>
 <td>API v1 entries and devicestatus match on identifier like treatments (the simple contract)</td>
-<td><code>in-flight-upstream</code></td>
+<td><code>merged-upstream</code></td>
 <td><code>bf/16.0.0-null-removes</code></td>
 <td>minor</td>
 <td>2 run + 1 no-gate</td>
@@ -6183,7 +6183,7 @@ that costs.</p>
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>in-flight-upstream</code></td>
+<td><code>merged-upstream</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -6216,11 +6216,11 @@ that costs.</p>
 <p><strong>Why <code>n/a</code>.</strong> test reliability</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c7857735 test/16.0.0-ci-flakes</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c7857735 official/dev</code></li>
 <li>The concurrent-writes fix is on the branch: ten Notes get times one second apart, so none share the created_at and eventType a Note without an identifier is matched on.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 65632082 test/16.0.0-ci-flakes</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 65632082 official/dev</code></li>
 <li>The dashboard round-trip fix is on the branch: each page must be ready before the test follows its close link and before it goes forward.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bdd569a3 test/16.0.0-ci-flakes</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bdd569a3 official/dev</code></li>
 <li>The page-startup fix is on the branch: the reports page counts as ready once its deferred first-week report has loaded (dates filled, Show visible, no jQuery request in flight).</li>
 <li><strong>NO GATE</strong> &mdash; The WebKit failure was not reproduced locally before or after the fix (CI image mcr.microsoft.com/playwright:v1.63.0-noble, Node 26.12.1): the mechanism, requests cancelled by navigating away from /report/, is read from the job log and the code. After the fix, page-startup.test.js passes 3 of 3 on WebKit, Chromium and Firefox, 28 passing each. The concurrent-writes collision is reproduced: with every Note at one time the test fails, expected 1 to be 10; the fix passes 30 of 30 on Node 22.23.4 and MongoDB 5.0.33.</li>
 </ul>
@@ -6228,7 +6228,7 @@ that costs.</p>
 <ul>
 <li><code>docs/30-design/remedial/rc-16.0.0-integration-record.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-27, later: the maintainer merged dev 2dc0c1bc in (ddeeff8c); run 40559261253 then failed WebKit's dashboard round trip with page.goForward: WebKit encountered an internal error, on the reports page (the test went forward from /report while its first report was loading). Fixed as 65632082 (3 of 3 on WebKit, Chromium and Firefox, page-startup 28 passing on each; not reproduced locally). #8867 was merged into the branch as 7a96b912 at the maintainer's request, so #8866 is the one CI pull request; #8867 is to be closed. 2026-10-27: dev 8dbb60c2 (#8860) push run 40424319822 failed Browser tests (26, webkit) and Run Tests (26, 5.0), and pull_request run 40424329138 failed WebKit; #8860's own run on the identical tree passed. Neither failure is #8860's: the suites on 8dbb60c2 pass on Node 22.23.4 with MongoDB 5.0.33 and Node 26.12.1 with 8.0.34 (integration record R17). Branch prepared off official/dev 8dbb60c2 by session d22eceb7 in externals/work/crm-ci-flakes; not pushed. The page-startup change may also explain R14's Chromium "recovers the actual reports page after two failed bundle downloads" timeout, which leaves the same page; not measured.</p>
+<p><strong>Notes.</strong> 2026-10-27, 19:42:55Z: merged. bewest merged #8866 (head f6884342) into dev as b84871d7 (gh pr view 8866); #8867 was closed at 19:28:02Z in its favour. Gates re-pointed to official/dev, with official/master as the control. 2026-10-27, later: the maintainer merged dev 2dc0c1bc in (ddeeff8c); run 40559261253 then failed WebKit's dashboard round trip with page.goForward: WebKit encountered an internal error, on the reports page (the test went forward from /report while its first report was loading). Fixed as 65632082 (3 of 3 on WebKit, Chromium and Firefox, page-startup 28 passing on each; not reproduced locally). #8867 was merged into the branch as 7a96b912 at the maintainer's request, so #8866 is the one CI pull request; #8867 is to be closed. 2026-10-27: dev 8dbb60c2 (#8860) push run 40424319822 failed Browser tests (26, webkit) and Run Tests (26, 5.0), and pull_request run 40424329138 failed WebKit; #8860's own run on the identical tree passed. Neither failure is #8860's: the suites on 8dbb60c2 pass on Node 22.23.4 with MongoDB 5.0.33 and Node 26.12.1 with 8.0.34 (integration record R17). Branch prepared off official/dev 8dbb60c2 by session d22eceb7 in externals/work/crm-ci-flakes; not pushed. The page-startup change may also explain R14's Chromium "recovers the actual reports page after two failed bundle downloads" timeout, which leaves the same page; not measured.</p>
 <h3 id="rt-16-rig-soak--1600-pre-tag-check-a-real-rig-soak-on-dev"><code>RT-16-RIG-SOAK</code> &mdash; 16.0.0 pre-tag check: a real-rig soak on dev<a class="headerlink" href="#rt-16-rig-soak--1600-pre-tag-check-a-real-rig-soak-on-dev" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -6876,7 +6876,7 @@ that costs.</p>
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>in-flight-upstream</code></td>
+<td><code>merged-upstream</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -6909,9 +6909,9 @@ that costs.</p>
 <p><strong>Why <code>minor</code>.</strong> Versioning policy section 2, question 10: the same write stores a different set of records (a re-send that today adds a second entry or devicestatus becomes a match on the stored one). By rule R3 one minor row makes the release a minor, and 15.0.9 is decided as a patch (RT-VERSION, RT-COUNT-COMPAT), so it cannot go into 15.0.9.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda bf/16.0.0-null-removes</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda official/dev</code></li>
 <li>The PR #8859 branch contains dev 47723cda (cut 5 merged). Red if the branch is rebased off dev or deleted.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8d0f9a22 bf/16.0.0-null-removes</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8d0f9a22 official/dev</code></li>
 <li>This item's commit 8d0f9a22 (built as feat/v1-identifier-match) is on the PR #8859 branch. Red if the branch is rewritten without it.</li>
 <li><strong>NO GATE</strong> &mdash; Behaviour is measured outside the queue. tools/lab/v3-identifier-immutable's "v1 entries: same identifier, date +60 s" cell, run 2026-10-26: stored n=2 on dev 47723cda, n=1 on 8d0f9a22 with the later date kept; every API v3 cell the same on both builds. The PR's mocha cases (11 entries, 7 devicestatus) each have a red control. Against dev's two files, 6 of 11 and 3 of 7 fail with the original symptom (expected 2 to be 1). Seven code mutations turn the cases that pass on dev red. 74 related test files, 1428 passing; tests/tiers.json check ok; trial merge with #8854 880b7369 clean, its boundary gate passes.</li>
 </ul>
@@ -6921,7 +6921,7 @@ that costs.</p>
 <li><code>tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md</code></li>
 <li><code>docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-26, later: the maintainer pushed 5c6ceabb; it is PR #8859's head (gh pr view, mergeable). Hosted CI on 5c6ceabb: 16 checks passed, 0 failed, 2 skipped (Build Docker image and Publish to Docker Hub, which run on push to dev only), including the browser tests on Node 26 in Chromium, Firefox and WebKit. 2026-10-26, after #8854 merged (dev 7ad3a67f): session -66 merged dev 7ad3a67f into bf/16.0.0-null-removes locally as 5c6ceabb, not pushed (the PR head is still fc170a4c; the push is the maintainer's). The resolution: both requires kept in lib/api3/generic/patch/operation.js; #8854's cross-path entries resend cells in tests/api.crud-by-id.matrix.test.js updated (the v1 resend expects 200, the _id-collision branch removed; only v3 to socket still duplicates). On 5c6ceabb: npm test 4521 passing, 0 failing, 3 pending; test:all 4849 passing, 0 failing, 3 pending. Red control: dev's matrix file on the merged tree gives 413 passing, 9 failing (the 4 cross-path cells and 5 v3 devicestatus resend rows); with the updated file 422 passing, 0 failing. #8854's boundary validates the effective result of $set and $unset (lib/storage/write-step.js:35, lib/server/write-validation.js:143), so a null that removes a field goes through reject-mode validation. 2026-10-26, later: ships inside draft PR #8859 to dev (bf/16.0.0-null-removes, head fc170a4c), opened by the maintainer, with Q1b (913d0895), BF-195 (1bdce62c), a merge of 8d0f9a22 (cf2a2a67: entries find their stored match first, then merge) and the devicestatus rule (b) as fc170a4c (a re-send with a stored identifier writes nothing and the reply carries the stored _id, v1 and v3; lib/api3/generic/create/acknowledge.js). dev is still 47723cda. Measured by session -66: npm test 4375 passing, 0 failing, 3 pending and test:all 4703 passing, 0 failing, 3 pending (re-run on fc170a4c 2026-10-26, Node 22.23.4, MongoDB 5.0; the first run, before push, had 1 environmental failure, development-watch ENOSPC on the host's file-watcher limit). With the code reverted 6 of 10 new v1 tests and 5 of 8 new v3 tests fail, controls pass; the devicestatus re-send probe leaves 1 record where dev stored 2, 3, then 4. Two existing expectations changed deliberately (api.crud-by-id matrix v3 devicestatus re-send row; api3.empty-identifier-edit). Trial merge with #8854: one textual conflict (an import line in lib/api3/generic/patch/operation.js, keep both requires) and 4 of #8854's cross-path matrix cells need a 3-line expectation change, applied by whichever PR merges second; with it all 405 matrix tests pass. Merges cleanly with #8856. Points for review in the PR body: v3's created_at+device devicestatus fallback still replaces; a deleted status re-sent with its identifier stays deleted; two simultaneous first sends with the same new identifier can both be stored (no unique index). 2026-10-26, later (maintainer, via session -66): (a) D-ID-FALLBACK decided: for 16.0.0 a v1 entries re-send whose identifier matches nothing still matches on sysTime+type, as today (TEST-ENTRY-UUID-003); treatments never fall back; to be revisited once identifiers are common. (b) A devicestatus re-send whose identifier is already stored writes nothing (no merge, no new record, no srvModified change) and the reply carries the stored _id, on API v1 and v3; v3, which today replaces and moves srvModified, is aligned in the same PR. (c) This item ships in one 16.0.0 re-send and merge PR with Q1b, BF-195 and (b), on bf/16.0.0-null-removes (Q1b head 1bdce62c; bundle in progress). Evidence for (b): the devicestatus study of 2026-10-26, reproduced on dev 47723cda and 8d0f9a22; client survey read-derived: no client sends an identifier on any devicestatus path (Loop's remote overrides travel as treatments and push notifications). 2026-10-26: carries the API v1 half of ID-CLIENT-OID-DECISION (the Loop reply's simple contract: whether a client may create its own ObjectId as _id over v1); the API v3 half is decided (BF-170, identity I2). 2026-10-26: built as feat/v1-identifier-match 8d0f9a22 (one commit over dev 47723cda; lib/server/entries.js +84/-8, lib/server/devicestatus.js +97, two test files), not pushed. A re-sent identifier updates the stored record; an identifier miss still falls back to sysTime+type for entries (status quo, TEST-ENTRY-UUID-003 pins it), unlike v1 treatments, which never fall back; that choice is the maintainer's (next-gen plan decision D-ID-FALLBACK). identifier decides over a conflicting _id. upsertQueryFor is at entries.js:308 on 47723cda. Draft PR body and push commands are in the lane report. 2026-10-25: RT-1 merged (#8828, dev eb72a1d3), so this item is no longer blocked and can go to dev. Neither lib/server/entries.js nor lib/server/devicestatus.js changed between fade2299 and eb72a1d3 (git diff --name-only fade2299 official/dev -- both files prints nothing), so the line numbers above still hold. Cut 2 changes entries.js, so landing before cut 2's catch-up adds to that merge (RT-2). 2026-10-21, later: cut 1's catch-up merge is done (RT-REBASE's cut 1 part; 806ff2f0 contains dev 04d435eb), so blocks_on moves from RT-REBASE to RT-1: this lands on dev after #8828 merges, which is the maintainer's 2026-10-17 order. Cut 1 still touches neither lib/server/entries.js nor lib/server/devicestatus.js (<code>git diff --name-only official/dev official/chore/retire-jsdom</code> on 806ff2f0 lists neither). 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Still waits on cut 1's catch-up merge (RT-REBASE, in progress). Decided by the maintainer 2026-10-17: not in 15.0.9; lands on dev after cut 1's rebase, with BFQ-169. 15.0.9 is dev as it stands at fade2299 (releases/cgm-remote- monitor-15.0.9/contents.md), and any merge to dev moves the head off the candidate whose re-approval RT-0 owes. blocks_on names RT-REBASE because no separate item marks cut 1's catch-up merge done; only cut 1's part is needed (RT-1 blocks on the same two). Why after the rebase: RT-REBASE records that each further merge to dev raises the cuts' catch-up cost. Cuts 2-5 already change both files this item touches: <code>git diff --name-only $(git merge-base fade2299 &lt;cut&gt;) &lt;cut&gt; -- lib/server/entries.js lib/server/devicestatus.js</code> lists entries.js on cut 2 and both files on cuts 3, 4 and 5 (measured 2026-10-17); cut 1 touches neither. Landing after the catch-up merge keeps this change out of that merge's conflicts. The tenancy item ID-FIRST-MATCH absorbs this rule into the write step once WC-STEP-PATCH exists (it blocks on this item). Background: the simple contract in the Loop reply (LOOP-ID-REPLY) - _id an ObjectId or absent; identifier when _id is absent; the time key when neither.</p>
+<p><strong>Notes.</strong> 2026-10-27, 19:52:21Z: merged. bewest merged #8859 (head 87f1aeb8) into dev as 94899828 (gh pr view 8859). Gates re-pointed to official/dev, with official/master as the control. 2026-10-26, later: the maintainer pushed 5c6ceabb; it is PR #8859's head (gh pr view, mergeable). Hosted CI on 5c6ceabb: 16 checks passed, 0 failed, 2 skipped (Build Docker image and Publish to Docker Hub, which run on push to dev only), including the browser tests on Node 26 in Chromium, Firefox and WebKit. 2026-10-26, after #8854 merged (dev 7ad3a67f): session -66 merged dev 7ad3a67f into bf/16.0.0-null- removes locally as 5c6ceabb, not pushed (the PR head is still fc170a4c; the push is the maintainer's). The resolution: both requires kept in lib/api3/generic/patch/operation.js; #8854's cross-path entries resend cells in tests/api.crud-by-id.matrix.test.js updated (the v1 resend expects 200, the _id-collision branch removed; only v3 to socket still duplicates). On 5c6ceabb: npm test 4521 passing, 0 failing, 3 pending; test:all 4849 passing, 0 failing, 3 pending. Red control: dev's matrix file on the merged tree gives 413 passing, 9 failing (the 4 cross-path cells and 5 v3 devicestatus resend rows); with the updated file 422 passing, 0 failing. #8854's boundary validates the effective result of $set and $unset (lib/storage/write- step.js:35, lib/server/write-validation.js:143), so a null that removes a field goes through reject-mode validation. 2026-10-26, later: ships inside draft PR #8859 to dev (bf/16.0.0-null-removes, head fc170a4c), opened by the maintainer, with Q1b (913d0895), BF-195 (1bdce62c), a merge of 8d0f9a22 (cf2a2a67: entries find their stored match first, then merge) and the devicestatus rule (b) as fc170a4c (a re-send with a stored identifier writes nothing and the reply carries the stored _id, v1 and v3; lib/api3/generic/create/acknowledge.js). dev is still 47723cda. Measured by session -66: npm test 4375 passing, 0 failing, 3 pending and test:all 4703 passing, 0 failing, 3 pending (re-run on fc170a4c 2026-10-26, Node 22.23.4, MongoDB 5.0; the first run, before push, had 1 environmental failure, development-watch ENOSPC on the host's file-watcher limit). With the code reverted 6 of 10 new v1 tests and 5 of 8 new v3 tests fail, controls pass; the devicestatus re-send probe leaves 1 record where dev stored 2, 3, then 4. Two existing expectations changed deliberately (api.crud-by-id matrix v3 devicestatus re-send row; api3.empty-identifier-edit). Trial merge with #8854: one textual conflict (an import line in lib/api3/generic/patch/operation.js, keep both requires) and 4 of #8854's cross-path matrix cells need a 3-line expectation change, applied by whichever PR merges second; with it all 405 matrix tests pass. Merges cleanly with #8856. Points for review in the PR body: v3's created_at+device devicestatus fallback still replaces; a deleted status re-sent with its identifier stays deleted; two simultaneous first sends with the same new identifier can both be stored (no unique index). 2026-10-26, later (maintainer, via session -66): (a) D-ID-FALLBACK decided: for 16.0.0 a v1 entries re-send whose identifier matches nothing still matches on sysTime+type, as today (TEST-ENTRY-UUID-003); treatments never fall back; to be revisited once identifiers are common. (b) A devicestatus re-send whose identifier is already stored writes nothing (no merge, no new record, no srvModified change) and the reply carries the stored _id, on API v1 and v3; v3, which today replaces and moves srvModified, is aligned in the same PR. (c) This item ships in one 16.0.0 re-send and merge PR with Q1b, BF-195 and (b), on bf/16.0.0-null-removes (Q1b head 1bdce62c; bundle in progress). Evidence for (b): the devicestatus study of 2026-10-26, reproduced on dev 47723cda and 8d0f9a22; client survey read-derived: no client sends an identifier on any devicestatus path (Loop's remote overrides travel as treatments and push notifications). 2026-10-26: carries the API v1 half of ID-CLIENT-OID-DECISION (the Loop reply's simple contract: whether a client may create its own ObjectId as _id over v1); the API v3 half is decided (BF-170, identity I2). 2026-10-26: built as feat/v1-identifier-match 8d0f9a22 (one commit over dev 47723cda; lib/server/entries.js +84/-8, lib/server/devicestatus.js +97, two test files), not pushed. A re-sent identifier updates the stored record; an identifier miss still falls back to sysTime+type for entries (status quo, TEST-ENTRY-UUID-003 pins it), unlike v1 treatments, which never fall back; that choice is the maintainer's (next-gen plan decision D-ID-FALLBACK). identifier decides over a conflicting _id. upsertQueryFor is at entries.js:308 on 47723cda. Draft PR body and push commands are in the lane report. 2026-10-25: RT-1 merged (#8828, dev eb72a1d3), so this item is no longer blocked and can go to dev. Neither lib/server/entries.js nor lib/server/devicestatus.js changed between fade2299 and eb72a1d3 (git diff --name-only fade2299 official/dev -- both files prints nothing), so the line numbers above still hold. Cut 2 changes entries.js, so landing before cut 2's catch-up adds to that merge (RT-2). 2026-10-21, later: cut 1's catch-up merge is done (RT-REBASE's cut 1 part; 806ff2f0 contains dev 04d435eb), so blocks_on moves from RT-REBASE to RT-1: this lands on dev after #8828 merges, which is the maintainer's 2026-10-17 order. Cut 1 still touches neither lib/server/entries.js nor lib/server/devicestatus.js (<code>git diff --name-only official/dev official/chore/retire-jsdom</code> on 806ff2f0 lists neither). 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. Still waits on cut 1's catch-up merge (RT-REBASE, in progress). Decided by the maintainer 2026-10-17: not in 15.0.9; lands on dev after cut 1's rebase, with BFQ-169. 15.0.9 is dev as it stands at fade2299 (releases/cgm-remote- monitor-15.0.9/contents.md), and any merge to dev moves the head off the candidate whose re-approval RT-0 owes. blocks_on names RT-REBASE because no separate item marks cut 1's catch-up merge done; only cut 1's part is needed (RT-1 blocks on the same two). Why after the rebase: RT-REBASE records that each further merge to dev raises the cuts' catch-up cost. Cuts 2-5 already change both files this item touches: <code>git diff --name-only $(git merge-base fade2299 &lt;cut&gt;) &lt;cut&gt; -- lib/server/entries.js lib/server/devicestatus.js</code> lists entries.js on cut 2 and both files on cuts 3, 4 and 5 (measured 2026-10-17); cut 1 touches neither. Landing after the catch-up merge keeps this change out of that merge's conflicts. The tenancy item ID-FIRST-MATCH absorbs this rule into the write step once WC-STEP-PATCH exists (it blocks on this item). Background: the simple contract in the Loop reply (LOOP-ID-REPLY) - _id an ObjectId or absent; identifier when _id is absent; the time key when neither.</p>
 <h3 id="arch-8854--8854---shared-write-boundary-read-contract-and-ci-gates-merged-to-dev-2026-10-26-for-1600-outcome-b-four-conditions-met"><code>ARCH-8854</code> &mdash; #8854 - shared write boundary, read contract and CI gates; merged to dev 2026-10-26 for 16.0.0 (outcome B, four conditions met)<a class="headerlink" href="#arch-8854--8854---shared-write-boundary-read-contract-and-ci-gates-merged-to-dev-2026-10-26-for-1600-outcome-b-four-conditions-met" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -9199,7 +9199,7 @@ distinction is the only thing that makes the register mean anything - widening
 <tr>
 <td><code>BFQ-201</code></td>
 <td>BF-201 - npm run dev's nodemon watches nearly the whole repository (1,502 Linux file watches); watch the paths the server loads</td>
-<td><code>in-flight-upstream</code></td>
+<td><code>merged-upstream</code></td>
 <td><code>test/16.0.0-ci-flakes</code></td>
 <td>n/a</td>
 <td>1 run + 1 no-gate</td>
@@ -9207,10 +9207,10 @@ distinction is the only thing that makes the register mean anything - widening
 <tr>
 <td><code>BFQ-202</code></td>
 <td>BF-202 - CI's MongoDB 8.0 jobs fail on hosted runners with Linux 6.19 or newer (MongoDB refuses to start, SERVER-121912)</td>
-<td><code>in-progress</code></td>
+<td><code>merged-upstream</code></td>
 <td><code>test/16.0.0-ci-flakes</code></td>
 <td>n/a</td>
-<td>1 run + 1 no-gate</td>
+<td>2 run + 1 no-gate</td>
 </tr>
 <tr>
 <td><code>BFQ-192</code></td>
@@ -9239,7 +9239,7 @@ distinction is the only thing that makes the register mean anything - widening
 <tr>
 <td><code>BFQ-200</code></td>
 <td>BF-200 - on dev, an unusable time on API v2's data-snapshot route stops the server</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-flight-upstream</code></td>
 <td><code>bf/16.0.0-ddata-at-crash</code></td>
 <td>patch</td>
 <td>3 run</td>
@@ -9247,7 +9247,7 @@ distinction is the only thing that makes the register mean anything - widening
 <tr>
 <td><code>BFQ-195</code></td>
 <td>BF-195 - a stale profile is pushed over the socket after a profile re-send</td>
-<td><code>in-flight-upstream</code></td>
+<td><code>merged-upstream</code></td>
 <td><code>bf/16.0.0-null-removes</code></td>
 <td>patch</td>
 <td>2 run + 1 no-gate</td>
@@ -16756,7 +16756,7 @@ distinction is the only thing that makes the register mean anything - widening
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>in-flight-upstream</code></td>
+<td><code>merged-upstream</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -16797,7 +16797,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>n/a</code>.</strong> developer tooling; no API, page, setting or runtime change</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show test/16.0.0-ci-flakes:package.json | node -e "const c=JSON.parse(require('fs').readFileSync(0)).nodemonConfig||{};process.exit(Array.isArray(c.watch)&amp;&amp;c.watch.includes('lib')&amp;&amp;!c.watch.includes('static')&amp;&amp;!c.ignore?0:1)"</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show official/dev:package.json | node -e "const c=JSON.parse(require('fs').readFileSync(0)).nodemonConfig||{};process.exit(Array.isArray(c.watch)&amp;&amp;c.watch.includes('lib')&amp;&amp;!c.watch.includes('static')&amp;&amp;!c.ignore?0:1)"</code></li>
 <li>
 <h1 id="8866s-branchs-nodemonconfig-is-a-watch-list-that-includes-lib-and-leaves-out-static-with-no-ignore-list">8866's branch's nodemonConfig is a watch list that includes lib and leaves out static, with no ignore list.<a class="headerlink" href="#8866s-branchs-nodemonconfig-is-a-watch-list-that-includes-lib-and-leaves-out-static-with-no-ignore-list" title="Permanent link">&para;</a></h1>
 </li>
@@ -16807,7 +16807,7 @@ distinction is the only thing that makes the register mean anything - widening
 <ul>
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-27: asked for by the maintainer through session -a7, after tests/development-watch.test.js failed with ENOSPC on 2026-10-26. Measured counts replace -a7's at dev 47723cda (1,396 and 339); the list adds translations, webpack and package.json, which the server reads at startup, so editing them still restarts it. Prepared as 426d2835 on chore/16.0.0-nodemon- watch-allowlist; npm test 4483 passing, 0 failing, 3 pending (Node 22.23.4, MongoDB 8.0.34). At the maintainer's request, cherry-picked onto #8867 as 5d9f84b5 and pushed 2026-10-27 (the CI and tooling PR), not a PR of its own. Later that day, at the maintainer's request, #8867 was merged into #8866's branch as 7a96b912, so it ships with #8866.</p>
+<p><strong>Notes.</strong> 2026-10-27, 19:42:55Z: merged with #8866 (head f6884342, merge b84871d7). Gate re-pointed to official/dev, with official/master as the control. 2026-10-27: asked for by the maintainer through session -a7, after tests/development- watch.test.js failed with ENOSPC on 2026-10-26. Measured counts replace -a7's at dev 47723cda (1,396 and 339); the list adds translations, webpack and package.json, which the server reads at startup, so editing them still restarts it. Prepared as 426d2835 on chore/16.0.0-nodemon-watch-allowlist; npm test 4483 passing, 0 failing, 3 pending (Node 22.23.4, MongoDB 8.0.34). At the maintainer's request, cherry-picked onto #8867 as 5d9f84b5 and pushed 2026-10-27 (the CI and tooling PR), not a PR of its own. Later that day, at the maintainer's request, #8867 was merged into #8866's branch as 7a96b912, so it ships with #8866.</p>
 <h3 id="bfq-202--bf-202---cis-mongodb-80-jobs-fail-on-hosted-runners-with-linux-619-or-newer-mongodb-refuses-to-start-server-121912"><code>BFQ-202</code> &mdash; BF-202 - CI's MongoDB 8.0 jobs fail on hosted runners with Linux 6.19 or newer (MongoDB refuses to start, SERVER-121912)<a class="headerlink" href="#bfq-202--bf-202---cis-mongodb-80-jobs-fail-on-hosted-runners-with-linux-619-or-newer-mongodb-refuses-to-start-server-121912" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -16819,7 +16819,7 @@ distinction is the only thing that makes the register mean anything - widening
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>in-progress</code></td>
+<td><code>merged-upstream</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -16855,22 +16855,24 @@ distinction is the only thing that makes the register mean anything - widening
 </tr>
 </tbody>
 </table>
-<p><strong>Blast radius.</strong> .github/workflows/main.yml's MongoDB 8.0 jobs, Run Tests (22.23.4, 8.0) and Maintained MongoDB (26, 8.0.29). The diagnosis aid in #8866 is tools/wait-for- mongodb.js; the mitigation is not chosen yet.</p>
+<p><strong>Blast radius.</strong> .github/workflows/main.yml's MongoDB 8.0 jobs, Run Tests (22.23.4, 8.0) and Maintained MongoDB (26, 8.0.29). The diagnosis aid in #8866 is tools/wait-for- mongodb.js (e0cfbd0c) and the mitigation f6884342 (the MongoDB 8.0 jobs run on ubuntu-22.04).</p>
 <p><strong>What an operator sees.</strong> <em>Nothing. No operator-visible change.</em></p>
 <p><strong>Why <code>n/a</code>.</strong> CI only</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show test/16.0.0-ci-flakes:tools/wait-for-mongodb.js | grep -q 'os.release()'</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show official/dev:tools/wait-for-mongodb.js | grep -q 'os.release()'</code></li>
 <li>
 <h1 id="8866s-branch-has-the-mongodb-wait-that-prints-the-runners-kernel-e0cfbd0c-so-a-failed-or-passing-80-job-records-which-kernel-it-ran-on-this-is-the-diagnosis-aid-not-the-fix">8866's branch has the MongoDB wait that prints the runner's kernel (e0cfbd0c), so a failed or passing 8.0 job records which kernel it ran on. This is the diagnosis aid, not the fix.<a class="headerlink" href="#8866s-branch-has-the-mongodb-wait-that-prints-the-runners-kernel-e0cfbd0c-so-a-failed-or-passing-80-job-records-which-kernel-it-ran-on-this-is-the-diagnosis-aid-not-the-fix" title="Permanent link">&para;</a></h1>
 </li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f6884342 official/dev</code></li>
+<li>The mitigation is on #8866's branch: Run Tests' MongoDB 8.0 cells and Maintained MongoDB run on ubuntu-22.04 (Linux 6.8).</li>
 <li><strong>NO GATE</strong> &mdash; The defect is in MongoDB and in which host GitHub assigns, so it cannot be reproduced on demand. Seen 2026-10-27: #8866 run 40532337252 (Maintained MongoDB, 212 failing), #8867 run 40557880084 (Run Tests (22.23.4, 8.0) logged MongoDB's refusal to start on Linux 6.19 and newer while 8.0.29 in the same run started), #8866 run 40566855699 (both 8.0 jobs over 9 minutes in Run Tests, cancelled).</li>
 </ul>
 <p><strong>Evidence.</strong></p>
 <ul>
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-27: filed at the maintainer's request. Next: read the kernel the wait prints on the next runs, then choose a runner image with an older kernel or a MongoDB 8.0 build that starts there.</p>
+<p><strong>Notes.</strong> 2026-10-27, 19:42:55Z: the diagnosis aid and the mitigation merged with #8866 (head f6884342, merge b84871d7). Gates re-pointed to official/dev, with official/master as the control. Revisit at runner kernel 7.0.14+, MongoDB support for 6.19+, or before ubuntu-22.04 is retired. 2026-10-27: filed at the maintainer's request. Kernel readings on run 40569101512: both 8.0 jobs on 7.0.0-1017-azure refused to start (8.0.29 included); 5.0 and 6.0 on 6.17.0-1022-azure passed; ubuntu-24.04 image 20261026.354 moves 6.17 to 7.0. The maintainer chose a runner image with an older kernel over an older MongoDB patch: f6884342, pushed to #8866; run 40569981396 passed both 8.0 jobs on 6.8.0-1064-azure. Revisit at kernel 7.0.14+, MongoDB support for 6.19+, or before ubuntu-22.04 is retired.</p>
 <h3 id="bfq-192--bf-192---the-populated-reports-browser-test-measured-a-drawn-report-against-an-empty-form-heap-ceiling-test-measurement-blind-spot-not-a-product-regression"><code>BFQ-192</code> &mdash; BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression)<a class="headerlink" href="#bfq-192--bf-192---the-populated-reports-browser-test-measured-a-drawn-report-against-an-empty-form-heap-ceiling-test-measurement-blind-spot-not-a-product-regression" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -17066,7 +17068,7 @@ distinction is the only thing that makes the register mean anything - widening
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-flight-upstream</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -17118,7 +17120,7 @@ distinction is the only thing that makes the register mean anything - widening
 <ul>
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-27: found by session -2e's route census on dev 2dc0c1bc and #8863; fixed by its agent on bf/16.0.0-ddata-at-crash 434c0157 (on dev 2dc0c1bc, 3 files, +142). v15.0.9 checked by -2e: not affected (500, process keeps running), so it is a dev-only regression from 26d0908a (callback-tasks replacing async) and goes as an ordinary 16.0.0 fix, no advisory fork. -2e's runs (Node 22.23.4, MongoDB 7.0.43): npm test 4487 passing, 1 failing, 3 pending; test:all 4815 passing, 1 failing, 3 pending; the one failure is the nodemon watch test on the host's inotify limit (ENOSPC), not this change. Red control re-run by session -ee: the new test on dev 2dc0c1bc's tree gives 1 passing, 5 failing (-2e reported 0 passing, 5 failing); on the branch 5 passing. 2026-10-27, later: the maintainer asked for a second commit, 2564e5dc (callback-tasks stops a run when a task throws, as async 0.9 did); the branch head is 2564e5dc on dev 2dc0c1bc. -2e's runs on it (Node 22.23.4, MongoDB 7.0): npm test 4489 passing, 0 failing, 3 pending; test:all 4817 passing, 0 failing, 3 pending (an earlier run whose MongoDB container vanished was discarded). The new callback-tasks case passes against async 0.9.2 (NIGHTSCOUT_ASYNC_ORACLE). Re-run by -ee: both test files on the branch 14 passing; with 434c0157's helper the callback-tasks file gives 8 passing, 1 failing; the unit gate's control (dev's tree with both test files) 9 passing, 6 failing. Not pushed; the maintainer pushes and opens the PR (body in -2e's scratchpad, ddata/PR-BODY.md).</p>
+<p><strong>Notes.</strong> 2026-10-27, 19:50:31Z: #8868 opened by bewest into dev, head 2ca7dfc8 (dev 94899828 merged in on top of 2564e5dc; gh pr view 8868). 2026-10-27: found by session -2e's route census on dev 2dc0c1bc and #8863; fixed by its agent on bf/16.0.0-ddata-at-crash 434c0157 (on dev 2dc0c1bc, 3 files, +142). v15.0.9 checked by -2e: not affected (500, process keeps running), so it is a dev-only regression from 26d0908a (callback-tasks replacing async) and goes as an ordinary 16.0.0 fix, no advisory fork. -2e's runs (Node 22.23.4, MongoDB 7.0.43): npm test 4487 passing, 1 failing, 3 pending; test:all 4815 passing, 1 failing, 3 pending; the one failure is the nodemon watch test on the host's inotify limit (ENOSPC), not this change. Red control re-run by session -ee: the new test on dev 2dc0c1bc's tree gives 1 passing, 5 failing (-2e reported 0 passing, 5 failing); on the branch 5 passing. 2026-10-27, later: the maintainer asked for a second commit, 2564e5dc (callback-tasks stops a run when a task throws, as async 0.9 did); the branch head is 2564e5dc on dev 2dc0c1bc. -2e's runs on it (Node 22.23.4, MongoDB 7.0): npm test 4489 passing, 0 failing, 3 pending; test:all 4817 passing, 0 failing, 3 pending (an earlier run whose MongoDB container vanished was discarded). The new callback-tasks case passes against async 0.9.2 (NIGHTSCOUT_ASYNC_ORACLE). Re-run by -ee: both test files on the branch 14 passing; with 434c0157's helper the callback-tasks file gives 8 passing, 1 failing; the unit gate's control (dev's tree with both test files) 9 passing, 6 failing. Not pushed; the maintainer pushes and opens the PR (body in -2e's scratchpad, ddata/PR-BODY.md).</p>
 <h3 id="bfq-195--bf-195---a-stale-profile-is-pushed-over-the-socket-after-a-profile-re-send"><code>BFQ-195</code> &mdash; BF-195 - a stale profile is pushed over the socket after a profile re-send<a class="headerlink" href="#bfq-195--bf-195---a-stale-profile-is-pushed-over-the-socket-after-a-profile-re-send" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -17130,7 +17132,7 @@ distinction is the only thing that makes the register mean anything - widening
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>in-flight-upstream</code></td>
+<td><code>merged-upstream</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -17171,9 +17173,9 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a race fixed; what is stored and replied does not change</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda bf/16.0.0-null-removes</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda official/dev</code></li>
 <li>The PR #8859 branch contains dev 47723cda. Red if the branch is rebased off dev or deleted.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1bdce62c bf/16.0.0-null-removes</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1bdce62c official/dev</code></li>
 <li>The fix commit 1bdce62c is on the PR #8859 branch. Red if the branch is rewritten without it.</li>
 <li><strong>NO GATE</strong> &mdash; Reproduced 2026-10-26 by the Q1b study, 2 of 2 runs on dev 47723cda and on lab/q1b-null-removes 63c33a0e: a socket client receives the earlier profile in dataUpdate after a profile re-send. A queue gate would re-send a profile in-process with a socket listener and assert the pushed profile is the merged one; control: dev 47723cda fails it. The fix's test is in draft PR #8859 (bf/16.0.0-null-removes, head fc170a4c); behaviour is measured outside the queue (the suite needs MongoDB): on fc170a4c, measured by session -66, npm test 4375 passing, 0 failing, 3 pending and test:all 4703 passing, 0 failing, 3 pending (re-run 2026-10-26; the first run had 1 environmental failure, development-watch ENOSPC on the file-watcher limit).</li>
 </ul>
@@ -17181,7 +17183,7 @@ distinction is the only thing that makes the register mean anything - widening
 <ul>
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-26, later: the maintainer pushed 5c6ceabb; it is PR #8859's head (gh pr view, mergeable). Hosted CI on 5c6ceabb: 16 checks passed, 0 failed, 2 skipped (Build Docker image and Publish to Docker Hub, which run on push to dev only), including the browser tests on Node 26 in Chromium, Firefox and WebKit. 2026-10-26, after #8854 merged (dev 7ad3a67f): session -66 merged dev 7ad3a67f into bf/16.0.0-null-removes locally as 5c6ceabb, not pushed (the PR head is still fc170a4c; the push is the maintainer's). The resolution: both requires kept in lib/api3/generic/patch/operation.js; #8854's cross-path entries resend cells in tests/api.crud-by-id.matrix.test.js updated (the v1 resend expects 200, the _id-collision branch removed; only v3 to socket still duplicates). On 5c6ceabb: npm test 4521 passing, 0 failing, 3 pending; test:all 4849 passing, 0 failing, 3 pending. Red control: dev's matrix file on the merged tree gives 413 passing, 9 failing (the 4 cross-path cells and 5 v3 devicestatus resend rows); with the updated file 422 passing, 0 failing. #8854's boundary validates the effective result of $set and $unset (lib/storage/write-step.js:35, lib/server/write-validation.js:143), so a null that removes a field goes through reject-mode validation. 2026-10-26, later: in draft PR #8859 to dev (bf/16.0.0-null-removes, head fc170a4c), opened by the maintainer, as 1bdce62c ("Announce a profile write after it finishes, not when it starts"), with Q1b 913d0895, ID-SIMPLE-MATCH (merge cf2a2a67) and the devicestatus rule fc170a4c. Measured by session -66: npm test 4375 passing, 0 failing, 3 pending and test:all 4703 / 0 / 3 (re-run 2026-10-26; the first run had 1 environmental ENOSPC failure). Merges cleanly with #8856; with #8854 one import-line conflict and a 3-line matrix expectation change (ID-SIMPLE-MATCH). 2026-10-26, later: lands in the one 16.0.0 re-send and merge PR on bf/16.0.0-null-removes (Q1b head 1bdce62c; bundle in progress; at cf2a2a67 the branch carries 913d0895 for Q1b, 1bdce62c for BF-195 and a merge of 8d0f9a22, read from git log, not measured here) with Q1b, ID-SIMPLE-MATCH and the devicestatus identifier re-send rule (maintainer, 2026-10-26). 2026-10-26: id allocated by session -66 and filed from the Q1b study. Fix direction, unverified: emit data-received once the write has completed. To land with Q1b (a null in an update removes the field, decided by the maintainer 2026-10-26, for 16.0.0) on bf/16.0.0-null-removes, in progress (the branch is at dev 47723cda).</p>
+<p><strong>Notes.</strong> 2026-10-27, 19:52:21Z: merged. bewest merged #8859 (head 87f1aeb8) into dev as 94899828 (gh pr view 8859). Gates re-pointed to official/dev, with official/master as the control. 2026-10-26, later: the maintainer pushed 5c6ceabb; it is PR #8859's head (gh pr view, mergeable). Hosted CI on 5c6ceabb: 16 checks passed, 0 failed, 2 skipped (Build Docker image and Publish to Docker Hub, which run on push to dev only), including the browser tests on Node 26 in Chromium, Firefox and WebKit. 2026-10-26, after #8854 merged (dev 7ad3a67f): session -66 merged dev 7ad3a67f into bf/16.0.0-null- removes locally as 5c6ceabb, not pushed (the PR head is still fc170a4c; the push is the maintainer's). The resolution: both requires kept in lib/api3/generic/patch/operation.js; #8854's cross-path entries resend cells in tests/api.crud-by-id.matrix.test.js updated (the v1 resend expects 200, the _id-collision branch removed; only v3 to socket still duplicates). On 5c6ceabb: npm test 4521 passing, 0 failing, 3 pending; test:all 4849 passing, 0 failing, 3 pending. Red control: dev's matrix file on the merged tree gives 413 passing, 9 failing (the 4 cross-path cells and 5 v3 devicestatus resend rows); with the updated file 422 passing, 0 failing. #8854's boundary validates the effective result of $set and $unset (lib/storage/write- step.js:35, lib/server/write-validation.js:143), so a null that removes a field goes through reject-mode validation. 2026-10-26, later: in draft PR #8859 to dev (bf/16.0.0-null-removes, head fc170a4c), opened by the maintainer, as 1bdce62c ("Announce a profile write after it finishes, not when it starts"), with Q1b 913d0895, ID-SIMPLE-MATCH (merge cf2a2a67) and the devicestatus rule fc170a4c. Measured by session -66: npm test 4375 passing, 0 failing, 3 pending and test:all 4703 / 0 / 3 (re-run 2026-10-26; the first run had 1 environmental ENOSPC failure). Merges cleanly with #8856; with #8854 one import-line conflict and a 3-line matrix expectation change (ID-SIMPLE-MATCH). 2026-10-26, later: lands in the one 16.0.0 re-send and merge PR on bf/16.0.0-null-removes (Q1b head 1bdce62c; bundle in progress; at cf2a2a67 the branch carries 913d0895 for Q1b, 1bdce62c for BF-195 and a merge of 8d0f9a22, read from git log, not measured here) with Q1b, ID-SIMPLE-MATCH and the devicestatus identifier re-send rule (maintainer, 2026-10-26). 2026-10-26: id allocated by session -66 and filed from the Q1b study. Fix direction, unverified: emit data-received once the write has completed. To land with Q1b (a null in an update removes the field, decided by the maintainer 2026-10-26, for 16.0.0) on bf/16.0.0-null-removes, in progress (the branch is at dev 47723cda).</p>
 <h3 id="bfq-134--bf-134---every-loop-remote-command-leaves-an-apns-connection-and-a-heartbeat-timer-open"><code>BFQ-134</code> &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open<a class="headerlink" href="#bfq-134--bf-134---every-loop-remote-command-leaves-an-apns-connection-and-a-heartbeat-timer-open" title="Permanent link">&para;</a></h3>
 <table>
 <thead>

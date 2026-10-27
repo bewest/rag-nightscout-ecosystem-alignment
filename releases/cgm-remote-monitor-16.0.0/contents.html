@@ -2134,7 +2134,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-27 at <code>6793843e0</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>82fcf27e7</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -2256,7 +2256,7 @@ bodies (see the integration record). No live site, vendor account or Docker imag
 <p>Merge SHAs: <code>git log --first-parent --format='%h %ad %an %s' --date=iso official/master..official/dev</code>;
 merge times are <code>gh pr view &lt;n&gt; --json mergedAt</code>. The first nineteen merges below were made on
 2026-10-25 (#8834, #8835 and #8838 by bewest, the others by AndyLow91), seventeen on 2026-10-26
-(#8843, #8848 and #8850 by bewest, the others by AndyLow91) and #8860 on 2026-10-27, by AndyLow91. Register ids refer to the
+(#8843, #8848 and #8850 by bewest, the others by AndyLow91) and on 2026-10-27 #8860 and #8864 by AndyLow91, then #8866 and #8859 by bewest. Register ids refer to the
 <a href="../../docs/30-design/remedial/nightscout-backfix-register.html">backfix register</a>.</p>
 <table>
 <thead>
@@ -2642,6 +2642,36 @@ merge times are <code>gh pr view &lt;n&gt; --json mergedAt</code>. The first nin
 <td>—</td>
 <td>the glucose pentagon (Comprehensive Glucose Pentagon) and its prognostic glycemic risk (PGR) in the Distribution report, for issue 8809 (20 files, +1178/−10; below)</td>
 </tr>
+<tr>
+<td>#8864</td>
+<td>10-27 16:55:01</td>
+<td><code>2dc0c1bc</code></td>
+<td><code>4ed92673</code></td>
+<td>AndyLow91</td>
+<td>—</td>
+<td>—</td>
+<td>the IOB pill keeps the device-reported value through a socket reconnect instead of switching to the treatment-based value</td>
+</tr>
+<tr>
+<td>#8866</td>
+<td>10-27 19:42:55</td>
+<td><code>b84871d7</code></td>
+<td><code>f6884342</code></td>
+<td>bewest</td>
+<td>BF-201, BF-202</td>
+<td><code>RT-CI-FLAKES-8DBB60C2</code>, <code>BFQ-201</code>, <code>BFQ-202</code></td>
+<td>CI: three intermittent test fixes, a MongoDB wait that names the runner's kernel, the MongoDB 8.0 jobs on <code>ubuntu-22.04</code>, release images published from the tag (a push to <code>master</code> publishes nothing), nodemon's watch list; #8867 was folded in and closed</td>
+</tr>
+<tr>
+<td>#8859</td>
+<td>10-27 19:52:21</td>
+<td><code>94899828</code></td>
+<td><code>87f1aeb8</code></td>
+<td>bewest</td>
+<td>BF-195</td>
+<td><code>BFQ-195</code>, <code>ID-SIMPLE-MATCH</code></td>
+<td>the re-send and merge contract: identifier matching, <code>null</code> in an update removes the field (Q1b), the profile socket push after its merge write (BF-195), devicestatus <code>identifier</code></td>
+</tr>
 </tbody>
 </table>
 <p>Before merging, AndyLow91 merged <code>dev</code> into most branches and added commits of his own (read with
@@ -2910,7 +2940,7 @@ runtime Docker image.</p>
 <td>the CI pull request: three intermittent test fixes, the MongoDB wait, image publishing, nodemon</td>
 <td><code>test/16.0.0-ci-flakes</code>, <strong>#8866</strong> (into <code>dev</code>; #8867 merged into it as <code>7a96b912</code> at the maintainer's request, 2026-10-27)</td>
 <td><code>7a96b912</code>: <code>c7857735</code> (concurrent-writes: Notes one second apart), <code>bdd569a3</code> (page-startup: the reports page is ready once its first report has loaded), the maintainer's <code>dev</code> merge <code>ddeeff8c</code>, <code>65632082</code> (the dashboard round trip waits for each page before leaving it), and #8867's <code>56804908</code>, <code>04b1f870</code>, <code>5d9f84b5</code>, <code>e0cfbd0c</code></td>
-<td>pushed 2026-10-27. <code>65632082</code> follows WebKit's <code>page.goForward: WebKit encountered an internal error</code> on run 40559261253 (3 of 3 on each engine after it; page-startup 28 passing on each; not reproduced locally). <code>e0cfbd0c</code> prints the runner's kernel in the MongoDB wait (BF-202). Run 40566855699 on <code>65632082</code> passed every job except the two MongoDB 8.0 jobs, which were over 9 minutes in Run Tests when the next push cancelled them (BF-202). #8867 is to be closed in favour of #8866</td>
+<td><strong>merged 2026-10-27 19:42:55Z by bewest as <code>dev</code> <code>b84871d7</code></strong> (head <code>f6884342</code>, after <code>f6884342</code> moved the MongoDB 8.0 jobs to <code>ubuntu-22.04</code>; both 8.0 jobs passed on <code>6.8.0-1064-azure</code> in run 40569981396). Earlier: <code>65632082</code> followed WebKit's <code>page.goForward: WebKit encountered an internal error</code> on run 40559261253; #8867 was merged in as <code>7a96b912</code> and closed at 19:28:02Z</td>
 <td><code>RT-CI-FLAKES-8DBB60C2</code>, <code>BFQ-201</code>, <code>BFQ-202</code></td>
 </tr>
 <tr>
@@ -2931,7 +2961,7 @@ runtime Docker image.</p>
 <td>the re-send and merge contract: <code>ID-SIMPLE-MATCH</code>, Q1b (a <code>null</code> in an update removes the field), BF-195 (a stale profile pushed over the socket after a re-send) and the devicestatus <code>identifier</code> rule, one PR</td>
 <td><code>bf/16.0.0-null-removes</code>, <strong>draft #8859</strong> (the maintainer, base <code>dev</code>)</td>
 <td><code>5c6ceabb</code>: five commits on <code>dev</code> <code>47723cda</code> and a merge of <code>dev</code> <code>7ad3a67f</code>: <code>ID-SIMPLE-MATCH</code> <code>8d0f9a22</code>, Q1b <code>913d0895</code>, BF-195 <code>1bdce62c</code>, merge <code>cf2a2a67</code>, the devicestatus <code>identifier</code> rule <code>fc170a4c</code> (read from <code>git log</code>)</td>
-<td>draft PR opened 2026-10-26; the devicestatus <code>identifier</code> rule is on it (v1 and v3: a re-send with a stored <code>identifier</code> writes nothing and the reply carries the stored <code>_id</code>); <code>npm test</code> 4375 passing, 0 failing, 3 pending and <code>test:all</code> 4703 passing, 0 failing, 3 pending (re-run on <code>fc170a4c</code> 2026-10-26; the first run had 1 environmental <code>ENOSPC</code> failure); with #8854 one import-line conflict and a 3-line matrix expectation change for whichever merges second. #8854 merged first: <code>dev</code> <code>7ad3a67f</code> merged in as <code>5c6ceabb</code> (session -66; pushed by the maintainer 2026-10-26, hosted CI 16 passed, 0 failed, 2 skipped; both requires kept, #8854's cross-path resend cells updated): <code>npm test</code> 4521 passing, 0 failing, 3 pending; <code>test:all</code> 4849 passing, 0 failing, 3 pending (integration record R16)</td>
+<td><strong>merged 2026-10-27 19:52:21Z by bewest as <code>dev</code> <code>94899828</code></strong> (head <code>87f1aeb8</code>, <code>dev</code> merged in; <code>gh pr view 8859</code>)</td>
 <td><code>ID-SIMPLE-MATCH</code>, <code>WRITE-CONTRACT</code>, <code>BFQ-195</code></td>
 </tr>
 <tr>
@@ -2950,16 +2980,16 @@ runtime Docker image.</p>
 </tr>
 <tr>
 <td>BF-200: the data-snapshot route's unusable time</td>
-<td><code>bf/16.0.0-ddata-at-crash</code> (worktree <code>externals/work/crm-ddata-crash</code>)</td>
-<td><code>2564e5dc</code> on <code>dev</code> <code>2dc0c1bc</code>: <code>434c0157</code> (400 for a time that does not parse, and a loader guard) and <code>2564e5dc</code> (the callback-tasks helper stops a run when a task throws, as <code>async</code> 0.9 did; asked for by the maintainer); 6 files, +176/−12</td>
-<td>ready to push 2026-10-27, not pushed. Red controls re-run by session -ee: the new data test on <code>dev</code> 1 passing, 5 failing; the new callback-tasks case with the first commit's helper 8 passing, 1 failing; both on the branch 14 passing. <code>npm test</code> 4489 passing, 0 failing, 3 pending and <code>test:all</code> 4817 passing, 0 failing, 3 pending (session -2e, Node 22.23.4, MongoDB 7.0)</td>
+<td><code>bf/16.0.0-ddata-at-crash</code>, <strong>#8868</strong> (opened by the maintainer 2026-10-27 19:50:31Z, base <code>dev</code>)</td>
+<td><code>2ca7dfc8</code>: <code>434c0157</code> and <code>2564e5dc</code> with <code>dev</code> <code>94899828</code> merged in; 6 files, +176/−12 against <code>dev</code></td>
+<td>open, CI running; ready to push 2026-10-27, not pushed. Red controls re-run by session -ee: the new data test on <code>dev</code> 1 passing, 5 failing; the new callback-tasks case with the first commit's helper 8 passing, 1 failing; both on the branch 14 passing. <code>npm test</code> 4489 passing, 0 failing, 3 pending and <code>test:all</code> 4817 passing, 0 failing, 3 pending (session -2e, Node 22.23.4, MongoDB 7.0)</td>
 <td><code>BFQ-200</code></td>
 </tr>
 <tr>
 <td>BF-201: nodemon's file watches</td>
 <td><strong>#8866</strong> (added to #8867 at the maintainer's request, 2026-10-27; #8867 merged into #8866 as <code>7a96b912</code>)</td>
 <td><code>5d9f84b5</code> (prepared as <code>426d2835</code> on <code>dev</code> <code>2dc0c1bc</code>): <code>package.json</code> nodemonConfig, the watch test and probe, the M24 addendum</td>
-<td>pushed 2026-10-27: nodemon watches <code>lib</code>, <code>views</code>, <code>translations</code>, <code>webpack</code> and <code>package.json</code>; Linux file watches 1,502 → 385 at <code>dev</code> <code>2dc0c1bc</code>; the watch test fails at <code>docs/unlisted.js</code> with the old configuration; <code>npm test</code> 4483 passing, 0 failing, 3 pending (Node 22.23.4, MongoDB 8.0.34); developer tooling only</td>
+<td>merged with #8866 (<code>b84871d7</code>, 2026-10-27 19:42:55Z). nodemon watches <code>lib</code>, <code>views</code>, <code>translations</code>, <code>webpack</code> and <code>package.json</code>; Linux file watches 1,502 → 385 at <code>dev</code> <code>2dc0c1bc</code>; the watch test fails at <code>docs/unlisted.js</code> with the old configuration; <code>npm test</code> 4483 passing, 0 failing, 3 pending (Node 22.23.4, MongoDB 8.0.34); developer tooling only</td>
 <td><code>BFQ-201</code></td>
 </tr>
 </tbody>
@@ -3109,8 +3139,8 @@ which this programme cannot do without real credentials; #8843 (CI diagonal) and
 </tr>
 <tr>
 <td>BF-202: CI's MongoDB 8.0 jobs on Linux 6.19 runners</td>
-<td>MongoDB 8.0 refuses to start on Linux 6.19 and newer (SERVER-121912), and only some GitHub-hosted runners have that kernel, so Run Tests (22.23.4, 8.0) and Maintained MongoDB (26, 8.0.29) fail by chance (runs 40532337252, 40557880084, 40566855699). #8866's wait step makes that a 90-second failure with MongoDB's log and prints the kernel; the mitigation is not chosen</td>
-<td>CI only; re-run the job. Operators running MongoDB 8.0 on such a kernel meet the same MongoDB defect, independently of Nightscout</td>
+<td>MongoDB 8.0 refuses to start on Linux 6.19 to 7.0.13 (SERVER-121912); <code>ubuntu-24.04</code> image 20261026.354 moved to <code>7.0.0-1017-azure</code>, where both 8.0 jobs refused to start on run 40569101512, 8.0.29 included. Mitigated by <code>f6884342</code>, merged with #8866 (<code>b84871d7</code>): the 8.0 jobs run on <code>ubuntu-22.04</code> (Linux 6.8), both passing on run 40569981396</td>
+<td>CI: mitigated on <code>dev</code>. Operators running MongoDB 8.0 on such a kernel meet the same MongoDB defect (release-notes line)</td>
 <td><code>BFQ-202</code></td>
 </tr>
 <tr>
@@ -3197,7 +3227,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6793843e031bd79790163d12520ce1768cb33b96/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (65 queue ids: every item this file or
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/bf3f7d790d99692b9b627c178fce2a048fdc7bf5/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (65 queue ids: every item this file or
 <a href="decisions.html">decisions.md</a> names, and the release items), with the capture command.</p>
 <p><strong>Dry run, 2026-10-27, <code>dev</code> <code>8dbb60c2</code></strong> (reproduced; written to a scratch directory, not kept, because a
 record is captured once, at the tag). The generator ran on the selection with its default <code>static</code> and
@@ -3318,6 +3348,10 @@ candidate is named.</p>
 <li>MongoDB 4.4 or newer is required to start (cut 3, driver 7): on 3.6, 4.0 or 4.2 the site does not
   serve data and shows a page naming the database server's version and the minimum it needs (BF-182); the
   fix is to upgrade MongoDB. 5.0 through 8.0 are the supported, tested range; 4.4 starts but is untested.</li>
+<li>MongoDB 8.0 itself does not start on Linux kernels 6.19 to 7.0.13, which includes Ubuntu 26.04's Linux 7.0: it
+  logs "MongoDB cannot start: Linux kernel versions 6.19 and newer has a known incompatibility" (MongoDB's
+  SERVER-121912, not a Nightscout change). On such a host, run MongoDB 5.0 to 7.0, or keep the database on a host
+  with an older kernel, until MongoDB supports it (BF-202).</li>
 <li>Production-only installs (<code>npm ci --omit=dev</code> or <code>NODE_ENV=production</code>) that worked on 15.0.9 do not
   build the client bundle since cut 2 (webpack and Babel are devDependencies). BF-179 (planned for cut 3)
   turns the failure into a message naming the fix (<code>npm ci --include=dev</code>, then
