@@ -3165,7 +3165,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-27 at <code>d21fe2a4e</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>eb4a004b4</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3204,19 +3204,19 @@
 <tbody>
 <tr>
 <td>items</td>
-<td>303</td>
+<td>304</td>
 </tr>
 <tr>
 <td>runnable gates</td>
-<td>361</td>
+<td>362</td>
 </tr>
 <tr>
 <td>explicit <code>no-gate:</code> markers</td>
-<td>340</td>
+<td>341</td>
 </tr>
 </tbody>
 </table>
-<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 340 of the 701 gate slots in this queue are in that state.</p>
+<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 341 of the 703 gate slots in this queue are in that state.</p>
 <h3 id="claimed-state-not-a-measurement----run-make-queue-status">Claimed state (NOT a measurement -- run <code>make queue-status</code>)<a class="headerlink" href="#claimed-state-not-a-measurement----run-make-queue-status" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3254,8 +3254,8 @@
 </tr>
 <tr>
 <td><code>in-flight-upstream</code></td>
-<td>10</td>
-<td>RT-CI-FLAKES-8DBB60C2, ID-SIMPLE-MATCH, BFQ-72, BFQ-161, BFQ-193, BFQ-195, ST-FILTER-READS, ST-WRITES, PLAT-ENTRY, PLAT-SERVE</td>
+<td>11</td>
+<td>RT-CI-FLAKES-8DBB60C2, ID-SIMPLE-MATCH, BFQ-72, BFQ-161, BFQ-201, BFQ-193, BFQ-195, ST-FILTER-READS, ST-WRITES, PLAT-ENTRY, PLAT-SERVE</td>
 </tr>
 <tr>
 <td><code>merged-upstream</code></td>
@@ -8234,7 +8234,7 @@ that costs.</p>
 <p><strong>Notes.</strong> Follow-up to BF-110/BF-117, queued 2026-09-25 at the maintainer's request. Editing both copies is not wrong for what is shown (both carry the edit), but the pair never becomes one record, so reads that list treatments keep showing two. The fix shape: update the ObjectId copy (converting a string-only record to its ObjectId, as dbAdd does), then delete the string forms, as the v1 treatments PUT does; the renderer's split-drag path (dbUpdate then dbAdd) must still see the edited _id. Best done with OID-V3-EDIT-MERGE and OID-STORAGE- HELPER, which would give v1, v3 and the websocket one rule for writes by _id. Decisions: - 2026-09-26 (maintainer): after 15.0.9.</p>
 <hr />
 <h2 id="open-backfix-register-entries">Open backfix-register entries<a class="headerlink" href="#open-backfix-register-entries" title="Permanent link">&para;</a></h2>
-<p><code>parcel: register-open</code> &mdash; 140 items</p>
+<p><code>parcel: register-open</code> &mdash; 141 items</p>
 <p>The §1 / §1b distinction is preserved in <code>ships_to_operators_today</code>. That
 distinction is the only thing that makes the register mean anything - widening
 §1's criterion would destroy it.</p>
@@ -9193,6 +9193,14 @@ distinction is the only thing that makes the register mean anything - widening
 <td><code>-</code></td>
 <td>n/a</td>
 <td>0 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>BFQ-201</code></td>
+<td>BF-201 - npm run dev's nodemon watches nearly the whole repository (1,502 Linux file watches); watch the paths the server loads</td>
+<td><code>in-flight-upstream</code></td>
+<td><code>ci/16.0.0-image-publishing</code></td>
+<td>n/a</td>
+<td>1 run + 1 no-gate</td>
 </tr>
 <tr>
 <td><code>BFQ-192</code></td>
@@ -16727,6 +16735,69 @@ distinction is the only thing that makes the register mean anything - widening
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 </ul>
 <p><strong>Notes.</strong> 2026-10-25, later: the fix also refuses such values on write for the second record kind, and tolerates on read a related field that working sites may hold (maintainer decision). 2026-10-25: a second record kind of the same class was found and is covered by the same fix; the fix is prepared on a local branch (private) and API v1's refusal of such a record will answer 400 with its message instead of 500 (maintainer decision 2026-10-25). Filed 2026-10-25 by session f4 from its AndroidAPS-safety lane; reproduced on dev b29f1bf7 and v15.0.9 c6a0d8ed. Availability, high (persistent), needs a credential with treatment write access. Fix in preparation on a local branch, to ship in 16.0.0 (maintainer decision 2026-10-25), via the maintainer's private advisory process.</p>
+<h3 id="bfq-201--bf-201---npm-run-devs-nodemon-watches-nearly-the-whole-repository-1502-linux-file-watches-watch-the-paths-the-server-loads"><code>BFQ-201</code> &mdash; BF-201 - npm run dev's nodemon watches nearly the whole repository (1,502 Linux file watches); watch the paths the server loads<a class="headerlink" href="#bfq-201--bf-201---npm-run-devs-nodemon-watches-nearly-the-whole-repository-1502-linux-file-watches-watch-the-paths-the-server-loads" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>in-flight-upstream</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>ci/16.0.0-image-publishing</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>official/dev@2dc0c1bc</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>externals/work/crm-ci-publish</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>n/a</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer</td>
+</tr>
+<tr>
+<td>ships to operators today</td>
+<td>no (pre-release)</td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-201</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> package.json nodemonConfig (ignore list to watch list), tests/development- watch.test.js and tools/probe-development-watch.py (fixture and expectations), docs/test-specs/development-watch.md (M24 addendum), docs/audits/development- watch.json and one plan line. npm start and the Docker image never run nodemon.</p>
+<p><strong>What an operator sees.</strong> <em>Nothing. No operator-visible change.</em></p>
+<p><strong>Why <code>n/a</code>.</strong> developer tooling; no API, page, setting or runtime change</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show ci/16.0.0-image-publishing:package.json | node -e "const c=JSON.parse(require('fs').readFileSync(0)).nodemonConfig||{};process.exit(Array.isArray(c.watch)&amp;&amp;c.watch.includes('lib')&amp;&amp;!c.watch.includes('static')&amp;&amp;!c.ignore?0:1)"</code></li>
+<li>
+<h1 id="8867s-branchs-nodemonconfig-is-a-watch-list-that-includes-lib-and-leaves-out-static-with-no-ignore-list">8867's branch's nodemonConfig is a watch list that includes lib and leaves out static, with no ignore list.<a class="headerlink" href="#8867s-branchs-nodemonconfig-is-a-watch-list-that-includes-lib-and-leaves-out-static-with-no-ignore-list" title="Permanent link">&para;</a></h1>
+</li>
+<li><strong>NO GATE</strong> &mdash; The watch test starts nodemon and native watch in owned fixtures for about 50 s, so it is not a queue gate. Measured 2026-10-27 at dev 2dc0c1bc on Linux, Node 22.23.4, nodemon 3.1.14: inotify watches 1,502 before against 385 after (lib and views alone 345; node --watch-path scoped the same way 346). The test passes on the branch and, with the previous configuration and the new expectations, fails at docs/unlisted.js.</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
+</ul>
+<p><strong>Notes.</strong> 2026-10-27: asked for by the maintainer through session -a7, after tests/development-watch.test.js failed with ENOSPC on 2026-10-26. Measured counts replace -a7's at dev 47723cda (1,396 and 339); the list adds translations, webpack and package.json, which the server reads at startup, so editing them still restarts it. Prepared as 426d2835 on chore/16.0.0-nodemon- watch-allowlist; npm test 4483 passing, 0 failing, 3 pending (Node 22.23.4, MongoDB 8.0.34). At the maintainer's request, cherry-picked onto #8867 as 5d9f84b5 and pushed 2026-10-27 (the CI and tooling PR), not a PR of its own.</p>
 <h3 id="bfq-192--bf-192---the-populated-reports-browser-test-measured-a-drawn-report-against-an-empty-form-heap-ceiling-test-measurement-blind-spot-not-a-product-regression"><code>BFQ-192</code> &mdash; BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression)<a class="headerlink" href="#bfq-192--bf-192---the-populated-reports-browser-test-measured-a-drawn-report-against-an-empty-form-heap-ceiling-test-measurement-blind-spot-not-a-product-regression" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -20352,7 +20423,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>tools/qc/write-contract-matrix.js</code></li>
 <li><code>tools/seam/DIFFERENTIALS.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-26, later: the maintainer pushed 48e7e101 and opened draft #8861. ST- WRITES is being built on top of it (feat/storage-writes). 2026-10-26: the maintainer decided ST-FILTER and ST-READS go up as one PR. ST-FILTER found five defects in the September seam's fromMongo, each of which widens or changes a read ({a: {}} dropped, empty $or and $and matching everything, $exists undefined read as presence, RegExp g and s flags swapped, mongod- refused $regex options coerced); the mingo round trip could not see them, the live-mongod differential did. All five are fixed on the branch and pinned by tests.</p>
+<p><strong>Notes.</strong> 2026-10-27 (maintainer, Q12): goes into 16.0.0 through release allocation B6's entry bar. Items 1, 3, 4 and 5 MET on local candidates (session -2e; cand/with d6ba8e18 vs cand/without 2cae64f3: 360-cell matrix equal off and reject, 67-row replay equal, v1 HTTP 700/700, latency inside the noise floor, one- commit revert cf762dd0 restores cand/without's tree). Item 2 (BF-72, BF-161 in their private forks) is with -e4. Maintainer decided #8859 merges to dev first. The PR branch is awaiting #8859: prep/storage-filter df4e5e9d (= 48e7e101 + dev 2dc0c1bc + #8859, clean; tree 402b22d6 equals cand/with's #8861 step 019bdce9, checked by -ee) becomes feat/storage-filter once the real dev with #8859 is merged in. No push commands until -2e sends the final head. 2026-10-26, later: the maintainer pushed 48e7e101 and opened draft #8861. ST- WRITES is being built on top of it (feat/storage-writes). 2026-10-26: the maintainer decided ST-FILTER and ST-READS go up as one PR. ST-FILTER found five defects in the September seam's fromMongo, each of which widens or changes a read ({a: {}} dropped, empty $or and $and matching everything, $exists undefined read as presence, RegExp g and s flags swapped, mongod- refused $regex options coerced); the mingo round trip could not see them, the live-mongod differential did. All five are fixed on the branch and pinned by tests.</p>
 <h3 id="st-writes--storage-interface-second-pr-api-v1-authorization-storage-and-socket-writes-through-the-interface-each-labelled-by-source-8854s-boundary-check-fails-a-write-that-skips-the-interface"><code>ST-WRITES</code> &mdash; Storage interface, second PR: API v1, authorization storage and socket writes through the interface, each labelled by source; #8854's boundary check fails a write that skips the interface<a class="headerlink" href="#st-writes--storage-interface-second-pr-api-v1-authorization-storage-and-socket-writes-through-the-interface-each-labelled-by-source-8854s-boundary-check-fails-a-write-that-skips-the-interface" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -20409,7 +20480,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>tools/qc/write-contract-matrix.js</code></li>
 <li><code>tools/seam/DIFFERENTIALS.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-26: draft #8863, stacked on #8861 (base feat/storage-filter); it retargets to dev when #8861 merges. Labels: v1 modules 'v1/internal', socket 'socket', authorization storage 'internal', default 'v3'; an unknown source is refused; origin has room but is not passed. Open in the PR: commit events for authorization writes, splitting 'v1/internal', insertOne normalize:false setting _id as interface contract, moving the write differential into tools/seam.</p>
+<p><strong>Notes.</strong> 2026-10-27 (maintainer, Q12): goes into 16.0.0 through release allocation B6's entry bar. Items 1, 3, 4 and 5 MET on local candidates (session -2e; cand/with d6ba8e18 vs cand/without 2cae64f3: 360-cell matrix equal off and reject, 67-row replay equal, v1 HTTP 700/700, latency inside the noise floor, one- commit revert cf762dd0 restores cand/without's tree). Item 2 (BF-72, BF-161 in their private forks) is with -e4. Maintainer decided #8859 merges to dev first. The PR branch is awaiting #8859: prep/storage-writes b1104d02 (= the count commit 079f20ae for GET /api/v1/count/:storage/where on 38b910d7, + prep/storage-filter, with the five conflict resolutions; tree c5ac59dc equals cand/with d6ba8e18, checked by -ee, so every B6 measurement applies) becomes feat/storage-writes for #8863 once the real dev with #8859 is merged in. No push commands until -2e sends the final head. 2026-10-26: draft #8863, stacked on #8861 (base feat/storage-filter); it retargets to dev when #8861 merges. Labels: v1 modules 'v1/internal', socket 'socket', authorization storage 'internal', default 'v3'; an unknown source is refused; origin has room but is not passed. Open in the PR: commit events for authorization writes, splitting 'v1/internal', insertOne normalize:false setting _id as interface contract, moving the write differential into tools/seam.</p>
 <hr />
 <h2 id="document-truth-sweeps">Document-truth sweeps<a class="headerlink" href="#document-truth-sweeps" title="Permanent link">&para;</a></h2>
 <p><code>parcel: docs-truth</code> &mdash; 19 items</p>

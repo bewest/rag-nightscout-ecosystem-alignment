@@ -1654,6 +1654,8 @@
       
         
       
+        
+      
     
     
     
@@ -1863,6 +1865,34 @@
     
   
     Bfq 200 bf 16 0 0 ddata at crash
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bfq-201-ci-16-0-0-image-publishing.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bfq 201 ci 16 0 0 image publishing
   
 
     
@@ -3438,7 +3468,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-26 at <code>eee1869b3</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>eb4a004b4</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3525,17 +3555,28 @@ the same reply and stores the same documents as before.</p>
 <h2 id="evidence">Evidence<a class="headerlink" href="#evidence" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../../docs/30-design/platform/next-gen-platform-plan.html"><code>docs/30-design/platform/next-gen-platform-plan.md</code></a></li>
-<li><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/d21fe2a4eab6094ee2b7e86c4009daa8802b4a95/tools/qc/write-contract-matrix.js"><code>tools/qc/write-contract-matrix.js</code></a></li>
+<li><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/eb4a004b4499a0dedadb9a5675623c5e980e3e86/tools/qc/write-contract-matrix.js"><code>tools/qc/write-contract-matrix.js</code></a></li>
 <li><a href="../../tools/seam/DIFFERENTIALS.html"><code>tools/seam/DIFFERENTIALS.md</code></a></li>
 </ul>
 <h2 id="notes-carried-on-the-item">Notes carried on the item<a class="headerlink" href="#notes-carried-on-the-item" title="Permanent link">&para;</a></h2>
-<p>2026-10-26: draft #8863, stacked on #8861 (base feat/storage-filter); it
-retargets to dev when #8861 merges. Labels: v1 modules 'v1/internal', socket
-'socket', authorization storage 'internal', default 'v3'; an unknown source is
-refused; origin has room but is not passed. Open in the PR: commit events for
-authorization writes, splitting 'v1/internal', insertOne normalize:false
-setting _id as interface contract, moving the write differential into
-tools/seam.</p>
+<p>2026-10-27 (maintainer, Q12): goes into 16.0.0 through release allocation B6's
+entry bar. Items 1, 3, 4 and 5 MET on local candidates (session -2e; cand/with
+d6ba8e18 vs cand/without 2cae64f3: 360-cell matrix equal off and reject,
+67-row replay equal, v1 HTTP 700/700, latency inside the noise floor, one-
+commit revert cf762dd0 restores cand/without's tree). Item 2 (BF-72, BF-161 in
+their private forks) is with -e4. Maintainer decided #8859 merges to dev
+first. The PR branch is awaiting #8859: prep/storage-writes b1104d02 (= the
+count commit 079f20ae for GET /api/v1/count/:storage/where on 38b910d7, +
+prep/storage-filter, with the five conflict resolutions; tree c5ac59dc equals
+cand/with d6ba8e18, checked by -ee, so every B6 measurement applies) becomes
+feat/storage-writes for #8863 once the real dev with #8859 is merged in. No
+push commands until -2e sends the final head. 2026-10-26: draft #8863, stacked
+on #8861 (base feat/storage-filter); it retargets to dev when #8861 merges.
+Labels: v1 modules 'v1/internal', socket 'socket', authorization storage
+'internal', default 'v3'; an unknown source is refused; origin has room but is
+not passed. Open in the PR: commit events for authorization writes, splitting
+'v1/internal', insertOne normalize:false setting _id as interface contract,
+moving the write differential into tools/seam.</p>
 <hr />
 <h2 id="before-you-approve">Before you approve<a class="headerlink" href="#before-you-approve" title="Permanent link">&para;</a></h2>
 <ul class="task-list">
