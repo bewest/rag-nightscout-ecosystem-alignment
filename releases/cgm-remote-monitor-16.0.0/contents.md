@@ -591,7 +591,7 @@ BF-193 is not a pre-tag requirement; its fix shape is decided (debug-gated paylo
 10. **BF-194** (maintainer): API v1 removes `units` from a treatment with no glucose value before
     `WRITE_VALIDATION` runs, so a v1 temp target sent in mmol/L is stored with mmol/L numbers and no
     units and reads as mg/dL, in every mode, on 15.0.9 and `dev` (reproduced, integration record R15):
-    keep the units, convert, or refuse. Queue `BFQ-194`. *2026-10-27 (maintainer): survey the clients first, then likely enforce mg/dL at write (convert a target labelled mmol and relabel it); survey running.* *Decided 2026-10-27 (maintainer): convert and always label. Fixed on local `bf/16.0.0-tt-units` `7b74110c` (on `dev` `ca1652d6`, not pushed): every write path stores a Temporary Target in mg/dL labelled `mg/dl`; gate PASS, npm test and test:all pass. Owes a release-note line.*
+    keep the units, convert, or refuse. Queue `BFQ-194`. *2026-10-27 (maintainer): survey the clients first, then likely enforce mg/dL at write (convert a target labelled mmol and relabel it); survey running.* *Decided 2026-10-27 (maintainer): convert and always label. Fixed on local `bf/16.0.0-tt-units` `7b74110c`, PR #8872 to `dev` (head `355b4f14`, opened 2026-10-27): every write path stores a Temporary Target in mg/dL labelled `mg/dl`; gate PASS, npm test and test:all pass. Owes a release-note line.*
 11. **#8854's `failed` slot** (maintainer): under `reject`, a socket treatment array answers an item whose
     write cannot be confirmed (a lookup, similar-record match or insert error, such as a duplicate key) with a
     slot without `_id` carrying `failed: {status: 500, message: "Treatment write could not be confirmed"}`,

@@ -17226,8 +17226,8 @@ items:
     branch: bf/16.0.0-tt-units
     base: official/dev@dcf20bfb
     worktree: externals/work/crm-tt-units
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8872]
     ships_to_operators_today: true
     blast_radius: >
       1 commit (7b74110c), 11 files, +742/-43: new lib/treatmentTargetUnits.js
@@ -17266,6 +17266,9 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
     notes: >
+      2026-10-27 23:06Z: PR #8872 opened to dev by the maintainer (head
+      355b4f14, not draft, mergeable).
+
       2026-10-27 late: official/dev moved to dcf20bfb (#8871, jsconfig.json
       only) and was merged in as 355b4f14; the four BF-194 test files, 499
       passing.
