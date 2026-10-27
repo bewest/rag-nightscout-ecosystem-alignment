@@ -29,6 +29,28 @@
 // Each cell also asserts liveness (GET /api/v1/status.json = 200) before and
 // after its measured step; a cell whose liveness fails is reported INVALID, so
 // a "nothing happened" cell cannot come from a dead server.
+//
+// Temporary Target cells (QC-MATRIX-TT). The build's own environment selects
+// its write-validation mode: run once with WRITE_VALIDATION unset (off) and
+// once with WRITE_VALIDATION=reject, then --compare the two. After the cells
+// above, the treatments collection gets Temporary Target forms whose bodies
+// carry eventType "Temporary Target" with targetBottom/targetTop/units/duration,
+// the fields lib/server/write-validation.js checks:
+//   tt-create-ok     a valid target (100-120 mg/dl, 60 min), every path
+//   tt-create-order  targetBottom above targetTop (rule tt-order), every path
+//   tt-create-units  labelled mmol with mg/dL numbers (tt-units-plausible), every path
+//   tt-update-ok     a valid target, then targetTop 130 (v1 PUT, v3 PATCH,
+//                    socket dbUpdate, in-process save)
+//   tt-update-order  a valid target, then targetTop 80, below targetBottom
+//   tt-put-ok / tt-put-order        the same through v3 PUT
+//   tt-unset-ok / tt-unset-target   socket dbUpdateUnset of endmills (a domain
+//                    field, so the update is validated) / of targetTop (tt-target)
+// Each TT cell adds a `tt` field: the stored targets and units. The seed of an
+// update form is always valid, so the seed is stored in either mode. A
+// "-ok" cell should be the same off and reject, a "-order/-units/-target" cell
+// should differ, and no earlier cell should change. --no-tt leaves them out;
+// --tt-only runs only them. The ids and results of the earlier cells do not
+// depend on these: they run first, in the same order as before.
 
 const fs = require('fs');
 const path = require('path');
@@ -52,7 +74,7 @@ if (flag('--compare')) {
 
 if (flag('--table')) {
   const r = JSON.parse(fs.readFileSync(argv[argv.indexOf('--table') + 1], 'utf8'));
-  const cols = ['st', 'store', 'srv', 'hist', 'ev', 'wire', 'cache', 'v1read'];
+  const cols = ['st', 'store', 'tt', 'srv', 'hist', 'ev', 'wire', 'cache', 'v1read'];
   for (const coll of r.collections) {
     console.log('\n#### ' + coll + '\n');
     console.log('| path | form | ' + cols.join(' | ') + ' |');
@@ -466,7 +488,8 @@ function body (coll, t, cell, extra) {
     cells[key] = out;
   }
 
-  for (const c of COLLS) {
+  const TT_ONLY = flag('--tt-only');
+  if (!TT_ONLY) for (const c of COLLS) {
     for (const p of PATHS) {
       for (const f of FORMS) {
         if (f === 'update-put' && p !== 'v3') continue;
@@ -476,7 +499,7 @@ function body (coll, t, cell, extra) {
   }
 
   // ---- cross-path: create through A, re-send the same body (no _id) through B
-  if (!flag('--no-cross')) {
+  if (!flag('--no-cross') && !TT_ONLY) {
     for (const c of COLLS) {
       for (const a of PATHS) for (const b of PATHS) {
         if (a === b) continue;
@@ -493,9 +516,87 @@ function body (coll, t, cell, extra) {
     }
   }
 
+  // ---- Temporary Target cells (see the header). The body is a valid target;
+  // `change` is what the measured step sends or applies.
+  const TT_FORMS = [];
+  if (COLLS.includes('treatments') && !flag('--no-tt')) {
+    const c = 'treatments';
+    const ttBody = (t, cell, extra) => Object.assign({ date: t, utcOffset: 0, app: 'wc-lab', wc: cell, wcv: 1
+      , eventType: 'Temporary Target', reason: 'wc-lab', targetBottom: 100, targetTop: 120, units: 'mg/dl', duration: 60
+      , created_at: iso(t), device: 'wc-lab', enteredBy: 'wc-lab' }, extra || {});
+    const ttDesc = docs => docs.length ? docs.map(d => d.targetBottom + '-' + d.targetTop + ' ' + (d.units === undefined ? 'no-units' : d.units)).join(',') : 'none';
+    const update = {
+      v1: (d, ch) => req('PUT', '/api/v1/treatments/', Object.assign({}, d, ch, { wcv: 2 })).then(r => replyDesc(r))
+      , v3: (d, ch, ident) => req('PATCH', '/api/v3/treatments/' + ident, Object.assign({}, ch, { wcv: 2 }), V).then(r => replyDesc(r))
+      , ws: (d, ch) => emit('dbUpdate', { collection: c, _id: d._id, data: Object.assign({}, ch, { wcv: 2 }) }).then(a => sockDesc(a))
+      , inproc: (d, ch) => cb(fn => ctx.treatments.save(Object.assign({}, d, ch, { _id: d._id, wcv: 2 }), fn)).then(r => inDesc(r))
+    };
+    const put = (d, ch, ident) => {
+      const b = Object.assign({}, d, ch, { wcv: 2 }); delete b._id; delete b.srvModified; delete b.srvCreated; delete b.subject;
+      return req('PUT', '/api/v3/treatments/' + ident, b, V).then(r => replyDesc(r));
+    };
+    const unset = (d, fields) => emit('dbUpdateUnset', { collection: c, _id: d._id, data: fields }).then(a => sockDesc(a));
+    // form -> [paths, kind, argument]
+    const TT = {
+      'tt-create-ok': [PATHS, 'create', {}]
+      , 'tt-create-order': [PATHS, 'create', { targetBottom: 150, targetTop: 120 }]
+      , 'tt-create-units': [PATHS, 'create', { units: 'mmol' }]
+      , 'tt-update-ok': [PATHS, 'update', { targetTop: 130 }]
+      , 'tt-update-order': [PATHS, 'update', { targetTop: 80 }]
+      , 'tt-put-ok': [['v3'], 'put', { targetTop: 130 }]
+      , 'tt-put-order': [['v3'], 'put', { targetTop: 80 }]
+      , 'tt-unset-ok': [['ws'], 'unset', { endmills: 1 }]
+      , 'tt-unset-target': [['ws'], 'unset', { targetTop: 1 }]
+    };
+    TT_FORMS.push(...Object.keys(TT));
+    for (const p of PATHS) {
+      for (const f of TT_FORMS) {
+        const [paths, kind, arg] = TT[f];
+        if (!paths.includes(p)) continue;
+        const key = c + ' ' + p + ' ' + f;
+        const cellId = 'wc-tt' + seq + '-' + crypto.randomBytes(3).toString('hex');
+        const t = nextT();
+        const out = {};
+        if (!(await alive())) { cells[key] = { st: 'INVALID liveness before' }; continue; }
+        let measured;
+        if (kind === 'create') {
+          measured = () => P[p].create(c, ttBody(t, cellId, arg));
+        } else {
+          out.seed = await P[p].create(c, ttBody(t, cellId)); await sleep(80);
+          const d = (await docsOf(c, cellId)).slice(-1)[0];
+          if (!d) { cells[key] = { st: 'n/a (seed not stored: ' + out.seed + ')' }; continue; }
+          const doc = Object.assign({}, d, { _id: d._id instanceof ObjectId ? d._id.toHexString() : d._id });
+          const ident = d.identifier || doc._id;
+          measured = kind === 'update' ? () => update[p](doc, arg, ident)
+            : kind === 'put' ? () => put(doc, arg, ident) : () => unset(doc, arg);
+        }
+        const before = await docsOf(c, cellId);
+        const cursor = await cursorOf(c);
+        events = []; wire = [];
+        out.st = await measured();
+        await sleep(250);
+        const evs = events.slice(); events = [];
+        const wired = wire.slice(); wire = [];
+        const after = await docsOf(c, cellId);
+        out.store = storeDesc(after);
+        out.tt = ttDesc(after);
+        out.srv = srvDesc(before, after);
+        out.hist = await histOf(c, cellId, cursor);
+        out.ev = evDesc(evs);
+        out.wire = wired.length ? wired.join(',') : 'none';
+        out.cache = cacheOf(c, cellId);
+        out.v1read = await v1readOf(c, cellId);
+        if (!(await alive())) { cells[key] = { st: 'INVALID liveness after' }; continue; }
+        cells[key] = out;
+      }
+    }
+  }
+
   const result = {
     head, dirty_lib: dirty || '', node: process.version, mongod: serverVersion, db: DBNAME
-    , date: new Date().toISOString(), collections: COLLS, paths: PATHS, forms: FORMS, cells
+    , write_validation: env.writeValidation === undefined ? '(not read by this build)' : env.writeValidation
+    , date: new Date().toISOString(), collections: COLLS, paths: PATHS
+    , forms: TT_ONLY ? TT_FORMS : FORMS.concat(TT_FORMS), cells
   };
   if (OUT) fs.writeFileSync(OUT, JSON.stringify(result, null, 1));
   else console.log(JSON.stringify(result, null, 1));

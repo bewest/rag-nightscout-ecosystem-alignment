@@ -113,6 +113,20 @@ that id); `update` (v1 `PUT`, v3 `PATCH`, socket `dbUpdate`, in-process `save`);
 in-process `remove`). Every path sends the same body, including the `date`, `utcOffset` and `app`
 API v3 requires.
 
+**Temporary Target forms (added 2026-10-26, QC-MATRIX-TT).** The build's `WRITE_VALIDATION`
+setting comes from the environment the harness runs in, and each result file records it
+(`write_validation`). After the cells above, the treatments collection gets nine forms whose
+bodies are Temporary Targets (`targetBottom`, `targetTop`, `units`, `duration`), the fields
+`lib/server/write-validation.js` checks: `tt-create-ok`, `tt-create-order` (bottom above top),
+`tt-create-units` (`mmol` on mg/dL numbers), `tt-update-ok` / `tt-update-order` (a valid seed, then
+`targetTop` 130 or 80, through v1 `PUT`, v3 `PATCH`, socket `dbUpdate` and in-process `save`),
+`tt-put-ok` / `tt-put-order` (v3 `PUT`) and `tt-unset-ok` / `tt-unset-target` (socket
+`dbUpdateUnset` of `endmills` or `targetTop`). They add 24 cells and a `tt` field (stored targets
+and units); the 336 earlier cells keep their ids and results. Run the harness once with
+`WRITE_VALIDATION` unset and once with `WRITE_VALIDATION=reject`, and `--compare` the two: only the
+invalid-target cells should differ. `tt-create-units` is not refused on v1 and in-process, because
+v1 storage drops `units` from a treatment without a glucose value before the check.
+
 ### 1.2 Legend
 
 Each cell is `reply · stored · server dates · v3 history · emissions` (`· v1:<n>` for deletes).
