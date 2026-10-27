@@ -130,14 +130,15 @@
    "id": "QC-MATRIX-TT",
    "track": "storage",
    "phase": "now",
-   "state": "planned",
+   "state": "done",
    "short": "Matrix: validation cells",
    "title": "Extend the write-contract matrix with Temporary Target records in reject mode, so validated updates are pinned on all four paths (today the matrix never reaches them)",
    "where": "tools/qc/write-contract-matrix.js",
    "check": "off and reject differ in the new cells and nowhere else",
    "depends": [
     "PR-8854"
-   ]
+   ],
+   "ref": "823c7c68d (2026-10-26): 24 Temporary Target cells, 360 in all; on dev 8dbb60c2 off and reject differ in the 12 invalid-target cells only; #8861 and #8863 equal dev cell for cell in both modes"
   },
   {
    "id": "ST-EVENT",
@@ -160,7 +161,7 @@
    "short": "Filter tree and interface",
    "title": "Slice 1: the backend-neutral filter tree and storage interface methods under the API v3 collection adapter, composed with #8854's boundary; no call site changes",
    "where": "lib/storage/filter.js, lib/api3/storage/mongoCollection/ (from old chain 4f753ab9, b0709c2c, 68ffbd66, c40d37f7, ef89bdb8, c1218d50, d75c1154, plus the type and nottype nodes)",
-   "check": "both write-contract matrices unchanged (0 of 336 cells, off and reject); filter differential against mongod 0 mismatches over 5,467 and 11,467 filters; #8854's gates",
+   "check": "both write-contract matrices unchanged (0 of 336 cells, off and reject; with the Temporary Target cells, 0 of 360 against dev 8dbb60c2 in each mode); filter differential against mongod 0 mismatches over 5,467 and 11,467 filters; #8854's gates",
    "depends": [
     "PR-8854"
    ],
@@ -190,7 +191,7 @@
    "short": "v1 and socket writes",
    "title": "Slice 3: v1 and socket writes go through the interface, each labelled by its source (and later its origin); #8854's boundary check accepts interface acquisition",
    "where": "treatments, entries, devicestatus, profile (incl. mergeInto), food, activity, authorization storage, websocket; about 400 lines",
-   "check": "our matrix with 0 cells changed (the replay's hard-delete key order fixed first); #8854's per-cell boundary assertions",
+   "check": "our matrix with 0 cells changed (the replay's hard-delete key order fixed first); #8854's per-cell boundary assertions; with QC-MATRIX-TT's 360 cells, equal to dev cell for cell off and reject",
    "depends": [
     "ST-READS"
    ],

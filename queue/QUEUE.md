@@ -8438,7 +8438,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; Measured by the lab, not re-runnable from this repository alone (needs MongoDB and a dev tree). On feat/storage-filter 48e7e101 (dev 8dbb60c2 merged into b752971c): npm test 4577/0/3, test:all 4905/0/3, check-write-boundary 8/8. On b752971c against dev 7ad3a67f: npm test 4526/0/3 (dev 4429), test:all 4854/0/3 (dev 4757), #8854 matrix 422 = 422, write-contract matrix 0 of 336 cells differ off and reject (red control findFiltered -> []: 186 cells), tools/seam/v1-http-differential.js 700/700 identical, tools/seam/v1-read-differential.js 2954/2954, tools/seam/filter-differential.js 0 mismatches.
+- **NO GATE** &mdash; Measured by the lab, not re-runnable from this repository alone (needs MongoDB and a dev tree). On feat/storage-filter 48e7e101 (dev 8dbb60c2 merged into b752971c): npm test 4577/0/3, test:all 4905/0/3, check-write-boundary 8/8. On b752971c against dev 7ad3a67f: npm test 4526/0/3 (dev 4429), test:all 4854/0/3 (dev 4757), #8854 matrix 422 = 422, write-contract matrix 0 of 336 cells differ off and reject (red control findFiltered -> []: 186 cells), tools/seam/v1-http-differential.js 700/700 identical, tools/seam/v1-read-differential.js 2954/2954, tools/seam/filter-differential.js 0 mismatches. With QC-MATRIX-TT's Temporary Target cells (360, 823c7c68d): 48e7e101 equals dev 8dbb60c2 cell for cell off and reject.
 
 **Evidence.**
 
@@ -8470,7 +8470,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; Measured by the lab, not re-runnable from this repository alone. On feat/storage-writes 38b910d7 against 48e7e101 (Node 22.23.4, MongoDB 8.0.34): npm test 4588/0/3 (base 4577), test:all 4916/0/3 (base 4905), check-write-boundary 9 entry points (red: a raw deleteMany), #8854 matrix 422 (red: socket label dropped, 78 failing), write-contract matrix 0 of 336 cells off and reject (red: deleted alias, 3 cells; reject mode is not exercised by the matrix, see QC-MATRIX-TT), v1 GET differential 700/700, write differential 88/88 with 3254 documents (red: alias 11 replies, $unset 11 stored states).
+- **NO GATE** &mdash; Measured by the lab, not re-runnable from this repository alone. On feat/storage-writes 38b910d7 against 48e7e101 (Node 22.23.4, MongoDB 8.0.34): npm test 4588/0/3 (base 4577), test:all 4916/0/3 (base 4905), check-write-boundary 9 entry points (red: a raw deleteMany), #8854 matrix 422 (red: socket label dropped, 78 failing), write-contract matrix 0 of 336 cells off and reject (red: deleted alias, 3 cells). With QC-MATRIX-TT's Temporary Target cells (360 in all, 823c7c68d), 0 cells differ from dev 8dbb60c2 off and 0 in reject; off vs reject differ in the same 12 invalid-target cells as dev. v1 GET differential 700/700, write differential 88/88 with 3254 documents (red: alias 11 replies, $unset 11 stored states).
 
 **Evidence.**
 

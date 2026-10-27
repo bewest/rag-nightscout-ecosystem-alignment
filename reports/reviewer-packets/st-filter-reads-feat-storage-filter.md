@@ -65,7 +65,9 @@ maintainer, plus a second human - every v1 read path moves
   contract matrix 0 of 336 cells differ off and reject (red control
   findFiltered -> []: 186 cells), tools/seam/v1-http-differential.js 700/700
   identical, tools/seam/v1-read-differential.js 2954/2954,
-  tools/seam/filter-differential.js 0 mismatches.
+  tools/seam/filter-differential.js 0 mismatches. With QC-MATRIX-TT's
+  Temporary Target cells (360, 823c7c68d): 48e7e101 equals dev 8dbb60c2 cell
+  for cell off and reject.
 
 ## Evidence
 
