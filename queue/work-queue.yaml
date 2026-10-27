@@ -3324,8 +3324,8 @@ items:
       - releases/cgm-remote-monitor-16.0.0/decisions.md
     notes: >
       2026-10-27, later: the suites on 8dbb60c2 pass (R17); the red CI is two
-      test faults, fixed on test/16.0.0-ci-flakes (RT-CI-FLAKES-8DBB60C2,
-      ready to push); BF-72 and BF-161 have dev 8dbb60c2 merged into their
+      test faults, fixed on test/16.0.0-ci-flakes (RT-CI-FLAKES-8DBB60C2, #8866
+      opened 2026-10-27); BF-72 and BF-161 have dev 8dbb60c2 merged into their
       fork heads, ready to push to the forks (BFQ-72, BFQ-161).
 
       2026-10-27: #8860 merged (dev 8dbb60c2, the glucose pentagon in the
@@ -3408,8 +3408,8 @@ items:
     branch: test/16.0.0-ci-flakes
     base: official/dev@8dbb60c2
     worktree: externals/work/crm-ci-flakes
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8866]
     blast_radius: >
       Two test files, no production source: tests/concurrent-writes.test.js
       (c7857735) and tests/browser/page-startup.test.js (bdd569a3).

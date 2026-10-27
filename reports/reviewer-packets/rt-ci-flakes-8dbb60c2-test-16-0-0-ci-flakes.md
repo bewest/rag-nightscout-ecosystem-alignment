@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — RT-CI-FLAKES-8DBB60C2
+# Review packet — RT-CI-FLAKES-8DBB60C2 (PR #8866)
 
 **dev 8dbb60c2's red CI: a concurrent-writes timestamp collision and the WebKit
 reports-page race**
@@ -21,7 +21,7 @@ reports-page race**
 | repository | `cgm-remote-monitor` |
 | branch | `test/16.0.0-ci-flakes` |
 | base | `official/dev@8dbb60c2` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=RT-CI-FLAKES-8DBB60C2` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=RT-CI-FLAKES-8DBB60C2` is the measurement |
 | semver | `n/a` |
 
 ## What this changes
