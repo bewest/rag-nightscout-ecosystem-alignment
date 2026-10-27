@@ -116,6 +116,8 @@ same ablation.
 
 ## Notes carried on the item
 
+2026-10-27, later: pushed by the maintainer to the private fork as bf/regex-
+limits a9da33ff (a fast-forward from f64f78c4). No fork PR opened yet.
 2026-10-27, after #8861, #8863 and #8870 merged: dev merged into the fork
 branch (f64f78c4, already on the fork) as adv/r3gv-1600-dev a9da33ff
 (externals/work/crm-ghsa-r3gv-dev), local, a fast-forward of the fork's

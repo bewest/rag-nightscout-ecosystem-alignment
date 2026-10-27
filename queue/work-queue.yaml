@@ -8313,6 +8313,10 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-27, later: pushed by the maintainer to the private fork as
+      bf/regex-limits a9da33ff (a fast-forward from f64f78c4). No fork PR
+      opened yet.
+
       2026-10-27, after #8861, #8863 and #8870 merged: dev merged into the
       fork branch (f64f78c4, already on the fork) as adv/r3gv-1600-dev
       a9da33ff (externals/work/crm-ghsa-r3gv-dev), local, a fast-forward
@@ -15094,6 +15098,10 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-27, later: pushed by the maintainer to the private fork as
+      bf/entries-pattern-limit 1dce7722 (a fast-forward from 8dcf1537). No
+      fork PR opened yet.
+
       Decided 2026-10-27 (maintainer): extend the draft advisory to cover
       BF-161 as well as BF-151, and publish it once, with 16.0.0.
 
@@ -17000,8 +17008,8 @@ items:
     branch: tooling/jsconfig-watch-scope
     base: official/dev@7abe1cf6
     worktree: externals/work/crm-jsconfig-2710
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8871]
     ships_to_operators_today: false
     blast_radius: >
       One new file, jsconfig.json (8 lines: module commonjs, target es2022,
@@ -17033,6 +17041,9 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-27, 22:21:20Z: #8871 opened by the maintainer into dev, head
+      f28d40bb.
+
       2026-10-27: draft e737d310 by the maintainer through session -a7
       (437,239 against 5,616 watches in its probe), re-measured by session
       -e4 and dev 7abe1cf6 merged in as f28d40bb. tsc -p jsconfig.json

@@ -68,6 +68,8 @@ further merge; goes red when dev moves ahead
 
 ## Notes carried on the item
 
+2026-10-27, later: pushed by the maintainer to the private fork as bf/entries-
+pattern-limit 1dce7722 (a fast-forward from 8dcf1537). No fork PR opened yet.
 Decided 2026-10-27 (maintainer): extend the draft advisory to cover BF-161 as
 well as BF-151, and publish it once, with 16.0.0. 2026-10-27, after #8861,
 #8863 and #8870 merged: dev 9668b179 and then 7abe1cf6 merged into the fork

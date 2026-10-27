@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-203
+# Review packet — BFQ-203 (PR #8871)
 
 **BF-203 - an editor opening a cgm-remote-monitor file inside a larger workspace
 watches every sibling worktree (450,689 inotify watches); add jsconfig.json**
@@ -21,7 +21,7 @@ watches every sibling worktree (450,689 inotify watches); add jsconfig.json**
 | repository | `cgm-remote-monitor` |
 | branch | `tooling/jsconfig-watch-scope` |
 | base | `official/dev@7abe1cf6` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-203` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-203` is the measurement |
 | semver | `n/a` |
 | register entries | `BF-203` |
 
@@ -64,6 +64,7 @@ include or files list, so new folders stay covered) and excludes node_modules.
 
 ## Notes carried on the item
 
+2026-10-27, 22:21:20Z: #8871 opened by the maintainer into dev, head f28d40bb.
 2026-10-27: draft e737d310 by the maintainer through session -a7 (437,239
 against 5,616 watches in its probe), re-measured by session -e4 and dev
 7abe1cf6 merged in as f28d40bb. tsc -p jsconfig.json --listFilesOnly lists
