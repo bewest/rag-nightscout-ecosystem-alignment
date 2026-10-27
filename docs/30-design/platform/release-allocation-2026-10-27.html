@@ -5464,8 +5464,9 @@ state; §1–§6 keep the morning's reasoning, with their decided rows marked. 1
   computation (ST-VIEWS: the page, plugins and alarms), or is reached only by multi mode
   (ST-V3-DECOUPLE, PLAT-SERVE, ST-HARNESS, ST-PG). None of them improves 16.0.0 for a self-hoster,
   and each would spend the short quiet period the pre-tag definition of done asks for
-  (<code>RT-16-RELEASE</code>, item 4, decided 2026-10-27). Recommendation: <code>dev</code> takes only release fixes until
-  the tag (Q1 (a), now Q13). D-EVENT was deferred by the maintainer the same evening (Q9); ST-EVENT stays tied to
+  (<code>RT-16-RELEASE</code>, item 4, decided 2026-10-27). Recommendation: the remaining storage items wait for
+  16.1.0. The quiet period is not a date: it starts when the 16.0.0 merge list is closed (Q13,
+  corrected by the maintainer 2026-10-27: merging is still under way). D-EVENT was deferred by the maintainer the same evening (Q9); ST-EVENT stays tied to
   WC-STEP-PATCH in 16.2.0.</li>
 <li><strong>Does including other roadmap features help multitenancy: not by being in 16.0.0.</strong> The one
   indirect benefit, real traffic on the interface before PostgreSQL depends on it (§4.2), is now
@@ -5503,7 +5504,7 @@ state; §1–§6 keep the morning's reasoning, with their decided rows marked. 1
 </tr>
 <tr>
 <td>4. a short quiet period on <code>dev</code> with the final candidate</td>
-<td>not started; needs Q13</td>
+<td>starts when the 16.0.0 merge list is closed (Q13); merging is still under way</td>
 </tr>
 <tr>
 <td><code>master</code> protection (#8824 <code>BLOCKED</code>)</td>
@@ -6106,10 +6107,10 @@ tenancy work, from its route census of <code>dev</code> <code>2dc0c1bc</code> (1
 </tr>
 <tr>
 <td>Q13</td>
-<td>Does the quiet period start now, at <code>ca1652d6</code>? (asked 2026-10-27 evening)</td>
-<td>(a) yes: <code>dev</code> takes release fixes only (BF-72 and BF-161 at publication, fixes for what the cohorts report, CI and docs); feature PRs stay draft. (b) take #8862 first, then start. (c) keep merging until the alarms and cohort checks are done</td>
-<td>(a): M1 is on <code>dev</code>, so what is left in review is 16.1.0 work (§3.5), and every merge restarts what the quiet period measures; (b) only if the image's new start is wanted in the major</td>
-<td>the tag date; #8862, #8865, #8857 merge dates</td>
+<td>When does the quiet period start?</td>
+<td><em>Corrected by the maintainer, 2026-10-27:</em> not now; merging is still under way. Proposed: it starts when the 16.0.0 merge list is closed: what is in flight for 16.0.0 (#8872 BF-194, #8855 translations, BF-72 and BF-161 through their forks) plus whatever the maintainer adds to it, with #8865 decided either way. Until then <code>dev</code> keeps taking 16.0.0 work, and the cohort requests (Q14) start now, because M1 and #8859 are already on <code>dev</code></td>
+<td>open: the content of the merge list, and #8865 in or out</td>
+<td>the tag date; #8865, #8857 merge dates</td>
 </tr>
 <tr>
 <td>Q14</td>
@@ -6363,17 +6364,18 @@ release soaks them; and how does that weigh against releasing as soon as the can
   exchange for one release of real traffic on the interface before PostgreSQL relies on it. If the
   gates are met before the bar is, release without the slices.</li>
 </ul>
-<h3 id="b7-quiet-period-now-tag-when-the-four-items-are-met-recommended-evening-2026-10-27">B7. Quiet period now, tag when the four items are met (recommended, evening 2026-10-27)<a class="headerlink" href="#b7-quiet-period-now-tag-when-the-four-items-are-met-recommended-evening-2026-10-27" title="Permanent link">&para;</a></h3>
+<h3 id="b7-close-the-merge-list-then-a-short-quiet-period-then-the-tag-recommended-evening-2026-10-27">B7. Close the merge list, then a short quiet period, then the tag (recommended, evening 2026-10-27)<a class="headerlink" href="#b7-close-the-merge-list-then-a-short-quiet-period-then-the-tag-recommended-evening-2026-10-27" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>What happens.</strong> <code>dev</code> stays at <code>ca1652d6</code> except for release fixes. The cohort requests (Q14) and
-  the live alarms check run in parallel; BF-72 and BF-161 are brought up to <code>dev</code> inside their
+<li><strong>What happens.</strong> The 16.0.0 merge list (Q13) is merged; then <code>dev</code> takes release fixes only for a
+  few days with the final candidate. The cohort requests (Q14) and the live alarms check start now and
+  run in parallel; BF-72 and BF-161 are brought up to <code>dev</code> inside their
   forks. D-T30 and the remaining identity questions are settled while <code>dev</code> is quiet.</li>
 <li><strong>Who it reaches.</strong> Every 16.0.0 user, through M1 and #8859, which are new code on every v1 read
   and write; B6's cohort table is the check list.</li>
 <li><strong>Measure first.</strong> The cohort confirmations; a 360-cell matrix and client replay on the final
   candidate, which will include the fork fixes.</li>
-<li><strong>Effect on tenancy.</strong> 16.1.0 work (ST-V3-DECOUPLE, PLAT-SERVE, registration) builds on
-  branches during the quiet period and merges when <code>dev</code> reopens.</li>
+<li><strong>Effect on tenancy.</strong> 16.1.0 work (ST-V3-DECOUPLE, registration, and PLAT-SERVE unless it joins
+  the merge list) builds on branches and merges when <code>dev</code> reopens.</li>
 </ul>
 <h3 id="b8-take-8862-into-1600-first">B8. Take #8862 into 16.0.0 first<a class="headerlink" href="#b8-take-8862-into-1600-first" title="Permanent link">&para;</a></h3>
 <ul>
