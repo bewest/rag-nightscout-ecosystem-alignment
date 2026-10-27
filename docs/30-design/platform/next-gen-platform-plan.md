@@ -1,6 +1,6 @@
 # Next-gen platform: one write path, four tracks
 
-*Contributor-facing. Living plan, current at cgm-remote-monitor dev `47723cda` (2026-10-26) and [#8854](https://github.com/nightscout/cgm-remote-monitor/pull/8854) at `fa22d573`; #8854 merged to dev 2026-10-26 as `c08cbe03`, and ST-FILTER is being built on dev `7ad3a67f`. Status: proposed; the decisions in §6 are open.*
+*Contributor-facing. Living plan, current at cgm-remote-monitor dev `8dbb60c2` (2026-10-27). #8854 merged to dev 2026-10-26 as `c08cbe03`; the seam slices, the one executable and registration are open as drafts #8861, #8863, #8865, #8862 and #8857. Status: proposed; the decisions in §6 are open. Which release each item goes in is proposed in [release allocation](release-allocation-2026-10-27.md) (2026-10-27).*
 
 The interactive version, with the dependency map, is the site page [nightscout-next-gen-platform.html](../../../site/pages/nightscout-next-gen-platform.html).
 
@@ -15,12 +15,12 @@ It names each piece of work, what it needs first, where it goes in the code, and
 
 ## 1. Where things stand
 
-| | on dev `47723cda` | in review or on a branch | not started |
+| | on dev `8dbb60c2` | in review (draft PRs) | not started |
 |---|---|---|---|
-| Storage | `WRITE_VALIDATION` (#8841), called from treatments and API v3. No storage interface, no `TENANCY_MODE`. | #8854 (draft): one write boundary for the six v1 modules, the socket and API v3; a 336-cell CRUD matrix; an AST gate over eight adapter files. The September seam chain (`seam/*`, `65ce54b9`, 51 commits, local). | write(intent), backend-neutral store, PostgreSQL on dev |
-| Identity | `identifier` is the client's, `_id` the server's; API v3 refuses a client `_id` (#8845: BF-169, BF-170) | [#8859](https://github.com/nightscout/cgm-remote-monitor/pull/8859) (ID-SIMPLE-MATCH) | identifier-first on every path, unique index |
-| Registration | nothing in code; dev carries an older proposal schema, `docs/proposals/schemas/controller-instance-registration.schema.json` | specs and 1,661 tests in this repository; `feat/registration-catalogue` (slice 0) | submit, instances, typed writes |
-| Tenancy | nothing | tenant resolution, admin plane, per-tenant contexts and sockets, change feed, credential schema (old chain only) | per-tenant config, tenant-scoped auth, hosted lab |
+| Storage | `WRITE_VALIDATION` (#8841); the write boundary `lib/storage/write-step.js` for the six v1 modules, the socket and API v3, with its CRUD matrix and AST gate (#8854) | #8861 ST-FILTER + ST-READS (`48e7e101`); #8863 ST-WRITES (`38b910d7`, stacked on #8861) | ST-EVENT (decision), write(intent), backend-selectable harness, PostgreSQL |
+| Identity | `identifier` is the client's, `_id` the server's; API v3 refuses a client `_id` (#8845: BF-169, BF-170) | #8859 ID-SIMPLE-MATCH with the null-removes rule (`5c6ceabb`) | identifier-first on every path, unique index |
+| Registration | nothing in code; dev carries an older proposal schema, `docs/proposals/schemas/controller-instance-registration.schema.json` | #8857 S0, S1, S2, S5, off by default (`f7a43fed`) | typed writes (S3), projected views (S4) |
+| Tenancy | nothing | #8862 PLAT-ENTRY (`b63d9b7f`); #8865 PLAT-SERVE (`1dafe2a5`, stacked on #8863) | tenant configuration, resolution, tenant-scoped auth, hosted lab |
 
 ## 2. Why the tracks meet at the write step
 
@@ -141,6 +141,7 @@ Decided 2026-10-26: #8854 lands in 16.0.0 after four alignment conditions (outco
 - **Red controls.** Every new test is shown failing against the code it guards before the change, with the original symptom.
 - **Conformance.** The registration and identity cases in `specs/sync/conformance/` run against a booted server by a harness in this repository (D12), reported case by case as passed, mapped or not applicable.
 - **Agents.** Agents build slices in their own worktrees, run the checks and hand back a branch, a PR body and the push commands. They never push. Maintainers push, open, review and merge.
+- **Releases.** Behaviour-neutral slices do not need a major, so they ship in the minor after the release in progress rather than lengthening its soak; the proposed allocation by release, its open decisions (Q1–Q11) and the scenario briefs are in [release allocation](release-allocation-2026-10-27.md).
 - **Records.** Each landed slice updates its queue item (`queue/work-queue.yaml`) and this plan's data file, and the page is re-rendered.
 
 ## 8. Sources

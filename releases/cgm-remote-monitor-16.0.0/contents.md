@@ -335,7 +335,7 @@ runtime Docker image.
 
 ## In flight for this release
 
-Read 2026-10-26, 19:10Z; #8854, #8856 and #8859 updated at 22:13Z; BF-72, BF-161 and the CI test fixes on 2026-10-27. Every cut is merged
+Read 2026-10-26, 19:10Z; #8854, #8856 and #8859 updated at 22:13Z; BF-72, BF-161, the CI test fixes, #8864 and the next-gen drafts on 2026-10-27. Every cut is merged
 ([Merge state](#merge-state)); #8854 is merged ([What is merged so far](#what-is-merged-so-far)).
 
 | work | branch | head | state | queue |
@@ -347,6 +347,8 @@ Read 2026-10-26, 19:10Z; #8854, #8856 and #8859 updated at 22:13Z; BF-72, BF-161
 | BF-191: a stored treatment can stop the server process, and keeps doing so after a restart | private, through the maintainer's advisory process | — | open in the register | `BFQ-191` |
 | BF-193: write paths log whole records | `bf/16.0.0-log-privacy`, **draft #8856** (the maintainer, base `dev`) | `6b6ad320`: one commit (`8ae43eb4`) and a merge of `dev` `7ad3a67f` | draft PR opened 2026-10-26. `dev` `7ad3a67f` merged in as `6b6ad320` (session -66, no conflicts; pushed by the maintainer 2026-10-26, hosted CI 16 passed, 0 failed, 2 skipped): `npm test` 4436 passing, 0 failing, 3 pending; `test:all` 4764 passing, 0 failing, 3 pending | `BFQ-193` |
 | the re-send and merge contract: `ID-SIMPLE-MATCH`, Q1b (a `null` in an update removes the field), BF-195 (a stale profile pushed over the socket after a re-send) and the devicestatus `identifier` rule, one PR | `bf/16.0.0-null-removes`, **draft #8859** (the maintainer, base `dev`) | `5c6ceabb`: five commits on `dev` `47723cda` and a merge of `dev` `7ad3a67f`: `ID-SIMPLE-MATCH` `8d0f9a22`, Q1b `913d0895`, BF-195 `1bdce62c`, merge `cf2a2a67`, the devicestatus `identifier` rule `fc170a4c` (read from `git log`) | draft PR opened 2026-10-26; the devicestatus `identifier` rule is on it (v1 and v3: a re-send with a stored `identifier` writes nothing and the reply carries the stored `_id`); `npm test` 4375 passing, 0 failing, 3 pending and `test:all` 4703 passing, 0 failing, 3 pending (re-run on `fc170a4c` 2026-10-26; the first run had 1 environmental `ENOSPC` failure); with #8854 one import-line conflict and a 3-line matrix expectation change for whichever merges second. #8854 merged first: `dev` `7ad3a67f` merged in as `5c6ceabb` (session -66; pushed by the maintainer 2026-10-26, hosted CI 16 passed, 0 failed, 2 skipped; both requires kept, #8854's cross-path resend cells updated): `npm test` 4521 passing, 0 failing, 3 pending; `test:all` 4849 passing, 0 failing, 3 pending (integration record R16) | `ID-SIMPLE-MATCH`, `WRITE-CONTRACT`, `BFQ-195` |
+| the IOB pill switching to the treatment-based value during a reconnect | AndyLow91's branch, **draft #8864** (base `dev`) | `4ed92673`: `lib/data/ddata.js` and a new `tests/data.reconnect-snapshot.test.js` | opened 2026-10-27 13:02Z; read from the PR body, not run here: the socket's reconnect payload is read from the live `ddata` the loader is rebuilding, so a reconnect during a refresh can carry no device statuses and the pill falls back for that moment; the fix reads from the completed snapshot. The PR reports three new tests failing on the unmodified base, and 4 sensor-age failures under `TZ=Europe/London` that it reproduces on the base too. Display of a dosing-relevant value (cycle priority 2) | — |
+| next-gen drafts: storage slices, one executable, `serve api`, registration | #8861 (`48e7e101`), #8863 (`38b910d7`, on #8861), #8862 (`b63d9b7f`), #8865 (`1dafe2a5`, on #8863), #8857 (`f7a43fed`) | — | drafts; proposed for 16.1.0 rather than 16.0.0, except #8862 if it merges before the soak starts ([release allocation](../../docs/30-design/platform/release-allocation-2026-10-27.md), Q1–Q3, read 2026-10-27) | `ST-FILTER-READS`, `ST-WRITES`, `PLAT-ENTRY`, `PLAT-SERVE`, `HUB-REG-CRM` |
 
 BF-72's fix, by mechanism: a length cap on every pattern and a time limit on every query whose filter
 holds a regular expression, generated ones included; a refusal check for caller-written patterns
@@ -542,10 +544,10 @@ BF-193 is not a pre-tag requirement; its fix shape is decided (debug-gated paylo
 
 1. **The scope of BF-161's draft advisory** (maintainer): publish it now for BF-151 (released in 15.0.9)
    with BF-161 as a follow-up, or extend it to include BF-161 and publish it with the release that
-   carries the fix. Packet: [bfq-161](../../reports/reviewer-packets/bfq-161-bf-entries-pattern-limit.md).
+   carries the fix. Packet: [bfq-161](../../reports/reviewer-packets/bfq-161-adv-phrf-1600.md).
 2. **BF-72's test inputs** (the original author of the regex-limit commits): the tests' hostile inputs
    are to be rebuilt in code before anything is published. Packet:
-   [bfq-72](../../reports/reviewer-packets/bfq-72-bf-regex-limits.md).
+   [bfq-72](../../reports/reviewer-packets/bfq-72-adv-r3gv-1600.md).
 3. **BF-95** (maintainer): a notice for readings that arrive dated ahead of the server clock, or the
    status quo. Packet: [bfq-95](../../reports/reviewer-packets/bfq-95.md). 2026-10-25 (maintainer): verify
    `srvModified` first; on `dev` it is a server receipt time on every live path (caveat BF-181).

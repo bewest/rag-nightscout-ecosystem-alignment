@@ -1,5 +1,5 @@
 {
- "measured": "2026-10-26 against cgm-remote-monitor dev 47723cda and #8854 at fa22d573; seam replay seam/replay-2610 f41cb244",
+ "measured": "2026-10-27 against cgm-remote-monitor dev 8dbb60c2 (open PRs #8857, #8859, #8861, #8862, #8863, #8865 read the same day); first measured 2026-10-26 against dev 47723cda and #8854 at fa22d573",
  "tracks": [
   {
    "id": "storage",
