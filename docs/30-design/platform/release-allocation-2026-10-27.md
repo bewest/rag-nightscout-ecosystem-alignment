@@ -336,6 +336,9 @@ release soaks them; and how does that weigh against releasing as soon as the can
   The candidates are local. Before anything is pushed, the conflict resolutions go onto the PR
   branches (`dev` and #8859 merged into `feat/storage-filter` and `feat/storage-writes`, the count
   commit added to #8863), and the maintainer merges #8859 before #8861 and #8863.
+  Merge order to `dev`, agreed 2026-10-27 (maintainer; sessions -2e and -e4): #8859, then #8856
+  (BF-193), then #8861 and #8863. #8856 is resolved against the slices on `prep/writes-plus-8856`
+  `699a70c4` (`npm test` 4694 passing, 0 failing, 3 pending; session -2e).
 - **Cohort checks to request once the slices are on `dev`** (they move every v1 read and write onto
   the interface):
 

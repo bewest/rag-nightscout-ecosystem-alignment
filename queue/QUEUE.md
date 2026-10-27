@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 304 |
-| runnable gates | 362 |
+| runnable gates | 363 |
 | explicit `no-gate:` markers | 341 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 341 of the 703 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 341 of the 704 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -2785,7 +2785,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-192` | BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression) | `merged-upstream` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-193` | BF-193 - the realtime socket and other write paths log every record written through them | `in-flight-upstream` | `bf/16.0.0-log-privacy` | patch | 2 run + 1 no-gate |
 | `BFQ-194` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL | `needs-decision` | `-` | minor | 0 run + 1 no-gate |
-| `BFQ-200` | BF-200 - on dev, an unusable time on API v2's data-snapshot route stops the server | `ready-to-push` | `bf/16.0.0-ddata-at-crash` | patch | 2 run |
+| `BFQ-200` | BF-200 - on dev, an unusable time on API v2's data-snapshot route stops the server | `ready-to-push` | `bf/16.0.0-ddata-at-crash` | patch | 3 run |
 | `BFQ-195` | BF-195 - a stale profile is pushed over the socket after a profile re-send | `in-flight-upstream` | `bf/16.0.0-null-removes` | patch | 2 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `released` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
@@ -6820,7 +6820,7 @@ distinction is the only thing that makes the register mean anything - widening
 | ships to operators today | no (pre-release) |
 | register | `BF-200` |
 
-**Blast radius.** lib/data/endpoints.js (/api/v2/ddata/at/:at answers 400 for a time that does not parse, before any load starts) and lib/data/dataloader.js (update() reports an error to its callback, without changing ddata or starting a query, when lastUpdated or its 372-day look-back is outside the Date range); one new test file. Responses for valid times are unchanged.
+**Blast radius.** lib/data/endpoints.js (/api/v2/ddata/at/:at answers 400 for a time that does not parse, before any load starts) and lib/data/dataloader.js (update() reports an error to its callback, without changing ddata or starting a query, when lastUpdated or its 372-day look-back is outside the Date range); lib/utils/callback-tasks.js (second commit 2564e5dc: a task that throws synchronously stops the run, as async 0.9 did, so no later task starts outside any caller's try); new tests and one sentence in docs/test-specs/callback- tasks.md. 6 files, +176/-12. Responses for valid times are unchanged.
 
 **What an operator sees.** On dev only: one authenticated read request on this route with a time the server cannot use stops the whole site until it restarts. With the fix the request is refused with 400 and the site keeps running. 15.0.9 answers the same request with 500 and keeps running.
 
@@ -6830,14 +6830,16 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 434c0157 bf/16.0.0-ddata-at-crash`
   - The fix commit 434c0157 is on the branch. Red if the branch is rewritten without it.
-- `[unit]` `sh -c 'd=$(mktemp -d) && git -C externals/cgm-remote-monitor-official archive bf/16.0.0-ddata-at-crash | tar -x -C "$d" && ln -s "$PWD/externals/work/crm-ddata-crash/node_modules" "$d/node_modules" && cd "$d" && NODE_ENV=test ./node_modules/.bin/mocha --timeout 15000 --exit tests/data.ddata-at.test.js; r=$?; rm -rf "$d"; exit $r'`
-  - Runs the branch's own tree (git archive) and its new test tests/data.ddata-at.test.js: the 400 path, the query bounds for a valid frame, and the loader guard (NaN and both ends of the Date range). 5 passing, measured 2026-10-27. Uses the fix worktree's node_modules.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2564e5dc bf/16.0.0-ddata-at-crash`
+  - The callback-tasks commit 2564e5dc is on the branch (its head, 2026-10-27). Red if the branch is rewritten without it.
+- `[unit]` `sh -c 'd=$(mktemp -d) && git -C externals/cgm-remote-monitor-official archive bf/16.0.0-ddata-at-crash | tar -x -C "$d" && ln -s "$PWD/externals/work/crm-ddata-crash/node_modules" "$d/node_modules" && cd "$d" && NODE_ENV=test ./node_modules/.bin/mocha --timeout 15000 --exit tests/data.ddata-at.test.js tests/callback-tasks.test.js; r=$?; rm -rf "$d"; exit $r'`
+  - Runs the branch's own tree (git archive) and its tests tests/data.ddata-at.test.js (the 400 path, the query bounds for a valid frame, the loader guard at NaN and both ends of the Date range) and tests/callback-tasks.test.js (a task that throws stops the run). 14 passing at 2564e5dc, measured 2026-10-27. Uses the fix worktree's node_modules.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-27: found by session -2e's route census on dev 2dc0c1bc and #8863; fixed by its agent on bf/16.0.0-ddata-at-crash 434c0157 (on dev 2dc0c1bc, 3 files, +142). v15.0.9 checked by -2e: not affected (500, process keeps running), so it is a dev-only regression from 26d0908a (callback-tasks replacing async) and goes as an ordinary 16.0.0 fix, no advisory fork. -2e's runs (Node 22.23.4, MongoDB 7.0.43): npm test 4487 passing, 1 failing, 3 pending; test:all 4815 passing, 1 failing, 3 pending; the one failure is the nodemon watch test on the host's inotify limit (ENOSPC), not this change. Red control re-run by session -ee: the new test on dev 2dc0c1bc's tree gives 1 passing, 5 failing (-2e reported 0 passing, 5 failing); on the branch 5 passing. Not pushed; the maintainer pushes and opens the PR (body in -2e's scratchpad, ddata/PR-BODY.md).
+**Notes.** 2026-10-27: found by session -2e's route census on dev 2dc0c1bc and #8863; fixed by its agent on bf/16.0.0-ddata-at-crash 434c0157 (on dev 2dc0c1bc, 3 files, +142). v15.0.9 checked by -2e: not affected (500, process keeps running), so it is a dev-only regression from 26d0908a (callback-tasks replacing async) and goes as an ordinary 16.0.0 fix, no advisory fork. -2e's runs (Node 22.23.4, MongoDB 7.0.43): npm test 4487 passing, 1 failing, 3 pending; test:all 4815 passing, 1 failing, 3 pending; the one failure is the nodemon watch test on the host's inotify limit (ENOSPC), not this change. Red control re-run by session -ee: the new test on dev 2dc0c1bc's tree gives 1 passing, 5 failing (-2e reported 0 passing, 5 failing); on the branch 5 passing. 2026-10-27, later: the maintainer asked for a second commit, 2564e5dc (callback-tasks stops a run when a task throws, as async 0.9 did); the branch head is 2564e5dc on dev 2dc0c1bc. -2e's runs on it (Node 22.23.4, MongoDB 7.0): npm test 4489 passing, 0 failing, 3 pending; test:all 4817 passing, 0 failing, 3 pending (an earlier run whose MongoDB container vanished was discarded). The new callback-tasks case passes against async 0.9.2 (NIGHTSCOUT_ASYNC_ORACLE). Re-run by -ee: both test files on the branch 14 passing; with 434c0157's helper the callback-tasks file gives 8 passing, 1 failing; the unit gate's control (dev's tree with both test files) 9 passing, 6 failing. Not pushed; the maintainer pushes and opens the PR (body in -2e's scratchpad, ddata/PR-BODY.md).
 
 ### `BFQ-195` &mdash; BF-195 - a stale profile is pushed over the socket after a profile re-send
 
