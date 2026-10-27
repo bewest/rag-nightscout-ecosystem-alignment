@@ -6091,9 +6091,9 @@ release soaks them; and how does that weigh against releasing as soon as the can
 <li>A one-step fallback: reverting the slices' merge commits restores the current paths, rehearsed
      once.
   Not met with time on <code>dev</code> before the tag → 16.1.0, as in §3.</li>
-<li><strong>Results, 2026-10-27: items 1, 3, 4 and 5 met</strong> on local candidates (session -2e's agent;
+<li><strong>Results, 2026-10-27: all five items met</strong> on local candidates (session -2e's agent;
   Node 22.23.4, MongoDB 5.0.33; <code>dev</code> <code>2dc0c1bc</code>, #8859 <code>5c6ceabb</code>, #8861 <code>48e7e101</code>, #8863
-  <code>38b910d7</code>). Item 2 is with session -e4.</li>
+  <code>38b910d7</code>). Item 2 met the same day by session -e4, inside the private forks (below).</li>
 </ul>
 <table>
 <thead>
@@ -6120,12 +6120,19 @@ release soaks them; and how does that weigh against releasing as soon as the can
 <td><code>cand/with-reverted</code> <code>cf762dd0</code>: one commit reverting the three merges; its tree equals <code>cand/without</code>'s (<code>7a6f5c20</code>, checked by session -ee) and <code>npm test</code> gives 4575/0/3</td>
 </tr>
 <tr>
+<td>2. advisory fixes</td>
+<td>BF-72's and BF-161's fixes merged onto <code>cand/with</code> in their private forks, local only (session -e4; Node 22.23.4, MongoDB 8.0.34). BF-72: seven files resolved where the slices move v1 reads onto the interface; its read time limit now travels through the interface, the new count path included; <code>npm test</code> 4765/0/3, <code>test:all</code> 5093/0/3; removing the limit from either path fails the matching test. BF-161: no conflicts; its check still runs before the pattern is expanded; 4703/0/3 and 5031/0/3. Both are published with the release, through the forks</td>
+</tr>
+<tr>
 <td>the count operation</td>
 <td><code>GET /api/v1/count/:storage/where</code>, the one REST storage call still direct after #8863 (approved by the maintainer 2026-10-27), on <code>feat/storage-writes-count</code> <code>079f20ae</code>: its test fails 2 of 4 on <code>38b910d7</code>; v1 HTTP differential 700 of 700 identical including 219 count requests, and a deliberate break gives 102 differing</td>
 </tr>
 </tbody>
 </table>
-<p>The candidates are local. Before anything is pushed, the conflict resolutions go onto the PR
+<p>The candidates are local. On <code>dev</code> <code>94899828</code> (#8866 and #8859 merged) the slices are re-merged as
+  <code>479e33d1</code> and <code>a3f74a08</code>; outside the 11 files #8866 changed, their trees equal the measured ones
+  (checked by session -ee), and the suites and the matrix are being re-run on them. Before anything is
+  pushed, the conflict resolutions go onto the PR
   branches (<code>dev</code> and #8859 merged into <code>feat/storage-filter</code> and <code>feat/storage-writes</code>, the count
   commit added to #8863), and the maintainer merges #8859 before #8861 and #8863.
   Merge order to <code>dev</code>, agreed 2026-10-27 (maintainer; sessions -2e and -e4): #8859, then #8856
