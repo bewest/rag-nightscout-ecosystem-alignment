@@ -17027,7 +17027,7 @@ items:
     branch: tooling/jsconfig-watch-scope
     base: official/dev@7abe1cf6
     worktree: externals/work/crm-jsconfig-2710
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8871]
     ships_to_operators_today: false
     blast_radius: >
@@ -17041,6 +17041,12 @@ items:
     semver_reason: editor tooling; nothing the server, build or tests read
     register: [BF-203]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e737d310 official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-203's jsconfig.json commit e737d310 (merged
+          2026-10-27 as dcf20bfb, #8871); red if dev is rewritten or the merge
+          is reverted out of history
       - run: git -C externals/cgm-remote-monitor-official show tooling/jsconfig-watch-scope:jsconfig.json | node -e "const c=JSON.parse(require('fs').readFileSync(0));process.exit(!c.include&&!c.files&&(c.exclude||[]).includes('node_modules')?0:1)"
         kind: static
         describe: >
@@ -17060,6 +17066,10 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-27 22:51:12Z: #8871 MERGED to dev by the maintainer as
+      dcf20bfb (head 57f1d37c). Developer tooling only; nothing an operator
+      sees. Recorded by session -4f.
+
       2026-10-27, 22:21:20Z: #8871 opened by the maintainer into dev, head
       f28d40bb.
 
@@ -17239,7 +17249,7 @@ items:
     branch: bf/16.0.0-tt-units
     base: official/dev@dcf20bfb
     worktree: externals/work/crm-tt-units
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8872]
     ships_to_operators_today: true
     blast_radius: >
@@ -17262,6 +17272,12 @@ items:
     semver_reason: changes what is stored for a write clients already send
     register: [BF-194]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7b74110c official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-194's fix 7b74110c (merged 2026-10-27 as
+          db3b9e4e, #8872); red if dev is rewritten or the merge is reverted
+          out of history
       - run: 'cd externals/work/crm-tt-units && node bin/with-env.js ./my.test.env node_modules/mocha/bin/mocha.js --timeout 5000 --require ./tests/hooks.js --exit tests/api.treatments-tt-units.test.js tests/websocket.tt-units.test.js'
         kind: integration
         describe: >
@@ -17279,6 +17295,9 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
     notes: >
+      2026-10-27 23:45Z: #8872 MERGED to dev by the maintainer as db3b9e4e.
+      Released in no version yet; owes a 16.0.0 release-note line.
+
       2026-10-27 23:06Z: PR #8872 opened to dev by the maintainer (head
       355b4f14, not draft, mergeable).
 

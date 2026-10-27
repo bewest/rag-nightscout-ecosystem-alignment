@@ -30,13 +30,11 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 19 items
+### Maintainer &mdash; 17 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BFQ-161` | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory  | &mdash; |
-| `BFQ-194` | `in-flight-upstream` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/ | #8872 |
-| `BFQ-203` | `in-flight-upstream` | BF-203 - an editor opening a cgm-remote-monitor file inside a larger workspace w | #8871 |
 | `PLAT-ENTRY` | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; im | #8862 |
 | `PLAT-SERVE` | `in-flight-upstream` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a ti | #8865 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
@@ -80,8 +78,6 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 |---|---|---|---|---|
 | **#8862** | `PLAT-ENTRY` | `feat/nightscout-entrypoint` | One executable (D21): bin/nightscout.js with `single` and th | Maintainer |
 | **#8865** | `PLAT-SERVE` | `feat/nightscout-serve` | `nightscout serve <roles>` (D21): hosted roles carved from b | Maintainer |
-| **#8871** | `BFQ-203` | `tooling/jsconfig-watch-scope` | BF-203 - an editor opening a cgm-remote-monitor file inside  | Maintainer |
-| **#8872** | `BFQ-194` | `bf/16.0.0-tt-units` | BF-194 - API v1 drops the units of a temp target with no glu | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 
