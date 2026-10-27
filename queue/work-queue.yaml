@@ -21431,8 +21431,8 @@ items:
     branch: feat/storage-filter
     base: official/dev@7ad3a67f
     worktree: externals/work/crm-stfilter
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8861]
     blast_radius: >
       lib/storage/filter.js (new: the filter tree, fromMongo, the MongoDB
       adapter), lib/api3/storage/mongoCollection/{index,find,modify}.js
@@ -21469,6 +21469,8 @@ items:
       - tools/qc/write-contract-matrix.js
       - tools/seam/DIFFERENTIALS.md
     notes: >
+      2026-10-26, later: the maintainer pushed 48e7e101 and opened draft
+      #8861. ST-WRITES is being built on top of it (feat/storage-writes).
       2026-10-26: the maintainer decided ST-FILTER and ST-READS go up as one
       PR. ST-FILTER found five defects in the September seam's fromMongo,
       each of which widens or changes a read ({a: {}} dropped, empty $or and
@@ -21481,9 +21483,9 @@ items:
     title: "One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT, CMD single, HEALTHCHECK; no start path changes"
     parcel: platform
     repo: cgm-remote-monitor
-    branch: ""
-    base: official/dev@7ad3a67f
-    state: not-started
+    branch: feat/nightscout-entrypoint
+    base: official/dev@8dbb60c2
+    state: in-progress
     pr: []
     blast_radius: >
       New bin/nightscout.js and a package.json "bin" entry; Dockerfile

@@ -156,7 +156,7 @@
    "id": "ST-FILTER",
    "track": "storage",
    "phase": "boundary",
-   "state": "ready",
+   "state": "review",
    "short": "Filter tree and interface",
    "title": "Slice 1: the backend-neutral filter tree and storage interface methods under the API v3 collection adapter, composed with #8854's boundary; no call site changes",
    "where": "lib/storage/filter.js, lib/api3/storage/mongoCollection/ (from old chain 4f753ab9, b0709c2c, 68ffbd66, c40d37f7, ef89bdb8, c1218d50, d75c1154, plus the type and nottype nodes)",
@@ -164,13 +164,14 @@
    "depends": [
     "PR-8854"
    ],
-   "ref": "feat/storage-filter 48e7e101 (dev 8dbb60c2 merged in), one PR with ST-FILTER and ST-READS"
+   "ref": "#8861 (draft, 48e7e101, dev 8dbb60c2 merged in; pushed 2026-10-26): one PR with ST-FILTER and ST-READS",
+   "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8861"
   },
   {
    "id": "ST-READS",
    "track": "storage",
    "phase": "boundary",
-   "state": "ready",
+   "state": "review",
    "short": "v1 reads on the interface",
    "title": "Slice 2: v1 list, get and query reads go through the interface (fromMongo), dev's count rules kept",
    "where": "six v1 modules, about 250 lines",
@@ -178,20 +179,22 @@
    "depends": [
     "ST-FILTER"
    ],
-   "ref": "feat/storage-filter 48e7e101 (dev 8dbb60c2 merged in), one PR with ST-FILTER and ST-READS"
+   "ref": "#8861 (draft, 48e7e101, dev 8dbb60c2 merged in; pushed 2026-10-26): one PR with ST-FILTER and ST-READS",
+   "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8861"
   },
   {
    "id": "ST-WRITES",
    "track": "storage",
    "phase": "boundary",
-   "state": "planned",
+   "state": "progress",
    "short": "v1 and socket writes",
    "title": "Slice 3: v1 and socket writes go through the interface, each labelled by its source (and later its origin); #8854's boundary check accepts interface acquisition",
    "where": "treatments, entries, devicestatus, profile (incl. mergeInto), food, activity, authorization storage, websocket; about 400 lines",
    "check": "our matrix with 0 cells changed (the replay's hard-delete key order fixed first); #8854's per-cell boundary assertions",
    "depends": [
     "ST-READS"
-   ]
+   ],
+   "ref": "feat/storage-writes, on 48e7e101 (#8861's head); being built 2026-10-26"
   },
   {
    "id": "WC-STEP-PATCH",
@@ -509,7 +512,7 @@
    "id": "PLAT-ENTRY",
    "track": "tenancy",
    "phase": "now",
-   "state": "planned",
+   "state": "progress",
    "short": "One entrypoint",
    "title": "bin/nightscout.js dispatches subcommands (D21): `single` is today's server, plus operator tools `diagnose data`, `healthcheck`, `version`, `env`; the image gets ENTRYPOINT, CMD single and HEALTHCHECK. No behaviour change: Procfile, npm start, server.js, web.config, start.sh and the old CMD all still start the same server",
    "where": "bin/nightscout.js, package.json bin, Dockerfile",
@@ -519,7 +522,8 @@
      "label": "D21",
      "href": "../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#212-d21--one-entrypoint-serve-roles-maintainer-2026-10-26"
     }
-   ]
+   ],
+   "ref": "feat/nightscout-entrypoint, on dev 8dbb60c2; being built 2026-10-26"
   },
   {
    "id": "PLAT-SERVE",

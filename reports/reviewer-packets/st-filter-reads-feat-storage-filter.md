@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — ST-FILTER-READS
+# Review packet — ST-FILTER-READS (PR #8861)
 
 **Storage interface, first PR: the filter tree and interface methods under API
 v3's adapter (ST-FILTER), and API v1 reads through them (ST-READS), with no v1
@@ -22,7 +22,7 @@ answer changed**
 | repository | `cgm-remote-monitor` |
 | branch | `feat/storage-filter` |
 | base | `official/dev@7ad3a67f` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=ST-FILTER-READS` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=ST-FILTER-READS` is the measurement |
 | semver | `patch` |
 
 ## What this changes
@@ -76,13 +76,15 @@ maintainer, plus a second human - every v1 read path moves
 
 ## Notes carried on the item
 
-2026-10-26: the maintainer decided ST-FILTER and ST-READS go up as one PR. ST-
-FILTER found five defects in the September seam's fromMongo, each of which
-widens or changes a read ({a: {}} dropped, empty $or and $and matching
-everything, $exists undefined read as presence, RegExp g and s flags swapped,
-mongod-refused $regex options coerced); the mingo round trip could not see
-them, the live-mongod differential did. All five are fixed on the branch and
-pinned by tests.
+2026-10-26, later: the maintainer pushed 48e7e101 and opened draft #8861. ST-
+WRITES is being built on top of it (feat/storage-writes). 2026-10-26: the
+maintainer decided ST-FILTER and ST-READS go up as one PR. ST-FILTER found
+five defects in the September seam's fromMongo, each of which widens or
+changes a read ({a: {}} dropped, empty $or and $and matching everything,
+$exists undefined read as presence, RegExp g and s flags swapped, mongod-
+refused $regex options coerced); the mingo round trip could not see them, the
+live-mongod differential did. All five are fixed on the branch and pinned by
+tests.
 
 ---
 
