@@ -1,6 +1,6 @@
 # Next-gen platform: one write path, four tracks
 
-*Contributor-facing. Living plan, current at cgm-remote-monitor dev `8dbb60c2` (2026-10-27). #8854 merged to dev 2026-10-26 as `c08cbe03`; the seam slices, the one executable and registration are open as drafts #8861, #8863, #8865, #8862 and #8857. Status: proposed; the decisions in §6 are open. Which release each item goes in is proposed in [release allocation](release-allocation-2026-10-27.md) (2026-10-27).*
+*Contributor-facing. Living plan, current at cgm-remote-monitor dev `ca1652d6` (2026-10-27 evening). Milestone M1 is on dev: #8854 (2026-10-26, `c08cbe03`), then on 2026-10-27 #8859 (`94899828`), #8861 (`84fac457`), #8863 (`9668b179`) and #8870 (`7abe1cf6`), so every REST and socket record read, write and count goes through the storage interface in 16.0.0. Still open as drafts: #8862, #8865 and #8857. Status: proposed; the decisions in §6 are open. Which release each item goes in is proposed in [release allocation](release-allocation-2026-10-27.md) (2026-10-27, §0 re-anchored at `ca1652d6`).*
 
 The interactive version, with the dependency map, is the site page [nightscout-next-gen-platform.html](../../../site/pages/nightscout-next-gen-platform.html).
 
@@ -15,12 +15,12 @@ It names each piece of work, what it needs first, where it goes in the code, and
 
 ## 1. Where things stand
 
-| | on dev `8dbb60c2` | in review (draft PRs) | not started |
+| | on dev `ca1652d6` | in review (draft PRs) | not started |
 |---|---|---|---|
-| Storage | `WRITE_VALIDATION` (#8841); the write boundary `lib/storage/write-step.js` for the six v1 modules, the socket and API v3, with its CRUD matrix and AST gate (#8854) | #8861 ST-FILTER + ST-READS (`48e7e101`); #8863 ST-WRITES (`38b910d7`, stacked on #8861) | ST-EVENT (decision), write(intent), backend-selectable harness, PostgreSQL |
-| Identity | `identifier` is the client's, `_id` the server's; API v3 refuses a client `_id` (#8845: BF-169, BF-170) | #8859 ID-SIMPLE-MATCH with the null-removes rule (`5c6ceabb`) | identifier-first on every path, unique index |
-| Registration | nothing in code; dev carries an older proposal schema, `docs/proposals/schemas/controller-instance-registration.schema.json` | #8857 S0, S1, S2, S5, off by default (`f7a43fed`) | typed writes (S3), projected views (S4) |
-| Tenancy | nothing | #8862 PLAT-ENTRY (`b63d9b7f`); #8865 PLAT-SERVE (`1dafe2a5`, stacked on #8863) | tenant configuration, resolution, tenant-scoped auth, hosted lab |
+| Storage | `WRITE_VALIDATION` (#8841); the write boundary `lib/storage/write-step.js` (#8854); the filter tree and interface, v1 reads (#8861), v1, authorization and socket writes labelled by source (#8863), v1 count only through the interface (#8870): milestone M1 | — | ST-EVENT (decision, bench running), ST-V3-DECOUPLE, write(intent), computed views, backend-selectable harness, PostgreSQL |
+| Identity | `identifier` is the client's, `_id` the server's; API v3 refuses a client `_id` (#8845: BF-169, BF-170); v1 entries and devicestatus match on `identifier`, null removes a field (#8859) | — | identifier-first on every path, unique index |
+| Registration | nothing in code; dev carries an older proposal schema, `docs/proposals/schemas/controller-instance-registration.schema.json` | #8857 S0, S1, S2, S5, off by default (`f7a43fed`, 64 behind dev, conflicts) | typed writes (S3), projected views (S4) |
+| Tenancy | nothing | #8862 PLAT-ENTRY (`b63d9b7f`, 64 behind dev); #8865 PLAT-SERVE (`1dafe2a5`; its base `feat/storage-writes` is merged, so it needs retargeting to dev) | tenant configuration, resolution, tenant-scoped auth, hosted lab |
 
 ## 2. Why the tracks meet at the write step
 
@@ -144,12 +144,12 @@ Decided 2026-10-26: #8854 lands in 16.0.0 after four alignment conditions (outco
 - **Red controls.** Every new test is shown failing against the code it guards before the change, with the original symptom.
 - **Conformance.** The registration and identity cases in `specs/sync/conformance/` run against a booted server by a harness in this repository (D12), reported case by case as passed, mapped or not applicable.
 - **Agents.** Agents build slices in their own worktrees, run the checks and hand back a branch, a PR body and the push commands. They never push. Maintainers push, open, review and merge.
-- **Releases.** Decided 2026-10-27 (maintainer): ST-FILTER, ST-READS and ST-WRITES go into 16.0.0 if they meet the entry bar of [release allocation B6](release-allocation-2026-10-27.md#b6-prototypes-in-1600-labelled-alpha-asked-2026-10-27) and merge to dev with time left before the 16.0.0 tag (the soak is informal: dev users run what is merged, and cohorts are asked for specific checks), otherwise 16.1.0; components shipped before they are mature are labelled alpha. Behaviour-neutral slices do not need a major, so they ship in the minor after the release in progress rather than lengthening its soak; the proposed allocation by release, its open decisions (Q1–Q11) and the scenario briefs are in [release allocation](release-allocation-2026-10-27.md).
+- **Releases.** Decided 2026-10-27 (maintainer, Q12): the seam slices go into 16.0.0 if they meet the entry bar of [release allocation B6](release-allocation-2026-10-27.md#b6-prototypes-in-1600-labelled-alpha-asked-2026-10-27); they met it and merged the same afternoon. Proposed that evening ([§0](release-allocation-2026-10-27.md#0-the-questions-again-after-m1-landed-evening-2026-10-27), Q13–Q16): nothing more from this plan enters 16.0.0; `dev` takes release fixes during the short quiet period the pre-tag definition of done asks for, decisions (D-EVENT, D-T30, identity) are settled meanwhile, and 16.1.0 work merges when `dev` reopens. Components shipped before they are mature are labelled alpha; that label belongs to the multitenant bindings (Q12a).
 - **Records.** Each landed slice updates its queue item (`queue/work-queue.yaml`) and this plan's data file, and the page is re-rendered.
 
 ## 8. Sources
 
-- cgm-remote-monitor dev `47723cda`; draft #8854 `880b7369` and its data-contracts document.
+- cgm-remote-monitor dev `ca1652d6` (2026-10-27 evening); earlier dev `47723cda` and draft #8854 `880b7369` with its data-contracts document.
 - [Storage seam interface](../tenancy/nightscout-storage-seam-interface-2026-09-14.md), [write-contract spec](../tenancy/write-contract-spec-2026-10-07.md), [execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).
 - [Registration specification](spec/registration.md), [identity specification](spec/identity.md), [records specification](spec/records.md).
 - Nocturne `970031f6`, re-checked at `36d5ef4a2`. Tenant scope is an `ITenantScoped` marker with row-level security. It keeps a sync key (tenant, data source, sync identifier) and a single record-changed seam proposed in its issue #2130. Its API v3 serves `identifier` equal to `_id` (issue #1932).

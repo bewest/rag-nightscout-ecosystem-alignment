@@ -1,6 +1,7 @@
 # Release allocation: what goes in 16.0.0, what follows, and in what order
 
-*Contributor-facing. Snapshot, 2026-10-27: cgm-remote-monitor `official/dev` `8dbb60c2`,
+*Contributor-facing. Snapshot, 2026-10-27: cgm-remote-monitor `official/dev` `8dbb60c2`, re-anchored
+for §0, §3.5 and Q13–Q16 at `ca1652d6` the same evening,
 `official/master` `c6a0d8ed` (= `v15.0.9`), open PRs read with `gh pr list` and `gh pr view` the same
 day. The work items are those of the living [next-gen platform plan](next-gen-platform-plan.md); the
 release's own state is in [releases/cgm-remote-monitor-16.0.0](../../../releases/cgm-remote-monitor-16.0.0/contents.md).
@@ -19,6 +20,50 @@ The maintainer asked four questions on 2026-10-27:
 
 §1 answers in brief, §2–§4 give the reasoning, §5 lists the open decisions, and §6 holds the scenario
 briefs. B6 and Q12 answer a follow-up the same day: whether prototypes should ship in 16.0.0 as alpha.
+
+**Re-anchored the same evening at `official/dev` `ca1652d6`** (merge of #8858, 22:29Z). Between
+`8dbb60c2` and `ca1652d6` ten PRs merged: #8864, #8866, #8859, #8868, #8856, #8861, #8863, #8870,
+#8869 and #8858. Milestone M1 (every REST and socket record read, write and count through the storage
+interface) is therefore on `dev` and ships in 16.0.0. §0 answers the four questions again from that
+state; §1–§6 keep the morning's reasoning, with their decided rows marked. 16.0.0 is now
+954 commits, 48 first-parent, 890 files, +139618/−18627 past `v15.0.9`
+(`git rev-list --count`, `--first-parent --count`, `git diff --shortstat official/master official/dev`).
+
+## 0. The questions again, after M1 landed (evening 2026-10-27)
+
+- **How much more of the seam goes in 16.0.0: none, beyond what is on `dev`.** The behaviour-neutral
+  slices that every single-tenant site runs (ST-FILTER, ST-READS, ST-WRITES, ST-COUNT-ONEPATH) are
+  merged, so the soak value B6 argued for is already being collected. Every storage item left
+  (§3.5) either changes what clients see (WC-STEP-PATCH, ID-BATCH), changes a safety-relevant
+  computation (ST-VIEWS: the page, plugins and alarms), or is reached only by multi mode
+  (ST-V3-DECOUPLE, PLAT-SERVE, ST-HARNESS, ST-PG). None of them improves 16.0.0 for a self-hoster,
+  and each would spend the short quiet period the pre-tag definition of done asks for
+  (`RT-16-RELEASE`, item 4, decided 2026-10-27). Recommendation: `dev` takes only release fixes until
+  the tag (Q1 (a), now Q13). ST-EVENT stays a decision with a bench running; settle it in the
+  freeze window, ship its code in 16.1.0 or later.
+- **Does including other roadmap features help multitenancy: not by being in 16.0.0.** The one
+  indirect benefit, real traffic on the interface before PostgreSQL depends on it (§4.2), is now
+  bought by M1. What shortens the path from here is decisions and a reopened `dev`: D-EVENT, D-T30,
+  D-LOOP-ID's remaining items, the identifier and schema rules that fix the PostgreSQL keys and
+  columns, and ST-V3-DECOUPLE for `serve api`. Registration and v4 reads stay parallel work.
+- **Schedule: tag 16.0.0 as soon as its four pre-tag items are met; then one theme per minor.**
+  The fastest route to a multi-mode preview is to release 16.0.0 and reopen `dev`, not to load it.
+  The revised themes are in §4.3 (16.1.0 one executable, `serve api` and registration off by
+  default; 16.2.0 `write(intent)` and identity on every path; 16.3.0 or later the multi preview;
+  17.0.0 enforcement). Client identity and formal schemas run ahead of tenancy because they fix its
+  tables; v4 publishes in pieces, unstable until shared.
+- **Open questions and briefs:** Q13–Q16 in §5 and B7–B9 in §6 are new this evening.
+
+What still stands between `dev` and the tag, at `ca1652d6`:
+
+| pre-tag item (`RT-16-RELEASE`) | state |
+|---|---|
+| 1. live Pushover and APNs delivery (`RT-16-LIVE-ALARMS`) | not started |
+| 2. cohort confirmations from `dev` users: AndroidAPS, Loop, Trio, xDrip+, a follower app, an mmol/L site (`RT-16-RIG-SOAK`); the M1 cohort table in B6 says what to ask each | not started |
+| 3. BF-72 and BF-161 through their forks | fix branches `bf/regex-limits` `a9da33ff` and `bf/entries-pattern-limit` `1dce7722` contain ST-WRITES and the count commit, and are 15 commits behind `dev` `ca1652d6` (`git merge-base --is-ancestor`, `git rev-list --count`); a `dev` merge and re-run inside each fork is owed |
+| 4. a short quiet period on `dev` with the final candidate | not started; needs Q13 |
+| `master` protection (#8824 `BLOCKED`) | still requires `Run Tests (22, 6)`, `Run Tests (22, 4.4)` and `Run Tests (24, 6)` and one approval (`gh api …/branches/master/protection`, read 22:4xZ); the decided change to require only *Tests pass* is not applied |
+| `dev` CI on `ca1652d6` | CodeQL passed; *CI test and publish Docker image* in progress at the time of reading |
 
 ## 1. The answers in brief
 
@@ -67,6 +112,11 @@ briefs. B6 and Q12 answer a follow-up the same day: whether prototypes should sh
 
 Sizes: `git diff --shortstat <base>...<head>` in `externals/cgm-remote-monitor-official` after
 fetching each PR head. #8863's base is #8861 and #8865's is #8863.
+
+*By `ca1652d6` (evening): #8859, #8856, #8858, #8864, #8866, #8861 and #8863 merged, with #8870
+(the count commit) and #8868 and #8869. Still open: #8862 (`b63d9b7f`, 64 behind `dev`), #8865
+(`1dafe2a5`, base `feat/storage-writes`, 55 behind), #8857 (`f7a43fed`, 64 behind, `DIRTY`:
+conflicts with `dev`), and #8871 (editor `jsconfig.json`, 0 behind).*
 
 The behavioural measurements behind "changes no behaviour" are the next-gen lane's
 (plan items ST-FILTER to PLAT-SERVE): the write-contract matrix (360 cells, both validation modes)
@@ -138,6 +188,24 @@ either a restart or a gap.
 
 Hold #8861, #8863 and #8865 until 16.0.0 is tagged; merge them to `dev` the day after, in stack
 order, and ship them in 16.1.0. This needs one rule for `dev` between now and the tag (Q1). The soak has not started, so B6 states the one condition under which they go into 16.0.0 instead: an entry bar met before it starts. *Decided 2026-10-27 (Q12): that condition applies; the slices are built to the bar and go in if they meet it.*
+*Outcome: the bar was met and #8861, #8863 and #8870 merged to `dev` the same afternoon
+(`84fac457`, `9668b179`, `7abe1cf6`), after #8859 and #8856 in the agreed order.*
+
+### 3.5 The rest of the seam, after M1 (evening 2026-10-27)
+
+| item | state at `ca1652d6` | ladder (§3.1) | who in 16.0.0 would run it | proposed release |
+|---|---|---|---|---|
+| ST-EVENT (D-EVENT) | decision; bench in progress (session -2e), no figures recorded until it reports | none while nothing in `lib/` subscribes; the commit event is internal and unstable (#8854 condition) | nobody | decide in the freeze window; code in 16.2.0 with WC-STEP-PATCH |
+| ST-V3-DECOUPLE (M3) | planned; it is the cause of `serve api`'s 81 failing API v3 suites at #8865 `1dafe2a5` | patch-class if `single` is unchanged | every site, for no gain under `single` | 16.1.0, with PLAT-SERVE |
+| PLAT-ENTRY (#8862) | draft `b63d9b7f`, 64 commits behind `dev` | minor-class (question 9); the image start changes form | every Docker site | 16.1.0, unless Q2 (a) is still wanted: then merged before the quiet period starts, with a Docker-host cohort check |
+| PLAT-SERVE (#8865) | draft `1dafe2a5` on base `feat/storage-writes`, which is merged; needs retargeting to `dev` and a `dev` merge (55 behind) before any re-measurement | minor-class | nobody under `single` | 16.1.0, labelled alpha (Q12a) |
+| WC-STEP-PATCH, ID-BATCH (M2) | planned | minor-class (question 10: reply shape, per-item results) | every uploader | 16.2.0 |
+| ST-VIEWS (M4) | planned | patch-class only if every view equals today's; the alarms are safety-relevant (execution plan §7b) | every page and alarm | 16.2.0 or later, with alarm cohort checks; before multi |
+| ST-HARNESS, ST-PG (M5) | planned | none for `single` | nobody | 16.3.0 or later (multi preview) |
+
+So the morning's question (how much of the seam goes ahead of multitenancy into 16.0.0) is answered
+by what merged: the part every single-tenant site exercises went in; the part only multi mode needs
+waits for the minors, where it can ship as alpha without holding the tag.
 
 ## 4. How the tracks depend on each other
 
@@ -184,9 +252,9 @@ the loudest row's (R3).
 
 | release | theme | contents | class |
 |---|---|---|---|
-| 16.0.0 | modernization, the write boundary | what is on `dev`, plus #8859, #8861 and #8863 if B6's bar is met, #8856, #8864, #8866, #8858, BF-72, BF-161; #8862 if Q2 says so | major (already) |
-| 16.1.0 | one write path, registration readable | #8861, #8863 (behaviour-neutral), unless they meet B6's bar and ship in 16.0.0 (Q12); #8862 and #8865 (one executable, `serve api`); #8857 off by default (D-REG-FLAG); SPEC-ID-AMEND; the OpenAPI description of what 16.1.0 serves, including the registration paths | minor |
-| 16.2.0 | `write(intent)` | ST-EVENT, WC-STEP-PATCH, ID-BATCH, ST-HARNESS; REG-S3 behind its flag; v4 statistics reads | minor |
+| 16.0.0 | modernization, the write boundary, one read and write path | what is on `dev` `ca1652d6` (M1 included: #8859, #8856, #8861, #8863, #8870, #8864, #8866, #8868, #8869, #8858 merged 2026-10-27), plus BF-72, BF-161 and any release fix found in the quiet period; #8862 only if Q2 (a) and Q13 allow it | major (already) |
+| 16.1.0 | one executable, hosted roles as alpha, registration readable | #8862 and #8865 (one executable, `serve api`) with ST-V3-DECOUPLE; #8857 off by default (D-REG-FLAG); SPEC-ID-AMEND; the D-EVENT decision; the OpenAPI description of what 16.1.0 serves, including the registration paths | minor |
+| 16.2.0 | `write(intent)` and identity on every path | ST-EVENT, WC-STEP-PATCH, ID-BATCH, ID-FIRST-MATCH where it changes no outcome, ST-HARNESS; ST-VIEWS if its alarm checks pass; REG-S3 behind its flag; v4 statistics reads | minor |
 | 16.3.0 or later | multi mode, preview | ST-PG, T30-SCHEMA-CONFIG, TEN-RESOLVE, T30-WIRING behind `TENANCY_MODE=multi`; TEN-LAB passes with its control; single-tenant unchanged | minor for self-hosters |
 | 17.0.0 | contract tightening | ID-UNIQUE-INDEX with a duplicate-cleaning step, ID-FIRST-MATCH where it changes outcomes, `WRITE_VALIDATION` default (if decided), D8 v1 query bounds, any v4 path promoted from unstable | major |
 
@@ -243,6 +311,10 @@ M3 is `ST-V3-DECOUPLE` and M4 is `ST-VIEWS` in the [next-gen plan](next-gen-plat
 | Q11 | Review capacity | #8857, #8859, #8861, #8862, #8863 and #8865 add 17,794 lines against their bases (§2) | review in theme order (16.1.0 first), one stacked chain at a time | every row of §4.3 |
 | Q12 | Put prototypes in 16.0.0 to soak them as alpha? | *Decided, maintainer 2026-10-27:* the seam slices go into 16.0.0 if feasible and B6's entry bar is met with time on `dev` before the tag (§2.1); building them to that bar is worth doing whether or not they ship, because it prepares the work that follows. Components that ship before they are mature are labelled alpha in the release notes. Still open: Q12a | B6 | the soak start, BFQ-72 |
 | Q12a | If the slices ship, how is an alpha label made meaningful for code on the default path? | *Decided, maintainer 2026-10-27:* option (a). The slices are default on in the single-tenant release, named in the release notes as new internals, with the rehearsed revert as the fallback. Once verified, exercised on `dev` and released, that code is trusted for what single-tenant sites run. The alpha label belongs to the multitenant bindings only: `serve` roles, tenant resolution and scope, per-tenant credentials, and the PostgreSQL backend. Trust covers the paths real clients exercise; code no single-tenant site runs (the filter tree's SQL translation, the tenant binding the interface carries, rarely used endpoints without a cohort check) does not inherit it | — | the release notes' wording |
+| Q13 | Does the quiet period start now, at `ca1652d6`? (asked 2026-10-27 evening) | (a) yes: `dev` takes release fixes only (BF-72 and BF-161 at publication, fixes for what the cohorts report, CI and docs); feature PRs stay draft. (b) take #8862 first, then start. (c) keep merging until the alarms and cohort checks are done | (a): M1 is on `dev`, so what is left in review is 16.1.0 work (§3.5), and every merge restarts what the quiet period measures; (b) only if the image's new start is wanted in the major | the tag date; #8862, #8865, #8857 merge dates |
+| Q14 | Who asks the cohorts, and when? | (a) now, one request per cohort in B6's table, naming M1 and #8859 as what changed; (b) after the alarms check | (a): the cohort confirmations are pre-tag item 2 and the slowest, because they wait on other people | `RT-16-RIG-SOAK` |
+| Q15 | #8865's base | (a) retarget to `dev` now and merge `dev` in, still draft; (b) close it and reopen with ST-V3-DECOUPLE | (a), by the maintainer; re-measure `serve api` after | PLAT-SERVE, ST-V3-DECOUPLE |
+| Q16 | When does `dev` reopen for 16.1.0 work? | (a) the day 16.0.0 is tagged; (b) a `release/16.0.0` branch for fixes, `dev` reopened earlier | (a), as Q1 (a); (b) only if the quiet period runs longer than about two weeks | every 16.1.0 row |
 
 ## 6. Scenario briefs
 
@@ -385,8 +457,43 @@ release soaks them; and how does that weigh against releasing as soon as the can
   exchange for one release of real traffic on the interface before PostgreSQL relies on it. If the
   gates are met before the bar is, release without the slices.
 
+### B7. Quiet period now, tag when the four items are met (recommended, evening 2026-10-27)
+
+- **What happens.** `dev` stays at `ca1652d6` except for release fixes. The cohort requests (Q14) and
+  the live alarms check run in parallel; BF-72 and BF-161 are brought up to `dev` inside their
+  forks. D-EVENT, D-T30 and the remaining identity questions are settled while `dev` is quiet.
+- **Who it reaches.** Every 16.0.0 user, through M1 and #8859, which are new code on every v1 read
+  and write; B6's cohort table is the check list.
+- **Measure first.** The cohort confirmations; a 360-cell matrix and client replay on the final
+  candidate, which will include the fork fixes.
+- **Effect on tenancy.** 16.1.0 work (ST-V3-DECOUPLE, PLAT-SERVE, registration) builds on
+  branches during the quiet period and merges when `dev` reopens.
+
+### B8. Take #8862 into 16.0.0 first
+
+- **What happens.** #8862 is brought up to `dev` (64 behind), reviewed and merged; the quiet period
+  starts after it.
+- **Who it reaches.** Every Docker site: the image gains an ENTRYPOINT and the `single` command.
+  Its seven measured start paths are equal to `nightscout single` at `b63d9b7f`; they are not
+  re-measured on `ca1652d6`.
+- **Measure first.** The start paths on the merged tree, and a Docker-host cohort (a hosting
+  provider or a self-hoster running the image) starting the new image with their own command.
+- **Trade.** One less change of start form in 16.1.0, against a later quiet period.
+
+### B9. Hosted roles in 16.0.0 as alpha
+
+- **What happens.** ST-V3-DECOUPLE is built and #8865 merged before the tag, `serve api` labelled
+  alpha.
+- **Why not.** Nobody under `single` runs it, so the release gives it no soak (B6), its names
+  become public surface, and the quiet period moves out. The prerelease route in B6
+  (`16.1.0-alpha.1` from a branch, run in TEN-LAB) gives the same exposure to the people who would
+  run it.
+
 ## 7. Sources
 
+- Evening re-anchor: `official/dev` `ca1652d6`, `official/master` `c6a0d8ed`; open PR heads
+  re-read with `gh pr view` and fetched; fork fix heads `a9da33ff` and `1dce7722`; `RT-16-RELEASE`'s
+  pre-tag definition of done (`queue/work-queue.yaml`, 9fb924b0f).
 - cgm-remote-monitor `official/dev` `8dbb60c2`; PR heads `5c6ceabb` (#8859), `48e7e101` (#8861),
   `38b910d7` (#8863), `b63d9b7f` (#8862), `1dafe2a5` (#8865), `f7a43fed` (#8857), `4ed92673` (#8864),
   `bdd569a3` (#8866).

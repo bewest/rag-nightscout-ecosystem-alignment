@@ -1,5 +1,5 @@
 {
- "measured": "2026-10-27 against cgm-remote-monitor dev 9668b179 (#8861 and #8863 merged; #8870 open); first measured 2026-10-26 against dev 47723cda and #8854 at fa22d573",
+ "measured": "2026-10-27 evening against cgm-remote-monitor dev ca1652d6 (#8859, #8861, #8863 and #8870 merged: M1 on dev); first measured 2026-10-26 against dev 47723cda and #8854 at fa22d573",
  "tracks": [
   {
    "id": "storage",
@@ -152,7 +152,7 @@
    "depends": [
     "PR-8854"
    ],
-   "ref": "Benchmark 2026-10-27 (session -2e; lab/commit-event-bench 54cd8fff7, prototype proto/d-event-per-call 8a396715 off 9668b179, local; Node 22.23.4, MongoDB 8.0.29): nothing in lib/ subscribes to storage-write-committed today (only tests), so option 1 costs nothing until a subscriber is added. With a listener: inserts free; updates, replaces and deletes need a pre-read, +0.4-1.8 ms (outside the noise floor 0.961-1.125 on 10 of 13 shapes); 1,000-record backfill +13% (entries) and +27% (treatments); ~105 B per record vs ~150 B counts-only; change feed exact 100/100 on 20 shapes with no follow-up read (counts-only needs a read every event); concurrent k=1/2/4, 41,118 ops, 0 cross-attributed, throughput -2 to -5%, the pre-read not atomic in a pruner race (3-8 inexact events per round, flagged by records != counts). Next, unbuilt: name upserts from the driver result and read matched records only after the write when matchedCount > 0"
+   "ref": "In progress, bench running (session -2e; a post-write variant is being measured, 2026-10-27 evening). Benchmark 2026-10-27 (session -2e; lab/commit-event-bench 54cd8fff7, prototype proto/d-event-per-call 8a396715 off 9668b179, local; Node 22.23.4, MongoDB 8.0.29): nothing in lib/ subscribes to storage-write-committed today (only tests), so option 1 costs nothing until a subscriber is added. With a listener: inserts free; updates, replaces and deletes need a pre-read, +0.4-1.8 ms (outside the noise floor 0.961-1.125 on 10 of 13 shapes); 1,000-record backfill +13% (entries) and +27% (treatments); ~105 B per record vs ~150 B counts-only; change feed exact 100/100 on 20 shapes with no follow-up read (counts-only needs a read every event); concurrent k=1/2/4, 41,118 ops, 0 cross-attributed, throughput -2 to -5%, the pre-read not atomic in a pruner race (3-8 inexact events per round, flagged by records != counts). Next, unbuilt: name upserts from the driver result and read matched records only after the write when matchedCount > 0"
   },
   {
    "id": "ST-FILTER",
@@ -202,8 +202,8 @@
   {
    "id": "ST-COUNT-ONEPATH",
    "track": "storage",
-   "phase": "boundary",
-   "state": "review",
+   "phase": "dev",
+   "state": "done",
    "short": "count: one path",
    "title": "API v1 count reaches the database only through the storage interface: lib/server/aggregate.js loses the constructor conf.pipeline hook and the no-store driver path (about 25 lines, including the per-stage JavaScript check), and construction without a store fails. Decided 2026-10-27 (maintainer): a follow-up after the slices land, done before the 16.0.0 tag",
    "where": "lib/server/aggregate.js; tests/api-v1-count-pipeline.test.js, tests/mongo-query-javascript.test.js, tests/mongo-query-modernization.test.js",
@@ -211,7 +211,7 @@
    "depends": [
     "ST-WRITES"
    ],
-   "ref": "#8870 (0955f25b, base dev, opened 2026-10-27)",
+   "ref": "#8870 merged to dev 2026-10-27 as 7abe1cf6 (head 0955f25b); in 16.0.0",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8870"
   },
   {
@@ -313,11 +313,11 @@
   {
    "id": "ID-SIMPLE-MATCH",
    "track": "identity",
-   "phase": "now",
-   "state": "review",
+   "phase": "dev",
+   "state": "done",
    "short": "v1 identifier match",
    "title": "API v1 entries and devicestatus match a re-sent record on identifier. Decided 2026-10-26: entries keep the time-key fallback in 16.0.0; a devicestatus re-send with a stored identifier writes nothing and replies with the stored _id (v1 and v3); ships in the 16.0.0 re-send and merge contract PR #8859 with the null-removes rule and BF-195",
-   "ref": "#8859 (draft, fc170a4c; carries 8d0f9a22 unchanged)",
+   "ref": "#8859 merged to dev 2026-10-27 as 94899828; in 16.0.0",
    "where": "lib/server/entries.js, lib/server/devicestatus.js",
    "check": "lab cell: same identifier twice stored n=2 on dev, n=1 on the branch; 18 cases with red controls",
    "depends": [
@@ -406,7 +406,7 @@
    "state": "review",
    "short": "Catalogue, read-only",
    "title": "GET /.well-known/nightscout/sync and /.well-known/nightscout/controllers serving the shipped catalogue, behind CONTROLLER_REGISTRATION, off by default; built, part of the single-tenant registration PR",
-   "ref": "#8857 (draft, 3be98536)",
+   "ref": "#8857 (draft, 3be98536); #8857 is 64 behind dev ca1652d6 and conflicts with it (mergeStateStatus DIRTY, 2026-10-27 evening)",
    "spec": [
     {
      "label": "registration §4",
@@ -570,7 +570,7 @@
      "href": "../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#212-d21--one-entrypoint-serve-roles-maintainer-2026-10-26"
     }
    ],
-   "ref": "#8862 (draft, b63d9b7f, on dev 8dbb60c2; pushed 2026-10-26): seven start paths equal to `nightscout single`",
+   "ref": "#8862 (draft, b63d9b7f, on dev 8dbb60c2; pushed 2026-10-26): seven start paths equal to `nightscout single`. 64 commits behind dev ca1652d6 (2026-10-27 evening); in 16.0.0 only if Q2 (a) and Q13 allow it",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8862"
   },
   {
@@ -592,7 +592,7 @@
      "href": "../tenancy/nightscout-deployable-components-2026-09-14.md"
     }
    ],
-   "ref": "#8865 (draft, 1dafe2a5, stacked on #8863 and #8862): `serve api` boots only API v3's pieces; single unchanged (4639/0/3); API v3 suites under serve api 485 pass, 81 fail on cache, v1 and socket fixtures",
+   "ref": "#8865 (draft, 1dafe2a5, stacked on #8863 and #8862): `serve api` boots only API v3's pieces; single unchanged (4639/0/3); API v3 suites under serve api 485 pass, 81 fail on cache, v1 and socket fixtures. 2026-10-27 evening: its base feat/storage-writes is merged to dev (9668b179), so it needs retargeting to dev and a dev merge (55 behind) before re-measurement (release allocation Q15)",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8865"
   },
   {
