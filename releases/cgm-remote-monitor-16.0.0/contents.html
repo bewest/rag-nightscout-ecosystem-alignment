@@ -2134,7 +2134,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-27 at <code>375a961df</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>59eed2c6c</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -2969,9 +2969,9 @@ runtime Docker image.</p>
 </tr>
 <tr>
 <td>WebKit's cached-bundle startup test, again</td>
-<td><code>test/16.0.0-reports-ready</code> (local, off <code>dev</code> <code>eed31dca</code>)</td>
-<td><code>9a44e16f</code>: <code>tests/browser/page-startup.test.js</code></td>
-<td>prepared 2026-10-27, not pushed: the first controlled navigation waits for the reports page's first report, and a failure names the page each browser error came from. Not reproduced locally before or after; the cause is not proven, and the new line is there to name it on the next failure. page-startup 28 passing on WebKit, Chromium and Firefox</td>
+<td><code>test/16.0.0-reports-ready</code>, <strong>#8869</strong> (opened by the maintainer 2026-10-27, base <code>dev</code>)</td>
+<td><code>9a44e16f</code> on <code>dev</code> <code>eed31dca</code>: <code>tests/browser/page-startup.test.js</code></td>
+<td>open, CI running: the first controlled navigation waits for the reports page's first report, and a failure names the page each browser error came from. Not reproduced locally before or after; the cause is not proven, and the new line is there to name it on the next failure. page-startup 28 passing on WebKit, Chromium and Firefox</td>
 <td><code>RT-CI-WEBKIT-REPORTS</code></td>
 </tr>
 <tr>
@@ -3004,9 +3004,9 @@ runtime Docker image.</p>
 </tr>
 <tr>
 <td>next-gen drafts: storage slices, one executable, <code>serve api</code>, registration</td>
-<td>#8861 (<code>48e7e101</code>), #8863 (<code>38b910d7</code>, on #8861), #8862 (<code>b63d9b7f</code>), #8865 (<code>1dafe2a5</code>, on #8863), #8857 (<code>f7a43fed</code>)</td>
+<td>#8861 (<code>5310a447</code>, draft), #8863 (<code>42128f3b</code>, on #8861, ready for review, pushed 2026-10-27), #8862 (<code>b63d9b7f</code>), #8865 (<code>1dafe2a5</code>, on #8863), #8857 (<code>f7a43fed</code>)</td>
 <td>—</td>
-<td>drafts. Decided 2026-10-27 (Q12): #8861 and #8863 go into 16.0.0 if they meet the <a href="../../docs/30-design/platform/release-allocation-2026-10-27.html">release allocation</a> B6 entry bar; items 1, 3, 4 and 5 met on local candidates the same day (<code>cand/with</code> <code>d6ba8e18</code>: matrix, replay and v1 HTTP differential equal, no measurable latency change, one-commit revert restores <code>cand/without</code>'s tree), item 2 (BF-72 and BF-161 re-merged in their private forks) met locally the same day; merge order #8859, #8856, #8861, #8863 (with the count commit <code>079f20ae</code>); #8856 resolved against the slices on <code>prep/writes-plus-8856</code> <code>699a70c4</code>. Planned before the tag, after the slices merge (maintainer, 2026-10-27): <code>ST-COUNT-ONEPATH</code>, one commit removing API v1 count's fallback paths in <code>lib/server/aggregate.js</code> (the constructor pipeline hook and the no-store driver path), unreachable over HTTP, so no client-visible change. #8862 if it merges with time on <code>dev</code> before the tag</td>
+<td>Decided 2026-10-27 (Q12): #8861 and #8863 go into 16.0.0 if they meet the <a href="../../docs/30-design/platform/release-allocation-2026-10-27.html">release allocation</a> B6 entry bar; items 1, 3, 4 and 5 met on local candidates the same day (<code>cand/with</code> <code>d6ba8e18</code>: matrix, replay and v1 HTTP differential equal, no measurable latency change, one-commit revert restores <code>cand/without</code>'s tree), item 2 (BF-72 and BF-161 re-merged in their private forks) met locally the same day; #8859 and #8856 merged (<code>dev</code> <code>eed31dca</code>); the final heads re-measured on it: #8863 <code>npm test</code> 4700/0/3, <code>test:all</code> 5028/0/3, 360-cell matrix equal to <code>dev</code>; #8861 <code>npm test</code> 4685/0/3 (session -2e). Hosted CI has not run on #8863 (its base is not <code>dev</code>) and runs once #8861 merges; merge order #8861, #8863 (with the count commit <code>079f20ae</code>); #8856 resolved against the slices on <code>prep/writes-plus-8856</code> <code>699a70c4</code>. Planned before the tag, after the slices merge (maintainer, 2026-10-27): <code>ST-COUNT-ONEPATH</code>, one commit removing API v1 count's fallback paths in <code>lib/server/aggregate.js</code> (the constructor pipeline hook and the no-store driver path), unreachable over HTTP, so no client-visible change. #8862 if it merges with time on <code>dev</code> before the tag</td>
 <td><code>ST-FILTER-READS</code>, <code>ST-WRITES</code>, <code>PLAT-ENTRY</code>, <code>PLAT-SERVE</code>, <code>HUB-REG-CRM</code></td>
 </tr>
 <tr>
@@ -3258,7 +3258,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/375a961df2ccd31e8528968fa135d1ef80c5bbe6/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (65 queue ids: every item this file or
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a379dd3f79b639046027094d91af4abd247c4adc/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (65 queue ids: every item this file or
 <a href="decisions.html">decisions.md</a> names, and the release items), with the capture command.</p>
 <p><strong>Dry run, 2026-10-27, <code>dev</code> <code>8dbb60c2</code></strong> (reproduced; written to a scratch directory, not kept, because a
 record is captured once, at the tag). The generator ran on the selection with its default <code>static</code> and

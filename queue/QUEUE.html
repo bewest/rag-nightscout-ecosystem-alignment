@@ -3187,7 +3187,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-27 at <code>375a961df</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>59eed2c6c</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3266,8 +3266,8 @@
 </tr>
 <tr>
 <td><code>ready-to-push</code></td>
-<td>4</td>
-<td>P0-C-REMEDIATE, RT-CI-WEBKIT-REPORTS, T30-AUTH, WS-LAB</td>
+<td>3</td>
+<td>P0-C-REMEDIATE, T30-AUTH, WS-LAB</td>
 </tr>
 <tr>
 <td><code>blocked</code></td>
@@ -3276,8 +3276,8 @@
 </tr>
 <tr>
 <td><code>in-flight-upstream</code></td>
-<td>6</td>
-<td>BFQ-72, BFQ-161, ST-FILTER-READS, ST-WRITES, PLAT-ENTRY, PLAT-SERVE</td>
+<td>7</td>
+<td>RT-CI-WEBKIT-REPORTS, BFQ-72, BFQ-161, ST-FILTER-READS, ST-WRITES, PLAT-ENTRY, PLAT-SERVE</td>
 </tr>
 <tr>
 <td><code>merged-upstream</code></td>
@@ -5133,7 +5133,7 @@ that costs.</p>
 <tr>
 <td><code>RT-CI-WEBKIT-REPORTS</code></td>
 <td>WebKit's cached-bundle startup test still fails on dev after bdd569a3: report requests cancelled 'due to access control checks'</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-flight-upstream</code></td>
 <td><code>test/16.0.0-reports-ready</code></td>
 <td>n/a</td>
 <td>1 run + 1 no-gate</td>
@@ -6213,7 +6213,7 @@ that costs.</p>
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-flight-upstream</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -6254,7 +6254,7 @@ that costs.</p>
 <ul>
 <li><code>releases/cgm-remote-monitor-16.0.0/contents.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-27: dev b84871d7's push run 40571593504 failed Browser tests (26, webkit) "boots every page from cached bundles and retires the old cache on upgrade" with fifteen report requests "due to access control checks", the failure bdd569a3 was meant to end; that merge published no image. Prepared on test/16.0.0-reports-ready off dev eed31dca, not pushed. A first idea, a page marker for the deferred first report, was measured and dropped: sampling every 5 ms showed no moment where the old readiness check passed before the first report started, even at 8x CPU throttling in Chromium.</p>
+<p><strong>Notes.</strong> 2026-10-27: pushed by the maintainer and opened as #8869 into dev (head 9a44e16f). 2026-10-27: dev b84871d7's push run 40571593504 failed Browser tests (26, webkit) "boots every page from cached bundles and retires the old cache on upgrade" with fifteen report requests "due to access control checks", the failure bdd569a3 was meant to end; that merge published no image. Prepared on test/16.0.0-reports-ready off dev eed31dca, not pushed. A first idea, a page marker for the deferred first report, was measured and dropped: sampling every 5 ms showed no moment where the old readiness check passed before the first report started, even at 8x CPU throttling in Chromium.</p>
 <h3 id="rt-ci-flakes-8dbb60c2--dev-8dbb60c2s-red-ci-a-concurrent-writes-timestamp-collision-and-the-webkit-reports-page-race"><code>RT-CI-FLAKES-8DBB60C2</code> &mdash; dev 8dbb60c2's red CI: a concurrent-writes timestamp collision and the WebKit reports-page race<a class="headerlink" href="#rt-ci-flakes-8dbb60c2--dev-8dbb60c2s-red-ci-a-concurrent-writes-timestamp-collision-and-the-webkit-reports-page-race" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -20583,7 +20583,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>tools/qc/write-contract-matrix.js</code></li>
 <li><code>tools/seam/DIFFERENTIALS.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-27, final: #8859, #8866, #8868 and #8856 are on dev (eed31dca). The maintainer merged dev into feat/storage-filter on GitHub as 5310a447 (48e7e101 + eed31dca, 20:13:03Z); its tree 884b95ec equals session -2e's re-merge 4fe7085b (checked by -ee), so the B6 measurements and the re- runs apply. No push needed for #8861. npm test on that tree (session -2e, MongoDB 7.0.43, Node 22.23.4): 4685 passing, 0 failing, 3 pending. 2026-10-27 (maintainer, Q12): goes into 16.0.0 through release allocation B6's entry bar. Items 1, 3, 4 and 5 MET on local candidates (session -2e; cand/with d6ba8e18 vs cand/without 2cae64f3: 360-cell matrix equal off and reject, 67-row replay equal, v1 HTTP 700/700, latency inside the noise floor, one-commit revert cf762dd0 restores cand/without's tree). Item 2 (BF-72, BF-161 in their private forks) is with -e4. Maintainer decided #8859 merges to dev first. The PR branch is awaiting #8859: prep/storage-filter df4e5e9d (= 48e7e101 + dev 2dc0c1bc + #8859, clean; tree 402b22d6 equals cand/with's #8861 step 019bdce9, checked by -ee) becomes feat/storage-filter once the real dev with #8859 is merged in. No push commands until -2e sends the final head. 2026-10-26, later: the maintainer pushed 48e7e101 and opened draft #8861. ST-WRITES is being built on top of it (feat/storage-writes). 2026-10-26: the maintainer decided ST-FILTER and ST-READS go up as one PR. ST-FILTER found five defects in the September seam's fromMongo, each of which widens or changes a read ({a: {}} dropped, empty $or and $and matching everything, $exists undefined read as presence, RegExp g and s flags swapped, mongod-refused $regex options coerced); the mingo round trip could not see them, the live-mongod differential did. All five are fixed on the branch and pinned by tests.</p>
+<p><strong>Notes.</strong> 2026-10-27: #8861 at 5310a447 is still a draft (gh pr view); hosted CI on it 16 passed, 3 skipped. It must be marked ready for review before it merges, and it merges before #8863. 2026-10-27, final: #8859, #8866, #8868 and #8856 are on dev (eed31dca). The maintainer merged dev into feat/storage-filter on GitHub as 5310a447 (48e7e101 + eed31dca, 20:13:03Z); its tree 884b95ec equals session -2e's re-merge 4fe7085b (checked by -ee), so the B6 measurements and the re- runs apply. No push needed for #8861. npm test on that tree (session -2e, MongoDB 7.0.43, Node 22.23.4): 4685 passing, 0 failing, 3 pending. 2026-10-27 (maintainer, Q12): goes into 16.0.0 through release allocation B6's entry bar. Items 1, 3, 4 and 5 MET on local candidates (session -2e; cand/with d6ba8e18 vs cand/without 2cae64f3: 360-cell matrix equal off and reject, 67-row replay equal, v1 HTTP 700/700, latency inside the noise floor, one- commit revert cf762dd0 restores cand/without's tree). Item 2 (BF-72, BF-161 in their private forks) is with -e4. Maintainer decided #8859 merges to dev first. The PR branch is awaiting #8859: prep/storage-filter df4e5e9d (= 48e7e101 + dev 2dc0c1bc + #8859, clean; tree 402b22d6 equals cand/with's #8861 step 019bdce9, checked by -ee) becomes feat/storage-filter once the real dev with #8859 is merged in. No push commands until -2e sends the final head. 2026-10-26, later: the maintainer pushed 48e7e101 and opened draft #8861. ST- WRITES is being built on top of it (feat/storage-writes). 2026-10-26: the maintainer decided ST-FILTER and ST-READS go up as one PR. ST-FILTER found five defects in the September seam's fromMongo, each of which widens or changes a read ({a: {}} dropped, empty $or and $and matching everything, $exists undefined read as presence, RegExp g and s flags swapped, mongod- refused $regex options coerced); the mingo round trip could not see them, the live-mongod differential did. All five are fixed on the branch and pinned by tests.</p>
 <h3 id="st-writes--storage-interface-second-pr-api-v1-authorization-storage-and-socket-writes-through-the-interface-each-labelled-by-source-8854s-boundary-check-fails-a-write-that-skips-the-interface"><code>ST-WRITES</code> &mdash; Storage interface, second PR: API v1, authorization storage and socket writes through the interface, each labelled by source; #8854's boundary check fails a write that skips the interface<a class="headerlink" href="#st-writes--storage-interface-second-pr-api-v1-authorization-storage-and-socket-writes-through-the-interface-each-labelled-by-source-8854s-boundary-check-fails-a-write-that-skips-the-interface" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -20640,7 +20640,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>tools/qc/write-contract-matrix.js</code></li>
 <li><code>tools/seam/DIFFERENTIALS.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-27, final: ready to push 42128f3b (parents a3f74a08 + 5310a447; contains 38b910d7, 5310a447 and dev eed31dca; tree d4684295; 25 files +896/-245 against 5310a447, 36 files +3124/-248 against dev; checked by -ee). Session -2e on that tree, Node 22.23.4: npm test 4700 passing, 0 failing, 3 pending and test:all 5028/0/3 (MongoDB 7.0.43; +13 over a3f74a08 = BF-200's tests); 360-cell matrix equal to dev eed31dca in off and reject, off vs reject 12 differing on each (MongoDB 5.0.33). Push: git -C externals/cgm-remote- monitor-official push official 42128f3b:refs/heads/feat/storage-writes. Merge order: #8861, then #8863; ST-COUNT-ONEPATH follows before the tag. 2026-10-27 (maintainer, Q12): goes into 16.0.0 through release allocation B6's entry bar. Items 1, 3, 4 and 5 MET on local candidates (session -2e; cand/with d6ba8e18 vs cand/without 2cae64f3: 360-cell matrix equal off and reject, 67-row replay equal, v1 HTTP 700/700, latency inside the noise floor, one-commit revert cf762dd0 restores cand/without's tree). Item 2 (BF-72, BF-161 in their private forks) is with -e4. Maintainer decided #8859 merges to dev first. The PR branch is awaiting #8859: prep/storage-writes b1104d02 (= the count commit 079f20ae for GET /api/v1/count/:storage/where on 38b910d7, + prep/storage- filter, with the five conflict resolutions; tree c5ac59dc equals cand/with d6ba8e18, checked by -ee, so every B6 measurement applies) becomes feat/storage-writes for #8863 once the real dev with #8859 is merged in. No push commands until -2e sends the final head. 2026-10-26: draft #8863, stacked on #8861 (base feat/storage-filter); it retargets to dev when #8861 merges. Labels: v1 modules 'v1/internal', socket 'socket', authorization storage 'internal', default 'v3'; an unknown source is refused; origin has room but is not passed. Open in the PR: commit events for authorization writes, splitting 'v1/internal', insertOne normalize:false setting _id as interface contract, moving the write differential into tools/seam.</p>
+<p><strong>Notes.</strong> 2026-10-27: the maintainer pushed 42128f3b; feat/storage-writes and refs/pull/8863/head point at it (gh pr view: open, ready for review, CLEAN, base feat/storage-filter). Hosted CI has not run on it: the workflow does not run for a pull request whose base is not dev (the branch's last run is pull_request_target on 38b910d7), so the evidence is the local suites and matrix above. GitHub retargets #8863 to dev when #8861 merges, and CI runs then. Merge order: #8861, then #8863. 2026-10-27, final: ready to push 42128f3b (parents a3f74a08 + 5310a447; contains 38b910d7, 5310a447 and dev eed31dca; tree d4684295; 25 files +896/-245 against 5310a447, 36 files +3124/-248 against dev; checked by -ee). Session -2e on that tree, Node 22.23.4: npm test 4700 passing, 0 failing, 3 pending and test:all 5028/0/3 (MongoDB 7.0.43; +13 over a3f74a08 = BF-200's tests); 360-cell matrix equal to dev eed31dca in off and reject, off vs reject 12 differing on each (MongoDB 5.0.33). Push: git -C externals/cgm-remote-monitor-official push official 42128f3b:refs/heads/feat/storage-writes. Merge order: #8861, then #8863; ST- COUNT-ONEPATH follows before the tag. 2026-10-27 (maintainer, Q12): goes into 16.0.0 through release allocation B6's entry bar. Items 1, 3, 4 and 5 MET on local candidates (session -2e; cand/with d6ba8e18 vs cand/without 2cae64f3: 360-cell matrix equal off and reject, 67-row replay equal, v1 HTTP 700/700, latency inside the noise floor, one-commit revert cf762dd0 restores cand/without's tree). Item 2 (BF-72, BF-161 in their private forks) is with -e4. Maintainer decided #8859 merges to dev first. The PR branch is awaiting #8859: prep/storage-writes b1104d02 (= the count commit 079f20ae for GET /api/v1/count/:storage/where on 38b910d7, + prep/storage-filter, with the five conflict resolutions; tree c5ac59dc equals cand/with d6ba8e18, checked by -ee, so every B6 measurement applies) becomes feat/storage-writes for #8863 once the real dev with #8859 is merged in. No push commands until -2e sends the final head. 2026-10-26: draft #8863, stacked on #8861 (base feat/storage- filter); it retargets to dev when #8861 merges. Labels: v1 modules 'v1/internal', socket 'socket', authorization storage 'internal', default 'v3'; an unknown source is refused; origin has room but is not passed. Open in the PR: commit events for authorization writes, splitting 'v1/internal', insertOne normalize:false setting _id as interface contract, moving the write differential into tools/seam.</p>
 <hr />
 <h2 id="document-truth-sweeps">Document-truth sweeps<a class="headerlink" href="#document-truth-sweeps" title="Permanent link">&para;</a></h2>
 <p><code>parcel: docs-truth</code> &mdash; 19 items</p>
