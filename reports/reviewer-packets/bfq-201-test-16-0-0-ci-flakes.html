@@ -10,7 +10,7 @@
       
       
       
-        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/bfq-201-ci-16-0-0-image-publishing.html">
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/bfq-201-test-16-0-0-ci-flakes.html">
       
       
         <link rel="prev" href="bfq-200-bf-16-0-0-ddata-at-crash.html">
@@ -27,7 +27,7 @@
     
     
       
-        <title>Bfq 201 ci 16 0 0 image publishing - Nightscout ecosystem alignment</title>
+        <title>Bfq 201 test 16 0 0 ci flakes - Nightscout ecosystem alignment</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#review-packet--bfq-201-pr-8867" class="md-skip">
+        <a href="#review-packet--bfq-201-pr-8866" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Bfq 201 ci 16 0 0 image publishing
+              Bfq 201 test 16 0 0 ci flakes
             
           </span>
         </div>
@@ -1901,7 +1901,7 @@
   <span class="md-ellipsis">
     
   
-    Bfq 201 ci 16 0 0 image publishing
+    Bfq 201 test 16 0 0 ci flakes
   
 
     
@@ -1912,14 +1912,14 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="bfq-201-ci-16-0-0-image-publishing.html" class="md-nav__link md-nav__link--active">
+      <a href="bfq-201-test-16-0-0-ci-flakes.html" class="md-nav__link md-nav__link--active">
         
   
   
   <span class="md-ellipsis">
     
   
-    Bfq 201 ci 16 0 0 image publishing
+    Bfq 201 test 16 0 0 ci flakes
   
 
     
@@ -3336,7 +3336,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-27 at <code>dc004950a</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>6793843e0</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3350,7 +3350,7 @@
   ============================================================================
 -->
 
-<h1 id="review-packet--bfq-201-pr-8867">Review packet — BFQ-201 (PR #8867)<a class="headerlink" href="#review-packet--bfq-201-pr-8867" title="Permanent link">&para;</a></h1>
+<h1 id="review-packet--bfq-201-pr-8866">Review packet — BFQ-201 (PR #8866)<a class="headerlink" href="#review-packet--bfq-201-pr-8866" title="Permanent link">&para;</a></h1>
 <p><strong>BF-201 - npm run dev's nodemon watches nearly the whole repository (1,502
 Linux file watches); watch the paths the server loads</strong></p>
 <table>
@@ -3367,7 +3367,7 @@ Linux file watches); watch the paths the server loads</strong></p>
 </tr>
 <tr>
 <td>branch</td>
-<td><code>ci/16.0.0-image-publishing</code></td>
+<td><code>test/16.0.0-ci-flakes</code></td>
 </tr>
 <tr>
 <td>base</td>
@@ -3398,8 +3398,8 @@ nodemon.</p>
 <h2 id="who-should-review-this-and-why">Who should review this, and why<a class="headerlink" href="#who-should-review-this-and-why" title="Permanent link">&para;</a></h2>
 <p>maintainer</p>
 <h2 id="what-was-measured">What was measured<a class="headerlink" href="#what-was-measured" title="Permanent link">&para;</a></h2>
-<p><strong><code>git -C externals/cgm-remote-monitor-official show ci/16.0.0-image-publishing:package.json | node -e "const c=J</code></strong> &nbsp;·&nbsp; kind: <code>static</code></p>
-<h1 id="8867s-branchs-nodemonconfig-is-a-watch-list-that-includes-lib-and-leaves">8867's branch's nodemonConfig is a watch list that includes lib and leaves<a class="headerlink" href="#8867s-branchs-nodemonconfig-is-a-watch-list-that-includes-lib-and-leaves" title="Permanent link">&para;</a></h1>
+<p><strong><code>git -C externals/cgm-remote-monitor-official show test/16.0.0-ci-flakes:package.json | node -e "const c=JSON.p</code></strong> &nbsp;·&nbsp; kind: <code>static</code></p>
+<h1 id="8866s-branchs-nodemonconfig-is-a-watch-list-that-includes-lib-and-leaves">8866's branch's nodemonConfig is a watch list that includes lib and leaves<a class="headerlink" href="#8866s-branchs-nodemonconfig-is-a-watch-list-that-includes-lib-and-leaves" title="Permanent link">&para;</a></h1>
 <p>out static, with no ignore list.</p>
 <h2 id="what-these-gates-do-not-prove">What these gates do NOT prove<a class="headerlink" href="#what-these-gates-do-not-prove" title="Permanent link">&para;</a></h2>
 <p><em>Each of these is the author recording, at the time, a property they could not measure. This is the reviewer's worklist.</em></p>
@@ -3423,7 +3423,9 @@ translations, webpack and package.json, which the server reads at startup, so
 editing them still restarts it. Prepared as 426d2835 on chore/16.0.0-nodemon-
 watch-allowlist; npm test 4483 passing, 0 failing, 3 pending (Node 22.23.4,
 MongoDB 8.0.34). At the maintainer's request, cherry-picked onto #8867 as
-5d9f84b5 and pushed 2026-10-27 (the CI and tooling PR), not a PR of its own.</p>
+5d9f84b5 and pushed 2026-10-27 (the CI and tooling PR), not a PR of its own.
+Later that day, at the maintainer's request, #8867 was merged into #8866's
+branch as 7a96b912, so it ships with #8866.</p>
 <hr />
 <h2 id="before-you-approve">Before you approve<a class="headerlink" href="#before-you-approve" title="Permanent link">&para;</a></h2>
 <ul class="task-list">

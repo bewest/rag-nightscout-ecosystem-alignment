@@ -1885,14 +1885,14 @@
   
   
     <li class="md-nav__item">
-      <a href="bfq-201-ci-16-0-0-image-publishing.html" class="md-nav__link">
+      <a href="bfq-201-test-16-0-0-ci-flakes.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Bfq 201 ci 16 0 0 image publishing
+    Bfq 201 test 16 0 0 ci flakes
   
 
     
@@ -2491,6 +2491,17 @@
     <span class="md-ellipsis">
       
         Notes carried on the item
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-you-approve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before you approve
       
     </span>
   </a>
@@ -3385,6 +3396,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#before-you-approve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before you approve
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3402,7 +3424,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-27 at <code>9555f20dc</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>6793843e0</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3450,8 +3472,10 @@ reports-page race</strong></p>
 </tbody>
 </table>
 <h2 id="what-this-changes">What this changes<a class="headerlink" href="#what-this-changes" title="Permanent link">&para;</a></h2>
-<p>Two test files, no production source: tests/concurrent-writes.test.js
-(c7857735) and tests/browser/page-startup.test.js (bdd569a3).</p>
+<p>Test fixes, no production source: tests/concurrent-writes.test.js (c7857735)
+and tests/browser/page-startup.test.js (bdd569a3, 65632082). Since 7a96b912
+the branch also carries #8867 (the workflow, CONTRIBUTING.md, tools/wait-for-
+mongodb.js and nodemon's watch list; BFQ-201, BFQ-202).</p>
 <h2 id="why-that-semver">Why that semver<a class="headerlink" href="#why-that-semver" title="Permanent link">&para;</a></h2>
 <p>test reliability</p>
 <h2 id="who-should-review-this-and-why">Who should review this, and why<a class="headerlink" href="#who-should-review-this-and-why" title="Permanent link">&para;</a></h2>
@@ -3461,6 +3485,9 @@ reports-page race</strong></p>
 <p>The concurrent-writes fix is on the branch: ten Notes get times one second
 apart, so none share the created_at and eventType a Note without an identifier
 is matched on.</p>
+<p><strong><code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 65632082 test/16.0.0-ci-flakes</code></strong> &nbsp;·&nbsp; kind: <code>static</code></p>
+<p>The dashboard round-trip fix is on the branch: each page must be ready before
+the test follows its close link and before it goes forward.</p>
 <p><strong><code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bdd569a3 test/16.0.0-ci-flakes</code></strong> &nbsp;·&nbsp; kind: <code>static</code></p>
 <p>The page-startup fix is on the branch: the reports page counts as ready once
 its deferred first-week report has loaded (dates filled, Show visible, no
@@ -3482,11 +3509,18 @@ jQuery request in flight).</p>
 <li><a href="../../docs/30-design/remedial/rc-16.0.0-integration-record.html"><code>docs/30-design/remedial/rc-16.0.0-integration-record.md</code></a></li>
 </ul>
 <h2 id="notes-carried-on-the-item">Notes carried on the item<a class="headerlink" href="#notes-carried-on-the-item" title="Permanent link">&para;</a></h2>
-<p>2026-10-27: dev 8dbb60c2 (#8860) push run 40424319822 failed Browser tests
-(26, webkit) and Run Tests (26, 5.0), and pull_request run 40424329138 failed
-WebKit; #8860's own run on the identical tree passed. Neither failure is</p>
-<h1 id="8860s-the-suites-on-8dbb60c2-pass-on-node-22234-with-mongodb-5033-and">8860's: the suites on 8dbb60c2 pass on Node 22.23.4 with MongoDB 5.0.33 and<a class="headerlink" href="#8860s-the-suites-on-8dbb60c2-pass-on-node-22234-with-mongodb-5033-and" title="Permanent link">&para;</a></h1>
-<p>Node 26.12.1 with 8.0.34 (integration record R17). Branch prepared off
+<p>2026-10-27, later: the maintainer merged dev 2dc0c1bc in (ddeeff8c); run
+40559261253 then failed WebKit's dashboard round trip with page.goForward:
+WebKit encountered an internal error, on the reports page (the test went
+forward from /report while its first report was loading). Fixed as 65632082 (3
+of 3 on WebKit, Chromium and Firefox, page-startup 28 passing on each; not
+reproduced locally). #8867 was merged into the branch as 7a96b912 at the
+maintainer's request, so #8866 is the one CI pull request; #8867 is to be
+closed. 2026-10-27: dev 8dbb60c2 (#8860) push run 40424319822 failed Browser
+tests (26, webkit) and Run Tests (26, 5.0), and pull_request run 40424329138
+failed WebKit; #8860's own run on the identical tree passed. Neither failure
+is #8860's: the suites on 8dbb60c2 pass on Node 22.23.4 with MongoDB 5.0.33
+and Node 26.12.1 with 8.0.34 (integration record R17). Branch prepared off
 official/dev 8dbb60c2 by session d22eceb7 in externals/work/crm-ci-flakes; not
 pushed. The page-startup change may also explain R14's Chromium "recovers the
 actual reports page after two failed bundle downloads" timeout, which leaves

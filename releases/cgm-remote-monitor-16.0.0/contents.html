@@ -2134,7 +2134,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-27 at <code>89427dad8</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>6793843e0</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -2907,11 +2907,11 @@ runtime Docker image.</p>
 <td><code>BFQ-161</code></td>
 </tr>
 <tr>
-<td>the two tests that turned <code>dev</code> <code>8dbb60c2</code>'s CI red</td>
-<td><code>test/16.0.0-ci-flakes</code> (#8866, into <code>dev</code>)</td>
-<td><code>bdd569a3</code>: <code>c7857735</code> (concurrent-writes: Notes one second apart) and <code>bdd569a3</code> (page-startup: the reports page is ready once its first report has loaded)</td>
-<td>prepared 2026-10-27, #8866 opened 2026-10-27, CI pending; test files only (R17)</td>
-<td><code>RT-CI-FLAKES-8DBB60C2</code></td>
+<td>the CI pull request: three intermittent test fixes, the MongoDB wait, image publishing, nodemon</td>
+<td><code>test/16.0.0-ci-flakes</code>, <strong>#8866</strong> (into <code>dev</code>; #8867 merged into it as <code>7a96b912</code> at the maintainer's request, 2026-10-27)</td>
+<td><code>7a96b912</code>: <code>c7857735</code> (concurrent-writes: Notes one second apart), <code>bdd569a3</code> (page-startup: the reports page is ready once its first report has loaded), the maintainer's <code>dev</code> merge <code>ddeeff8c</code>, <code>65632082</code> (the dashboard round trip waits for each page before leaving it), and #8867's <code>56804908</code>, <code>04b1f870</code>, <code>5d9f84b5</code>, <code>e0cfbd0c</code></td>
+<td>pushed 2026-10-27. <code>65632082</code> follows WebKit's <code>page.goForward: WebKit encountered an internal error</code> on run 40559261253 (3 of 3 on each engine after it; page-startup 28 passing on each; not reproduced locally). <code>e0cfbd0c</code> prints the runner's kernel in the MongoDB wait (BF-202). Run 40566855699 on <code>65632082</code> passed every job except the two MongoDB 8.0 jobs, which were over 9 minutes in Run Tests when the next push cancelled them (BF-202). #8867 is to be closed in favour of #8866</td>
+<td><code>RT-CI-FLAKES-8DBB60C2</code>, <code>BFQ-201</code>, <code>BFQ-202</code></td>
 </tr>
 <tr>
 <td>BF-191: a stored treatment can stop the server process, and keeps doing so after a restart</td>
@@ -2956,15 +2956,8 @@ runtime Docker image.</p>
 <td><code>BFQ-200</code></td>
 </tr>
 <tr>
-<td>image publishing and CI's MongoDB wait</td>
-<td><code>ci/16.0.0-image-publishing</code>, <strong>#8867</strong> (opened by the maintainer 2026-10-27 17:44Z, base <code>dev</code>)</td>
-<td><code>04b1f870</code> on <code>dev</code> <code>2dc0c1bc</code>: <code>.github/workflows/main.yml</code>, <code>CONTRIBUTING.md</code>, new <code>tools/wait-for-mongodb.js</code></td>
-<td>open, not draft; per its title, release images publish from the tag and a push to <code>master</code> publishes nothing; all checks pass, the three publishing jobs skipped on a pull request by design, and the MongoDB wait answered on the first attempt in all five database jobs (5.0.33, 6.0.28 twice, 8.0.29, 8.0.34) (reported by session -e4)</td>
-<td>—</td>
-</tr>
-<tr>
 <td>BF-201: nodemon's file watches</td>
-<td><code>ci/16.0.0-image-publishing</code>, <strong>#8867</strong> (added 2026-10-27 at the maintainer's request)</td>
+<td><strong>#8866</strong> (added to #8867 at the maintainer's request, 2026-10-27; #8867 merged into #8866 as <code>7a96b912</code>)</td>
 <td><code>5d9f84b5</code> (prepared as <code>426d2835</code> on <code>dev</code> <code>2dc0c1bc</code>): <code>package.json</code> nodemonConfig, the watch test and probe, the M24 addendum</td>
 <td>pushed 2026-10-27: nodemon watches <code>lib</code>, <code>views</code>, <code>translations</code>, <code>webpack</code> and <code>package.json</code>; Linux file watches 1,502 → 385 at <code>dev</code> <code>2dc0c1bc</code>; the watch test fails at <code>docs/unlisted.js</code> with the old configuration; <code>npm test</code> 4483 passing, 0 failing, 3 pending (Node 22.23.4, MongoDB 8.0.34); developer tooling only</td>
 <td><code>BFQ-201</code></td>
@@ -3115,6 +3108,12 @@ which this programme cannot do without real credentials; #8843 (CI diagonal) and
 <td><code>BFQ-200</code></td>
 </tr>
 <tr>
+<td>BF-202: CI's MongoDB 8.0 jobs on Linux 6.19 runners</td>
+<td>MongoDB 8.0 refuses to start on Linux 6.19 and newer (SERVER-121912), and only some GitHub-hosted runners have that kernel, so Run Tests (22.23.4, 8.0) and Maintained MongoDB (26, 8.0.29) fail by chance (runs 40532337252, 40557880084, 40566855699). #8866's wait step makes that a 90-second failure with MongoDB's log and prints the kernel; the mitigation is not chosen</td>
+<td>CI only; re-run the job. Operators running MongoDB 8.0 on such a kernel meet the same MongoDB defect, independently of Nightscout</td>
+<td><code>BFQ-202</code></td>
+</tr>
+<tr>
 <td>Firefox legacy-reports wait</td>
 <td><code>tests/browser/legacy-reports.test.js</code> "should produce some html" timed out at its fixed 30 s wait (<code>12154df9</code>) in one or two Firefox cells of the CI runs on <code>93f152bd</code> (<code>pull_request</code>) and <code>a20469dc</code> (both events), so the push run on <code>a20469dc</code> skipped the Docker publish; and once more on #8836's head <code>df2f37ab</code> (run 40228187718 attempt 1, <em>Browser tests (26, firefox)</em>, 463 passing, 1 failing; attempt 2 passed). Since cut 2 merged (<code>eb44a9c2</code>), <code>dev</code>'s test uses the progress-aware wait (fails after 15 s with no completed request, 60 s ceiling; <code>tests/browser/legacy-reports.test.js:136-144</code>), and <em>Browser tests (26, firefox)</em> passed in every push and <code>pull_request</code> run on <code>5de8505d</code>, <code>fd3792e5</code>, <code>eb44a9c2</code>, <code>78524be4</code> and <code>b29f1bf7</code> (one run each, so not yet evidence that the flake is gone)</td>
 <td>test only; no register entry filed</td>
@@ -3198,7 +3197,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/89427dad89106d85c629e673653520f55b21897d/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (65 queue ids: every item this file or
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6793843e031bd79790163d12520ce1768cb33b96/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (65 queue ids: every item this file or
 <a href="decisions.html">decisions.md</a> names, and the release items), with the capture command.</p>
 <p><strong>Dry run, 2026-10-27, <code>dev</code> <code>8dbb60c2</code></strong> (reproduced; written to a scratch directory, not kept, because a
 record is captured once, at the tag). The generator ran on the selection with its default <code>static</code> and

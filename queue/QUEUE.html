@@ -3165,7 +3165,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-27 at <code>89427dad8</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>6793843e0</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3204,19 +3204,19 @@
 <tbody>
 <tr>
 <td>items</td>
-<td>304</td>
+<td>305</td>
 </tr>
 <tr>
 <td>runnable gates</td>
-<td>363</td>
+<td>365</td>
 </tr>
 <tr>
 <td>explicit <code>no-gate:</code> markers</td>
-<td>341</td>
+<td>342</td>
 </tr>
 </tbody>
 </table>
-<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 341 of the 704 gate slots in this queue are in that state.</p>
+<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 342 of the 707 gate slots in this queue are in that state.</p>
 <h3 id="claimed-state-not-a-measurement----run-make-queue-status">Claimed state (NOT a measurement -- run <code>make queue-status</code>)<a class="headerlink" href="#claimed-state-not-a-measurement----run-make-queue-status" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3234,8 +3234,8 @@
 </tr>
 <tr>
 <td><code>in-progress</code></td>
-<td>6</td>
-<td>BFQ-178, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY</td>
+<td>7</td>
+<td>BFQ-178, ID-CONVENTIONS, BFQ-191, BFQ-202, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY</td>
 </tr>
 <tr>
 <td><code>gate-not-met</code></td>
@@ -5114,7 +5114,7 @@ that costs.</p>
 <td><code>in-flight-upstream</code></td>
 <td><code>test/16.0.0-ci-flakes</code></td>
 <td>n/a</td>
-<td>2 run + 1 no-gate</td>
+<td>3 run + 1 no-gate</td>
 </tr>
 <tr>
 <td><code>RT-16-RIG-SOAK</code></td>
@@ -6211,13 +6211,15 @@ that costs.</p>
 </tr>
 </tbody>
 </table>
-<p><strong>Blast radius.</strong> Two test files, no production source: tests/concurrent-writes.test.js (c7857735) and tests/browser/page-startup.test.js (bdd569a3).</p>
+<p><strong>Blast radius.</strong> Test fixes, no production source: tests/concurrent-writes.test.js (c7857735) and tests/browser/page-startup.test.js (bdd569a3, 65632082). Since 7a96b912 the branch also carries #8867 (the workflow, CONTRIBUTING.md, tools/wait-for- mongodb.js and nodemon's watch list; BFQ-201, BFQ-202).</p>
 <p><strong>What an operator sees.</strong> <em>Nothing. No operator-visible change.</em></p>
 <p><strong>Why <code>n/a</code>.</strong> test reliability</p>
 <p><strong>Gates.</strong></p>
 <ul>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c7857735 test/16.0.0-ci-flakes</code></li>
 <li>The concurrent-writes fix is on the branch: ten Notes get times one second apart, so none share the created_at and eventType a Note without an identifier is matched on.</li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 65632082 test/16.0.0-ci-flakes</code></li>
+<li>The dashboard round-trip fix is on the branch: each page must be ready before the test follows its close link and before it goes forward.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bdd569a3 test/16.0.0-ci-flakes</code></li>
 <li>The page-startup fix is on the branch: the reports page counts as ready once its deferred first-week report has loaded (dates filled, Show visible, no jQuery request in flight).</li>
 <li><strong>NO GATE</strong> &mdash; The WebKit failure was not reproduced locally before or after the fix (CI image mcr.microsoft.com/playwright:v1.63.0-noble, Node 26.12.1): the mechanism, requests cancelled by navigating away from /report/, is read from the job log and the code. After the fix, page-startup.test.js passes 3 of 3 on WebKit, Chromium and Firefox, 28 passing each. The concurrent-writes collision is reproduced: with every Note at one time the test fails, expected 1 to be 10; the fix passes 30 of 30 on Node 22.23.4 and MongoDB 5.0.33.</li>
@@ -6226,7 +6228,7 @@ that costs.</p>
 <ul>
 <li><code>docs/30-design/remedial/rc-16.0.0-integration-record.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-27: dev 8dbb60c2 (#8860) push run 40424319822 failed Browser tests (26, webkit) and Run Tests (26, 5.0), and pull_request run 40424329138 failed WebKit; #8860's own run on the identical tree passed. Neither failure is #8860's: the suites on 8dbb60c2 pass on Node 22.23.4 with MongoDB 5.0.33 and Node 26.12.1 with 8.0.34 (integration record R17). Branch prepared off official/dev 8dbb60c2 by session d22eceb7 in externals/work/crm-ci-flakes; not pushed. The page-startup change may also explain R14's Chromium "recovers the actual reports page after two failed bundle downloads" timeout, which leaves the same page; not measured.</p>
+<p><strong>Notes.</strong> 2026-10-27, later: the maintainer merged dev 2dc0c1bc in (ddeeff8c); run 40559261253 then failed WebKit's dashboard round trip with page.goForward: WebKit encountered an internal error, on the reports page (the test went forward from /report while its first report was loading). Fixed as 65632082 (3 of 3 on WebKit, Chromium and Firefox, page-startup 28 passing on each; not reproduced locally). #8867 was merged into the branch as 7a96b912 at the maintainer's request, so #8866 is the one CI pull request; #8867 is to be closed. 2026-10-27: dev 8dbb60c2 (#8860) push run 40424319822 failed Browser tests (26, webkit) and Run Tests (26, 5.0), and pull_request run 40424329138 failed WebKit; #8860's own run on the identical tree passed. Neither failure is #8860's: the suites on 8dbb60c2 pass on Node 22.23.4 with MongoDB 5.0.33 and Node 26.12.1 with 8.0.34 (integration record R17). Branch prepared off official/dev 8dbb60c2 by session d22eceb7 in externals/work/crm-ci-flakes; not pushed. The page-startup change may also explain R14's Chromium "recovers the actual reports page after two failed bundle downloads" timeout, which leaves the same page; not measured.</p>
 <h3 id="rt-16-rig-soak--1600-pre-tag-check-a-real-rig-soak-on-dev"><code>RT-16-RIG-SOAK</code> &mdash; 16.0.0 pre-tag check: a real-rig soak on dev<a class="headerlink" href="#rt-16-rig-soak--1600-pre-tag-check-a-real-rig-soak-on-dev" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -8234,7 +8236,7 @@ that costs.</p>
 <p><strong>Notes.</strong> Follow-up to BF-110/BF-117, queued 2026-09-25 at the maintainer's request. Editing both copies is not wrong for what is shown (both carry the edit), but the pair never becomes one record, so reads that list treatments keep showing two. The fix shape: update the ObjectId copy (converting a string-only record to its ObjectId, as dbAdd does), then delete the string forms, as the v1 treatments PUT does; the renderer's split-drag path (dbUpdate then dbAdd) must still see the edited _id. Best done with OID-V3-EDIT-MERGE and OID-STORAGE- HELPER, which would give v1, v3 and the websocket one rule for writes by _id. Decisions: - 2026-09-26 (maintainer): after 15.0.9.</p>
 <hr />
 <h2 id="open-backfix-register-entries">Open backfix-register entries<a class="headerlink" href="#open-backfix-register-entries" title="Permanent link">&para;</a></h2>
-<p><code>parcel: register-open</code> &mdash; 141 items</p>
+<p><code>parcel: register-open</code> &mdash; 142 items</p>
 <p>The §1 / §1b distinction is preserved in <code>ships_to_operators_today</code>. That
 distinction is the only thing that makes the register mean anything - widening
 §1's criterion would destroy it.</p>
@@ -9198,7 +9200,15 @@ distinction is the only thing that makes the register mean anything - widening
 <td><code>BFQ-201</code></td>
 <td>BF-201 - npm run dev's nodemon watches nearly the whole repository (1,502 Linux file watches); watch the paths the server loads</td>
 <td><code>in-flight-upstream</code></td>
-<td><code>ci/16.0.0-image-publishing</code></td>
+<td><code>test/16.0.0-ci-flakes</code></td>
+<td>n/a</td>
+<td>1 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>BFQ-202</code></td>
+<td>BF-202 - CI's MongoDB 8.0 jobs fail on hosted runners with Linux 6.19 or newer (MongoDB refuses to start, SERVER-121912)</td>
+<td><code>in-progress</code></td>
+<td><code>test/16.0.0-ci-flakes</code></td>
 <td>n/a</td>
 <td>1 run + 1 no-gate</td>
 </tr>
@@ -16754,7 +16764,7 @@ distinction is the only thing that makes the register mean anything - widening
 </tr>
 <tr>
 <td>branch</td>
-<td><code>ci/16.0.0-image-publishing</code></td>
+<td><code>test/16.0.0-ci-flakes</code></td>
 </tr>
 <tr>
 <td>base</td>
@@ -16762,7 +16772,7 @@ distinction is the only thing that makes the register mean anything - widening
 </tr>
 <tr>
 <td>worktree</td>
-<td><code>externals/work/crm-ci-publish</code></td>
+<td><code>externals/work/crm-ci-flakes</code></td>
 </tr>
 <tr>
 <td>semver</td>
@@ -16787,9 +16797,9 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>n/a</code>.</strong> developer tooling; no API, page, setting or runtime change</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show ci/16.0.0-image-publishing:package.json | node -e "const c=JSON.parse(require('fs').readFileSync(0)).nodemonConfig||{};process.exit(Array.isArray(c.watch)&amp;&amp;c.watch.includes('lib')&amp;&amp;!c.watch.includes('static')&amp;&amp;!c.ignore?0:1)"</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show test/16.0.0-ci-flakes:package.json | node -e "const c=JSON.parse(require('fs').readFileSync(0)).nodemonConfig||{};process.exit(Array.isArray(c.watch)&amp;&amp;c.watch.includes('lib')&amp;&amp;!c.watch.includes('static')&amp;&amp;!c.ignore?0:1)"</code></li>
 <li>
-<h1 id="8867s-branchs-nodemonconfig-is-a-watch-list-that-includes-lib-and-leaves-out-static-with-no-ignore-list">8867's branch's nodemonConfig is a watch list that includes lib and leaves out static, with no ignore list.<a class="headerlink" href="#8867s-branchs-nodemonconfig-is-a-watch-list-that-includes-lib-and-leaves-out-static-with-no-ignore-list" title="Permanent link">&para;</a></h1>
+<h1 id="8866s-branchs-nodemonconfig-is-a-watch-list-that-includes-lib-and-leaves-out-static-with-no-ignore-list">8866's branch's nodemonConfig is a watch list that includes lib and leaves out static, with no ignore list.<a class="headerlink" href="#8866s-branchs-nodemonconfig-is-a-watch-list-that-includes-lib-and-leaves-out-static-with-no-ignore-list" title="Permanent link">&para;</a></h1>
 </li>
 <li><strong>NO GATE</strong> &mdash; The watch test starts nodemon and native watch in owned fixtures for about 50 s, so it is not a queue gate. Measured 2026-10-27 at dev 2dc0c1bc on Linux, Node 22.23.4, nodemon 3.1.14: inotify watches 1,502 before against 385 after (lib and views alone 345; node --watch-path scoped the same way 346). The test passes on the branch and, with the previous configuration and the new expectations, fails at docs/unlisted.js.</li>
 </ul>
@@ -16797,7 +16807,70 @@ distinction is the only thing that makes the register mean anything - widening
 <ul>
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-27: asked for by the maintainer through session -a7, after tests/development-watch.test.js failed with ENOSPC on 2026-10-26. Measured counts replace -a7's at dev 47723cda (1,396 and 339); the list adds translations, webpack and package.json, which the server reads at startup, so editing them still restarts it. Prepared as 426d2835 on chore/16.0.0-nodemon- watch-allowlist; npm test 4483 passing, 0 failing, 3 pending (Node 22.23.4, MongoDB 8.0.34). At the maintainer's request, cherry-picked onto #8867 as 5d9f84b5 and pushed 2026-10-27 (the CI and tooling PR), not a PR of its own.</p>
+<p><strong>Notes.</strong> 2026-10-27: asked for by the maintainer through session -a7, after tests/development-watch.test.js failed with ENOSPC on 2026-10-26. Measured counts replace -a7's at dev 47723cda (1,396 and 339); the list adds translations, webpack and package.json, which the server reads at startup, so editing them still restarts it. Prepared as 426d2835 on chore/16.0.0-nodemon- watch-allowlist; npm test 4483 passing, 0 failing, 3 pending (Node 22.23.4, MongoDB 8.0.34). At the maintainer's request, cherry-picked onto #8867 as 5d9f84b5 and pushed 2026-10-27 (the CI and tooling PR), not a PR of its own. Later that day, at the maintainer's request, #8867 was merged into #8866's branch as 7a96b912, so it ships with #8866.</p>
+<h3 id="bfq-202--bf-202---cis-mongodb-80-jobs-fail-on-hosted-runners-with-linux-619-or-newer-mongodb-refuses-to-start-server-121912"><code>BFQ-202</code> &mdash; BF-202 - CI's MongoDB 8.0 jobs fail on hosted runners with Linux 6.19 or newer (MongoDB refuses to start, SERVER-121912)<a class="headerlink" href="#bfq-202--bf-202---cis-mongodb-80-jobs-fail-on-hosted-runners-with-linux-619-or-newer-mongodb-refuses-to-start-server-121912" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>in-progress</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>test/16.0.0-ci-flakes</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>official/dev@2dc0c1bc</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>externals/work/crm-ci-flakes</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>n/a</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer</td>
+</tr>
+<tr>
+<td>ships to operators today</td>
+<td>no (pre-release)</td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-202</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> .github/workflows/main.yml's MongoDB 8.0 jobs, Run Tests (22.23.4, 8.0) and Maintained MongoDB (26, 8.0.29). The diagnosis aid in #8866 is tools/wait-for- mongodb.js; the mitigation is not chosen yet.</p>
+<p><strong>What an operator sees.</strong> <em>Nothing. No operator-visible change.</em></p>
+<p><strong>Why <code>n/a</code>.</strong> CI only</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show test/16.0.0-ci-flakes:tools/wait-for-mongodb.js | grep -q 'os.release()'</code></li>
+<li>
+<h1 id="8866s-branch-has-the-mongodb-wait-that-prints-the-runners-kernel-e0cfbd0c-so-a-failed-or-passing-80-job-records-which-kernel-it-ran-on-this-is-the-diagnosis-aid-not-the-fix">8866's branch has the MongoDB wait that prints the runner's kernel (e0cfbd0c), so a failed or passing 8.0 job records which kernel it ran on. This is the diagnosis aid, not the fix.<a class="headerlink" href="#8866s-branch-has-the-mongodb-wait-that-prints-the-runners-kernel-e0cfbd0c-so-a-failed-or-passing-80-job-records-which-kernel-it-ran-on-this-is-the-diagnosis-aid-not-the-fix" title="Permanent link">&para;</a></h1>
+</li>
+<li><strong>NO GATE</strong> &mdash; The defect is in MongoDB and in which host GitHub assigns, so it cannot be reproduced on demand. Seen 2026-10-27: #8866 run 40532337252 (Maintained MongoDB, 212 failing), #8867 run 40557880084 (Run Tests (22.23.4, 8.0) logged MongoDB's refusal to start on Linux 6.19 and newer while 8.0.29 in the same run started), #8866 run 40566855699 (both 8.0 jobs over 9 minutes in Run Tests, cancelled).</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
+</ul>
+<p><strong>Notes.</strong> 2026-10-27: filed at the maintainer's request. Next: read the kernel the wait prints on the next runs, then choose a runner image with an older kernel or a MongoDB 8.0 build that starts there.</p>
 <h3 id="bfq-192--bf-192---the-populated-reports-browser-test-measured-a-drawn-report-against-an-empty-form-heap-ceiling-test-measurement-blind-spot-not-a-product-regression"><code>BFQ-192</code> &mdash; BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression)<a class="headerlink" href="#bfq-192--bf-192---the-populated-reports-browser-test-measured-a-drawn-report-against-an-empty-form-heap-ceiling-test-measurement-blind-spot-not-a-product-regression" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
