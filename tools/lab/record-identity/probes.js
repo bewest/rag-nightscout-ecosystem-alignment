@@ -421,7 +421,16 @@ async function req (method, p, body, headers) {
   const V = { authorization: 'Bearer ' + jwt };
   const v3tr = (t, extra) => Object.assign({ date: t, utcOffset: 0, app: 'ridlab', device: 'ridlab-dev', eventType: 'Carb Correction', carbs: 10 }, extra);
   const v3brief = r => r.s + (r.j && r.j.message ? ' "' + r.j.message + '"' : '') + (r.j && r.j.identifier ? ' identifier' : '') + (r.j && r.j._id ? ' _id' : '') + (r.j && r.j.isDeduplication ? ' isDeduplication' : '');
-  const uuidMod = require(path.join(MODULES, 'uuid'));
+  // 16.0.0 dropped the uuid package; RFC 4122 v5 is SHA-1 over namespace + name.
+  let uuidMod;
+  try { uuidMod = require(path.join(MODULES, 'uuid')); } catch (e) {
+    uuidMod = { v5: (name, ns) => {
+      const h = crypto.createHash('sha1').update(Buffer.from(ns)).update(name).digest();
+      h[6] = (h[6] & 0x0f) | 0x50; h[8] = (h[8] & 0x3f) | 0x80;
+      const x = h.subarray(0, 16).toString('hex');
+      return [x.slice(0, 8), x.slice(8, 12), x.slice(12, 16), x.slice(16, 20), x.slice(20)].join('-');
+    } };
+  }
   const NS = [...Buffer.from('NightscoutRocks!', 'ascii')];
   {
     const t = T();
