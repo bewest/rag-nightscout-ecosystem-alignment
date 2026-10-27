@@ -128,7 +128,7 @@ Select **Show on the map** on a card to see which items it holds up. Release que
 - **Red controls.** Every new test is shown failing against the code it guards before the change, with the original symptom.
 - **Conformance.** The registration and identity cases in `specs/sync/conformance/` run against a booted server by a harness in this repository (D12), reported case by case as passed, mapped or not applicable.
 - **Agents.** Agents build slices in their own worktrees, run the checks and hand back a branch, a PR body and the push commands. They never push. Maintainers push, open, review and merge.
-- **Releases.** Nothing more from this plan is proposed for 16.0.0. The next items merge to dev after the 16.0.0 tag, one theme per minor. Components shipped before they are mature are labelled alpha; the label belongs to the multitenant bindings, not to code every single-tenant site runs.
+- **Releases.** Nothing more from this plan is proposed for 16.0.0 except, if the maintainer chooses, #8865 (one executable and `serve api`). The rest merges to dev after the 16.0.0 tag, one theme per minor; the 16.0.0 quiet period starts when its merge list is closed, not on a date. Components shipped before they are mature are labelled alpha; the label belongs to the multitenant bindings, not to code every single-tenant site runs.
 - **Records.** Each landed slice updates its queue item (`queue/work-queue.yaml`) and this plan's data file, and the page is re-rendered.
 
 ## 7. Sources

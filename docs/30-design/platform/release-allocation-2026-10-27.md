@@ -38,8 +38,9 @@ state; §1–§6 keep the morning's reasoning, with their decided rows marked. 1
   computation (ST-VIEWS: the page, plugins and alarms), or is reached only by multi mode
   (ST-V3-DECOUPLE, PLAT-SERVE, ST-HARNESS, ST-PG). None of them improves 16.0.0 for a self-hoster,
   and each would spend the short quiet period the pre-tag definition of done asks for
-  (`RT-16-RELEASE`, item 4, decided 2026-10-27). Recommendation: `dev` takes only release fixes until
-  the tag (Q1 (a), now Q13). D-EVENT was deferred by the maintainer the same evening (Q9); ST-EVENT stays tied to
+  (`RT-16-RELEASE`, item 4, decided 2026-10-27). Recommendation: the remaining storage items wait for
+  16.1.0. The quiet period is not a date: it starts when the 16.0.0 merge list is closed (Q13,
+  corrected by the maintainer 2026-10-27: merging is still under way). D-EVENT was deferred by the maintainer the same evening (Q9); ST-EVENT stays tied to
   WC-STEP-PATCH in 16.2.0.
 - **Does including other roadmap features help multitenancy: not by being in 16.0.0.** The one
   indirect benefit, real traffic on the interface before PostgreSQL depends on it (§4.2), is now
@@ -61,7 +62,7 @@ What still stands between `dev` and the tag, at `ca1652d6`:
 | 1. live Pushover and APNs delivery (`RT-16-LIVE-ALARMS`) | not started |
 | 2. cohort confirmations from `dev` users: AndroidAPS, Loop, Trio, xDrip+, a follower app, an mmol/L site (`RT-16-RIG-SOAK`); the M1 cohort table in B6 says what to ask each | not started |
 | 3. BF-72 and BF-161 through their forks | fix branches `bf/regex-limits` `a9da33ff` and `bf/entries-pattern-limit` `1dce7722` contain ST-WRITES and the count commit, and are 15 commits behind `dev` `ca1652d6` (`git merge-base --is-ancestor`, `git rev-list --count`); a `dev` merge and re-run inside each fork is owed |
-| 4. a short quiet period on `dev` with the final candidate | not started; needs Q13 |
+| 4. a short quiet period on `dev` with the final candidate | starts when the 16.0.0 merge list is closed (Q13); merging is still under way |
 | `master` protection (#8824 `BLOCKED`) | still requires `Run Tests (22, 6)`, `Run Tests (22, 4.4)` and `Run Tests (24, 6)` and one approval (`gh api …/branches/master/protection`, read 22:4xZ); the decided change to require only *Tests pass* is not applied |
 | `dev` CI on `ca1652d6` | CodeQL passed; *CI test and publish Docker image* in progress at the time of reading |
 
@@ -311,7 +312,7 @@ M3 is `ST-V3-DECOUPLE` and M4 is `ST-VIEWS` in the [next-gen plan](next-gen-plat
 | Q11 | Review capacity | #8857, #8859, #8861, #8862, #8863 and #8865 add 17,794 lines against their bases (§2) | review in theme order (16.1.0 first), one stacked chain at a time | every row of §4.3 |
 | Q12 | Put prototypes in 16.0.0 to soak them as alpha? | *Decided, maintainer 2026-10-27:* the seam slices go into 16.0.0 if feasible and B6's entry bar is met with time on `dev` before the tag (§2.1); building them to that bar is worth doing whether or not they ship, because it prepares the work that follows. Components that ship before they are mature are labelled alpha in the release notes. Still open: Q12a | B6 | the soak start, BFQ-72 |
 | Q12a | If the slices ship, how is an alpha label made meaningful for code on the default path? | *Decided, maintainer 2026-10-27:* option (a). The slices are default on in the single-tenant release, named in the release notes as new internals, with the rehearsed revert as the fallback. Once verified, exercised on `dev` and released, that code is trusted for what single-tenant sites run. The alpha label belongs to the multitenant bindings only: `serve` roles, tenant resolution and scope, per-tenant credentials, and the PostgreSQL backend. Trust covers the paths real clients exercise; code no single-tenant site runs (the filter tree's SQL translation, the tenant binding the interface carries, rarely used endpoints without a cohort check) does not inherit it | — | the release notes' wording |
-| Q13 | Does the quiet period start now, at `ca1652d6`? (asked 2026-10-27 evening) | (a) yes: `dev` takes release fixes only (BF-72 and BF-161 at publication, fixes for what the cohorts report, CI and docs); feature PRs stay draft. (b) take #8862 first, then start. (c) keep merging until the alarms and cohort checks are done | (a): M1 is on `dev`, so what is left in review is 16.1.0 work (§3.5), and every merge restarts what the quiet period measures; (b) only if the image's new start is wanted in the major | the tag date; #8862, #8865, #8857 merge dates |
+| Q13 | When does the quiet period start? | *Corrected by the maintainer, 2026-10-27:* not now; merging is still under way. Proposed: it starts when the 16.0.0 merge list is closed: what is in flight for 16.0.0 (#8872 BF-194, #8855 translations, BF-72 and BF-161 through their forks) plus whatever the maintainer adds to it, with #8865 decided either way. Until then `dev` keeps taking 16.0.0 work, and the cohort requests (Q14) start now, because M1 and #8859 are already on `dev` | open: the content of the merge list, and #8865 in or out | the tag date; #8865, #8857 merge dates |
 | Q14 | Who asks the cohorts, and when? | (a) now, one request per cohort in B6's table, naming M1 and #8859 as what changed; (b) after the alarms check | (a): the cohort confirmations are pre-tag item 2 and the slowest, because they wait on other people | `RT-16-RIG-SOAK` |
 | Q15 | #8865's base | (a) retarget to `dev` now and merge `dev` in, still draft; (b) close it and reopen with ST-V3-DECOUPLE | (a), by the maintainer; re-measure `serve api` after | PLAT-SERVE, ST-V3-DECOUPLE |
 | Q16 | When does `dev` reopen for 16.1.0 work? | (a) the day 16.0.0 is tagged; (b) a `release/16.0.0` branch for fixes, `dev` reopened earlier | (a), as Q1 (a); (b) only if the quiet period runs longer than about two weeks | every 16.1.0 row |
@@ -457,17 +458,18 @@ release soaks them; and how does that weigh against releasing as soon as the can
   exchange for one release of real traffic on the interface before PostgreSQL relies on it. If the
   gates are met before the bar is, release without the slices.
 
-### B7. Quiet period now, tag when the four items are met (recommended, evening 2026-10-27)
+### B7. Close the merge list, then a short quiet period, then the tag (recommended, evening 2026-10-27)
 
-- **What happens.** `dev` stays at `ca1652d6` except for release fixes. The cohort requests (Q14) and
-  the live alarms check run in parallel; BF-72 and BF-161 are brought up to `dev` inside their
+- **What happens.** The 16.0.0 merge list (Q13) is merged; then `dev` takes release fixes only for a
+  few days with the final candidate. The cohort requests (Q14) and the live alarms check start now and
+  run in parallel; BF-72 and BF-161 are brought up to `dev` inside their
   forks. D-T30 and the remaining identity questions are settled while `dev` is quiet.
 - **Who it reaches.** Every 16.0.0 user, through M1 and #8859, which are new code on every v1 read
   and write; B6's cohort table is the check list.
 - **Measure first.** The cohort confirmations; a 360-cell matrix and client replay on the final
   candidate, which will include the fork fixes.
-- **Effect on tenancy.** 16.1.0 work (ST-V3-DECOUPLE, PLAT-SERVE, registration) builds on
-  branches during the quiet period and merges when `dev` reopens.
+- **Effect on tenancy.** 16.1.0 work (ST-V3-DECOUPLE, registration, and PLAT-SERVE unless it joins
+  the merge list) builds on branches and merges when `dev` reopens.
 
 ### B8. Take #8862 into 16.0.0 first
 
