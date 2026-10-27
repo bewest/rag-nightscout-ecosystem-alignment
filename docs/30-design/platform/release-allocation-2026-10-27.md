@@ -18,7 +18,7 @@ The maintainer asked four questions on 2026-10-27:
 4. Where are the open questions and the briefs for understanding each scenario?
 
 §1 answers in brief, §2–§4 give the reasoning, §5 lists the open decisions, and §6 holds the scenario
-briefs.
+briefs. B6 and Q12 answer a follow-up the same day: whether prototypes should ship in 16.0.0 as alpha.
 
 ## 1. The answers in brief
 
@@ -120,7 +120,7 @@ either a restart or a gap.
 ### 3.4 Recommendation
 
 Hold #8861, #8863 and #8865 until 16.0.0 is tagged; merge them to `dev` the day after, in stack
-order, and ship them in 16.1.0. This needs one rule for `dev` between now and the tag (Q1).
+order, and ship them in 16.1.0. This needs one rule for `dev` between now and the tag (Q1). The soak has not started, so B6 states the one condition under which they go into 16.0.0 instead: an entry bar met before it starts (Q12).
 
 ## 4. How the tracks depend on each other
 
@@ -209,6 +209,7 @@ Two consequences:
 | Q9 | D-EVENT: commit event per call or per driver operation | per the plan's decision card | settle while the slices wait (§3.3) | WC-STEP-PATCH, the change feed |
 | Q10 | D-T30: approve the tenant configuration surface | walk through the DECISION sections | start once 16.0.0 is tagged, after re-measuring the 277 settings on `dev` | T30-SCHEMA-CONFIG, TEN-RESOLVE |
 | Q11 | Review capacity | #8857, #8859, #8861, #8862, #8863 and #8865 add 17,794 lines against their bases (§2) | review in theme order (16.1.0 first), one stacked chain at a time | every row of §4.3 |
+| Q12 | Put prototypes in 16.0.0 to soak them as alpha (asked 2026-10-27)? | (a) seam slices in, if they meet B6's entry bar before the soak starts; multi prototype as a prerelease outside the 16.0.0 artifact. (b) both in 16.0.0, prototype code labelled alpha. (c) neither; release as soon as the gates are met | (a), B6 | the soak start, BFQ-72 |
 
 ## 6. Scenario briefs
 
@@ -265,6 +266,51 @@ Each brief states what the scenario is, who it reaches, and what to measure befo
   `3be98536`); flag off is byte-identical to `dev`.
 - **Effect on tenancy.** None until `HUB-REG-CRM-SEAM`; registrations are per tenant (AU6), so the
   store gains a tenant column when ST-PG lands.
+
+### B6. Prototypes in 16.0.0, labelled alpha (asked 2026-10-27)
+
+The question: if a prototype of every REST API behind the storage interface, and a prototype of
+multi mode, exist within days, are they worth shipping in 16.0.0 with their status noted, so the
+release soaks them; and how does that weigh against releasing as soon as the candidate is ready?
+
+- **The candidate is not ready to release now, so the choice is what is on `dev` when the soak
+  starts.** Unmet on 2026-10-27: the real-rig soak (not started), the live delivery check, the
+  BF-72 and BF-161 fork fixes, #8859 (needed in 16.0.0, draft), #8866 (`dev` CI red until it merges)
+  and `master`'s protection (#8824 blocked). The soak cannot start until the code it measures is
+  merged, so merging before it starts costs no restart.
+- **The two prototypes behave differently in a release.**
+
+  | | seam slices (#8861, #8863) | multi-mode prototype |
+  |---|---|---|
+  | reached by a self-hoster | every v1 read and write, by default | only with `TENANCY_MODE=multi` or `serve` |
+  | soak value from shipping | high: every site exercises it | none: nobody running `single` runs it |
+  | can be labelled alpha | no; code on the default path is either fit to ship or not | yes |
+  | new public surface | none (behaviour-neutral) | subcommands and settings, which become semver surface (S3) once released |
+  | security exposure | none new | tenant isolation and per-tenant credentials (T30-WIRING, D13, D14) unbuilt; a hoster can turn it on from a released image |
+  | overlap with 16.0.0's required work | 7 files with the BF-72 fork fix (`adv/r3gv-1600`), 6 with #8859, 1 with BF-161's (`git diff --name-only` against `dev` `8dbb60c2`) | none measured |
+
+- **The seam slices: in, only through an entry bar met before the soak starts.**
+  1. #8859 and the seam chain merged together, the overlap resolved once.
+  2. BF-72's fix re-merged onto the seam inside its private fork and its tests re-run there. The
+     fix stays out of public branches until the release publishes it.
+  3. The write-contract matrix (360 cells, off and reject) and the 67-shape client replay equal to
+     the candidate without the slices.
+  4. A read and write latency comparison on the corpus, with and without the slices. Not measured
+     yet: v1 reads now translate each query into the filter tree and back.
+  5. A one-step fallback: reverting the slices' merge commits restores the current paths, rehearsed
+     once.
+  Not met by the soak start → 16.1.0, as in §3.
+- **The multi-mode prototype: shipped, but not in the 16.0.0 artifact.** Shipping it inside 16.0.0
+  gives it no soak and makes its names public surface. Ship it as a prerelease instead
+  (`16.1.0-alpha.1` image and tag from a branch, its status in the tag message), run in TEN-LAB
+  and by a hoster who agrees to run alpha. If the maintainer still wants it in the tree for 16.0.0, the
+  minimum is: unreachable without an explicit experimental setting, refused at boot without
+  per-tenant credentials (no `API_SECRET` under `multi`, D13), and named in the release notes as
+  outside the versioning policy.
+- **Weighed against releasing at once.** Including the seam adds the entry bar's work (one or two
+  days of agent time plus maintainer review of about 3,000 lines) before the soak starts, in
+  exchange for one release of real traffic on the interface before PostgreSQL relies on it. If the
+  gates are met before the bar is, release without the slices.
 
 ## 7. Sources
 
