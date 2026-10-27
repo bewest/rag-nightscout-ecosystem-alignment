@@ -116,8 +116,20 @@ same ablation.
 
 ## Notes carried on the item
 
-2026-10-27: dev 8dbb60c2 merged into the fork head 532d7d7a as f64f78c4 on
-adv/r3gv-1600 (externals/work/crm-ghsa-r3gv-1600), eight conflicting files
+2026-10-27, later: for the 16.0.0 entry bar (maintainer, 2026-10-27), the fix
+is also merged onto session -2e's candidate cand/with d6ba8e18 (dev 2dc0c1bc +
+#8859, #8861, #8863 and the count commit) as adv/r3gv-1600-cand 87335351
+(externals/work/crm-ghsa-r3gv-cand), local only. Seven files conflicted where
+the slices move the v1 reads onto the storage interface; the fix's read time
+limit now travels through that interface, including the slices' new count
+path, which had none. One slice test needed the fix's refusal expected. Node
+22.23.4, MongoDB 8.0.34: npm test 4765 passing, 0 failing, 3 pending; test:all
+5093 passing, 0 failing, 3 pending; the gate passes on the merge and fails on
+cand/with. Removing the limit from either path fails the matching test. -2e
+reports the slices re-merged onto dev 94899828 with the same non-CI tree, so
+this merge stands; adv/r3gv-1600 stays the push to the fork until the slices
+land. 2026-10-27: dev 8dbb60c2 merged into the fork head 532d7d7a as f64f78c4
+on adv/r3gv-1600 (externals/work/crm-ghsa-r3gv-1600), eight conflicting files
 resolved; a fast-forward of the fork branch, not pushed. Node 22.23.4, MongoDB
 5.0.33: npm test 4558 passing, 0 failing, 3 pending; test:all 4886 passing, 0
 failing, 3 pending (integration record R17). The gate passes on the branch
