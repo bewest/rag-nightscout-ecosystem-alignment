@@ -130,12 +130,11 @@ pages:
     source_commit: c0a47cf6f
     render: tools/site/render_apis.py
     api:
-      status: draft-pr
+      status: current
       note: >-
-        cgm-remote-monitor's own API v1 document, corrected for 16.0.0 in pull request #8858
-        (branch docs/16.0.0-swagger-accuracy: dev 7ad3a67f plus documentation changes). The copy on dev today
-        fails the OpenAPI linter and omits endpoints; when the correction merges, this page is
-        re-rendered from dev and marked current.
+        cgm-remote-monitor's own API v1 document as dev serves it for 16.0.0, copied at dev ca1652d6,
+        the merge of pull request #8858 (2026-10-27), which corrected it and added a test that holds it to the
+        routes. 15.0.9 ships the earlier, uncorrected document.
       see: specs/openapi/upstream/cgm-remote-monitor/README.md
   api-cgm-remote-monitor-v3.html:
     kind: living
@@ -143,12 +142,11 @@ pages:
     source_commit: c0a47cf6f
     render: tools/site/render_apis.py
     api:
-      status: draft-pr
+      status: current
       note: >-
-        cgm-remote-monitor's own API v3 document, corrected for 16.0.0 in pull request #8858
-        (branch docs/16.0.0-swagger-accuracy: dev 7ad3a67f plus documentation changes). The copy on dev today
-        fails the OpenAPI linter and omits endpoints; when the correction merges, this page is
-        re-rendered from dev and marked current.
+        cgm-remote-monitor's own API v3 document as dev serves it for 16.0.0, copied at dev ca1652d6,
+        the merge of pull request #8858 (2026-10-27), which corrected it and added a test that holds it to the
+        routes. 15.0.9 ships the earlier, uncorrected document.
       see: specs/openapi/upstream/cgm-remote-monitor/README.md
   api-nightscout-v4-proposed.html:
     kind: living

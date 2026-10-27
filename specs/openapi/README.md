@@ -33,8 +33,8 @@ This directory contains OpenAPI specifications (3.0.3 and 3.1.0; see [Lint statu
 cgm-remote-monitor's own API documents, copied with their provenance into
 [`upstream/cgm-remote-monitor/`](upstream/cgm-remote-monitor/README.md), are rendered next to
 the pages below: [API v1](../../site/pages/api-cgm-remote-monitor-v1.html) and
-[API v3](../../site/pages/api-cgm-remote-monitor-v3.html). Today they come from the 16.0.0
-correction in [#8858](https://github.com/nightscout/cgm-remote-monitor/pull/8858), not yet merged; their banners say so.
+[API v3](../../site/pages/api-cgm-remote-monitor-v3.html). They are copied from `dev` at `ca1652d6`, the merge
+of the 16.0.0 correction in [#8858](https://github.com/nightscout/cgm-remote-monitor/pull/8858) (2026-10-27), and their banners say current.
 The proposed [API v4](../../site/pages/api-nightscout-v4-proposed.html) surface, rendered from
 [`proposed/nightscout-v4.yaml`](proposed/nightscout-v4.yaml), sits beside them; its split by listener and the
 comparison with Nocturne are in [API v4 and Nocturne](../../docs/30-design/platform/v4-surface-and-nocturne-2026-10-26.md).
