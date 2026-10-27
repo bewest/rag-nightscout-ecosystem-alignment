@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/next-gen-platform-plan.html">
       
       
-        <link rel="prev" href="integration-questionnaire-defaults-2026-10-18.html">
+        <link rel="prev" href="interface-ownership-2026-10-27.html">
       
       
         <link rel="next" href="partial-acceptance-prototype-2026-10-18.html">
@@ -2369,6 +2369,8 @@
       
         
       
+        
+      
     
     
     
@@ -3176,6 +3178,34 @@
     
   
     Integration questionnaire: default answers for Loop, Trio, AndroidAPS and OpenAPS, read from their source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="interface-ownership-2026-10-27.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Which interface owns which API: single-tenant and hosted multitenant
   
 
     
@@ -5716,7 +5746,7 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-27 at <code>be692a344</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>f41389aea</code>.</em></p>
 <p><em>Contributor-facing. Living plan, current at cgm-remote-monitor dev <code>8dbb60c2</code> (2026-10-27). #8854 merged to dev 2026-10-26 as <code>c08cbe03</code>; the seam slices, the one executable and registration are open as drafts #8861, #8863, #8865, #8862 and #8857. Status: proposed; the decisions in §6 are open. Which release each item goes in is proposed in <a href="release-allocation-2026-10-27.html">release allocation</a> (2026-10-27).</em></p>
 <p>The interactive version, with the dependency map, is the site page <a href="../../../site/pages/nightscout-next-gen-platform.html">nightscout-next-gen-platform.html</a>.</p>
 <p>This plan covers the work that follows the 16.0.0 modernization:</p>
@@ -6091,7 +6121,7 @@
 </tr>
 </tbody>
 </table>
-<p>The decisions D1–D21 are in the <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a>. Single-tenant on MongoDB stays first-class (D1, D4). Every tenancy item ships behind <code>TENANCY_MODE=multi</code>.</p>
+<p>Which listener and role owns each API, single-tenant and multitenant, is mapped in <a href="interface-ownership-2026-10-27.html">interface ownership</a> (2026-10-27, with eight open questions); the tenant settings census re-measured on dev is <a href="../../60-research/tenancy/t30-census-dev-2026-10-27.html">t30-census-dev</a>. The decisions D1–D21 are in the <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a>. Single-tenant on MongoDB stays first-class (D1, D4). Every tenancy item ships behind <code>TENANCY_MODE=multi</code>.</p>
 <h2 id="6-open-decisions">6. Open decisions<a class="headerlink" href="#6-open-decisions" title="Permanent link">&para;</a></h2>
 <p>Select <strong>Show on the map</strong> on a card to see which items it holds up.</p>
 <p>Decided 2026-10-26: an explicit null removes a field on merge-on-match, API v3 PATCH and the socket's <code>dbUpdate</code> (RFC 7386; <a href="../tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-10-12">write contract §6.1</a>), never on PUT or create, and devicestatus never merges; in 16.0.0, in one shared merge helper.</p>

@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.html">
       
       
-        <link rel="prev" href="t25-postgres-backend-verification-2026-09-15.html">
+        <link rel="prev" href="t30-census-dev-2026-10-27.html">
       
       
         <link rel="next" href="tenant-resolution-adversarial-2026-09-15.html">
@@ -4743,6 +4743,8 @@
       
         
       
+        
+      
     
     
     
@@ -5316,6 +5318,34 @@
     
   
     Verifying the T2.5 PostgreSQL backend — four predictions, two of them wrong
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="t30-census-dev-2026-10-27.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The tenant configuration census, re-measured on dev (2026-10-27)
   
 
     
@@ -7430,9 +7460,9 @@ Queue items: <code>T30-RESEARCH</code>, <code>T30-SCHEMA-CRED</code>. Specificat
 <p>Two things were done:</p>
 <ol>
 <li>The §G.3 census script now lives in the queue as a gate:
-   <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/e91676ff3b9a74deb893517c70e20731a10666e1/tools/queue/gates/t30-census-differential.js"><code>tools/queue/gates/t30-census-differential.js</code></a>.</li>
+   <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/59172c7b683f0d66d5b06d3a2c2c59f81a86d021/tools/queue/gates/t30-census-differential.js"><code>tools/queue/gates/t30-census-differential.js</code></a>.</li>
 <li>The device and data-path credential tables were added to <code>lib/admin/platform.sql</code>, and
-   <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/e91676ff3b9a74deb893517c70e20731a10666e1/tools/queue/gates/platform-sql-surface.js"><code>tools/queue/gates/platform-sql-surface.js</code></a>
+   <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/59172c7b683f0d66d5b06d3a2c2c59f81a86d021/tools/queue/gates/platform-sql-surface.js"><code>tools/queue/gates/platform-sql-surface.js</code></a>
    was tightened. Before the change it could not tell a column from a comment.</li>
 </ol>
 <p>Environment: Node 24.20.0, the version the seam's <code>engines</code> field (<code>^22.23.2 || ^24.20.0</code>)
