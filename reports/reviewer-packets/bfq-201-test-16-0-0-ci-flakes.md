@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-201 (PR #8867)
+# Review packet — BFQ-201 (PR #8866)
 
 **BF-201 - npm run dev's nodemon watches nearly the whole repository (1,502
 Linux file watches); watch the paths the server loads**
@@ -19,7 +19,7 @@ Linux file watches); watch the paths the server loads**
 | | |
 |---|---|
 | repository | `cgm-remote-monitor` |
-| branch | `ci/16.0.0-image-publishing` |
+| branch | `test/16.0.0-ci-flakes` |
 | base | `official/dev@2dc0c1bc` |
 | claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-201` is the measurement |
 | semver | `n/a` |
@@ -43,9 +43,9 @@ maintainer
 
 ## What was measured
 
-**`git -C externals/cgm-remote-monitor-official show ci/16.0.0-image-publishing:package.json | node -e "const c=J`** &nbsp;·&nbsp; kind: `static`
+**`git -C externals/cgm-remote-monitor-official show test/16.0.0-ci-flakes:package.json | node -e "const c=JSON.p`** &nbsp;·&nbsp; kind: `static`
 
-#8867's branch's nodemonConfig is a watch list that includes lib and leaves
+#8866's branch's nodemonConfig is a watch list that includes lib and leaves
 out static, with no ignore list.
 
 ## What these gates do NOT prove
@@ -73,6 +73,8 @@ editing them still restarts it. Prepared as 426d2835 on chore/16.0.0-nodemon-
 watch-allowlist; npm test 4483 passing, 0 failing, 3 pending (Node 22.23.4,
 MongoDB 8.0.34). At the maintainer's request, cherry-picked onto #8867 as
 5d9f84b5 and pushed 2026-10-27 (the CI and tooling PR), not a PR of its own.
+Later that day, at the maintainer's request, #8867 was merged into #8866's
+branch as 7a96b912, so it ships with #8866.
 
 ---
 

@@ -26,8 +26,10 @@ reports-page race**
 
 ## What this changes
 
-Two test files, no production source: tests/concurrent-writes.test.js
-(c7857735) and tests/browser/page-startup.test.js (bdd569a3).
+Test fixes, no production source: tests/concurrent-writes.test.js (c7857735)
+and tests/browser/page-startup.test.js (bdd569a3, 65632082). Since 7a96b912
+the branch also carries #8867 (the workflow, CONTRIBUTING.md, tools/wait-for-
+mongodb.js and nodemon's watch list; BFQ-201, BFQ-202).
 
 ## Why that semver
 
@@ -44,6 +46,11 @@ maintainer
 The concurrent-writes fix is on the branch: ten Notes get times one second
 apart, so none share the created_at and eventType a Note without an identifier
 is matched on.
+
+**`git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 65632082 test/16.0.0-ci-flakes`** &nbsp;·&nbsp; kind: `static`
+
+The dashboard round-trip fix is on the branch: each page must be ready before
+the test follows its close link and before it goes forward.
 
 **`git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bdd569a3 test/16.0.0-ci-flakes`** &nbsp;·&nbsp; kind: `static`
 
@@ -70,11 +77,18 @@ jQuery request in flight).
 
 ## Notes carried on the item
 
-2026-10-27: dev 8dbb60c2 (#8860) push run 40424319822 failed Browser tests
-(26, webkit) and Run Tests (26, 5.0), and pull_request run 40424329138 failed
-WebKit; #8860's own run on the identical tree passed. Neither failure is
-#8860's: the suites on 8dbb60c2 pass on Node 22.23.4 with MongoDB 5.0.33 and
-Node 26.12.1 with 8.0.34 (integration record R17). Branch prepared off
+2026-10-27, later: the maintainer merged dev 2dc0c1bc in (ddeeff8c); run
+40559261253 then failed WebKit's dashboard round trip with page.goForward:
+WebKit encountered an internal error, on the reports page (the test went
+forward from /report while its first report was loading). Fixed as 65632082 (3
+of 3 on WebKit, Chromium and Firefox, page-startup 28 passing on each; not
+reproduced locally). #8867 was merged into the branch as 7a96b912 at the
+maintainer's request, so #8866 is the one CI pull request; #8867 is to be
+closed. 2026-10-27: dev 8dbb60c2 (#8860) push run 40424319822 failed Browser
+tests (26, webkit) and Run Tests (26, 5.0), and pull_request run 40424329138
+failed WebKit; #8860's own run on the identical tree passed. Neither failure
+is #8860's: the suites on 8dbb60c2 pass on Node 22.23.4 with MongoDB 5.0.33
+and Node 26.12.1 with 8.0.34 (integration record R17). Branch prepared off
 official/dev 8dbb60c2 by session d22eceb7 in externals/work/crm-ci-flakes; not
 pushed. The page-startup change may also explain R14's Chromium "recovers the
 actual reports page after two failed bundle downloads" timeout, which leaves

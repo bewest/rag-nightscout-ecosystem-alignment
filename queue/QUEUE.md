@@ -31,18 +31,18 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 304 |
-| runnable gates | 363 |
-| explicit `no-gate:` markers | 341 |
+| items | 305 |
+| runnable gates | 365 |
+| explicit `no-gate:` markers | 342 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 341 of the 704 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 342 of the 707 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 63 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-STEP-PATCH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
-| `in-progress` | 6 | BFQ-178, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY |
+| `in-progress` | 7 | BFQ-178, ID-CONVENTIONS, BFQ-191, BFQ-202, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, BFQ-200, WS-LAB |
 | `blocked` | 16 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
@@ -1039,7 +1039,7 @@ that costs.
 | `RT-CI-DIAGONAL` | CI runs the Node x MongoDB diagonal, the no-database tiers on their own, a Tests pass check and seeded test-file order | `merged-upstream` | `ci/edge-diagonal-matrix` | n/a | 1 run + 1 no-gate |
 | `RT-16-RELEASE` | Release 16.0.0 | `blocked` | `official/dev` | major | 0 run + 1 no-gate |
 | `RT-16-LIVE-ALARMS` | 16.0.0 pre-tag check: live Pushover and APNs delivery on dev | `not-started` | `-` | n/a | 0 run + 1 no-gate |
-| `RT-CI-FLAKES-8DBB60C2` | dev 8dbb60c2's red CI: a concurrent-writes timestamp collision and the WebKit reports-page race | `in-flight-upstream` | `test/16.0.0-ci-flakes` | n/a | 2 run + 1 no-gate |
+| `RT-CI-FLAKES-8DBB60C2` | dev 8dbb60c2's red CI: a concurrent-writes timestamp collision and the WebKit reports-page race | `in-flight-upstream` | `test/16.0.0-ci-flakes` | n/a | 3 run + 1 no-gate |
 | `RT-16-RIG-SOAK` | 16.0.0 pre-tag check: a real-rig soak on dev | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `RT-BUNDLE-THEME-SPLIT` | Load the modern theme's client code only when it is chosen (page-bundle budget option B) | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `RT-BOOT-INDEX-AWAIT` | Boot awaits its collection and index creation before it reports ready | `merged-upstream` | `bf/16.0.0-boot-resilience` | patch | 2 run + 1 no-gate |
@@ -1526,7 +1526,7 @@ that costs.
 | semver | `n/a` |
 | review | maintainer |
 
-**Blast radius.** Two test files, no production source: tests/concurrent-writes.test.js (c7857735) and tests/browser/page-startup.test.js (bdd569a3).
+**Blast radius.** Test fixes, no production source: tests/concurrent-writes.test.js (c7857735) and tests/browser/page-startup.test.js (bdd569a3, 65632082). Since 7a96b912 the branch also carries #8867 (the workflow, CONTRIBUTING.md, tools/wait-for- mongodb.js and nodemon's watch list; BFQ-201, BFQ-202).
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -1536,6 +1536,8 @@ that costs.
 
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c7857735 test/16.0.0-ci-flakes`
   - The concurrent-writes fix is on the branch: ten Notes get times one second apart, so none share the created_at and eventType a Note without an identifier is matched on.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 65632082 test/16.0.0-ci-flakes`
+  - The dashboard round-trip fix is on the branch: each page must be ready before the test follows its close link and before it goes forward.
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bdd569a3 test/16.0.0-ci-flakes`
   - The page-startup fix is on the branch: the reports page counts as ready once its deferred first-week report has loaded (dates filled, Show visible, no jQuery request in flight).
 - **NO GATE** &mdash; The WebKit failure was not reproduced locally before or after the fix (CI image mcr.microsoft.com/playwright:v1.63.0-noble, Node 26.12.1): the mechanism, requests cancelled by navigating away from /report/, is read from the job log and the code. After the fix, page-startup.test.js passes 3 of 3 on WebKit, Chromium and Firefox, 28 passing each. The concurrent-writes collision is reproduced: with every Note at one time the test fails, expected 1 to be 10; the fix passes 30 of 30 on Node 22.23.4 and MongoDB 5.0.33.
@@ -1544,7 +1546,7 @@ that costs.
 
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 
-**Notes.** 2026-10-27: dev 8dbb60c2 (#8860) push run 40424319822 failed Browser tests (26, webkit) and Run Tests (26, 5.0), and pull_request run 40424329138 failed WebKit; #8860's own run on the identical tree passed. Neither failure is #8860's: the suites on 8dbb60c2 pass on Node 22.23.4 with MongoDB 5.0.33 and Node 26.12.1 with 8.0.34 (integration record R17). Branch prepared off official/dev 8dbb60c2 by session d22eceb7 in externals/work/crm-ci-flakes; not pushed. The page-startup change may also explain R14's Chromium "recovers the actual reports page after two failed bundle downloads" timeout, which leaves the same page; not measured.
+**Notes.** 2026-10-27, later: the maintainer merged dev 2dc0c1bc in (ddeeff8c); run 40559261253 then failed WebKit's dashboard round trip with page.goForward: WebKit encountered an internal error, on the reports page (the test went forward from /report while its first report was loading). Fixed as 65632082 (3 of 3 on WebKit, Chromium and Firefox, page-startup 28 passing on each; not reproduced locally). #8867 was merged into the branch as 7a96b912 at the maintainer's request, so #8866 is the one CI pull request; #8867 is to be closed. 2026-10-27: dev 8dbb60c2 (#8860) push run 40424319822 failed Browser tests (26, webkit) and Run Tests (26, 5.0), and pull_request run 40424329138 failed WebKit; #8860's own run on the identical tree passed. Neither failure is #8860's: the suites on 8dbb60c2 pass on Node 22.23.4 with MongoDB 5.0.33 and Node 26.12.1 with 8.0.34 (integration record R17). Branch prepared off official/dev 8dbb60c2 by session d22eceb7 in externals/work/crm-ci-flakes; not pushed. The page-startup change may also explain R14's Chromium "recovers the actual reports page after two failed bundle downloads" timeout, which leaves the same page; not measured.
 
 ### `RT-16-RIG-SOAK` &mdash; 16.0.0 pre-tag check: a real-rig soak on dev
 
@@ -2655,7 +2657,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 141 items
+`parcel: register-open` &mdash; 142 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2781,7 +2783,8 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-189` | BF-189 - tests/security.test.js (API_SECRET) fails depending on file order | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `BFQ-190` | BF-190 - an alarm on a page without a current reading cannot be silenced from the page | `merged-upstream` | `bf/16.0.0-client-alarms` | patch | 2 run + 1 no-gate |
 | `BFQ-191` | BF-191 - a stored treatment can stop the server process, and keeps doing so after a restart (mechanism only) | `in-progress` | `-` | n/a | 0 run + 1 no-gate |
-| `BFQ-201` | BF-201 - npm run dev's nodemon watches nearly the whole repository (1,502 Linux file watches); watch the paths the server loads | `in-flight-upstream` | `ci/16.0.0-image-publishing` | n/a | 1 run + 1 no-gate |
+| `BFQ-201` | BF-201 - npm run dev's nodemon watches nearly the whole repository (1,502 Linux file watches); watch the paths the server loads | `in-flight-upstream` | `test/16.0.0-ci-flakes` | n/a | 1 run + 1 no-gate |
+| `BFQ-202` | BF-202 - CI's MongoDB 8.0 jobs fail on hosted runners with Linux 6.19 or newer (MongoDB refuses to start, SERVER-121912) | `in-progress` | `test/16.0.0-ci-flakes` | n/a | 1 run + 1 no-gate |
 | `BFQ-192` | BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression) | `merged-upstream` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-193` | BF-193 - the realtime socket and other write paths log every record written through them | `in-flight-upstream` | `bf/16.0.0-log-privacy` | patch | 2 run + 1 no-gate |
 | `BFQ-194` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL | `needs-decision` | `-` | minor | 0 run + 1 no-gate |
@@ -6683,9 +6686,9 @@ distinction is the only thing that makes the register mean anything - widening
 |---|---|
 | state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
-| branch | `ci/16.0.0-image-publishing` |
+| branch | `test/16.0.0-ci-flakes` |
 | base | `official/dev@2dc0c1bc` |
-| worktree | `externals/work/crm-ci-publish` |
+| worktree | `externals/work/crm-ci-flakes` |
 | semver | `n/a` |
 | review | maintainer |
 | ships to operators today | no (pre-release) |
@@ -6699,15 +6702,47 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `git -C externals/cgm-remote-monitor-official show ci/16.0.0-image-publishing:package.json | node -e "const c=JSON.parse(require('fs').readFileSync(0)).nodemonConfig||{};process.exit(Array.isArray(c.watch)&&c.watch.includes('lib')&&!c.watch.includes('static')&&!c.ignore?0:1)"`
-  - #8867's branch's nodemonConfig is a watch list that includes lib and leaves out static, with no ignore list.
+- `[static]` `git -C externals/cgm-remote-monitor-official show test/16.0.0-ci-flakes:package.json | node -e "const c=JSON.parse(require('fs').readFileSync(0)).nodemonConfig||{};process.exit(Array.isArray(c.watch)&&c.watch.includes('lib')&&!c.watch.includes('static')&&!c.ignore?0:1)"`
+  - #8866's branch's nodemonConfig is a watch list that includes lib and leaves out static, with no ignore list.
 - **NO GATE** &mdash; The watch test starts nodemon and native watch in owned fixtures for about 50 s, so it is not a queue gate. Measured 2026-10-27 at dev 2dc0c1bc on Linux, Node 22.23.4, nodemon 3.1.14: inotify watches 1,502 before against 385 after (lib and views alone 345; node --watch-path scoped the same way 346). The test passes on the branch and, with the previous configuration and the new expectations, fails at docs/unlisted.js.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-27: asked for by the maintainer through session -a7, after tests/development-watch.test.js failed with ENOSPC on 2026-10-26. Measured counts replace -a7's at dev 47723cda (1,396 and 339); the list adds translations, webpack and package.json, which the server reads at startup, so editing them still restarts it. Prepared as 426d2835 on chore/16.0.0-nodemon- watch-allowlist; npm test 4483 passing, 0 failing, 3 pending (Node 22.23.4, MongoDB 8.0.34). At the maintainer's request, cherry-picked onto #8867 as 5d9f84b5 and pushed 2026-10-27 (the CI and tooling PR), not a PR of its own.
+**Notes.** 2026-10-27: asked for by the maintainer through session -a7, after tests/development-watch.test.js failed with ENOSPC on 2026-10-26. Measured counts replace -a7's at dev 47723cda (1,396 and 339); the list adds translations, webpack and package.json, which the server reads at startup, so editing them still restarts it. Prepared as 426d2835 on chore/16.0.0-nodemon- watch-allowlist; npm test 4483 passing, 0 failing, 3 pending (Node 22.23.4, MongoDB 8.0.34). At the maintainer's request, cherry-picked onto #8867 as 5d9f84b5 and pushed 2026-10-27 (the CI and tooling PR), not a PR of its own. Later that day, at the maintainer's request, #8867 was merged into #8866's branch as 7a96b912, so it ships with #8866.
+
+### `BFQ-202` &mdash; BF-202 - CI's MongoDB 8.0 jobs fail on hosted runners with Linux 6.19 or newer (MongoDB refuses to start, SERVER-121912)
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `cgm-remote-monitor` |
+| branch | `test/16.0.0-ci-flakes` |
+| base | `official/dev@2dc0c1bc` |
+| worktree | `externals/work/crm-ci-flakes` |
+| semver | `n/a` |
+| review | maintainer |
+| ships to operators today | no (pre-release) |
+| register | `BF-202` |
+
+**Blast radius.** .github/workflows/main.yml's MongoDB 8.0 jobs, Run Tests (22.23.4, 8.0) and Maintained MongoDB (26, 8.0.29). The diagnosis aid in #8866 is tools/wait-for- mongodb.js; the mitigation is not chosen yet.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** CI only
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official show test/16.0.0-ci-flakes:tools/wait-for-mongodb.js | grep -q 'os.release()'`
+  - #8866's branch has the MongoDB wait that prints the runner's kernel (e0cfbd0c), so a failed or passing 8.0 job records which kernel it ran on. This is the diagnosis aid, not the fix.
+- **NO GATE** &mdash; The defect is in MongoDB and in which host GitHub assigns, so it cannot be reproduced on demand. Seen 2026-10-27: #8866 run 40532337252 (Maintained MongoDB, 212 failing), #8867 run 40557880084 (Run Tests (22.23.4, 8.0) logged MongoDB's refusal to start on Linux 6.19 and newer while 8.0.29 in the same run started), #8866 run 40566855699 (both 8.0 jobs over 9 minutes in Run Tests, cancelled).
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** 2026-10-27: filed at the maintainer's request. Next: read the kernel the wait prints on the next runs, then choose a runner image with an older kernel or a MongoDB 8.0 build that starts there.
 
 ### `BFQ-192` &mdash; BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression)
 

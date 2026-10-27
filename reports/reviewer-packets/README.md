@@ -30,8 +30,8 @@ repository.
 | [`PLAT-ENTRY`](plat-entry-feat-nightscout-entrypoint.md) | #8862 | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT and CMD single, no image HEALTHCHECK; no start path changes |
 | [`ST-WRITES`](st-writes-feat-storage-writes.md) | #8863 | `in-flight-upstream` | Storage interface, second PR: API v1, authorization storage and socket writes through the interface, each labelled by source; #8854's boundary check fails a write that skips the interface |
 | [`PLAT-SERVE`](plat-serve-feat-nightscout-serve.md) | #8865 | `in-flight-upstream` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a time, `api` first; each listener bound separately |
+| [`BFQ-201`](bfq-201-test-16-0-0-ci-flakes.md) | #8866 | `in-flight-upstream` | BF-201 - npm run dev's nodemon watches nearly the whole repository (1,502 Linux file watches); watch the paths the server loads |
 | [`RT-CI-FLAKES-8DBB60C2`](rt-ci-flakes-8dbb60c2-test-16-0-0-ci-flakes.md) | #8866 | `in-flight-upstream` | dev 8dbb60c2's red CI: a concurrent-writes timestamp collision and the WebKit reports-page race |
-| [`BFQ-201`](bfq-201-ci-16-0-0-image-publishing.md) | #8867 | `in-flight-upstream` | BF-201 - npm run dev's nodemon watches nearly the whole repository (1,502 Linux file watches); watch the paths the server loads |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`ARCH-8854-FAILED`](arch-8854-failed.md) | &mdash; | `needs-decision` | Decide: the socket's failed slot that #8854 adds under WRITE_VALIDATION=reject - ship as is, or agree it alongside refused (and on API v1?) |
 | [`BFQ-161`](bfq-161-adv-phrf-1600.md) | &mdash; | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes |

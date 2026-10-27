@@ -3411,8 +3411,11 @@ items:
     state: in-flight-upstream
     pr: [8866]
     blast_radius: >
-      Two test files, no production source: tests/concurrent-writes.test.js
-      (c7857735) and tests/browser/page-startup.test.js (bdd569a3).
+      Test fixes, no production source: tests/concurrent-writes.test.js
+      (c7857735) and tests/browser/page-startup.test.js (bdd569a3,
+      65632082). Since 7a96b912 the branch also carries #8867 (the workflow,
+      CONTRIBUTING.md, tools/wait-for-mongodb.js and nodemon's watch list;
+      BFQ-201, BFQ-202).
     review: maintainer
     operator_visible: ""
     semver: n/a
@@ -3425,6 +3428,12 @@ items:
           The concurrent-writes fix is on the branch: ten Notes get times one
           second apart, so none share the created_at and eventType a Note
           without an identifier is matched on.
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 65632082 test/16.0.0-ci-flakes
+        kind: static
+        describe: >
+          The dashboard round-trip fix is on the branch: each page must be
+          ready before the test follows its close link and before it goes
+          forward.
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bdd569a3 test/16.0.0-ci-flakes
         kind: static
         describe: >
@@ -3444,6 +3453,14 @@ items:
     evidence:
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
     notes: >
+      2026-10-27, later: the maintainer merged dev 2dc0c1bc in (ddeeff8c);
+      run 40559261253 then failed WebKit's dashboard round trip with
+      page.goForward: WebKit encountered an internal error, on the reports
+      page (the test went forward from /report while its first report was
+      loading). Fixed as 65632082 (3 of 3 on WebKit, Chromium and Firefox,
+      page-startup 28 passing on each; not reproduced locally). #8867 was
+      merged into the branch as 7a96b912 at the maintainer's request, so
+      #8866 is the one CI pull request; #8867 is to be closed.
       2026-10-27: dev 8dbb60c2 (#8860) push run 40424319822 failed Browser
       tests (26, webkit) and Run Tests (26, 5.0), and pull_request run
       40424329138 failed WebKit; #8860's own run on the identical tree passed.
@@ -16725,11 +16742,11 @@ items:
     title: "BF-201 - npm run dev's nodemon watches nearly the whole repository (1,502 Linux file watches); watch the paths the server loads"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ci/16.0.0-image-publishing
+    branch: test/16.0.0-ci-flakes
     base: official/dev@2dc0c1bc
-    worktree: externals/work/crm-ci-publish
+    worktree: externals/work/crm-ci-flakes
     state: in-flight-upstream
-    pr: [8867]
+    pr: [8866]
     ships_to_operators_today: false
     blast_radius: >
       package.json nodemonConfig (ignore list to watch list),
@@ -16743,10 +16760,10 @@ items:
     semver_reason: developer tooling; no API, page, setting or runtime change
     register: [BF-201]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official show ci/16.0.0-image-publishing:package.json | node -e "const c=JSON.parse(require('fs').readFileSync(0)).nodemonConfig||{};process.exit(Array.isArray(c.watch)&&c.watch.includes('lib')&&!c.watch.includes('static')&&!c.ignore?0:1)"
+      - run: git -C externals/cgm-remote-monitor-official show test/16.0.0-ci-flakes:package.json | node -e "const c=JSON.parse(require('fs').readFileSync(0)).nodemonConfig||{};process.exit(Array.isArray(c.watch)&&c.watch.includes('lib')&&!c.watch.includes('static')&&!c.ignore?0:1)"
         kind: static
         describe: >
-          #8867's branch's nodemonConfig is a watch list that includes lib
+          #8866's branch's nodemonConfig is a watch list that includes lib
           and leaves out static, with no ignore list.
       - no-gate: >
           The watch test starts nodemon and native watch in owned fixtures
@@ -16768,7 +16785,49 @@ items:
       426d2835 on chore/16.0.0-nodemon-watch-allowlist; npm test 4483
       passing, 0 failing, 3 pending (Node 22.23.4, MongoDB 8.0.34). At the
       maintainer's request, cherry-picked onto #8867 as 5d9f84b5 and pushed
-      2026-10-27 (the CI and tooling PR), not a PR of its own.
+      2026-10-27 (the CI and tooling PR), not a PR of its own. Later that
+      day, at the maintainer's request, #8867 was merged into #8866's branch
+      as 7a96b912, so it ships with #8866.
+  - id: BFQ-202
+    title: "BF-202 - CI's MongoDB 8.0 jobs fail on hosted runners with Linux 6.19 or newer (MongoDB refuses to start, SERVER-121912)"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: test/16.0.0-ci-flakes
+    base: official/dev@2dc0c1bc
+    worktree: externals/work/crm-ci-flakes
+    state: in-progress
+    pr: [8866]
+    ships_to_operators_today: false
+    blast_radius: >
+      .github/workflows/main.yml's MongoDB 8.0 jobs, Run Tests (22.23.4, 8.0)
+      and Maintained MongoDB (26, 8.0.29). The diagnosis aid in #8866 is
+      tools/wait-for-mongodb.js; the mitigation is not chosen yet.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: CI only
+    register: [BF-202]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official show test/16.0.0-ci-flakes:tools/wait-for-mongodb.js | grep -q 'os.release()'
+        kind: static
+        describe: >
+          #8866's branch has the MongoDB wait that prints the runner's kernel
+          (e0cfbd0c), so a failed or passing 8.0 job records which kernel it
+          ran on. This is the diagnosis aid, not the fix.
+      - no-gate: >
+          The defect is in MongoDB and in which host GitHub assigns, so it
+          cannot be reproduced on demand. Seen 2026-10-27: #8866 run
+          40532337252 (Maintained MongoDB, 212 failing), #8867 run 40557880084
+          (Run Tests (22.23.4, 8.0) logged MongoDB's refusal to start on Linux
+          6.19 and newer while 8.0.29 in the same run started), #8866 run
+          40566855699 (both 8.0 jobs over 9 minutes in Run Tests, cancelled).
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      2026-10-27: filed at the maintainer's request. Next: read the kernel the
+      wait prints on the next runs, then choose a runner image with an older
+      kernel or a MongoDB 8.0 build that starts there.
   - id: BFQ-192
     title: "BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression)"
     parcel: register-open
