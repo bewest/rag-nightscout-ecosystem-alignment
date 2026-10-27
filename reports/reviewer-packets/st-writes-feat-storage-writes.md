@@ -80,13 +80,24 @@ maintainer, plus a second human - every v1 and socket write path moves
 
 ## Notes carried on the item
 
-2026-10-26: draft #8863, stacked on #8861 (base feat/storage-filter); it
-retargets to dev when #8861 merges. Labels: v1 modules 'v1/internal', socket
-'socket', authorization storage 'internal', default 'v3'; an unknown source is
-refused; origin has room but is not passed. Open in the PR: commit events for
-authorization writes, splitting 'v1/internal', insertOne normalize:false
-setting _id as interface contract, moving the write differential into
-tools/seam.
+2026-10-27 (maintainer, Q12): goes into 16.0.0 through release allocation B6's
+entry bar. Items 1, 3, 4 and 5 MET on local candidates (session -2e; cand/with
+d6ba8e18 vs cand/without 2cae64f3: 360-cell matrix equal off and reject,
+67-row replay equal, v1 HTTP 700/700, latency inside the noise floor, one-
+commit revert cf762dd0 restores cand/without's tree). Item 2 (BF-72, BF-161 in
+their private forks) is with -e4. Maintainer decided #8859 merges to dev
+first. The PR branch is awaiting #8859: prep/storage-writes b1104d02 (= the
+count commit 079f20ae for GET /api/v1/count/:storage/where on 38b910d7, +
+prep/storage-filter, with the five conflict resolutions; tree c5ac59dc equals
+cand/with d6ba8e18, checked by -ee, so every B6 measurement applies) becomes
+feat/storage-writes for #8863 once the real dev with #8859 is merged in. No
+push commands until -2e sends the final head. 2026-10-26: draft #8863, stacked
+on #8861 (base feat/storage-filter); it retargets to dev when #8861 merges.
+Labels: v1 modules 'v1/internal', socket 'socket', authorization storage
+'internal', default 'v3'; an unknown source is refused; origin has room but is
+not passed. Open in the PR: commit events for authorization writes, splitting
+'v1/internal', insertOne normalize:false setting _id as interface contract,
+moving the write differential into tools/seam.
 
 ---
 

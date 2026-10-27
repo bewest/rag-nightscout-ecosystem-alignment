@@ -78,6 +78,16 @@ maintainer, plus a second human - every v1 read path moves
 
 ## Notes carried on the item
 
+2026-10-27 (maintainer, Q12): goes into 16.0.0 through release allocation B6's
+entry bar. Items 1, 3, 4 and 5 MET on local candidates (session -2e; cand/with
+d6ba8e18 vs cand/without 2cae64f3: 360-cell matrix equal off and reject,
+67-row replay equal, v1 HTTP 700/700, latency inside the noise floor, one-
+commit revert cf762dd0 restores cand/without's tree). Item 2 (BF-72, BF-161 in
+their private forks) is with -e4. Maintainer decided #8859 merges to dev
+first. The PR branch is awaiting #8859: prep/storage-filter df4e5e9d (=
+48e7e101 + dev 2dc0c1bc + #8859, clean; tree 402b22d6 equals cand/with's #8861
+step 019bdce9, checked by -ee) becomes feat/storage-filter once the real dev
+with #8859 is merged in. No push commands until -2e sends the final head.
 2026-10-26, later: the maintainer pushed 48e7e101 and opened draft #8861. ST-
 WRITES is being built on top of it (feat/storage-writes). 2026-10-26: the
 maintainer decided ST-FILTER and ST-READS go up as one PR. ST-FILTER found
