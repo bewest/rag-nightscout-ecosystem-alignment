@@ -2063,12 +2063,16 @@ controls:
       gate itself exits 0 against official/dev eb72a1d3.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/entries-pattern-limit
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev adv/phrf-1600
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/entries-pattern-limit
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor adv/r3gv-1600 adv/phrf-1600
     control-kind: static
     proves: >
+      run 2026-10-27: adv/r3gv-1600 (BF-72's branch, f64f78c4) is a base
+      adv/phrf-1600 has NOT taken, and the same command reports it
+      not-an-ancestor (exit 1); the gate itself exits 0 with official/dev at
+      8dbb60c2 merged in (8dcf1537). Earlier:
       run 2026-10-21: official/chore/nightscout-modernization is a base
       bf/entries-pattern-limit has NOT taken, and the same command reports it
       not-an-ancestor (exit 1); the gate itself exits 0 with official/dev
@@ -2750,3 +2754,23 @@ controls:
       be clean: it reports that ref BAD and exits 1 (measured 2026-10-27;
       8 checked, 3 failing), while dev and master with the v15.0.8 control
       are 6 checked, 2 failing, both v15.0.8's, and exit 0.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c7857735 test/16.0.0-ci-flakes
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c7857735 official/dev
+    control-kind: static
+    proves: >
+      the same containment against official/dev 8dbb60c2, which does not
+      carry the concurrent-writes fix yet, exits 1 (measured 2026-10-27).
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bdd569a3 test/16.0.0-ci-flakes
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bdd569a3 official/dev
+    control-kind: static
+    proves: >
+      the same containment against official/dev 8dbb60c2, which does not
+      carry the page-startup fix yet, exits 1 (measured 2026-10-27).

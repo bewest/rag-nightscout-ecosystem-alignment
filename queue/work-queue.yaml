@@ -3323,6 +3323,11 @@ items:
       - releases/cgm-remote-monitor-16.0.0/contents.md
       - releases/cgm-remote-monitor-16.0.0/decisions.md
     notes: >
+      2026-10-27, later: the suites on 8dbb60c2 pass (R17); the red CI is two
+      test faults, fixed on test/16.0.0-ci-flakes (RT-CI-FLAKES-8DBB60C2,
+      ready to push); BF-72 and BF-161 have dev 8dbb60c2 merged into their
+      fork heads, ready to push to the forks (BFQ-72, BFQ-161).
+
       2026-10-27: #8860 merged (dev 8dbb60c2, the glucose pentagon in the
       Distribution report). dev's CI on 8dbb60c2 is red: the WebKit
       cached-bundle startup test failed in both runs and a concurrent-write
@@ -3395,6 +3400,60 @@ items:
       - releases/cgm-remote-monitor-16.0.0/contents.md
     notes: >
       Required before the tag (maintainer, 2026-10-26, session -66).
+
+  - id: RT-CI-FLAKES-8DBB60C2
+    title: "dev 8dbb60c2's red CI: a concurrent-writes timestamp collision and the WebKit reports-page race"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: test/16.0.0-ci-flakes
+    base: official/dev@8dbb60c2
+    worktree: externals/work/crm-ci-flakes
+    state: ready-to-push
+    pr: []
+    blast_radius: >
+      Two test files, no production source: tests/concurrent-writes.test.js
+      (c7857735) and tests/browser/page-startup.test.js (bdd569a3).
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: test reliability
+    register: []
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c7857735 test/16.0.0-ci-flakes
+        kind: static
+        describe: >
+          The concurrent-writes fix is on the branch: ten Notes get times one
+          second apart, so none share the created_at and eventType a Note
+          without an identifier is matched on.
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bdd569a3 test/16.0.0-ci-flakes
+        kind: static
+        describe: >
+          The page-startup fix is on the branch: the reports page counts as
+          ready once its deferred first-week report has loaded (dates filled,
+          Show visible, no jQuery request in flight).
+      - no-gate: >
+          The WebKit failure was not reproduced locally before or after the
+          fix (CI image mcr.microsoft.com/playwright:v1.63.0-noble, Node
+          26.12.1): the mechanism, requests cancelled by navigating away from
+          /report/, is read from the job log and the code. After the fix,
+          page-startup.test.js passes 3 of 3 on WebKit, Chromium and Firefox,
+          28 passing each. The concurrent-writes collision is reproduced: with
+          every Note at one time the test fails, expected 1 to be 10; the fix
+          passes 30 of 30 on Node 22.23.4 and MongoDB 5.0.33.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/rc-16.0.0-integration-record.md
+    notes: >
+      2026-10-27: dev 8dbb60c2 (#8860) push run 40424319822 failed Browser
+      tests (26, webkit) and Run Tests (26, 5.0), and pull_request run
+      40424329138 failed WebKit; #8860's own run on the identical tree passed.
+      Neither failure is #8860's: the suites on 8dbb60c2 pass on Node 22.23.4
+      with MongoDB 5.0.33 and Node 26.12.1 with 8.0.34 (integration record
+      R17). Branch prepared off official/dev 8dbb60c2 by session d22eceb7 in
+      externals/work/crm-ci-flakes; not pushed. The page-startup change may
+      also explain R14's Chromium "recovers the actual reports page after two
+      failed bundle downloads" timeout, which leaves the same page; not
+      measured.
 
   - id: RT-16-RIG-SOAK
     title: "16.0.0 pre-tag check: a real-rig soak on dev"
@@ -8055,9 +8114,9 @@ items:
     title: BF-72 - an unauthenticated $regex can spend minutes of database CPU
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: bf/regex-limits
-    base: official/dev@b29f1bf7
-    worktree: externals/work/crm-bf72
+    branch: adv/r3gv-1600
+    base: official/dev@8dbb60c2
+    worktree: externals/work/crm-ghsa-r3gv-1600
     state: in-flight-upstream
     pr: []
     ships_to_operators_today: true
@@ -8138,6 +8197,13 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-27: dev 8dbb60c2 merged into the fork head 532d7d7a as
+      f64f78c4 on adv/r3gv-1600 (externals/work/crm-ghsa-r3gv-1600), eight
+      conflicting files resolved; a fast-forward of the fork branch, not
+      pushed. Node 22.23.4, MongoDB 5.0.33: npm test 4558 passing, 0 failing,
+      3 pending; test:all 4886 passing, 0 failing, 3 pending (integration
+      record R17). The gate passes on the branch (BF72_REF=adv/r3gv-1600).
+
       2026-10-25: rebased onto dev b29f1bf7; head 532d7d7a on a branch of the
       advisory's private fork. Decision (maintainer): 16.0.0 only, no 15.0.x
       backport. Mechanism only in this repository.
@@ -14852,9 +14918,9 @@ items:
     title: "BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: bf/entries-pattern-limit
-    worktree: externals/work/crm-bf161
-    base: official/dev@b29f1bf7
+    branch: adv/phrf-1600
+    worktree: externals/work/crm-ghsa-phrf-1600
+    base: official/dev@8dbb60c2
     state: in-flight-upstream
     pr: []
     ships_to_operators_today: true
@@ -14869,11 +14935,12 @@ items:
     semver_reason: an input limit on three read routes
     register: [BF-161]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/entries-pattern-limit
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev adv/phrf-1600
         kind: static
         describe: >
-          the branch contains official/dev (04d435eb on 2026-10-21), so it can
-          be pushed without a further merge; goes red when dev moves ahead
+          the branch (pushed as bf/entries-pattern-limit on the advisory's
+          private fork) contains official/dev (8dbb60c2 on 2026-10-27), so it
+          can be pushed without a further merge; goes red when dev moves ahead
       - no-gate: >
           Read, not run: GHSA-vfj7-8cjw-p6xm (braces <= 3.0.3, no patched
           version); the routes call braces.parse and expand synchronously in
@@ -14884,6 +14951,12 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-27: dev 8dbb60c2 merged into the fork head 0e06a36b as
+      8dcf1537 on adv/phrf-1600 (externals/work/crm-ghsa-phrf-1600), no
+      conflicts; a fast-forward of the fork branch, not pushed. npm test
+      4496 passing, 0 failing, 3 pending; test:all 4824 passing, 0 failing,
+      3 pending (integration record R17). The gate now reads adv/phrf-1600.
+
       2026-10-25: over HTTP on dev b29f1bf7, Node 22.23.4 and 24.22.1, stack
       exhaustion did not reproduce; other limits are reached first; the change
       is hardening. Rebased onto b29f1bf7 as head 0e06a36b on the private
