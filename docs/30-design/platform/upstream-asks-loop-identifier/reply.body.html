@@ -3020,10 +3020,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-works-today-and-the-one-gap" class="md-nav__link">
+  <a href="#what-works-by-version" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What works today, and the one gap
+        What works, by version
       
     </span>
   </a>
@@ -3064,10 +3064,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-we-will-do" class="md-nav__link">
+  <a href="#what-we-have-done-and-what-is-next" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What we will do
+        What we have done, and what is next
       
     </span>
   </a>
@@ -5541,10 +5541,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-works-today-and-the-one-gap" class="md-nav__link">
+  <a href="#what-works-by-version" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What works today, and the one gap
+        What works, by version
       
     </span>
   </a>
@@ -5585,10 +5585,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-we-will-do" class="md-nav__link">
+  <a href="#what-we-have-done-and-what-is-next" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What we will do
+        What we have done, and what is next
       
     </span>
   </a>
@@ -5614,28 +5614,33 @@
 
   <h1>Reply.body</h1>
 
-<p><em>Living document, last changed 2026-10-26 at <code>9ea0af8cd</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>a2a670252</code>.</em></p>
 <p><strong>Re: client-supplied identifiers for Nightscout</strong></p>
 <p>Thank you for writing this up. We agree with the core of the ask, and most of what Loop needs
-already works. Much of the confusion comes from our API documentation, not the design: API v3's
-swagger says "The client should not create the identifier", but the server keeps one a client
-sends. That sentence is wrong; we track it as BF-169.</p>
-<p>Code references are to cgm-remote-monitor <code>15.0.8</code> (<code>92d08342</code>) and <code>dev</code> at <code>fade2299</code> (the
-15.0.9 candidate).</p>
+already works. The one gap we found, v1 entries and device status ignoring <code>identifier</code> on a
+re-send, is closed for 16.0.0. Much of the earlier confusion came from our API documentation, not
+the design: API v3's swagger said "The client should not create the identifier", but the server
+keeps one a client sends. That sentence is removed for 16.0.0 (BF-169).</p>
+<p>Code references are to cgm-remote-monitor <code>15.0.9</code> (<code>c6a0d8ed</code>, released 2026-10-21) and <code>dev</code> at
+<code>7abe1cf6</code>, which becomes 16.0.0 (in development, not released). Behaviour marked <em>measured</em> is from
+our <a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/lab/record-identity/results/record-identity-2026-10-27.html">record identity lab of 2026-10-27</a>,
+which runs both versions side by side.</p>
 <h2 id="the-contract-in-three-rules">The contract, in three rules<a class="headerlink" href="#the-contract-in-three-rules" title="Permanent link">&para;</a></h2>
 <ol>
 <li><strong><code>_id</code> is a MongoDB ObjectId (24 hex characters) or absent.</strong> A client that keeps a local
-   cache may create its own ObjectId and send it over API v1. (Over API v3, send <code>identifier</code> instead: from
-   16.0.0 API v3 refuses a body <code>_id</code> with HTTP 400, and 15.0.9 and earlier store it as sent, so a
-   24-hex value becomes a string there; measured 2026-10-18, <a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/10-domain/record-identity-reference.html">record identity reference</a>.) ObjectIds are designed to be made by clients
+   cache may create its own ObjectId and send it over API v1. (Over API v3, send <code>identifier</code> instead:
+   from 16.0.0 API v3 refuses a body <code>_id</code> with HTTP 400, and 15.0.9 and earlier store it as sent, so
+   a 24-hex value becomes a string there; measured.) ObjectIds are designed to be made by clients
    without coordination (a timestamp, a random part and a counter). Other values in <code>_id</code> are not
    valid. For compatibility, <code>UUID_HANDLING</code> (on by default) moves any string <code>_id</code> that is not 24
    hex characters to <code>identifier</code> on treatments and entries, and the server assigns the ObjectId.</li>
 <li><strong>If <code>_id</code> is absent, send <code>identifier</code></strong>: an opaque string, compared exactly as sent. It does
-   not have to be a UUID. The server assigns <code>_id</code>. One identifier names one record.</li>
+   not have to be a UUID. The server assigns <code>_id</code>. One identifier names one record in each
+   collection.</li>
 <li><strong>If neither is sent</strong>, the server falls back to the collection's time key: entries
-   <code>sysTime</code> + <code>type</code>, treatments <code>created_at</code> + <code>eventType</code>. This fallback may be deprecated
-   later.</li>
+   <code>sysTime</code> + <code>type</code>, treatments <code>created_at</code> + <code>eventType</code>. This fallback stays. Sending
+   <code>identifier</code> is recommended for every app. It will be required for controllers that register with
+   Nightscout, a registration interface we are building, which apps opt into.</li>
 </ol>
 <p><strong>Tie-break:</strong> if a write carries both and they point at different records, <code>identifier</code>
 decides. That is what v1 treatments do today (they drop <code>_id</code> when <code>identifier</code> is present), what
@@ -5648,18 +5653,19 @@ key clients own. Rule 5 also says what every write reply should carry:</p>
 <p>Returning both means a client never needs a cache of server ids to edit or delete what it sent.</p>
 <p><strong>What an <code>identifier</code> is.</strong> It names the real thing a record describes: this CGM reading, this
 pump event, this carb entry. Two uploads of the same thing should carry the same value, whichever
-app sends it. The server treats it as opaque and enforces one record per identifier in each
+app sends it. The server treats it as opaque and keeps one record per identifier in each
 collection; clients compute the values from a published
 <a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/identifier-conventions.html">conventions table</a>,
 one row per record kind. Values are written in URL syntax. Readings and pump events take the
 manufacturer as the scheme and the model as the first segment, so every app that reads one sensor
 produces the same value: for a G7 reading, <code>dexcom://g7/&lt;serial&gt;/&lt;sensor offset&gt;</code>. Records made in
 the app take the app's scheme, with the kind as the first segment: <code>loop://carbs/&lt;uuid&gt;</code>,
-<code>loop://tempbasal/&lt;syncIdentifier&gt;</code>, <code>loop://override/&lt;uuid&gt;</code>. Would that work for Loop?</p>
+<code>loop://tempbasal/&lt;syncIdentifier&gt;</code>, <code>loop://override/&lt;uuid&gt;</code>. The kind segment also keeps values
+unique across collections, which the server does not check. Would that work for Loop?</p>
 <p><strong>What an <code>identifier</code> may contain (proposed).</strong> 1 to 256 characters from <code>A-Z a-z 0-9 . _ ~ : / -</code>,
 and under MongoDB's index key limit. In API v3 paths (<code>/api/v3/{collection}/{identifier}</code>), send
 it percent-encoded as one path segment (<code>/</code> as <code>%2F</code>, <code>:</code> as <code>%3A</code>): that works for GET, PATCH,
-PUT and DELETE on 15.0.8 and <code>dev</code>, while a raw <code>/</code> is 404 (measured 2026-10-18,
+PUT and DELETE, while a raw <code>/</code> is 404 (measured 2026-10-18 on 15.0.8 and the 15.0.9 candidate,
 <a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/tenancy/identifier-format-2026-10-17.html#34-url-form-identifiers-end-to-end-2026-10-18-m">identifier format §3.4</a>).
 No <code>%</code>, <code>?</code>, <code>#</code> or space. Not exactly 24 hex
 characters, which both APIs read as an <code>_id</code>. Never a placeholder such as <code>invalid</code>, <code>undefined</code>,
@@ -5668,33 +5674,45 @@ A UUID (v4 for a record made on one device, or v5 of a source-derived key) is ne
 today's v1 by-<code>_id</code> routes (<code>find[_id]=</code>, <code>DELETE /api/v1/treatments/:id</code>), which recognise
 UUID-shaped values only. API v3 and <code>find[identifier]=</code> take any string
 (<a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/tenancy/identifier-format-2026-10-17.html">identifier format</a>).</p>
-<h2 id="what-works-today-and-the-one-gap">What works today, and the one gap<a class="headerlink" href="#what-works-today-and-the-one-gap" title="Permanent link">&para;</a></h2>
+<h2 id="what-works-by-version">What works, by version<a class="headerlink" href="#what-works-by-version" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
 <th>path</th>
-<th>status</th>
+<th>15.0.9</th>
+<th>16.0.0 (<code>dev</code>)</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>v1 treatments, <code>identifier</code></td>
-<td>works since 15.0.7 (#8421, <code>cdef1e7c</code>): matched first, and the reply carries the stored <code>_id</code> (<a href="https://github.com/nightscout/cgm-remote-monitor/blob/92d0834219aa771b5837dbcbf1baeb839a200cf6/lib/server/treatments.js#L356-L381">treatments.js:356-381</a>, <a href="https://github.com/nightscout/cgm-remote-monitor/blob/92d0834219aa771b5837dbcbf1baeb839a200cf6/lib/server/treatments.js#L104-L128">104-128</a>)</td>
+<td>matched first, the reply carries the stored <code>_id</code> (since 15.0.7, #8421)</td>
+<td>the same; a treatment matched by time (no ids) is now also answered with its <code>_id</code> (BF-165), measured</td>
 </tr>
 <tr>
 <td>API v3, every collection, <code>identifier</code></td>
-<td>works: a client value is kept and re-sends match on it (<a href="https://github.com/nightscout/cgm-remote-monitor/blob/92d0834219aa771b5837dbcbf1baeb839a200cf6/lib/api3/shared/operationTools.js#L114-L126">operationTools.js:114-126</a>)</td>
+<td>a client value is kept and re-sends match on it</td>
+<td>the same</td>
 </tr>
 <tr>
-<td>client ObjectId <code>_id</code></td>
-<td>v1 treatments: works on 15.0.8. v1 device status: works on <code>dev</code> (#8758; a re-send is answered with the stored record, <a href="https://github.com/nightscout/cgm-remote-monitor/blob/fade229909e6f3a0b5459230bc7273fe85de4f32/lib/server/devicestatus.js#L57-L90">devicestatus.js:57-90</a>); on 15.0.8 a re-sent <code>_id</code> fails the POST with 500 and loses the rest of the batch</td>
+<td>v1 entries, <code>identifier</code></td>
+<td>stored, not matched: a re-send at another time is a second record, measured</td>
+<td><strong>matched</strong>: one record, updated (#8859), measured</td>
 </tr>
 <tr>
-<td><strong>v1 entries and device status, <code>identifier</code></strong></td>
-<td><strong>the gap</strong>: stored, not matched. Entries match on <code>sysTime</code> + <code>type</code> only (<a href="https://github.com/nightscout/cgm-remote-monitor/blob/92d0834219aa771b5837dbcbf1baeb839a200cf6/lib/server/entries.js#L238-L255">entries.js:238-255</a>); device status has no key</td>
+<td>v1 device status, <code>identifier</code></td>
+<td>stored, not matched: two records, measured</td>
+<td><strong>matched</strong>: a re-send writes nothing and is answered with the stored <code>_id</code> (#8859), measured</td>
+</tr>
+<tr>
+<td>client ObjectId <code>_id</code>, v1</td>
+<td>treatments, entries and device status: a re-send is matched, measured</td>
+<td>the same; a re-sent profile <code>_id</code> is answered 200 instead of 500, measured</td>
 </tr>
 </tbody>
 </table>
+<p>A merge on a match follows RFC 7386 from 16.0.0: a field sent as <code>null</code> is removed from the stored
+record, and a field left out is kept. A <code>PUT</code> replaces the record.</p>
 <h2 id="your-watch-and-phone-case">Your watch-and-phone case<a class="headerlink" href="#your-watch-and-phone-case" title="Permanent link">&para;</a></h2>
 <p>Neither id alone solves two devices uploading one reading: both must arrive at the same key.</p>
 <table>
@@ -5711,11 +5729,11 @@ UUID-shaped values only. API v3 and <code>find[identifier]=</code> take any stri
 </tr>
 <tr>
 <td>2. both devices agree on the timestamp: the phone adopts the watch's activation estimate for the loaned period</td>
-<td>none: v1 entries already merge on <code>sysTime</code> + <code>type</code>. The match is exact, so the times must be identical to the millisecond. <code>device</code> need not match: it is not part of the v1 key (over API v3 it would, because the server computes <code>identifier</code> from <code>device</code> + <code>date</code>). The later upload's fields overwrite the stored ones (<code>$set</code>), so <code>device</code> becomes the phone's (<a href="https://github.com/nightscout/cgm-remote-monitor/blob/92d0834219aa771b5837dbcbf1baeb839a200cf6/lib/server/entries.js#L127-L136">entries.js:127-136</a>)</td>
+<td>none: v1 entries already merge on <code>sysTime</code> + <code>type</code>. The match is exact, so the times must be identical to the millisecond. <code>device</code> need not match: it is not part of the v1 key (over API v3 it would, because the server computes <code>identifier</code> from <code>device</code> + <code>date</code>). The later upload's fields overwrite the stored ones, so <code>device</code> becomes the phone's</td>
 </tr>
 <tr>
 <td>3. a source-derived identifier, <code>dexcom://g7/&lt;serial&gt;/&lt;seconds&gt;</code></td>
-<td>entries match on <code>identifier</code> (the one change below). The inputs must come from the sensor: the real serial and the sensor's own seconds counter</td>
+<td>none from 16.0.0: v1 entries match on <code>identifier</code>. The inputs must come from the sensor: the real serial and the sensor's own seconds counter</td>
 </tr>
 <tr>
 <td>4. server-side fuzzy time matching</td>
@@ -5723,7 +5741,7 @@ UUID-shaped values only. API v3 and <code>find[identifier]=</code> take any stri
 </tr>
 </tbody>
 </table>
-<p>We recommend (3), with (2) as an interim that needs no server change. Today's G7 <code>syncIdentifier</code>
+<p>We recommend (3), with (2) as an interim that works on any version. Today's G7 <code>syncIdentifier</code>
 would not serve (3) as it stands. It embeds each device's own activation estimate, as fractional
 hours, and the BLE name <code>DXCMxx</code> rather than the serial, and it falls back to <code>"invalid"</code>
 (G7SensorKit <code>dd91f46</code>, <code>G7CGMManager.swift:511-517</code>). Hashing it into a UUIDv5 would not help,
@@ -5753,21 +5771,20 @@ the comparison slightly differently).</p>
   pair (<a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/tenancy/identifier-duplicates-2026-10-17.html#22-syncidentifier-on-treatments-as-a-proxy-m">identifier duplicates §2.2</a>).
   Sent as <code>identifier</code> to 15.0.7 or later, the second would replace the first. A kind segment
   (<code>loop://suspend/…</code>, <code>loop://tempbasal/…</code>) keeps such a pair apart.</li>
-<li><strong>Entries do not match on <code>identifier</code> until the server change lands.</strong> A re-send with the same
-  identifier and a different time is stored twice
-  (<a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.html">lab</a>).</li>
+<li><strong>On 15.0.9 and earlier, entries and device status do not match on <code>identifier</code>.</strong> A re-send
+  with the same identifier is stored twice there; from 16.0.0 it is matched
+  (<a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-27.html">lab</a>).</li>
 <li><strong>Older servers store the field and ignore it.</strong></li>
 </ul>
 <h2 id="six-cases-what-should-nightscout-do">Six cases: what should Nightscout do?<a class="headerlink" href="#six-cases-what-should-nightscout-do" title="Permanent link">&para;</a></h2>
 <p>To make the contract unambiguous, we would like your answer for each case. "Our default" is what
-our decisions so far would give (write contract, 2026-10-12), chosen to keep today's clients
-working. Where it says <em>open</em>, we have no default yet.</p>
+our decisions so far give, chosen to keep today's clients working.</p>
 <table>
 <thead>
 <tr>
 <th>#</th>
 <th>case</th>
-<th>today</th>
+<th>15.0.9 / 16.0.0 today (measured)</th>
 <th>our default</th>
 <th>your answer</th>
 </tr>
@@ -5776,7 +5793,7 @@ working. Where it says <em>open</em>, we have no default yet.</p>
 <tr>
 <td>1</td>
 <td>The watch uploads a G7 reading. Later the phone uploads the same reading: same <code>identifier</code>, other <code>device</code>, time 1.5 s later</td>
-<td>v1 entries: two records. API v3: 400</td>
+<td>v1 entries: two records on 15.0.9, one (updated) on 16.0.0. API v3: 400 on both</td>
 <td>one record, updated with the later upload's fields (merge on match)</td>
 <td></td>
 </tr>
@@ -5790,22 +5807,22 @@ working. Where it says <em>open</em>, we have no default yet.</p>
 <tr>
 <td>3</td>
 <td>Loop re-sends an identical record after a timeout</td>
-<td>v1 entries and treatments: matched, but a treatment matched by time is answered without <code>_id</code> (BF-165). v1 device status: stored again. API v3: matched</td>
+<td>16.0.0: matched, and the reply carries the stored <code>_id</code>, on v1 entries, treatments and device status and on API v3. 15.0.9: device status stored again, and a treatment matched by time is answered without <code>_id</code></td>
 <td>success, and the reply carries the stored <code>_id</code> and <code>identifier</code></td>
 <td></td>
 </tr>
 <tr>
 <td>4</td>
 <td>A record is deleted, then the same <code>identifier</code> arrives again</td>
-<td>API v3 (soft delete): the record comes back. v1 (hard delete): a new record</td>
-<td><em>open</em></td>
+<td>v1 (hard delete): stored again as a new record. API v3 (soft delete): a <code>POST</code> brings it back, a <code>PUT</code> is 410; on 16.0.0 an API v3 device status stays deleted</td>
+<td>the re-send is acknowledged (a success reply naming the stored record, so the app stops retrying) and the record <strong>stays deleted</strong> (decided 2026-10-27; not built yet)</td>
 <td></td>
 </tr>
 <tr>
 <td>5</td>
-<td>An older app sends no <code>identifier</code></td>
+<td>An app sends no <code>identifier</code></td>
 <td>each collection's time key</td>
-<td>keep the time key on legacy paths now; <code>identifier</code> becomes mandatory at a future version boundary and for registered controller instances</td>
+<td>the time key stays; <code>identifier</code> is recommended for every app and required for registered controller instances</td>
 <td></td>
 </tr>
 <tr>
@@ -5819,12 +5836,13 @@ working. Where it says <em>open</em>, we have no default yet.</p>
 </table>
 <p>For case 1, if you would rather Nightscout keep the first upload unchanged, or refuse the second,
 please say so and what the phone should do next. An error reply makes NightscoutKit treat the
-batch as failed.</p>
-<h2 id="what-we-will-do">What we will do<a class="headerlink" href="#what-we-will-do" title="Permanent link">&para;</a></h2>
-<p>One server change: v1 entries and device status match on <code>identifier</code> the way treatments do.
-With it, the swagger fix (BF-169). Both land after 15.0.9, which is frozen as <code>dev</code> stands. Your
-answers above decide the rest. Later, and only if needed: identifier length and character
-checks (a warning first), results per record in a batch, and a unique index on <code>identifier</code>.</p>
+batch as failed. For case 4, would Loop treat a success reply for a deleted record as final?</p>
+<h2 id="what-we-have-done-and-what-is-next">What we have done, and what is next<a class="headerlink" href="#what-we-have-done-and-what-is-next" title="Permanent link">&para;</a></h2>
+<p>Done for 16.0.0, on <code>dev</code> now: v1 entries and device status match on <code>identifier</code> (#8859), the
+swagger correction (BF-169) and API v3's refusal of a body <code>_id</code> (#8845). Next: case 4's re-send
+after delete, results per record in a batch, and a unique index on <code>identifier</code> per collection,
+each after your answers. Later, and only if needed: identifier length and character checks (a
+warning first).</p>
 <p>Details and evidence are in our
 <a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/upstream-asks-loop-identifier/index.html">notes on your proposal</a>.</p>
 <p>Where would you like to continue?</p>

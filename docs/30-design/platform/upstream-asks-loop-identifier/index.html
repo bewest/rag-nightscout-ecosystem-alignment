@@ -5528,7 +5528,7 @@
 
 
 <h1 id="reply-to-the-loop-developers-identifier-proposal">Reply to the Loop developers' <code>identifier</code> proposal<a class="headerlink" href="#reply-to-the-loop-developers-identifier-proposal" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>9ea0af8cd</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>a2a670252</code>.</em></p>
 <p><em>What this is: an outreach draft (contributor-facing). Read after the <a href="../spec/identity.html">identity
 specification</a>; leads to the <a href="../upstream-asks-device-simulators/index.html">device-simulator
 requests</a>. Status: </em><em>draft, not yet sent; for maintainer review.</em><em> Queue item <code>LOOP-ID-REPLY</code>.
@@ -5724,7 +5724,7 @@ model is generally workable; the previous, longer version is in git history at <
 <p>Decisions cited: <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">D20 rule 5 and rule 7</a>
 (<code>18397441</code>, 2026-10-16); <a href="../../tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-10-12">write contract §3 (U4, U6) and §6.1</a>
 (2026-10-12); <a href="../nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">hub-sync design §3.7</a>
-(<code>write.ids</code>, <code>matchedBy</code>); cases in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/f95ce793716d80490de3e60f29ffa987f9112d5a/specs/sync/conformance/quirks"><code>specs/sync/conformance/quirks/</code></a>;
+(<code>write.ids</code>, <code>matchedBy</code>); cases in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/a2a67025296cf50cc2e11a4e1b3b2e9d9173b17d/specs/sync/conformance/quirks"><code>specs/sync/conformance/quirks/</code></a>;
 <a href="../../../../traceability/sync-identity-gaps.html">GAP-SYNC-032</a> ("send <code>syncIdentifier</code> as
 <code>identifier</code>") and REQ-BATCH-003 (per-item results) in
 <a href="../../../../traceability/sync-identity-requirements.html">sync-identity-requirements</a>.</p>
@@ -5778,6 +5778,13 @@ send <code>identifier</code>) is the direction the reply takes.</p>
 <td>—</td>
 <td>case 5's default: time key on legacy paths now, <code>identifier</code> mandatory at a future version boundary and for registered controller instances; the format paragraph states the conventions table, URL syntax, source schemes (<code>dexcom://g7/…</code>) and app schemes (<code>loop://carbs/…</code>) and asks whether that works for Loop; the character set allows <code>/</code> and <code>:</code> with percent-encoding in v3 paths (measured) (maintainer)</td>
 <td><code>ID-ABSENT-DECISION</code>, <code>ID-FORMAT-DECISION</code>, <code>ID-CONVENTIONS</code>; <a href="../identifier-conventions.html">identifier conventions</a></td>
+</tr>
+<tr>
+<td>2026-10-27</td>
+<td>revised</td>
+<td>—</td>
+<td>updated for 16.0.0 and re-measured (record-identity and v3-identifier-immutable labs, 15.0.9 <code>c6a0d8ed</code> vs dev <code>7abe1cf6</code>): the v1 entries and device status gap is closed by #8859; BF-169 and BF-170 corrected (#8845); rule 3: the time key stays, <code>identifier</code> recommended for every app and required for registered controller instances (<code>ID-ABSENT-DECISION</code>); scope per collection (<code>ID-SCOPE-DECISION</code>); case 4's default: acknowledged, stays deleted (<code>ID-DELETE-REUSE-DECISION</code>); RFC 7386 merge. Maintainer: send now</td>
+<td><code>ID-*-DECISION</code> (queue)</td>
 </tr>
 </tbody>
 </table>

@@ -1634,10 +1634,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -2013,34 +2009,6 @@
   
   
     <li class="md-nav__item">
-      <a href="id-absent-decision.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Id absent decision
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="id-client-oid-decision.html" class="md-nav__link">
         
   
@@ -2273,34 +2241,6 @@
     
   
     Rt ci webkit reports test 16 0 0 reports ready
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="st-count-onepath-feat-storage-count-onepath.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    St count onepath feat storage count onepath
   
 
     
@@ -3176,7 +3116,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-27 at <code>c8a9baaab</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>9fb924b0f</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3264,7 +3204,23 @@ from an app, and talk to your care team about how you set targets.</p>
 <li><a href="../../docs/30-design/remedial/rc-16.0.0-integration-record.html"><code>docs/30-design/remedial/rc-16.0.0-integration-record.md</code></a></li>
 </ul>
 <h2 id="notes-carried-on-the-item">Notes carried on the item<a class="headerlink" href="#notes-carried-on-the-item" title="Permanent link">&para;</a></h2>
-<p>2026-10-27 (maintainer): survey the clients first (which apps send or read
+<p>2026-10-27, survey done (session -ee's agent, read from source; AAPS 7e1d537d,
+Trio 0b29cd53, iAPS 642a82cd, oref0 d219baf9, nightguard 75404bd, LoopFollow
+4a74b781, xDrip 1ed76004, nightscout-reporter 518d61f): no surveyed client
+uploads a Temporary Target labelled mmol. AAPS (API v3) and nightguard send
+mg/dL labelled mg/dl; Trio and iAPS send mg/dL with no label (v1);
+Nightscout's careportal converts first; Loop, NightscoutKit, LoopCaregiver,
+DiaBLE and xDrip+ send none. Readers that ignore the label: Trio, iAPS, oref0,
+LoopFollow. Read-back by value: none (AAPS matches by identifier and never
+compares targets). So BF-194's exposure is clients outside the survey
+(scripts, third-party apps). Convert-at-write changes no surveyed client's
+records; it must run before v1's units delete, and relabel as mg/dL (AAPS
+treats any label but 'mmol' as mg/dL; the reporter compares mg/dl case-
+insensitively; nightguard checks for 'mol'). Separate finding: nightscout-
+reporter reads an unlabelled target in the site's units, so unlabelled mg/dL
+targets (Trio, iAPS, careportal via v1) show wrong on mmol sites; writing an
+mg/dL label on every Temporary Target would fix that. Decision pending.
+2026-10-27 (maintainer): survey the clients first (which apps send or read
 temp targets in mmol/L, over which API, and whether they read back their own),
 then likely enforce mg/dL at write: a target labelled mmol is converted to
 mg/dL and relabelled, so readers that ignore the label (Trio) read it right
