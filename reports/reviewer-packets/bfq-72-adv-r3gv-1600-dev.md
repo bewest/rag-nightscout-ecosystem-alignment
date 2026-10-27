@@ -18,8 +18,8 @@
 | | |
 |---|---|
 | repository | `cgm-remote-monitor` |
-| branch | `adv/r3gv-1600` |
-| base | `official/dev@8dbb60c2` |
+| branch | `adv/r3gv-1600-dev` |
+| base | `official/dev@7abe1cf6` |
 | claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-72` is the measurement |
 | semver | `minor` |
 | register entries | `BF-72` |
@@ -116,9 +116,19 @@ same ablation.
 
 ## Notes carried on the item
 
-2026-10-27, later: for the 16.0.0 entry bar (maintainer, 2026-10-27), the fix
-is also merged onto session -2e's candidate cand/with d6ba8e18 (dev 2dc0c1bc +
-#8859, #8861, #8863 and the count commit) as adv/r3gv-1600-cand 87335351
+2026-10-27, after #8861, #8863 and #8870 merged: dev merged into the fork
+branch (f64f78c4, already on the fork) as adv/r3gv-1600-dev a9da33ff
+(externals/work/crm-ghsa-r3gv-dev), local, a fast-forward of the fork's
+bf/regex-limits. First dev 9668b179 (9ab6c705): the seven conflicts resolved
+as on the candidate; the merge equals the tested candidate merge plus dev's
+later changes. Then dev 7abe1cf6 (#8870, one count path): the fix's read time
+limit carried onto the single count path. Node 22.23.4, MongoDB 8.0.34 at
+a9da33ff: npm test 4776 passing, 0 failing, 3 pending; test:all 5104 passing,
+0 failing, 3 pending; removing the limit from the count path fails the count
+test; the gate passes on the branch and fails on official/dev. 2026-10-27,
+later: for the 16.0.0 entry bar (maintainer, 2026-10-27), the fix is also
+merged onto session -2e's candidate cand/with d6ba8e18 (dev 2dc0c1bc + #8859,
+#8861, #8863 and the count commit) as adv/r3gv-1600-cand 87335351
 (externals/work/crm-ghsa-r3gv-cand), local only. Seven files conflicted where
 the slices move the v1 reads onto the storage interface; the fix's read time
 limit now travels through that interface, including the slices' new count

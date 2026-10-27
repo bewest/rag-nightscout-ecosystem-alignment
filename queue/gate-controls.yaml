@@ -2063,10 +2063,10 @@ controls:
       gate itself exits 0 against official/dev eb72a1d3.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev adv/phrf-1600
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev adv/phrf-1600-dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor adv/r3gv-1600 adv/phrf-1600
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor adv/r3gv-1600 adv/phrf-1600-dev
     control-kind: static
     proves: >
       run 2026-10-27: adv/r3gv-1600 (BF-72's branch, f64f78c4) is a base
@@ -2783,6 +2783,16 @@ controls:
     proves: >
       the same containment against official/dev eed31dca, which does not
       carry the change, exits 1 (measured 2026-10-27).
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official show tooling/jsconfig-watch-scope:jsconfig.json | node -e "const c=JSON.parse(require('fs').readFileSync(0));process.exit(!c.include&&!c.files&&(c.exclude||[]).includes('node_modules')?0:1)"
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official show official/dev:jsconfig.json | node -e "const c=JSON.parse(require('fs').readFileSync(0));process.exit(!c.include&&!c.files&&(c.exclude||[]).includes('node_modules')?0:1)"
+    control-kind: static
+    proves: >
+      the same check on official/dev 7abe1cf6, which has no jsconfig.json,
+      exits non-zero (measured 2026-10-27).
 
   - gate: |-
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c7857735 official/dev

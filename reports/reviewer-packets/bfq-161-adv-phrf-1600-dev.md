@@ -19,8 +19,8 @@ advisory with no fixed release, reachable from the entries pattern routes**
 | | |
 |---|---|
 | repository | `cgm-remote-monitor` |
-| branch | `adv/phrf-1600` |
-| base | `official/dev@8dbb60c2` |
+| branch | `adv/phrf-1600-dev` |
+| base | `official/dev@7abe1cf6` |
 | claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-161` is the measurement |
 | semver | `patch` |
 | register entries | `BF-161` |
@@ -46,7 +46,7 @@ maintainer
 
 ## What was measured
 
-**`git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev adv/phrf-1600`** &nbsp;·&nbsp; kind: `static`
+**`git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev adv/phrf-1600-dev`** &nbsp;·&nbsp; kind: `static`
 
 the branch (pushed as bf/entries-pattern-limit on the advisory's private fork)
 contains official/dev (8dbb60c2 on 2026-10-27), so it can be pushed without a
@@ -68,6 +68,12 @@ further merge; goes red when dev moves ahead
 
 ## Notes carried on the item
 
+2026-10-27, after #8861, #8863 and #8870 merged: dev 9668b179 and then
+7abe1cf6 merged into the fork branch (8dcf1537, already on the fork) as
+adv/phrf-1600-dev 1dce7722 (externals/work/crm-ghsa-phrf- dev), local, no
+conflicts, a fast-forward of the fork's bf/entries- pattern-limit. npm test
+4714 passing, 0 failing, 3 pending; test:all 5042 passing, 0 failing, 3
+pending; the fix's test file 48 passing. Gate re-pointed to adv/phrf-1600-dev.
 2026-10-27, later: for the 16.0.0 entry bar, also merged onto session -2e's
 candidate cand/with d6ba8e18 as adv/phrf-1600-cand baf14858
 (externals/work/crm-ghsa-phrf-cand), local only, no conflicts; the fix's check

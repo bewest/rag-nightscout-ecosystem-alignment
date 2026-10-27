@@ -8230,9 +8230,9 @@ items:
     title: BF-72 - an unauthenticated $regex can spend minutes of database CPU
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: adv/r3gv-1600
-    base: official/dev@8dbb60c2
-    worktree: externals/work/crm-ghsa-r3gv-1600
+    branch: adv/r3gv-1600-dev
+    base: official/dev@7abe1cf6
+    worktree: externals/work/crm-ghsa-r3gv-dev
     state: in-flight-upstream
     pr: []
     ships_to_operators_today: true
@@ -8313,6 +8313,18 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-27, after #8861, #8863 and #8870 merged: dev merged into the
+      fork branch (f64f78c4, already on the fork) as adv/r3gv-1600-dev
+      a9da33ff (externals/work/crm-ghsa-r3gv-dev), local, a fast-forward
+      of the fork's bf/regex-limits. First dev 9668b179 (9ab6c705): the
+      seven conflicts resolved as on the candidate; the merge equals the
+      tested candidate merge plus dev's later changes. Then dev 7abe1cf6
+      (#8870, one count path): the fix's read time limit carried onto the
+      single count path. Node 22.23.4, MongoDB 8.0.34 at a9da33ff: npm
+      test 4776 passing, 0 failing, 3 pending; test:all 5104 passing, 0
+      failing, 3 pending; removing the limit from the count path fails the
+      count test; the gate passes on the branch and fails on official/dev.
+
       2026-10-27, later: for the 16.0.0 entry bar (maintainer, 2026-10-27),
       the fix is also merged onto session -2e's candidate cand/with d6ba8e18
       (dev 2dc0c1bc + #8859, #8861, #8863 and the count commit) as
@@ -15049,9 +15061,9 @@ items:
     title: "BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: adv/phrf-1600
-    worktree: externals/work/crm-ghsa-phrf-1600
-    base: official/dev@8dbb60c2
+    branch: adv/phrf-1600-dev
+    worktree: externals/work/crm-ghsa-phrf-dev
+    base: official/dev@7abe1cf6
     state: in-flight-upstream
     pr: []
     ships_to_operators_today: true
@@ -15066,7 +15078,7 @@ items:
     semver_reason: an input limit on three read routes
     register: [BF-161]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev adv/phrf-1600
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev adv/phrf-1600-dev
         kind: static
         describe: >
           the branch (pushed as bf/entries-pattern-limit on the advisory's
@@ -15082,6 +15094,14 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-27, after #8861, #8863 and #8870 merged: dev 9668b179 and
+      then 7abe1cf6 merged into the fork branch (8dcf1537, already on the
+      fork) as adv/phrf-1600-dev 1dce7722 (externals/work/crm-ghsa-phrf-
+      dev), local, no conflicts, a fast-forward of the fork's bf/entries-
+      pattern-limit. npm test 4714 passing, 0 failing, 3 pending; test:all
+      5042 passing, 0 failing, 3 pending; the fix's test file 48 passing.
+      Gate re-pointed to adv/phrf-1600-dev.
+
       2026-10-27, later: for the 16.0.0 entry bar, also merged onto session
       -2e's candidate cand/with d6ba8e18 as adv/phrf-1600-cand baf14858
       (externals/work/crm-ghsa-phrf-cand), local only, no conflicts; the
@@ -16970,6 +16990,53 @@ items:
       #8866; run 40569981396 passed both 8.0 jobs on 6.8.0-1064-azure.
       Revisit at kernel 7.0.14+, MongoDB support for 6.19+, or before
       ubuntu-22.04 is retired.
+  - id: BFQ-203
+    title: "BF-203 - an editor opening a cgm-remote-monitor file inside a larger workspace watches every sibling worktree (450,689 inotify watches); add jsconfig.json"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: tooling/jsconfig-watch-scope
+    base: official/dev@7abe1cf6
+    worktree: externals/work/crm-jsconfig-2710
+    state: ready-to-push
+    pr: []
+    ships_to_operators_today: false
+    blast_radius: >
+      One new file, jsconfig.json (8 lines: module commonjs, target es2022,
+      checkJs false, exclude node_modules, coverage, .nyc_output, tmp). Read
+      only by editors' TypeScript servers; build, lint, tests and the server
+      ignore it.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: editor tooling; nothing the server, build or tests read
+    register: [BF-203]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official show tooling/jsconfig-watch-scope:jsconfig.json | node -e "const c=JSON.parse(require('fs').readFileSync(0));process.exit(!c.include&&!c.files&&(c.exclude||[]).includes('node_modules')?0:1)"
+        kind: static
+        describe: >
+          The branch has a jsconfig.json that scopes the project by exclude
+          only (no include or files list, so new folders stay covered) and
+          excludes node_modules.
+      - no-gate: >
+          The watch count needs a TypeScript server started as an editor
+          starts it, about 2.5 minutes per measurement, so it is not a queue
+          gate. Measured 2026-10-27 with tsserver 5.9.3 on Linux, opening
+          lib/server/app.js with --useInferredProjectPerProjectRoot,
+          JavaScript enabled for inferred projects and the alignment repo as
+          project root: 450,689 watches and 1.4 GB without the file, 2,007
+          and 358 MB with it. Plain tsserver without those settings gives
+          1,203 either way.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      2026-10-27: draft e737d310 by the maintainer through session -a7
+      (437,239 against 5,616 watches in its probe), re-measured by session
+      -e4 and dev 7abe1cf6 merged in as f28d40bb. tsc -p jsconfig.json
+      --listFilesOnly lists lib/server/app.js; test:tiers 401 files ok; npm
+      test on dev 9668b179 plus the file 4700 passing, 0 failing, 3 pending.
+      No tooling PR is open, so it starts the next one. The editor-side
+      companion of BF-201.
   - id: BFQ-192
     title: "BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression)"
     parcel: register-open
