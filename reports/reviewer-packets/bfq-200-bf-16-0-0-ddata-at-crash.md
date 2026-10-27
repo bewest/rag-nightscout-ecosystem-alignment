@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-200
+# Review packet — BFQ-200 (PR #8868)
 
 **BF-200 - on dev, an unusable time on API v2's data-snapshot route stops the
 server**
@@ -21,7 +21,7 @@ server**
 | repository | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-ddata-at-crash` |
 | base | `official/dev@2dc0c1bc` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-200` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-200` is the measurement |
 | semver | `patch` |
 | register entries | `BF-200` |
 
@@ -83,27 +83,28 @@ Uses the fix worktree's node_modules.
 
 ## Notes carried on the item
 
-2026-10-27: found by session -2e's route census on dev 2dc0c1bc and #8863;
-fixed by its agent on bf/16.0.0-ddata-at-crash 434c0157 (on dev 2dc0c1bc, 3
-files, +142). v15.0.9 checked by -2e: not affected (500, process keeps
-running), so it is a dev-only regression from 26d0908a (callback-tasks
-replacing async) and goes as an ordinary 16.0.0 fix, no advisory fork. -2e's
-runs (Node 22.23.4, MongoDB 7.0.43): npm test 4487 passing, 1 failing, 3
-pending; test:all 4815 passing, 1 failing, 3 pending; the one failure is the
-nodemon watch test on the host's inotify limit (ENOSPC), not this change. Red
-control re-run by session -ee: the new test on dev 2dc0c1bc's tree gives 1
-passing, 5 failing (-2e reported 0 passing, 5 failing); on the branch 5
-passing. 2026-10-27, later: the maintainer asked for a second commit, 2564e5dc
-(callback-tasks stops a run when a task throws, as async 0.9 did); the branch
-head is 2564e5dc on dev 2dc0c1bc. -2e's runs on it (Node 22.23.4, MongoDB
-7.0): npm test 4489 passing, 0 failing, 3 pending; test:all 4817 passing, 0
-failing, 3 pending (an earlier run whose MongoDB container vanished was
-discarded). The new callback-tasks case passes against async 0.9.2
-(NIGHTSCOUT_ASYNC_ORACLE). Re-run by -ee: both test files on the branch 14
-passing; with 434c0157's helper the callback-tasks file gives 8 passing, 1
-failing; the unit gate's control (dev's tree with both test files) 9 passing,
-6 failing. Not pushed; the maintainer pushes and opens the PR (body in -2e's
-scratchpad, ddata/PR-BODY.md).
+2026-10-27, 19:50:31Z: #8868 opened by bewest into dev, head 2ca7dfc8 (dev
+94899828 merged in on top of 2564e5dc; gh pr view 8868). 2026-10-27: found by
+session -2e's route census on dev 2dc0c1bc and #8863; fixed by its agent on
+bf/16.0.0-ddata-at-crash 434c0157 (on dev 2dc0c1bc, 3 files, +142). v15.0.9
+checked by -2e: not affected (500, process keeps running), so it is a dev-only
+regression from 26d0908a (callback-tasks replacing async) and goes as an
+ordinary 16.0.0 fix, no advisory fork. -2e's runs (Node 22.23.4, MongoDB
+7.0.43): npm test 4487 passing, 1 failing, 3 pending; test:all 4815 passing, 1
+failing, 3 pending; the one failure is the nodemon watch test on the host's
+inotify limit (ENOSPC), not this change. Red control re-run by session -ee:
+the new test on dev 2dc0c1bc's tree gives 1 passing, 5 failing (-2e reported 0
+passing, 5 failing); on the branch 5 passing. 2026-10-27, later: the
+maintainer asked for a second commit, 2564e5dc (callback-tasks stops a run
+when a task throws, as async 0.9 did); the branch head is 2564e5dc on dev
+2dc0c1bc. -2e's runs on it (Node 22.23.4, MongoDB 7.0): npm test 4489 passing,
+0 failing, 3 pending; test:all 4817 passing, 0 failing, 3 pending (an earlier
+run whose MongoDB container vanished was discarded). The new callback-tasks
+case passes against async 0.9.2 (NIGHTSCOUT_ASYNC_ORACLE). Re-run by -ee: both
+test files on the branch 14 passing; with 434c0157's helper the callback-tasks
+file gives 8 passing, 1 failing; the unit gate's control (dev's tree with both
+test files) 9 passing, 6 failing. Not pushed; the maintainer pushes and opens
+the PR (body in -2e's scratchpad, ddata/PR-BODY.md).
 
 ---
 

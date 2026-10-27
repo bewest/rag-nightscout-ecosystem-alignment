@@ -24,20 +24,15 @@ repository.
 | [`ADV-CONFIG`](adv-config.md) | #8746 | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) |
 | [`BFQ-ENV`](bfq-env-bf-16-0-0-boot-resilience.md) | #8849 | `needs-decision` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies |
 | [`BFQ-193`](bfq-193-bf-16-0-0-log-privacy.md) | #8856 | `in-flight-upstream` | BF-193 - the realtime socket and other write paths log every record written through them |
-| [`BFQ-195`](bfq-195-bf-16-0-0-null-removes.md) | #8859 | `in-flight-upstream` | BF-195 - a stale profile is pushed over the socket after a profile re-send |
-| [`ID-SIMPLE-MATCH`](id-simple-match-bf-16-0-0-null-removes.md) | #8859 | `in-flight-upstream` | API v1 entries and devicestatus match on identifier like treatments (the simple contract) |
 | [`ST-FILTER-READS`](st-filter-reads-feat-storage-filter.md) | #8861 | `in-flight-upstream` | Storage interface, first PR: the filter tree and interface methods under API v3's adapter (ST-FILTER), and API v1 reads through them (ST-READS), with no v1 answer changed |
 | [`PLAT-ENTRY`](plat-entry-feat-nightscout-entrypoint.md) | #8862 | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT and CMD single, no image HEALTHCHECK; no start path changes |
 | [`ST-WRITES`](st-writes-feat-storage-writes.md) | #8863 | `in-flight-upstream` | Storage interface, second PR: API v1, authorization storage and socket writes through the interface, each labelled by source; #8854's boundary check fails a write that skips the interface |
 | [`PLAT-SERVE`](plat-serve-feat-nightscout-serve.md) | #8865 | `in-flight-upstream` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a time, `api` first; each listener bound separately |
-| [`BFQ-201`](bfq-201-test-16-0-0-ci-flakes.md) | #8866 | `in-flight-upstream` | BF-201 - npm run dev's nodemon watches nearly the whole repository (1,502 Linux file watches); watch the paths the server loads |
-| [`BFQ-202`](bfq-202-test-16-0-0-ci-flakes.md) | #8866 | `in-flight-upstream` | BF-202 - CI's MongoDB 8.0 jobs fail on hosted runners with Linux 6.19 or newer (MongoDB refuses to start, SERVER-121912) |
-| [`RT-CI-FLAKES-8DBB60C2`](rt-ci-flakes-8dbb60c2-test-16-0-0-ci-flakes.md) | #8866 | `in-flight-upstream` | dev 8dbb60c2's red CI: a concurrent-writes timestamp collision and the WebKit reports-page race |
+| [`BFQ-200`](bfq-200-bf-16-0-0-ddata-at-crash.md) | #8868 | `in-flight-upstream` | BF-200 - on dev, an unusable time on API v2's data-snapshot route stops the server |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`ARCH-8854-FAILED`](arch-8854-failed.md) | &mdash; | `needs-decision` | Decide: the socket's failed slot that #8854 adds under WRITE_VALIDATION=reject - ship as is, or agree it alongside refused (and on API v1?) |
 | [`BFQ-161`](bfq-161-adv-phrf-1600.md) | &mdash; | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes |
 | [`BFQ-194`](bfq-194.md) | &mdash; | `needs-decision` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL |
-| [`BFQ-200`](bfq-200-bf-16-0-0-ddata-at-crash.md) | &mdash; | `ready-to-push` | BF-200 - on dev, an unusable time on API v2's data-snapshot route stops the server |
 | [`BFQ-72`](bfq-72-adv-r3gv-1600.md) | &mdash; | `in-flight-upstream` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | [`BFQ-95`](bfq-95.md) | &mdash; | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
 | [`DEPENDABOT-CONFIG`](dependabot-config.md) | &mdash; | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev |

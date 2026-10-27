@@ -3408,7 +3408,7 @@ items:
     branch: test/16.0.0-ci-flakes
     base: official/dev@8dbb60c2
     worktree: externals/work/crm-ci-flakes
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8866]
     blast_radius: >
       Test fixes, no production source: tests/concurrent-writes.test.js
@@ -3422,19 +3422,19 @@ items:
     semver_reason: test reliability
     register: []
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c7857735 test/16.0.0-ci-flakes
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c7857735 official/dev
         kind: static
         describe: >
           The concurrent-writes fix is on the branch: ten Notes get times one
           second apart, so none share the created_at and eventType a Note
           without an identifier is matched on.
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 65632082 test/16.0.0-ci-flakes
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 65632082 official/dev
         kind: static
         describe: >
           The dashboard round-trip fix is on the branch: each page must be
           ready before the test follows its close link and before it goes
           forward.
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bdd569a3 test/16.0.0-ci-flakes
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bdd569a3 official/dev
         kind: static
         describe: >
           The page-startup fix is on the branch: the reports page counts as
@@ -3453,6 +3453,10 @@ items:
     evidence:
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
     notes: >
+      2026-10-27, 19:42:55Z: merged. bewest merged #8866 (head f6884342)
+      into dev as b84871d7 (gh pr view 8866); #8867 was closed at
+      19:28:02Z in its favour. Gates re-pointed to official/dev, with
+      official/master as the control.
       2026-10-27, later: the maintainer merged dev 2dc0c1bc in (ddeeff8c);
       run 40559261253 then failed WebKit's dashboard round trip with
       page.goForward: WebKit encountered an internal error, on the reports
@@ -4747,7 +4751,7 @@ items:
     branch: bf/16.0.0-null-removes
     base: official/dev@47723cda
     worktree: externals/work/crm-idmatch
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8859]
     blast_radius: >
       Built as feat/v1-identifier-match 8d0f9a22; ships inside draft PR #8859
@@ -4774,12 +4778,12 @@ items:
       (RT-VERSION, RT-COUNT-COMPAT), so it cannot go into 15.0.9.
     register: []
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda bf/16.0.0-null-removes
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda official/dev
         kind: static
         describe: >
           The PR #8859 branch contains dev 47723cda (cut 5 merged). Red if the
           branch is rebased off dev or deleted.
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8d0f9a22 bf/16.0.0-null-removes
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8d0f9a22 official/dev
         kind: static
         describe: >
           This item's commit 8d0f9a22 (built as feat/v1-identifier-match) is
@@ -4799,6 +4803,9 @@ items:
       - tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md
       - docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
     notes: >
+      2026-10-27, 19:52:21Z: merged. bewest merged #8859 (head 87f1aeb8)
+      into dev as 94899828 (gh pr view 8859). Gates re-pointed to
+      official/dev, with official/master as the control.
       2026-10-26, later: the maintainer pushed 5c6ceabb; it is PR #8859's
       head (gh pr view, mergeable). Hosted CI on 5c6ceabb: 16 checks
       passed, 0 failed, 2 skipped (Build Docker image and Publish to Docker
@@ -16745,7 +16752,7 @@ items:
     branch: test/16.0.0-ci-flakes
     base: official/dev@2dc0c1bc
     worktree: externals/work/crm-ci-flakes
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8866]
     ships_to_operators_today: false
     blast_radius: >
@@ -16760,7 +16767,7 @@ items:
     semver_reason: developer tooling; no API, page, setting or runtime change
     register: [BF-201]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official show test/16.0.0-ci-flakes:package.json | node -e "const c=JSON.parse(require('fs').readFileSync(0)).nodemonConfig||{};process.exit(Array.isArray(c.watch)&&c.watch.includes('lib')&&!c.watch.includes('static')&&!c.ignore?0:1)"
+      - run: git -C externals/cgm-remote-monitor-official show official/dev:package.json | node -e "const c=JSON.parse(require('fs').readFileSync(0)).nodemonConfig||{};process.exit(Array.isArray(c.watch)&&c.watch.includes('lib')&&!c.watch.includes('static')&&!c.ignore?0:1)"
         kind: static
         describe: >
           #8866's branch's nodemonConfig is a watch list that includes lib
@@ -16777,6 +16784,9 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-27, 19:42:55Z: merged with #8866 (head f6884342, merge
+      b84871d7). Gate re-pointed to official/dev, with official/master as
+      the control.
       2026-10-27: asked for by the maintainer through session -a7, after
       tests/development-watch.test.js failed with ENOSPC on 2026-10-26.
       Measured counts replace -a7's at dev 47723cda (1,396 and 339); the
@@ -16795,7 +16805,7 @@ items:
     branch: test/16.0.0-ci-flakes
     base: official/dev@2dc0c1bc
     worktree: externals/work/crm-ci-flakes
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8866]
     ships_to_operators_today: false
     blast_radius: >
@@ -16809,13 +16819,13 @@ items:
     semver_reason: CI only
     register: [BF-202]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official show test/16.0.0-ci-flakes:tools/wait-for-mongodb.js | grep -q 'os.release()'
+      - run: git -C externals/cgm-remote-monitor-official show official/dev:tools/wait-for-mongodb.js | grep -q 'os.release()'
         kind: static
         describe: >
           #8866's branch has the MongoDB wait that prints the runner's kernel
           (e0cfbd0c), so a failed or passing 8.0 job records which kernel it
           ran on. This is the diagnosis aid, not the fix.
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f6884342 test/16.0.0-ci-flakes
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f6884342 official/dev
         kind: static
         describe: >
           The mitigation is on #8866's branch: Run Tests' MongoDB 8.0 cells and
@@ -16831,6 +16841,11 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-27, 19:42:55Z: the diagnosis aid and the mitigation merged
+      with #8866 (head f6884342, merge b84871d7). Gates re-pointed to
+      official/dev, with official/master as the control. Revisit at runner
+      kernel 7.0.14+, MongoDB support for 6.19+, or before ubuntu-22.04 is
+      retired.
       2026-10-27: filed at the maintainer's request. Kernel readings on run
       40569101512: both 8.0 jobs on 7.0.0-1017-azure refused to start (8.0.29
       included); 5.0 and 6.0 on 6.17.0-1022-azure passed; ubuntu-24.04 image
@@ -17045,8 +17060,8 @@ items:
     branch: bf/16.0.0-ddata-at-crash
     base: official/dev@2dc0c1bc
     worktree: externals/work/crm-ddata-crash
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8868]
     ships_to_operators_today: false
     blast_radius: >
       lib/data/endpoints.js (/api/v2/ddata/at/:at answers 400 for a time that
@@ -17095,6 +17110,9 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-27, 19:50:31Z: #8868 opened by bewest into dev, head
+      2ca7dfc8 (dev 94899828 merged in on top of 2564e5dc; gh pr view
+      8868).
       2026-10-27: found by session -2e's route census on dev 2dc0c1bc and
       #8863; fixed by its agent on bf/16.0.0-ddata-at-crash 434c0157 (on dev
       2dc0c1bc, 3 files, +142). v15.0.9 checked by -2e: not affected (500,
@@ -17127,7 +17145,7 @@ items:
     branch: bf/16.0.0-null-removes
     base: official/dev@47723cda
     worktree: externals/work/crm-q1b-fix
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8859]
     ships_to_operators_today: true
     blast_radius: >
@@ -17144,12 +17162,12 @@ items:
     semver_reason: a race fixed; what is stored and replied does not change
     register: [BF-195]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda bf/16.0.0-null-removes
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda official/dev
         kind: static
         describe: >
           The PR #8859 branch contains dev 47723cda. Red if the branch is
           rebased off dev or deleted.
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1bdce62c bf/16.0.0-null-removes
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1bdce62c official/dev
         kind: static
         describe: >
           The fix commit 1bdce62c is on the PR #8859 branch. Red if the branch
@@ -17170,6 +17188,9 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-27, 19:52:21Z: merged. bewest merged #8859 (head 87f1aeb8)
+      into dev as 94899828 (gh pr view 8859). Gates re-pointed to
+      official/dev, with official/master as the control.
       2026-10-26, later: the maintainer pushed 5c6ceabb; it is PR #8859's
       head (gh pr view, mergeable). Hosted CI on 5c6ceabb: 16 checks
       passed, 0 failed, 2 skipped (Build Docker image and Publish to Docker

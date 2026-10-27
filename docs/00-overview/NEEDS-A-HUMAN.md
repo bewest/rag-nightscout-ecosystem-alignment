@@ -30,19 +30,15 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 31 items
+### Maintainer &mdash; 26 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BFQ-161` | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory  | &mdash; |
 | `BFQ-193` | `in-flight-upstream` | BF-193 - the realtime socket and other write paths log every record written thro | #8856 |
-| `BFQ-195` | `in-flight-upstream` | BF-195 - a stale profile is pushed over the socket after a profile re-send | #8859 |
-| `BFQ-201` | `in-flight-upstream` | BF-201 - npm run dev's nodemon watches nearly the whole repository (1,502 Linux  | #8866 |
-| `BFQ-202` | `in-flight-upstream` | BF-202 - CI's MongoDB 8.0 jobs fail on hosted runners with Linux 6.19 or newer ( | #8866 |
-| `ID-SIMPLE-MATCH` | `in-flight-upstream` | API v1 entries and devicestatus match on identifier like treatments (the simple  | #8859 |
+| `BFQ-200` | `in-flight-upstream` | BF-200 - on dev, an unusable time on API v2's data-snapshot route stops the serv | #8868 |
 | `PLAT-ENTRY` | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; im | #8862 |
 | `PLAT-SERVE` | `in-flight-upstream` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a ti | #8865 |
-| `RT-CI-FLAKES-8DBB60C2` | `in-flight-upstream` | dev 8dbb60c2's red CI: a concurrent-writes timestamp collision and the WebKit re | #8866 |
 | `ST-FILTER-READS` | `in-flight-upstream` | Storage interface, first PR: the filter tree and interface methods under API v3' | #8861 |
 | `ST-WRITES` | `in-flight-upstream` | Storage interface, second PR: API v1, authorization storage and socket writes th | #8863 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
@@ -61,7 +57,6 @@ every item that was `merged-upstream` then is `released`.
 | `MOD-UNITS-CANONICAL` | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), an | &mdash; |
 | `MOD-WRITE-VALIDATION-READ` | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
-| `BFQ-200` | `ready-to-push` | BF-200 - on dev, an unusable time on API v2's data-snapshot route stops the serv | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
@@ -91,15 +86,11 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
 | **#8856** | `BFQ-193` | `bf/16.0.0-log-privacy` | BF-193 - the realtime socket and other write paths log every | Maintainer |
-| **#8859** | `BFQ-195` | `bf/16.0.0-null-removes` | BF-195 - a stale profile is pushed over the socket after a p | Maintainer |
-| **#8859** | `ID-SIMPLE-MATCH` | `bf/16.0.0-null-removes` | API v1 entries and devicestatus match on identifier like tre | Maintainer |
 | **#8861** | `ST-FILTER-READS` | `feat/storage-filter` | Storage interface, first PR: the filter tree and interface m | Maintainer |
 | **#8862** | `PLAT-ENTRY` | `feat/nightscout-entrypoint` | One executable (D21): bin/nightscout.js with `single` and th | Maintainer |
 | **#8863** | `ST-WRITES` | `feat/storage-writes` | Storage interface, second PR: API v1, authorization storage  | Maintainer |
 | **#8865** | `PLAT-SERVE` | `feat/nightscout-serve` | `nightscout serve <roles>` (D21): hosted roles carved from b | Maintainer |
-| **#8866** | `BFQ-201` | `test/16.0.0-ci-flakes` | BF-201 - npm run dev's nodemon watches nearly the whole repo | Maintainer |
-| **#8866** | `BFQ-202` | `test/16.0.0-ci-flakes` | BF-202 - CI's MongoDB 8.0 jobs fail on hosted runners with L | Maintainer |
-| **#8866** | `RT-CI-FLAKES-8DBB60C2` | `test/16.0.0-ci-flakes` | dev 8dbb60c2's red CI: a concurrent-writes timestamp collisi | Maintainer |
+| **#8868** | `BFQ-200` | `bf/16.0.0-ddata-at-crash` | BF-200 - on dev, an unusable time on API v2's data-snapshot  | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 

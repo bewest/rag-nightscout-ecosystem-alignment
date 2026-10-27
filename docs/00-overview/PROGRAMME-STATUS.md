@@ -24,10 +24,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 183 | 38 | 15 |
-| **Modernization** | `release-train` | 49 | 8 | 5 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 183 | 38 | 12 |
+| **Modernization** | `release-train` | 49 | 8 | 3 |
 | **Multitenant** | `tenancy`, `platform` | 71 | 17 | 13 |
-| | **total** | **305** | **63** | **33** |
+| | **total** | **305** | **63** | **28** |
 
 <!-- END GENERATED: horizons -->
 
@@ -176,7 +176,7 @@ cover more than one `BF-`:
 | `BFQ-191` | `in-progress` | BF-191 - a stored treatment can stop the server process, and keeps doing so after a restar |
 | `BFQ-193` | `in-flight-upstream` | BF-193 - the realtime socket and other write paths log every record written through them |
 | `BFQ-194` | `needs-decision` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets  |
-| `BFQ-195` | `in-flight-upstream` | BF-195 - a stale profile is pushed over the socket after a profile re-send |
+| `BFQ-195` | `merged-upstream` | BF-195 - a stale profile is pushed over the socket after a profile re-send |
 | `BFQ-196` | `not-started` | BF-196 to BF-199 - API v1 error paths and the README's read window, found by PR #8858's ro |
 | `BFQ-40` | `released` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `merged-upstream` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
@@ -213,8 +213,8 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `released` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  |  | 17 |  | 1 |  |  |  | **22** |
-| `release-train` | 8 |  | 1 |  | 1 | 2 | 15 | 15 | 3 | 1 |  |  | 3 | **49** |
-| `register-open` | 28 | 3 | 1 | 2 | 3 | 6 | 31 | 58 | 6 |  |  | 4 |  | **142** |
+| `release-train` | 8 |  | 1 |  | 1 |  | 17 | 15 | 3 | 1 |  |  | 3 | **49** |
+| `register-open` | 28 | 3 | 1 | 1 | 3 | 4 | 34 | 58 | 6 |  |  | 4 |  | **142** |
 | `tenancy` | 9 | 1 |  | 1 | 12 | 2 |  |  | 7 | 3 | 1 |  |  | **36** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  |  | 11 |  |  |  | **19** |
 | `backfix2` |  |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |

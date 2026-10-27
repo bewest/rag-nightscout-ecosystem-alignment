@@ -2756,64 +2756,64 @@ controls:
       are 6 checked, 2 failing, both v15.0.8's, and exit 0.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official show test/16.0.0-ci-flakes:package.json | node -e "const c=JSON.parse(require('fs').readFileSync(0)).nodemonConfig||{};process.exit(Array.isArray(c.watch)&&c.watch.includes('lib')&&!c.watch.includes('static')&&!c.ignore?0:1)"
-    cwd: .
-    control: |-
       git -C externals/cgm-remote-monitor-official show official/dev:package.json | node -e "const c=JSON.parse(require('fs').readFileSync(0)).nodemonConfig||{};process.exit(Array.isArray(c.watch)&&c.watch.includes('lib')&&!c.watch.includes('static')&&!c.ignore?0:1)"
-    control-kind: static
-    proves: >
-      the same check on official/dev 2dc0c1bc, whose nodemonConfig is the
-      ignore list, exits 1 (measured 2026-10-27).
-
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official show test/16.0.0-ci-flakes:tools/wait-for-mongodb.js | grep -q 'os.release()'
     cwd: .
     control: |-
+      git -C externals/cgm-remote-monitor-official show official/master:package.json | node -e "const c=JSON.parse(require('fs').readFileSync(0)).nodemonConfig||{};process.exit(Array.isArray(c.watch)&&c.watch.includes('lib')&&!c.watch.includes('static')&&!c.ignore?0:1)"
+    control-kind: static
+    proves: >
+      the same check on official/master (c6a0d8ed, v15.0.9), which does not
+      carry the change, exits non-zero (re-pointed 2026-10-27 after the merge).
+
+  - gate: |-
       git -C externals/cgm-remote-monitor-official show official/dev:tools/wait-for-mongodb.js | grep -q 'os.release()'
-    control-kind: static
-    proves: >
-      the same check on official/dev 2dc0c1bc, which has no MongoDB wait
-      script, exits non-zero (measured 2026-10-27).
-
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f6884342 test/16.0.0-ci-flakes
     cwd: .
     control: |-
+      git -C externals/cgm-remote-monitor-official show official/master:tools/wait-for-mongodb.js | grep -q 'os.release()'
+    control-kind: static
+    proves: >
+      the same check on official/master (c6a0d8ed, v15.0.9), which does not
+      carry the change, exits non-zero (re-pointed 2026-10-27 after the merge).
+
+  - gate: |-
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f6884342 official/dev
-    control-kind: static
-    proves: >
-      the same containment against official/dev 2dc0c1bc, which runs every
-      MongoDB job on ubuntu-latest, exits 1 (measured 2026-10-27).
-
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c7857735 test/16.0.0-ci-flakes
     cwd: .
     control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f6884342 official/master
+    control-kind: static
+    proves: >
+      the same check on official/master (c6a0d8ed, v15.0.9), which does not
+      carry the change, exits non-zero (re-pointed 2026-10-27 after the merge).
+
+  - gate: |-
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c7857735 official/dev
-    control-kind: static
-    proves: >
-      the same containment against official/dev 8dbb60c2, which does not
-      carry the concurrent-writes fix yet, exits 1 (measured 2026-10-27).
-
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 65632082 test/16.0.0-ci-flakes
     cwd: .
     control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c7857735 official/master
+    control-kind: static
+    proves: >
+      the same check on official/master (c6a0d8ed, v15.0.9), which does not
+      carry the change, exits non-zero (re-pointed 2026-10-27 after the merge).
+
+  - gate: |-
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 65632082 official/dev
-    control-kind: static
-    proves: >
-      the same containment against official/dev 2dc0c1bc, which does not
-      carry the dashboard round-trip fix, exits 1 (measured 2026-10-27).
-
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bdd569a3 test/16.0.0-ci-flakes
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bdd569a3 official/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 65632082 official/master
     control-kind: static
     proves: >
-      the same containment against official/dev 8dbb60c2, which does not
-      carry the page-startup fix yet, exits 1 (measured 2026-10-27).
+      the same check on official/master (c6a0d8ed, v15.0.9), which does not
+      carry the change, exits non-zero (re-pointed 2026-10-27 after the merge).
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bdd569a3 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bdd569a3 official/master
+    control-kind: static
+    proves: >
+      the same check on official/master (c6a0d8ed, v15.0.9), which does not
+      carry the change, exits non-zero (re-pointed 2026-10-27 after the merge).
 
   - gate: |-
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 434c0157 bf/16.0.0-ddata-at-crash
@@ -2845,3 +2845,33 @@ controls:
     proves: >
       the same containment against official/dev 2dc0c1bc, which does not
       carry the callback-tasks change, exits 1 (measured 2026-10-27).
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda official/master
+    control-kind: static
+    proves: >
+      the same check on official/master (c6a0d8ed, v15.0.9), which does not
+      carry the change, exits non-zero (added 2026-10-27 after the merge).
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8d0f9a22 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8d0f9a22 official/master
+    control-kind: static
+    proves: >
+      the same check on official/master (c6a0d8ed, v15.0.9), which does not
+      carry the change, exits non-zero (added 2026-10-27 after the merge).
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1bdce62c official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1bdce62c official/master
+    control-kind: static
+    proves: >
+      the same check on official/master (c6a0d8ed, v15.0.9), which does not
+      carry the change, exits non-zero (added 2026-10-27 after the merge).
