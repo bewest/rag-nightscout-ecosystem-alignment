@@ -321,9 +321,9 @@ release soaks them; and how does that weigh against releasing as soon as the can
   5. A one-step fallback: reverting the slices' merge commits restores the current paths, rehearsed
      once.
   Not met with time on `dev` before the tag → 16.1.0, as in §3.
-- **Results, 2026-10-27: items 1, 3, 4 and 5 met** on local candidates (session -2e's agent;
+- **Results, 2026-10-27: all five items met** on local candidates (session -2e's agent;
   Node 22.23.4, MongoDB 5.0.33; `dev` `2dc0c1bc`, #8859 `5c6ceabb`, #8861 `48e7e101`, #8863
-  `38b910d7`). Item 2 is with session -e4.
+  `38b910d7`). Item 2 met the same day by session -e4, inside the private forks (below).
 
   | item | result |
   |---|---|
@@ -331,9 +331,13 @@ release soaks them; and how does that weigh against releasing as soon as the can
   | 3. behaviour | write-contract matrix, 360 cells: with = without in off and in reject (0 differing; off vs reject differ in 12 on each, so the matrix can see a change). Client replay, 67 rows / 201 cells: equal; its dead-port and wrong-expectation controls fail. v1 HTTP differential: 700 of 700 identical. Suites, passing/failing/pending: without `npm test` 4575/0/3, `test:all` 4903/0/3; with 4687/0/3 and 5015/0/3 |
   | 4. latency | 16 read and write shapes, 200 runs each, interleaved, on a 90-day synthetic database: with/without median 0.99–1.04 and p95 0.93–1.04, inside the noise floor (median 0.97–1.05). No measurable change. Not measured: concurrent load, larger databases, MongoDB 8, Node 26 |
   | 5. revert | `cand/with-reverted` `cf762dd0`: one commit reverting the three merges; its tree equals `cand/without`'s (`7a6f5c20`, checked by session -ee) and `npm test` gives 4575/0/3 |
+  | 2. advisory fixes | BF-72's and BF-161's fixes merged onto `cand/with` in their private forks, local only (session -e4; Node 22.23.4, MongoDB 8.0.34). BF-72: seven files resolved where the slices move v1 reads onto the interface; its read time limit now travels through the interface, the new count path included; `npm test` 4765/0/3, `test:all` 5093/0/3; removing the limit from either path fails the matching test. BF-161: no conflicts; its check still runs before the pattern is expanded; 4703/0/3 and 5031/0/3. Both are published with the release, through the forks |
   | the count operation | `GET /api/v1/count/:storage/where`, the one REST storage call still direct after #8863 (approved by the maintainer 2026-10-27), on `feat/storage-writes-count` `079f20ae`: its test fails 2 of 4 on `38b910d7`; v1 HTTP differential 700 of 700 identical including 219 count requests, and a deliberate break gives 102 differing |
 
-  The candidates are local. Before anything is pushed, the conflict resolutions go onto the PR
+  The candidates are local. On `dev` `94899828` (#8866 and #8859 merged) the slices are re-merged as
+  `479e33d1` and `a3f74a08`; outside the 11 files #8866 changed, their trees equal the measured ones
+  (checked by session -ee), and the suites and the matrix are being re-run on them. Before anything is
+  pushed, the conflict resolutions go onto the PR
   branches (`dev` and #8859 merged into `feat/storage-filter` and `feat/storage-writes`, the count
   commit added to #8863), and the maintainer merges #8859 before #8861 and #8863.
   Merge order to `dev`, agreed 2026-10-27 (maintainer; sessions -2e and -e4): #8859, then #8856
