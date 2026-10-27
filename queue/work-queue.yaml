@@ -15094,6 +15094,9 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      Decided 2026-10-27 (maintainer): extend the draft advisory to cover
+      BF-161 as well as BF-151, and publish it once, with 16.0.0.
+
       2026-10-27, after #8861, #8863 and #8870 merged: dev 9668b179 and
       then 7abe1cf6 merged into the fork branch (8dcf1537, already on the
       fork) as adv/phrf-1600-dev 1dce7722 (externals/work/crm-ghsa-phrf-
@@ -17205,7 +17208,7 @@ items:
     repo: cgm-remote-monitor
     branch: ""
     base: official/dev@47723cda
-    state: needs-decision
+    state: in-progress
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -17235,6 +17238,23 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
     notes: >
+      2026-10-27: building on local bf/16.0.0-tt-units (worktree
+      externals/work/crm-tt-units, off dev 7abe1cf6; session -ee's agent).
+      Rule as briefed: a target labelled mmol (any spelling) is converted with
+      the careportal's arithmetic; an unlabelled target below 20 is converted
+      too (the read-side rule of lib/data/ddata.js:486-488, #3549, moved to
+      write, so Trio's unlabelled-mmol edge case is not stamped mg/dL); every
+      Temporary Target is then labelled mg/dL; other eventTypes and stored
+      records unchanged.
+
+      Decided 2026-10-27 (maintainer), for 16.0.0: convert and always label.
+      At write, on API v1 and v3, a Temporary Target labelled mmol is
+      converted to mg/dL, and every Temporary Target is stored with units
+      mg/dL (the spelling every surveyed label-honouring reader accepts). The
+      conversion runs before v1's units deletion. Fixes BF-194 and nightscout-
+      reporter's misreading of unlabelled mg/dL targets on mmol sites; changes
+      no surveyed client's numbers. A release-note line in 16.0.0.
+
       2026-10-27, survey done (session -ee's agent, read from source; AAPS
       7e1d537d, Trio 0b29cd53, iAPS 642a82cd, oref0 d219baf9, nightguard
       75404bd, LoopFollow 4a74b781, xDrip 1ed76004, nightscout-reporter
@@ -21312,7 +21332,7 @@ items:
     repo: rag-nightscout-ecosystem-alignment
     branch: main
     base: main@5a6cef4d
-    state: in-progress
+    state: done
     pr: []
     blast_radius: >
       A drafted message in docs/30-design/platform/upstream-asks-loop-identifier/
@@ -21336,6 +21356,15 @@ items:
       - reports/consumer-impact-15.0.9/clients-8758.md
       - docs/30-design/platform/upstream-asks-device-simulators/README.md
     notes: >
+      2026-10-27 (maintainer): send now, as an update on the alignment
+      repository's Loop dialogue page (docs/30-design/platform/upstream-asks-
+      loop-identifier/README.md, published on the project site; the repository
+      has no Discussions). The reply was revised and re-measured first
+      (record-identity and v3-identifier-immutable labs, 15.0.9 c6a0d8ed vs
+      dev 7abe1cf6, results 2026-10-27). Posted 2026-10-27. Waiting on Loop's
+      answers to the six cases; record them in the README's conversation
+      table.
+
       Points the reply should carry, each re-checked at the ref before
       sending: API v3 already keeps a client-supplied identifier on entries,
       treatments and devicestatus (resolveIdentifier, 15.0.8 and fade2299),

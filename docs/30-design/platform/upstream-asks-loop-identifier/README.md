@@ -2,10 +2,17 @@
 
 *What this is: an outreach draft (contributor-facing). Read after the [identity
 specification](../spec/identity.md); leads to the [device-simulator
-requests](../upstream-asks-device-simulators/README.md). Status: **draft, not yet sent; for maintainer review.** Queue item `LOOP-ID-REPLY`.
-Facts checked 2026-10-17 at cgm-remote-monitor `15.0.8` (`92d08342`) and `dev` `fade2299`, Loop at
+requests](../upstream-asks-device-simulators/README.md). Status: **posted 2026-10-27 as an update on this page** (the maintainer's choice of channel); the reply is [reply.body.md](reply.body.md). Queue item `LOOP-ID-REPLY`.
+Facts first checked 2026-10-17 at cgm-remote-monitor `15.0.8` (`92d08342`) and `dev` `fade2299`; the reply re-measured 2026-10-27 at `15.0.9` (`c6a0d8ed`) and `dev` `7abe1cf6`; Loop at
 LoopWorkspace `548b332` (NightscoutService `2cef489`, LoopKit `d9f1437`) and NightscoutKit `4ec9fd1`,
 from this repository's `5a6cef4d`. Each project's maintainers decide what, if anything, to do.*
+
+## Update, 2026-10-27
+
+Our reply is posted here as an update, re-measured on 15.0.9 and 16.0.0's `dev`: the gap the first
+draft described (v1 entries and device status ignoring `identifier`) is closed for 16.0.0, and our
+defaults for a re-send after a delete (case 4) and for apps that send no identifier (case 5) are now
+decided. Read [the reply](reply.body.md); its six cases ask for your answers.
 
 ## What this is
 
@@ -133,6 +140,7 @@ send `identifier`) is the direction the reply takes.
 | 2026-10-18 | revised | — | open questions become six concrete cases with today's behaviour, our default and an answer column; tie-break reversed to `identifier` decides (maintainer) | `ID-CLIENT-OID-DECISION`; write contract §6.1 |
 | 2026-10-18 | revised | — | case 5's default: time key on legacy paths now, `identifier` mandatory at a future version boundary and for registered controller instances; the format paragraph states the conventions table, URL syntax, source schemes (`dexcom://g7/…`) and app schemes (`loop://carbs/…`) and asks whether that works for Loop; the character set allows `/` and `:` with percent-encoding in v3 paths (measured) (maintainer) | `ID-ABSENT-DECISION`, `ID-FORMAT-DECISION`, `ID-CONVENTIONS`; [identifier conventions](../identifier-conventions.md) |
 | 2026-10-27 | revised | — | updated for 16.0.0 and re-measured (record-identity and v3-identifier-immutable labs, 15.0.9 `c6a0d8ed` vs dev `7abe1cf6`): the v1 entries and device status gap is closed by #8859; BF-169 and BF-170 corrected (#8845); rule 3: the time key stays, `identifier` recommended for every app and required for registered controller instances (`ID-ABSENT-DECISION`); scope per collection (`ID-SCOPE-DECISION`); case 4's default: acknowledged, stays deleted (`ID-DELETE-REUSE-DECISION`); RFC 7386 merge. Maintainer: send now | `ID-*-DECISION` (queue) |
+| 2026-10-27 | sent | this page (the alignment repository's Loop dialogue page, published on the project site) | posted as an update: the revised reply below. Their answers to the six cases, case 4's question and the conventions question are awaited | this README |
 
 When the reply is sent, add its date, channel and link. When they answer, add a row and the
 decision row it produces.

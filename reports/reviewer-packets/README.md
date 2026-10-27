@@ -28,7 +28,6 @@ repository.
 | [`RT-CI-WEBKIT-REPORTS`](rt-ci-webkit-reports-test-16-0-0-reports-ready.md) | #8869 | `in-flight-upstream` | WebKit's cached-bundle startup test still fails on dev after bdd569a3: report requests cancelled 'due to access control checks' |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`BFQ-161`](bfq-161-adv-phrf-1600-dev.md) | &mdash; | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes |
-| [`BFQ-194`](bfq-194.md) | &mdash; | `needs-decision` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL |
 | [`BFQ-203`](bfq-203-tooling-jsconfig-watch-scope.md) | &mdash; | `ready-to-push` | BF-203 - an editor opening a cgm-remote-monitor file inside a larger workspace watches every sibling worktree (450,689 inotify watches); add jsconfig.json |
 | [`BFQ-72`](bfq-72-adv-r3gv-1600-dev.md) | &mdash; | `in-flight-upstream` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | [`BFQ-95`](bfq-95.md) | &mdash; | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |

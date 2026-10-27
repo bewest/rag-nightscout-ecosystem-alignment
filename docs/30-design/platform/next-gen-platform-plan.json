@@ -152,7 +152,7 @@
    "depends": [
     "PR-8854"
    ],
-   "ref": "2026-10-27: maintainer leans to one internal event per write call naming each record by _id and identifier; benchmark against the counts-only event first (latency, payload and listener cost, change-feed usefulness, concurrent writers), session -2e, tools/lab/commit-event-bench"
+   "ref": "Benchmark 2026-10-27 (session -2e; lab/commit-event-bench 54cd8fff7, prototype proto/d-event-per-call 8a396715 off 9668b179, local; Node 22.23.4, MongoDB 8.0.29): nothing in lib/ subscribes to storage-write-committed today (only tests), so option 1 costs nothing until a subscriber is added. With a listener: inserts free; updates, replaces and deletes need a pre-read, +0.4-1.8 ms (outside the noise floor 0.961-1.125 on 10 of 13 shapes); 1,000-record backfill +13% (entries) and +27% (treatments); ~105 B per record vs ~150 B counts-only; change feed exact 100/100 on 20 shapes with no follow-up read (counts-only needs a read every event); concurrent k=1/2/4, 41,118 ops, 0 cross-attributed, throughput -2 to -5%, the pre-read not atomic in a pruner race (3-8 inexact events per round, flagged by records != counts). Next, unbuilt: name upserts from the driver result and read matched records only after the write when matchedCount > 0"
   },
   {
    "id": "ST-FILTER",

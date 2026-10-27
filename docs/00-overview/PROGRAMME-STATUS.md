@@ -24,10 +24,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 184 | 38 | 11 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 184 | 38 | 10 |
 | **Modernization** | `release-train` | 50 | 8 | 3 |
 | **Multitenant** | `tenancy`, `platform` | 72 | 17 | 8 |
-| | **total** | **308** | **63** | **22** |
+| | **total** | **308** | **63** | **21** |
 
 <!-- END GENERATED: horizons -->
 
@@ -175,7 +175,7 @@ cover more than one `BF-`:
 | `BFQ-190` | `merged-upstream` | BF-190 - an alarm on a page without a current reading cannot be silenced from the page |
 | `BFQ-191` | `in-progress` | BF-191 - a stored treatment can stop the server process, and keeps doing so after a restar |
 | `BFQ-193` | `merged-upstream` | BF-193 - the realtime socket and other write paths log every record written through them |
-| `BFQ-194` | `needs-decision` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets  |
+| `BFQ-194` | `in-progress` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets  |
 | `BFQ-195` | `merged-upstream` | BF-195 - a stale profile is pushed over the socket after a profile re-send |
 | `BFQ-196` | `not-started` | BF-196 to BF-199 - API v1 error paths and the README's read window, found by PR #8858's ro |
 | `BFQ-40` | `released` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
@@ -214,11 +214,11 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 8 |  | 1 |  | 1 | 1 | 17 | 15 | 2 | 1 |  |  | 4 | **50** |
-| `register-open` | 28 | 3 | 1 | 2 | 3 | 2 | 36 | 58 | 6 |  |  | 4 |  | **143** |
+| `register-open` | 28 | 4 | 1 | 2 | 3 | 2 | 36 | 58 | 5 |  |  | 4 |  | **143** |
 | `tenancy` | 9 | 1 |  | 1 | 12 |  | 3 |  | 4 | 3 | 1 |  | 3 | **37** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  |  | 11 |  |  |  | **19** |
 | `backfix2` |  |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
-| `platform` | 8 | 2 |  |  |  | 2 |  |  |  | 23 |  |  |  | **35** |
+| `platform` | 8 | 1 |  |  |  | 2 |  |  |  | 24 |  |  |  | **35** |
 
 <!-- END GENERATED: state-matrix -->
 
