@@ -5209,10 +5209,6 @@
          <lastmod>2026-10-27</lastmod>
     </url>
     <url>
-         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/arch-8854-failed.html</loc>
-         <lastmod>2026-10-27</lastmod>
-    </url>
-    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/bfq-161-adv-phrf-1600.html</loc>
          <lastmod>2026-10-27</lastmod>
     </url>
@@ -5245,15 +5241,7 @@
          <lastmod>2026-10-27</lastmod>
     </url>
     <url>
-         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/id-delete-reuse-decision.html</loc>
-         <lastmod>2026-10-27</lastmod>
-    </url>
-    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/id-format-decision.html</loc>
-         <lastmod>2026-10-27</lastmod>
-    </url>
-    <url>
-         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/id-scope-decision.html</loc>
          <lastmod>2026-10-27</lastmod>
     </url>
     <url>
@@ -5285,11 +5273,7 @@
          <lastmod>2026-10-27</lastmod>
     </url>
     <url>
-         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/st-filter-reads-feat-storage-filter.html</loc>
-         <lastmod>2026-10-27</lastmod>
-    </url>
-    <url>
-         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/st-writes-feat-storage-writes.html</loc>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/st-count-onepath-feat-storage-count-onepath.html</loc>
          <lastmod>2026-10-27</lastmod>
     </url>
     <url>

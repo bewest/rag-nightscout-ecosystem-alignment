@@ -2134,7 +2134,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-27 at <code>59eed2c6c</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>c8a9baaab</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -3258,7 +3258,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a379dd3f79b639046027094d91af4abd247c4adc/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (65 queue ids: every item this file or
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f95ce793716d80490de3e60f29ffa987f9112d5a/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (65 queue ids: every item this file or
 <a href="decisions.html">decisions.md</a> names, and the release items), with the capture command.</p>
 <p><strong>Dry run, 2026-10-27, <code>dev</code> <code>8dbb60c2</code></strong> (reproduced; written to a scratch directory, not kept, because a
 record is captured once, at the tag). The generator ran on the selection with its default <code>static</code> and
@@ -3322,13 +3322,13 @@ BF-193 is not a pre-tag requirement; its fix shape is decided (debug-gated paylo
 <li><strong>BF-194</strong> (maintainer): API v1 removes <code>units</code> from a treatment with no glucose value before
     <code>WRITE_VALIDATION</code> runs, so a v1 temp target sent in mmol/L is stored with mmol/L numbers and no
     units and reads as mg/dL, in every mode, on 15.0.9 and <code>dev</code> (reproduced, integration record R15):
-    keep the units, convert, or refuse. Queue <code>BFQ-194</code>.</li>
+    keep the units, convert, or refuse. Queue <code>BFQ-194</code>. <em>2026-10-27 (maintainer): survey the clients first, then likely enforce mg/dL at write (convert a target labelled mmol and relabel it); survey running.</em></li>
 <li><strong>#8854's <code>failed</code> slot</strong> (maintainer): under <code>reject</code>, a socket treatment array answers an item whose
     write cannot be confirmed (a lookup, similar-record match or insert error, such as a duplicate key) with a
     slot without <code>_id</code> carrying <code>failed: {status: 500, message: "Treatment write could not be confirmed"}</code>,
     where <code>47723cda</code> left the item out of the reply (<code>lib/server/websocket.js:557-563</code> on <code>7ad3a67f</code>;
     read, not measured). API v1 has no equivalent. List it in the 16.0.0 client notes as it is, or agree it
-    alongside <code>refused</code> (and whether API v1 should match). Queue <code>ARCH-8854-FAILED</code>.</li>
+    alongside <code>refused</code> (and whether API v1 should match). Queue <code>ARCH-8854-FAILED</code>. <em>Decided 2026-10-27 (maintainer): ship it as it is, described in the client notes as experimental under <code>reject</code>; the per-item reply for every path is settled in ID-BATCH.</em></li>
 </ol>
 <p><strong>Found by R15 (reproduced; no register entry):</strong></p>
 <ul>

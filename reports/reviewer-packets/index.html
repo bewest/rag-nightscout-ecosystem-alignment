@@ -16,7 +16,7 @@
         <link rel="prev" href="../phase0-pr-bodies/v1-writes-v3-history.html">
       
       
-        <link rel="next" href="arch-8854-failed.html">
+        <link rel="next" href="bfq-161-adv-phrf-1600.html">
       
       
         
@@ -1638,14 +1638,6 @@
       
         
       
-        
-      
-        
-      
-        
-      
-        
-      
     
     
     
@@ -1698,34 +1690,6 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="arch-8854-failed.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Arch 8854 failed
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
               
             
               
@@ -1959,34 +1923,6 @@
   
   
     <li class="md-nav__item">
-      <a href="id-delete-reuse-decision.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Id delete reuse decision
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="id-format-decision.html" class="md-nav__link">
         
   
@@ -1995,34 +1931,6 @@
     
   
     Id format decision
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="id-scope-decision.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Id scope decision
   
 
     
@@ -2239,42 +2147,14 @@
   
   
     <li class="md-nav__item">
-      <a href="st-filter-reads-feat-storage-filter.html" class="md-nav__link">
+      <a href="st-count-onepath-feat-storage-count-onepath.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    St filter reads feat storage filter
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="st-writes-feat-storage-writes.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    St writes feat storage writes
+    St count onepath feat storage count onepath
   
 
     
@@ -3043,7 +2923,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-27 at <code>59eed2c6c</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>c8a9baaab</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3086,22 +2966,10 @@ repository.</p>
 <td>BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies</td>
 </tr>
 <tr>
-<td><a href="st-filter-reads-feat-storage-filter.html"><code>ST-FILTER-READS</code></a></td>
-<td>#8861</td>
-<td><code>in-flight-upstream</code></td>
-<td>Storage interface, first PR: the filter tree and interface methods under API v3's adapter (ST-FILTER), and API v1 reads through them (ST-READS), with no v1 answer changed</td>
-</tr>
-<tr>
 <td><a href="plat-entry-feat-nightscout-entrypoint.html"><code>PLAT-ENTRY</code></a></td>
 <td>#8862</td>
 <td><code>in-flight-upstream</code></td>
 <td>One executable (D21): bin/nightscout.js with <code>single</code> and the operator tools; image ENTRYPOINT and CMD single, no image HEALTHCHECK; no start path changes</td>
-</tr>
-<tr>
-<td><a href="st-writes-feat-storage-writes.html"><code>ST-WRITES</code></a></td>
-<td>#8863</td>
-<td><code>in-flight-upstream</code></td>
-<td>Storage interface, second PR: API v1, authorization storage and socket writes through the interface, each labelled by source; #8854's boundary check fails a write that skips the interface</td>
 </tr>
 <tr>
 <td><a href="plat-serve-feat-nightscout-serve.html"><code>PLAT-SERVE</code></a></td>
@@ -3116,16 +2984,16 @@ repository.</p>
 <td>WebKit's cached-bundle startup test still fails on dev after bdd569a3: report requests cancelled 'due to access control checks'</td>
 </tr>
 <tr>
+<td><a href="st-count-onepath-feat-storage-count-onepath.html"><code>ST-COUNT-ONEPATH</code></a></td>
+<td>#8870</td>
+<td><code>in-flight-upstream</code></td>
+<td>API v1 count only through the storage interface: lib/server/aggregate.js loses its constructor pipeline hook and no-store path</td>
+</tr>
+<tr>
 <td><code>ADV-XSS-META</code> (not published)</td>
 <td>&mdash;</td>
 <td><code>needs-decision</code></td>
 <td>GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74)</td>
-</tr>
-<tr>
-<td><a href="arch-8854-failed.html"><code>ARCH-8854-FAILED</code></a></td>
-<td>&mdash;</td>
-<td><code>needs-decision</code></td>
-<td>Decide: the socket's failed slot that #8854 adds under WRITE_VALIDATION=reject - ship as is, or agree it alongside refused (and on API v1?)</td>
 </tr>
 <tr>
 <td><a href="bfq-161-adv-phrf-1600.html"><code>BFQ-161</code></a></td>
@@ -3170,22 +3038,10 @@ repository.</p>
 <td>Decide: may a client set _id (an ObjectId it creates) over API v1? (API v3 decided: refused, BF-170)</td>
 </tr>
 <tr>
-<td><a href="id-delete-reuse-decision.html"><code>ID-DELETE-REUSE-DECISION</code></a></td>
-<td>&mdash;</td>
-<td><code>needs-decision</code></td>
-<td>Decide: after a delete, what does a re-send of the same identifier (or _id) do - resurrect, refuse, or create new?</td>
-</tr>
-<tr>
 <td><a href="id-format-decision.html"><code>ID-FORMAT-DECISION</code></a></td>
 <td>&mdash;</td>
 <td><code>needs-decision</code></td>
 <td>Decide: the client identifier's format (opaque string with limits; UUID not required)</td>
-</tr>
-<tr>
-<td><a href="id-scope-decision.html"><code>ID-SCOPE-DECISION</code></a></td>
-<td>&mdash;</td>
-<td><code>needs-decision</code></td>
-<td>Decide: is identifier unique per collection, across collections, and per tenant under TENANCY_MODE=multi?</td>
 </tr>
 <tr>
 <td><a href="id-v3-immutable-decision.html"><code>ID-V3-IMMUTABLE-DECISION</code></a></td>

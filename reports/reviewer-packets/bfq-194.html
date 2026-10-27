@@ -1638,14 +1638,6 @@
       
         
       
-        
-      
-        
-      
-        
-      
-        
-      
     
     
     
@@ -1698,34 +1690,6 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="arch-8854-failed.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Arch 8854 failed
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
               
             
               
@@ -2105,34 +2069,6 @@
   
   
     <li class="md-nav__item">
-      <a href="id-delete-reuse-decision.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Id delete reuse decision
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="id-format-decision.html" class="md-nav__link">
         
   
@@ -2141,34 +2077,6 @@
     
   
     Id format decision
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="id-scope-decision.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Id scope decision
   
 
     
@@ -2385,42 +2293,14 @@
   
   
     <li class="md-nav__item">
-      <a href="st-filter-reads-feat-storage-filter.html" class="md-nav__link">
+      <a href="st-count-onepath-feat-storage-count-onepath.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    St filter reads feat storage filter
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="st-writes-feat-storage-writes.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    St writes feat storage writes
+    St count onepath feat storage count onepath
   
 
     
@@ -3296,7 +3176,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-26 at <code>15705e554</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>c8a9baaab</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3384,8 +3264,18 @@ from an app, and talk to your care team about how you set targets.</p>
 <li><a href="../../docs/30-design/remedial/rc-16.0.0-integration-record.html"><code>docs/30-design/remedial/rc-16.0.0-integration-record.md</code></a></li>
 </ul>
 <h2 id="notes-carried-on-the-item">Notes carried on the item<a class="headerlink" href="#notes-carried-on-the-item" title="Permanent link">&para;</a></h2>
-<p>Filed 2026-10-26 from R15. Needs a maintainer decision: keep units on a record
-with targets when no glucose is given, convert to mg/dL, or refuse under
+<p>2026-10-27 (maintainer): survey the clients first (which apps send or read
+temp targets in mmol/L, over which API, and whether they read back their own),
+then likely enforce mg/dL at write: a target labelled mmol is converted to
+mg/dL and relabelled, so readers that ignore the label (Trio) read it right
+and Nightscout's read-side conversion (lib/data/ddata.js:476-488, #3549 in
+2018) does not convert it twice. History: the units deletion dates from
+a6182b55 (2015-02-11, 'if there isn't a glucose value, don't store the
+units'), before temp targets carried units; #3549 (2018) added the read-side
+mg/dL normalisation, which a v1-written target's missing label defeats only
+for readers outside Nightscout's own page. Survey running (session -ee). Filed
+2026-10-26 from R15. Needs a maintainer decision: keep units on a record with
+targets when no glucose is given, convert to mg/dL, or refuse under
 WRITE_VALIDATION=reject. Related to BF-180 (the careportal path through the
 same lines, merged in #8842) and MOD-UNITS-CANONICAL.</p>
 <hr />
