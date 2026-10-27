@@ -110,7 +110,7 @@ Slices S0, S1, S2 and S5 need no storage work and go to dev together as one sing
 
 | item | builds | needs |
 |---|---|---|
-| PLAT-ENTRY | one executable, `bin/nightscout.js`: `single` (today's server, every old start path unchanged) and the operator tools; image ENTRYPOINT and HEALTHCHECK (D21) | dev |
+| PLAT-ENTRY | one executable, `bin/nightscout.js`: `single` (today's server, every old start path unchanged) and the operator tools; image ENTRYPOINT, and no image HEALTHCHECK so a boot-error page is not restarted away (D21) | dev |
 | PLAT-SERVE | `nightscout serve <roles>`: hosted roles carved from `bootevent`, `api` first, each listener bound separately (D5, D7, D16) | PLAT-ENTRY, ST-READS |
 | T30-RESEARCH | the tenant-owner configuration surface (277 settings classified) | D-T30 |
 | T30-SCHEMA-CONFIG | the per-tenant settings table (D15) | T30-RESEARCH |

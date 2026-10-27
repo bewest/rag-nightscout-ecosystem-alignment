@@ -21479,14 +21479,66 @@ items:
       mingo round trip could not see them, the live-mongod differential
       did. All five are fixed on the branch and pinned by tests.
 
+  - id: ST-WRITES
+    title: "Storage interface, second PR: API v1, authorization storage and socket writes through the interface, each labelled by source; #8854's boundary check fails a write that skips the interface"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: feat/storage-writes
+    base: feat/storage-filter@48e7e101
+    worktree: externals/work/crm-stwrites
+    state: in-flight-upstream
+    pr: [8863]
+    blast_radius: >
+      lib/server/{entries, treatments, devicestatus, profile, food,
+      activity, websocket}.js, lib/authorization/storage.js, the new
+      lib/server/storage-writes.js, lib/api3/storage/mongoCollection
+      (write context {source, validated}, write options), the cache
+      wrapper, delete-status.js, scripts/check-write-boundary.js (a new
+      rule: every write goes through the interface). aggregate.js is
+      unchanged (BF-70).
+    review: maintainer, plus a second human - every v1 and socket write path moves
+    operator_visible: >
+      Nothing should look different: every API v1 write and socket event
+      gets the same reply and stores the same documents as before.
+    semver: patch
+    semver_reason: >
+      No client-visible change; the write-contract matrix, #8854's CRUD
+      matrix and an 88-step write differential are the pins.
+    gates:
+      - no-gate: >
+          Measured by the lab, not re-runnable from this repository alone.
+          On feat/storage-writes 38b910d7 against 48e7e101 (Node 22.23.4,
+          MongoDB 8.0.34): npm test 4588/0/3 (base 4577), test:all 4916/0/3
+          (base 4905), check-write-boundary 9 entry points (red: a raw
+          deleteMany), #8854 matrix 422 (red: socket label dropped, 78
+          failing), write-contract matrix 0 of 336 cells off and reject
+          (red: deleted alias, 3 cells; reject mode is not exercised by the
+          matrix, see QC-MATRIX-TT), v1 GET differential 700/700, write
+          differential 88/88 with 3254 documents (red: alias 11 replies,
+          $unset 11 stored states).
+    blocks_on: [ST-FILTER-READS]
+    evidence:
+      - docs/30-design/platform/next-gen-platform-plan.md
+      - tools/qc/write-contract-matrix.js
+      - tools/seam/DIFFERENTIALS.md
+    notes: >
+      2026-10-26: draft #8863, stacked on #8861 (base feat/storage-filter);
+      it retargets to dev when #8861 merges. Labels: v1 modules
+      'v1/internal', socket 'socket', authorization storage 'internal',
+      default 'v3'; an unknown source is refused; origin has room but is not
+      passed. Open in the PR: commit events for authorization writes,
+      splitting 'v1/internal', insertOne normalize:false setting _id as
+      interface contract, moving the write differential into tools/seam.
+
   - id: PLAT-ENTRY
-    title: "One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT, CMD single, HEALTHCHECK; no start path changes"
+    title: "One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT and CMD single, no image HEALTHCHECK; no start path changes"
     parcel: platform
     repo: cgm-remote-monitor
     branch: feat/nightscout-entrypoint
     base: official/dev@8dbb60c2
-    state: in-progress
-    pr: []
+    worktree: externals/work/crm-platentry
+    state: in-flight-upstream
+    pr: [8862]
     blast_radius: >
       New bin/nightscout.js and a package.json "bin" entry; Dockerfile
       ENTRYPOINT/CMD/HEALTHCHECK. lib/server/server.js stays the
@@ -21503,16 +21555,28 @@ items:
       changes.
     gates:
       - no-gate: >
-          Not started. Gate: a test boots the app through each legacy start
-          path and through `nightscout single` and compares them; an unknown
-          subcommand exits 64; `nightscout healthcheck` is red against a
-          stopped server and green against a running one; the image built
-          with the new ENTRYPOINT passes its HEALTHCHECK.
+          Measured by the lab, not re-runnable from this repository alone
+          (needs MongoDB and a crm tree). On feat/nightscout-entrypoint
+          b63d9b7f (dev 8dbb60c2): npm test 4509/0/3 (dev 4480/0/3),
+          test:all 4837/0/3 at 4c7d678d (dev 4808/0/3), Node 22.23.4.
+          tests/start-paths.test.js boots seven start paths as processes and
+          deep-compares each with `nightscout single` (three ablations of the
+          single mapping red); unknown subcommand exits 64; healthcheck red
+          before start, green while running, red after stop; env redacts
+          five planted secrets (red without redact()); the image has no
+          HEALTHCHECK (asserted, red when one is added).
     blocks_on: []
     evidence:
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
       - docs/30-design/tenancy/nightscout-deployable-components-2026-09-14.md
     notes: >
+      2026-10-26, later: draft #8862 opened at 4c7d678d; b63d9b7f removed the
+      image HEALTHCHECK after the maintainer asked whether it would hide the
+      boot-error page. It would: a site that boots with errors serves that
+      page as a 500, and swarm or autoheal would restart it in a loop.
+      `nightscout healthcheck` stays as an opt-in command and names the
+      boot-error page. Open in the PR: PATH passthrough outside the image,
+      `docker run <image> env`, SIGTERM handling, 307-to-https as healthy.
       2026-10-26: the maintainer chose one executable with subcommands, the
       Consul / node-multienv start_container.sh / Ory `serve` pattern, and
       `serve <roles>` for hosted roles (D21, execution plan section 2.12).

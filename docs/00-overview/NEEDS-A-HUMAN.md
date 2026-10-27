@@ -30,7 +30,7 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 24 items
+### Maintainer &mdash; 26 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -38,7 +38,9 @@ every item that was `merged-upstream` then is `released`.
 | `BFQ-193` | `in-flight-upstream` | BF-193 - the realtime socket and other write paths log every record written thro | #8856 |
 | `BFQ-195` | `in-flight-upstream` | BF-195 - a stale profile is pushed over the socket after a profile re-send | #8859 |
 | `ID-SIMPLE-MATCH` | `in-flight-upstream` | API v1 entries and devicestatus match on identifier like treatments (the simple  | #8859 |
+| `PLAT-ENTRY` | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; im | #8862 |
 | `ST-FILTER-READS` | `in-flight-upstream` | Storage interface, first PR: the filter tree and interface methods under API v3' | #8861 |
+| `ST-WRITES` | `in-flight-upstream` | Storage interface, second PR: API v1, authorization storage and socket writes th | #8863 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `ARCH-8854-FAILED` | `needs-decision` | Decide: the socket's failed slot that #8854 adds under WRITE_VALIDATION=reject - | &mdash; |
@@ -87,6 +89,8 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 | **#8859** | `BFQ-195` | `bf/16.0.0-null-removes` | BF-195 - a stale profile is pushed over the socket after a p | Maintainer |
 | **#8859** | `ID-SIMPLE-MATCH` | `bf/16.0.0-null-removes` | API v1 entries and devicestatus match on identifier like tre | Maintainer |
 | **#8861** | `ST-FILTER-READS` | `feat/storage-filter` | Storage interface, first PR: the filter tree and interface m | Maintainer |
+| **#8862** | `PLAT-ENTRY` | `feat/nightscout-entrypoint` | One executable (D21): bin/nightscout.js with `single` and th | Maintainer |
+| **#8863** | `ST-WRITES` | `feat/storage-writes` | Storage interface, second PR: API v1, authorization storage  | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 

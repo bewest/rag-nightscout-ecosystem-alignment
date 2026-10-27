@@ -31,22 +31,22 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 300 |
+| items | 301 |
 | runnable gates | 357 |
-| explicit `no-gate:` markers | 339 |
+| explicit `no-gate:` markers | 340 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 339 of the 696 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 340 of the 697 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 63 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-STEP-PATCH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
-| `in-progress` | 7 | BFQ-178, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY, PLAT-ENTRY |
+| `in-progress` | 6 | BFQ-178, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY |
 | `gate-not-met` | 5 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 17 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164, PLAT-SERVE |
-| `in-flight-upstream` | 6 | ID-SIMPLE-MATCH, BFQ-72, BFQ-161, BFQ-193, BFQ-195, ST-FILTER-READS |
+| `in-flight-upstream` | 8 | ID-SIMPLE-MATCH, BFQ-72, BFQ-161, BFQ-193, BFQ-195, ST-FILTER-READS, ST-WRITES, PLAT-ENTRY |
 | `merged-upstream` | 44 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-192, MOD-WRITE-VALIDATION |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 16 | T30-RESEARCH, ARCH-8854-FAILED, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-194, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
@@ -7317,7 +7317,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 35 items
+`parcel: tenancy` &mdash; 36 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -7359,6 +7359,7 @@ alarm-readiness items, and the seam branch refresh.
 | `BFQ-66` | BF-66 - the deployment's own tokens fail its own tenant check | `blocked` | `crm-seam` | n/a | 0 run + 2 no-gate |
 | `BFQ-CAP02` | CAP-02 - no importer, and no Mongo to PostgreSQL loader | `not-started` | `crm-seam` | n/a | 0 run + 2 no-gate |
 | `ST-FILTER-READS` | Storage interface, first PR: the filter tree and interface methods under API v3's adapter (ST-FILTER), and API v1 reads through them (ST-READS), with no v1 answer changed | `in-flight-upstream` | `feat/storage-filter` | patch | 0 run + 1 no-gate |
+| `ST-WRITES` | Storage interface, second PR: API v1, authorization storage and socket writes through the interface, each labelled by source; #8854's boundary check fails a write that skips the interface | `in-flight-upstream` | `feat/storage-writes` | patch | 0 run + 1 no-gate |
 
 ### `T30-RESEARCH` &mdash; T3.0 part 1 - enumerate the per-tenant configuration surface
 
@@ -8448,6 +8449,37 @@ alarm-readiness items, and the seam branch refresh.
 
 **Notes.** 2026-10-26, later: the maintainer pushed 48e7e101 and opened draft #8861. ST- WRITES is being built on top of it (feat/storage-writes). 2026-10-26: the maintainer decided ST-FILTER and ST-READS go up as one PR. ST-FILTER found five defects in the September seam's fromMongo, each of which widens or changes a read ({a: {}} dropped, empty $or and $and matching everything, $exists undefined read as presence, RegExp g and s flags swapped, mongod- refused $regex options coerced); the mingo round trip could not see them, the live-mongod differential did. All five are fixed on the branch and pinned by tests.
 
+### `ST-WRITES` &mdash; Storage interface, second PR: API v1, authorization storage and socket writes through the interface, each labelled by source; #8854's boundary check fails a write that skips the interface
+
+| | |
+|---|---|
+| state (claimed) | `in-flight-upstream` |
+| repo | `cgm-remote-monitor` |
+| branch | `feat/storage-writes` |
+| base | `feat/storage-filter@48e7e101` |
+| worktree | `externals/work/crm-stwrites` |
+| semver | `patch` |
+| review | maintainer, plus a second human - every v1 and socket write path moves |
+| blocks on | `ST-FILTER-READS` |
+
+**Blast radius.** lib/server/{entries, treatments, devicestatus, profile, food, activity, websocket}.js, lib/authorization/storage.js, the new lib/server/storage- writes.js, lib/api3/storage/mongoCollection (write context {source, validated}, write options), the cache wrapper, delete-status.js, scripts/check-write-boundary.js (a new rule: every write goes through the interface). aggregate.js is unchanged (BF-70).
+
+**What an operator sees.** Nothing should look different: every API v1 write and socket event gets the same reply and stores the same documents as before.
+
+**Why `patch`.** No client-visible change; the write-contract matrix, #8854's CRUD matrix and an 88-step write differential are the pins.
+
+**Gates.**
+
+- **NO GATE** &mdash; Measured by the lab, not re-runnable from this repository alone. On feat/storage-writes 38b910d7 against 48e7e101 (Node 22.23.4, MongoDB 8.0.34): npm test 4588/0/3 (base 4577), test:all 4916/0/3 (base 4905), check-write-boundary 9 entry points (red: a raw deleteMany), #8854 matrix 422 (red: socket label dropped, 78 failing), write-contract matrix 0 of 336 cells off and reject (red: deleted alias, 3 cells; reject mode is not exercised by the matrix, see QC-MATRIX-TT), v1 GET differential 700/700, write differential 88/88 with 3254 documents (red: alias 11 replies, $unset 11 stored states).
+
+**Evidence.**
+
+- `docs/30-design/platform/next-gen-platform-plan.md`
+- `tools/qc/write-contract-matrix.js`
+- `tools/seam/DIFFERENTIALS.md`
+
+**Notes.** 2026-10-26: draft #8863, stacked on #8861 (base feat/storage-filter); it retargets to dev when #8861 merges. Labels: v1 modules 'v1/internal', socket 'socket', authorization storage 'internal', default 'v3'; an unknown source is refused; origin has room but is not passed. Open in the PR: commit events for authorization writes, splitting 'v1/internal', insertOne normalize:false setting _id as interface contract, moving the write differential into tools/seam.
+
 ---
 
 ## Document-truth sweeps
@@ -9214,7 +9246,7 @@ reproduced ones.
 | `SPEC-RECORDS` | Platform spec L1: the records specification (observation primitives, decomposition of today's documents, effective-dated settings snapshots) | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 2 run |
 | `SPEC-ACTIVE-STATE` | Decide and specify what a hub reports as active at a time, and a therapy-state version an approval can bind to | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 2 run |
 | `SCHEMA-INTENT-GAPS` | Registration grammar: the initiators other form, duration units on requested and applied carriers, typed carrier fields | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 2 run |
-| `PLAT-ENTRY` | One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT, CMD single, HEALTHCHECK; no start path changes | `in-progress` | `feat/nightscout-entrypoint` | minor | 0 run + 1 no-gate |
+| `PLAT-ENTRY` | One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT and CMD single, no image HEALTHCHECK; no start path changes | `in-flight-upstream` | `feat/nightscout-entrypoint` | minor | 0 run + 1 no-gate |
 | `PLAT-SERVE` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a time, `api` first; each listener bound separately | `blocked` | `-` | minor | 0 run + 1 no-gate |
 
 ### `LAB-G7-TWO-DISPLAY` &mdash; Lab: two displays on one real G7 sensor report the same seconds counter for each reading, live and backfill
@@ -10302,15 +10334,15 @@ reproduced ones.
 
 **Notes.** Done 2026-10-18 by a background agent in worktree rag-alignment-intent-gaps (commit 113f98c7, cherry-picked). Source reads: Loop's applied override duration is seconds remaining (NightscoutService fe075ef StoredDosingDecision.swift:129, NightscoutKit 4ec9fd1 OverrideStatus.swift:17,44-46); AndroidAPS timeshift and originalTimeshift are milliseconds (7e1d537d49 PS.kt:22, EPS.kt:24, ProfileFunctionImpl.kt:218, CommandQueueImplementation.kt:202, TreatmentMapper.kt:510,540, RemoteTreatment.kt:85,101), agreeing with the hub active-state lab and MAP- AAPS-PROFILESWITCH. A free initiator string stays valid (the controller's own vocabulary); only a malformed other-form object is rejected. Non-vacuity: eight weakenings, one at a time, each red for the right reason (strings-only initiators, any-object initiators, durationUnit removed from carrier, "hours" added to the units, path not required, strings-only paths, the type-xor- typeRef rule dropped, fieldTyping dropped). Suites: tools/nsschema 1675 passed; the three registration suites 1,281 unchanged. Open, in state and intent §8: the reference meaning comparison treats a typed path {path: x} with no typing members as different from the bare string x, so rewriting one as the other at one version would be refused version-conflict.
 
-### `PLAT-ENTRY` &mdash; One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT, CMD single, HEALTHCHECK; no start path changes
+### `PLAT-ENTRY` &mdash; One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT and CMD single, no image HEALTHCHECK; no start path changes
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `feat/nightscout-entrypoint` |
 | base | `official/dev@8dbb60c2` |
-| worktree | `-` |
+| worktree | `externals/work/crm-platentry` |
 | semver | `minor` |
 | review | maintainer |
 
@@ -10322,14 +10354,14 @@ reproduced ones.
 
 **Gates.**
 
-- **NO GATE** &mdash; Not started. Gate: a test boots the app through each legacy start path and through `nightscout single` and compares them; an unknown subcommand exits 64; `nightscout healthcheck` is red against a stopped server and green against a running one; the image built with the new ENTRYPOINT passes its HEALTHCHECK.
+- **NO GATE** &mdash; Measured by the lab, not re-runnable from this repository alone (needs MongoDB and a crm tree). On feat/nightscout-entrypoint b63d9b7f (dev 8dbb60c2): npm test 4509/0/3 (dev 4480/0/3), test:all 4837/0/3 at 4c7d678d (dev 4808/0/3), Node 22.23.4. tests/start-paths.test.js boots seven start paths as processes and deep-compares each with `nightscout single` (three ablations of the single mapping red); unknown subcommand exits 64; healthcheck red before start, green while running, red after stop; env redacts five planted secrets (red without redact()); the image has no HEALTHCHECK (asserted, red when one is added).
 
 **Evidence.**
 
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/30-design/tenancy/nightscout-deployable-components-2026-09-14.md`
 
-**Notes.** 2026-10-26: the maintainer chose one executable with subcommands, the Consul / node-multienv start_container.sh / Ory `serve` pattern, and `serve <roles>` for hosted roles (D21, execution plan section 2.12). Node, not bash: self- hosters run on Windows, IIS and Azure, and the final image has no npm. The dispatcher require()s the role in-process so SIGTERM reaches the server.
+**Notes.** 2026-10-26, later: draft #8862 opened at 4c7d678d; b63d9b7f removed the image HEALTHCHECK after the maintainer asked whether it would hide the boot-error page. It would: a site that boots with errors serves that page as a 500, and swarm or autoheal would restart it in a loop. `nightscout healthcheck` stays as an opt-in command and names the boot-error page. Open in the PR: PATH passthrough outside the image, `docker run <image> env`, SIGTERM handling, 307-to-https as healthy. 2026-10-26: the maintainer chose one executable with subcommands, the Consul / node-multienv start_container.sh / Ory `serve` pattern, and `serve <roles>` for hosted roles (D21, execution plan section 2.12). Node, not bash: self-hosters run on Windows, IIS and Azure, and the final image has no npm. The dispatcher require()s the role in-process so SIGTERM reaches the server.
 
 ### `PLAT-SERVE` &mdash; `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a time, `api` first; each listener bound separately
 

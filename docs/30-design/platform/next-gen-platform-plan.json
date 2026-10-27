@@ -186,7 +186,7 @@
    "id": "ST-WRITES",
    "track": "storage",
    "phase": "boundary",
-   "state": "progress",
+   "state": "review",
    "short": "v1 and socket writes",
    "title": "Slice 3: v1 and socket writes go through the interface, each labelled by its source (and later its origin); #8854's boundary check accepts interface acquisition",
    "where": "treatments, entries, devicestatus, profile (incl. mergeInto), food, activity, authorization storage, websocket; about 400 lines",
@@ -194,7 +194,8 @@
    "depends": [
     "ST-READS"
    ],
-   "ref": "feat/storage-writes, on 48e7e101 (#8861's head); being built 2026-10-26"
+   "ref": "#8863 (draft, 38b910d7, stacked on #8861; pushed 2026-10-26): write differential 88/88, matrix 0 of 336 cells, #8854 matrix 422",
+   "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8863"
   },
   {
    "id": "WC-STEP-PATCH",
@@ -512,18 +513,19 @@
    "id": "PLAT-ENTRY",
    "track": "tenancy",
    "phase": "now",
-   "state": "progress",
+   "state": "review",
    "short": "One entrypoint",
-   "title": "bin/nightscout.js dispatches subcommands (D21): `single` is today's server, plus operator tools `diagnose data`, `healthcheck`, `version`, `env`; the image gets ENTRYPOINT, CMD single and HEALTHCHECK. No behaviour change: Procfile, npm start, server.js, web.config, start.sh and the old CMD all still start the same server",
+   "title": "bin/nightscout.js dispatches subcommands (D21): `single` is today's server, plus operator tools `diagnose data`, `healthcheck`, `version`, `env`; the image gets ENTRYPOINT and CMD single, and no HEALTHCHECK, so a site showing its boot-error page is not restarted in a loop. No behaviour change: Procfile, npm start, server.js, web.config, start.sh and the old CMD all still start the same server",
    "where": "bin/nightscout.js, package.json bin, Dockerfile",
-   "check": "each legacy start path and `nightscout single` boot the same app (test); unknown subcommand exits 64; healthcheck red against a stopped server",
+   "check": "each legacy start path and `nightscout single` boot the same app (test); unknown subcommand exits 64; healthcheck red against a stopped server; the image sets no HEALTHCHECK",
    "spec": [
     {
      "label": "D21",
      "href": "../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#212-d21--one-entrypoint-serve-roles-maintainer-2026-10-26"
     }
    ],
-   "ref": "feat/nightscout-entrypoint, on dev 8dbb60c2; being built 2026-10-26"
+   "ref": "#8862 (draft, b63d9b7f, on dev 8dbb60c2; pushed 2026-10-26): seven start paths equal to `nightscout single`",
+   "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8862"
   },
   {
    "id": "PLAT-SERVE",
