@@ -879,6 +879,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#what-a-record-does-not-do" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2196,6 +2207,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#what-a-record-does-not-do" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2224,9 +2246,15 @@
 
 
 <h1 id="verification-records">Verification records<a class="headerlink" href="#verification-records" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-09-22 at <code>f2b960da5</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>40caa66d5</code>.</em></p>
 <p><strong>Status: DRAFT tooling. Requires maintainer review before it is relied upon.</strong></p>
-<p><strong>Current record, 2026-09-22:</strong> <code>cgm-remote-monitor-15.0.9/verification-record.{json,md}</code> was
+<p><strong>16.0.0, 2026-10-27:</strong> no record is captured yet; it is captured once, at the tag, over the items in
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1c8ed63b8fb1b35894605be5d95a27dadd556f78/releases/cgm-remote-monitor-16.0.0/verification-selection.txt"><code>cgm-remote-monitor-16.0.0/verification-selection.txt</code></a>,
+which also holds the command. A dry run on <code>dev</code> <code>8dbb60c2</code>, written to a scratch directory and not
+kept, is described in the 16.0.0 <a href="cgm-remote-monitor-16.0.0/contents.html#testing-so-far">contents</a>; the
+generator fixes it led to are under <a href="#changes">Changes</a>. 15.0.9 was released without a capture of
+its merged tree, the gap this selection file exists to prevent.</p>
+<p><strong>15.0.9, as of 2026-09-22:</strong> <code>cgm-remote-monitor-15.0.9/verification-record.{json,md}</code> was
 captured 2026-09-16 from the Phase 0 branch candidate (queue parcel <code>phase0</code>, then unmerged
 <code>bf/*</code> branches off <code>origin/dev</code> <code>a8888f0d</code>). It is <strong>superseded</strong>: 15.0.9 is now
 <code>official/master..official/dev</code> <code>74fc6619</code> (see
@@ -2250,7 +2278,7 @@ naming <strong>what was not verified and why</strong>.</p>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  verification-record.json    the record. Machine-readable, the source of truth.
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  verification-record.md      generated FROM the json by the generator. Never hand-written.
 </code></pre></div>
-<p>Generator: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/97113c37bd717bb70af2ba2fbb350b3a039c9e4c/tools/queue/verification-record.py"><code>tools/queue/verification-record.py</code></a>,
+<p>Generator: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1c8ed63b8fb1b35894605be5d95a27dadd556f78/tools/queue/verification-record.py"><code>tools/queue/verification-record.py</code></a>,
 the seventh tool under <code>tools/queue/</code>, beside <code>manifest.py</code>, <code>validate.py</code>, <code>emit.py</code>,
 <code>status.py</code> and <code>vacuity.py</code>. It reuses <code>status.py</code>'s gate executor rather than
 reimplementing it, so a gate result in a record is the same measurement <code>make queue-status</code>
@@ -2368,6 +2396,25 @@ node prints its pid.</p>
 verdicts, bases and gaps. Do <strong>not</strong> diff them on digests, or on a <code>last_line</code> that quotes
 a duration. The digest is there to let a reader bind a full log they hold to <em>this</em> capture,
 not to let two captures be compared byte for byte.</p>
+<h2 id="changes">Changes<a class="headerlink" href="#changes" title="Permanent link">&para;</a></h2>
+<p><strong>2026-10-27</strong>, from the 16.0.0 dry run. Each was reproduced on the 16.0.0 selection, <code>--self-test</code>
+passes with <code>--parcel phase0</code> and with <code>--id BFQ-177 --id BFQ-173</code>, and <code>--check</code> on the 15.0.9 record
+still reports only its documented hand-edit drift.</p>
+<ul>
+<li><strong>Register statuses.</strong> <code>merged</code>, <code>partly merged</code>, <code>released</code>, <code>partly released</code> and <code>landed</code> now count
+  as claims of a fix, alongside <code>fixed</code> and <code>partly fixed</code>. Since the register adopted those words
+  (2026-09-21), no merged or released entry could reach <code>claimed-fixed-gates-pass</code>, so every one
+  was listed as not demonstrated, and breaking a gate left the gaps section the same size: the
+  self-test's "the gaps section grew" assertion failed on the 16.0.0 selection, on the unmodified
+  generator too.</li>
+<li><strong>A failing gate is a gap of its own</strong> (<code>gate-failed</code>), whatever the register says.</li>
+<li><strong>A base that moved past its pin</strong> (<code>base: official/dev@&lt;sha&gt;</code> while <code>dev</code> has moved on and still
+  contains <code>&lt;sha&gt;</code>) is the gap <code>base-moved-past-pin</code>, no longer <code>branch-unresolved</code>; a pin that <code>dev</code>
+  no longer contains is still unresolved.</li>
+<li><strong>A branch or base that exists only on the upstream remote</strong> resolves through <code>official/&lt;name&gt;</code>,
+  and the record names the ref it used (<code>resolved through</code>).</li>
+<li><strong>Register cells holding an escaped <code>\|</code></strong> are one cell (BF-58's status read as <code>\</code>).</li>
+</ul>
 <h2 id="what-a-record-does-not-do">What a record does not do<a class="headerlink" href="#what-a-record-does-not-do" title="Permanent link">&para;</a></h2>
 <p>It does not ship anything, and it does not assert that a defect has reached an operator. A
 fix reaches operators when it is <code>released</code> in a tagged release, which is outside the record.
@@ -2375,7 +2422,7 @@ The 2026-09-16 record was taken from local, unpushed branches and says so per it
 <p>It also does not replace the register, the queue or the release notes. It is the
 cross-section of all three at one instant, with the measurements attached.</p>
 <hr />
-<p><em>Draft tooling, 2026-09-15; status updated 2026-09-22. Requires maintainer review before it
+<p><em>Draft tooling, 2026-09-15; status updated 2026-09-22 and 2026-10-27. Requires maintainer review before it
 is relied upon. Nightscout is not a medical device and
 nothing here is medical advice.</em></p>
 

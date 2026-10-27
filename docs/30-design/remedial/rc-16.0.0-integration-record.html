@@ -2365,6 +2365,8 @@
       
         
       
+        
+      
     
     
     
@@ -4625,7 +4627,7 @@
 
 
 <h1 id="1600-integration-record">16.0.0 integration record<a class="headerlink" href="#1600-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>65040d552</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>f67b1d6a0</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 16.0.0 candidate is assembled and
 tested, in the form of the <a href="rc-15.0.9-integration-record.html">15.0.9 integration record</a>. Item state is
 in <code>queue/work-queue.yaml</code>; defect facts are in the <a href="nightscout-backfix-register.html">backfix register</a>;
@@ -5554,6 +5556,106 @@ is unchanged; Node 22.23.4, MongoDB 5.0):</p>
 <h1 id="8856-and-8859-merge-with-each-other-cleanly-8854s-boundary-validates-the-effective-result-of-set">8856 and #8859 merge with each other cleanly. #8854's boundary validates the effective result of <code>$set</code><a class="headerlink" href="#8856-and-8859-merge-with-each-other-cleanly-8854s-boundary-validates-the-effective-result-of-set" title="Permanent link">&para;</a></h1>
 <p>and <code>$unset</code> (<code>lib/storage/write-step.js:35</code>, <code>write-validation.js:143</code>), so a <code>null</code> that removes a field
 under #8859 goes through <code>reject</code>-mode validation.</p>
+<h3 id="r17--dev-8dbb60c2-8860-suites-the-red-ci-and-the-advisory-fork-merges-2026-10-27">R17 · <code>dev</code> <code>8dbb60c2</code> (#8860): suites, the red CI, and the advisory-fork merges (2026-10-27)<a class="headerlink" href="#r17--dev-8dbb60c2-8860-suites-the-red-ci-and-the-advisory-fork-merges-2026-10-27" title="Permanent link">&para;</a></h3>
+<p><strong>Reproduced</strong>, 2026-10-27, by two agents of session d22eceb7 and the session itself; each tree in its own
+worktree with its own <code>npm ci</code>, MongoDB in dedicated containers (<code>db.version()</code> read), never the local 3.6.</p>
+<p><strong>Suites on <code>dev</code> <code>8dbb60c2</code></strong> (TZ unset, host zone America/Los_Angeles; <code>my.test.env</code> from
+<code>tests/ci.test.env</code> with only the connection string changed):</p>
+<table>
+<thead>
+<tr>
+<th>Node</th>
+<th>MongoDB</th>
+<th><code>npm test</code></th>
+<th><code>npm run test:all</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>22.23.4</td>
+<td>5.0.33</td>
+<td>4480 passing, 0 failing, 3 pending</td>
+<td>4808 passing, 0 failing, 3 pending</td>
+</tr>
+<tr>
+<td>26.12.1</td>
+<td>8.0.34</td>
+<td>4480 passing, 0 failing, 3 pending</td>
+<td>4808 passing, 0 failing, 3 pending</td>
+</tr>
+</tbody>
+</table>
+<p><code>test:all</code> by tier, the same on both: unit 1497, dom 198, dependency 368 (2 pending), core 319, harness 80,
+integration 2328 (1 pending), stress 18. The browser tier in CI's image
+(<code>mcr.microsoft.com/playwright:v1.63.0-noble</code>, WebKit 26.6, Node 26.12.1, TZ=UTC): WebKit 659 passing, 0
+failing on <code>8dbb60c2</code>, 653 on <code>7ad3a67f</code> (the six more are #8860's).</p>
+<p><strong>The red CI on <code>8dbb60c2</code></strong> (push run 40424319822, <code>pull_request</code> run 40424329138; #8860's own run
+40422840113 on the identical tree <code>342de4bc</code> passed). Neither failure is #8860's:</p>
+<ul>
+<li><em>Run Tests (26, 5.0)</em>, <code>tests/concurrent-writes.test.js</code> "all documents have unique _id after concurrent
+  inserts", expected 10, got 9. The ten Notes get <code>baseTime + Math.random()*10000</code> as <code>created_at</code>, cut to
+  milliseconds; a Note without an <code>identifier</code> is matched on time and event type
+  (<code>lib/server/treatments.js:487-510</code>, <code>lib/server/treatment-fallback-key.js:36</code>), so two in one
+  millisecond are one record, about 1 run in 220 (read-derived). The file alone, 30 runs on Node 26.12.1
+  and MongoDB 5.0.33: 30 passed. Two Notes posted with one <code>created_at</code>: one <code>_id</code> (3 of 3 in sequence);
+  posted concurrently, once two documents were inserted (a race between two upserts; not filed).</li>
+<li><em>Browser tests (26, webkit)</em>, "Complete page template startup boots every page from cached bundles and
+  retires the old cache on upgrade". Push run: fifteen <code>entries.json</code> and <code>treatments.json</code> requests for 20
+  to 28 October "due to access control checks" as uncaught page errors; <code>pull_request</code> run: <code>page.goto:
+  WebKit encountered an internal error</code> at "visits after upgrade: admin", leaving <code>/report/</code>. Not
+  reproduced locally: the test alone 3 of 3 on each of <code>8dbb60c2</code> and <code>7ad3a67f</code>, the whole file twice on
+  <code>8dbb60c2</code>. Read-derived: <code>readyEntry('reports')</code> is true once <code>window.Nightscout.report_plugins</code> exists,
+  before the deferred first-week report (<code>loadInitialReport</code>, <code>lib/report/reportclient.js:80-99</code>) has
+  fetched its days, and the test navigates away at once; the service worker does not handle API requests
+  (<code>views/service-worker.js:107-116</code>), so they are open on the network, and WebKit reports cancelled
+  requests that way. #8860 does not change what the page fetches on load.</li>
+</ul>
+<p><strong>The fixes</strong>, <code>test/16.0.0-ci-flakes</code> off <code>dev</code> <code>8dbb60c2</code> (local, not pushed; queue
+<code>RT-CI-FLAKES-8DBB60C2</code>): <code>c7857735</code> gives the ten Notes times one second apart; <code>bdd569a3</code> makes the
+reports page ready once its first report has loaded (<code>#rp_to</code> filled, <code>#rp_show</code> visible, <code>$.active</code> 0).
+The concurrent-writes file: 30 of 30 passing on Node 22.23.4 and MongoDB 5.0.33; control, every Note at
+one time, fails "expected 1 to be 10". <code>tests/browser/page-startup.test.js</code> in CI's image, Node 26.12.1:
+3 runs each on WebKit, Chromium and Firefox, 28 passing, 0 failing every run; there is no failing control
+for this one, because the failure did not reproduce locally before the fix. ESLint and <code>test-tiers check</code>
+pass.</p>
+<p><strong>BF-72 and BF-161, merged with <code>dev</code> <code>8dbb60c2</code></strong> (local branches of the advisories' private forks; not
+pushed; each merge has the fork head as first parent, so a push is a fast-forward):</p>
+<table>
+<thead>
+<tr>
+<th>advisory branch</th>
+<th>fork head</th>
+<th>merge</th>
+<th>conflicts</th>
+<th><code>npm test</code></th>
+<th><code>npm run test:all</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BF-161, <code>adv/phrf-1600</code></td>
+<td><code>0e06a36b</code></td>
+<td><code>8dcf1537</code></td>
+<td>none</td>
+<td>4496 passing, 0 failing, 3 pending</td>
+<td>4824 passing, 0 failing, 3 pending</td>
+</tr>
+<tr>
+<td>BF-72, <code>adv/r3gv-1600</code></td>
+<td><code>532d7d7a</code></td>
+<td><code>f64f78c4</code></td>
+<td>8 files: the five v1 read paths, API v3 find, <code>package.json</code>, <code>package-lock.json</code></td>
+<td>4558 passing, 0 failing, 3 pending</td>
+<td>4886 passing, 0 failing, 3 pending</td>
+</tr>
+</tbody>
+</table>
+<p>Node 22.23.4, MongoDB 5.0.33, TZ=UTC. BF-161's merge has the tree (<code>116006de</code>) of a merge first tested on
+an older local branch tip, where the figures above were measured. BF-72's resolutions keep <code>dev</code>'s
+read options inside the fix's limit, and <code>package.json</code> takes <code>dev</code>'s dependency set plus the one the fix
+adds. A first merge onto an older local tip of the BF-72 branch failed one <code>dev</code> contract test (a query
+tree with a cycle in it); the fork head already carried the fix for it, and the merged tree passes. Both
+items' static gates pass on the merged branches. Mechanism only, as for the rest of these two entries.</p>
 <h2 id="known-test-defects-on-dev">Known test defects on <code>dev</code><a class="headerlink" href="#known-test-defects-on-dev" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5590,6 +5692,11 @@ under #8859 goes through <code>reject</code>-mode validation.</p>
 <td>—</td>
 </tr>
 <tr>
+<td><code>dev</code> <code>8dbb60c2</code>'s red CI</td>
+<td>the concurrent-writes <code>_id</code> count and the WebKit reports-page race (R17); test-only fixes prepared on <code>test/16.0.0-ci-flakes</code></td>
+<td><code>RT-CI-FLAKES-8DBB60C2</code> (ready-to-push)</td>
+</tr>
+<tr>
 <td>intermittents seen on 2026-10-26</td>
 <td>the development watch policy test, the Firefox job limit and the page-startup reports recovery (R14), and a peer-reported <code>api.entries.repost-with-id</code> failure under <code>TEST_SHUFFLE_SEED=303</code> (not verified); none reproduced locally</td>
 <td><code>TEST-FLAKE-REPOST-FIND-COUNT</code> (the last); no item for the others</td>
@@ -5617,11 +5724,6 @@ under #8859 goes through <code>reject</code>-mode validation.</p>
 <td>Chromium, Firefox and WebKit locally (R15 did not run it; CI did, R14)</td>
 </tr>
 <tr>
-<td>the suites on <code>7ad3a67f</code></td>
-<td><code>dev</code></td>
-<td><code>npm test</code> and <code>npm run test:all</code> on the tree with #8854 merged (R16 ran the client replay and the socket probe only; CI passed)</td>
-</tr>
-<tr>
 <td>the <code>failed</code> slot</td>
 <td><code>dev</code> <code>7ad3a67f</code></td>
 <td>a fault-injection cell (an insert error on a socket treatment array under <code>reject</code>), once its shape is decided (<code>ARCH-8854-FAILED</code>)</td>
@@ -5639,7 +5741,7 @@ under #8859 goes through <code>reject</code>-mode validation.</p>
 </tbody>
 </table>
 <hr />
-<p><em>Draft, 2026-10-26. Requires maintainer review before it is relied upon.</em></p>
+<p><em>Draft, 2026-10-26; R17 2026-10-27. Requires maintainer review before it is relied upon.</em></p>
 
 
 

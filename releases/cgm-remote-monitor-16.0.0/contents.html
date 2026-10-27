@@ -988,24 +988,6 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    cgm-remote-monitor 16.0.0 — contents
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="contents.html" class="md-nav__link md-nav__link--active">
         
   
@@ -1022,58 +1004,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#identity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Identity
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#provenance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Provenance
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#what-is-merged-so-far" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What is merged so far
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
       
     </li>
   
@@ -2188,47 +2118,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#identity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Identity
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#provenance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Provenance
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#what-is-merged-so-far" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What is merged so far
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -2245,15 +2134,15 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>65040d552</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>5e4296f2b</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
 <code>official/master</code> <code>c6a0d8ed</code> (= <code>v15.0.9</code>, the shipping release), in
 <code>externals/cgm-remote-monitor-official</code> after <code>git fetch official</code>, with <code>gh pr view</code>, <code>gh run view</code> and
 <code>gh api</code> for PR, CI and branch-protection state. Updated at 22:13Z for <code>dev</code> <code>7ad3a67f</code> (#8854 <code>c08cbe03</code>,
-then #8084): the Identity rows for <code>dev</code>, the merge list, #8854 and the in-flight rows; the other figures
-are still those of <code>47723cda</code>.</p>
+then #8084), and on 2026-10-27 for <code>dev</code> <code>8dbb60c2</code> (#8860): the Identity rows for <code>dev</code>, the merge list,</p>
+<h1 id="8854-8860-the-in-flight-rows-and-the-ci-on-8dbb60c2-the-other-figures-are-still-those-of-47723cda">8854, #8860, the in-flight rows and the CI on <code>8dbb60c2</code>; the other figures are still those of <code>47723cda</code>.<a class="headerlink" href="#8854-8860-the-in-flight-rows-and-the-ci-on-8dbb60c2-the-other-figures-are-still-those-of-47723cda" title="Permanent link">&para;</a></h1>
 <blockquote>
 <p>Complements the generated changelog. The changelog is authoritative for <em>what merged</em>; this file
 records what the release is made of so far, how each figure was measured, and what is unsettled.</p>
@@ -2293,19 +2182,19 @@ for testers is <a href="testing-notes.html">testing-notes.md</a> (not written ye
 </tr>
 <tr>
 <td><code>dev</code> head</td>
-<td><code>7ad3a67f</code> (merge of #8084, 2026-10-26 22:13:18Z, by AndyLow91), tree <code>8469654e</code>; before it <code>c08cbe03</code> (#8854, 21:20:34Z) and <code>47723cda</code> (#8605, cut 5, 17:32:44Z, tree <code>200a1c00</code>)</td>
+<td><code>8dbb60c2</code> (merge of #8860, 2026-10-27 00:07:13Z, by AndyLow91), tree <code>342de4bc</code>, the tree of #8860's head <code>ad593fce</code>; before it <code>7ad3a67f</code> (merge of #8084, 2026-10-26 22:13:18Z), tree <code>8469654e</code>, and <code>c08cbe03</code> (#8854, 21:20:34Z) and <code>47723cda</code> (#8605, cut 5, 17:32:44Z, tree <code>200a1c00</code>)</td>
 </tr>
 <tr>
 <td>Commits on <code>dev</code></td>
-<td>882 — <code>git rev-list --count official/master..official/dev</code> (506 without merges, <code>--no-merges</code>); 857 at <code>47723cda</code></td>
+<td>890 — <code>git rev-list --count official/master..official/dev</code> (513 without merges, <code>--no-merges</code>); 882 at <code>7ad3a67f</code>, 857 at <code>47723cda</code></td>
 </tr>
 <tr>
 <td>First-parent commits on <code>dev</code></td>
-<td>37 — <code>git rev-list --first-parent --count official/master..official/dev</code>: 36 PR merges and the cycle's version bump <code>04d435eb</code></td>
+<td>38 — <code>git rev-list --first-parent --count official/master..official/dev</code>: 37 PR merges and the cycle's version bump <code>04d435eb</code></td>
 </tr>
 <tr>
 <td>Diff on <code>dev</code></td>
-<td>847 files, +126813/−15088 — <code>git diff --shortstat official/master official/dev</code>; 745 files, +123438/−15023 at <code>47723cda</code></td>
+<td>855 files, +127983/−15090 — <code>git diff --shortstat official/master official/dev</code>; 847 files, +126813/−15088 at <code>7ad3a67f</code>; 745 files, +123438/−15023 at <code>47723cda</code></td>
 </tr>
 <tr>
 <td>Merged on 2026-10-26</td>
@@ -2337,7 +2226,11 @@ for testers is <a href="testing-notes.html">testing-notes.md</a> (not written ye
 </tr>
 <tr>
 <td>Staging PR</td>
-<td>#8824 (<code>dev</code> → <code>master</code>, "new dev branch post 15.0.9 release"): open, head <code>7ad3a67f</code> (<code>BLOCKED</code>, <code>REVIEW_REQUIRED</code>, read after 22:13Z); at <code>47723cda</code>: <code>mergeable</code> <code>MERGEABLE</code>, <code>mergeStateStatus</code> <code>BLOCKED</code>, <code>reviewDecision</code> <code>REVIEW_REQUIRED</code>; every check reported on the head passed except the jobs skipped by design (<em>Publish to Docker Hub</em> and <em>Build Docker image</em> on the <code>pull_request</code> run, <em>Validate Docker image</em> on the push run) — <code>gh pr view 8824</code>, <code>gh pr checks 8824</code>. <code>master</code>'s branch protection requires <code>Run Tests (22, 6)</code>, <code>Run Tests (22, 4.4)</code> and <code>Run Tests (24, 6)</code> (<code>gh api repos/nightscout/cgm-remote-monitor/branches/master/protection</code>, read 2026-10-26); no workflow on <code>dev</code> emits <code>Run Tests (22, 4.4)</code> since #8833, so #8824 cannot meet <code>master</code>'s required checks until that setting changes, and it also needs one approving review</td>
+<td>#8824 (<code>dev</code> → <code>master</code>, "new dev branch post 15.0.9 release"): open, head <code>8dbb60c2</code> (<code>MERGEABLE</code>, <code>BLOCKED</code>, <code>REVIEW_REQUIRED</code>, read 2026-10-27); <code>master</code>'s protection read again 2026-10-27 is unchanged (the three <code>Run Tests</code> contexts, one approval); at <code>47723cda</code>: <code>mergeable</code> <code>MERGEABLE</code>, <code>mergeStateStatus</code> <code>BLOCKED</code>, <code>reviewDecision</code> <code>REVIEW_REQUIRED</code>; every check reported on the head passed except the jobs skipped by design (<em>Publish to Docker Hub</em> and <em>Build Docker image</em> on the <code>pull_request</code> run, <em>Validate Docker image</em> on the push run) — <code>gh pr view 8824</code>, <code>gh pr checks 8824</code>. <code>master</code>'s branch protection requires <code>Run Tests (22, 6)</code>, <code>Run Tests (22, 4.4)</code> and <code>Run Tests (24, 6)</code> (<code>gh api repos/nightscout/cgm-remote-monitor/branches/master/protection</code>, read 2026-10-26); no workflow on <code>dev</code> emits <code>Run Tests (22, 4.4)</code> since #8833, so #8824 cannot meet <code>master</code>'s required checks until that setting changes, and it also needs one approving review</td>
+</tr>
+<tr>
+<td>CI on <code>8dbb60c2</code></td>
+<td><strong>red.</strong> <code>push</code> run 40424319822: <em>Browser tests (26, webkit)</em> (658 passing, 1 failing: "Complete page template startup boots every page from cached bundles and retires the old cache on upgrade", <code>Uncaught browser errors</code>, fifteen report-page <code>entries.json</code>/<code>treatments.json</code> requests "due to access control checks") and <em>Run Tests (26, 5.0)</em> (<code>tests/concurrent-writes.test.js</code> "all documents have unique _id after concurrent inserts", expected 10, got 9) failed, so <em>Tests pass</em> failed and no image was published; <code>pull_request</code> run 40424329138: the same WebKit test failed, every other job passed (<em>Validate Docker image</em> amd64 and arm64 passed); CodeQL passed on both events (40424319787, 40424329177). #8860's own run 40422840113 on <code>ad593fce</code>, the identical tree, passed every job at 23:55Z, before UTC midnight; the merge runs started after 00:07Z. See <a href="#known-defects-on-dev-now">Known defects</a> — <code>gh run view &lt;id&gt; --json jobs</code>, <code>--log-failed</code></td>
 </tr>
 <tr>
 <td>CI on <code>7ad3a67f</code></td>
@@ -2362,8 +2255,8 @@ bodies (see the integration record). No live site, vendor account or Docker imag
 <h2 id="what-is-merged-so-far">What is merged so far<a class="headerlink" href="#what-is-merged-so-far" title="Permanent link">&para;</a></h2>
 <p>Merge SHAs: <code>git log --first-parent --format='%h %ad %an %s' --date=iso official/master..official/dev</code>;
 merge times are <code>gh pr view &lt;n&gt; --json mergedAt</code>. The first nineteen merges below were made on
-2026-10-25 (#8834, #8835 and #8838 by bewest, the others by AndyLow91), the last seventeen on 2026-10-26
-(#8843, #8848 and #8850 by bewest, the others by AndyLow91). Register ids refer to the
+2026-10-25 (#8834, #8835 and #8838 by bewest, the others by AndyLow91), seventeen on 2026-10-26
+(#8843, #8848 and #8850 by bewest, the others by AndyLow91) and #8860 on 2026-10-27, by AndyLow91. Register ids refer to the
 <a href="../../docs/30-design/remedial/nightscout-backfix-register.html">backfix register</a>.</p>
 <table>
 <thead>
@@ -2739,6 +2632,16 @@ merge times are <code>gh pr view &lt;n&gt; --json mergedAt</code>. The first nin
 <td>—</td>
 <td>Google Fonts replaced by fonts served from the site; the Content-Security-Policy drops the Google font hosts (92 files, +1093/−23); not examined further</td>
 </tr>
+<tr>
+<td>#8860</td>
+<td>10-27 00:07:13</td>
+<td><code>8dbb60c2</code></td>
+<td><code>ad593fce</code></td>
+<td>AndyLow91</td>
+<td>—</td>
+<td>—</td>
+<td>the glucose pentagon (Comprehensive Glucose Pentagon) and its prognostic glycemic risk (PGR) in the Distribution report, for issue 8809 (20 files, +1178/−10; below)</td>
+</tr>
 </tbody>
 </table>
 <p>Before merging, AndyLow91 merged <code>dev</code> into most branches and added commits of his own (read with
@@ -2886,6 +2789,20 @@ authors'):</p>
   <code>reject</code> for an item whose write cannot be confirmed (open item 11). The merged tree's client replay is
   R16 in the integration record: 0 differences from <code>47723cda</code> in 201 cells.</li>
 </ul>
+<p><strong>#8860</strong>, the glucose pentagon (read from the PR body and <code>git diff --stat 7ad3a67f 8dbb60c2</code>; not run by
+this programme). The Distribution report gains the Comprehensive Glucose Pentagon's five component values,
+a reference polygon, CGM coverage, the reading count and the prognostic glycemic risk (PGR), in both
+glucose units, both report themes and print (<code>lib/report/pentagon.js</code>, <code>pentagon-view.js</code>, <code>agp-data.js</code>,
+<code>lib/report_plugins/glucosedistribution.js</code>). Fixed 70–180 mg/dL thresholds; it reads the original CGM
+observations before the report's one-minute filter, time-weights them, collapses exact same-source
+duplicates and withholds the score for conflicting simultaneous readings or indistinguishable alternating
+streams. The score is withheld below 70 % elapsed coverage, below 16 h 48 min of observed data, or when an
+hourly filter excludes part of the day; the PR body calls these "implementation guards, not validated
+clinical PGR thresholds", and says the numerical checks "do not constitute third-party clinical
+validation" and that independent review of the incomplete-data method and clinical presentation remains
+advisable. It adds the Nightscout Reporter licence notices (<code>docs/third-party/</code>) and the method in
+<code>docs/test-specs/glucose-pentagon.md</code>. The PR's CI on <code>ad593fce</code> passed every job; the merge's did not
+(<a href="#identity">Identity</a>, CI on <code>8dbb60c2</code>).</p>
 <p>None of these merged trees was re-run locally by this programme, except the client replay on <code>7ad3a67f</code>
 (R16). The merged trees' CI is in
 <a href="#identity">Identity</a> and the integration record (R13, R14).</p>
@@ -2955,7 +2872,7 @@ runtime Docker image.</p>
 <p><strong>Classification:</strong> MAJOR, because of S5 and S6 (cut 1) and S5 again (cut 3's MongoDB floor).
 <strong>Directory name says:</strong> 16.0.0. <strong>Settled?</strong> Yes, by the maintainer, 2026-10-21.</p>
 <h2 id="in-flight-for-this-release">In flight for this release<a class="headerlink" href="#in-flight-for-this-release" title="Permanent link">&para;</a></h2>
-<p>Read 2026-10-26, 19:10Z; #8854, #8856 and #8859 updated at 22:13Z. Every cut is merged
+<p>Read 2026-10-26, 19:10Z; #8854, #8856 and #8859 updated at 22:13Z; BF-72, BF-161, the CI test fixes, #8864 and the next-gen drafts on 2026-10-27. Every cut is merged
 (<a href="#merge-state">Merge state</a>); #8854 is merged (<a href="#what-is-merged-so-far">What is merged so far</a>).</p>
 <table>
 <thead>
@@ -2977,17 +2894,24 @@ runtime Docker image.</p>
 </tr>
 <tr>
 <td>BF-72: a caller-supplied regular expression can hold the database for minutes</td>
-<td><code>bf/regex-limits</code>, in the private fork of its draft advisory</td>
-<td><code>1833ab00</code> on <code>dev</code> <code>04d435eb</code></td>
-<td>in the fork; no fork PR opened yet; owes a merge of <code>dev</code></td>
+<td><code>bf/regex-limits</code> in the private fork of its draft advisory (fork head <code>532d7d7a</code>, on <code>dev</code> <code>b29f1bf7</code>); locally <code>adv/r3gv-1600</code></td>
+<td><code>f64f78c4</code>, a merge of <code>dev</code> <code>8dbb60c2</code> into <code>532d7d7a</code> (2026-10-27, not pushed; a fast-forward of the fork branch)</td>
+<td>in the fork; no fork PR opened yet; merge with <code>dev</code> prepared: <code>npm test</code> 4558 passing, 0 failing, 3 pending; <code>test:all</code> 4886 passing, 0 failing, 3 pending (R17)</td>
 <td><code>BFQ-72</code></td>
 </tr>
 <tr>
 <td>BF-161: a deeply nested pattern on three query endpoints makes that request fail</td>
-<td><code>bf/entries-pattern-limit</code>, in the private fork of its draft advisory</td>
-<td><code>d2c4df9f</code> on <code>dev</code> <code>04d435eb</code></td>
-<td>in the fork; no fork PR opened yet; owes a merge of <code>dev</code></td>
+<td><code>bf/entries-pattern-limit</code> in the private fork of its draft advisory (fork head <code>0e06a36b</code>, on <code>dev</code> <code>b29f1bf7</code>); locally <code>adv/phrf-1600</code></td>
+<td><code>8dcf1537</code>, a merge of <code>dev</code> <code>8dbb60c2</code> into <code>0e06a36b</code>, no conflicts (2026-10-27, not pushed; a fast-forward of the fork branch)</td>
+<td>in the fork; no fork PR opened yet; merge with <code>dev</code> prepared: <code>npm test</code> 4496 passing, 0 failing, 3 pending; <code>test:all</code> 4824 passing, 0 failing, 3 pending (R17)</td>
 <td><code>BFQ-161</code></td>
+</tr>
+<tr>
+<td>the two tests that turned <code>dev</code> <code>8dbb60c2</code>'s CI red</td>
+<td><code>test/16.0.0-ci-flakes</code> (#8866, into <code>dev</code>)</td>
+<td><code>bdd569a3</code>: <code>c7857735</code> (concurrent-writes: Notes one second apart) and <code>bdd569a3</code> (page-startup: the reports page is ready once its first report has loaded)</td>
+<td>prepared 2026-10-27, #8866 opened 2026-10-27, CI pending; test files only (R17)</td>
+<td><code>RT-CI-FLAKES-8DBB60C2</code></td>
 </tr>
 <tr>
 <td>BF-191: a stored treatment can stop the server process, and keeps doing so after a restart</td>
@@ -3009,6 +2933,20 @@ runtime Docker image.</p>
 <td><code>5c6ceabb</code>: five commits on <code>dev</code> <code>47723cda</code> and a merge of <code>dev</code> <code>7ad3a67f</code>: <code>ID-SIMPLE-MATCH</code> <code>8d0f9a22</code>, Q1b <code>913d0895</code>, BF-195 <code>1bdce62c</code>, merge <code>cf2a2a67</code>, the devicestatus <code>identifier</code> rule <code>fc170a4c</code> (read from <code>git log</code>)</td>
 <td>draft PR opened 2026-10-26; the devicestatus <code>identifier</code> rule is on it (v1 and v3: a re-send with a stored <code>identifier</code> writes nothing and the reply carries the stored <code>_id</code>); <code>npm test</code> 4375 passing, 0 failing, 3 pending and <code>test:all</code> 4703 passing, 0 failing, 3 pending (re-run on <code>fc170a4c</code> 2026-10-26; the first run had 1 environmental <code>ENOSPC</code> failure); with #8854 one import-line conflict and a 3-line matrix expectation change for whichever merges second. #8854 merged first: <code>dev</code> <code>7ad3a67f</code> merged in as <code>5c6ceabb</code> (session -66; pushed by the maintainer 2026-10-26, hosted CI 16 passed, 0 failed, 2 skipped; both requires kept, #8854's cross-path resend cells updated): <code>npm test</code> 4521 passing, 0 failing, 3 pending; <code>test:all</code> 4849 passing, 0 failing, 3 pending (integration record R16)</td>
 <td><code>ID-SIMPLE-MATCH</code>, <code>WRITE-CONTRACT</code>, <code>BFQ-195</code></td>
+</tr>
+<tr>
+<td>the IOB pill switching to the treatment-based value during a reconnect</td>
+<td>AndyLow91's branch, <strong>draft #8864</strong> (base <code>dev</code>)</td>
+<td><code>4ed92673</code>: <code>lib/data/ddata.js</code> and a new <code>tests/data.reconnect-snapshot.test.js</code></td>
+<td>opened 2026-10-27 13:02Z; read from the PR body, not run here: the socket's reconnect payload is read from the live <code>ddata</code> the loader is rebuilding, so a reconnect during a refresh can carry no device statuses and the pill falls back for that moment; the fix reads from the completed snapshot. The PR reports three new tests failing on the unmodified base, and 4 sensor-age failures under <code>TZ=Europe/London</code> that it reproduces on the base too. Display of a dosing-relevant value (cycle priority 2)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>next-gen drafts: storage slices, one executable, <code>serve api</code>, registration</td>
+<td>#8861 (<code>48e7e101</code>), #8863 (<code>38b910d7</code>, on #8861), #8862 (<code>b63d9b7f</code>), #8865 (<code>1dafe2a5</code>, on #8863), #8857 (<code>f7a43fed</code>)</td>
+<td>—</td>
+<td>drafts; proposed for 16.1.0 rather than 16.0.0, except #8862 if it merges before the soak starts (<a href="../../docs/30-design/platform/release-allocation-2026-10-27.html">release allocation</a>, Q1–Q3, read 2026-10-27)</td>
+<td><code>ST-FILTER-READS</code>, <code>ST-WRITES</code>, <code>PLAT-ENTRY</code>, <code>PLAT-SERVE</code>, <code>HUB-REG-CRM</code></td>
 </tr>
 </tbody>
 </table>
@@ -3175,7 +3113,7 @@ which this programme cannot do without real credentials; #8843 (CI diagonal) and
 </tr>
 </tbody>
 </table>
-<p>Seen in <code>dev</code>'s CI on 2026-10-26 (read from the job logs, <code>gh run view &lt;id&gt; --log-failed</code>; neither
+<p>Seen in <code>dev</code>'s CI on 2026-10-26 and 2026-10-27 (read from the job logs, <code>gh run view &lt;id&gt; --log-failed</code>; neither
 reproduced locally, no register entry):</p>
 <table>
 <thead>
@@ -3202,6 +3140,16 @@ reproduced locally, no register entry):</p>
 <td><em>Browser tests (26, chromium)</em>: "Complete page template startup recovers the actual reports page after two failed bundle downloads" exceeded 30 s (172 passing, 2 failing with its <code>afterEach</code>); the push run on the same commit passed</td>
 </tr>
 <tr>
+<td>concurrent-writes <code>_id</code> count</td>
+<td>push run 40424319822 on <code>8dbb60c2</code> (#8860)</td>
+<td><em>Run Tests (26, 5.0)</em>: "all documents have unique _id after concurrent inserts", expected 10, got 9. Ten Notes with random times within 10 s; a Note without an <code>identifier</code> is matched on its time and event type, so two in the same millisecond are one record (about 1 run in 220). Reproduced with a forced collision (expected 1 to be 10); not reproduced in 30 plain runs. Fix prepared: <code>RT-CI-FLAKES-8DBB60C2</code> (R17)</td>
+</tr>
+<tr>
+<td>WebKit reports-page race</td>
+<td>push run 40424319822 and <code>pull_request</code> run 40424329138 on <code>8dbb60c2</code></td>
+<td><em>Browser tests (26, webkit)</em>: "Complete page template startup boots every page from cached bundles and retires the old cache on upgrade". Push run: fifteen report-page requests "due to access control checks" as uncaught page errors; <code>pull_request</code> run: <code>page.goto: WebKit encountered an internal error</code> leaving <code>/report/</code>. The test leaves the reports page before its deferred first-week report has loaded. Not reproduced locally in CI's image (3 of 3 on <code>8dbb60c2</code> and <code>7ad3a67f</code>); #8860 does not change what the page fetches. Fix prepared: <code>RT-CI-FLAKES-8DBB60C2</code> (R17)</td>
+</tr>
+<tr>
 <td>repost-with-id find count</td>
 <td>reported by peer session -b7</td>
 <td><code>tests/api.entries.repost-with-id.test.js</code> failed once under <code>TEST_SHUFFLE_SEED=303</code>; not reproduced or verified here (<code>TEST-FLAKE-REPOST-FIND-COUNT</code>)</td>
@@ -3222,7 +3170,28 @@ place and form as the <a href="../../docs/30-design/remedial/rc-15.0.9-integrati
 No verification record is captured yet: <code>verification-record.{json,md}</code> is generated by
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
-has none until then.</p>
+has none until then. The items it is captured over are listed in
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1c8ed63b8fb1b35894605be5d95a27dadd556f78/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (65 queue ids: every item this file or
+<a href="decisions.html">decisions.md</a> names, and the release items), with the capture command.</p>
+<p><strong>Dry run, 2026-10-27, <code>dev</code> <code>8dbb60c2</code></strong> (reproduced; written to a scratch directory, not kept, because a
+record is captured once, at the tag). The generator ran on the selection with its default <code>static</code> and
+<code>unit</code> gate kinds: 65 items, 49 PASS, 4 FAIL, 12 UNMEASURED; 157 gates run or marked, 72 passed, 5 failed,
+80 are <code>no-gate</code> markers. The five failures: BFQ-72's gate (BF-72 still on <code>dev</code>; its fix is in the
+advisory fork), BFQ-161's freshness gate (the fork branch owes a merge of <code>dev</code>), RT-CONNECT-PIN-CUTS
+(the gate refuses to report because every ref it reads now pins <code>nightscout-connect</code> 0.1.0) and
+RT-NODE-FLOOR-TESTED's two gates (they read the old <code>origin/chore/*</code> tips). The dry run found four defects
+in the generator and the register, fixed on 2026-10-27 before the tag-time capture (VERIFICATION-RECORDS.md,
+"Changes"): register statuses <code>merged</code> and <code>released</code> were not read as claims of a fix, so every merged
+entry was listed as not demonstrated; a failing gate added no gap of its own; an item whose <code>dev</code> had
+moved past its pinned base was reported as unresolved (35 items); a cell holding an escaped <code>\|</code> was split
+in two (BF-58), and three §1b rows carried a sixth cell (BF-177, BF-179, BF-182). RT-NODE-FLOOR-TESTED now
+gates on <code>official/dev</code> (merged-upstream; register BF-58 and BF-59 <code>merged 2026-10-26</code>), and
+RT-CONNECT-PIN-CUTS gates <code>dev</code> and <code>master</code> with <code>v15.0.8</code> as its bad control (BF-65). Five register
+entries written against the cut branches before they merged were re-graded by measurement on <code>8dbb60c2</code>,
+each with a break-it run where one applies: BF-55, BF-65 and BF-88 <code>merged 2026-10-26</code>, BF-56 <code>closed,
+did not occur</code>, BF-64 <code>closed, superseded</code>. <strong>Re-run after the fixes</strong> (same selection and kinds): 65
+items, 51 PASS, 2 FAIL, 12 UNMEASURED; the two failures are BFQ-72 and BFQ-161, both pre-tag
+requirements in the advisory forks.</p>
 <h2 id="open-items-a-releaser-must-settle">Open items a releaser must settle<a class="headerlink" href="#open-items-a-releaser-must-settle" title="Permanent link">&para;</a></h2>
 <p>As of <code>dev</code> <code>47723cda</code> (2026-10-26), with item 11 from <code>7ad3a67f</code>. The decisions already made are in <a href="decisions.html">decisions.md</a>.
 Whether cuts 3–5 ship in 16.0.0 is answered: all three are merged into <code>dev</code>, so they ship in 16.0.0
@@ -3236,10 +3205,10 @@ BF-193 is not a pre-tag requirement; its fix shape is decided (debug-gated paylo
 <ol>
 <li><strong>The scope of BF-161's draft advisory</strong> (maintainer): publish it now for BF-151 (released in 15.0.9)
    with BF-161 as a follow-up, or extend it to include BF-161 and publish it with the release that
-   carries the fix. Packet: <a href="../../reports/reviewer-packets/bfq-161-bf-entries-pattern-limit.html">bfq-161</a>.</li>
+   carries the fix. Packet: <a href="../../reports/reviewer-packets/bfq-161-adv-phrf-1600.html">bfq-161</a>.</li>
 <li><strong>BF-72's test inputs</strong> (the original author of the regex-limit commits): the tests' hostile inputs
    are to be rebuilt in code before anything is published. Packet:
-   <a href="../../reports/reviewer-packets/bfq-72-bf-regex-limits.html">bfq-72</a>.</li>
+   <a href="../../reports/reviewer-packets/bfq-72-adv-r3gv-1600.html">bfq-72</a>.</li>
 <li><strong>BF-95</strong> (maintainer): a notice for readings that arrive dated ahead of the server clock, or the
    status quo. Packet: <a href="../../reports/reviewer-packets/bfq-95.html">bfq-95</a>. 2026-10-25 (maintainer): verify
    <code>srvModified</code> first; on <code>dev</code> it is a server receipt time on every live path (caveat BF-181).</li>
@@ -3303,8 +3272,8 @@ merged with #8849.</p>
 <ol>
 <li>The follow-ups, each in a themed PR: <code>RT-JSDOM-REST</code> (scope B), <code>ID-SIMPLE-MATCH</code> with BF-169's
    remaining client work, <code>RT-BUNDLE-THEME-SPLIT</code>.</li>
-<li>BF-72 and BF-161 through their advisory forks, each after a merge of <code>dev</code>, published with the
-   release that carries them.</li>
+<li>BF-72 and BF-161 through their advisory forks, published with the release that carries them; each has
+   a merge of <code>dev</code> <code>8dbb60c2</code> prepared locally (<code>f64f78c4</code>, <code>8dcf1537</code>; R17), ready to push to its fork.</li>
 </ol>
 <p><strong>Before the tag:</strong> the three requirements above (the live delivery check, the real-rig soak, BF-72 and BF-161), the other live acceptance checks #8605 leaves to the maintainer (Pushover emergency
 delivery, acknowledgement and cancellation; alarm de-duplication over its real window; APNs delivery
@@ -3366,6 +3335,12 @@ candidate is named.</p>
 <li>Dose labels round correctly on midpoints (#8851).</li>
 <li>The Bolus Wizard Preview and Careportal Bolus Wizard unit fixes (BF-172, BF-173) and the profile
   picker (BF-174); BF-09 (the socket's duplicate check keeps zero temps, cancels and zero amounts); #8816's snooze; #8812 and #8808's report figures.</li>
+<li>The glucose pentagon and PGR in the Distribution report (#8860): what the five values and the risk figure
+  are, that the report withholds them when too little of the period has readings, and the PR's own caveats
+  carried verbatim: the withholding rules are "implementation guards, not validated clinical PGR
+  thresholds", PGR is a research metric, and the numerical checks "do not constitute third-party clinical
+  validation". It is a report figure, not a treatment recommendation; talk to the care team before acting
+  on it.</li>
 <li>One stored-text change from <code>sanitize-html</code> 2.18.1 (#8835): a malformed empty
   <code>&lt;textarea&gt;&lt;/textarea/&gt;</code> followed by an image with an event handler is now stored as the image tag
   without its handler (<code>&lt;img src="x" /&gt;</code>), where 2.17.5 stored nothing (the empty string). The other 34

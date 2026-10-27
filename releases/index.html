@@ -2101,7 +2101,7 @@
 
 
 <h1 id="release-assets">Release assets<a class="headerlink" href="#release-assets" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-25 at <code>d9d475733</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>40caa66d5</code>.</em></p>
 <p><em>Contributor-facing. Status 2026-10-02: every file under this directory is a DRAFT. Nothing
 here has been tagged or published.</em></p>
 <p>This directory holds the <strong>tag messages, release notes and contents records</strong> for releases
@@ -2122,8 +2122,8 @@ of <code>cgm-remote-monitor</code> and <code>nightscout-connect</code>, one dire
 </tr>
 <tr>
 <td><a href="cgm-remote-monitor-16.0.0/index.html"><code>cgm-remote-monitor-16.0.0/</code></a></td>
-<td><code>official/master..official/dev</code>, at <code>eb72a1d3</code> on 2026-10-25 (11 merged PRs, cut 1 among them); the next release (maintainer, 2026-10-21)</td>
-<td>in development: contents, decisions and the <a href="../docs/30-design/remedial/rc-16.0.0-integration-record.html">integration record</a> are living; testing notes, tag message and release notes not written yet</td>
+<td><code>official/master..official/dev</code>, at <code>8dbb60c2</code> on 2026-10-27 (37 merged PRs, all five cuts among them); the next release (maintainer, 2026-10-21)</td>
+<td>in development: contents, decisions and the <a href="../docs/30-design/remedial/rc-16.0.0-integration-record.html">integration record</a> are living; the verification record's <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1c8ed63b8fb1b35894605be5d95a27dadd556f78/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">selection</a> is set (captured at the tag); testing notes, tag message and release notes are written once a candidate is named</td>
 </tr>
 <tr>
 <td><a href="nightscout-connect-v0.0.14/index.html"><code>nightscout-connect-v0.0.14/</code></a></td>
@@ -2174,7 +2174,9 @@ are accepted, in which case the reconciliation below must also diff against that
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                        Part 1 user-facing (plain language), part 2 for
 <a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>                        operators and tool authors. Living until the tag.
 <a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    verification-record.{json,md}   optional; see VERIFICATION-RECORDS.md
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>  _template/            copy this to start a new release directory
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    verification-selection.txt      the queue ids the record is captured over,
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>                        and the capture command
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>  _template/            copy this to start a new release directory
 </code></pre></div>
 <p>Directory names use the product's own version spelling: <code>cgm-remote-monitor-15.0.9</code> (no
 <code>v</code>, matching <code>package.json</code>), <code>nightscout-connect-v0.0.14</code> (with <code>v</code>, matching the tag).

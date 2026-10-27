@@ -1073,6 +1073,10 @@
          <lastmod>2026-10-27</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/release-allocation-2026-10-27.html</loc>
+         <lastmod>2026-10-27</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/v4-surface-and-nocturne-2026-10-26.html</loc>
          <lastmod>2026-10-27</lastmod>
     </url>
@@ -5209,7 +5213,7 @@
          <lastmod>2026-10-27</lastmod>
     </url>
     <url>
-         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/bfq-161-bf-entries-pattern-limit.html</loc>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/bfq-161-adv-phrf-1600.html</loc>
          <lastmod>2026-10-27</lastmod>
     </url>
     <url>
@@ -5225,7 +5229,7 @@
          <lastmod>2026-10-27</lastmod>
     </url>
     <url>
-         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/bfq-72-bf-regex-limits.html</loc>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/bfq-72-adv-r3gv-1600.html</loc>
          <lastmod>2026-10-27</lastmod>
     </url>
     <url>
@@ -5286,6 +5290,10 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/plat-serve-feat-nightscout-serve.html</loc>
+         <lastmod>2026-10-27</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/rt-ci-flakes-8dbb60c2-test-16-0-0-ci-flakes.html</loc>
          <lastmod>2026-10-27</lastmod>
     </url>
     <url>
