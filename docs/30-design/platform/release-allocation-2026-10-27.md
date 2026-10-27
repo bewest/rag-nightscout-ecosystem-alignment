@@ -39,17 +39,17 @@ state; §1–§6 keep the morning's reasoning, with their decided rows marked. 1
   (ST-V3-DECOUPLE, PLAT-SERVE, ST-HARNESS, ST-PG). None of them improves 16.0.0 for a self-hoster,
   and each would spend the short quiet period the pre-tag definition of done asks for
   (`RT-16-RELEASE`, item 4, decided 2026-10-27). Recommendation: `dev` takes only release fixes until
-  the tag (Q1 (a), now Q13). ST-EVENT stays a decision with a bench running; settle it in the
-  freeze window, ship its code in 16.1.0 or later.
+  the tag (Q1 (a), now Q13). D-EVENT was deferred by the maintainer the same evening (Q9); ST-EVENT stays tied to
+  WC-STEP-PATCH in 16.2.0.
 - **Does including other roadmap features help multitenancy: not by being in 16.0.0.** The one
   indirect benefit, real traffic on the interface before PostgreSQL depends on it (§4.2), is now
-  bought by M1. What shortens the path from here is decisions and a reopened `dev`: D-EVENT, D-T30,
+  bought by M1. What shortens the path from here is decisions and a reopened `dev`: D-T30,
   D-LOOP-ID's remaining items, the identifier and schema rules that fix the PostgreSQL keys and
   columns, and ST-V3-DECOUPLE for `serve api`. Registration and v4 reads stay parallel work.
 - **Schedule: tag 16.0.0 as soon as its four pre-tag items are met; then one theme per minor.**
   The fastest route to a multi-mode preview is to release 16.0.0 and reopen `dev`, not to load it.
   The revised themes are in §4.3 (16.1.0 one executable, `serve api` and registration off by
-  default; 16.2.0 `write(intent)` and identity on every path; 16.3.0 or later the multi preview;
+  default; 16.2.0 `write(intent)`, the commit event and identity on every path; 16.3.0 or later the multi preview;
   17.0.0 enforcement). Client identity and formal schemas run ahead of tenancy because they fix its
   tables; v4 publishes in pieces, unstable until shared.
 - **Open questions and briefs:** Q13–Q16 in §5 and B7–B9 in §6 are new this evening.
@@ -195,7 +195,7 @@ order, and ship them in 16.1.0. This needs one rule for `dev` between now and th
 
 | item | state at `ca1652d6` | ladder (§3.1) | who in 16.0.0 would run it | proposed release |
 |---|---|---|---|---|
-| ST-EVENT (D-EVENT) | decision; bench in progress (session -2e), no figures recorded until it reports | none while nothing in `lib/` subscribes; the commit event is internal and unstable (#8854 condition) | nobody | decide in the freeze window; code in 16.2.0 with WC-STEP-PATCH |
+| ST-EVENT (D-EVENT) | deferred (maintainer, 2026-10-27): counts-only and internal; reopened when WriteResult.items[], a first subscriber, the BF-164 re-measure and a replica-set site count are in hand | none while nothing in `lib/` subscribes; the commit event is internal and unstable (#8854 condition) | nobody | 16.2.0, with WC-STEP-PATCH |
 | ST-V3-DECOUPLE (M3) | planned; it is the cause of `serve api`'s 81 failing API v3 suites at #8865 `1dafe2a5` | patch-class if `single` is unchanged | every site, for no gain under `single` | 16.1.0, with PLAT-SERVE |
 | PLAT-ENTRY (#8862) | draft `b63d9b7f`, 64 commits behind `dev` | minor-class (question 9); the image start changes form | every Docker site | 16.1.0, unless Q2 (a) is still wanted: then merged before the quiet period starts, with a Docker-host cohort check |
 | PLAT-SERVE (#8865) | draft `1dafe2a5` on base `feat/storage-writes`, which is merged; needs retargeting to `dev` and a `dev` merge (55 behind) before any re-measurement | minor-class | nobody under `single` | 16.1.0, labelled alpha (Q12a) |
@@ -215,7 +215,7 @@ The multitenant target (D1–D3) is PostgreSQL with row-level security behind th
 interface, with tenant resolution and per-tenant credentials. Its critical path in the plan:
 
 ```
-ST-WRITES → ST-EVENT (D-EVENT) → WC-STEP-PATCH → ST-HARNESS → ST-PG ──┐
+ST-WRITES → WC-STEP-PATCH → ST-HARNESS → ST-PG ─────────────────────────┐
 T30-RESEARCH (D-T30) → T30-SCHEMA-CONFIG ───────────────────────────────┼→ TEN-RESOLVE → T30-WIRING → TEN-LAB
 PLAT-ENTRY → PLAT-SERVE ───────────────────────────────────────────────┘
 ```
@@ -253,8 +253,8 @@ the loudest row's (R3).
 | release | theme | contents | class |
 |---|---|---|---|
 | 16.0.0 | modernization, the write boundary, one read and write path | what is on `dev` `ca1652d6` (M1 included: #8859, #8856, #8861, #8863, #8870, #8864, #8866, #8868, #8869, #8858 merged 2026-10-27), plus BF-72, BF-161 and any release fix found in the quiet period; #8862 only if Q2 (a) and Q13 allow it | major (already) |
-| 16.1.0 | one executable, hosted roles as alpha, registration readable | #8862 and #8865 (one executable, `serve api`) with ST-V3-DECOUPLE; #8857 off by default (D-REG-FLAG); SPEC-ID-AMEND; the D-EVENT decision; the OpenAPI description of what 16.1.0 serves, including the registration paths | minor |
-| 16.2.0 | `write(intent)` and identity on every path | ST-EVENT, WC-STEP-PATCH, ID-BATCH, ID-FIRST-MATCH where it changes no outcome, ST-HARNESS; ST-VIEWS if its alarm checks pass; REG-S3 behind its flag; v4 statistics reads | minor |
+| 16.1.0 | one executable, hosted roles as alpha, registration readable | #8862 and #8865 (one executable, `serve api`) with ST-V3-DECOUPLE; #8857 off by default (D-REG-FLAG); SPEC-ID-AMEND; the OpenAPI description of what 16.1.0 serves, including the registration paths | minor |
+| 16.2.0 | `write(intent)` and identity on every path | WC-STEP-PATCH, ST-EVENT, ID-BATCH, ID-FIRST-MATCH where it changes no outcome, ST-HARNESS; ST-VIEWS if its alarm checks pass; REG-S3 behind its flag; v4 statistics reads | minor |
 | 16.3.0 or later | multi mode, preview | ST-PG, T30-SCHEMA-CONFIG, TEN-RESOLVE, T30-WIRING behind `TENANCY_MODE=multi`; TEN-LAB passes with its control; single-tenant unchanged | minor for self-hosters |
 | 17.0.0 | contract tightening | ID-UNIQUE-INDEX with a duplicate-cleaning step, ID-FIRST-MATCH where it changes outcomes, `WRITE_VALIDATION` default (if decided), D8 v1 query bounds, any v4 path promoted from unstable | major |
 
@@ -274,7 +274,7 @@ tenancy work, from its route census of `dev` `2dc0c1bc` (129 routes and 7 socket
 |---|---|---|---|
 | M0 | route census | done | — |
 | M1 | one read and write path: every REST and socket record read and write, and count, through the storage interface (#8861, #8863, the count commit, ST-COUNT-ONEPATH) | the census finds no direct driver call in `lib/server` or `lib/api` | 16.0.0 (Q12) |
-| M2 | D-EVENT and `write(intent)` | | 16.2.0 |
+| M2 | `write(intent)`, then the commit event (D-EVENT deferred until it exists) | | 16.2.0 |
 | M3 | API v3 decoupled from v1 and the cache (the cause of `serve api`'s 81 failing suites in #8865) | | 16.1.0 or 16.2.0 |
 | M4 | computed views without a resident `ddata` | | before multi |
 | M5 | backend-selectable harness and PostgreSQL | | 16.3.0 or later |
@@ -306,7 +306,7 @@ M3 is `ST-V3-DECOUPLE` and M4 is `ST-VIEWS` in the [next-gen plan](next-gen-plat
 | Q6 | Does multi mode ship in 16.x minors behind `TENANCY_MODE=multi`? | (a) yes, labelled preview; (b) wait for 17.0.0 | (a), §4.3 | TEN-LAB's release |
 | Q7 | How is v4's stability declared? | (a) per path in the capability document; (b) a `/api/v4-unstable` prefix; (c) no marker | (a): the capability document is already the place a client reads what the hub serves | REG-PROPOSE |
 | Q8 | `WRITE_VALIDATION` default | (a) stays `off`; (b) `log` in a minor; (c) `reject` in 17.0.0 | (b) then (c), after #8841's open items (contents, item 7) | 17.0.0 contents |
-| Q9 | D-EVENT: commit event per call or per driver operation | per the plan's decision card | settle while the slices wait (§3.3) | WC-STEP-PATCH, the change feed |
+| Q9 | D-EVENT: commit event per call or per driver operation | per the plan's decision card | *Deferred, maintainer 2026-10-27:* no shape adopted; the event stays counts-only and internal; reopened when WC-STEP-PATCH's WriteResult.items[], a named first subscriber, the BF-164 websocket cursor re-measure and a count of replica-set sites are in hand. A read after the write is not adopted (no precedent) | ST-EVENT, the change feed |
 | Q10 | D-T30: approve the tenant configuration surface | walk through the DECISION sections | start once 16.0.0 is tagged, after re-measuring the 277 settings on `dev` | T30-SCHEMA-CONFIG, TEN-RESOLVE |
 | Q11 | Review capacity | #8857, #8859, #8861, #8862, #8863 and #8865 add 17,794 lines against their bases (§2) | review in theme order (16.1.0 first), one stacked chain at a time | every row of §4.3 |
 | Q12 | Put prototypes in 16.0.0 to soak them as alpha? | *Decided, maintainer 2026-10-27:* the seam slices go into 16.0.0 if feasible and B6's entry bar is met with time on `dev` before the tag (§2.1); building them to that bar is worth doing whether or not they ship, because it prepares the work that follows. Components that ship before they are mature are labelled alpha in the release notes. Still open: Q12a | B6 | the soak start, BFQ-72 |
@@ -461,7 +461,7 @@ release soaks them; and how does that weigh against releasing as soon as the can
 
 - **What happens.** `dev` stays at `ca1652d6` except for release fixes. The cohort requests (Q14) and
   the live alarms check run in parallel; BF-72 and BF-161 are brought up to `dev` inside their
-  forks. D-EVENT, D-T30 and the remaining identity questions are settled while `dev` is quiet.
+  forks. D-T30 and the remaining identity questions are settled while `dev` is quiet.
 - **Who it reaches.** Every 16.0.0 user, through M1 and #8859, which are new code on every v1 read
   and write; B6's cohort table is the check list.
 - **Measure first.** The cohort confirmations; a 360-cell matrix and client replay on the final

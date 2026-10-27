@@ -143,16 +143,17 @@
   {
    "id": "ST-EVENT",
    "track": "storage",
-   "phase": "boundary",
-   "state": "progress",
+   "phase": "intent",
+   "state": "decision",
    "short": "Commit event contents",
    "title": "The storage-write-committed event: per call or per driver operation, and whether it carries _id and identifier (internal only)",
    "where": "lib/storage/write-step.js",
    "check": "a test per path that the event names every stored record once",
    "depends": [
-    "PR-8854"
+    "PR-8854",
+    "WC-STEP-PATCH"
    ],
-   "ref": "In progress (session -2e, lab/commit-event-bench, local). First variant measured: free while nothing in lib/ subscribes (today only tests do); with a subscriber, updates and deletes need a pre-read and bulk uploads slow down, and the change feed is exact. A post-write variant is being measured; its results go here when it reports"
+   "ref": "Deferred (maintainer, 2026-10-27): the event stays counts-only and internal; nothing in lib/ subscribes. Evidence: session -2e's bench, lab/commit-event-bench 54cd8fff7"
   },
   {
    "id": "ST-FILTER",
@@ -235,7 +236,7 @@
    "phase": "intent",
    "state": "planned",
    "short": "write(intent)",
-   "title": "write(intent) -> WriteResult.items[] above the interface: id forms, server dates, twin removal and identifier matching move into one step; validation and the commit event move up to it; the compare-and-set that #8854's validated updates do with MongoDB $expr moves behind a backend-neutral adapter method (for example updateIfUnchanged) before PostgreSQL",
+   "title": "write(intent) -> WriteResult.items[] above the interface: id forms, server dates, twin removal and identifier matching move into one step; validation moves up to it, and its WriteResult.items[] is what a later commit event names records from; the compare-and-set that #8854's validated updates do with MongoDB $expr moves behind a backend-neutral adapter method (for example updateIfUnchanged) before PostgreSQL",
    "spec": [
     {
      "label": "write contract spec",
@@ -244,8 +245,7 @@
    ],
    "check": "write-contract spec G1: every matrix cell equal to dev except BF-165's two",
    "depends": [
-    "ST-WRITES",
-    "ST-EVENT"
+    "ST-WRITES"
    ],
    "where": "a new intent module with its own name (#8854 condition 4); about 500 lines"
   },
@@ -667,22 +667,23 @@
  "decisions": [
   {
    "id": "D-EVENT",
-   "short": "Commit event and socket refusals",
-   "owner": "maintainer; leaning to per call with _id and identifier; a post-write variant is being benchmarked (session -2e)",
-   "question": "One event per call carrying the stored records, or one per driver operation with counts only; and does a socket refusal acknowledge [] for the whole batch?",
+   "short": "Commit event (deferred)",
+   "owner": "maintainer; deferred 2026-10-27",
+   "question": "No shape is adopted for storage-write-committed; it stays counts-only and internal. Reopen when all four are in hand: (1) WC-STEP-PATCH's WriteResult.items[], so records are named from the write's own result, as API v3's storage events already are; (2) a named first subscriber and its exactness need (screen refresh, or sync and alarms); (3) the BF-164 AndroidAPS websocket cursor finding re-measured; (4) a count of sites running on a replica set, where change streams are the exact source.",
    "holds": [
     "ST-EVENT"
    ],
    "options": [
     {
-     "label": "Per call, with _id and identifier (internal)",
-     "gains": "one fact per write for caches, the change feed (T4) and a future tenant broadcast",
-     "risks": "changes #8854's contract; payload must stay off public channels"
+     "label": "Reopen with the four inputs",
+     "recommended": true,
+     "gains": "the shape is chosen against a real subscriber and the write's own result",
+     "risks": "none until something subscribes"
     },
     {
-     "label": "Per driver operation, counts only (as drafted)",
-     "gains": "no change to the draft",
-     "risks": "the change feed cannot name records from it"
+     "label": "Read records after the write",
+     "gains": "exact names without a pre-read",
+     "risks": "no surveyed system does this; precedents name records from the database log (change streams, Debezium, PostgreSQL logical decoding) or by reading before the write (Nocturne, Sequelize individualHooks, Django delete). Not adopted"
     }
    ]
   },

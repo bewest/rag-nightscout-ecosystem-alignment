@@ -17,7 +17,7 @@ It names each piece of work, what it needs first, where it goes in the code, and
 
 | | on dev `ca1652d6` (ships in 16.0.0) | in review (draft PRs) | not started |
 |---|---|---|---|
-| Storage | `WRITE_VALIDATION` (#8841); the write boundary `lib/storage/write-step.js` (#8854); the filter tree and interface with v1 reads (#8861); v1, authorization and socket writes labelled by source (#8863); v1 count only through the interface (#8870). Every REST and socket record read, write and count goes through the storage interface (milestone M1) | — | ST-EVENT (decision, bench running), ST-V3-DECOUPLE, `write(intent)`, computed views, backend-selectable harness, PostgreSQL |
+| Storage | `WRITE_VALIDATION` (#8841); the write boundary `lib/storage/write-step.js` (#8854); the filter tree and interface with v1 reads (#8861); v1, authorization and socket writes labelled by source (#8863); v1 count only through the interface (#8870). Every REST and socket record read, write and count goes through the storage interface (milestone M1) | — | ST-V3-DECOUPLE, `write(intent)`, ST-EVENT (deferred), computed views, backend-selectable harness, PostgreSQL |
 | Identity | `identifier` is the client's, `_id` the server's; API v3 refuses a client `_id` (#8845); v1 entries and devicestatus match on `identifier`, and an explicit null removes a field (#8859) | — | identifier-first on every path, unique index |
 | Registration | specifications only; dev also carries an older proposal schema, `docs/proposals/schemas/controller-instance-registration.schema.json` | #8857: S0, S1, S2, S5, off by default (`f7a43fed`, 64 behind dev, conflicts) | typed writes (S3), projected views (S4) |
 | Tenancy | nothing | #8862 PLAT-ENTRY (`b63d9b7f`, 64 behind dev); #8865 PLAT-SERVE (`1dafe2a5`; its base branch is merged, so it needs retargeting to dev) | tenant configuration, resolution, tenant-scoped auth, hosted lab |
@@ -42,7 +42,7 @@ Every track changes what happens when a record is written:
 | Loop's `syncIdentifier` and Trio's `id` stored and returned untouched | write-contract matrix |
 | v1 treatment upsert on `created_at` + `eventType` | write-contract matrix |
 
-The forward constraints are two mature backends behind one interface (D2–D4), the closed query operator set as a filter tree (D8), a source label and later a tenant binding on every write, and one commit fact the change feed can carry (D6, decision D-EVENT). Under #8854's merge conditions, the commit event stays internal and unstable, and the intent layer gets its own name.
+The forward constraints are two mature backends behind one interface (D2–D4), the closed query operator set as a filter tree (D8), a source label and later a tenant binding on every write, and one commit fact the change feed can carry (D6; D-EVENT deferred until WC-STEP-PATCH and a first subscriber exist). Under #8854's merge conditions, the commit event stays internal and unstable, and the intent layer gets its own name.
 
 ## 3. The map
 
@@ -56,12 +56,13 @@ Done, in 16.0.0: PR-8854, QC-MATRIX-TT (360 cells), ST-FILTER, ST-READS, ST-WRIT
 
 | item | builds | needs | check |
 |---|---|---|---|
-| ST-EVENT | the commit event's granularity and contents | PR-8854, D-EVENT | each stored record named once per write |
 | ST-V3-DECOUPLE | API v3 without API v1's modules, the socket and the cache, so `serve api` serves it alone (M3) | ST-WRITES, PLAT-SERVE | `serve api` passes the API v3 suites (485 pass, 81 fail at #8865 `1dafe2a5`); `single` unchanged |
-| WC-STEP-PATCH | `write(intent)` -> WriteResult.items[] above the interface; matching, server dates, the null-removes rule and validation move into it; compare-and-set behind an adapter method | ST-WRITES, ST-EVENT | [write-contract spec](../tenancy/write-contract-spec-2026-10-07.md) G1 |
+| WC-STEP-PATCH | `write(intent)` -> WriteResult.items[] above the interface; matching, server dates, the null-removes rule and validation move into it; compare-and-set behind an adapter method | ST-WRITES | [write-contract spec](../tenancy/write-contract-spec-2026-10-07.md) G1 |
+| ST-EVENT | the commit event names the records of each write, from WriteResult.items[] | WC-STEP-PATCH, D-EVENT (deferred) | each stored record named once per write |
 | ST-HARNESS | backend-selectable harness, backend selection, tenant scope | WC-STEP-PATCH | `NS_TEST_BACKEND` controls |
 | ST-VIEWS | computed views from bounded queries, without a resident `ddata`: page, socket `dataUpdate`, plugins, alarms (M4) | ST-READS | each view equal to today's on the corpus fixtures; alarms per the execution plan §7b |
-| ST-PG | PostgreSQL with row-level security, entries first | ST-HARNESS | the backend-selectable suite on both stores |
+| ST-PG | PostgreSQL with row-level security, entries first | ST-EVENT | the commit event names the records of each write, from WriteResult.items[] | WC-STEP-PATCH, D-EVENT (deferred) | each stored record named once per write |
+| ST-HARNESS | the backend-selectable suite on both stores |
 
 The September seam chain is kept as reference for ST-HARNESS, ST-PG and TEN-RESOLVE (commits named on each item); it is not merged as it stands.
 
