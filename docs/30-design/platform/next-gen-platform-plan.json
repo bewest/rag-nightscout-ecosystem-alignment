@@ -532,7 +532,7 @@
    "id": "PLAT-SERVE",
    "track": "tenancy",
    "phase": "boundary",
-   "state": "planned",
+   "state": "ready",
    "short": "serve <roles>",
    "title": "`nightscout serve <role>[,<role>…]`: hosted roles carved one at a time from bootevent's factory chain, `api` first (API v3 holds no resident state); each listener on its own bind address so `admin` stays off the consumer interface (D5, D7, D16, D21)",
    "where": "bin/nightscout.js, lib/server/bootevent.js, lib/server/server.js",
@@ -546,7 +546,8 @@
      "label": "components doc",
      "href": "../tenancy/nightscout-deployable-components-2026-09-14.md"
     }
-   ]
+   ],
+   "ref": "feat/nightscout-serve 1dafe2a5 (on #8863 + #8862, merge 775fd1cb): `serve api` boots only API v3's pieces; single unchanged (4639/0/3); API v3 suites under serve api 485 pass, 81 fail on cache events, v1 and sockets the role leaves out"
   },
   {
    "id": "T30-RESEARCH",

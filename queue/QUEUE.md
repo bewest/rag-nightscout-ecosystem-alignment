@@ -44,8 +44,8 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `not-started` | 63 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-STEP-PATCH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 6 | BFQ-178, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY |
 | `gate-not-met` | 5 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR |
-| `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
-| `blocked` | 17 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164, PLAT-SERVE |
+| `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, WS-LAB, PLAT-SERVE |
+| `blocked` | 16 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
 | `in-flight-upstream` | 8 | ID-SIMPLE-MATCH, BFQ-72, BFQ-161, BFQ-193, BFQ-195, ST-FILTER-READS, ST-WRITES, PLAT-ENTRY |
 | `merged-upstream` | 44 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-192, MOD-WRITE-VALIDATION |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
@@ -9247,7 +9247,7 @@ reproduced ones.
 | `SPEC-ACTIVE-STATE` | Decide and specify what a hub reports as active at a time, and a therapy-state version an approval can bind to | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 2 run |
 | `SCHEMA-INTENT-GAPS` | Registration grammar: the initiators other form, duration units on requested and applied carriers, typed carrier fields | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 2 run |
 | `PLAT-ENTRY` | One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT and CMD single, no image HEALTHCHECK; no start path changes | `in-flight-upstream` | `feat/nightscout-entrypoint` | minor | 0 run + 1 no-gate |
-| `PLAT-SERVE` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a time, `api` first; each listener bound separately | `blocked` | `-` | minor | 0 run + 1 no-gate |
+| `PLAT-SERVE` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a time, `api` first; each listener bound separately | `ready-to-push` | `feat/nightscout-serve` | minor | 0 run + 1 no-gate |
 
 ### `LAB-G7-TWO-DISPLAY` &mdash; Lab: two displays on one real G7 sensor report the same seconds counter for each reading, live and backfill
 
@@ -10367,11 +10367,11 @@ reproduced ones.
 
 | | |
 |---|---|
-| state (claimed) | `blocked` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
-| base | `official/dev@7ad3a67f` |
-| worktree | `-` |
+| branch | `feat/nightscout-serve` |
+| base | `feat/storage-writes@38b910d7 + feat/nightscout-entrypoint@b63d9b7f (merge 775fd1cb)` |
+| worktree | `externals/work/crm-serve` |
 | semver | `minor` |
 | review | maintainer, plus a second human - the boot sequence moves |
 | blocks on | `PLAT-ENTRY`, `ST-FILTER-READS` |
@@ -10384,13 +10384,13 @@ reproduced ones.
 
 **Gates.**
 
-- **NO GATE** &mdash; Blocked on PLAT-ENTRY and ST-FILTER-READS. Gate: `serve api` passes the API v3 suites with no bus or ddata constructed (asserted, with a control that constructs one); `serve admin` refuses the consumer listener's address; `single` passes the full suite unchanged.
+- **NO GATE** &mdash; Measured by the lab, not re-runnable from this repository alone. On feat/nightscout-serve 1dafe2a5 against 775fd1cb (Node 22.23.4, MongoDB 8.0.34): single npm test 4639/0/3 (base 4617), test:all 4967/0/3 (base 4945), start-paths green. API v3 suites (46 files) under `serve api`: 485 passing, 81 failing, 168 not run, against 734/0 under single; the failures are fixtures that wait for the cache's data-update event (42), call v1 modules (33) or need socket.io (6), all pieces the api role leaves out. A `serve api` boot constructs no bus, ddata, cache, websocket or v1/v2 (asserted; red when the api profile lists single's stages). Plane rule: 18 listener tests, each check ablated red. Unknown or unimplemented role exits 64; SIGTERM exits 0 in under 10 ms (red: Mongo client left open, exit 1 at 10 s).
 
 **Evidence.**
 
 - `docs/30-design/tenancy/nightscout-deployable-components-2026-09-14.md`
 
-**Notes.** 2026-10-26 (D21). Open: whether a composed `serve` of every role is part of the multi target or only a small-hoster convenience. TEN-RESOLVE (platform admin on its own interface) depends on this item.
+**Notes.** 2026-10-26, later: built on feat/nightscout-serve (ready to push, draft PR stacked on #8863 and #8862). Env per role: <PREFIX>_HOSTNAME / _PORT (API_, REALTIME_, TENANT_ADMIN_, ADMIN_); admin defaults to 127.0.0.1:1338 and needs ADMIN_INSECURE_BIND_ACKNOWLEDGED for a non-loopback bind. Open: per-tenant config after TEN-RESOLVE, ADMIN_BIND vs ADMIN_HOSTNAME, the admin address rule on any port, /api/v2/authorization under tenant-admin, migrate owning indexes, one context per process. 2026-10-26 (D21). Open: whether a composed `serve` of every role is part of the multi target or only a small-hoster convenience. TEN-RESOLVE (platform admin on its own interface) depends on this item.
 
 ---
 
