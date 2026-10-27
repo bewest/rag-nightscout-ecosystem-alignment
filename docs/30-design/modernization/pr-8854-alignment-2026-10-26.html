@@ -4940,7 +4940,7 @@
 <tr>
 <td>backward</td>
 <td>Loop's <code>syncIdentifier</code> and Trio's <code>id</code> stored and returned untouched</td>
-<td>the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/e7c2f2330246bc326494cc50c2e0f59668975a48/tools/qc/write-contract-matrix.js">write-contract matrix</a></td>
+<td>the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/994452de5b680d3fcb8041e2ff733ba076ddeb22/tools/qc/write-contract-matrix.js">write-contract matrix</a></td>
 </tr>
 <tr>
 <td>forward</td>
@@ -4969,7 +4969,7 @@
 <p><strong>Re-measured at <code>fa22d573</code></strong>, the head after #8854 left draft (three commits past <code>880b7369</code>: <code>a7e65ecf</code> atomic validated updates in <code>lib/storage/validated-update.js</code>, <code>3b095381</code>, <code>fa22d573</code>):</p>
 <ul>
 <li><strong>Write-contract matrix.</strong> 0 of 336 cells differ from dev, and 0 with <code>WRITE_VALIDATION=reject</code> on both sides. The replay's known 3-cell difference shows the comparison can go red.</li>
-<li><strong>Validated updates are not covered by our matrix.</strong> Its fixtures carry no Temporary Target fields, so the new code path is reached only by #8854's own tests. Extending the matrix is the next-gen plan's QC-MATRIX-TT.</li>
+<li><strong>Validated updates are covered by our matrix since QC-MATRIX-TT (2026-10-26, <code>823c7c68d</code>).</strong> Its 24 Temporary Target cells reach reject mode on all four paths: on dev <code>8dbb60c2</code>, off and reject differ in the 12 invalid-target cells and nowhere else. Only the socket's <code>dbUpdate</code> and <code>dbUpdateUnset</code> refuse through <code>validatedUpdate.run</code>. v3 PATCH reaches it only for valid edits (an invalid one is refused earlier by <code>validateDomain</code>). v1 PUT and in-process <code>save</code> validate with <code>checkDomain</code> and write with <code>replaceOne</code>. Neutralising the validated-update check changes exactly those two socket cells.</li>
 <li><strong>Composition.</strong> The September interface still composes above the boundary: the same 2 conflicting paths, and #8854's tests pass 429 of 430. The one failure is the boundary check's rule described above.</li>
 <li><strong>Socket updates on the composition.</strong> They now go through the interface into #8854's compare-and-set, and its socket, v3 and cross-path conditional-update tests pass.</li>
 <li><strong>What validated updates mean for the plan.</strong></li>

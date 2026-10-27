@@ -3143,7 +3143,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-26 at <code>44061bf9f</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>9e7476869</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3222,13 +3222,13 @@
 </tr>
 <tr>
 <td><code>ready-to-push</code></td>
-<td>3</td>
-<td>P0-C-REMEDIATE, T30-AUTH, WS-LAB</td>
+<td>4</td>
+<td>P0-C-REMEDIATE, T30-AUTH, WS-LAB, PLAT-SERVE</td>
 </tr>
 <tr>
 <td><code>blocked</code></td>
-<td>17</td>
-<td>RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164, PLAT-SERVE</td>
+<td>16</td>
+<td>RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164</td>
 </tr>
 <tr>
 <td><code>in-flight-upstream</code></td>
@@ -20193,7 +20193,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <p><strong>Why <code>patch</code>.</strong> No client-visible change; the write-contract matrix (336 cells, off and reject) and #8854's CRUD matrix are the pins.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><strong>NO GATE</strong> &mdash; Measured by the lab, not re-runnable from this repository alone (needs MongoDB and a dev tree). On feat/storage-filter 48e7e101 (dev 8dbb60c2 merged into b752971c): npm test 4577/0/3, test:all 4905/0/3, check-write-boundary 8/8. On b752971c against dev 7ad3a67f: npm test 4526/0/3 (dev 4429), test:all 4854/0/3 (dev 4757), #8854 matrix 422 = 422, write-contract matrix 0 of 336 cells differ off and reject (red control findFiltered -&gt; []: 186 cells), tools/seam/v1-http-differential.js 700/700 identical, tools/seam/v1-read-differential.js 2954/2954, tools/seam/filter-differential.js 0 mismatches.</li>
+<li><strong>NO GATE</strong> &mdash; Measured by the lab, not re-runnable from this repository alone (needs MongoDB and a dev tree). On feat/storage-filter 48e7e101 (dev 8dbb60c2 merged into b752971c): npm test 4577/0/3, test:all 4905/0/3, check-write-boundary 8/8. On b752971c against dev 7ad3a67f: npm test 4526/0/3 (dev 4429), test:all 4854/0/3 (dev 4757), #8854 matrix 422 = 422, write-contract matrix 0 of 336 cells differ off and reject (red control findFiltered -&gt; []: 186 cells), tools/seam/v1-http-differential.js 700/700 identical, tools/seam/v1-read-differential.js 2954/2954, tools/seam/filter-differential.js 0 mismatches. With QC-MATRIX-TT's Temporary Target cells (360, 823c7c68d): 48e7e101 equals dev 8dbb60c2 cell for cell off and reject.</li>
 </ul>
 <p><strong>Evidence.</strong></p>
 <ul>
@@ -20251,7 +20251,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <p><strong>Why <code>patch</code>.</strong> No client-visible change; the write-contract matrix, #8854's CRUD matrix and an 88-step write differential are the pins.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><strong>NO GATE</strong> &mdash; Measured by the lab, not re-runnable from this repository alone. On feat/storage-writes 38b910d7 against 48e7e101 (Node 22.23.4, MongoDB 8.0.34): npm test 4588/0/3 (base 4577), test:all 4916/0/3 (base 4905), check-write-boundary 9 entry points (red: a raw deleteMany), #8854 matrix 422 (red: socket label dropped, 78 failing), write-contract matrix 0 of 336 cells off and reject (red: deleted alias, 3 cells; reject mode is not exercised by the matrix, see QC-MATRIX-TT), v1 GET differential 700/700, write differential 88/88 with 3254 documents (red: alias 11 replies, $unset 11 stored states).</li>
+<li><strong>NO GATE</strong> &mdash; Measured by the lab, not re-runnable from this repository alone. On feat/storage-writes 38b910d7 against 48e7e101 (Node 22.23.4, MongoDB 8.0.34): npm test 4588/0/3 (base 4577), test:all 4916/0/3 (base 4905), check-write-boundary 9 entry points (red: a raw deleteMany), #8854 matrix 422 (red: socket label dropped, 78 failing), write-contract matrix 0 of 336 cells off and reject (red: deleted alias, 3 cells). With QC-MATRIX-TT's Temporary Target cells (360 in all, 823c7c68d), 0 cells differ from dev 8dbb60c2 off and 0 in reject; off vs reject differ in the same 12 invalid-target cells as dev. v1 GET differential 700/700, write differential 88/88 with 3254 documents (red: alias 11 replies, $unset 11 stored states).</li>
 </ul>
 <p><strong>Evidence.</strong></p>
 <ul>
@@ -21927,8 +21927,8 @@ reproduced ones.</p>
 <tr>
 <td><code>PLAT-SERVE</code></td>
 <td><code>nightscout serve &lt;roles&gt;</code> (D21): hosted roles carved from bootevent one at a time, <code>api</code> first; each listener bound separately</td>
-<td><code>blocked</code></td>
-<td><code>-</code></td>
+<td><code>ready-to-push</code></td>
+<td><code>feat/nightscout-serve</code></td>
 <td>minor</td>
 <td>0 run + 1 no-gate</td>
 </tr>
@@ -23910,7 +23910,7 @@ reproduced ones.</p>
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>blocked</code></td>
+<td><code>ready-to-push</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -23918,15 +23918,15 @@ reproduced ones.</p>
 </tr>
 <tr>
 <td>branch</td>
-<td><code>-</code></td>
+<td><code>feat/nightscout-serve</code></td>
 </tr>
 <tr>
 <td>base</td>
-<td><code>official/dev@7ad3a67f</code></td>
+<td><code>feat/storage-writes@38b910d7 + feat/nightscout-entrypoint@b63d9b7f (merge 775fd1cb)</code></td>
 </tr>
 <tr>
 <td>worktree</td>
-<td><code>-</code></td>
+<td><code>externals/work/crm-serve</code></td>
 </tr>
 <tr>
 <td>semver</td>
@@ -23947,13 +23947,13 @@ reproduced ones.</p>
 <p><strong>Why <code>minor</code>.</strong> new subcommands; <code>single</code> unchanged</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><strong>NO GATE</strong> &mdash; Blocked on PLAT-ENTRY and ST-FILTER-READS. Gate: <code>serve api</code> passes the API v3 suites with no bus or ddata constructed (asserted, with a control that constructs one); <code>serve admin</code> refuses the consumer listener's address; <code>single</code> passes the full suite unchanged.</li>
+<li><strong>NO GATE</strong> &mdash; Measured by the lab, not re-runnable from this repository alone. On feat/nightscout-serve 1dafe2a5 against 775fd1cb (Node 22.23.4, MongoDB 8.0.34): single npm test 4639/0/3 (base 4617), test:all 4967/0/3 (base 4945), start-paths green. API v3 suites (46 files) under <code>serve api</code>: 485 passing, 81 failing, 168 not run, against 734/0 under single; the failures are fixtures that wait for the cache's data-update event (42), call v1 modules (33) or need socket.io (6), all pieces the api role leaves out. A <code>serve api</code> boot constructs no bus, ddata, cache, websocket or v1/v2 (asserted; red when the api profile lists single's stages). Plane rule: 18 listener tests, each check ablated red. Unknown or unimplemented role exits 64; SIGTERM exits 0 in under 10 ms (red: Mongo client left open, exit 1 at 10 s).</li>
 </ul>
 <p><strong>Evidence.</strong></p>
 <ul>
 <li><code>docs/30-design/tenancy/nightscout-deployable-components-2026-09-14.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-26 (D21). Open: whether a composed <code>serve</code> of every role is part of the multi target or only a small-hoster convenience. TEN-RESOLVE (platform admin on its own interface) depends on this item.</p>
+<p><strong>Notes.</strong> 2026-10-26, later: built on feat/nightscout-serve (ready to push, draft PR stacked on #8863 and #8862). Env per role: <PREFIX><em>HOSTNAME / _PORT (API</em>, REALTIME_, TENANT_ADMIN_, ADMIN_); admin defaults to 127.0.0.1:1338 and needs ADMIN_INSECURE_BIND_ACKNOWLEDGED for a non-loopback bind. Open: per-tenant config after TEN-RESOLVE, ADMIN_BIND vs ADMIN_HOSTNAME, the admin address rule on any port, /api/v2/authorization under tenant-admin, migrate owning indexes, one context per process. 2026-10-26 (D21). Open: whether a composed <code>serve</code> of every role is part of the multi target or only a small-hoster convenience. TEN-RESOLVE (platform admin on its own interface) depends on this item.</p>
 <hr />
 <p><em>End of generated view. Source: <code>queue/work-queue.yaml</code>.</em></p>
 
