@@ -171,9 +171,9 @@
     {
       "name": "cgm-remote-monitor-official",
       "url": "https://github.com/nightscout/cgm-remote-monitor.git",
-      "ref": "2dc0c1bce50a25f3a4e0647b48202123337dd2ff",
+      "ref": "9489982852c5dbf25e78d0232a073cd8bb8a9912",
       "description": "Official Nightscout server (dev branch)",
-      "frozen_at": "2026-10-27T10:33:57.277823",
+      "frozen_at": "2026-10-27T12:55:40.137539",
       "frozen_from": "dev"
     },
     {
