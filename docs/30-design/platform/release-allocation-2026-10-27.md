@@ -199,6 +199,21 @@ Two consequences:
 - **17.0.0 is where identity is enforced, not where it starts.** Identifier matching starts in
   16.0.0 (#8859) and spreads in 16.2.0; the unique index that makes it a guarantee is the major.
 
+**Milestones proposed by session -2e (2026-10-27, not decided).** A finer split of the storage and
+tenancy work, from its route census of `dev` `2dc0c1bc` (129 routes and 7 socket events):
+
+| milestone | contents | exit check | release row |
+|---|---|---|---|
+| M0 | route census | done | — |
+| M1 | one read and write path: every REST and socket record read and write, and count, through the storage interface (#8861, #8863, the count commit, ST-COUNT-ONEPATH) | the census finds no direct driver call in `lib/server` or `lib/api` | 16.0.0 (Q12) |
+| M2 | D-EVENT and `write(intent)` | | 16.2.0 |
+| M3 | API v3 decoupled from v1 and the cache (the cause of `serve api`'s 81 failing suites in #8865) | | 16.1.0 or 16.2.0 |
+| M4 | computed views without a resident `ddata` | | before multi |
+| M5 | backend-selectable harness and PostgreSQL | | 16.3.0 or later |
+| M6 | tenant resolution, per-tenant credentials, realtime, the hosted lab, as a preview | | 16.3.0 or later |
+
+M3 and M4 are not items in the next-gen plan yet.
+
 ### 4.4 API v4 and formal schemas across releases
 
 - **v4 ships in pieces, marked unstable until its contract is shared.** Registration is already under
@@ -336,7 +351,10 @@ release soaks them; and how does that weigh against releasing as soon as the can
 
   The candidates are local. On `dev` `94899828` (#8866 and #8859 merged) the slices are re-merged as
   `479e33d1` and `a3f74a08`; outside the 11 files #8866 changed, their trees equal the measured ones
-  (checked by session -ee), and the suites and the matrix are being re-run on them. Before anything is
+  (checked by session -ee). Re-run on `a3f74a08` (session -2e): `npm test` 4687/0/3 and `test:all` 5015/0/3,
+  the same totals as `cand/with`; the 360-cell matrix equals `dev` `94899828` in off and in reject
+  (off vs reject differ in 12 cells on each). The client replay, v1 HTTP differential and latency are
+  not re-run: their inputs are the non-CI tree, which is unchanged. Before anything is
   pushed, the conflict resolutions go onto the PR
   branches (`dev` and #8859 merged into `feat/storage-filter` and `feat/storage-writes`, the count
   commit added to #8863), and the maintainer merges #8859 before #8861 and #8863.
