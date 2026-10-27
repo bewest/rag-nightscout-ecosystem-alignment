@@ -3291,24 +3291,6 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Release allocation: what goes in 16.0.0, what follows, and in what order
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="release-allocation-2026-10-27.html" class="md-nav__link md-nav__link--active">
         
   
@@ -3325,47 +3307,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#1-the-answers-in-brief" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. The answers in brief
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-where-things-stand" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Where things stand
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
       
     </li>
   
@@ -5468,36 +5409,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#1-the-answers-in-brief" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. The answers in brief
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-where-things-stand" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Where things stand
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -5518,7 +5429,8 @@
 <p class="admonition-title">Record</p>
 <p>Record as of 2026-10-27. A point-in-time document; it is not kept up to date.</p>
 </div>
-<p><em>Contributor-facing. Snapshot, 2026-10-27: cgm-remote-monitor <code>official/dev</code> <code>8dbb60c2</code>,
+<p><em>Contributor-facing. Snapshot, 2026-10-27: cgm-remote-monitor <code>official/dev</code> <code>8dbb60c2</code>, re-anchored
+for §0, §3.5 and Q13–Q16 at <code>ca1652d6</code> the same evening,
 <code>official/master</code> <code>c6a0d8ed</code> (= <code>v15.0.9</code>), open PRs read with <code>gh pr list</code> and <code>gh pr view</code> the same
 day. The work items are those of the living <a href="next-gen-platform-plan.html">next-gen platform plan</a>; the
 release's own state is in <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">releases/cgm-remote-monitor-16.0.0</a>.
@@ -5536,6 +5448,73 @@ are proposals for the maintainer; nothing here is decided until §5 says so.</em
 </ol>
 <p>§1 answers in brief, §2–§4 give the reasoning, §5 lists the open decisions, and §6 holds the scenario
 briefs. B6 and Q12 answer a follow-up the same day: whether prototypes should ship in 16.0.0 as alpha.</p>
+<p><strong>Re-anchored the same evening at <code>official/dev</code> <code>ca1652d6</code></strong> (merge of #8858, 22:29Z). Between
+<code>8dbb60c2</code> and <code>ca1652d6</code> ten PRs merged: #8864, #8866, #8859, #8868, #8856, #8861, #8863, #8870,</p>
+<h1 id="8869-and-8858-milestone-m1-every-rest-and-socket-record-read-write-and-count-through-the-storage">8869 and #8858. Milestone M1 (every REST and socket record read, write and count through the storage<a class="headerlink" href="#8869-and-8858-milestone-m1-every-rest-and-socket-record-read-write-and-count-through-the-storage" title="Permanent link">&para;</a></h1>
+<p>interface) is therefore on <code>dev</code> and ships in 16.0.0. §0 answers the four questions again from that
+state; §1–§6 keep the morning's reasoning, with their decided rows marked. 16.0.0 is now
+954 commits, 48 first-parent, 890 files, +139618/−18627 past <code>v15.0.9</code>
+(<code>git rev-list --count</code>, <code>--first-parent --count</code>, <code>git diff --shortstat official/master official/dev</code>).</p>
+<h2 id="0-the-questions-again-after-m1-landed-evening-2026-10-27">0. The questions again, after M1 landed (evening 2026-10-27)<a class="headerlink" href="#0-the-questions-again-after-m1-landed-evening-2026-10-27" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>How much more of the seam goes in 16.0.0: none, beyond what is on <code>dev</code>.</strong> The behaviour-neutral
+  slices that every single-tenant site runs (ST-FILTER, ST-READS, ST-WRITES, ST-COUNT-ONEPATH) are
+  merged, so the soak value B6 argued for is already being collected. Every storage item left
+  (§3.5) either changes what clients see (WC-STEP-PATCH, ID-BATCH), changes a safety-relevant
+  computation (ST-VIEWS: the page, plugins and alarms), or is reached only by multi mode
+  (ST-V3-DECOUPLE, PLAT-SERVE, ST-HARNESS, ST-PG). None of them improves 16.0.0 for a self-hoster,
+  and each would spend the short quiet period the pre-tag definition of done asks for
+  (<code>RT-16-RELEASE</code>, item 4, decided 2026-10-27). Recommendation: <code>dev</code> takes only release fixes until
+  the tag (Q1 (a), now Q13). ST-EVENT stays a decision with a bench running; settle it in the
+  freeze window, ship its code in 16.1.0 or later.</li>
+<li><strong>Does including other roadmap features help multitenancy: not by being in 16.0.0.</strong> The one
+  indirect benefit, real traffic on the interface before PostgreSQL depends on it (§4.2), is now
+  bought by M1. What shortens the path from here is decisions and a reopened <code>dev</code>: D-EVENT, D-T30,
+  D-LOOP-ID's remaining items, the identifier and schema rules that fix the PostgreSQL keys and
+  columns, and ST-V3-DECOUPLE for <code>serve api</code>. Registration and v4 reads stay parallel work.</li>
+<li><strong>Schedule: tag 16.0.0 as soon as its four pre-tag items are met; then one theme per minor.</strong>
+  The fastest route to a multi-mode preview is to release 16.0.0 and reopen <code>dev</code>, not to load it.
+  The revised themes are in §4.3 (16.1.0 one executable, <code>serve api</code> and registration off by
+  default; 16.2.0 <code>write(intent)</code> and identity on every path; 16.3.0 or later the multi preview;
+  17.0.0 enforcement). Client identity and formal schemas run ahead of tenancy because they fix its
+  tables; v4 publishes in pieces, unstable until shared.</li>
+<li><strong>Open questions and briefs:</strong> Q13–Q16 in §5 and B7–B9 in §6 are new this evening.</li>
+</ul>
+<p>What still stands between <code>dev</code> and the tag, at <code>ca1652d6</code>:</p>
+<table>
+<thead>
+<tr>
+<th>pre-tag item (<code>RT-16-RELEASE</code>)</th>
+<th>state</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. live Pushover and APNs delivery (<code>RT-16-LIVE-ALARMS</code>)</td>
+<td>not started</td>
+</tr>
+<tr>
+<td>2. cohort confirmations from <code>dev</code> users: AndroidAPS, Loop, Trio, xDrip+, a follower app, an mmol/L site (<code>RT-16-RIG-SOAK</code>); the M1 cohort table in B6 says what to ask each</td>
+<td>not started</td>
+</tr>
+<tr>
+<td>3. BF-72 and BF-161 through their forks</td>
+<td>fix branches <code>bf/regex-limits</code> <code>a9da33ff</code> and <code>bf/entries-pattern-limit</code> <code>1dce7722</code> contain ST-WRITES and the count commit, and are 15 commits behind <code>dev</code> <code>ca1652d6</code> (<code>git merge-base --is-ancestor</code>, <code>git rev-list --count</code>); a <code>dev</code> merge and re-run inside each fork is owed</td>
+</tr>
+<tr>
+<td>4. a short quiet period on <code>dev</code> with the final candidate</td>
+<td>not started; needs Q13</td>
+</tr>
+<tr>
+<td><code>master</code> protection (#8824 <code>BLOCKED</code>)</td>
+<td>still requires <code>Run Tests (22, 6)</code>, <code>Run Tests (22, 4.4)</code> and <code>Run Tests (24, 6)</code> and one approval (<code>gh api …/branches/master/protection</code>, read 22:4xZ); the decided change to require only <em>Tests pass</em> is not applied</td>
+</tr>
+<tr>
+<td><code>dev</code> CI on <code>ca1652d6</code></td>
+<td>CodeQL passed; <em>CI test and publish Docker image</em> in progress at the time of reading</td>
+</tr>
+</tbody>
+</table>
 <h2 id="1-the-answers-in-brief">1. The answers in brief<a class="headerlink" href="#1-the-answers-in-brief" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Storage seam in 16.0.0: in, if it meets the entry bar with time left on <code>dev</code> before the tag
@@ -5646,6 +5625,10 @@ briefs. B6 and Q12 answer a follow-up the same day: whether prototypes should sh
 </table>
 <p>Sizes: <code>git diff --shortstat &lt;base&gt;...&lt;head&gt;</code> in <code>externals/cgm-remote-monitor-official</code> after
 fetching each PR head. #8863's base is #8861 and #8865's is #8863.</p>
+<p><em>By <code>ca1652d6</code> (evening): #8859, #8856, #8858, #8864, #8866, #8861 and #8863 merged, with #8870
+(the count commit) and #8868 and #8869. Still open: #8862 (<code>b63d9b7f</code>, 64 behind <code>dev</code>), #8865
+(<code>1dafe2a5</code>, base <code>feat/storage-writes</code>, 55 behind), #8857 (<code>f7a43fed</code>, 64 behind, <code>DIRTY</code>:
+conflicts with <code>dev</code>), and #8871 (editor <code>jsconfig.json</code>, 0 behind).</em></p>
 <p>The behavioural measurements behind "changes no behaviour" are the next-gen lane's
 (plan items ST-FILTER to PLAT-SERVE): the write-contract matrix (360 cells, both validation modes)
 equal to <code>dev</code> for #8861 and #8863; HTTP diff 700 of 700 and v1 read diff 2954 of 2954 identical for</p>
@@ -5748,7 +5731,75 @@ either a restart or a gap.</p>
 </ul>
 <h3 id="34-recommendation">3.4 Recommendation<a class="headerlink" href="#34-recommendation" title="Permanent link">&para;</a></h3>
 <p>Hold #8861, #8863 and #8865 until 16.0.0 is tagged; merge them to <code>dev</code> the day after, in stack
-order, and ship them in 16.1.0. This needs one rule for <code>dev</code> between now and the tag (Q1). The soak has not started, so B6 states the one condition under which they go into 16.0.0 instead: an entry bar met before it starts. <em>Decided 2026-10-27 (Q12): that condition applies; the slices are built to the bar and go in if they meet it.</em></p>
+order, and ship them in 16.1.0. This needs one rule for <code>dev</code> between now and the tag (Q1). The soak has not started, so B6 states the one condition under which they go into 16.0.0 instead: an entry bar met before it starts. <em>Decided 2026-10-27 (Q12): that condition applies; the slices are built to the bar and go in if they meet it.</em>
+<em>Outcome: the bar was met and #8861, #8863 and #8870 merged to <code>dev</code> the same afternoon
+(<code>84fac457</code>, <code>9668b179</code>, <code>7abe1cf6</code>), after #8859 and #8856 in the agreed order.</em></p>
+<h3 id="35-the-rest-of-the-seam-after-m1-evening-2026-10-27">3.5 The rest of the seam, after M1 (evening 2026-10-27)<a class="headerlink" href="#35-the-rest-of-the-seam-after-m1-evening-2026-10-27" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>item</th>
+<th>state at <code>ca1652d6</code></th>
+<th>ladder (§3.1)</th>
+<th>who in 16.0.0 would run it</th>
+<th>proposed release</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ST-EVENT (D-EVENT)</td>
+<td>decision; bench in progress (session -2e), no figures recorded until it reports</td>
+<td>none while nothing in <code>lib/</code> subscribes; the commit event is internal and unstable (#8854 condition)</td>
+<td>nobody</td>
+<td>decide in the freeze window; code in 16.2.0 with WC-STEP-PATCH</td>
+</tr>
+<tr>
+<td>ST-V3-DECOUPLE (M3)</td>
+<td>planned; it is the cause of <code>serve api</code>'s 81 failing API v3 suites at #8865 <code>1dafe2a5</code></td>
+<td>patch-class if <code>single</code> is unchanged</td>
+<td>every site, for no gain under <code>single</code></td>
+<td>16.1.0, with PLAT-SERVE</td>
+</tr>
+<tr>
+<td>PLAT-ENTRY (#8862)</td>
+<td>draft <code>b63d9b7f</code>, 64 commits behind <code>dev</code></td>
+<td>minor-class (question 9); the image start changes form</td>
+<td>every Docker site</td>
+<td>16.1.0, unless Q2 (a) is still wanted: then merged before the quiet period starts, with a Docker-host cohort check</td>
+</tr>
+<tr>
+<td>PLAT-SERVE (#8865)</td>
+<td>draft <code>1dafe2a5</code> on base <code>feat/storage-writes</code>, which is merged; needs retargeting to <code>dev</code> and a <code>dev</code> merge (55 behind) before any re-measurement</td>
+<td>minor-class</td>
+<td>nobody under <code>single</code></td>
+<td>16.1.0, labelled alpha (Q12a)</td>
+</tr>
+<tr>
+<td>WC-STEP-PATCH, ID-BATCH (M2)</td>
+<td>planned</td>
+<td>minor-class (question 10: reply shape, per-item results)</td>
+<td>every uploader</td>
+<td>16.2.0</td>
+</tr>
+<tr>
+<td>ST-VIEWS (M4)</td>
+<td>planned</td>
+<td>patch-class only if every view equals today's; the alarms are safety-relevant (execution plan §7b)</td>
+<td>every page and alarm</td>
+<td>16.2.0 or later, with alarm cohort checks; before multi</td>
+</tr>
+<tr>
+<td>ST-HARNESS, ST-PG (M5)</td>
+<td>planned</td>
+<td>none for <code>single</code></td>
+<td>nobody</td>
+<td>16.3.0 or later (multi preview)</td>
+</tr>
+</tbody>
+</table>
+<p>So the morning's question (how much of the seam goes ahead of multitenancy into 16.0.0) is answered
+by what merged: the part every single-tenant site exercises went in; the part only multi mode needs
+waits for the minors, where it can ship as alpha without holding the tag.</p>
 <h2 id="4-how-the-tracks-depend-on-each-other">4. How the tracks depend on each other<a class="headerlink" href="#4-how-the-tracks-depend-on-each-other" title="Permanent link">&para;</a></h2>
 <h3 id="41-which-features-shorten-the-path-to-multitenancy">4.1 Which features shorten the path to multitenancy<a class="headerlink" href="#41-which-features-shorten-the-path-to-multitenancy" title="Permanent link">&para;</a></h3>
 <p>The multitenant target (D1–D3) is PostgreSQL with row-level security behind the same storage
@@ -5842,20 +5893,20 @@ the loudest row's (R3).</p>
 <tbody>
 <tr>
 <td>16.0.0</td>
-<td>modernization, the write boundary</td>
-<td>what is on <code>dev</code>, plus #8859, #8861 and #8863 if B6's bar is met, #8856, #8864, #8866, #8858, BF-72, BF-161; #8862 if Q2 says so</td>
+<td>modernization, the write boundary, one read and write path</td>
+<td>what is on <code>dev</code> <code>ca1652d6</code> (M1 included: #8859, #8856, #8861, #8863, #8870, #8864, #8866, #8868, #8869, #8858 merged 2026-10-27), plus BF-72, BF-161 and any release fix found in the quiet period; #8862 only if Q2 (a) and Q13 allow it</td>
 <td>major (already)</td>
 </tr>
 <tr>
 <td>16.1.0</td>
-<td>one write path, registration readable</td>
-<td>#8861, #8863 (behaviour-neutral), unless they meet B6's bar and ship in 16.0.0 (Q12); #8862 and #8865 (one executable, <code>serve api</code>); #8857 off by default (D-REG-FLAG); SPEC-ID-AMEND; the OpenAPI description of what 16.1.0 serves, including the registration paths</td>
+<td>one executable, hosted roles as alpha, registration readable</td>
+<td>#8862 and #8865 (one executable, <code>serve api</code>) with ST-V3-DECOUPLE; #8857 off by default (D-REG-FLAG); SPEC-ID-AMEND; the D-EVENT decision; the OpenAPI description of what 16.1.0 serves, including the registration paths</td>
 <td>minor</td>
 </tr>
 <tr>
 <td>16.2.0</td>
-<td><code>write(intent)</code></td>
-<td>ST-EVENT, WC-STEP-PATCH, ID-BATCH, ST-HARNESS; REG-S3 behind its flag; v4 statistics reads</td>
+<td><code>write(intent)</code> and identity on every path</td>
+<td>ST-EVENT, WC-STEP-PATCH, ID-BATCH, ID-FIRST-MATCH where it changes no outcome, ST-HARNESS; ST-VIEWS if its alarm checks pass; REG-S3 behind its flag; v4 statistics reads</td>
 <td>minor</td>
 </tr>
 <tr>
@@ -6052,6 +6103,34 @@ tenancy work, from its route census of <code>dev</code> <code>2dc0c1bc</code> (1
 <td><em>Decided, maintainer 2026-10-27:</em> option (a). The slices are default on in the single-tenant release, named in the release notes as new internals, with the rehearsed revert as the fallback. Once verified, exercised on <code>dev</code> and released, that code is trusted for what single-tenant sites run. The alpha label belongs to the multitenant bindings only: <code>serve</code> roles, tenant resolution and scope, per-tenant credentials, and the PostgreSQL backend. Trust covers the paths real clients exercise; code no single-tenant site runs (the filter tree's SQL translation, the tenant binding the interface carries, rarely used endpoints without a cohort check) does not inherit it</td>
 <td>—</td>
 <td>the release notes' wording</td>
+</tr>
+<tr>
+<td>Q13</td>
+<td>Does the quiet period start now, at <code>ca1652d6</code>? (asked 2026-10-27 evening)</td>
+<td>(a) yes: <code>dev</code> takes release fixes only (BF-72 and BF-161 at publication, fixes for what the cohorts report, CI and docs); feature PRs stay draft. (b) take #8862 first, then start. (c) keep merging until the alarms and cohort checks are done</td>
+<td>(a): M1 is on <code>dev</code>, so what is left in review is 16.1.0 work (§3.5), and every merge restarts what the quiet period measures; (b) only if the image's new start is wanted in the major</td>
+<td>the tag date; #8862, #8865, #8857 merge dates</td>
+</tr>
+<tr>
+<td>Q14</td>
+<td>Who asks the cohorts, and when?</td>
+<td>(a) now, one request per cohort in B6's table, naming M1 and #8859 as what changed; (b) after the alarms check</td>
+<td>(a): the cohort confirmations are pre-tag item 2 and the slowest, because they wait on other people</td>
+<td><code>RT-16-RIG-SOAK</code></td>
+</tr>
+<tr>
+<td>Q15</td>
+<td>#8865's base</td>
+<td>(a) retarget to <code>dev</code> now and merge <code>dev</code> in, still draft; (b) close it and reopen with ST-V3-DECOUPLE</td>
+<td>(a), by the maintainer; re-measure <code>serve api</code> after</td>
+<td>PLAT-SERVE, ST-V3-DECOUPLE</td>
+</tr>
+<tr>
+<td>Q16</td>
+<td>When does <code>dev</code> reopen for 16.1.0 work?</td>
+<td>(a) the day 16.0.0 is tagged; (b) a <code>release/16.0.0</code> branch for fixes, <code>dev</code> reopened earlier</td>
+<td>(a), as Q1 (a); (b) only if the quiet period runs longer than about two weeks</td>
+<td>every 16.1.0 row</td>
 </tr>
 </tbody>
 </table>
@@ -6284,8 +6363,43 @@ release soaks them; and how does that weigh against releasing as soon as the can
   exchange for one release of real traffic on the interface before PostgreSQL relies on it. If the
   gates are met before the bar is, release without the slices.</li>
 </ul>
+<h3 id="b7-quiet-period-now-tag-when-the-four-items-are-met-recommended-evening-2026-10-27">B7. Quiet period now, tag when the four items are met (recommended, evening 2026-10-27)<a class="headerlink" href="#b7-quiet-period-now-tag-when-the-four-items-are-met-recommended-evening-2026-10-27" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>What happens.</strong> <code>dev</code> stays at <code>ca1652d6</code> except for release fixes. The cohort requests (Q14) and
+  the live alarms check run in parallel; BF-72 and BF-161 are brought up to <code>dev</code> inside their
+  forks. D-EVENT, D-T30 and the remaining identity questions are settled while <code>dev</code> is quiet.</li>
+<li><strong>Who it reaches.</strong> Every 16.0.0 user, through M1 and #8859, which are new code on every v1 read
+  and write; B6's cohort table is the check list.</li>
+<li><strong>Measure first.</strong> The cohort confirmations; a 360-cell matrix and client replay on the final
+  candidate, which will include the fork fixes.</li>
+<li><strong>Effect on tenancy.</strong> 16.1.0 work (ST-V3-DECOUPLE, PLAT-SERVE, registration) builds on
+  branches during the quiet period and merges when <code>dev</code> reopens.</li>
+</ul>
+<h3 id="b8-take-8862-into-1600-first">B8. Take #8862 into 16.0.0 first<a class="headerlink" href="#b8-take-8862-into-1600-first" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>What happens.</strong> #8862 is brought up to <code>dev</code> (64 behind), reviewed and merged; the quiet period
+  starts after it.</li>
+<li><strong>Who it reaches.</strong> Every Docker site: the image gains an ENTRYPOINT and the <code>single</code> command.
+  Its seven measured start paths are equal to <code>nightscout single</code> at <code>b63d9b7f</code>; they are not
+  re-measured on <code>ca1652d6</code>.</li>
+<li><strong>Measure first.</strong> The start paths on the merged tree, and a Docker-host cohort (a hosting
+  provider or a self-hoster running the image) starting the new image with their own command.</li>
+<li><strong>Trade.</strong> One less change of start form in 16.1.0, against a later quiet period.</li>
+</ul>
+<h3 id="b9-hosted-roles-in-1600-as-alpha">B9. Hosted roles in 16.0.0 as alpha<a class="headerlink" href="#b9-hosted-roles-in-1600-as-alpha" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>What happens.</strong> ST-V3-DECOUPLE is built and #8865 merged before the tag, <code>serve api</code> labelled
+  alpha.</li>
+<li><strong>Why not.</strong> Nobody under <code>single</code> runs it, so the release gives it no soak (B6), its names
+  become public surface, and the quiet period moves out. The prerelease route in B6
+  (<code>16.1.0-alpha.1</code> from a branch, run in TEN-LAB) gives the same exposure to the people who would
+  run it.</li>
+</ul>
 <h2 id="7-sources">7. Sources<a class="headerlink" href="#7-sources" title="Permanent link">&para;</a></h2>
 <ul>
+<li>Evening re-anchor: <code>official/dev</code> <code>ca1652d6</code>, <code>official/master</code> <code>c6a0d8ed</code>; open PR heads
+  re-read with <code>gh pr view</code> and fetched; fork fix heads <code>a9da33ff</code> and <code>1dce7722</code>; <code>RT-16-RELEASE</code>'s
+  pre-tag definition of done (<code>queue/work-queue.yaml</code>, 9fb924b0f).</li>
 <li>cgm-remote-monitor <code>official/dev</code> <code>8dbb60c2</code>; PR heads <code>5c6ceabb</code> (#8859), <code>48e7e101</code> (#8861),
   <code>38b910d7</code> (#8863), <code>b63d9b7f</code> (#8862), <code>1dafe2a5</code> (#8865), <code>f7a43fed</code> (#8857), <code>4ed92673</code> (#8864),
   <code>bdd569a3</code> (#8866).</li>
