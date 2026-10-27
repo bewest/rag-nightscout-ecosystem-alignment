@@ -3408,8 +3408,8 @@ items:
     branch: test/16.0.0-reports-ready
     base: official/dev@eed31dca
     worktree: externals/work/crm-reports-ready
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8869]
     blast_radius: >
       tests/browser/page-startup.test.js only (9a44e16f): the first
       controlled navigation waits for the reports page's first report before
@@ -3439,6 +3439,8 @@ items:
     evidence:
       - releases/cgm-remote-monitor-16.0.0/contents.md
     notes: >
+      2026-10-27: pushed by the maintainer and opened as #8869 into dev
+      (head 9a44e16f).
       2026-10-27: dev b84871d7's push run 40571593504 failed Browser tests
       (26, webkit) "boots every page from cached bundles and retires the old
       cache on upgrade" with fifteen report requests "due to access control
@@ -21871,6 +21873,10 @@ items:
       - tools/qc/write-contract-matrix.js
       - tools/seam/DIFFERENTIALS.md
     notes: >
+      2026-10-27: #8861 at 5310a447 is still a draft (gh pr view); hosted CI
+      on it 16 passed, 3 skipped. It must be marked ready for review before it
+      merges, and it merges before #8863.
+
       2026-10-27, final: #8859, #8866, #8868 and #8856 are on dev (eed31dca).
       The maintainer merged dev into feat/storage-filter on GitHub as 5310a447
       (48e7e101 + eed31dca, 20:13:03Z); its tree 884b95ec equals session -2e's
@@ -21946,6 +21952,14 @@ items:
       - tools/qc/write-contract-matrix.js
       - tools/seam/DIFFERENTIALS.md
     notes: >
+      2026-10-27: the maintainer pushed 42128f3b; feat/storage-writes and
+      refs/pull/8863/head point at it (gh pr view: open, ready for review,
+      CLEAN, base feat/storage-filter). Hosted CI has not run on it: the
+      workflow does not run for a pull request whose base is not dev (the
+      branch's last run is pull_request_target on 38b910d7), so the evidence
+      is the local suites and matrix above. GitHub retargets #8863 to dev when
+      #8861 merges, and CI runs then. Merge order: #8861, then #8863.
+
       2026-10-27, final: ready to push 42128f3b (parents a3f74a08 + 5310a447;
       contains 38b910d7, 5310a447 and dev eed31dca; tree d4684295; 25 files
       +896/-245 against 5310a447, 36 files +3124/-248 against dev; checked by

@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — RT-CI-WEBKIT-REPORTS
+# Review packet — RT-CI-WEBKIT-REPORTS (PR #8869)
 
 **WebKit's cached-bundle startup test still fails on dev after bdd569a3: report
 requests cancelled 'due to access control checks'**
@@ -21,7 +21,7 @@ requests cancelled 'due to access control checks'**
 | repository | `cgm-remote-monitor` |
 | branch | `test/16.0.0-reports-ready` |
 | base | `official/dev@eed31dca` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=RT-CI-WEBKIT-REPORTS` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=RT-CI-WEBKIT-REPORTS` is the measurement |
 | semver | `n/a` |
 
 ## What this changes
@@ -65,14 +65,15 @@ The wait and the error-page diagnostics are on the branch.
 
 ## Notes carried on the item
 
-2026-10-27: dev b84871d7's push run 40571593504 failed Browser tests (26,
-webkit) "boots every page from cached bundles and retires the old cache on
-upgrade" with fifteen report requests "due to access control checks", the
-failure bdd569a3 was meant to end; that merge published no image. Prepared on
-test/16.0.0-reports-ready off dev eed31dca, not pushed. A first idea, a page
-marker for the deferred first report, was measured and dropped: sampling every
-5 ms showed no moment where the old readiness check passed before the first
-report started, even at 8x CPU throttling in Chromium.
+2026-10-27: pushed by the maintainer and opened as #8869 into dev (head
+9a44e16f). 2026-10-27: dev b84871d7's push run 40571593504 failed Browser
+tests (26, webkit) "boots every page from cached bundles and retires the old
+cache on upgrade" with fifteen report requests "due to access control checks",
+the failure bdd569a3 was meant to end; that merge published no image. Prepared
+on test/16.0.0-reports-ready off dev eed31dca, not pushed. A first idea, a
+page marker for the deferred first report, was measured and dropped: sampling
+every 5 ms showed no moment where the old readiness check passed before the
+first report started, even at 8x CPU throttling in Chromium.
 
 ---
 

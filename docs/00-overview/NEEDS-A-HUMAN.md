@@ -37,6 +37,7 @@ every item that was `merged-upstream` then is `released`.
 | `BFQ-161` | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory  | &mdash; |
 | `PLAT-ENTRY` | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; im | #8862 |
 | `PLAT-SERVE` | `in-flight-upstream` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a ti | #8865 |
+| `RT-CI-WEBKIT-REPORTS` | `in-flight-upstream` | WebKit's cached-bundle startup test still fails on dev after bdd569a3: report re | #8869 |
 | `ST-FILTER-READS` | `in-flight-upstream` | Storage interface, first PR: the filter tree and interface methods under API v3' | #8861 |
 | `ST-WRITES` | `in-flight-upstream` | Storage interface, second PR: API v1, authorization storage and socket writes th | #8863 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
@@ -56,7 +57,6 @@ every item that was `merged-upstream` then is `released`.
 | `MOD-WRITE-VALIDATION-READ` | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
-| `RT-CI-WEBKIT-REPORTS` | `ready-to-push` | WebKit's cached-bundle startup test still fails on dev after bdd569a3: report re | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
 
@@ -88,6 +88,7 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 | **#8862** | `PLAT-ENTRY` | `feat/nightscout-entrypoint` | One executable (D21): bin/nightscout.js with `single` and th | Maintainer |
 | **#8863** | `ST-WRITES` | `feat/storage-writes` | Storage interface, second PR: API v1, authorization storage  | Maintainer |
 | **#8865** | `PLAT-SERVE` | `feat/nightscout-serve` | `nightscout serve <roles>` (D21): hosted roles carved from b | Maintainer |
+| **#8869** | `RT-CI-WEBKIT-REPORTS` | `test/16.0.0-reports-ready` | WebKit's cached-bundle startup test still fails on dev after | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 
