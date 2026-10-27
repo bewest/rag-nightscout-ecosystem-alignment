@@ -2458,7 +2458,7 @@
 
 
 <h1 id="work-waiting-on-a-person-what-to-push-decide-or-review">Work waiting on a person: what to push, decide or review<a class="headerlink" href="#work-waiting-on-a-person-what-to-push-decide-or-review" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>9e7476869</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>27c391563</code>.</em></p>
 <p><em>What this is: a record (contributor-facing). Read after the <a href="ROADMAP.html">roadmap</a>; leads to the
 <a href="DEFINITION-OF-DONE.html">definition of done: when a change is ready for the apps that depend on it</a>. The subset of the work queue where no further engineering
 advances anything — a person has to push, decide, or review. Prose revised
@@ -2542,6 +2542,12 @@ every item that was <code>merged-upstream</code> then is <code>released</code>.<
 <td><code>in-flight-upstream</code></td>
 <td>One executable (D21): bin/nightscout.js with <code>single</code> and the operator tools; im</td>
 <td>#8862</td>
+</tr>
+<tr>
+<td><code>PLAT-SERVE</code></td>
+<td><code>in-flight-upstream</code></td>
+<td><code>nightscout serve &lt;roles&gt;</code> (D21): hosted roles carved from bootevent one at a ti</td>
+<td>#8865</td>
 </tr>
 <tr>
 <td><code>ST-FILTER-READS</code></td>
@@ -2658,12 +2664,6 @@ every item that was <code>merged-upstream</code> then is <code>released</code>.<
 <td>&mdash;</td>
 </tr>
 <tr>
-<td><code>PLAT-SERVE</code></td>
-<td><code>ready-to-push</code></td>
-<td><code>nightscout serve &lt;roles&gt;</code> (D21): hosted roles carved from bootevent one at a ti</td>
-<td>&mdash;</td>
-</tr>
-<tr>
 <td><code>T30-AUTH</code></td>
 <td><code>ready-to-push</code></td>
 <td>The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i</td>
@@ -2773,6 +2773,13 @@ every item that was <code>merged-upstream</code> then is <code>released</code>.<
 <td><code>ST-WRITES</code></td>
 <td><code>feat/storage-writes</code></td>
 <td>Storage interface, second PR: API v1, authorization storage</td>
+<td>Maintainer</td>
+</tr>
+<tr>
+<td><strong>#8865</strong></td>
+<td><code>PLAT-SERVE</code></td>
+<td><code>feat/nightscout-serve</code></td>
+<td><code>nightscout serve &lt;roles&gt;</code> (D21): hosted roles carved from b</td>
 <td>Maintainer</td>
 </tr>
 </tbody>

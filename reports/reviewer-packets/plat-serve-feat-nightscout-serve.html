@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#review-packet--plat-serve" class="md-skip">
+        <a href="#review-packet--plat-serve-pr-8865" class="md-skip">
           Skip to content
         </a>
       
@@ -3378,7 +3378,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-26 at <code>9e7476869</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>27c391563</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3392,7 +3392,7 @@
   ============================================================================
 -->
 
-<h1 id="review-packet--plat-serve">Review packet — PLAT-SERVE<a class="headerlink" href="#review-packet--plat-serve" title="Permanent link">&para;</a></h1>
+<h1 id="review-packet--plat-serve-pr-8865">Review packet — PLAT-SERVE (PR #8865)<a class="headerlink" href="#review-packet--plat-serve-pr-8865" title="Permanent link">&para;</a></h1>
 <p><strong><code>nightscout serve &lt;roles&gt;</code> (D21): hosted roles carved from bootevent one at a
 time, <code>api</code> first; each listener bound separately</strong></p>
 <table>
@@ -3417,7 +3417,7 @@ time, <code>api</code> first; each listener bound separately</strong></p>
 </tr>
 <tr>
 <td>claimed state</td>
-<td><code>ready-to-push</code> — a claim; <code>make queue-status ID=PLAT-SERVE</code> is the measurement</td>
+<td><code>in-flight-upstream</code> — a claim; <code>make queue-status ID=PLAT-SERVE</code> is the measurement</td>
 </tr>
 <tr>
 <td>semver</td>
@@ -3463,15 +3463,16 @@ the in-memory data layer.</p>
 <li><a href="../../docs/30-design/tenancy/nightscout-deployable-components-2026-09-14.html"><code>docs/30-design/tenancy/nightscout-deployable-components-2026-09-14.md</code></a></li>
 </ul>
 <h2 id="notes-carried-on-the-item">Notes carried on the item<a class="headerlink" href="#notes-carried-on-the-item" title="Permanent link">&para;</a></h2>
-<p>2026-10-26, later: built on feat/nightscout-serve (ready to push, draft PR
-stacked on #8863 and #8862). Env per role: <PREFIX><em>HOSTNAME / _PORT (API</em>,
-REALTIME_, TENANT_ADMIN_, ADMIN_); admin defaults to 127.0.0.1:1338 and needs
-ADMIN_INSECURE_BIND_ACKNOWLEDGED for a non-loopback bind. Open: per-tenant
-config after TEN-RESOLVE, ADMIN_BIND vs ADMIN_HOSTNAME, the admin address rule
-on any port, /api/v2/authorization under tenant-admin, migrate owning indexes,
-one context per process. 2026-10-26 (D21). Open: whether a composed <code>serve</code> of
-every role is part of the multi target or only a small-hoster convenience.
-TEN-RESOLVE (platform admin on its own interface) depends on this item.</p>
+<p>2026-10-26, later: draft #8865 at 1dafe2a5, stacked on #8863 (base
+feat/storage-writes) with #8862 merged in. Env per role: <PREFIX><em>HOSTNAME /
+_PORT (API</em>, REALTIME_, TENANT_ADMIN_, ADMIN_); admin defaults to
+127.0.0.1:1338 and needs ADMIN_INSECURE_BIND_ACKNOWLEDGED for a non-loopback
+bind. Open: per-tenant config after TEN-RESOLVE, ADMIN_BIND vs ADMIN_HOSTNAME,
+the admin address rule on any port, /api/v2/authorization under tenant-admin,
+migrate owning indexes, one context per process. 2026-10-26 (D21). Open:
+whether a composed <code>serve</code> of every role is part of the multi target or only a
+small-hoster convenience. TEN-RESOLVE (platform admin on its own interface)
+depends on this item.</p>
 <hr />
 <h2 id="before-you-approve">Before you approve<a class="headerlink" href="#before-you-approve" title="Permanent link">&para;</a></h2>
 <ul class="task-list">
