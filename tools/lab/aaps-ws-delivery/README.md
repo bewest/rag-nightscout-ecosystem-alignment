@@ -35,3 +35,5 @@ create while the socket is up.
 
 Results: [results/2026-10-25-dev-b29f1bf7/](results/2026-10-25-dev-b29f1bf7/) (`dev` `b29f1bf7`,
 Node v22.23.4). The connector's copy took 84 to 190 s in that run, so a full run takes about 7.5 min.
+Re-run: [results/2026-10-27-dev-dcf20bfb/](results/2026-10-27-dev-dcf20bfb/) (`dev` `dcf20bfb`, Node v22.23.4,
+MongoDB 8.0.34), the same outcome in all 11 cells; the connector's copy took 96 and 183 s.

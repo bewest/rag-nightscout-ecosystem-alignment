@@ -1,0 +1,84 @@
+{
+  "head": "dcf20bfbbc296300c621b5cf1b72dafc1b121a92 Merge pull request #8871 from nightscout/tooling/jsconfig-watch-scope",
+  "version": "16.0.0",
+  "node": "v22.23.4",
+  "results": [
+    {
+      "scenario": "control: v3 create, socket up",
+      "path": "v3treat",
+      "outcome": "ws:create",
+      "latency_s": "0.01",
+      "extra": ""
+    },
+    {
+      "scenario": "control: v3 create, socket up",
+      "path": "v3entry",
+      "outcome": "ws:create",
+      "latency_s": "0.01",
+      "extra": ""
+    },
+    {
+      "scenario": "S1 socket up, wait 45 s",
+      "path": "v1",
+      "outcome": "NOT RECEIVED",
+      "latency_s": null,
+      "extra": ""
+    },
+    {
+      "scenario": "S2 then reconnect (no v3 treatment in between)",
+      "path": "v1",
+      "outcome": "history(WS_CONNECT)",
+      "latency_s": "47.17",
+      "extra": ""
+    },
+    {
+      "scenario": "S3 then a v3 treatment, then reconnect",
+      "path": "v1",
+      "outcome": "NOT RECEIVED",
+      "latency_s": null,
+      "extra": "record in v3 history: 1 srvModified 1793143233682"
+    },
+    {
+      "scenario": "S1 socket up, wait 45 s",
+      "path": "socket",
+      "outcome": "NOT RECEIVED",
+      "latency_s": null,
+      "extra": ""
+    },
+    {
+      "scenario": "S2 then reconnect (no v3 treatment in between)",
+      "path": "socket",
+      "outcome": "history(WS_CONNECT)",
+      "latency_s": "47.12",
+      "extra": ""
+    },
+    {
+      "scenario": "S3 then a v3 treatment, then reconnect",
+      "path": "socket",
+      "outcome": "NOT RECEIVED",
+      "latency_s": null,
+      "extra": "record in v3 history: 1 srvModified 1793143289585"
+    },
+    {
+      "scenario": "S1 socket up, wait 45 s after the connector wrote",
+      "path": "connector",
+      "outcome": "NOT RECEIVED",
+      "latency_s": null,
+      "extra": ""
+    },
+    {
+      "scenario": "S2 then reconnect (no v3 entry in between)",
+      "path": "connector",
+      "outcome": "history(WS_CONNECT)",
+      "latency_s": "47.10",
+      "extra": ""
+    },
+    {
+      "scenario": "S3 then a v3 entry, then reconnect",
+      "path": "connector",
+      "outcome": "NOT RECEIVED",
+      "latency_s": null,
+      "extra": ""
+    }
+  ]
+}

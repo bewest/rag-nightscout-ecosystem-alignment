@@ -53,6 +53,16 @@ client in §1 being right; the drafted note asks the AndroidAPS developers to co
 2026-10-07: 0 of 190 non-v3 write cells produced an event). Since 15.0.9 every write path sets
 `srvModified`, so API v3 history returns those records; the loss comes from the cursor rule in §1.
 
+**Re-measured 2026-10-27** on `dev` `dcf20bfb` (after the seam slices #8861, #8863, #8870 and #8854's write
+boundary; Node v22.23.4, MongoDB 8.0.34), same lab and client model, one run
+([`results/2026-10-27-dev-dcf20bfb/`](../../../tools/lab/aaps-ws-delivery/results/2026-10-27-dev-dcf20bfb/results.json)).
+**[M]** All 11 cells match the table above. v3 controls pushed in 0.01 s. v1, `dbAdd` and connector writes were not
+pushed in 45 s. They arrived by the catch-up history call on reconnect (47 s, the lab's wait). Each was **not
+received** when a v3 write in the same collection landed first, though the v1 and `dbAdd` records were in v3
+history. **[R]** The cursor rule the model follows is unchanged on AndroidAPS `dev` `22fb0eeac2`
+(2026-10-27): `NsFrameHandler.onDataCreateUpdate` calls `lastLoadedSrvModified.set` with the frame's
+`srvModified`, and `LastModified.set` assigns it.
+
 ## 3. BF-152: reading a settings document by identifier
 
 Read and measured by the same lane:

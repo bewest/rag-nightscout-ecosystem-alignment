@@ -15370,6 +15370,19 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
     notes: >
+      2026-10-27 (session -4f): re-measured on dev dcf20bfb with
+      tools/lab/aaps-ws-delivery (results/2026-10-27-dev-dcf20bfb, MongoDB
+      8.0.34): all 11 cells match 2026-10-25. v1, socket dbAdd and connector
+      records are never pushed; they arrive by catch-up history on reconnect,
+      unless a v3 write in the same collection lands first, which moves the
+      cursor past them. AndroidAPS dev 22fb0eeac2 still sets the cursor from
+      each pushed frame (read). Maintainer 2026-10-27: AndroidAPS receiving
+      only v3 writes over the socket is intended by its authors (v1 accepts
+      loosely typed records v3 was meant to eliminate). The open point is
+      the timing-dependent history delivery, for the drafted, unsent note to
+      the AndroidAPS developers. Input to D-EVENT (deferred, research
+      continuing).
+
       2026-10-25, later (maintainer decision, "plan C"): /storage stays
       v3-only for now. Records from the other write paths will be announced
       on it only after write checks (log mode, MOD-WRITE-VALIDATION) cover

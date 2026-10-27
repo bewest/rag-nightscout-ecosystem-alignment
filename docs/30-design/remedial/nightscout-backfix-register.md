@@ -6393,6 +6393,13 @@ on reconnect, or after a reload interval), and the AndroidAPS authors' answer to
 announcing v1, socket and careportal writes would help or harm them. Until then the write contract does not
 change the emissions (spec §6 Q6).
 
+**Re-measured 2026-10-27** on `dev` `dcf20bfb` (session -4f, same lab, MongoDB 8.0.34): all 11 cells as in the
+table below, so the seam slices and #8854 changed nothing here. The AndroidAPS cursor rule is unchanged on its
+`dev` `22fb0eeac2` (read). The maintainer's 2026-10-27 framing: AndroidAPS receiving only API v3 writes
+over the socket is intended by its authors, because API v1 accepts loosely typed records that v3 was meant to
+eliminate. What remains is that the same record *is* delivered through catch-up history unless a v3 write in
+that collection lands first. Delivery therefore depends on timing, not on a v3-only rule.
+
 **Lab, 2026-10-25** (session f4's API v3 contract lane; `dev` `b29f1bf7`, Node v22.23.4, two real servers,
 nightscout-connect 0.1.0 writing into one of them, MongoDB 8.0.34). The client follows AndroidAPS's websocket
 mode as read from its source: subscribe; a catch-up history round on every (re)connect; no polling while the
