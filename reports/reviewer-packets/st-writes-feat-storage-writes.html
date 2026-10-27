@@ -3318,7 +3318,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-27 at <code>eb4a004b4</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>9abb9591d</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3405,20 +3405,29 @@ the same reply and stores the same documents as before.</p>
 <h2 id="evidence">Evidence<a class="headerlink" href="#evidence" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../../docs/30-design/platform/next-gen-platform-plan.html"><code>docs/30-design/platform/next-gen-platform-plan.md</code></a></li>
-<li><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1fdb7c99a4416b0ba2d07e720210bde5ca8a93ed/tools/qc/write-contract-matrix.js"><code>tools/qc/write-contract-matrix.js</code></a></li>
+<li><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9abb9591d6daf828f785e90a113a4392f834c92b/tools/qc/write-contract-matrix.js"><code>tools/qc/write-contract-matrix.js</code></a></li>
 <li><a href="../../tools/seam/DIFFERENTIALS.html"><code>tools/seam/DIFFERENTIALS.md</code></a></li>
 </ul>
 <h2 id="notes-carried-on-the-item">Notes carried on the item<a class="headerlink" href="#notes-carried-on-the-item" title="Permanent link">&para;</a></h2>
-<p>2026-10-27 (maintainer, Q12): goes into 16.0.0 through release allocation B6's
-entry bar. Items 1, 3, 4 and 5 MET on local candidates (session -2e; cand/with
-d6ba8e18 vs cand/without 2cae64f3: 360-cell matrix equal off and reject,
-67-row replay equal, v1 HTTP 700/700, latency inside the noise floor, one-
-commit revert cf762dd0 restores cand/without's tree). Item 2 (BF-72, BF-161 in
-their private forks) is with -e4. Maintainer decided #8859 merges to dev
-first. The PR branch is awaiting #8859: prep/storage-writes b1104d02 (= the
-count commit 079f20ae for GET /api/v1/count/:storage/where on 38b910d7, +
-prep/storage-filter, with the five conflict resolutions; tree c5ac59dc equals
-cand/with d6ba8e18, checked by -ee, so every B6 measurement applies) becomes
+<p>2026-10-27, final: ready to push 42128f3b (parents a3f74a08 + 5310a447;
+contains 38b910d7, 5310a447 and dev eed31dca; tree d4684295; 25 files
++896/-245 against 5310a447, 36 files +3124/-248 against dev; checked by -ee).
+Session -2e on that tree, Node 22.23.4: npm test 4700 passing, 0 failing, 3
+pending and test:all 5028/0/3 (MongoDB 7.0.43; +13 over a3f74a08 = BF-200's
+tests); 360-cell matrix equal to dev eed31dca in off and reject, off vs reject
+12 differing on each (MongoDB 5.0.33). Push: git -C externals/cgm-remote-
+monitor-official push official 42128f3b:refs/heads/feat/storage-writes. Merge
+order: #8861, then #8863; ST-COUNT-ONEPATH follows before the tag. 2026-10-27
+(maintainer, Q12): goes into 16.0.0 through release allocation B6's entry bar.
+Items 1, 3, 4 and 5 MET on local candidates (session -2e; cand/with d6ba8e18
+vs cand/without 2cae64f3: 360-cell matrix equal off and reject, 67-row replay
+equal, v1 HTTP 700/700, latency inside the noise floor, one-commit revert
+cf762dd0 restores cand/without's tree). Item 2 (BF-72, BF-161 in their private
+forks) is with -e4. Maintainer decided #8859 merges to dev first. The PR
+branch is awaiting #8859: prep/storage-writes b1104d02 (= the count commit
+079f20ae for GET /api/v1/count/:storage/where on 38b910d7, + prep/storage-
+filter, with the five conflict resolutions; tree c5ac59dc equals cand/with
+d6ba8e18, checked by -ee, so every B6 measurement applies) becomes
 feat/storage-writes for #8863 once the real dev with #8859 is merged in. No
 push commands until -2e sends the final head. 2026-10-26: draft #8863, stacked
 on #8861 (base feat/storage-filter); it retargets to dev when #8861 merges.
