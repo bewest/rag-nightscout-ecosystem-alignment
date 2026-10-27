@@ -10608,7 +10608,7 @@ reproduced ones.
 | state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `feat/nightscout-serve` |
-| base | `feat/storage-writes@38b910d7 + feat/nightscout-entrypoint@b63d9b7f (merge 775fd1cb)` |
+| base | `official/dev (PR base since the retarget; first stacked on feat/storage-writes@38b910d7 + feat/nightscout-entrypoint@b63d9b7f, merge 775fd1cb)` |
 | worktree | `externals/work/crm-serve` |
 | semver | `minor` |
 | review | maintainer, plus a second human - the boot sequence moves |
@@ -10628,7 +10628,7 @@ reproduced ones.
 
 - `docs/30-design/tenancy/nightscout-deployable-components-2026-09-14.md`
 
-**Notes.** 2026-10-26, later: draft #8865 at 1dafe2a5, stacked on #8863 (base feat/storage-writes) with #8862 merged in. Env per role: <PREFIX>_HOSTNAME / _PORT (API_, REALTIME_, TENANT_ADMIN_, ADMIN_); admin defaults to 127.0.0.1:1338 and needs ADMIN_INSECURE_BIND_ACKNOWLEDGED for a non-loopback bind. Open: per-tenant config after TEN-RESOLVE, ADMIN_BIND vs ADMIN_HOSTNAME, the admin address rule on any port, /api/v2/authorization under tenant-admin, migrate owning indexes, one context per process. 2026-10-26 (D21). Open: whether a composed `serve` of every role is part of the multi target or only a small-hoster convenience. TEN-RESOLVE (platform admin on its own interface) depends on this item.
+**Notes.** 2026-10-27 late (from session -2e; not re-run by the recording session): #8865 head 9bb1f0b4 on official, a fast-forward of 4d243590 pushed by the maintainer; open, not draft, base dev, mergeable. Two commits. 9f4bd874: the image keeps the node base entrypoint with CMD ["nightscout","single"]; an explicit `docker run` command replaces CMD and is exec'd by docker- entrypoint.sh, so the image no longer routes explicit commands through the dispatcher (one process, as on dev; env unchanged; image 52 MB smaller). The dispatcher's passthrough itself stays: lib/cli/index.js still runs a non- subcommand first argument as a program (`nightscout node lib/server/server.js`, covered by start-paths). Only the `version` shorthand without `nightscout` is lost; `nightscout version` works. 9bb1f0b4: lib/server/server.js handles SIGTERM and SIGINT through the bus teardown and exits 0, bounded at 8 s (exit 1 past it), so every start path (Procfile, npm start, server.js, the image) gets it. Measured on the image with MongoDB 7.0: docker stop 10.2 s force-killed (137) on dev, 0.16-0.20 s exit 0 on 9bb1f0b4, in every start case, with or without a connected websocket client. npm test 4757/0/3; start-paths 13 passing; the 2 new SIGTERM tests fail on the parent (death by signal). 2026-10-26, later: draft #8865 at 1dafe2a5, stacked on #8863 (base feat/storage-writes) with #8862 merged in. Env per role: <PREFIX>_HOSTNAME / _PORT (API_, REALTIME_, TENANT_ADMIN_, ADMIN_); admin defaults to 127.0.0.1:1338 and needs ADMIN_INSECURE_BIND_ACKNOWLEDGED for a non-loopback bind. Open: per-tenant config after TEN-RESOLVE, ADMIN_BIND vs ADMIN_HOSTNAME, the admin address rule on any port, /api/v2/authorization under tenant-admin, migrate owning indexes, one context per process. 2026-10-26 (D21). Open: whether a composed `serve` of every role is part of the multi target or only a small-hoster convenience. TEN-RESOLVE (platform admin on its own interface) depends on this item.
 
 ---
 
