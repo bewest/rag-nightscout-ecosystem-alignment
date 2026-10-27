@@ -17223,15 +17223,20 @@ items:
     title: "BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
-    base: official/dev@47723cda
-    state: in-progress
+    branch: bf/16.0.0-tt-units
+    base: official/dev@ca1652d6
+    worktree: externals/work/crm-tt-units
+    state: ready-to-push
     pr: []
     ships_to_operators_today: true
     blast_radius: >
-      lib/server/treatments.js prepareData (:639-643 on dev 47723cda, :566-570
-      on v15.0.9): the delete of units together with glucose and glucoseType
-      when no glucose is given. API v1 and in-process treatment writes.
+      1 commit (7b74110c), 11 files, +742/-43: new lib/treatmentTargetUnits.js
+      (122 lines), called from lib/server/treatments.js prepareData, API v3
+      create/insert.js, update/replace.js and patch/operation.js, and the
+      socket's dbAdd and dbUpdate (lib/server/websocket.js); the treatments
+      schema doc; three test files. The bug itself: prepareData's delete of
+      units together with glucose and glucoseType when no glucose is given
+      (:639-643 on dev 47723cda, :566-570 on v15.0.9).
     review: maintainer
     operator_visible: >
       If an app sends Nightscout a temporary target in mmol/L through the
@@ -17244,17 +17249,42 @@ items:
     semver_reason: changes what is stored for a write clients already send
     register: [BF-194]
     gates:
-      - no-gate: >
-          Reproduced 2026-10-26 by the client replay of integration record R15
-          against booted servers (v15.0.9 and dev 47723cda, each
-          WRITE_VALIDATION mode). A queue gate would post the record through
-          the v1 handler in-process and assert units survives; control: dev
-          47723cda fails it. Not written until the fix shape is decided.
+      - run: 'cd externals/work/crm-tt-units && node bin/with-env.js ./my.test.env node_modules/mocha/bin/mocha.js --timeout 5000 --require ./tests/hooks.js --exit tests/api.treatments-tt-units.test.js tests/websocket.tt-units.test.js'
+        kind: integration
+        describe: >
+          A Temporary Target is stored in mg/dL labelled mg/dl on every write
+          path: API v1 POST (one and a batch) and PUT, in-process create and
+          save, API v3 POST, PUT and PATCH, socket dbAdd (one and an array) and
+          dbUpdate; other event types and untouched stored records are left
+          alone. Control 2026-10-27: the same test files over dev ca1652d6's
+          lib/ fail 45 of 499 (with the write-validation and CRUD matrix files),
+          every failure a stored value or label left unconverted, none a
+          missing module. Needs the worktree's untracked my.test.env (MongoDB
+          on 127.0.0.1:27195).
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
     notes: >
+      2026-10-27 evening, verified by session -4f on 7b74110c (rebased on dev
+      ca1652d6; d4435f18 was the same commit before an amend that updated
+      tests/api.crud-by-id.matrix.test.js only): red control as in the gate;
+      npm test 4750 passing, 0 failing, 3 pending; test:all exit 0 (all seven
+      tiers; Node v22.23.4, MongoDB 7.0). Write paths checked by reading: every
+      v1 entry (create, createChecked, upsert, save) goes through prepareData;
+      dbUpdateUnset only removes fields and cannot introduce mmol numbers; the
+      helper is idempotent, so a socket dbAdd that is converted and then
+      prepared again is unchanged. The rule matches the read side: ddata
+      converts both targets when either is below 20, and so does the helper.
+      Label spelling: the code writes mg/dl, not the mg/dL of the decision
+      text. mg/dl is write-validation's canonicalUnits, ddata's and the
+      careportal's spelling, and the exact text of AAPS's GlucoseUnit.MGDL
+      (fromText matches exactly, falling back to mg/dL); the survey's other
+      label readers accept it (the reporter case-insensitive, nightguard
+      checks for mol). Not done: a mixed patch (units mmol with one target in
+      mmol and the stored other above 30) keeps the numbers as sent, an edge
+      no surveyed client sends.
+
       2026-10-27: building on local bf/16.0.0-tt-units (worktree
       externals/work/crm-tt-units, off dev 7abe1cf6; session -ee's agent).
       Rule as briefed: a target labelled mmol (any spelling) is converted with
