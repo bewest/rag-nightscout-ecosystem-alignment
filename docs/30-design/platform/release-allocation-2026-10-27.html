@@ -5508,11 +5508,12 @@ are proposals for the maintainer; nothing here is decided until §5 says so.</em
 briefs. B6 and Q12 answer a follow-up the same day: whether prototypes should ship in 16.0.0 as alpha.</p>
 <h2 id="1-the-answers-in-brief">1. The answers in brief<a class="headerlink" href="#1-the-answers-in-brief" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Storage seam in 16.0.0: none beyond what is merged.</strong> #8854 (the write boundary) is on <code>dev</code> and
-  ships. The three seam slices in review (#8861 ST-FILTER and ST-READS, #8863 ST-WRITES) are measured
-  to change no behaviour, so no rule of the versioning policy needs them in a major; adding them now
-  enlarges a release whose remaining gate is a soak. They go to <code>dev</code> right after the tag and ship in
-  16.1.0.</li>
+<li><strong>Storage seam in 16.0.0: in, if it meets the entry bar before the soak starts (decided by the
+  maintainer 2026-10-27, Q12).</strong> #8854 (the write boundary) is on <code>dev</code> and ships. The three seam slices
+  in review (#8861 ST-FILTER and ST-READS, #8863 ST-WRITES) are measured to change no behaviour, so no
+  rule of the versioning policy needs them in a major. The first recommendation was to hold them to
+  16.1.0 to keep the soak small (§3); the soak has not started, so B6's five-point entry bar decides
+  instead. Building to the bar is worth doing either way, because it prepares the work that follows.</li>
 <li><strong>What 16.0.0 should still take</strong> is the work whose behaviour change belongs at a major boundary or
   that fixes a live defect: #8859 (re-send matching and the null-removes rule), #8856 (BF-193, write
   logging), #8864 (the IOB pill on reconnect), #8866 (two CI test faults), #8858 (API docs held to the
@@ -5703,7 +5704,7 @@ either a restart or a gap.</p>
 </ul>
 <h3 id="34-recommendation">3.4 Recommendation<a class="headerlink" href="#34-recommendation" title="Permanent link">&para;</a></h3>
 <p>Hold #8861, #8863 and #8865 until 16.0.0 is tagged; merge them to <code>dev</code> the day after, in stack
-order, and ship them in 16.1.0. This needs one rule for <code>dev</code> between now and the tag (Q1). The soak has not started, so B6 states the one condition under which they go into 16.0.0 instead: an entry bar met before it starts (Q12).</p>
+order, and ship them in 16.1.0. This needs one rule for <code>dev</code> between now and the tag (Q1). The soak has not started, so B6 states the one condition under which they go into 16.0.0 instead: an entry bar met before it starts. <em>Decided 2026-10-27 (Q12): that condition applies; the slices are built to the bar and go in if they meet it.</em></p>
 <h2 id="4-how-the-tracks-depend-on-each-other">4. How the tracks depend on each other<a class="headerlink" href="#4-how-the-tracks-depend-on-each-other" title="Permanent link">&para;</a></h2>
 <h3 id="41-which-features-shorten-the-path-to-multitenancy">4.1 Which features shorten the path to multitenancy<a class="headerlink" href="#41-which-features-shorten-the-path-to-multitenancy" title="Permanent link">&para;</a></h3>
 <p>The multitenant target (D1–D3) is PostgreSQL with row-level security behind the same storage
@@ -5798,13 +5799,13 @@ the loudest row's (R3).</p>
 <tr>
 <td>16.0.0</td>
 <td>modernization, the write boundary</td>
-<td>what is on <code>dev</code>, plus #8859, #8856, #8864, #8866, #8858, BF-72, BF-161; #8862 if Q2 says so</td>
+<td>what is on <code>dev</code>, plus #8859, #8861 and #8863 if B6's bar is met, #8856, #8864, #8866, #8858, BF-72, BF-161; #8862 if Q2 says so</td>
 <td>major (already)</td>
 </tr>
 <tr>
 <td>16.1.0</td>
 <td>one write path, registration readable</td>
-<td>#8861, #8863 (behaviour-neutral); #8862 and #8865 (one executable, <code>serve api</code>); #8857 off by default (D-REG-FLAG); SPEC-ID-AMEND; the OpenAPI description of what 16.1.0 serves, including the registration paths</td>
+<td>#8861, #8863 (behaviour-neutral), unless they meet B6's bar and ship in 16.0.0 (Q12); #8862 and #8865 (one executable, <code>serve api</code>); #8857 off by default (D-REG-FLAG); SPEC-ID-AMEND; the OpenAPI description of what 16.1.0 serves, including the registration paths</td>
 <td>minor</td>
 </tr>
 <tr>
@@ -5878,7 +5879,7 @@ the loudest row's (R3).</p>
 <td>Q3</td>
 <td>The seam slices in 16.0.0?</td>
 <td>(a) hold to 16.1.0; (b) merge now</td>
-<td>(a), §3</td>
+<td><em>Superseded by Q12 (decided 2026-10-27):</em> in, through B6's entry bar, if met before the soak starts; otherwise 16.1.0</td>
 <td>tenancy start date by the time the soak takes</td>
 </tr>
 <tr>
@@ -5939,10 +5940,17 @@ the loudest row's (R3).</p>
 </tr>
 <tr>
 <td>Q12</td>
-<td>Put prototypes in 16.0.0 to soak them as alpha (asked 2026-10-27)?</td>
-<td>(a) seam slices in, if they meet B6's entry bar before the soak starts; multi prototype as a prerelease outside the 16.0.0 artifact. (b) both in 16.0.0, prototype code labelled alpha. (c) neither; release as soon as the gates are met</td>
-<td>(a), B6</td>
+<td>Put prototypes in 16.0.0 to soak them as alpha?</td>
+<td><em>Decided, maintainer 2026-10-27:</em> the seam slices go into 16.0.0 if feasible and B6's entry bar is met; building them to that bar is worth doing whether or not they ship, because it prepares the work that follows. Components that ship before they are mature are labelled alpha in the release notes. Still open: Q12a</td>
+<td>B6</td>
 <td>the soak start, BFQ-72</td>
+</tr>
+<tr>
+<td>Q12a</td>
+<td>If the slices ship, how is an alpha label made meaningful for code on the default path?</td>
+<td>(a) default on, named in the release notes as new internals, with the rehearsed revert as the fallback; (b) a setting that selects the old or new path, old by default, the new path labelled alpha; (c) as (b), new by default</td>
+<td>(a) for #8861 and #8863, whose matrices show no change and where a second path doubles what each later slice must keep equal; the alpha label applies to <code>serve</code> and to multi mode, which are opt-in</td>
+<td>the entry bar's item 5</td>
 </tr>
 </tbody>
 </table>
@@ -6001,6 +6009,7 @@ the loudest row's (R3).</p>
   store gains a tenant column when ST-PG lands.</li>
 </ul>
 <h3 id="b6-prototypes-in-1600-labelled-alpha-asked-2026-10-27">B6. Prototypes in 16.0.0, labelled alpha (asked 2026-10-27)<a class="headerlink" href="#b6-prototypes-in-1600-labelled-alpha-asked-2026-10-27" title="Permanent link">&para;</a></h3>
+<p><em>Decided, maintainer 2026-10-27: the seam slices go in if feasible and the entry bar below is met; components that ship before they are mature are labelled alpha (Q12, Q12a).</em></p>
 <p>The question: if a prototype of every REST API behind the storage interface, and a prototype of
 multi mode, exist within days, are they worth shipping in 16.0.0 with their status noted, so the
 release soaks them; and how does that weigh against releasing as soon as the candidate is ready?</p>
