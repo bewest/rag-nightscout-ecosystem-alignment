@@ -5962,9 +5962,9 @@ the loudest row's (R3).</p>
 <tr>
 <td>Q12a</td>
 <td>If the slices ship, how is an alpha label made meaningful for code on the default path?</td>
-<td>(a) default on, named in the release notes as new internals, with the rehearsed revert as the fallback; (b) a setting that selects the old or new path, old by default, the new path labelled alpha; (c) as (b), new by default</td>
-<td>(a) for #8861 and #8863, whose matrices show no change and where a second path doubles what each later slice must keep equal; the alpha label applies to <code>serve</code> and to multi mode, which are opt-in</td>
-<td>the entry bar's item 5</td>
+<td><em>Decided, maintainer 2026-10-27:</em> option (a). The slices are default on in the single-tenant release, named in the release notes as new internals, with the rehearsed revert as the fallback. Once verified, exercised on <code>dev</code> and released, that code is trusted for what single-tenant sites run. The alpha label belongs to the multitenant bindings only: <code>serve</code> roles, tenant resolution and scope, per-tenant credentials, and the PostgreSQL backend. Trust covers the paths real clients exercise; code no single-tenant site runs (the filter tree's SQL translation, the tenant binding the interface carries, rarely used endpoints without a cohort check) does not inherit it</td>
+<td>—</td>
+<td>the release notes' wording</td>
 </tr>
 </tbody>
 </table>
