@@ -570,7 +570,7 @@
      "href": "../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#212-d21--one-entrypoint-serve-roles-maintainer-2026-10-26"
     }
    ],
-   "ref": "#8862 (draft, b63d9b7f; 64 behind dev ca1652d6): seven start paths equal to `nightscout single`",
+   "ref": "#8862 (draft, 32c3f5a5): its four commits are also in #8865, so merging #8865 lands it; seven start paths equal to `nightscout single`",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8862"
   },
   {
@@ -592,7 +592,7 @@
      "href": "../tenancy/nightscout-deployable-components-2026-09-14.md"
     }
    ],
-   "ref": "#8865 (draft, 1dafe2a5): `serve api` boots only API v3's pieces; single unchanged (4639/0/3); API v3 suites under serve api 485 pass, 81 fail on cache, v1 and socket fixtures (ST-V3-DECOUPLE). Its base branch is merged, so it needs retargeting to dev and a dev merge before re-measurement",
+   "ref": "#8865 (open, base dev, 0 behind dcf20bfb, head 9bb1f0b4; carries #8862's four commits): `serve api` boots only API v3's pieces; the image keeps the base entrypoint with CMD `nightscout single` (9f4bd874); SIGTERM and SIGINT close and exit 0 within 8 s on every start path (9bb1f0b4). npm test 4757/0/3 (session -2e). API v3 suites under serve api: 485 pass, 81 fail at 1dafe2a5, the ST-V3-DECOUPLE work",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8865"
   },
   {

@@ -1,6 +1,6 @@
 # Next-gen platform: one write path, four tracks
 
-*Contributor-facing. Living plan, current at cgm-remote-monitor dev `ca1652d6` (2026-10-27). Status: proposed; the decisions in §5 are open. Which release each item goes in is proposed in [release allocation](release-allocation-2026-10-27.md).*
+*Contributor-facing. Living plan, current at cgm-remote-monitor dev `dcf20bfb` (2026-10-27). Status: proposed; the decisions in §5 are open. Which release each item goes in is proposed in [release allocation](release-allocation-2026-10-27.md).*
 
 The interactive version, with the dependency map, is the site page [nightscout-next-gen-platform.html](../../../site/pages/nightscout-next-gen-platform.html).
 
@@ -15,12 +15,12 @@ It names each piece of work, what it needs first, where it goes in the code, and
 
 ## 1. Where things stand
 
-| | on dev `ca1652d6` (ships in 16.0.0) | in review (draft PRs) | not started |
+| | on dev `dcf20bfb` (ships in 16.0.0) | in review (draft PRs) | not started |
 |---|---|---|---|
 | Storage | `WRITE_VALIDATION` (#8841); the write boundary `lib/storage/write-step.js` (#8854); the filter tree and interface with v1 reads (#8861); v1, authorization and socket writes labelled by source (#8863); v1 count only through the interface (#8870). Every REST and socket record read, write and count goes through the storage interface (milestone M1) | — | ST-V3-DECOUPLE, `write(intent)`, ST-EVENT (decision deferred, research continuing), computed views, backend-selectable harness, PostgreSQL |
 | Identity | `identifier` is the client's, `_id` the server's; API v3 refuses a client `_id` (#8845); v1 entries and devicestatus match on `identifier`, and an explicit null removes a field (#8859) | — | identifier-first on every path, unique index |
 | Registration | specifications only; dev also carries an older proposal schema, `docs/proposals/schemas/controller-instance-registration.schema.json` | #8857: S0, S1, S2, S5, off by default (`f7a43fed`, 64 behind dev, conflicts) | typed writes (S3), projected views (S4) |
-| Tenancy | nothing | #8862 PLAT-ENTRY (`b63d9b7f`, 64 behind dev); #8865 PLAT-SERVE (`1dafe2a5`; its base branch is merged, so it needs retargeting to dev) | tenant configuration, resolution, tenant-scoped auth, hosted lab |
+| Tenancy | nothing | #8865 PLAT-SERVE (`9bb1f0b4`, base dev, open), which also carries #8862 PLAT-ENTRY's commits | tenant configuration, resolution, tenant-scoped auth, hosted lab |
 
 ## 2. Why the tracks meet at the write step
 
