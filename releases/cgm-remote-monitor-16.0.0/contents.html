@@ -2134,7 +2134,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-27 at <code>d8db79da7</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>8ceebc60d</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -2260,7 +2260,7 @@ bodies (see the integration record). No live site, vendor account or Docker imag
 <p>Merge SHAs: <code>git log --first-parent --format='%h %ad %an %s' --date=iso official/master..official/dev</code>;
 merge times are <code>gh pr view &lt;n&gt; --json mergedAt</code>. The first nineteen merges below were made on
 2026-10-25 (#8834, #8835 and #8838 by bewest, the others by AndyLow91), seventeen on 2026-10-26
-(#8843, #8848 and #8850 by bewest, the others by AndyLow91) and on 2026-10-27 #8860 and #8864 by AndyLow91, then #8866, #8859, #8868 and #8856 by bewest. Register ids refer to the
+(#8843, #8848 and #8850 by bewest, the others by AndyLow91) and on 2026-10-27 #8860 and #8864 by AndyLow91, then #8866, #8859, #8868, #8856, #8861, #8863, #8870, #8869 and #8858 by bewest. Register ids refer to the
 <a href="../../docs/30-design/remedial/nightscout-backfix-register.html">backfix register</a>.</p>
 <table>
 <thead>
@@ -2696,6 +2696,56 @@ merge times are <code>gh pr view &lt;n&gt; --json mergedAt</code>. The first nin
 <td><code>BFQ-193</code></td>
 <td>write paths log a summary of a write, not the record, unless <code>DEBUG_LOGGING</code> is on</td>
 </tr>
+<tr>
+<td>#8861</td>
+<td>10-27 20:57:07</td>
+<td><code>84fac457</code></td>
+<td><code>5310a447</code></td>
+<td>bewest</td>
+<td>—</td>
+<td><code>ST-FILTER-READS</code></td>
+<td>the storage filter AST and interface methods; API v1 reads move onto the storage interface</td>
+</tr>
+<tr>
+<td>#8863</td>
+<td>10-27 21:00:16</td>
+<td><code>9668b179</code></td>
+<td><code>42128f3b</code></td>
+<td>bewest</td>
+<td>—</td>
+<td><code>ST-WRITES</code></td>
+<td>API v1, authorization and socket writes go through the storage interface, labelled by source</td>
+</tr>
+<tr>
+<td>#8870</td>
+<td>10-27 21:33:44</td>
+<td><code>7abe1cf6</code></td>
+<td><code>0955f25b</code></td>
+<td>bewest</td>
+<td>—</td>
+<td><code>ST-COUNT-ONEPATH</code></td>
+<td>API v1 count goes only through the storage interface (the pipeline path removed)</td>
+</tr>
+<tr>
+<td>#8869</td>
+<td>10-27 22:23:05</td>
+<td><code>b8baf24d</code></td>
+<td><code>d9fca2de</code></td>
+<td>bewest</td>
+<td>—</td>
+<td><code>RT-CI-WEBKIT-REPORTS</code></td>
+<td>test: page-startup waits for <code>/report/</code> on its first controlled visit, and a failure names each browser error's page</td>
+</tr>
+<tr>
+<td>#8858</td>
+<td>10-27 22:29:46</td>
+<td><code>ca1652d6</code></td>
+<td><code>debf4a14</code></td>
+<td>bewest</td>
+<td>—</td>
+<td>—</td>
+<td>the API v1 and v3 documents describe what 16.0.0 serves, and a contract test holds them to the routes (includes #8381 by arfaomar); the alignment site's API pages re-rendered from it as current</td>
+</tr>
 </tbody>
 </table>
 <p>Before merging, AndyLow91 merged <code>dev</code> into most branches and added commits of his own (read with
@@ -2971,7 +3021,7 @@ runtime Docker image.</p>
 <td>WebKit's cached-bundle startup test, again</td>
 <td><code>test/16.0.0-reports-ready</code>, <strong>#8869</strong> (opened by the maintainer 2026-10-27, base <code>dev</code>)</td>
 <td><code>9a44e16f</code> on <code>dev</code> <code>eed31dca</code>: <code>tests/browser/page-startup.test.js</code></td>
-<td>open, CI running: the first controlled navigation waits for the reports page's first report, and a failure names the page each browser error came from. Not reproduced locally before or after; the cause is not proven, and the new line is there to name it on the next failure. page-startup 28 passing on WebKit, Chromium and Firefox</td>
+<td><strong>merged 2026-10-27 22:23:05Z by bewest as <code>dev</code> <code>b8baf24d</code></strong> (head <code>d9fca2de</code>, <code>dev</code> merged in). Earlier: the first controlled navigation waits for the reports page's first report, and a failure names the page each browser error came from. Not reproduced locally before or after; the cause is not proven, and the new line is there to name it on the next failure. page-startup 28 passing on WebKit, Chromium and Firefox</td>
 <td><code>RT-CI-WEBKIT-REPORTS</code></td>
 </tr>
 <tr>
@@ -3265,7 +3315,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/59172c7b683f0d66d5b06d3a2c2c59f81a86d021/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (65 queue ids: every item this file or
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/8ceebc60d5d9604559768ff86cd5407d4c875a75/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (65 queue ids: every item this file or
 <a href="decisions.html">decisions.md</a> names, and the release items), with the capture command.</p>
 <p><strong>Dry run, 2026-10-27, <code>dev</code> <code>8dbb60c2</code></strong> (reproduced; written to a scratch directory, not kept, because a
 record is captured once, at the tag). The generator ran on the selection with its default <code>static</code> and

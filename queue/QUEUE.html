@@ -3187,7 +3187,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-27 at <code>3658d3e29</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>8ceebc60d</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3276,13 +3276,13 @@
 </tr>
 <tr>
 <td><code>in-flight-upstream</code></td>
-<td>6</td>
-<td>RT-CI-WEBKIT-REPORTS, BFQ-72, BFQ-161, BFQ-203, PLAT-ENTRY, PLAT-SERVE</td>
+<td>5</td>
+<td>BFQ-72, BFQ-161, BFQ-203, PLAT-ENTRY, PLAT-SERVE</td>
 </tr>
 <tr>
 <td><code>merged-upstream</code></td>
-<td>56</td>
-<td>BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-192, BFQ-193, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH</td>
+<td>57</td>
+<td>BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-192, BFQ-193, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH</td>
 </tr>
 <tr>
 <td><code>released</code></td>
@@ -5133,7 +5133,7 @@ that costs.</p>
 <tr>
 <td><code>RT-CI-WEBKIT-REPORTS</code></td>
 <td>WebKit's cached-bundle startup test still fails on dev after bdd569a3: report requests cancelled 'due to access control checks'</td>
-<td><code>in-flight-upstream</code></td>
+<td><code>merged-upstream</code></td>
 <td><code>test/16.0.0-reports-ready</code></td>
 <td>n/a</td>
 <td>1 run + 1 no-gate</td>
@@ -6213,7 +6213,7 @@ that costs.</p>
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>in-flight-upstream</code></td>
+<td><code>merged-upstream</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -6246,7 +6246,7 @@ that costs.</p>
 <p><strong>Why <code>n/a</code>.</strong> test reliability and diagnostics</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9a44e16f test/16.0.0-reports-ready</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9a44e16f official/dev</code></li>
 <li>The wait and the error-page diagnostics are on the branch.</li>
 <li><strong>NO GATE</strong> &mdash; Not reproduced locally before or after the change, in the Playwright v1.63.0 image on WebKit, even with the fixture delaying entries 1.5 s and a 1 s pause before leaving /report/; Chromium does not report cancelled requests as page errors, so a CPU-throttled Chromium run cannot show it either. The wait closes the one step that left /report/ unguarded, but that this is the cause is not proven: the new "Error pages" line names the document on the next CI failure. After the change page-startup is 28 passing on WebKit, Chromium and Firefox; a forced error on /report/ prints Error pages: [".../report/"].</li>
 </ul>
@@ -6254,7 +6254,7 @@ that costs.</p>
 <ul>
 <li><code>releases/cgm-remote-monitor-16.0.0/contents.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-27: pushed by the maintainer and opened as #8869 into dev (head 9a44e16f). 2026-10-27: dev b84871d7's push run 40571593504 failed Browser tests (26, webkit) "boots every page from cached bundles and retires the old cache on upgrade" with fifteen report requests "due to access control checks", the failure bdd569a3 was meant to end; that merge published no image. Prepared on test/16.0.0-reports-ready off dev eed31dca, not pushed. A first idea, a page marker for the deferred first report, was measured and dropped: sampling every 5 ms showed no moment where the old readiness check passed before the first report started, even at 8x CPU throttling in Chromium.</p>
+<p><strong>Notes.</strong> 2026-10-27, 22:23:05Z: merged. bewest merged #8869 (head d9fca2de, dev merged in) into dev as b8baf24d (gh pr view 8869). Gate re- pointed to official/dev, with official/master as the control. Whether the wait is the cause stays open: a WebKit failure from now on names the page each error came from. 2026-10-27: pushed by the maintainer and opened as #8869 into dev (head 9a44e16f). 2026-10-27: dev b84871d7's push run 40571593504 failed Browser tests (26, webkit) "boots every page from cached bundles and retires the old cache on upgrade" with fifteen report requests "due to access control checks", the failure bdd569a3 was meant to end; that merge published no image. Prepared on test/16.0.0-reports-ready off dev eed31dca, not pushed. A first idea, a page marker for the deferred first report, was measured and dropped: sampling every 5 ms showed no moment where the old readiness check passed before the first report started, even at 8x CPU throttling in Chromium.</p>
 <h3 id="rt-ci-flakes-8dbb60c2--dev-8dbb60c2s-red-ci-a-concurrent-writes-timestamp-collision-and-the-webkit-reports-page-race"><code>RT-CI-FLAKES-8DBB60C2</code> &mdash; dev 8dbb60c2's red CI: a concurrent-writes timestamp collision and the WebKit reports-page race<a class="headerlink" href="#rt-ci-flakes-8dbb60c2--dev-8dbb60c2s-red-ci-a-concurrent-writes-timestamp-collision-and-the-webkit-reports-page-race" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
