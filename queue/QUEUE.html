@@ -3143,7 +3143,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-26 at <code>4f4a2766e</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>fbad0ef1f</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3212,8 +3212,8 @@
 </tr>
 <tr>
 <td><code>in-progress</code></td>
-<td>7</td>
-<td>BFQ-178, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY, ST-FILTER-READS</td>
+<td>6</td>
+<td>BFQ-178, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY</td>
 </tr>
 <tr>
 <td><code>gate-not-met</code></td>
@@ -3222,8 +3222,8 @@
 </tr>
 <tr>
 <td><code>ready-to-push</code></td>
-<td>3</td>
-<td>P0-C-REMEDIATE, T30-AUTH, WS-LAB</td>
+<td>4</td>
+<td>P0-C-REMEDIATE, T30-AUTH, WS-LAB, ST-FILTER-READS</td>
 </tr>
 <tr>
 <td><code>blocked</code></td>
@@ -18190,7 +18190,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <tr>
 <td><code>ST-FILTER-READS</code></td>
 <td>Storage interface, first PR: the filter tree and interface methods under API v3's adapter (ST-FILTER), and API v1 reads through them (ST-READS), with no v1 answer changed</td>
-<td><code>in-progress</code></td>
+<td><code>ready-to-push</code></td>
 <td><code>feat/storage-filter</code></td>
 <td>patch</td>
 <td>0 run + 1 no-gate</td>
@@ -20152,7 +20152,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>in-progress</code></td>
+<td><code>ready-to-push</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -20185,13 +20185,14 @@ alarm-readiness items, and the seam branch refresh.</p>
 <p><strong>Why <code>patch</code>.</strong> No client-visible change; the write-contract matrix (336 cells, off and reject) and #8854's CRUD matrix are the pins.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><strong>NO GATE</strong> &mdash; In progress. ST-FILTER measured 2026-10-26 at 50172510 on dev 7ad3a67f: npm test 4505/0/3 (dev 4429/0/3), test:all 4833/0/3 (dev 4757/0/3), #8854 matrix 422 = 422, write-contract matrix 0 of 336 cells differ off and reject (red control: 5 cells), live mongod differential 0 mismatches over 5,467 and 11,467 filters. The gate for the PR is the same set re-run on the ST-READS head.</li>
+<li><strong>NO GATE</strong> &mdash; Measured by the lab, not re-runnable from this repository alone (needs MongoDB and a dev tree). On feat/storage-filter 48e7e101 (dev 8dbb60c2 merged into b752971c): npm test 4577/0/3, test:all 4905/0/3, check-write-boundary 8/8. On b752971c against dev 7ad3a67f: npm test 4526/0/3 (dev 4429), test:all 4854/0/3 (dev 4757), #8854 matrix 422 = 422, write-contract matrix 0 of 336 cells differ off and reject (red control findFiltered -&gt; []: 186 cells), tools/seam/v1-http-differential.js 700/700 identical, tools/seam/v1-read-differential.js 2954/2954, tools/seam/filter-differential.js 0 mismatches.</li>
 </ul>
 <p><strong>Evidence.</strong></p>
 <ul>
 <li><code>docs/30-design/platform/next-gen-platform-plan.md</code></li>
 <li><code>docs/30-design/modernization/pr-8854-alignment-2026-10-26.md</code></li>
 <li><code>tools/qc/write-contract-matrix.js</code></li>
+<li><code>tools/seam/DIFFERENTIALS.md</code></li>
 </ul>
 <p><strong>Notes.</strong> 2026-10-26: the maintainer decided ST-FILTER and ST-READS go up as one PR. ST- FILTER found five defects in the September seam's fromMongo, each of which widens or changes a read ({a: {}} dropped, empty $or and $and matching everything, $exists undefined read as presence, RegExp g and s flags swapped, mongod-refused $regex options coerced); the mingo round trip could not see them, the live-mongod differential did. All five are fixed on the branch and pinned by tests.</p>
 <hr />
