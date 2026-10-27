@@ -3143,7 +3143,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-26 at <code>fbad0ef1f</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>614b168ea</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3207,13 +3207,13 @@
 <tbody>
 <tr>
 <td><code>not-started</code></td>
-<td>64</td>
-<td>RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-STEP-PATCH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, PLAT-ENTRY</td>
+<td>63</td>
+<td>RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-STEP-PATCH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS</td>
 </tr>
 <tr>
 <td><code>in-progress</code></td>
-<td>6</td>
-<td>BFQ-178, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY</td>
+<td>7</td>
+<td>BFQ-178, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY, PLAT-ENTRY</td>
 </tr>
 <tr>
 <td><code>gate-not-met</code></td>
@@ -3222,8 +3222,8 @@
 </tr>
 <tr>
 <td><code>ready-to-push</code></td>
-<td>4</td>
-<td>P0-C-REMEDIATE, T30-AUTH, WS-LAB, ST-FILTER-READS</td>
+<td>3</td>
+<td>P0-C-REMEDIATE, T30-AUTH, WS-LAB</td>
 </tr>
 <tr>
 <td><code>blocked</code></td>
@@ -3232,8 +3232,8 @@
 </tr>
 <tr>
 <td><code>in-flight-upstream</code></td>
-<td>5</td>
-<td>ID-SIMPLE-MATCH, BFQ-72, BFQ-161, BFQ-193, BFQ-195</td>
+<td>6</td>
+<td>ID-SIMPLE-MATCH, BFQ-72, BFQ-161, BFQ-193, BFQ-195, ST-FILTER-READS</td>
 </tr>
 <tr>
 <td><code>merged-upstream</code></td>
@@ -18190,7 +18190,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <tr>
 <td><code>ST-FILTER-READS</code></td>
 <td>Storage interface, first PR: the filter tree and interface methods under API v3's adapter (ST-FILTER), and API v1 reads through them (ST-READS), with no v1 answer changed</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-flight-upstream</code></td>
 <td><code>feat/storage-filter</code></td>
 <td>patch</td>
 <td>0 run + 1 no-gate</td>
@@ -20152,7 +20152,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-flight-upstream</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -20194,7 +20194,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>tools/qc/write-contract-matrix.js</code></li>
 <li><code>tools/seam/DIFFERENTIALS.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-26: the maintainer decided ST-FILTER and ST-READS go up as one PR. ST- FILTER found five defects in the September seam's fromMongo, each of which widens or changes a read ({a: {}} dropped, empty $or and $and matching everything, $exists undefined read as presence, RegExp g and s flags swapped, mongod-refused $regex options coerced); the mingo round trip could not see them, the live-mongod differential did. All five are fixed on the branch and pinned by tests.</p>
+<p><strong>Notes.</strong> 2026-10-26, later: the maintainer pushed 48e7e101 and opened draft #8861. ST- WRITES is being built on top of it (feat/storage-writes). 2026-10-26: the maintainer decided ST-FILTER and ST-READS go up as one PR. ST-FILTER found five defects in the September seam's fromMongo, each of which widens or changes a read ({a: {}} dropped, empty $or and $and matching everything, $exists undefined read as presence, RegExp g and s flags swapped, mongod- refused $regex options coerced); the mingo round trip could not see them, the live-mongod differential did. All five are fixed on the branch and pinned by tests.</p>
 <hr />
 <h2 id="document-truth-sweeps">Document-truth sweeps<a class="headerlink" href="#document-truth-sweeps" title="Permanent link">&para;</a></h2>
 <p><code>parcel: docs-truth</code> &mdash; 19 items</p>
@@ -21854,8 +21854,8 @@ reproduced ones.</p>
 <tr>
 <td><code>PLAT-ENTRY</code></td>
 <td>One executable (D21): bin/nightscout.js with <code>single</code> and the operator tools; image ENTRYPOINT, CMD single, HEALTHCHECK; no start path changes</td>
-<td><code>not-started</code></td>
-<td><code>-</code></td>
+<td><code>in-progress</code></td>
+<td><code>feat/nightscout-entrypoint</code></td>
 <td>minor</td>
 <td>0 run + 1 no-gate</td>
 </tr>
@@ -23793,7 +23793,7 @@ reproduced ones.</p>
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>not-started</code></td>
+<td><code>in-progress</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -23801,11 +23801,11 @@ reproduced ones.</p>
 </tr>
 <tr>
 <td>branch</td>
-<td><code>-</code></td>
+<td><code>feat/nightscout-entrypoint</code></td>
 </tr>
 <tr>
 <td>base</td>
-<td><code>official/dev@7ad3a67f</code></td>
+<td><code>official/dev@8dbb60c2</code></td>
 </tr>
 <tr>
 <td>worktree</td>

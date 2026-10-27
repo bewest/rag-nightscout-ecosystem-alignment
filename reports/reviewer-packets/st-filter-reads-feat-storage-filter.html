@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#review-packet--st-filter-reads" class="md-skip">
+        <a href="#review-packet--st-filter-reads-pr-8861" class="md-skip">
           Skip to content
         </a>
       
@@ -3266,7 +3266,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-26 at <code>fbad0ef1f</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>614b168ea</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3280,7 +3280,7 @@
   ============================================================================
 -->
 
-<h1 id="review-packet--st-filter-reads">Review packet — ST-FILTER-READS<a class="headerlink" href="#review-packet--st-filter-reads" title="Permanent link">&para;</a></h1>
+<h1 id="review-packet--st-filter-reads-pr-8861">Review packet — ST-FILTER-READS (PR #8861)<a class="headerlink" href="#review-packet--st-filter-reads-pr-8861" title="Permanent link">&para;</a></h1>
 <p><strong>Storage interface, first PR: the filter tree and interface methods under API
 v3's adapter (ST-FILTER), and API v1 reads through them (ST-READS), with no v1
 answer changed</strong></p>
@@ -3306,7 +3306,7 @@ answer changed</strong></p>
 </tr>
 <tr>
 <td>claimed state</td>
-<td><code>ready-to-push</code> — a claim; <code>make queue-status ID=ST-FILTER-READS</code> is the measurement</td>
+<td><code>in-flight-upstream</code> — a claim; <code>make queue-status ID=ST-FILTER-READS</code> is the measurement</td>
 </tr>
 <tr>
 <td>semver</td>
@@ -3351,17 +3351,19 @@ listed in the PR, not refused.</p>
 <ul>
 <li><a href="../../docs/30-design/platform/next-gen-platform-plan.html"><code>docs/30-design/platform/next-gen-platform-plan.md</code></a></li>
 <li><a href="../../docs/30-design/modernization/pr-8854-alignment-2026-10-26.html"><code>docs/30-design/modernization/pr-8854-alignment-2026-10-26.md</code></a></li>
-<li><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c5e562b7dc3066a9935cd41dfc7ab55498e4bf0b/tools/qc/write-contract-matrix.js"><code>tools/qc/write-contract-matrix.js</code></a></li>
+<li><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ef5bfb4269310de3f680af7194665324cd413ca7/tools/qc/write-contract-matrix.js"><code>tools/qc/write-contract-matrix.js</code></a></li>
 <li><a href="../../tools/seam/DIFFERENTIALS.html"><code>tools/seam/DIFFERENTIALS.md</code></a></li>
 </ul>
 <h2 id="notes-carried-on-the-item">Notes carried on the item<a class="headerlink" href="#notes-carried-on-the-item" title="Permanent link">&para;</a></h2>
-<p>2026-10-26: the maintainer decided ST-FILTER and ST-READS go up as one PR. ST-
-FILTER found five defects in the September seam's fromMongo, each of which
-widens or changes a read ({a: {}} dropped, empty $or and $and matching
-everything, $exists undefined read as presence, RegExp g and s flags swapped,
-mongod-refused $regex options coerced); the mingo round trip could not see
-them, the live-mongod differential did. All five are fixed on the branch and
-pinned by tests.</p>
+<p>2026-10-26, later: the maintainer pushed 48e7e101 and opened draft #8861. ST-
+WRITES is being built on top of it (feat/storage-writes). 2026-10-26: the
+maintainer decided ST-FILTER and ST-READS go up as one PR. ST-FILTER found
+five defects in the September seam's fromMongo, each of which widens or
+changes a read ({a: {}} dropped, empty $or and $and matching everything,
+$exists undefined read as presence, RegExp g and s flags swapped, mongod-
+refused $regex options coerced); the mingo round trip could not see them, the
+live-mongod differential did. All five are fixed on the branch and pinned by
+tests.</p>
 <hr />
 <h2 id="before-you-approve">Before you approve<a class="headerlink" href="#before-you-approve" title="Permanent link">&para;</a></h2>
 <ul class="task-list">
