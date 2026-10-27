@@ -16795,13 +16795,14 @@ items:
     branch: test/16.0.0-ci-flakes
     base: official/dev@2dc0c1bc
     worktree: externals/work/crm-ci-flakes
-    state: in-progress
+    state: in-flight-upstream
     pr: [8866]
     ships_to_operators_today: false
     blast_radius: >
       .github/workflows/main.yml's MongoDB 8.0 jobs, Run Tests (22.23.4, 8.0)
       and Maintained MongoDB (26, 8.0.29). The diagnosis aid in #8866 is
-      tools/wait-for-mongodb.js; the mitigation is not chosen yet.
+      tools/wait-for-mongodb.js (e0cfbd0c) and the mitigation f6884342 (the
+      MongoDB 8.0 jobs run on ubuntu-22.04).
     review: maintainer
     operator_visible: ""
     semver: n/a
@@ -16814,6 +16815,11 @@ items:
           #8866's branch has the MongoDB wait that prints the runner's kernel
           (e0cfbd0c), so a failed or passing 8.0 job records which kernel it
           ran on. This is the diagnosis aid, not the fix.
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f6884342 test/16.0.0-ci-flakes
+        kind: static
+        describe: >
+          The mitigation is on #8866's branch: Run Tests' MongoDB 8.0 cells and
+          Maintained MongoDB run on ubuntu-22.04 (Linux 6.8).
       - no-gate: >
           The defect is in MongoDB and in which host GitHub assigns, so it
           cannot be reproduced on demand. Seen 2026-10-27: #8866 run
@@ -16825,9 +16831,14 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
-      2026-10-27: filed at the maintainer's request. Next: read the kernel the
-      wait prints on the next runs, then choose a runner image with an older
-      kernel or a MongoDB 8.0 build that starts there.
+      2026-10-27: filed at the maintainer's request. Kernel readings on run
+      40569101512: both 8.0 jobs on 7.0.0-1017-azure refused to start (8.0.29
+      included); 5.0 and 6.0 on 6.17.0-1022-azure passed; ubuntu-24.04 image
+      20261026.354 moves 6.17 to 7.0. The maintainer chose a runner image
+      with an older kernel over an older MongoDB patch: f6884342, pushed to
+      #8866; run 40569981396 passed both 8.0 jobs on 6.8.0-1064-azure.
+      Revisit at kernel 7.0.14+, MongoDB support for 6.19+, or before
+      ubuntu-22.04 is retired.
   - id: BFQ-192
     title: "BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression)"
     parcel: register-open

@@ -2776,6 +2776,16 @@ controls:
       script, exits non-zero (measured 2026-10-27).
 
   - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f6884342 test/16.0.0-ci-flakes
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f6884342 official/dev
+    control-kind: static
+    proves: >
+      the same containment against official/dev 2dc0c1bc, which runs every
+      MongoDB job on ubuntu-latest, exits 1 (measured 2026-10-27).
+
+  - gate: |-
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c7857735 test/16.0.0-ci-flakes
     cwd: .
     control: |-

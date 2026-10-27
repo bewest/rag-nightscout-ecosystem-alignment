@@ -32,21 +32,21 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 305 |
-| runnable gates | 365 |
+| runnable gates | 366 |
 | explicit `no-gate:` markers | 342 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 342 of the 707 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 342 of the 708 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 63 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-STEP-PATCH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
-| `in-progress` | 7 | BFQ-178, ID-CONVENTIONS, BFQ-191, BFQ-202, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY |
+| `in-progress` | 6 | BFQ-178, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, BFQ-200, WS-LAB |
 | `blocked` | 16 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
-| `in-flight-upstream` | 11 | RT-CI-FLAKES-8DBB60C2, ID-SIMPLE-MATCH, BFQ-72, BFQ-161, BFQ-201, BFQ-193, BFQ-195, ST-FILTER-READS, ST-WRITES, PLAT-ENTRY, PLAT-SERVE |
+| `in-flight-upstream` | 12 | RT-CI-FLAKES-8DBB60C2, ID-SIMPLE-MATCH, BFQ-72, BFQ-161, BFQ-201, BFQ-202, BFQ-193, BFQ-195, ST-FILTER-READS, ST-WRITES, PLAT-ENTRY, PLAT-SERVE |
 | `merged-upstream` | 46 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-192, MOD-WRITE-VALIDATION |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 16 | T30-RESEARCH, ARCH-8854-FAILED, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-194, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
@@ -2784,7 +2784,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-190` | BF-190 - an alarm on a page without a current reading cannot be silenced from the page | `merged-upstream` | `bf/16.0.0-client-alarms` | patch | 2 run + 1 no-gate |
 | `BFQ-191` | BF-191 - a stored treatment can stop the server process, and keeps doing so after a restart (mechanism only) | `in-progress` | `-` | n/a | 0 run + 1 no-gate |
 | `BFQ-201` | BF-201 - npm run dev's nodemon watches nearly the whole repository (1,502 Linux file watches); watch the paths the server loads | `in-flight-upstream` | `test/16.0.0-ci-flakes` | n/a | 1 run + 1 no-gate |
-| `BFQ-202` | BF-202 - CI's MongoDB 8.0 jobs fail on hosted runners with Linux 6.19 or newer (MongoDB refuses to start, SERVER-121912) | `in-progress` | `test/16.0.0-ci-flakes` | n/a | 1 run + 1 no-gate |
+| `BFQ-202` | BF-202 - CI's MongoDB 8.0 jobs fail on hosted runners with Linux 6.19 or newer (MongoDB refuses to start, SERVER-121912) | `in-flight-upstream` | `test/16.0.0-ci-flakes` | n/a | 2 run + 1 no-gate |
 | `BFQ-192` | BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression) | `merged-upstream` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-193` | BF-193 - the realtime socket and other write paths log every record written through them | `in-flight-upstream` | `bf/16.0.0-log-privacy` | patch | 2 run + 1 no-gate |
 | `BFQ-194` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL | `needs-decision` | `-` | minor | 0 run + 1 no-gate |
@@ -6716,7 +6716,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `test/16.0.0-ci-flakes` |
 | base | `official/dev@2dc0c1bc` |
@@ -6726,7 +6726,7 @@ distinction is the only thing that makes the register mean anything - widening
 | ships to operators today | no (pre-release) |
 | register | `BF-202` |
 
-**Blast radius.** .github/workflows/main.yml's MongoDB 8.0 jobs, Run Tests (22.23.4, 8.0) and Maintained MongoDB (26, 8.0.29). The diagnosis aid in #8866 is tools/wait-for- mongodb.js; the mitigation is not chosen yet.
+**Blast radius.** .github/workflows/main.yml's MongoDB 8.0 jobs, Run Tests (22.23.4, 8.0) and Maintained MongoDB (26, 8.0.29). The diagnosis aid in #8866 is tools/wait-for- mongodb.js (e0cfbd0c) and the mitigation f6884342 (the MongoDB 8.0 jobs run on ubuntu-22.04).
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -6736,13 +6736,15 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `[static]` `git -C externals/cgm-remote-monitor-official show test/16.0.0-ci-flakes:tools/wait-for-mongodb.js | grep -q 'os.release()'`
   - #8866's branch has the MongoDB wait that prints the runner's kernel (e0cfbd0c), so a failed or passing 8.0 job records which kernel it ran on. This is the diagnosis aid, not the fix.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f6884342 test/16.0.0-ci-flakes`
+  - The mitigation is on #8866's branch: Run Tests' MongoDB 8.0 cells and Maintained MongoDB run on ubuntu-22.04 (Linux 6.8).
 - **NO GATE** &mdash; The defect is in MongoDB and in which host GitHub assigns, so it cannot be reproduced on demand. Seen 2026-10-27: #8866 run 40532337252 (Maintained MongoDB, 212 failing), #8867 run 40557880084 (Run Tests (22.23.4, 8.0) logged MongoDB's refusal to start on Linux 6.19 and newer while 8.0.29 in the same run started), #8866 run 40566855699 (both 8.0 jobs over 9 minutes in Run Tests, cancelled).
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-27: filed at the maintainer's request. Next: read the kernel the wait prints on the next runs, then choose a runner image with an older kernel or a MongoDB 8.0 build that starts there.
+**Notes.** 2026-10-27: filed at the maintainer's request. Kernel readings on run 40569101512: both 8.0 jobs on 7.0.0-1017-azure refused to start (8.0.29 included); 5.0 and 6.0 on 6.17.0-1022-azure passed; ubuntu-24.04 image 20261026.354 moves 6.17 to 7.0. The maintainer chose a runner image with an older kernel over an older MongoDB patch: f6884342, pushed to #8866; run 40569981396 passed both 8.0 jobs on 6.8.0-1064-azure. Revisit at kernel 7.0.14+, MongoDB support for 6.19+, or before ubuntu-22.04 is retired.
 
 ### `BFQ-192` &mdash; BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression)
 
