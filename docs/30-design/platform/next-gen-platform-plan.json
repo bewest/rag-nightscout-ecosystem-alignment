@@ -144,7 +144,7 @@
    "id": "ST-EVENT",
    "track": "storage",
    "phase": "intent",
-   "state": "decision",
+   "state": "progress",
    "short": "Commit event contents",
    "title": "The storage-write-committed event: per call or per driver operation, and whether it carries _id and identifier (internal only)",
    "where": "lib/storage/write-step.js",
@@ -153,7 +153,7 @@
     "PR-8854",
     "WC-STEP-PATCH"
    ],
-   "ref": "Deferred (maintainer, 2026-10-27): the event stays counts-only and internal; nothing in lib/ subscribes. Evidence: session -2e's bench, lab/commit-event-bench 54cd8fff7"
+   "ref": "Decision deferred, research continuing (maintainer, 2026-10-27): the event stays counts-only and internal; nothing in lib/ subscribes. Session -2e is building and measuring a post-write variant, with a capped pre-read as the comparison, as input to the decision (lab/commit-event-bench 54cd8fff7 and later)"
   },
   {
    "id": "ST-FILTER",
@@ -668,8 +668,8 @@
   {
    "id": "D-EVENT",
    "short": "Commit event (deferred)",
-   "owner": "maintainer; deferred 2026-10-27",
-   "question": "No shape is adopted for storage-write-committed; it stays counts-only and internal. Reopen when all four are in hand: (1) WC-STEP-PATCH's WriteResult.items[], so records are named from the write's own result, as API v3's storage events already are; (2) a named first subscriber and its exactness need (screen refresh, or sync and alarms); (3) the BF-164 AndroidAPS websocket cursor finding re-measured; (4) a count of sites running on a replica set, where change streams are the exact source.",
+   "owner": "maintainer; deferred 2026-10-27, research continuing",
+   "question": "No shape is adopted for storage-write-committed; it stays counts-only and internal. Prototyping and measuring continue as input. Reopen when all four are in hand: (1) WC-STEP-PATCH's WriteResult.items[], so records are named from the write's own result, as API v3's storage events already are; (2) a named first subscriber and its exactness need (screen refresh, or sync and alarms); (3) the BF-164 AndroidAPS websocket cursor finding re-measured; (4) a count of sites running on a replica set, where change streams are the exact source.",
    "holds": [
     "ST-EVENT"
    ],
@@ -682,8 +682,8 @@
     },
     {
      "label": "Read records after the write",
-     "gains": "exact names without a pre-read",
-     "risks": "no surveyed system does this; precedents name records from the database log (change streams, Debezium, PostgreSQL logical decoding) or by reading before the write (Nocturne, Sequelize individualHooks, Django delete). Not adopted"
+     "gains": "exact names without a pre-read; being prototyped and measured (session -2e), with a capped pre-read as the comparison",
+     "risks": "no surveyed system does this; precedents name records from the database log (change streams, Debezium, PostgreSQL logical decoding) or by reading before the write (Nocturne, Sequelize individualHooks, Django delete)"
     }
    ]
   },
