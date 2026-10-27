@@ -5508,17 +5508,18 @@ are proposals for the maintainer; nothing here is decided until §5 says so.</em
 briefs. B6 and Q12 answer a follow-up the same day: whether prototypes should ship in 16.0.0 as alpha.</p>
 <h2 id="1-the-answers-in-brief">1. The answers in brief<a class="headerlink" href="#1-the-answers-in-brief" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Storage seam in 16.0.0: in, if it meets the entry bar before the soak starts (decided by the
-  maintainer 2026-10-27, Q12).</strong> #8854 (the write boundary) is on <code>dev</code> and ships. The three seam slices
+<li><strong>Storage seam in 16.0.0: in, if it meets the entry bar with time left on <code>dev</code> before the tag
+  (decided by the maintainer 2026-10-27, Q12).</strong> #8854 (the write boundary) is on <code>dev</code> and ships. The three seam slices
   in review (#8861 ST-FILTER and ST-READS, #8863 ST-WRITES) are measured to change no behaviour, so no
   rule of the versioning policy needs them in a major. The first recommendation was to hold them to
-  16.1.0 to keep the soak small (§3); the soak has not started, so B6's five-point entry bar decides
-  instead. Building to the bar is worth doing either way, because it prepares the work that follows.</li>
+  16.1.0 to keep the soak small (§3). The soak is informal (§2.1): whatever is on <code>dev</code> is run by
+  people who use it as a nightly, so B6's measured checks decide, and the slices then need time on
+  <code>dev</code> and targeted cohort checks before the tag. Building to the bar is worth doing either way, because it prepares the work that follows.</li>
 <li><strong>What 16.0.0 should still take</strong> is the work whose behaviour change belongs at a major boundary or
   that fixes a live defect: #8859 (re-send matching and the null-removes rule), #8856 (BF-193, write
   logging), #8864 (the IOB pill on reconnect), #8866 (two CI test faults), #8858 (API docs held to the
   routes) and the BF-72 and BF-161 advisory fixes. #8862 (one executable) goes in only if it merges
-  before the soak starts (Q2).</li>
+  before the tag with time on <code>dev</code> (Q2).</li>
 <li><strong>The other roadmap features help multitenancy unevenly.</strong> Identity and formal record schemas are
   on its critical path: they fix the keys and columns of the PostgreSQL tables. PLAT-ENTRY and
   PLAT-SERVE are on it too. Registration, statistics and the v4 typed paths are parallel work that
@@ -5627,6 +5628,18 @@ BF-161 fixes through their advisory forks. None is met. The staging PR #8824 is 
 <code>master</code>'s protection still requires <code>Run Tests (22, 4.4)</code>, which <code>dev</code> no longer emits, and one
 approving review (<code>gh api repos/nightscout/cgm-remote-monitor/branches/master/protection</code>, read
 2026-10-27). The maintainer's decided change (require only <em>Tests pass</em>) is not yet applied.</p>
+<h3 id="21-how-1600-is-soaked-maintainer-2026-10-27">2.1 How 16.0.0 is soaked (maintainer, 2026-10-27)<a class="headerlink" href="#21-how-1600-is-soaked-maintainer-2026-10-27" title="Permanent link">&para;</a></h3>
+<p>The soak is informal. Anything on <code>dev</code> is run by people who follow it as a nightly, so merging to
+<code>dev</code> starts exposure; there is no separate soak start. When a change needs a specific behaviour
+checked, the maintainers ask for it, or look for the cohort that exercises it (one uploader, one
+follower app, mmol/L users, a hosting provider). RT-16-RIG-SOAK is met by those reports. Two
+consequences for this plan:</p>
+<ul>
+<li>The deadline for anything entering 16.0.0 is the tag, less the time on <code>dev</code> its cohort checks
+  need; it is not a soak start date.</li>
+<li>A change merged to <code>dev</code> early gets more exposure than one merged late, so a change that is going
+  into 16.0.0 should merge as soon as its measured checks pass.</li>
+</ul>
 <h2 id="3-how-much-of-the-storage-seam-goes-in-1600">3. How much of the storage seam goes in 16.0.0<a class="headerlink" href="#3-how-much-of-the-storage-seam-goes-in-1600" title="Permanent link">&para;</a></h2>
 <h3 id="31-what-the-versioning-policy-asks">3.1 What the versioning policy asks<a class="headerlink" href="#31-what-the-versioning-policy-asks" title="Permanent link">&para;</a></h3>
 <p>The policy classifies a release by its loudest change (R3) and says a version number is not a
@@ -5690,6 +5703,7 @@ substitute for a test. Applied to the seam:</p>
 <p>Nothing in the seam slices needs 16.0.0. The items that need a major are not ready, and none of them
 is in review.</p>
 <h3 id="32-what-including-the-slices-would-cost">3.2 What including the slices would cost<a class="headerlink" href="#32-what-including-the-slices-would-cost" title="Permanent link">&para;</a></h3>
+<p><em>Written before the maintainer said the soak is informal (§2.1). With no soak start to restart, the cost below becomes exposure time: slices merged late get less of it.</em></p>
 <p>16.0.0 is already 890 commits and 855 files past <code>v15.0.9</code> (contents, Identity). Its remaining gates are a soak and live delivery checks, which measure time on
 real sites, not lines of code. Every merge to <code>dev</code> after a soak starts changes what the soak
 measured. The three slices add about 3,000 lines over every v1 read and write path. Their matrices say
@@ -5863,7 +5877,7 @@ the loudest row's (R3).</p>
 <tbody>
 <tr>
 <td>Q1</td>
-<td>How is <code>dev</code> kept stable for the 16.0.0 soak?</td>
+<td>How is <code>dev</code> kept stable before the 16.0.0 tag (the soak is informal, §2.1)?</td>
 <td>(a) <code>dev</code> takes release fixes only until the tag; feature PRs stay draft. (b) cut <code>release/16.0.0</code> from <code>dev</code> now; soak and tag from it; <code>dev</code> takes the seam.</td>
 <td>(a): the soak and the Docker <code>dev</code> image both run from <code>dev</code> today, and a second long-lived branch doubles the merge work for a few weeks</td>
 <td>#8861, #8863, #8865, #8857 merge dates</td>
@@ -5871,7 +5885,7 @@ the loudest row's (R3).</p>
 <tr>
 <td>Q2</td>
 <td>#8862 (one executable) in 16.0.0?</td>
-<td>(a) yes, if merged before the soak starts; (b) 16.1.0</td>
+<td>(a) yes, if merged with time on <code>dev</code> before the tag; (b) 16.1.0</td>
 <td>(a): the image's start changes form, and a major's release notes already ask operators to check their start; if the soak has started, (b)</td>
 <td>the soak start</td>
 </tr>
@@ -5879,7 +5893,7 @@ the loudest row's (R3).</p>
 <td>Q3</td>
 <td>The seam slices in 16.0.0?</td>
 <td>(a) hold to 16.1.0; (b) merge now</td>
-<td><em>Superseded by Q12 (decided 2026-10-27):</em> in, through B6's entry bar, if met before the soak starts; otherwise 16.1.0</td>
+<td><em>Superseded by Q12 (decided 2026-10-27):</em> in, through B6's entry bar, merged to <code>dev</code> once its measured items pass (§2.1); otherwise 16.1.0</td>
 <td>tenancy start date by the time the soak takes</td>
 </tr>
 <tr>
@@ -5941,7 +5955,7 @@ the loudest row's (R3).</p>
 <tr>
 <td>Q12</td>
 <td>Put prototypes in 16.0.0 to soak them as alpha?</td>
-<td><em>Decided, maintainer 2026-10-27:</em> the seam slices go into 16.0.0 if feasible and B6's entry bar is met; building them to that bar is worth doing whether or not they ship, because it prepares the work that follows. Components that ship before they are mature are labelled alpha in the release notes. Still open: Q12a</td>
+<td><em>Decided, maintainer 2026-10-27:</em> the seam slices go into 16.0.0 if feasible and B6's entry bar is met with time on <code>dev</code> before the tag (§2.1); building them to that bar is worth doing whether or not they ship, because it prepares the work that follows. Components that ship before they are mature are labelled alpha in the release notes. Still open: Q12a</td>
 <td>B6</td>
 <td>the soak start, BFQ-72</td>
 </tr>
@@ -5968,13 +5982,13 @@ the loudest row's (R3).</p>
 </ul>
 <h3 id="b2-1600-with-the-seam-included">B2. 16.0.0 with the seam included<a class="headerlink" href="#b2-1600-with-the-seam-included" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>What happens.</strong> #8861 and #8863 merge before the soak. 16.1.0 starts from a <code>dev</code> that already
+<li><strong>What happens.</strong> #8861 and #8863 merge to <code>dev</code> as soon as their checks pass (now the decided path, Q12). 16.1.0 starts from a <code>dev</code> that already
   routes v1 through the interface.</li>
 <li><strong>Who it reaches.</strong> The same as B1, plus every v1 read and write on every site going through new
   code.</li>
 <li><strong>Measure first.</strong> The write-contract matrix, the HTTP and v1 read diffs and the client replay on
-  the merged tree; the soak counts only from the merge. The gain is about one release of lead time
-  for tenancy; the cost is a longer or restarted soak.</li>
+  the merged tree; <code>dev</code> users exercise them from the merge (§2.1). The gain is about one release of lead time
+  for tenancy; the cost is less time on <code>dev</code> for the rest of 16.0.0's changes to be told apart from the slices if something regresses.</li>
 </ul>
 <h3 id="b3-identity-first">B3. Identity first<a class="headerlink" href="#b3-identity-first" title="Permanent link">&para;</a></h3>
 <ul>
@@ -6014,11 +6028,11 @@ the loudest row's (R3).</p>
 multi mode, exist within days, are they worth shipping in 16.0.0 with their status noted, so the
 release soaks them; and how does that weigh against releasing as soon as the candidate is ready?</p>
 <ul>
-<li><strong>The candidate is not ready to release now, so the choice is what is on <code>dev</code> when the soak
-  starts.</strong> Unmet on 2026-10-27: the real-rig soak (not started), the live delivery check, the
+<li><strong>The candidate is not ready to release now, so the choice is what is on <code>dev</code> long enough before
+  the tag.</strong> Unmet on 2026-10-27: the real-rig soak (not started), the live delivery check, the
   BF-72 and BF-161 fork fixes, #8859 (needed in 16.0.0, draft), #8866 (<code>dev</code> CI red until it merges)
-  and <code>master</code>'s protection (#8824 blocked). The soak cannot start until the code it measures is
-  merged, so merging before it starts costs no restart.</li>
+  and <code>master</code>'s protection (#8824 blocked). The soak is informal (§2.1): <code>dev</code> users exercise
+  whatever is merged, so a change merged sooner is soaked longer.</li>
 <li><strong>The two prototypes behave differently in a release.</strong></li>
 </ul>
 <table>
@@ -6063,7 +6077,8 @@ release soaks them; and how does that weigh against releasing as soon as the can
 </tbody>
 </table>
 <ul>
-<li><strong>The seam slices: in, only through an entry bar met before the soak starts.</strong></li>
+<li><strong>The seam slices: in, only through an entry bar, merged to <code>dev</code> as soon as items 1, 3, 4 and 5
+  pass.</strong></li>
 <li>
 <h1 id="8859-and-the-seam-chain-merged-together-the-overlap-resolved-once">8859 and the seam chain merged together, the overlap resolved once.<a class="headerlink" href="#8859-and-the-seam-chain-merged-together-the-overlap-resolved-once" title="Permanent link">&para;</a></h1>
 </li>
@@ -6075,7 +6090,52 @@ release soaks them; and how does that weigh against releasing as soon as the can
      yet: v1 reads now translate each query into the filter tree and back.</li>
 <li>A one-step fallback: reverting the slices' merge commits restores the current paths, rehearsed
      once.
-  Not met by the soak start → 16.1.0, as in §3.</li>
+  Not met with time on <code>dev</code> before the tag → 16.1.0, as in §3.</li>
+<li><strong>Cohort checks to request once the slices are on <code>dev</code></strong> (they move every v1 read and write onto
+  the interface):</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>cohort</th>
+<th>what to check</th>
+<th>why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AndroidAPS (API v3 client)</td>
+<td>uploads, re-sends and deletions sync without duplicates or refusals</td>
+<td>v3 already uses the adapter the slices extend</td>
+</tr>
+<tr>
+<td>Loop and Trio (v1 treatments, <code>syncIdentifier</code>, <code>id</code>)</td>
+<td>carbs, boluses and temp targets appear once; edits and deletes take effect</td>
+<td>ST-WRITES moves v1 treatment writes</td>
+</tr>
+<tr>
+<td>xDrip+ and other v1 entries uploaders</td>
+<td>readings appear on time, no gaps after a reconnect</td>
+<td>v1 entries writes and the dedup key</td>
+</tr>
+<tr>
+<td>follower apps (LoopFollow, Nightguard, Nightscout watch faces)</td>
+<td>current reading, IOB and COB match the site</td>
+<td>v1 reads through <code>fromMongo</code></td>
+</tr>
+<tr>
+<td>report users (Nightscout Reporter, the site's reports)</td>
+<td>long-range reports load and match 15.0.9's numbers</td>
+<td>large v1 queries; the latency item</td>
+</tr>
+<tr>
+<td>mmol/L sites</td>
+<td>values and targets shown in the right unit</td>
+<td>units handling on the paths that moved</td>
+</tr>
+</tbody>
+</table>
+<ul>
 <li><strong>The multi-mode prototype: shipped, but not in the 16.0.0 artifact.</strong> Shipping it inside 16.0.0
   gives it no soak and makes its names public surface. Ship it as a prerelease instead
   (<code>16.1.0-alpha.1</code> image and tag from a branch, its status in the tag message), run in TEN-LAB
@@ -6084,7 +6144,7 @@ release soaks them; and how does that weigh against releasing as soon as the can
   per-tenant credentials (no <code>API_SECRET</code> under <code>multi</code>, D13), and named in the release notes as
   outside the versioning policy.</li>
 <li><strong>Weighed against releasing at once.</strong> Including the seam adds the entry bar's work (one or two
-  days of agent time plus maintainer review of about 3,000 lines) before the soak starts, in
+  days of agent time plus maintainer review of about 3,000 lines) before merging to <code>dev</code>, in
   exchange for one release of real traffic on the interface before PostgreSQL relies on it. If the
   gates are met before the bar is, release without the slices.</li>
 </ul>
