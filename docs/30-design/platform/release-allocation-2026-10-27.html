@@ -5465,17 +5465,17 @@ state; §1–§6 keep the morning's reasoning, with their decided rows marked. 1
   (ST-V3-DECOUPLE, PLAT-SERVE, ST-HARNESS, ST-PG). None of them improves 16.0.0 for a self-hoster,
   and each would spend the short quiet period the pre-tag definition of done asks for
   (<code>RT-16-RELEASE</code>, item 4, decided 2026-10-27). Recommendation: <code>dev</code> takes only release fixes until
-  the tag (Q1 (a), now Q13). ST-EVENT stays a decision with a bench running; settle it in the
-  freeze window, ship its code in 16.1.0 or later.</li>
+  the tag (Q1 (a), now Q13). D-EVENT was deferred by the maintainer the same evening (Q9); ST-EVENT stays tied to
+  WC-STEP-PATCH in 16.2.0.</li>
 <li><strong>Does including other roadmap features help multitenancy: not by being in 16.0.0.</strong> The one
   indirect benefit, real traffic on the interface before PostgreSQL depends on it (§4.2), is now
-  bought by M1. What shortens the path from here is decisions and a reopened <code>dev</code>: D-EVENT, D-T30,
+  bought by M1. What shortens the path from here is decisions and a reopened <code>dev</code>: D-T30,
   D-LOOP-ID's remaining items, the identifier and schema rules that fix the PostgreSQL keys and
   columns, and ST-V3-DECOUPLE for <code>serve api</code>. Registration and v4 reads stay parallel work.</li>
 <li><strong>Schedule: tag 16.0.0 as soon as its four pre-tag items are met; then one theme per minor.</strong>
   The fastest route to a multi-mode preview is to release 16.0.0 and reopen <code>dev</code>, not to load it.
   The revised themes are in §4.3 (16.1.0 one executable, <code>serve api</code> and registration off by
-  default; 16.2.0 <code>write(intent)</code> and identity on every path; 16.3.0 or later the multi preview;
+  default; 16.2.0 <code>write(intent)</code>, the commit event and identity on every path; 16.3.0 or later the multi preview;
   17.0.0 enforcement). Client identity and formal schemas run ahead of tenancy because they fix its
   tables; v4 publishes in pieces, unstable until shared.</li>
 <li><strong>Open questions and briefs:</strong> Q13–Q16 in §5 and B7–B9 in §6 are new this evening.</li>
@@ -5748,10 +5748,10 @@ order, and ship them in 16.1.0. This needs one rule for <code>dev</code> between
 <tbody>
 <tr>
 <td>ST-EVENT (D-EVENT)</td>
-<td>decision; bench in progress (session -2e), no figures recorded until it reports</td>
+<td>deferred (maintainer, 2026-10-27): counts-only and internal; reopened when WriteResult.items[], a first subscriber, the BF-164 re-measure and a replica-set site count are in hand</td>
 <td>none while nothing in <code>lib/</code> subscribes; the commit event is internal and unstable (#8854 condition)</td>
 <td>nobody</td>
-<td>decide in the freeze window; code in 16.2.0 with WC-STEP-PATCH</td>
+<td>16.2.0, with WC-STEP-PATCH</td>
 </tr>
 <tr>
 <td>ST-V3-DECOUPLE (M3)</td>
@@ -5804,7 +5804,7 @@ waits for the minors, where it can ship as alpha without holding the tag.</p>
 <h3 id="41-which-features-shorten-the-path-to-multitenancy">4.1 Which features shorten the path to multitenancy<a class="headerlink" href="#41-which-features-shorten-the-path-to-multitenancy" title="Permanent link">&para;</a></h3>
 <p>The multitenant target (D1–D3) is PostgreSQL with row-level security behind the same storage
 interface, with tenant resolution and per-tenant credentials. Its critical path in the plan:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>ST-WRITES → ST-EVENT (D-EVENT) → WC-STEP-PATCH → ST-HARNESS → ST-PG ──┐
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>ST-WRITES → WC-STEP-PATCH → ST-HARNESS → ST-PG ─────────────────────────┐
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>T30-RESEARCH (D-T30) → T30-SCHEMA-CONFIG ───────────────────────────────┼→ TEN-RESOLVE → T30-WIRING → TEN-LAB
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>PLAT-ENTRY → PLAT-SERVE ───────────────────────────────────────────────┘
 </code></pre></div>
@@ -5900,13 +5900,13 @@ the loudest row's (R3).</p>
 <tr>
 <td>16.1.0</td>
 <td>one executable, hosted roles as alpha, registration readable</td>
-<td>#8862 and #8865 (one executable, <code>serve api</code>) with ST-V3-DECOUPLE; #8857 off by default (D-REG-FLAG); SPEC-ID-AMEND; the D-EVENT decision; the OpenAPI description of what 16.1.0 serves, including the registration paths</td>
+<td>#8862 and #8865 (one executable, <code>serve api</code>) with ST-V3-DECOUPLE; #8857 off by default (D-REG-FLAG); SPEC-ID-AMEND; the OpenAPI description of what 16.1.0 serves, including the registration paths</td>
 <td>minor</td>
 </tr>
 <tr>
 <td>16.2.0</td>
 <td><code>write(intent)</code> and identity on every path</td>
-<td>ST-EVENT, WC-STEP-PATCH, ID-BATCH, ID-FIRST-MATCH where it changes no outcome, ST-HARNESS; ST-VIEWS if its alarm checks pass; REG-S3 behind its flag; v4 statistics reads</td>
+<td>WC-STEP-PATCH, ST-EVENT, ID-BATCH, ID-FIRST-MATCH where it changes no outcome, ST-HARNESS; ST-VIEWS if its alarm checks pass; REG-S3 behind its flag; v4 statistics reads</td>
 <td>minor</td>
 </tr>
 <tr>
@@ -5958,7 +5958,7 @@ tenancy work, from its route census of <code>dev</code> <code>2dc0c1bc</code> (1
 </tr>
 <tr>
 <td>M2</td>
-<td>D-EVENT and <code>write(intent)</code></td>
+<td><code>write(intent)</code>, then the commit event (D-EVENT deferred until it exists)</td>
 <td></td>
 <td>16.2.0</td>
 </tr>
@@ -6073,8 +6073,8 @@ tenancy work, from its route census of <code>dev</code> <code>2dc0c1bc</code> (1
 <td>Q9</td>
 <td>D-EVENT: commit event per call or per driver operation</td>
 <td>per the plan's decision card</td>
-<td>settle while the slices wait (§3.3)</td>
-<td>WC-STEP-PATCH, the change feed</td>
+<td><em>Deferred, maintainer 2026-10-27:</em> no shape adopted; the event stays counts-only and internal; reopened when WC-STEP-PATCH's WriteResult.items[], a named first subscriber, the BF-164 websocket cursor re-measure and a count of replica-set sites are in hand. A read after the write is not adopted (no precedent)</td>
+<td>ST-EVENT, the change feed</td>
 </tr>
 <tr>
 <td>Q10</td>
@@ -6367,7 +6367,7 @@ release soaks them; and how does that weigh against releasing as soon as the can
 <ul>
 <li><strong>What happens.</strong> <code>dev</code> stays at <code>ca1652d6</code> except for release fixes. The cohort requests (Q14) and
   the live alarms check run in parallel; BF-72 and BF-161 are brought up to <code>dev</code> inside their
-  forks. D-EVENT, D-T30 and the remaining identity questions are settled while <code>dev</code> is quiet.</li>
+  forks. D-T30 and the remaining identity questions are settled while <code>dev</code> is quiet.</li>
 <li><strong>Who it reaches.</strong> Every 16.0.0 user, through M1 and #8859, which are new code on every v1 read
   and write; B6's cohort table is the check list.</li>
 <li><strong>Measure first.</strong> The cohort confirmations; a 360-cell matrix and client replay on the final

@@ -5514,7 +5514,7 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-27 at <code>af403e09e</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>3dd9216f2</code>.</em></p>
 <p><em>Contributor-facing. Living plan, current at cgm-remote-monitor dev <code>ca1652d6</code> (2026-10-27). Status: proposed; the decisions in §5 are open. Which release each item goes in is proposed in <a href="release-allocation-2026-10-27.html">release allocation</a>.</em></p>
 <p>The interactive version, with the dependency map, is the site page <a href="../../../site/pages/nightscout-next-gen-platform.html">nightscout-next-gen-platform.html</a>.</p>
 <p>This plan covers the work that follows the 16.0.0 modernization:</p>
@@ -5540,7 +5540,7 @@
 <td>Storage</td>
 <td><code>WRITE_VALIDATION</code> (#8841); the write boundary <code>lib/storage/write-step.js</code> (#8854); the filter tree and interface with v1 reads (#8861); v1, authorization and socket writes labelled by source (#8863); v1 count only through the interface (#8870). Every REST and socket record read, write and count goes through the storage interface (milestone M1)</td>
 <td>—</td>
-<td>ST-EVENT (decision, bench running), ST-V3-DECOUPLE, <code>write(intent)</code>, computed views, backend-selectable harness, PostgreSQL</td>
+<td>ST-V3-DECOUPLE, <code>write(intent)</code>, ST-EVENT (deferred), computed views, backend-selectable harness, PostgreSQL</td>
 </tr>
 <tr>
 <td>Identity</td>
@@ -5617,7 +5617,7 @@
 </tr>
 </tbody>
 </table>
-<p>The forward constraints are two mature backends behind one interface (D2–D4), the closed query operator set as a filter tree (D8), a source label and later a tenant binding on every write, and one commit fact the change feed can carry (D6, decision D-EVENT). Under #8854's merge conditions, the commit event stays internal and unstable, and the intent layer gets its own name.</p>
+<p>The forward constraints are two mature backends behind one interface (D2–D4), the closed query operator set as a filter tree (D8), a source label and later a tenant binding on every write, and one commit fact the change feed can carry (D6; D-EVENT deferred until WC-STEP-PATCH and a first subscriber exist). Under #8854's merge conditions, the commit event stays internal and unstable, and the intent layer gets its own name.</p>
 <h2 id="3-the-map">3. The map<a class="headerlink" href="#3-the-map" title="Permanent link">&para;</a></h2>
 <!-- chart: map -->
 
@@ -5635,12 +5635,6 @@
 </thead>
 <tbody>
 <tr>
-<td>ST-EVENT</td>
-<td>the commit event's granularity and contents</td>
-<td>PR-8854, D-EVENT</td>
-<td>each stored record named once per write</td>
-</tr>
-<tr>
 <td>ST-V3-DECOUPLE</td>
 <td>API v3 without API v1's modules, the socket and the cache, so <code>serve api</code> serves it alone (M3)</td>
 <td>ST-WRITES, PLAT-SERVE</td>
@@ -5649,8 +5643,14 @@
 <tr>
 <td>WC-STEP-PATCH</td>
 <td><code>write(intent)</code> -&gt; WriteResult.items[] above the interface; matching, server dates, the null-removes rule and validation move into it; compare-and-set behind an adapter method</td>
-<td>ST-WRITES, ST-EVENT</td>
+<td>ST-WRITES</td>
 <td><a href="../tenancy/write-contract-spec-2026-10-07.html">write-contract spec</a> G1</td>
+</tr>
+<tr>
+<td>ST-EVENT</td>
+<td>the commit event names the records of each write, from WriteResult.items[]</td>
+<td>WC-STEP-PATCH, D-EVENT (deferred)</td>
+<td>each stored record named once per write</td>
 </tr>
 <tr>
 <td>ST-HARNESS</td>
@@ -5667,8 +5667,14 @@
 <tr>
 <td>ST-PG</td>
 <td>PostgreSQL with row-level security, entries first</td>
+<td>ST-EVENT</td>
+<td>the commit event names the records of each write, from WriteResult.items[]</td>
+</tr>
+<tr>
 <td>ST-HARNESS</td>
 <td>the backend-selectable suite on both stores</td>
+<td></td>
+<td></td>
 </tr>
 </tbody>
 </table>
