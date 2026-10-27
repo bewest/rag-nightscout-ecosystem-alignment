@@ -156,28 +156,29 @@
    "id": "ST-FILTER",
    "track": "storage",
    "phase": "boundary",
-   "state": "progress",
+   "state": "ready",
    "short": "Filter tree and interface",
    "title": "Slice 1: the backend-neutral filter tree and storage interface methods under the API v3 collection adapter, composed with #8854's boundary; no call site changes",
    "where": "lib/storage/filter.js, lib/api3/storage/mongoCollection/ (from old chain 4f753ab9, b0709c2c, 68ffbd66, c40d37f7, ef89bdb8, c1218d50, d75c1154, plus the type and nottype nodes)",
-   "check": "both write-contract matrices unchanged; the mingo differential; #8854's gates",
+   "check": "both write-contract matrices unchanged (0 of 336 cells, off and reject); filter differential against mongod 0 mismatches over 5,467 and 11,467 filters; #8854's gates",
    "depends": [
     "PR-8854"
    ],
-   "ref": "feat/storage-filter (local, from dev 7ad3a67f)"
+   "ref": "feat/storage-filter 48e7e101 (dev 8dbb60c2 merged in), one PR with ST-FILTER and ST-READS"
   },
   {
    "id": "ST-READS",
    "track": "storage",
    "phase": "boundary",
-   "state": "planned",
+   "state": "ready",
    "short": "v1 reads on the interface",
    "title": "Slice 2: v1 list, get and query reads go through the interface (fromMongo), dev's count rules kept",
    "where": "six v1 modules, about 250 lines",
-   "check": "api.* suites; a new end-to-end $type/$exists test, which dev lacks",
+   "check": "API v1 answers unchanged: HTTP differential 700/700 identical against dev; v1 read differential 2,954/2,954; new end-to-end $type/$exists test; refusals answer the allowlist's 400; both write-contract matrices unchanged",
    "depends": [
     "ST-FILTER"
-   ]
+   ],
+   "ref": "feat/storage-filter 48e7e101 (dev 8dbb60c2 merged in), one PR with ST-FILTER and ST-READS"
   },
   {
    "id": "ST-WRITES",

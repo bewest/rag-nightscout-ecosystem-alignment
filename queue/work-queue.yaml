@@ -21431,7 +21431,7 @@ items:
     branch: feat/storage-filter
     base: official/dev@7ad3a67f
     worktree: externals/work/crm-stfilter
-    state: in-progress
+    state: ready-to-push
     pr: []
     blast_radius: >
       lib/storage/filter.js (new: the filter tree, fromMongo, the MongoDB
@@ -21452,17 +21452,22 @@ items:
       and reject) and #8854's CRUD matrix are the pins.
     gates:
       - no-gate: >
-          In progress. ST-FILTER measured 2026-10-26 at 50172510 on dev
-          7ad3a67f: npm test 4505/0/3 (dev 4429/0/3), test:all 4833/0/3
-          (dev 4757/0/3), #8854 matrix 422 = 422, write-contract matrix 0
-          of 336 cells differ off and reject (red control: 5 cells), live
-          mongod differential 0 mismatches over 5,467 and 11,467 filters.
-          The gate for the PR is the same set re-run on the ST-READS head.
+          Measured by the lab, not re-runnable from this repository alone
+          (needs MongoDB and a dev tree). On feat/storage-filter 48e7e101
+          (dev 8dbb60c2 merged into b752971c): npm test 4577/0/3, test:all
+          4905/0/3, check-write-boundary 8/8. On b752971c against dev
+          7ad3a67f: npm test 4526/0/3 (dev 4429), test:all 4854/0/3 (dev
+          4757), #8854 matrix 422 = 422, write-contract matrix 0 of 336
+          cells differ off and reject (red control findFiltered -> []: 186
+          cells), tools/seam/v1-http-differential.js 700/700 identical,
+          tools/seam/v1-read-differential.js 2954/2954,
+          tools/seam/filter-differential.js 0 mismatches.
     blocks_on: []
     evidence:
       - docs/30-design/platform/next-gen-platform-plan.md
       - docs/30-design/modernization/pr-8854-alignment-2026-10-26.md
       - tools/qc/write-contract-matrix.js
+      - tools/seam/DIFFERENTIALS.md
     notes: >
       2026-10-26: the maintainer decided ST-FILTER and ST-READS go up as one
       PR. ST-FILTER found five defects in the September seam's fromMongo,

@@ -42,9 +42,9 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | state | n | ids |
 |---|---|---|
 | `not-started` | 64 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-STEP-PATCH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, PLAT-ENTRY |
-| `in-progress` | 7 | BFQ-178, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY, ST-FILTER-READS |
+| `in-progress` | 6 | BFQ-178, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY |
 | `gate-not-met` | 5 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR |
-| `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
+| `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, WS-LAB, ST-FILTER-READS |
 | `blocked` | 17 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164, PLAT-SERVE |
 | `in-flight-upstream` | 5 | ID-SIMPLE-MATCH, BFQ-72, BFQ-161, BFQ-193, BFQ-195 |
 | `merged-upstream` | 44 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-192, MOD-WRITE-VALIDATION |
@@ -7358,7 +7358,7 @@ alarm-readiness items, and the seam branch refresh.
 | `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up safe on existing duplicates | `blocked` | `-` | minor | 0 run + 1 no-gate |
 | `BFQ-66` | BF-66 - the deployment's own tokens fail its own tenant check | `blocked` | `crm-seam` | n/a | 0 run + 2 no-gate |
 | `BFQ-CAP02` | CAP-02 - no importer, and no Mongo to PostgreSQL loader | `not-started` | `crm-seam` | n/a | 0 run + 2 no-gate |
-| `ST-FILTER-READS` | Storage interface, first PR: the filter tree and interface methods under API v3's adapter (ST-FILTER), and API v1 reads through them (ST-READS), with no v1 answer changed | `in-progress` | `feat/storage-filter` | patch | 0 run + 1 no-gate |
+| `ST-FILTER-READS` | Storage interface, first PR: the filter tree and interface methods under API v3's adapter (ST-FILTER), and API v1 reads through them (ST-READS), with no v1 answer changed | `ready-to-push` | `feat/storage-filter` | patch | 0 run + 1 no-gate |
 
 ### `T30-RESEARCH` &mdash; T3.0 part 1 - enumerate the per-tenant configuration surface
 
@@ -8421,7 +8421,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `feat/storage-filter` |
 | base | `official/dev@7ad3a67f` |
@@ -8437,13 +8437,14 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; In progress. ST-FILTER measured 2026-10-26 at 50172510 on dev 7ad3a67f: npm test 4505/0/3 (dev 4429/0/3), test:all 4833/0/3 (dev 4757/0/3), #8854 matrix 422 = 422, write-contract matrix 0 of 336 cells differ off and reject (red control: 5 cells), live mongod differential 0 mismatches over 5,467 and 11,467 filters. The gate for the PR is the same set re-run on the ST-READS head.
+- **NO GATE** &mdash; Measured by the lab, not re-runnable from this repository alone (needs MongoDB and a dev tree). On feat/storage-filter 48e7e101 (dev 8dbb60c2 merged into b752971c): npm test 4577/0/3, test:all 4905/0/3, check-write-boundary 8/8. On b752971c against dev 7ad3a67f: npm test 4526/0/3 (dev 4429), test:all 4854/0/3 (dev 4757), #8854 matrix 422 = 422, write-contract matrix 0 of 336 cells differ off and reject (red control findFiltered -> []: 186 cells), tools/seam/v1-http-differential.js 700/700 identical, tools/seam/v1-read-differential.js 2954/2954, tools/seam/filter-differential.js 0 mismatches.
 
 **Evidence.**
 
 - `docs/30-design/platform/next-gen-platform-plan.md`
 - `docs/30-design/modernization/pr-8854-alignment-2026-10-26.md`
 - `tools/qc/write-contract-matrix.js`
+- `tools/seam/DIFFERENTIALS.md`
 
 **Notes.** 2026-10-26: the maintainer decided ST-FILTER and ST-READS go up as one PR. ST- FILTER found five defects in the September seam's fromMongo, each of which widens or changes a read ({a: {}} dropped, empty $or and $and matching everything, $exists undefined read as presence, RegExp g and s flags swapped, mongod-refused $regex options coerced); the mingo round trip could not see them, the live-mongod differential did. All five are fixed on the branch and pinned by tests.
 
