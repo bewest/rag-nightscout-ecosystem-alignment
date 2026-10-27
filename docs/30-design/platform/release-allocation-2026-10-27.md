@@ -22,17 +22,18 @@ briefs. B6 and Q12 answer a follow-up the same day: whether prototypes should sh
 
 ## 1. The answers in brief
 
-- **Storage seam in 16.0.0: in, if it meets the entry bar before the soak starts (decided by the
-  maintainer 2026-10-27, Q12).** #8854 (the write boundary) is on `dev` and ships. The three seam slices
+- **Storage seam in 16.0.0: in, if it meets the entry bar with time left on `dev` before the tag
+  (decided by the maintainer 2026-10-27, Q12).** #8854 (the write boundary) is on `dev` and ships. The three seam slices
   in review (#8861 ST-FILTER and ST-READS, #8863 ST-WRITES) are measured to change no behaviour, so no
   rule of the versioning policy needs them in a major. The first recommendation was to hold them to
-  16.1.0 to keep the soak small (§3); the soak has not started, so B6's five-point entry bar decides
-  instead. Building to the bar is worth doing either way, because it prepares the work that follows.
+  16.1.0 to keep the soak small (§3). The soak is informal (§2.1): whatever is on `dev` is run by
+  people who use it as a nightly, so B6's measured checks decide, and the slices then need time on
+  `dev` and targeted cohort checks before the tag. Building to the bar is worth doing either way, because it prepares the work that follows.
 - **What 16.0.0 should still take** is the work whose behaviour change belongs at a major boundary or
   that fixes a live defect: #8859 (re-send matching and the null-removes rule), #8856 (BF-193, write
   logging), #8864 (the IOB pill on reconnect), #8866 (two CI test faults), #8858 (API docs held to the
   routes) and the BF-72 and BF-161 advisory fixes. #8862 (one executable) goes in only if it merges
-  before the soak starts (Q2).
+  before the tag with time on `dev` (Q2).
 - **The other roadmap features help multitenancy unevenly.** Identity and formal record schemas are
   on its critical path: they fix the keys and columns of the PostgreSQL tables. PLAT-ENTRY and
   PLAT-SERVE are on it too. Registration, statistics and the v4 typed paths are parallel work that
@@ -81,6 +82,19 @@ BF-161 fixes through their advisory forks. None is met. The staging PR #8824 is 
 approving review (`gh api repos/nightscout/cgm-remote-monitor/branches/master/protection`, read
 2026-10-27). The maintainer's decided change (require only *Tests pass*) is not yet applied.
 
+### 2.1 How 16.0.0 is soaked (maintainer, 2026-10-27)
+
+The soak is informal. Anything on `dev` is run by people who follow it as a nightly, so merging to
+`dev` starts exposure; there is no separate soak start. When a change needs a specific behaviour
+checked, the maintainers ask for it, or look for the cohort that exercises it (one uploader, one
+follower app, mmol/L users, a hosting provider). RT-16-RIG-SOAK is met by those reports. Two
+consequences for this plan:
+
+- The deadline for anything entering 16.0.0 is the tag, less the time on `dev` its cohort checks
+  need; it is not a soak start date.
+- A change merged to `dev` early gets more exposure than one merged late, so a change that is going
+  into 16.0.0 should merge as soon as its measured checks pass.
+
 ## 3. How much of the storage seam goes in 16.0.0
 
 ### 3.1 What the versioning policy asks
@@ -104,6 +118,8 @@ Nothing in the seam slices needs 16.0.0. The items that need a major are not rea
 is in review.
 
 ### 3.2 What including the slices would cost
+
+*Written before the maintainer said the soak is informal (§2.1). With no soak start to restart, the cost below becomes exposure time: slices merged late get less of it.*
 
 16.0.0 is already 890 commits and 855 files past `v15.0.9` (contents, Identity). Its remaining gates are a soak and live delivery checks, which measure time on
 real sites, not lines of code. Every merge to `dev` after a soak starts changes what the soak
@@ -199,9 +215,9 @@ Two consequences:
 
 | # | question | options | recommendation | holds |
 |---|---|---|---|---|
-| Q1 | How is `dev` kept stable for the 16.0.0 soak? | (a) `dev` takes release fixes only until the tag; feature PRs stay draft. (b) cut `release/16.0.0` from `dev` now; soak and tag from it; `dev` takes the seam. | (a): the soak and the Docker `dev` image both run from `dev` today, and a second long-lived branch doubles the merge work for a few weeks | #8861, #8863, #8865, #8857 merge dates |
-| Q2 | #8862 (one executable) in 16.0.0? | (a) yes, if merged before the soak starts; (b) 16.1.0 | (a): the image's start changes form, and a major's release notes already ask operators to check their start; if the soak has started, (b) | the soak start |
-| Q3 | The seam slices in 16.0.0? | (a) hold to 16.1.0; (b) merge now | *Superseded by Q12 (decided 2026-10-27):* in, through B6's entry bar, if met before the soak starts; otherwise 16.1.0 | tenancy start date by the time the soak takes |
+| Q1 | How is `dev` kept stable before the 16.0.0 tag (the soak is informal, §2.1)? | (a) `dev` takes release fixes only until the tag; feature PRs stay draft. (b) cut `release/16.0.0` from `dev` now; soak and tag from it; `dev` takes the seam. | (a): the soak and the Docker `dev` image both run from `dev` today, and a second long-lived branch doubles the merge work for a few weeks | #8861, #8863, #8865, #8857 merge dates |
+| Q2 | #8862 (one executable) in 16.0.0? | (a) yes, if merged with time on `dev` before the tag; (b) 16.1.0 | (a): the image's start changes form, and a major's release notes already ask operators to check their start; if the soak has started, (b) | the soak start |
+| Q3 | The seam slices in 16.0.0? | (a) hold to 16.1.0; (b) merge now | *Superseded by Q12 (decided 2026-10-27):* in, through B6's entry bar, merged to `dev` once its measured items pass (§2.1); otherwise 16.1.0 | tenancy start date by the time the soak takes |
 | Q4 | #8857 in 16.1.0, off by default? | keep `CONTROLLER_REGISTRATION` on/off, or a staged mode (D-REG-FLAG) | 16.1.0 with whichever flag the PR review settles | REG-S3 |
 | Q5 | Is ID-UNIQUE-INDEX (with duplicate cleaning) 17.0.0 material? | (a) yes; (b) add the index as opt-in in a minor, enforce in 17.0.0 | (b): an opt-in index lets operators measure their duplicates first | ID-UNIQUE-INDEX, the PostgreSQL key |
 | Q6 | Does multi mode ship in 16.x minors behind `TENANCY_MODE=multi`? | (a) yes, labelled preview; (b) wait for 17.0.0 | (a), §4.3 | TEN-LAB's release |
@@ -210,7 +226,7 @@ Two consequences:
 | Q9 | D-EVENT: commit event per call or per driver operation | per the plan's decision card | settle while the slices wait (§3.3) | WC-STEP-PATCH, the change feed |
 | Q10 | D-T30: approve the tenant configuration surface | walk through the DECISION sections | start once 16.0.0 is tagged, after re-measuring the 277 settings on `dev` | T30-SCHEMA-CONFIG, TEN-RESOLVE |
 | Q11 | Review capacity | #8857, #8859, #8861, #8862, #8863 and #8865 add 17,794 lines against their bases (§2) | review in theme order (16.1.0 first), one stacked chain at a time | every row of §4.3 |
-| Q12 | Put prototypes in 16.0.0 to soak them as alpha? | *Decided, maintainer 2026-10-27:* the seam slices go into 16.0.0 if feasible and B6's entry bar is met; building them to that bar is worth doing whether or not they ship, because it prepares the work that follows. Components that ship before they are mature are labelled alpha in the release notes. Still open: Q12a | B6 | the soak start, BFQ-72 |
+| Q12 | Put prototypes in 16.0.0 to soak them as alpha? | *Decided, maintainer 2026-10-27:* the seam slices go into 16.0.0 if feasible and B6's entry bar is met with time on `dev` before the tag (§2.1); building them to that bar is worth doing whether or not they ship, because it prepares the work that follows. Components that ship before they are mature are labelled alpha in the release notes. Still open: Q12a | B6 | the soak start, BFQ-72 |
 | Q12a | If the slices ship, how is an alpha label made meaningful for code on the default path? | (a) default on, named in the release notes as new internals, with the rehearsed revert as the fallback; (b) a setting that selects the old or new path, old by default, the new path labelled alpha; (c) as (b), new by default | (a) for #8861 and #8863, whose matrices show no change and where a second path doubles what each later slice must keep equal; the alpha label applies to `serve` and to multi mode, which are opt-in | the entry bar's item 5 |
 
 ## 6. Scenario briefs
@@ -229,13 +245,13 @@ Each brief states what the scenario is, who it reaches, and what to measure befo
 
 ### B2. 16.0.0 with the seam included
 
-- **What happens.** #8861 and #8863 merge before the soak. 16.1.0 starts from a `dev` that already
+- **What happens.** #8861 and #8863 merge to `dev` as soon as their checks pass (now the decided path, Q12). 16.1.0 starts from a `dev` that already
   routes v1 through the interface.
 - **Who it reaches.** The same as B1, plus every v1 read and write on every site going through new
   code.
 - **Measure first.** The write-contract matrix, the HTTP and v1 read diffs and the client replay on
-  the merged tree; the soak counts only from the merge. The gain is about one release of lead time
-  for tenancy; the cost is a longer or restarted soak.
+  the merged tree; `dev` users exercise them from the merge (§2.1). The gain is about one release of lead time
+  for tenancy; the cost is less time on `dev` for the rest of 16.0.0's changes to be told apart from the slices if something regresses.
 
 ### B3. Identity first
 
@@ -277,11 +293,11 @@ The question: if a prototype of every REST API behind the storage interface, and
 multi mode, exist within days, are they worth shipping in 16.0.0 with their status noted, so the
 release soaks them; and how does that weigh against releasing as soon as the candidate is ready?
 
-- **The candidate is not ready to release now, so the choice is what is on `dev` when the soak
-  starts.** Unmet on 2026-10-27: the real-rig soak (not started), the live delivery check, the
+- **The candidate is not ready to release now, so the choice is what is on `dev` long enough before
+  the tag.** Unmet on 2026-10-27: the real-rig soak (not started), the live delivery check, the
   BF-72 and BF-161 fork fixes, #8859 (needed in 16.0.0, draft), #8866 (`dev` CI red until it merges)
-  and `master`'s protection (#8824 blocked). The soak cannot start until the code it measures is
-  merged, so merging before it starts costs no restart.
+  and `master`'s protection (#8824 blocked). The soak is informal (§2.1): `dev` users exercise
+  whatever is merged, so a change merged sooner is soaked longer.
 - **The two prototypes behave differently in a release.**
 
   | | seam slices (#8861, #8863) | multi-mode prototype |
@@ -293,7 +309,8 @@ release soaks them; and how does that weigh against releasing as soon as the can
   | security exposure | none new | tenant isolation and per-tenant credentials (T30-WIRING, D13, D14) unbuilt; a hoster can turn it on from a released image |
   | overlap with 16.0.0's required work | 7 files with the BF-72 fork fix (`adv/r3gv-1600`), 6 with #8859, 1 with BF-161's (`git diff --name-only` against `dev` `8dbb60c2`) | none measured |
 
-- **The seam slices: in, only through an entry bar met before the soak starts.**
+- **The seam slices: in, only through an entry bar, merged to `dev` as soon as items 1, 3, 4 and 5
+  pass.**
   1. #8859 and the seam chain merged together, the overlap resolved once.
   2. BF-72's fix re-merged onto the seam inside its private fork and its tests re-run there. The
      fix stays out of public branches until the release publishes it.
@@ -303,7 +320,19 @@ release soaks them; and how does that weigh against releasing as soon as the can
      yet: v1 reads now translate each query into the filter tree and back.
   5. A one-step fallback: reverting the slices' merge commits restores the current paths, rehearsed
      once.
-  Not met by the soak start → 16.1.0, as in §3.
+  Not met with time on `dev` before the tag → 16.1.0, as in §3.
+- **Cohort checks to request once the slices are on `dev`** (they move every v1 read and write onto
+  the interface):
+
+  | cohort | what to check | why |
+  |---|---|---|
+  | AndroidAPS (API v3 client) | uploads, re-sends and deletions sync without duplicates or refusals | v3 already uses the adapter the slices extend |
+  | Loop and Trio (v1 treatments, `syncIdentifier`, `id`) | carbs, boluses and temp targets appear once; edits and deletes take effect | ST-WRITES moves v1 treatment writes |
+  | xDrip+ and other v1 entries uploaders | readings appear on time, no gaps after a reconnect | v1 entries writes and the dedup key |
+  | follower apps (LoopFollow, Nightguard, Nightscout watch faces) | current reading, IOB and COB match the site | v1 reads through `fromMongo` |
+  | report users (Nightscout Reporter, the site's reports) | long-range reports load and match 15.0.9's numbers | large v1 queries; the latency item |
+  | mmol/L sites | values and targets shown in the right unit | units handling on the paths that moved |
+
 - **The multi-mode prototype: shipped, but not in the 16.0.0 artifact.** Shipping it inside 16.0.0
   gives it no soak and makes its names public surface. Ship it as a prerelease instead
   (`16.1.0-alpha.1` image and tag from a branch, its status in the tag message), run in TEN-LAB
@@ -312,7 +341,7 @@ release soaks them; and how does that weigh against releasing as soon as the can
   per-tenant credentials (no `API_SECRET` under `multi`, D13), and named in the release notes as
   outside the versioning policy.
 - **Weighed against releasing at once.** Including the seam adds the entry bar's work (one or two
-  days of agent time plus maintainer review of about 3,000 lines) before the soak starts, in
+  days of agent time plus maintainer review of about 3,000 lines) before merging to `dev`, in
   exchange for one release of real traffic on the interface before PostgreSQL relies on it. If the
   gates are met before the bar is, release without the slices.
 
