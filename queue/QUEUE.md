@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 302 |
-| runnable gates | 359 |
+| items | 303 |
+| runnable gates | 361 |
 | explicit `no-gate:` markers | 340 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 340 of the 699 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 340 of the 701 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -44,7 +44,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `not-started` | 63 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-STEP-PATCH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 6 | BFQ-178, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
-| `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
+| `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, BFQ-200, WS-LAB |
 | `blocked` | 16 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
 | `in-flight-upstream` | 10 | RT-CI-FLAKES-8DBB60C2, ID-SIMPLE-MATCH, BFQ-72, BFQ-161, BFQ-193, BFQ-195, ST-FILTER-READS, ST-WRITES, PLAT-ENTRY, PLAT-SERVE |
 | `merged-upstream` | 46 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-192, MOD-WRITE-VALIDATION |
@@ -2655,7 +2655,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 139 items
+`parcel: register-open` &mdash; 140 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2784,6 +2784,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-192` | BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression) | `merged-upstream` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-193` | BF-193 - the realtime socket and other write paths log every record written through them | `in-flight-upstream` | `bf/16.0.0-log-privacy` | patch | 2 run + 1 no-gate |
 | `BFQ-194` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL | `needs-decision` | `-` | minor | 0 run + 1 no-gate |
+| `BFQ-200` | BF-200 - on dev, an unusable time on API v2's data-snapshot route stops the server | `ready-to-push` | `bf/16.0.0-ddata-at-crash` | patch | 2 run |
 | `BFQ-195` | BF-195 - a stale profile is pushed over the socket after a profile re-send | `in-flight-upstream` | `bf/16.0.0-null-removes` | patch | 2 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `released` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
@@ -6771,6 +6772,39 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 
 **Notes.** Filed 2026-10-26 from R15. Needs a maintainer decision: keep units on a record with targets when no glucose is given, convert to mg/dL, or refuse under WRITE_VALIDATION=reject. Related to BF-180 (the careportal path through the same lines, merged in #8842) and MOD-UNITS-CANONICAL.
+
+### `BFQ-200` &mdash; BF-200 - on dev, an unusable time on API v2's data-snapshot route stops the server
+
+| | |
+|---|---|
+| state (claimed) | `ready-to-push` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/16.0.0-ddata-at-crash` |
+| base | `official/dev@2dc0c1bc` |
+| worktree | `externals/work/crm-ddata-crash` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | no (pre-release) |
+| register | `BF-200` |
+
+**Blast radius.** lib/data/endpoints.js (/api/v2/ddata/at/:at answers 400 for a time that does not parse, before any load starts) and lib/data/dataloader.js (update() reports an error to its callback, without changing ddata or starting a query, when lastUpdated or its 372-day look-back is outside the Date range); one new test file. Responses for valid times are unchanged.
+
+**What an operator sees.** On dev only: one authenticated read request on this route with a time the server cannot use stops the whole site until it restarts. With the fix the request is refused with 400 and the site keeps running. 15.0.9 answers the same request with 500 and keeps running.
+
+**Why `patch`.** a regression introduced on dev and never released is fixed; against 15.0.9 the request's 500 becomes 400, an error answer for an input no client sends successfully
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 434c0157 bf/16.0.0-ddata-at-crash`
+  - The fix commit 434c0157 is on the branch. Red if the branch is rewritten without it.
+- `[unit]` `sh -c 'd=$(mktemp -d) && git -C externals/cgm-remote-monitor-official archive bf/16.0.0-ddata-at-crash | tar -x -C "$d" && ln -s "$PWD/externals/work/crm-ddata-crash/node_modules" "$d/node_modules" && cd "$d" && NODE_ENV=test ./node_modules/.bin/mocha --timeout 15000 --exit tests/data.ddata-at.test.js; r=$?; rm -rf "$d"; exit $r'`
+  - Runs the branch's own tree (git archive) and its new test tests/data.ddata-at.test.js: the 400 path, the query bounds for a valid frame, and the loader guard (NaN and both ends of the Date range). 5 passing, measured 2026-10-27. Uses the fix worktree's node_modules.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** 2026-10-27: found by session -2e's route census on dev 2dc0c1bc and #8863; fixed by its agent on bf/16.0.0-ddata-at-crash 434c0157 (on dev 2dc0c1bc, 3 files, +142). v15.0.9 checked by -2e: not affected (500, process keeps running), so it is a dev-only regression from 26d0908a (callback-tasks replacing async) and goes as an ordinary 16.0.0 fix, no advisory fork. -2e's runs (Node 22.23.4, MongoDB 7.0.43): npm test 4487 passing, 1 failing, 3 pending; test:all 4815 passing, 1 failing, 3 pending; the one failure is the nodemon watch test on the host's inotify limit (ENOSPC), not this change. Red control re-run by session -ee: the new test on dev 2dc0c1bc's tree gives 1 passing, 5 failing (-2e reported 0 passing, 5 failing); on the branch 5 passing. Not pushed; the maintainer pushes and opens the PR (body in -2e's scratchpad, ddata/PR-BODY.md).
 
 ### `BFQ-195` &mdash; BF-195 - a stale profile is pushed over the socket after a profile re-send
 

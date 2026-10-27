@@ -16920,6 +16920,68 @@ items:
       refuse under WRITE_VALIDATION=reject. Related to BF-180 (the careportal
       path through the same lines, merged in #8842) and MOD-UNITS-CANONICAL.
 
+  - id: BFQ-200
+    title: "BF-200 - on dev, an unusable time on API v2's data-snapshot route stops the server"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/16.0.0-ddata-at-crash
+    base: official/dev@2dc0c1bc
+    worktree: externals/work/crm-ddata-crash
+    state: ready-to-push
+    pr: []
+    ships_to_operators_today: false
+    blast_radius: >
+      lib/data/endpoints.js (/api/v2/ddata/at/:at answers 400 for a time that
+      does not parse, before any load starts) and lib/data/dataloader.js
+      (update() reports an error to its callback, without changing ddata or
+      starting a query, when lastUpdated or its 372-day look-back is outside
+      the Date range); one new test file. Responses for valid times are
+      unchanged.
+    review: maintainer
+    operator_visible: >
+      On dev only: one authenticated read request on this route with a time
+      the server cannot use stops the whole site until it restarts. With the
+      fix the request is refused with 400 and the site keeps running.
+      15.0.9 answers the same request with 500 and keeps running.
+    semver: patch
+    semver_reason: >
+      a regression introduced on dev and never released is fixed; against
+      15.0.9 the request's 500 becomes 400, an error answer for an input no
+      client sends successfully
+    register: [BF-200]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 434c0157 bf/16.0.0-ddata-at-crash
+        kind: static
+        describe: >
+          The fix commit 434c0157 is on the branch. Red if the branch is
+          rewritten without it.
+      - run: >-
+          sh -c 'd=$(mktemp -d) && git -C externals/cgm-remote-monitor-official archive bf/16.0.0-ddata-at-crash | tar -x -C "$d" && ln -s "$PWD/externals/work/crm-ddata-crash/node_modules" "$d/node_modules" && cd "$d" && NODE_ENV=test ./node_modules/.bin/mocha --timeout 15000 --exit tests/data.ddata-at.test.js; r=$?; rm -rf "$d"; exit $r'
+        kind: unit
+        describe: >
+          Runs the branch's own tree (git archive) and its new test
+          tests/data.ddata-at.test.js: the 400 path, the query bounds for a
+          valid frame, and the loader guard (NaN and both ends of the Date
+          range). 5 passing, measured 2026-10-27. Uses the fix worktree's
+          node_modules.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      2026-10-27: found by session -2e's route census on dev 2dc0c1bc and
+      #8863; fixed by its agent on bf/16.0.0-ddata-at-crash 434c0157 (on dev
+      2dc0c1bc, 3 files, +142). v15.0.9 checked by -2e: not affected (500,
+      process keeps running), so it is a dev-only regression from 26d0908a
+      (callback-tasks replacing async) and goes as an ordinary 16.0.0 fix, no
+      advisory fork. -2e's runs (Node 22.23.4, MongoDB 7.0.43): npm test 4487
+      passing, 1 failing, 3 pending; test:all 4815 passing, 1 failing, 3
+      pending; the one failure is the nodemon watch test on the host's
+      inotify limit (ENOSPC), not this change. Red control re-run by session
+      -ee: the new test on dev 2dc0c1bc's tree gives 1 passing, 5 failing (-2e
+      reported 0 passing, 5 failing); on the branch 5 passing. Not pushed;
+      the maintainer pushes and opens the PR (body in -2e's scratchpad,
+      ddata/PR-BODY.md).
+
   - id: BFQ-195
     title: "BF-195 - a stale profile is pushed over the socket after a profile re-send"
     parcel: register-open

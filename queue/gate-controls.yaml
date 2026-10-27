@@ -2774,3 +2774,23 @@ controls:
     proves: >
       the same containment against official/dev 8dbb60c2, which does not
       carry the page-startup fix yet, exits 1 (measured 2026-10-27).
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 434c0157 bf/16.0.0-ddata-at-crash
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 434c0157 official/dev
+    control-kind: static
+    proves: >
+      the same containment against official/dev 2dc0c1bc, which does not
+      carry the BF-200 fix, exits 1 (measured 2026-10-27).
+
+  - gate: |-
+      sh -c 'd=$(mktemp -d) && git -C externals/cgm-remote-monitor-official archive bf/16.0.0-ddata-at-crash | tar -x -C "$d" && ln -s "$PWD/externals/work/crm-ddata-crash/node_modules" "$d/node_modules" && cd "$d" && NODE_ENV=test ./node_modules/.bin/mocha --timeout 15000 --exit tests/data.ddata-at.test.js; r=$?; rm -rf "$d"; exit $r'
+    cwd: .
+    control: |-
+      sh -c 'd=$(mktemp -d) && git -C externals/cgm-remote-monitor-official archive official/dev | tar -x -C "$d" && git -C externals/cgm-remote-monitor-official show bf/16.0.0-ddata-at-crash:tests/data.ddata-at.test.js > "$d/tests/data.ddata-at.test.js" && ln -s "$PWD/externals/work/crm-ddata-crash/node_modules" "$d/node_modules" && cd "$d" && NODE_ENV=test ./node_modules/.bin/mocha --timeout 15000 --exit tests/data.ddata-at.test.js; r=$?; rm -rf "$d"; exit $r'
+    control-kind: unit
+    proves: >
+      the branch's new test run over official/dev 2dc0c1bc's tree (the fix
+      absent) fails: 1 passing, 5 failing, exit 5 (measured 2026-10-27).
