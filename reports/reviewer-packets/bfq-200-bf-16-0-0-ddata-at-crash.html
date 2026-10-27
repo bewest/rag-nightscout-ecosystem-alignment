@@ -3446,7 +3446,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-27 at <code>d21fe2a4e</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>89427dad8</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3501,8 +3501,11 @@ server</strong></p>
 <p>lib/data/endpoints.js (/api/v2/ddata/at/:at answers 400 for a time that does
 not parse, before any load starts) and lib/data/dataloader.js (update()
 reports an error to its callback, without changing ddata or starting a query,
-when lastUpdated or its 372-day look-back is outside the Date range); one new
-test file. Responses for valid times are unchanged.</p>
+when lastUpdated or its 372-day look-back is outside the Date range);
+lib/utils/callback-tasks.js (second commit 2564e5dc: a task that throws
+synchronously stops the run, as async 0.9 did, so no later task starts outside
+any caller's try); new tests and one sentence in docs/test-specs/callback-
+tasks.md. 6 files, +176/-12. Responses for valid times are unchanged.</p>
 <h2 id="why-that-semver">Why that semver<a class="headerlink" href="#why-that-semver" title="Permanent link">&para;</a></h2>
 <p>a regression introduced on dev and never released is fixed; against 15.0.9 the
 request's 500 becomes 400, an error answer for an input no client sends
@@ -3520,10 +3523,14 @@ same request with 500 and keeps running.</p>
 <p><strong><code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 434c0157 bf/16.0.0-ddata-at-crash</code></strong> &nbsp;·&nbsp; kind: <code>static</code></p>
 <p>The fix commit 434c0157 is on the branch. Red if the branch is rewritten
 without it.</p>
+<p><strong><code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2564e5dc bf/16.0.0-ddata-at-crash</code></strong> &nbsp;·&nbsp; kind: <code>static</code></p>
+<p>The callback-tasks commit 2564e5dc is on the branch (its head, 2026-10-27).
+Red if the branch is rewritten without it.</p>
 <p><strong><code>sh -c 'd=$(mktemp -d) &amp;&amp; git -C externals/cgm-remote-monitor-official archive bf/16.0.0-ddata-at-crash | tar -</code></strong> &nbsp;·&nbsp; kind: <code>unit</code></p>
-<p>Runs the branch's own tree (git archive) and its new test tests/data.ddata-
-at.test.js: the 400 path, the query bounds for a valid frame, and the loader
-guard (NaN and both ends of the Date range). 5 passing, measured 2026-10-27.
+<p>Runs the branch's own tree (git archive) and its tests tests/data.ddata-
+at.test.js (the 400 path, the query bounds for a valid frame, the loader guard
+at NaN and both ends of the Date range) and tests/callback-tasks.test.js (a
+task that throws stops the run). 14 passing at 2564e5dc, measured 2026-10-27.
 Uses the fix worktree's node_modules.</p>
 <h2 id="what-these-gates-do-not-prove">What these gates do NOT prove<a class="headerlink" href="#what-these-gates-do-not-prove" title="Permanent link">&para;</a></h2>
 <p><em>No <code>no-gate:</code> markers on this item — every declared property has a runnable measurement. That is rare in this manifest and worth confirming rather than assuming.</em></p>
@@ -3542,7 +3549,16 @@ pending; test:all 4815 passing, 1 failing, 3 pending; the one failure is the
 nodemon watch test on the host's inotify limit (ENOSPC), not this change. Red
 control re-run by session -ee: the new test on dev 2dc0c1bc's tree gives 1
 passing, 5 failing (-2e reported 0 passing, 5 failing); on the branch 5
-passing. Not pushed; the maintainer pushes and opens the PR (body in -2e's
+passing. 2026-10-27, later: the maintainer asked for a second commit, 2564e5dc
+(callback-tasks stops a run when a task throws, as async 0.9 did); the branch
+head is 2564e5dc on dev 2dc0c1bc. -2e's runs on it (Node 22.23.4, MongoDB
+7.0): npm test 4489 passing, 0 failing, 3 pending; test:all 4817 passing, 0
+failing, 3 pending (an earlier run whose MongoDB container vanished was
+discarded). The new callback-tasks case passes against async 0.9.2
+(NIGHTSCOUT_ASYNC_ORACLE). Re-run by -ee: both test files on the branch 14
+passing; with 434c0157's helper the callback-tasks file gives 8 passing, 1
+failing; the unit gate's control (dev's tree with both test files) 9 passing,
+6 failing. Not pushed; the maintainer pushes and opens the PR (body in -2e's
 scratchpad, ddata/PR-BODY.md).</p>
 <hr />
 <h2 id="before-you-approve">Before you approve<a class="headerlink" href="#before-you-approve" title="Permanent link">&para;</a></h2>

@@ -2134,7 +2134,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-27 at <code>dc004950a</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>89427dad8</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -2945,14 +2945,14 @@ runtime Docker image.</p>
 <td>next-gen drafts: storage slices, one executable, <code>serve api</code>, registration</td>
 <td>#8861 (<code>48e7e101</code>), #8863 (<code>38b910d7</code>, on #8861), #8862 (<code>b63d9b7f</code>), #8865 (<code>1dafe2a5</code>, on #8863), #8857 (<code>f7a43fed</code>)</td>
 <td>—</td>
-<td>drafts. Decided 2026-10-27 (Q12): #8861 and #8863 go into 16.0.0 if they meet the <a href="../../docs/30-design/platform/release-allocation-2026-10-27.html">release allocation</a> B6 entry bar; items 1, 3, 4 and 5 met on local candidates the same day (<code>cand/with</code> <code>d6ba8e18</code>: matrix, replay and v1 HTTP differential equal, no measurable latency change, one-commit revert restores <code>cand/without</code>'s tree), item 2 (BF-72 and BF-161 re-merged in their private forks) open; merge order #8859, #8861, #8863 (with the count commit <code>079f20ae</code>). #8862 if it merges with time on <code>dev</code> before the tag</td>
+<td>drafts. Decided 2026-10-27 (Q12): #8861 and #8863 go into 16.0.0 if they meet the <a href="../../docs/30-design/platform/release-allocation-2026-10-27.html">release allocation</a> B6 entry bar; items 1, 3, 4 and 5 met on local candidates the same day (<code>cand/with</code> <code>d6ba8e18</code>: matrix, replay and v1 HTTP differential equal, no measurable latency change, one-commit revert restores <code>cand/without</code>'s tree), item 2 (BF-72 and BF-161 re-merged in their private forks) open; merge order #8859, #8856, #8861, #8863 (with the count commit <code>079f20ae</code>); #8856 resolved against the slices on <code>prep/writes-plus-8856</code> <code>699a70c4</code>. #8862 if it merges with time on <code>dev</code> before the tag</td>
 <td><code>ST-FILTER-READS</code>, <code>ST-WRITES</code>, <code>PLAT-ENTRY</code>, <code>PLAT-SERVE</code>, <code>HUB-REG-CRM</code></td>
 </tr>
 <tr>
 <td>BF-200: the data-snapshot route's unusable time</td>
 <td><code>bf/16.0.0-ddata-at-crash</code> (worktree <code>externals/work/crm-ddata-crash</code>)</td>
-<td><code>434c0157</code> on <code>dev</code> <code>2dc0c1bc</code>, 3 files, +142</td>
-<td>ready to push 2026-10-27, not pushed: 400 for a time that does not parse, and a loader guard; the new test fails on <code>dev</code> (1 passing, 5 failing, re-run by session -ee) and passes on the branch (5 passing); <code>npm test</code> 4487 passing, 1 failing, 3 pending and <code>test:all</code> 4815 passing, 1 failing, 3 pending (session -2e; the failure is the nodemon watch test on the host's inotify limit)</td>
+<td><code>2564e5dc</code> on <code>dev</code> <code>2dc0c1bc</code>: <code>434c0157</code> (400 for a time that does not parse, and a loader guard) and <code>2564e5dc</code> (the callback-tasks helper stops a run when a task throws, as <code>async</code> 0.9 did; asked for by the maintainer); 6 files, +176/−12</td>
+<td>ready to push 2026-10-27, not pushed. Red controls re-run by session -ee: the new data test on <code>dev</code> 1 passing, 5 failing; the new callback-tasks case with the first commit's helper 8 passing, 1 failing; both on the branch 14 passing. <code>npm test</code> 4489 passing, 0 failing, 3 pending and <code>test:all</code> 4817 passing, 0 failing, 3 pending (session -2e, Node 22.23.4, MongoDB 7.0)</td>
 <td><code>BFQ-200</code></td>
 </tr>
 <tr>
@@ -3198,7 +3198,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/eb4a004b4499a0dedadb9a5675623c5e980e3e86/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (65 queue ids: every item this file or
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/89427dad89106d85c629e673653520f55b21897d/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (65 queue ids: every item this file or
 <a href="decisions.html">decisions.md</a> names, and the release items), with the capture command.</p>
 <p><strong>Dry run, 2026-10-27, <code>dev</code> <code>8dbb60c2</code></strong> (reproduced; written to a scratch directory, not kept, because a
 record is captured once, at the tag). The generator ran on the selection with its default <code>static</code> and
