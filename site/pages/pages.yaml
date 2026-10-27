@@ -127,7 +127,7 @@ pages:
   api-cgm-remote-monitor-v1.html:
     kind: living
     sources: [specs/openapi/upstream/cgm-remote-monitor/api-v1.yaml]
-    source_commit: c0a47cf6f
+    source_commit: 1e16da7c7
     render: tools/site/render_apis.py
     api:
       status: current
@@ -139,7 +139,7 @@ pages:
   api-cgm-remote-monitor-v3.html:
     kind: living
     sources: [specs/openapi/upstream/cgm-remote-monitor/api-v3.yaml]
-    source_commit: c0a47cf6f
+    source_commit: 1e16da7c7
     render: tools/site/render_apis.py
     api:
       status: current
