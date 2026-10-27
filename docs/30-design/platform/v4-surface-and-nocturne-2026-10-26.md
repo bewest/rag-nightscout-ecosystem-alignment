@@ -20,7 +20,8 @@ candidate for a shared contract.
 
 ## 0. Decided, 2026-10-26
 
-The maintainer decided four points the same day; the sections below are amended for them.
+The maintainer decided four points the same day, and seven more in a second round (decisions 1, 2,
+5, 8, 9, 10 and 11 in §7); the sections below are amended for them.
 
 | point | decision | where it is applied |
 |---|---|---|
@@ -28,6 +29,12 @@ The maintainer decided four points the same day; the sections below are amended 
 | registration scope | registration of products, definitions and instances is a per-tenant API that affects only that tenant's site and data, never a platform or operator action; the owner's listing and actions are tenant-scoped (tenant-admin under `multi`, the one listener under `single`); controller actions and commands are on the data listener | [authority AU6](spec/authority.md#2-principals-and-credentials); registration's opening note |
 | instance paths | one flat root: `/api/v4/instances/{instanceId}` is the instance resource, its command fetch `/api/v4/instances/{instanceId}/commands`, and the owner's listing `GET /api/v4/instances`; creating an instance names the product in the body | [registration §7](spec/registration.md#7-definitions) amendment; commands §7.1; the instance schema's `product`; operations 8–10; §5.1 |
 | `softwareId` | proposed in the registration's `metadata`, in Nocturne's RFC 7591 `software_id` form, for compatibility; its rules stay open for discussion | `controller-state-model.schema.json`; [registration §5.1](spec/registration.md#51-identity-and-methods); §5 |
+| owner paths (1) | a controller registers with the credential it already holds: the role a hub issues by default to a device or uploader credential includes `api:registrations:create` and `:delete`, and the owner may withhold them. The owner's actions are for exceptions and use the same paths on every deployment (`/api/v4/registrations/…/<action>`, `/api/v4/instances`), on tenant-admin under `multi` and the one listener under `single` | [authority §4, §5](spec/authority.md#4-the-owners-actions); [registration §5.1](spec/registration.md#51-identity-and-methods); `registration-submit.schema.json` `request` |
+| retire (2) | both: the bound controller retires with `DELETE` on the product, the owner with `POST …/retire`, as #8857 serves them | registration §5.1, §5.5; operations 6 and 11 |
+| commands (5) | on the data listener; the tenant owner marks the subject acting for the person, as subject configuration on the owner's listener, and the hub reads the mark; a client cannot assert it | [commands CM14, CM32](spec/commands.md#6-proposals-and-approvals-proposed) |
+| owner boundary (8) | stated per credential: an owner action is refused to any credential issued to a device or an app; a separate listener is one way to meet it. To be reviewed as the design matures | [authority AU7](spec/authority.md#2-principals-and-credentials) |
+| data sources and connectors (9) | on the owner's listener: configuring a vendor cloud connection, triggering a sync and listing who sends data change or describe the runtime and its resources, unlike an AID controller's registration | §6.1 |
+| operator and self-service (10, 11) | both hub-specific, outside the shared contract; in cgm-remote-monitor the operator keeps D7's tenant lifecycle with no access to members' credentials, and creating tenants stays the operator's. Revisit once D17 row 2 lands | §6.1 |
 
 ## 1. The answer in brief
 
@@ -131,7 +138,7 @@ at `PUT` and `DELETE /api/v4/registrations/{vendor}/{product}/instances/{instanc
 | typed record writes and reads | [registration §11](spec/registration.md#11-typed-writes-and-attribution) (an instance id on every typed write, "proposed as a request header"), [records](spec/records.md) R1–R9 | paths, the header's name, read and query forms |
 | reading a definition or an instance | registration §7, §8 define `PUT` and `DELETE` only (and the owner's listing) | whether `GET` exists for either |
 | plan operations | [plans](spec/plans.md) PN1–PN18: propose a plan, approve in parts, report occurrences, skip, end, read the mirror | every path |
-| marking the subject who acts for the person | [commands CM14, CM25](spec/commands.md#6-proposals-and-approvals-proposed) | who sets it, on which listener |
+| marking the subject who acts for the person | [commands CM14, CM25](spec/commands.md#6-proposals-and-approvals-proposed) | the owner sets it (decision 5); the path for setting it is part of the tenant-owner configuration surface, not yet given |
 | the tenant-owner configuration surface | [tenant-owner surface §F.1](../tenancy/tenant-owner-config-surface-2026-09-15.md#f1-the-line): settings, plugin config, thresholds, subjects and roles, credential rotation, own export | every path; specified as a schema, not built |
 | the operator's tenant lifecycle | [execution plan §2.3](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#23-design) (D7): create, list, get, suspend, activate, delete, export | built at `/tenants` on `bin/admin.js` on the seam chain, not on `dev`, and not a v4 path |
 | the fetch-now subscription | [sync-transport T16](spec/sync-transport.md#5-typed-records-on-the-socket-proposed) | a socket event, not a REST path |
@@ -323,10 +330,10 @@ separately from the path, so none changes. A renewal naming another product is 4
 | G4 state spans | data | **shared, second** | the semantics differ on measured cases (state and intent §6.2); agree the rules first |
 | G9 client devices | data | hub-specific | an alert target, not a data source; instances may later carry such a role as `{value: other}` (registration §9), not proposed here |
 | G5 profiles; G7 analytics; G8 alerts (follower reads, acknowledge); G17 information; G18 demo | data | hub-specific | product features of each hub; no counterpart in the specifications |
-| G8 alert rules and tenant alert settings; G10 connector configuration; G11 members, roles, sharing; G13 settings and setup; G14 maintenance | tenant-admin | hub-specific | the tenant-owner surface (§F.1) is per-hub configuration; its vocabulary is each hub's own (§B census) |
+| G8 alert rules and tenant alert settings; G10 connector configuration, sync and the data-source listing (decision 9); G11 members, roles, sharing; G13 settings and setup; G14 maintenance | tenant-admin | hub-specific | the tenant-owner surface (§F.1) is per-hub configuration; its vocabulary is each hub's own (§B census) |
 | G15 platform administration | operator | hub-specific | D7 |
 | G2 sign-in and OAuth; G12 the signed-in person | open | hub-specific | depends on D17 row 2 (gated) and the deferred delegated-access server |
-| G10 data-source listing; G16 self-service tenants | open | hub-specific | decisions 9 and 11 below |
+| G16 self-service tenants; Nocturne's operator actions on members' credentials | operator, where a hub offers them | hub-specific | decisions 10 and 11 (§0) |
 
 ### 6.2 The minimum shared v4 contract
 
@@ -412,23 +419,23 @@ plugin math.
 
 ## 7. Open decisions for the maintainer
 
-Each is a placement or a rule the evidence above does not settle. Rows 3, 4, 6 and 7 were decided
-on 2026-10-26 and keep their numbers; what remains open in them is stated.
+Each is a placement or a rule the evidence above does not settle. All but row 12 were decided on
+2026-10-26 and keep their numbers; what remains open in them is stated.
 
 | # | decision | evidence |
 |---|---|---|
-| 1 | **The owner's action paths on `ns-tenant-admin`.** The same path as on `single`, served on the other socket, or a separate admin prefix. | `registration-submit.schema.json` `request` says "`POST <admin registrations path>/<vendor>/<product>/<action>`"; the [hub-implementer guide §4.6](guides/hub-implementer.md#46-s5-the-owners-actions-on-single) and #8857 put them under the same router as the controller's (`/api/v4/registrations`). This is a mismatch between two of our texts. |
-| 2 | **The owner's retire: `DELETE` or `POST …/retire`.** | registration §5.1 and the schema's `request` say `DELETE`; #8857 serves `POST …/retire` (`negotiate.js:742`). On `single`, one `API_SECRET` holder may be both the bound controller and the owner, so `DELETE` alone cannot tell which is acting. |
+| 1 | **The owner's action paths on `ns-tenant-admin`.** *Decided, maintainer 2026-10-26:* the same paths on every deployment, served on the owner's listener; and a controller registers with the credential it already holds (the default device or uploader role includes the registration permissions; the owner may withhold them), so setting up a controller needs no owner action. | `registration-submit.schema.json` `request` says "`POST <admin registrations path>/<vendor>/<product>/<action>`"; the [hub-implementer guide §4.6](guides/hub-implementer.md#46-s5-the-owners-actions-on-single) and #8857 put them under the same router as the controller's (`/api/v4/registrations`). This was a mismatch between two of our texts; the schema text now names the controller's paths. |
+| 2 | **The owner's retire: `DELETE` or `POST …/retire`.** *Decided, maintainer 2026-10-26:* both, as #8857 serves them: `DELETE` for the bound controller, `POST …/retire` for the owner. | registration §5.1 and the schema's `request` say `DELETE`; #8857 serves `POST …/retire` (`negotiate.js:742`). On `single`, one `API_SECRET` holder may be both the bound controller and the owner, so `DELETE` alone cannot tell which is acting. |
 | 3 | **The owner's listing path.** *Decided, maintainer 2026-10-26:* `GET /api/v4/instances`, tenant-scoped (AU6), on tenant-admin under `multi` and the one listener under `single`. | registration is per tenant (AU6); the flat instance root (§5.1). #8857 serves `GET /api/v4/registrations/instances`. |
 | 4 | **One root for instance paths.** *Decided, maintainer 2026-10-26: one flat root,* `/api/v4/instances/{instanceId}`, the product named in the body. | §5.1, with the #8857 follow-up. |
-| 5 | **State the commands listener, and who marks the subject acting for the person.** | commands §7.1 names no listener; CM14 and CM25 rely on a mark no specification places. |
+| 5 | **State the commands listener, and who marks the subject acting for the person.** *Decided, maintainer 2026-10-26:* the data listener; the tenant owner sets the mark as subject configuration, and the hub reads it. Open: whether more than one subject may hold it. | commands §7.1 names no listener; CM14 and CM25 rely on a mark no specification places. |
 | 6 | **Statistics.** *Decided, maintainer 2026-10-26:* v4, `statistics`, matching Nocturne's reads. Open for discussion: what the shared contract fixes and what each hub keeps; whether compute over a posted body joins later; how `reports.read` maps onto cgm-remote-monitor's permissions. | §6.4. |
 | 7 | **`softwareId` in registration `metadata`.** *Decided, maintainer 2026-10-26:* proposed, in Nocturne's `software_id` form. Open for discussion: whether two products may share one; whether a hub checks it against the credential's registered client. | §5; registration §5.1, §18. |
-| 8 | **State the owner boundary per credential in the shared contract**, so a one-listener hub can conform. | §4. |
-| 9 | **The data-source listing: data listener or owner's listener.** | Nocturne serves its data sources to `devices.read` on the data API (`ServicesController.cs:101-112`); our listing of instances, bindings and overlaps is the owner's (authority §4). |
-| 10 | **Operator actions on a tenant member's credentials.** | Nocturne's operator can list and remove a member's passkeys and OIDC identities and issue login and recovery codes (`TenantController.cs:186-310`); tenant-owner surface §F.1 lists create, list, suspend, activate, delete and export for the operator. |
-| 11 | **Self-service tenant creation.** | Nocturne allows it behind `AllowSelfServiceCreation` (`PlatformController.cs:56-66`); §F.1 makes tenant creation the operator's. |
-| 12 | **Typed record paths: start from Nocturne's v4 routes or define our own.** | records §3 shares the model; the identity decisions (`ID-FORMAT-DECISION` and the others in the hub-implementer guide's backlog) decide how a typed write is matched and re-sent. Nocturne issue [#1932](https://github.com/nightscout/nocturne/issues/1932) (open) records that its v3 `POST` ignores a client's `identifier` and never upserts. |
+| 8 | **State the owner boundary per credential in the shared contract**, so a one-listener hub can conform. *Decided, maintainer 2026-10-26:* yes (authority AU7), to be reviewed as the design matures. | §4. |
+| 9 | **The data-source listing: data listener or owner's listener.** *Decided, maintainer 2026-10-26:* the owner's listener, with connector configuration: they change or describe the runtime and its resources, differently from an AID controller's registration. | Nocturne's `/api/v4/services` at `42275c812` (`Controllers/V4/Platform/ServicesController.cs`) mixes reads open to any signed-in credential (class `[Authorize]`, `:29`; the data-source list `:106`, connectors, uploader setup) with actions that require the owner atom `tenant.settings`: deleting a source's data (`:321-322`), deleting a connector's data (`:395-396`), a connector sync (`:438-439`) and a cursor reset (`:489-490`). Our listing of instances, bindings and overlaps is the owner's (authority §4). |
+| 10 | **Operator actions on a tenant member's credentials.** *Decided, maintainer 2026-10-26:* hub-specific, outside the shared contract; cgm-remote-monitor's operator has none. | Nocturne's operator can list and remove a member's passkeys and OIDC identities and issue login and recovery codes (`TenantController.cs:186-310`); tenant-owner surface §F.1 lists create, list, suspend, activate, delete and export for the operator. |
+| 11 | **Self-service tenant creation.** *Decided, maintainer 2026-10-26:* hub-specific; in cgm-remote-monitor creating a tenant stays the operator's. | Nocturne allows it behind `AllowSelfServiceCreation` (`PlatformController.cs:56-66`); §F.1 makes tenant creation the operator's. |
+| 12 | **Typed record paths: start from Nocturne's v4 routes or define our own.** *Deferred, maintainer 2026-10-26,* until the identity decisions are settled; a detailed comparison of the two options, with criteria that can be benchmarked later, was asked for. | records §3 shares the model; the identity decisions (`ID-FORMAT-DECISION` and the others in the hub-implementer guide's backlog) decide how a typed write is matched and re-sent. Nocturne issue [#1932](https://github.com/nightscout/nocturne/issues/1932) (open) records that its v3 `POST` ignores a client's `identifier` and never upserts. |
 
 ## 8. How this was produced
 

@@ -35,6 +35,7 @@ specified; §7 states delegation's requirements, and its design is open.
 | AU4 | **Subjects, not tokens.** A registration or an instance is bound to the subject that created it, never to a token, so a token rotated on the same subject changes nothing that is bound to it. Whether a delegation grant names subjects the same way is part of §7. | decided 2026-10-14 (registration question 4; hub-sync §3.5 at `b3536bbf`) |
 | AU5 | **Permissions today.** Writes are per collection (`api:<collection>:<action>`); reading is one bit: `readable` is `*:*:read`, every collection, every field, all time. | shipping (cgm-remote-monitor `lib/authorization/storage.js:235` at `dev` `fade2299`, read) |
 | AU6 | **Registration is per tenant.** Registering a controller's products, definitions and instances is a per-tenant API: it affects only that tenant's site and data, and is never a platform or operator action (`ns-admin` serves none of it). The controller's requests and commands are on the data listener; the owner's listing and the owner's actions are the tenant owner's, on `ns-tenant-admin` under `TENANCY_MODE=multi` and on the one listener with `API_SECRET` under `single` (AU2). | maintainer, 2026-10-26 |
+| AU7 | **The owner boundary is a property of the credential.** The shared contract states it as: an owner action is refused, 403 `not-authorised`, to any credential issued to a device or an app. A separate owner listener (AU2) is one way to meet it; a hub with one listener meets it by keeping the owner's powers out of every device or app credential (Nocturne's scope partition, `Scope.cs:17-21` at `89dcaf1dd`). The conformance cases keep their `listener` member for hubs that have one. | maintainer, 2026-10-26; to be reviewed as the design matures |
 
 Under `multi`, who reaches the hub through which listener, with which credential (dashed: adopted
 in principle and gated, D17 row 2). The drawing's source is
@@ -63,7 +64,10 @@ so a development build with its own subject may run a copy of a registered produ
 
 ## 4. The owner's actions
 
-On the owner's listener: `ns-tenant-admin`, or the one listener with `API_SECRET` on `single`. The owner never edits a registration's content (an owner `PUT` is 403
+On the owner's listener: `ns-tenant-admin`, or the one listener with `API_SECRET` on `single`. The
+paths are the same on both (`/api/v4/registrations/<vendor>/<product>/<action>`, `/api/v4/instances`);
+the listener, not the path, decides who may act (maintainer, 2026-10-26). These actions handle
+exceptions (a lost phone, two apps claiming one role); setting up a controller needs none of them (§5). The owner never edits a registration's content (an owner `PUT` is 403
 `not-authorised`) and never submits one. An action other than retire answers outcome `applied`
 with the resource after it; a request for what is already the case is a no-op.
 
@@ -89,8 +93,11 @@ An owner action on the data listener is 403 `not-authorised`, except with `API_S
   registration is per tenant and a controller on two tenants registers twice. On `single`,
   `API_SECRET` may also register and is recorded as `api-secret`.
 - **Permissions.** Submitting needs `api:registrations:create` and retiring
-  `api:registrations:delete`, granted by the tenant owner on `ns-tenant-admin`. Updating and
-  retiring also need the binding. The names are proposals.
+  `api:registrations:delete`. The role a hub issues by default to a device or uploader credential
+  includes both, so a controller registers with the credential it already holds and no separate
+  grant; the tenant owner may withhold them on `ns-tenant-admin` (maintainer, 2026-10-26). Under
+  `single`, `API_SECRET` holds them. Updating and retiring also need the binding. The names are
+  proposals.
 - **Storage.** Registrations, definitions and instances are tenant data: per tenant, under RLS
   under `multi` (D3), never in the public capability document.
 

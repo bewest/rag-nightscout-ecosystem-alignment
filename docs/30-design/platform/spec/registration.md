@@ -122,14 +122,15 @@ record with what it means on one key
 ([controller descriptions §2.2](../PROPOSAL-controller-descriptions-2026-09-11.md#22-two-halves-who-a-controller-is-and-what-its-data-means)).
 It is optional and not part of the identity. Whether two products may share one, and whether a hub
 checks it against the credential's registered client, are open (§18). The product resource
-is `<submit.href>/<vendor>/<product>`, each segment percent-encoded.
+is `<submit.href>/<vendor>/<product>`, each segment percent-encoded. The owner's actions use the
+same paths on every deployment, served on the owner's listener (maintainer, 2026-10-26; authority §4).
 
 | method | who | meaning | precondition |
 |---|---|---|---|
 | `PUT` | controller | create or update | `If-None-Match: *` to create; `If-Match: <etag>` to update |
 | `GET` | controller | the stored registration with its current element results, binding and credential kind | none |
 | `DELETE` | controller | retire | `If-Match` |
-| `DELETE` | owner | retire | `If-Match` |
+| `POST …/retire` | owner | retire (maintainer, 2026-10-26: the owner's retire is a named action like the others, so on `single`, where one `API_SECRET` holder may be both, the request says which is acting) | `If-Match` |
 | `POST …/block` | owner | block | `If-Match`; `If-None-Match: *` when nothing is stored |
 | `POST …/unblock`, `…/release`, `…/transfer`, `…/free-namespaces` | owner | [authority §4](authority.md#4-the-owners-actions) | `If-Match` |
 
@@ -223,7 +224,7 @@ registration and its etag do not.
 
 ### 5.5 Retire
 
-The bound controller retires with `api:registrations:delete`; the owner may also retire. Retiring
+The bound controller retires with `DELETE` and `api:registrations:delete`; the owner may also retire, with `POST …/retire` (§5.1). Retiring
 sets the state to `retired`, changes the etag, and keeps the declaration and the binding frozen:
 data already stored under it stays stored and readable as declared, and no typed write is accepted
 for its elements. Its namespaces stay claimed until the owner frees them. A later `PUT` with the

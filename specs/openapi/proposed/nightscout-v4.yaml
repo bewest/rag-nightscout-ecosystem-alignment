@@ -15,7 +15,7 @@ info:
 
     Every operation carries three extensions, also written at the top of its description:
 
-    - `x-status`: `in-pr-8857` (served by #8857 at `3be98536`), `specified` (rules and
+    - `x-status`: `in-pr-8857` (served by #8857 at `6a5355e2`), `specified` (rules and
       conformance cases, or decided by the maintainer, and not served by cgm-remote-monitor), or
       `open` (defined elsewhere in this repository, with its path or placement undecided).
     - `x-spec-rules`: the rule and section ids the operation implements.
@@ -96,7 +96,7 @@ paths:
       operationId: getSyncCapabilities
       summary: Read the hub capability document
       description: |
-        **Status:** in PR #8857 (`lib/registration/index.js:136`, `:157`). **Listener:** data,
+        **Status:** in PR #8857 (`lib/registration/index.js:139`, `:160`). **Listener:** data,
         unauthenticated. **Rules:** registration §4, CM31.
 
         What the hub reads and stores: grammar majors, interpreted members, horizons, type
@@ -123,7 +123,7 @@ paths:
       operationId: getWellKnownCatalogue
       summary: Read the well-known controller catalogue
       description: |
-        **Status:** in PR #8857 (`lib/registration/index.js:137`). **Listener:** data,
+        **Status:** in PR #8857 (`lib/registration/index.js:140`). **Listener:** data,
         unauthenticated. **Rules:** registration §2, §4 (`wellKnown.catalogue`).
 
         The index of the well-known registrations the hub ships (generated from measurement), the
@@ -136,7 +136,7 @@ paths:
       responses:
         '200':
           description: >-
-            The catalogue index. Its shape is #8857's (`lib/registration/index.js:113-121`); the
+            The catalogue index. Its shape is #8857's (`lib/registration/index.js:116-124`); the
             specifications give its members inside the capability document's `wellKnown`.
           content:
             application/json:
@@ -150,7 +150,7 @@ paths:
       operationId: getWellKnownRegistration
       summary: Read one well-known registration
       description: |
-        **Status:** in PR #8857 (`lib/registration/index.js:49`, `:138-140`). **Listener:** data,
+        **Status:** in PR #8857 (`lib/registration/index.js:52`, `:141-143`). **Listener:** data,
         unauthenticated. **Rules:** registration §2, §4 (`wellKnown.kinds[].href`).
 
         The specifications give each kind an `href`; #8857 serves it at this path, with `kindId`
@@ -186,7 +186,7 @@ paths:
       operationId: putRegistration
       summary: Create or update a controller's registration
       description: |
-        **Status:** in PR #8857 (`lib/registration/products.js:266`). **Listener:** data.
+        **Status:** in PR #8857 (`lib/registration/products.js:284`). **Listener:** data.
         **Credential:** `api:registrations:create`; an update also needs the binding.
         **Rules:** registration §5.1–§5.4, §6, G1–G5; authority §3, §5, AU4.
 
@@ -229,7 +229,7 @@ paths:
       operationId: getRegistration
       summary: Read a registration with its current element results
       description: |
-        **Status:** in PR #8857 (`lib/registration/products.js:336`; it requires
+        **Status:** in PR #8857 (`lib/registration/products.js:331`; it requires
         `api:registrations:create`). **Listener:** data. **Rules:** registration §5.1, §5.4.
 
         The stored registration with its element results as evaluated against the hub's current
@@ -251,11 +251,9 @@ paths:
       operationId: retireRegistration
       summary: Retire a registration
       description: |
-        **Status:** in PR #8857 for the controller (`lib/registration/products.js:271`); the
-        owner's retire is served there as `POST …/retire` instead (see that operation).
-        **Listener:** data for the bound controller; tenant-admin for the owner (registration §5.1,
-        and `registration-submit.schema.json` `request`: "`retire` is `DELETE`").
-        **Credential:** the bound controller with `api:registrations:delete`; or the owner.
+        **Status:** in PR #8857 (`lib/registration/products.js:289`). The controller's retire;
+        the owner retires with `POST …/retire` (maintainer, 2026-10-26; see that operation).
+        **Listener:** data. **Credential:** the bound controller with `api:registrations:delete`.
         **Rules:** registration §5.1, §5.5; authority §4.
 
         Retiring sets the state to `retired`, changes the etag, and keeps the declaration, binding
@@ -290,7 +288,7 @@ paths:
       operationId: putDefinition
       summary: Add a definition to a product, immutably
       description: |
-        **Status:** in PR #8857 (`lib/registration/products.js:277`). **Listener:** data.
+        **Status:** in PR #8857 (`lib/registration/products.js:295`). **Listener:** data.
         **Credential:** the credential the product is bound to, with `api:registrations:create`.
         **Rules:** registration §7; identity §2; D19.
 
@@ -332,10 +330,8 @@ paths:
       operationId: putInstance
       summary: Create, renew or change an instance
       description: |
-        **Status:** specified. The flat path is the maintainer's decision of 2026-10-26
-        (registration §7, amendment); #8857 serves this operation today at the nested
-        `PUT /api/v4/registrations/{vendor}/{product}/instances/{instanceId}`
-        (`lib/registration/products.js:283`), a follow-up for that PR. **Listener:** data.
+        **Status:** in PR #8857 (`lib/registration/products.js:364`), at the flat path the
+        maintainer decided on 2026-10-26 (registration §7, amendment). **Listener:** data.
         **Credential:** any credential with `api:registrations:create`; an existing instance's
         binding to renew. **Rules:** registration §7–§10, §11; authority §3, §6; identity §2.
 
@@ -346,7 +342,7 @@ paths:
         never writes an instance. The instance is looked up within the request's tenant, as every
         tenant resource is (CM6). A renewal naming a product other than the stored instance's is
         422 `invalid-instance` (registration §7 amendment).
-      x-status: specified
+      x-status: in-pr-8857
       x-spec-rules: [registration §7, registration §8, registration §9, registration §10, authority §3, authority §6, identity §2]
       x-listener: [data]
       x-credential: api:registrations:create; the instance's binding to renew
@@ -381,13 +377,12 @@ paths:
       operationId: deleteInstance
       summary: Release an instance and all its roles
       description: |
-        **Status:** specified at the flat path (maintainer, 2026-10-26); #8857 serves it at the
-        nested `DELETE /api/v4/registrations/{vendor}/{product}/instances/{instanceId}`
-        (`lib/registration/products.js:289`). **Listener:** data. **Credential:** the credential
+        **Status:** in PR #8857 (`lib/registration/products.js:370`), at the flat path
+        (maintainer, 2026-10-26). **Listener:** data. **Credential:** the credential
         the instance is bound to, with `api:registrations:delete`. **Rules:** registration §7, §8.
 
         `If-Match` the instance's etag. Records it wrote keep its id.
-      x-status: specified
+      x-status: in-pr-8857
       x-spec-rules: [registration §7, registration §8]
       x-listener: [data]
       x-credential: api:registrations:delete and the instance's binding
@@ -410,15 +405,15 @@ paths:
       operationId: listInstances
       summary: The owner's listing of instances, overlaps and registrations
       description: |
-        **Status:** specified at the flat instances root (maintainer, 2026-10-26); #8857 serves
-        it at `GET /api/v4/registrations/instances` (`lib/registration/products.js:295`).
+        **Status:** in PR #8857 (`lib/registration/products.js:376`), at the flat instances root
+        (maintainer, 2026-10-26).
         **Listener:** tenant-admin under `multi`; on `single`, the one listener with
         `API_SECRET` (authority AU6). **Rules:** authority §4, §8, AU6; registration §8, §9.
 
         Every instance with its roles, labels and liveness; the overlaps (channel, role, claimant,
         holder); `registrations` with `boundTo`, `credentialKind` and `bindingEvent`;
         `slotNameObservations`; observed aliases only with `includeWithheld=true`.
-      x-status: specified
+      x-status: in-pr-8857
       x-spec-rules: [authority §4, authority §8, AU6, registration §8, registration §9]
       x-listener: [tenant-admin]
       x-single: one listener with `API_SECRET`
@@ -448,12 +443,12 @@ paths:
     post:
       tags: [Owner actions]
       operationId: ownerRetire
-      summary: Retire a registration (the owner, as #8857 serves it)
+      summary: Retire a registration (the owner)
       description: |
-        **Status:** in PR #8857 only (`lib/registration/negotiate.js:742` lists `retire` among the
-        owner's `POST` actions). The specifications give the owner's retire as `DELETE` on the
-        product resource (registration §5.1; `registration-submit.schema.json` `request`); this
-        difference is an open decision on the comparison page. **Listener:** tenant-admin; on
+        **Status:** in PR #8857 (`lib/registration/negotiate.js:742` lists `retire` among the
+        owner's `POST` actions). The owner's retire is a named action, like the others, so on
+        `single`, where one `API_SECRET` holder may be both, the request says which is acting
+        (maintainer, 2026-10-26; registration §5.1). **Listener:** tenant-admin; on
         `single`, `API_SECRET`. **Rules:** authority §4, registration §5.5.
       x-status: in-pr-8857
       x-spec-rules: [authority §4, registration §5.5]
@@ -489,7 +484,7 @@ paths:
       operationId: ownerBlock
       summary: Block a registration, or an identity with nothing stored
       description: |
-        **Status:** in PR #8857 (`lib/registration/products.js:307`). **Listener:** tenant-admin;
+        **Status:** in PR #8857 (`lib/registration/products.js:302`). **Listener:** tenant-admin;
         on `single`, `API_SECRET`. **Rules:** authority §4; registration §5.1, §5.2.
 
         State `blocked`, recording `blockedFrom`; the controller's writes and typed writes are
@@ -528,7 +523,7 @@ paths:
       operationId: ownerUnblock
       summary: Unblock a registration
       description: |
-        **Status:** in PR #8857 (`lib/registration/products.js:307`). **Listener:** tenant-admin;
+        **Status:** in PR #8857 (`lib/registration/products.js:302`). **Listener:** tenant-admin;
         on `single`, `API_SECRET`. **Rules:** authority §4.
 
         Restores the interrupted state (`active` or `retired`); removes a pre-emptive block; never
@@ -563,7 +558,7 @@ paths:
       operationId: ownerRelease
       summary: Release a registration from its subject
       description: |
-        **Status:** in PR #8857 (`lib/registration/products.js:307`). **Listener:** tenant-admin;
+        **Status:** in PR #8857 (`lib/registration/products.js:302`). **Listener:** tenant-admin;
         on `single`, `API_SECRET`. **Rules:** authority §3, §4, §6.
 
         `boundTo: null`; the next credential with the permission that updates it is bound
@@ -598,7 +593,7 @@ paths:
       operationId: ownerTransfer
       summary: Bind a registration to a named subject
       description: |
-        **Status:** in PR #8857 (`lib/registration/products.js:325-331`). **Listener:**
+        **Status:** in PR #8857 (`lib/registration/products.js:320-326`). **Listener:**
         tenant-admin; on `single`, `API_SECRET`. **Rules:** authority §3, §4, §6.
 
         Binds to `transferTo`; drops `device` command-sink roles of instances that no longer match
@@ -645,7 +640,7 @@ paths:
       operationId: ownerFreeNamespaces
       summary: Free a retired registration's namespaces
       description: |
-        **Status:** in PR #8857 (`lib/registration/products.js:307`). **Listener:** tenant-admin;
+        **Status:** in PR #8857 (`lib/registration/products.js:302`). **Listener:** tenant-admin;
         on `single`, `API_SECRET`. **Rules:** authority §4, §5; registration §5.5.
 
         409 `not-retired` for an active registration. The declaration and stored data stay
@@ -682,7 +677,7 @@ paths:
       operationId: ownerTransferRole
       summary: Move one role from its holder to a live claimant
       description: |
-        **Status:** in PR #8857 (`lib/registration/products.js:315-318`). **Listener:**
+        **Status:** in PR #8857 (`lib/registration/products.js:310-313`). **Listener:**
         tenant-admin; on `single`, `API_SECRET`. **Rules:** authority §4, §6; registration §9.
 
         `If-Match` the etag of the instance the role is moved from. 409 `role-not-granted`,
@@ -729,7 +724,7 @@ paths:
       operationId: ownerPinVersion
       summary: Pin the version a site's default views show for one element
       description: |
-        **Status:** in PR #8857 (`lib/registration/products.js:319-323`). **Listener:**
+        **Status:** in PR #8857 (`lib/registration/products.js:314-318`). **Listener:**
         tenant-admin; on `single`, `API_SECRET`. **Rules:** authority §4; registration §12.
 
         Pins are a resource of their own per product with their own etag (`If-None-Match: *` for
@@ -776,7 +771,7 @@ paths:
       operationId: ownerUnpinVersion
       summary: Remove a version pin
       description: |
-        **Status:** in PR #8857 (`lib/registration/products.js:319-323`). **Listener:**
+        **Status:** in PR #8857 (`lib/registration/products.js:314-318`). **Listener:**
         tenant-admin; on `single`, `API_SECRET`. **Rules:** authority §4; registration §12.
       x-status: in-pr-8857
       x-spec-rules: [authority §4, registration §12]
@@ -1736,7 +1731,7 @@ components:
   schemas:
     WellKnownCatalogue:
       type: object
-      description: As #8857 serves it (`lib/registration/index.js:113-121`).
+      description: As #8857 serves it (`lib/registration/index.js:116-124`).
       required: [apiVersion, kind, kinds]
       properties:
         apiVersion:
