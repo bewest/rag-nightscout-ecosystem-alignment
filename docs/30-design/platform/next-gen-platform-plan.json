@@ -153,7 +153,7 @@
     "PR-8854",
     "WC-STEP-PATCH"
    ],
-   "ref": "Decision deferred, research continuing (maintainer, 2026-10-27): the event stays counts-only and internal; nothing in lib/ subscribes. Session -2e is building and measuring a post-write variant, with a capped pre-read as the comparison, as input to the decision (lab/commit-event-bench 54cd8fff7 and later)"
+   "ref": "Decision deferred, research continuing (maintainer, 2026-10-27): the event stays counts-only and internal; nothing in lib/ subscribes. Session -2e is building and measuring a post-write variant, with a capped pre-read as the comparison, as input to the decision (lab/commit-event-bench 54cd8fff7 and later). Reopen condition (3) re-measured 2026-10-27, unchanged (BF-164; tools/lab/aaps-ws-delivery results/2026-10-27-dev-dcf20bfb, dev dcf20bfb, MongoDB 8.0.34): all 11 cells match 2026-10-25. API v1, socket dbAdd and connector records are never pushed on /storage; they arrive by catch-up history on reconnect, and are missed when an API v3 write in the same collection lands first, because AndroidAPS sets its cursor from each frame. AndroidAPS taking only API v3 writes over the socket is intended; the timing-dependent history delivery is the open point"
   },
   {
    "id": "ST-FILTER",
