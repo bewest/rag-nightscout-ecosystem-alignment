@@ -1,5 +1,5 @@
 {
- "measured": "2026-10-27 against cgm-remote-monitor dev ca1652d6",
+ "measured": "2026-10-27 against cgm-remote-monitor dev db3b9e4e (#8872 merged)",
  "tracks": [
   {
    "id": "storage",
@@ -228,13 +228,13 @@
     "ST-WRITES",
     "PLAT-SERVE"
    ],
-   "ref": "release allocation §3.5"
+   "ref": "Second lane after WC-STEP-PATCH (maintainer, 2026-10-27); offered to session -2e. release allocation §3.5"
   },
   {
    "id": "WC-STEP-PATCH",
    "track": "storage",
    "phase": "intent",
-   "state": "planned",
+   "state": "progress",
    "short": "write(intent)",
    "title": "write(intent) -> WriteResult.items[] above the interface: id forms, server dates, twin removal and identifier matching move into one step; validation moves up to it, and its WriteResult.items[] is what a later commit event names records from; the compare-and-set that #8854's validated updates do with MongoDB $expr moves behind a backend-neutral adapter method (for example updateIfUnchanged) before PostgreSQL",
    "spec": [
@@ -247,7 +247,8 @@
    "depends": [
     "ST-WRITES"
    ],
-   "where": "a new intent module with its own name (#8854 condition 4); about 500 lines"
+   "where": "a new intent module with its own name (#8854 condition 4); about 500 lines",
+   "ref": "In progress (maintainer, 2026-10-27: two lanes, WC-STEP-PATCH first, ST-V3-DECOUPLE second). Milestone 1 by session -4f: local feat/write-intent off dev db3b9e4e; pin the G1 matrix, map spec §2 onto the seam, one behaviour-neutral slice"
   },
   {
    "id": "ST-HARNESS",

@@ -1,6 +1,6 @@
 # Next-gen platform: one write path, four tracks
 
-*Contributor-facing. Living plan, current at cgm-remote-monitor dev `dcf20bfb` (2026-10-27). Status: proposed; the decisions in §5 are open. Which release each item goes in is proposed in [release allocation](release-allocation-2026-10-27.md).*
+*Contributor-facing. Living plan, current at cgm-remote-monitor dev `db3b9e4e` (2026-10-27). Status: proposed; the decisions in §5 are open. Which release each item goes in is proposed in [release allocation](release-allocation-2026-10-27.md).*
 
 The interactive version, with the dependency map, is the site page [nightscout-next-gen-platform.html](../../../site/pages/nightscout-next-gen-platform.html).
 
@@ -15,7 +15,7 @@ It names each piece of work, what it needs first, where it goes in the code, and
 
 ## 1. Where things stand
 
-| | on dev `dcf20bfb` (ships in 16.0.0) | in review (draft PRs) | not started |
+| | on dev `db3b9e4e` (ships in 16.0.0) | in review (draft PRs) | not started |
 |---|---|---|---|
 | Storage | `WRITE_VALIDATION` (#8841); the write boundary `lib/storage/write-step.js` (#8854); the filter tree and interface with v1 reads (#8861); v1, authorization and socket writes labelled by source (#8863); v1 count only through the interface (#8870). Every REST and socket record read, write and count goes through the storage interface (milestone M1) | — | ST-V3-DECOUPLE, `write(intent)`, ST-EVENT (decision deferred, research continuing), computed views, backend-selectable harness, PostgreSQL |
 | Identity | `identifier` is the client's, `_id` the server's; API v3 refuses a client `_id` (#8845); v1 entries and devicestatus match on `identifier`, and an explicit null removes a field (#8859) | — | identifier-first on every path, unique index |
@@ -56,13 +56,12 @@ Done, in 16.0.0: PR-8854, QC-MATRIX-TT (360 cells), ST-FILTER, ST-READS, ST-WRIT
 
 | item | builds | needs | check |
 |---|---|---|---|
+| WC-STEP-PATCH | in progress (session -4f, milestone 1): `write(intent)` -> WriteResult.items[] above the interface; matching, server dates, the null-removes rule and validation move into it; compare-and-set behind an adapter method | ST-WRITES | [write-contract spec](../tenancy/write-contract-spec-2026-10-07.md) G1 |
 | ST-V3-DECOUPLE | API v3 without API v1's modules, the socket and the cache, so `serve api` serves it alone (M3) | ST-WRITES, PLAT-SERVE | `serve api` passes the API v3 suites (485 pass, 81 fail at #8865 `1dafe2a5`); `single` unchanged |
-| WC-STEP-PATCH | `write(intent)` -> WriteResult.items[] above the interface; matching, server dates, the null-removes rule and validation move into it; compare-and-set behind an adapter method | ST-WRITES | [write-contract spec](../tenancy/write-contract-spec-2026-10-07.md) G1 |
 | ST-EVENT | the commit event names the records of each write, from WriteResult.items[] | WC-STEP-PATCH, D-EVENT (deferred) | each stored record named once per write |
 | ST-HARNESS | backend-selectable harness, backend selection, tenant scope | WC-STEP-PATCH | `NS_TEST_BACKEND` controls |
 | ST-VIEWS | computed views from bounded queries, without a resident `ddata`: page, socket `dataUpdate`, plugins, alarms (M4) | ST-READS | each view equal to today's on the corpus fixtures; alarms per the execution plan §7b |
-| ST-PG | PostgreSQL with row-level security, entries first | ST-EVENT | the commit event names the records of each write, from WriteResult.items[] | WC-STEP-PATCH, D-EVENT (deferred) | each stored record named once per write |
-| ST-HARNESS | the backend-selectable suite on both stores |
+| ST-PG | PostgreSQL with row-level security, entries first | ST-HARNESS | the backend-selectable suite on both stores |
 
 The September seam chain is kept as reference for ST-HARNESS, ST-PG and TEN-RESOLVE (commits named on each item); it is not merged as it stands.
 
