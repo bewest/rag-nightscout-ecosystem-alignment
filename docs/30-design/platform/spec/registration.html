@@ -6247,7 +6247,7 @@
 
 
 <h1 id="l2-registration-how-a-controller-declares-what-its-data-means-and-how-a-hub-accepts-it">L2 Registration: how a controller declares what its data means, and how a hub accepts it<a class="headerlink" href="#l2-registration-how-a-controller-declares-what-its-data-means-and-how-a-hub-accepts-it" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>789446fd4</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>36487a5dd</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>8d2b93ed</code> (2026-10-18). Layer L2 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>; ids are defined in
 the <a href="identity.html">identity specification</a>. Status: specified, not implemented; the first hub implementation is <code>HUB-REG-CRM</code>.
@@ -6472,7 +6472,8 @@ record with what it means on one key
 (<a href="../PROPOSAL-controller-descriptions-2026-09-11.html#22-two-halves-who-a-controller-is-and-what-its-data-means">controller descriptions §2.2</a>).
 It is optional and not part of the identity. Whether two products may share one, and whether a hub
 checks it against the credential's registered client, are open (§18). The product resource
-is <code>&lt;submit.href&gt;/&lt;vendor&gt;/&lt;product&gt;</code>, each segment percent-encoded.</p>
+is <code>&lt;submit.href&gt;/&lt;vendor&gt;/&lt;product&gt;</code>, each segment percent-encoded. The owner's actions use the
+same paths on every deployment, served on the owner's listener (maintainer, 2026-10-26; authority §4).</p>
 <table>
 <thead>
 <tr>
@@ -6502,9 +6503,9 @@ is <code>&lt;submit.href&gt;/&lt;vendor&gt;/&lt;product&gt;</code>, each segment
 <td><code>If-Match</code></td>
 </tr>
 <tr>
-<td><code>DELETE</code></td>
+<td><code>POST …/retire</code></td>
 <td>owner</td>
-<td>retire</td>
+<td>retire (maintainer, 2026-10-26: the owner's retire is a named action like the others, so on <code>single</code>, where one <code>API_SECRET</code> holder may be both, the request says which is acting)</td>
 <td><code>If-Match</code></td>
 </tr>
 <tr>
@@ -6658,7 +6659,7 @@ beside it and are not in it. A request whose content and state are already store
 capabilities on every read, so an element's result can change after a hub upgrade while the stored
 registration and its etag do not.</p>
 <h3 id="55-retire">5.5 Retire<a class="headerlink" href="#55-retire" title="Permanent link">&para;</a></h3>
-<p>The bound controller retires with <code>api:registrations:delete</code>; the owner may also retire. Retiring
+<p>The bound controller retires with <code>DELETE</code> and <code>api:registrations:delete</code>; the owner may also retire, with <code>POST …/retire</code> (§5.1). Retiring
 sets the state to <code>retired</code>, changes the etag, and keeps the declaration and the binding frozen:
 data already stored under it stays stored and readable as declared, and no typed write is accepted
 for its elements. Its namespaces stay claimed until the owner frees them. A later <code>PUT</code> with the

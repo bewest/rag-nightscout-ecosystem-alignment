@@ -5759,7 +5759,7 @@
 
 
 <h1 id="bringing-a-controller-onto-a-hub-register-it-hold-a-lease-receive-commands-and-report-outcomes">Bringing a controller onto a hub: register it, hold a lease, receive commands and report outcomes<a class="headerlink" href="#bringing-a-controller-onto-a-hub-register-it-hold-a-lease-receive-commands-and-report-outcomes" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>789446fd4</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>36487a5dd</code>.</em></p>
 <p><em>Contributor-facing. Living guide, current at <code>main</code> <code>127f69e1</code> (2026-10-18). Uses the <a href="../index.html">platform specifications</a>; terms are in the <a href="../spec/glossary.html">glossary</a>. Status: the specifications are proposed and not implemented; until <code>HUB-REG-CRM</code> is, each step is checked against its conformance case, not run against a hub.</em></p>
 <p>This guide is for a developer bringing an automated insulin delivery controller, or a controller
 app, onto a Nightscout hub that implements the platform specifications. It follows one fictional
@@ -5836,14 +5836,14 @@ is bound to that subject, never to a token, so rotating the token changes nothin
 <tr>
 <td><code>api:registrations:create</code></td>
 <td>creating and updating the product, adding definitions, creating and renewing instances</td>
-<td>the tenant owner, on the owner's listener (<code>ns-tenant-admin</code>)</td>
+<td>included in the role a hub issues by default to a device or uploader credential (<code>API_SECRET</code> on <code>single</code>); the tenant owner may withhold it on the owner's listener</td>
 <td>authority §5, registration §7</td>
 <td><code>not-authorised.yaml</code>, <code>instances/instance-create.yaml</code></td>
 </tr>
 <tr>
 <td><code>api:registrations:delete</code></td>
 <td>retiring the product, deleting an instance</td>
-<td>the tenant owner</td>
+<td>as <code>api:registrations:create</code></td>
 <td>authority §5, registration §5</td>
 <td><code>retire.yaml</code>, <code>retire-not-authorised.yaml</code></td>
 </tr>

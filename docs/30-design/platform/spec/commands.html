@@ -5961,7 +5961,7 @@
 
 
 <h1 id="l3-and-l5-commands-how-a-request-or-a-proposal-reaches-a-controller-and-how-its-outcome-comes-back">L3 and L5 Commands: how a request or a proposal reaches a controller, and how its outcome comes back<a class="headerlink" href="#l3-and-l5-commands-how-a-request-or-a-proposal-reaches-a-controller-and-how-its-outcome-comes-back" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>789446fd4</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>36487a5dd</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>9736bd65</code> (2026-10-18). Layers L3
 and L5 of the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. Decisions:
 <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">D18 and D19</a>
@@ -6315,7 +6315,7 @@ the bold ones are final. A report may skip <code>acknowledged</code> (CM9).</p>
 </tr>
 <tr>
 <td>CM14</td>
-<td><strong>Who may approve.</strong> The approver holds the permission to send the command itself (<code>api:commands:create</code>), else 403 <code>not-authorised</code>; approving is sending. When the proposing instance's propose role is an agent's, the subject that proposed cannot approve it (403 <code>self-approval</code>); a person may approve a proposal they made from their own app. Rejecting needs the same permission. Withdrawing is the proposer's, and also the person's: the subject the tenant marks as acting for the person whose therapy it holds may withdraw any proposal. Either by anyone else is 403 <code>not-authorised</code>. How a capability document marks a propose role as an agent's is open (§9).</td>
+<td><strong>Who may approve.</strong> The approver holds the permission to send the command itself (<code>api:commands:create</code>), else 403 <code>not-authorised</code>; approving is sending. When the proposing instance's propose role is an agent's, the subject that proposed cannot approve it (403 <code>self-approval</code>); a person may approve a proposal they made from their own app. Rejecting needs the same permission. Withdrawing is the proposer's, and also the person's: the subject the tenant marks as acting for the person whose therapy it holds may withdraw any proposal. The tenant owner sets that mark on a subject, on the owner's listener, as part of subject and role configuration; the hub reads it from the subject when it checks a withdrawal, a cancel (CM25) or an approval, and a client cannot assert it in a request (maintainer, 2026-10-26). Either by anyone else is 403 <code>not-authorised</code>. How a capability document marks a propose role as an agent's is open (§9).</td>
 </tr>
 <tr>
 <td>CM15</td>
@@ -6424,7 +6424,7 @@ the bold ones are final. A report may skip <code>acknowledged</code> (CM9).</p>
 </tr>
 <tr>
 <td>CM32</td>
-<td><strong>Paths.</strong> The operations of §4–§7 are served at the paths below, each bound to the request's tenant (CM6) and answered as the rules state. Request and reply members are in the tables that follow; a member not listed is ignored, as in the grammar (G1).</td>
+<td><strong>Paths.</strong> The operations of §4–§7 are served on the data listener (<code>ns-api</code>, or <code>single</code>; maintainer, 2026-10-26) at the paths below, each bound to the request's tenant (CM6) and answered as the rules state. Request and reply members are in the tables that follow; a member not listed is ignored, as in the grammar (G1).</td>
 </tr>
 </tbody>
 </table>
@@ -6747,8 +6747,8 @@ was run.</p>
      a channel.</li>
 <li><strong>Required reviews on a moment proposal.</strong> Plans name reviews an approval waits for (plans
      PN6); a proposal for one command has no such member.</li>
-<li><strong>Who acts for the person</strong> (CM14). Which subject the tenant marks as acting for the person
-     whose therapy it holds, and whether there may be more than one.</li>
+<li><strong>Who acts for the person</strong> (CM14). The owner sets the mark (decided 2026-10-26); whether more
+     than one subject may hold it is open.</li>
 <li><strong>A process holding the destination's credential</strong> (UCA-CMD-014). CM7 and CM18 check the
      subject, not the process: under <code>single</code> every holder of <code>API_SECRET</code> is one subject, so
      another app can fetch a command, which moves it to <code>fetched</code> and out of the controller's

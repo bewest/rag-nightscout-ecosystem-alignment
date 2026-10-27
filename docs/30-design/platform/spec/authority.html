@@ -5927,7 +5927,7 @@
 
 
 <h1 id="l5-authority-who-may-register-write-own-a-site-receive-a-command-and-act-for-someone-else">L5 Authority: who may register, write, own a site, receive a command, and act for someone else<a class="headerlink" href="#l5-authority-who-may-register-write-own-a-site-receive-a-command-and-act-for-someone-else" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>789446fd4</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>36487a5dd</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>1b69c295</code> (2026-10-18). Layer L5 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>. Decisions:
 <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">D7 and D13–D17</a>
@@ -6011,6 +6011,11 @@ specified; §7 states delegation's requirements, and its design is open.</p>
 <td><strong>Registration is per tenant.</strong> Registering a controller's products, definitions and instances is a per-tenant API: it affects only that tenant's site and data, and is never a platform or operator action (<code>ns-admin</code> serves none of it). The controller's requests and commands are on the data listener; the owner's listing and the owner's actions are the tenant owner's, on <code>ns-tenant-admin</code> under <code>TENANCY_MODE=multi</code> and on the one listener with <code>API_SECRET</code> under <code>single</code> (AU2).</td>
 <td>maintainer, 2026-10-26</td>
 </tr>
+<tr>
+<td>AU7</td>
+<td><strong>The owner boundary is a property of the credential.</strong> The shared contract states it as: an owner action is refused, 403 <code>not-authorised</code>, to any credential issued to a device or an app. A separate owner listener (AU2) is one way to meet it; a hub with one listener meets it by keeping the owner's powers out of every device or app credential (Nocturne's scope partition, <code>Scope.cs:17-21</code> at <code>89dcaf1dd</code>). The conformance cases keep their <code>listener</code> member for hubs that have one.</td>
+<td>maintainer, 2026-10-26; to be reviewed as the design matures</td>
+</tr>
 </tbody>
 </table>
 <p>Under <code>multi</code>, who reaches the hub through which listener, with which credential (dashed: adopted
@@ -6034,7 +6039,10 @@ the mechanics are <code>SPEC-REG-MODES</code> and <code>SPEC-REG-MIGRATE</code>)
 so a development build with its own subject may run a copy of a registered product
 (<a href="registration.html#8-instances">registration §8</a>).</p>
 <h2 id="4-the-owners-actions">4. The owner's actions<a class="headerlink" href="#4-the-owners-actions" title="Permanent link">&para;</a></h2>
-<p>On the owner's listener: <code>ns-tenant-admin</code>, or the one listener with <code>API_SECRET</code> on <code>single</code>. The owner never edits a registration's content (an owner <code>PUT</code> is 403
+<p>On the owner's listener: <code>ns-tenant-admin</code>, or the one listener with <code>API_SECRET</code> on <code>single</code>. The
+paths are the same on both (<code>/api/v4/registrations/&lt;vendor&gt;/&lt;product&gt;/&lt;action&gt;</code>, <code>/api/v4/instances</code>);
+the listener, not the path, decides who may act (maintainer, 2026-10-26). These actions handle
+exceptions (a lost phone, two apps claiming one role); setting up a controller needs none of them (§5). The owner never edits a registration's content (an owner <code>PUT</code> is 403
 <code>not-authorised</code>) and never submits one. An action other than retire answers outcome <code>applied</code>
 with the resource after it; a request for what is already the case is a no-op.</p>
 <table>
@@ -6092,8 +6100,11 @@ with the resource after it; a request for what is already the case is a no-op.</
   registration is per tenant and a controller on two tenants registers twice. On <code>single</code>,
   <code>API_SECRET</code> may also register and is recorded as <code>api-secret</code>.</li>
 <li><strong>Permissions.</strong> Submitting needs <code>api:registrations:create</code> and retiring
-  <code>api:registrations:delete</code>, granted by the tenant owner on <code>ns-tenant-admin</code>. Updating and
-  retiring also need the binding. The names are proposals.</li>
+  <code>api:registrations:delete</code>. The role a hub issues by default to a device or uploader credential
+  includes both, so a controller registers with the credential it already holds and no separate
+  grant; the tenant owner may withhold them on <code>ns-tenant-admin</code> (maintainer, 2026-10-26). Under
+  <code>single</code>, <code>API_SECRET</code> holds them. Updating and retiring also need the binding. The names are
+  proposals.</li>
 <li><strong>Storage.</strong> Registrations, definitions and instances are tenant data: per tenant, under RLS
   under <code>multi</code> (D3), never in the public capability document.</li>
 </ul>

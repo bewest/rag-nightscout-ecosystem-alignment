@@ -5677,7 +5677,7 @@ the same day for the maintainer's decisions in §0),
 cgm-remote-monitor draft PR #8857 at <code>3be98536</code>, Nocturne <code>main</code> <code>89dcaf1dd</code>. Every Nocturne
 statement below was read from source at <code>89dcaf1dd</code> and nothing was run against it (read-derived).
 The proposed surface is described in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ef5bfb4269310de3f680af7194665324cd413ca7/specs/openapi/proposed/nightscout-v4.yaml"><code>specs/openapi/proposed/nightscout-v4.yaml</code></a>;
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/64fd0d1ded1297da13b66b6b9fdfd62cfb9657f3/specs/openapi/proposed/nightscout-v4.yaml"><code>specs/openapi/proposed/nightscout-v4.yaml</code></a>;
 the current API in <a href="../../../specs/openapi/upstream/cgm-remote-monitor/index.html"><code>specs/openapi/upstream/cgm-remote-monitor/</code></a>.
 Nocturne paths are relative to <code>src/API/Nocturne.API/</code> unless they begin with <code>Core.</code> (under
 <code>src/Core/Nocturne.</code>) or <code>tests/</code>. Nothing here has been sent to either project.</em></p>
@@ -5689,7 +5689,8 @@ listeners. This page therefore treats Nocturne's surface as material to partitio
 and states for each group which listener it belongs on in our specifications and whether it is a
 candidate for a shared contract.</p>
 <h2 id="0-decided-2026-10-26">0. Decided, 2026-10-26<a class="headerlink" href="#0-decided-2026-10-26" title="Permanent link">&para;</a></h2>
-<p>The maintainer decided four points the same day; the sections below are amended for them.</p>
+<p>The maintainer decided four points the same day, and seven more in a second round (decisions 1, 2,
+5, 8, 9, 10 and 11 in §7); the sections below are amended for them.</p>
 <table>
 <thead>
 <tr>
@@ -5719,6 +5720,36 @@ candidate for a shared contract.</p>
 <td>proposed in the registration's <code>metadata</code>, in Nocturne's RFC 7591 <code>software_id</code> form, for compatibility; its rules stay open for discussion</td>
 <td><code>controller-state-model.schema.json</code>; <a href="spec/registration.html#51-identity-and-methods">registration §5.1</a>; §5</td>
 </tr>
+<tr>
+<td>owner paths (1)</td>
+<td>a controller registers with the credential it already holds: the role a hub issues by default to a device or uploader credential includes <code>api:registrations:create</code> and <code>:delete</code>, and the owner may withhold them. The owner's actions are for exceptions and use the same paths on every deployment (<code>/api/v4/registrations/…/&lt;action&gt;</code>, <code>/api/v4/instances</code>), on tenant-admin under <code>multi</code> and the one listener under <code>single</code></td>
+<td><a href="spec/authority.html#4-the-owners-actions">authority §4, §5</a>; <a href="spec/registration.html#51-identity-and-methods">registration §5.1</a>; <code>registration-submit.schema.json</code> <code>request</code></td>
+</tr>
+<tr>
+<td>retire (2)</td>
+<td>both: the bound controller retires with <code>DELETE</code> on the product, the owner with <code>POST …/retire</code>, as #8857 serves them</td>
+<td>registration §5.1, §5.5; operations 6 and 11</td>
+</tr>
+<tr>
+<td>commands (5)</td>
+<td>on the data listener; the tenant owner marks the subject acting for the person, as subject configuration on the owner's listener, and the hub reads the mark; a client cannot assert it</td>
+<td><a href="spec/commands.html#6-proposals-and-approvals-proposed">commands CM14, CM32</a></td>
+</tr>
+<tr>
+<td>owner boundary (8)</td>
+<td>stated per credential: an owner action is refused to any credential issued to a device or an app; a separate listener is one way to meet it. To be reviewed as the design matures</td>
+<td><a href="spec/authority.html#2-principals-and-credentials">authority AU7</a></td>
+</tr>
+<tr>
+<td>data sources and connectors (9)</td>
+<td>on the owner's listener: configuring a vendor cloud connection, triggering a sync and listing who sends data change or describe the runtime and its resources, unlike an AID controller's registration</td>
+<td>§6.1</td>
+</tr>
+<tr>
+<td>operator and self-service (10, 11)</td>
+<td>both hub-specific, outside the shared contract; in cgm-remote-monitor the operator keeps D7's tenant lifecycle with no access to members' credentials, and creating tenants stays the operator's. Revisit once D17 row 2 lands</td>
+<td>§6.1</td>
+</tr>
 </tbody>
 </table>
 <h2 id="1-the-answer-in-brief">1. The answer in brief<a class="headerlink" href="#1-the-answer-in-brief" title="Permanent link">&para;</a></h2>
@@ -5740,7 +5771,7 @@ candidate for a shared contract.</p>
   second, after the identity decisions. Everything else in Nocturne's v4 stays hub-specific (§6).</li>
 </ul>
 <h2 id="2-the-proposed-v4-surface-operation-by-operation">2. The proposed v4 surface, operation by operation<a class="headerlink" href="#2-the-proposed-v4-surface-operation-by-operation" title="Permanent link">&para;</a></h2>
-<p>From <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ef5bfb4269310de3f680af7194665324cd413ca7/specs/openapi/proposed/nightscout-v4.yaml"><code>nightscout-v4.yaml</code></a>. Listener names
+<p>From <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/64fd0d1ded1297da13b66b6b9fdfd62cfb9657f3/specs/openapi/proposed/nightscout-v4.yaml"><code>nightscout-v4.yaml</code></a>. Listener names
 follow <a href="spec/authority.html#2-principals-and-credentials">authority AU2</a> (D16): <code>data</code> is <code>ns-api</code>
 (devices, clients, viewers); <code>tenant-admin</code> is <code>ns-tenant-admin</code>, the owner's second bound socket
 inside <code>ns-api</code>. Under <code>TENANCY_MODE=single</code> there is one listener and <code>API_SECRET</code> acts as the
@@ -6136,7 +6167,7 @@ at <code>PUT</code> and <code>DELETE /api/v4/registrations/{vendor}/{product}/in
   the product resource (operation 6). Operation 10's path follows the flat instance root (§0).</li>
 <li>Operations 32–41 are Nocturne's ten statistics reads over stored data, by the maintainer's
   decision (§0, §6.4). Their response shapes are in
-  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ef5bfb4269310de3f680af7194665324cd413ca7/specs/openapi/proposed/statistics-v4.schema.json"><code>statistics-v4.schema.json</code></a>, read from
+  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/64fd0d1ded1297da13b66b6b9fdfd62cfb9657f3/specs/openapi/proposed/statistics-v4.schema.json"><code>statistics-v4.schema.json</code></a>, read from
   Nocturne's models.</li>
 </ul>
 <p><strong>Defined without a path, so not in the OpenAPI file.</strong> These are open:</p>
@@ -6167,7 +6198,7 @@ at <code>PUT</code> and <code>DELETE /api/v4/registrations/{vendor}/{product}/in
 <tr>
 <td>marking the subject who acts for the person</td>
 <td><a href="spec/commands.html#6-proposals-and-approvals-proposed">commands CM14, CM25</a></td>
-<td>who sets it, on which listener</td>
+<td>the owner sets it (decision 5); the path for setting it is part of the tenant-owner configuration surface, not yet given</td>
 </tr>
 <tr>
 <td>the tenant-owner configuration surface</td>
@@ -6627,7 +6658,7 @@ separately from the path, so none changes. A renewal naming another product is 4
 <td>product features of each hub; no counterpart in the specifications</td>
 </tr>
 <tr>
-<td>G8 alert rules and tenant alert settings; G10 connector configuration; G11 members, roles, sharing; G13 settings and setup; G14 maintenance</td>
+<td>G8 alert rules and tenant alert settings; G10 connector configuration, sync and the data-source listing (decision 9); G11 members, roles, sharing; G13 settings and setup; G14 maintenance</td>
 <td>tenant-admin</td>
 <td>hub-specific</td>
 <td>the tenant-owner surface (§F.1) is per-hub configuration; its vocabulary is each hub's own (§B census)</td>
@@ -6645,10 +6676,10 @@ separately from the path, so none changes. A renewal naming another product is 4
 <td>depends on D17 row 2 (gated) and the deferred delegated-access server</td>
 </tr>
 <tr>
-<td>G10 data-source listing; G16 self-service tenants</td>
-<td>open</td>
+<td>G16 self-service tenants; Nocturne's operator actions on members' credentials</td>
+<td>operator, where a hub offers them</td>
 <td>hub-specific</td>
-<td>decisions 9 and 11 below</td>
+<td>decisions 10 and 11 (§0)</td>
 </tr>
 </tbody>
 </table>
@@ -6679,7 +6710,7 @@ the operator plane secured by unreachability is ORY's public and admin port spli
 time-zone bucketing, the under-ten-readings rule and its read scopes. The OpenAPI file has its ten
 <code>GET</code> reads over stored data (operations 32–41, anchored per operation to
 <code>Controllers/V4/Analytics/StatisticsController.cs</code>), with response shapes read from Nocturne's
-models into <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ef5bfb4269310de3f680af7194665324cd413ca7/specs/openapi/proposed/statistics-v4.schema.json"><code>statistics-v4.schema.json</code></a>
+models into <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/64fd0d1ded1297da13b66b6b9fdfd62cfb9657f3/specs/openapi/proposed/statistics-v4.schema.json"><code>statistics-v4.schema.json</code></a>
 (83 types; read-derived from property declarations, nested types not checked by hand). Not
 included: its 15 <code>POST</code> actions that compute over a posted body, and its five stateless calculators
 (<code>gmi/{meanGlucose}</code>, <code>estimated-a1c/{averageGlucose}</code>, <code>clinical-targets/{population}</code>, and the two
@@ -6701,7 +6732,7 @@ pointing at this decision and are otherwise unchanged. The proposal's MCP resour
 agents") would sit on top of the v4 reads.</p>
 <p><strong>Why v4 rather than v3</strong>, the evidence before the decision: API v3 is a per-collection contract
 (<code>/{collection}</code>, <code>/{collection}/{identifier}</code>, <code>/history</code>, with <code>version</code>, <code>status</code> and
-<code>lastModified</code> beside them, <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ef5bfb4269310de3f680af7194665324cd413ca7/specs/openapi/upstream/cgm-remote-monitor/api-v3.yaml">api-v3.yaml</a>),
+<code>lastModified</code> beside them, <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/64fd0d1ded1297da13b66b6b9fdfd62cfb9657f3/specs/openapi/upstream/cgm-remote-monitor/api-v3.yaml">api-v3.yaml</a>),
 mounted per enabled collection (<code>lib/api3/generic/collection.js:42-57</code>, <code>lib/api3/index.js:66</code>), so
 a documented client would read <code>/api/v3/stats/daily</code> as a record of a collection <code>stats</code>; and
 Nocturne already serves statistics under v4.</p>
@@ -6756,8 +6787,8 @@ plugin math.</p>
 </tbody>
 </table>
 <h2 id="7-open-decisions-for-the-maintainer">7. Open decisions for the maintainer<a class="headerlink" href="#7-open-decisions-for-the-maintainer" title="Permanent link">&para;</a></h2>
-<p>Each is a placement or a rule the evidence above does not settle. Rows 3, 4, 6 and 7 were decided
-on 2026-10-26 and keep their numbers; what remains open in them is stated.</p>
+<p>Each is a placement or a rule the evidence above does not settle. All but row 12 were decided on
+2026-10-26 and keep their numbers; what remains open in them is stated.</p>
 <table>
 <thead>
 <tr>
@@ -6769,12 +6800,12 @@ on 2026-10-26 and keep their numbers; what remains open in them is stated.</p>
 <tbody>
 <tr>
 <td>1</td>
-<td><strong>The owner's action paths on <code>ns-tenant-admin</code>.</strong> The same path as on <code>single</code>, served on the other socket, or a separate admin prefix.</td>
-<td><code>registration-submit.schema.json</code> <code>request</code> says "<code>POST &lt;admin registrations path&gt;/&lt;vendor&gt;/&lt;product&gt;/&lt;action&gt;</code>"; the <a href="guides/hub-implementer.html#46-s5-the-owners-actions-on-single">hub-implementer guide §4.6</a> and #8857 put them under the same router as the controller's (<code>/api/v4/registrations</code>). This is a mismatch between two of our texts.</td>
+<td><strong>The owner's action paths on <code>ns-tenant-admin</code>.</strong> <em>Decided, maintainer 2026-10-26:</em> the same paths on every deployment, served on the owner's listener; and a controller registers with the credential it already holds (the default device or uploader role includes the registration permissions; the owner may withhold them), so setting up a controller needs no owner action.</td>
+<td><code>registration-submit.schema.json</code> <code>request</code> says "<code>POST &lt;admin registrations path&gt;/&lt;vendor&gt;/&lt;product&gt;/&lt;action&gt;</code>"; the <a href="guides/hub-implementer.html#46-s5-the-owners-actions-on-single">hub-implementer guide §4.6</a> and #8857 put them under the same router as the controller's (<code>/api/v4/registrations</code>). This was a mismatch between two of our texts; the schema text now names the controller's paths.</td>
 </tr>
 <tr>
 <td>2</td>
-<td><strong>The owner's retire: <code>DELETE</code> or <code>POST …/retire</code>.</strong></td>
+<td><strong>The owner's retire: <code>DELETE</code> or <code>POST …/retire</code>.</strong> <em>Decided, maintainer 2026-10-26:</em> both, as #8857 serves them: <code>DELETE</code> for the bound controller, <code>POST …/retire</code> for the owner.</td>
 <td>registration §5.1 and the schema's <code>request</code> say <code>DELETE</code>; #8857 serves <code>POST …/retire</code> (<code>negotiate.js:742</code>). On <code>single</code>, one <code>API_SECRET</code> holder may be both the bound controller and the owner, so <code>DELETE</code> alone cannot tell which is acting.</td>
 </tr>
 <tr>
@@ -6789,7 +6820,7 @@ on 2026-10-26 and keep their numbers; what remains open in them is stated.</p>
 </tr>
 <tr>
 <td>5</td>
-<td><strong>State the commands listener, and who marks the subject acting for the person.</strong></td>
+<td><strong>State the commands listener, and who marks the subject acting for the person.</strong> <em>Decided, maintainer 2026-10-26:</em> the data listener; the tenant owner sets the mark as subject configuration, and the hub reads it. Open: whether more than one subject may hold it.</td>
 <td>commands §7.1 names no listener; CM14 and CM25 rely on a mark no specification places.</td>
 </tr>
 <tr>
@@ -6804,27 +6835,27 @@ on 2026-10-26 and keep their numbers; what remains open in them is stated.</p>
 </tr>
 <tr>
 <td>8</td>
-<td><strong>State the owner boundary per credential in the shared contract</strong>, so a one-listener hub can conform.</td>
+<td><strong>State the owner boundary per credential in the shared contract</strong>, so a one-listener hub can conform. <em>Decided, maintainer 2026-10-26:</em> yes (authority AU7), to be reviewed as the design matures.</td>
 <td>§4.</td>
 </tr>
 <tr>
 <td>9</td>
-<td><strong>The data-source listing: data listener or owner's listener.</strong></td>
-<td>Nocturne serves its data sources to <code>devices.read</code> on the data API (<code>ServicesController.cs:101-112</code>); our listing of instances, bindings and overlaps is the owner's (authority §4).</td>
+<td><strong>The data-source listing: data listener or owner's listener.</strong> <em>Decided, maintainer 2026-10-26:</em> the owner's listener, with connector configuration: they change or describe the runtime and its resources, differently from an AID controller's registration.</td>
+<td>Nocturne's <code>/api/v4/services</code> at <code>42275c812</code> (<code>Controllers/V4/Platform/ServicesController.cs</code>) mixes reads open to any signed-in credential (class <code>[Authorize]</code>, <code>:29</code>; the data-source list <code>:106</code>, connectors, uploader setup) with actions that require the owner atom <code>tenant.settings</code>: deleting a source's data (<code>:321-322</code>), deleting a connector's data (<code>:395-396</code>), a connector sync (<code>:438-439</code>) and a cursor reset (<code>:489-490</code>). Our listing of instances, bindings and overlaps is the owner's (authority §4).</td>
 </tr>
 <tr>
 <td>10</td>
-<td><strong>Operator actions on a tenant member's credentials.</strong></td>
+<td><strong>Operator actions on a tenant member's credentials.</strong> <em>Decided, maintainer 2026-10-26:</em> hub-specific, outside the shared contract; cgm-remote-monitor's operator has none.</td>
 <td>Nocturne's operator can list and remove a member's passkeys and OIDC identities and issue login and recovery codes (<code>TenantController.cs:186-310</code>); tenant-owner surface §F.1 lists create, list, suspend, activate, delete and export for the operator.</td>
 </tr>
 <tr>
 <td>11</td>
-<td><strong>Self-service tenant creation.</strong></td>
+<td><strong>Self-service tenant creation.</strong> <em>Decided, maintainer 2026-10-26:</em> hub-specific; in cgm-remote-monitor creating a tenant stays the operator's.</td>
 <td>Nocturne allows it behind <code>AllowSelfServiceCreation</code> (<code>PlatformController.cs:56-66</code>); §F.1 makes tenant creation the operator's.</td>
 </tr>
 <tr>
 <td>12</td>
-<td><strong>Typed record paths: start from Nocturne's v4 routes or define our own.</strong></td>
+<td><strong>Typed record paths: start from Nocturne's v4 routes or define our own.</strong> <em>Deferred, maintainer 2026-10-26,</em> until the identity decisions are settled; a detailed comparison of the two options, with criteria that can be benchmarked later, was asked for.</td>
 <td>records §3 shares the model; the identity decisions (<code>ID-FORMAT-DECISION</code> and the others in the hub-implementer guide's backlog) decide how a typed write is matched and re-sent. Nocturne issue <a href="https://github.com/nightscout/nocturne/issues/1932">#1932</a> (open) records that its v3 <code>POST</code> ignores a client's <code>identifier</code> and never upserts.</td>
 </tr>
 </tbody>
