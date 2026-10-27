@@ -3165,7 +3165,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-27 at <code>9555f20dc</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>d21fe2a4e</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3204,11 +3204,11 @@
 <tbody>
 <tr>
 <td>items</td>
-<td>302</td>
+<td>303</td>
 </tr>
 <tr>
 <td>runnable gates</td>
-<td>359</td>
+<td>361</td>
 </tr>
 <tr>
 <td>explicit <code>no-gate:</code> markers</td>
@@ -3216,7 +3216,7 @@
 </tr>
 </tbody>
 </table>
-<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 340 of the 699 gate slots in this queue are in that state.</p>
+<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 340 of the 701 gate slots in this queue are in that state.</p>
 <h3 id="claimed-state-not-a-measurement----run-make-queue-status">Claimed state (NOT a measurement -- run <code>make queue-status</code>)<a class="headerlink" href="#claimed-state-not-a-measurement----run-make-queue-status" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3244,8 +3244,8 @@
 </tr>
 <tr>
 <td><code>ready-to-push</code></td>
-<td>3</td>
-<td>P0-C-REMEDIATE, T30-AUTH, WS-LAB</td>
+<td>4</td>
+<td>P0-C-REMEDIATE, T30-AUTH, BFQ-200, WS-LAB</td>
 </tr>
 <tr>
 <td><code>blocked</code></td>
@@ -8234,7 +8234,7 @@ that costs.</p>
 <p><strong>Notes.</strong> Follow-up to BF-110/BF-117, queued 2026-09-25 at the maintainer's request. Editing both copies is not wrong for what is shown (both carry the edit), but the pair never becomes one record, so reads that list treatments keep showing two. The fix shape: update the ObjectId copy (converting a string-only record to its ObjectId, as dbAdd does), then delete the string forms, as the v1 treatments PUT does; the renderer's split-drag path (dbUpdate then dbAdd) must still see the edited _id. Best done with OID-V3-EDIT-MERGE and OID-STORAGE- HELPER, which would give v1, v3 and the websocket one rule for writes by _id. Decisions: - 2026-09-26 (maintainer): after 15.0.9.</p>
 <hr />
 <h2 id="open-backfix-register-entries">Open backfix-register entries<a class="headerlink" href="#open-backfix-register-entries" title="Permanent link">&para;</a></h2>
-<p><code>parcel: register-open</code> &mdash; 139 items</p>
+<p><code>parcel: register-open</code> &mdash; 140 items</p>
 <p>The §1 / §1b distinction is preserved in <code>ships_to_operators_today</code>. That
 distinction is the only thing that makes the register mean anything - widening
 §1's criterion would destroy it.</p>
@@ -9217,6 +9217,14 @@ distinction is the only thing that makes the register mean anything - widening
 <td><code>-</code></td>
 <td>minor</td>
 <td>0 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>BFQ-200</code></td>
+<td>BF-200 - on dev, an unusable time on API v2's data-snapshot route stops the server</td>
+<td><code>ready-to-push</code></td>
+<td><code>bf/16.0.0-ddata-at-crash</code></td>
+<td>patch</td>
+<td>2 run</td>
 </tr>
 <tr>
 <td><code>BFQ-195</code></td>
@@ -16903,6 +16911,68 @@ distinction is the only thing that makes the register mean anything - widening
 <li><code>docs/30-design/remedial/rc-16.0.0-integration-record.md</code></li>
 </ul>
 <p><strong>Notes.</strong> Filed 2026-10-26 from R15. Needs a maintainer decision: keep units on a record with targets when no glucose is given, convert to mg/dL, or refuse under WRITE_VALIDATION=reject. Related to BF-180 (the careportal path through the same lines, merged in #8842) and MOD-UNITS-CANONICAL.</p>
+<h3 id="bfq-200--bf-200---on-dev-an-unusable-time-on-api-v2s-data-snapshot-route-stops-the-server"><code>BFQ-200</code> &mdash; BF-200 - on dev, an unusable time on API v2's data-snapshot route stops the server<a class="headerlink" href="#bfq-200--bf-200---on-dev-an-unusable-time-on-api-v2s-data-snapshot-route-stops-the-server" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>ready-to-push</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>bf/16.0.0-ddata-at-crash</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>official/dev@2dc0c1bc</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>externals/work/crm-ddata-crash</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>patch</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer</td>
+</tr>
+<tr>
+<td>ships to operators today</td>
+<td>no (pre-release)</td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-200</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> lib/data/endpoints.js (/api/v2/ddata/at/:at answers 400 for a time that does not parse, before any load starts) and lib/data/dataloader.js (update() reports an error to its callback, without changing ddata or starting a query, when lastUpdated or its 372-day look-back is outside the Date range); one new test file. Responses for valid times are unchanged.</p>
+<p><strong>What an operator sees.</strong> On dev only: one authenticated read request on this route with a time the server cannot use stops the whole site until it restarts. With the fix the request is refused with 400 and the site keeps running. 15.0.9 answers the same request with 500 and keeps running.</p>
+<p><strong>Why <code>patch</code>.</strong> a regression introduced on dev and never released is fixed; against 15.0.9 the request's 500 becomes 400, an error answer for an input no client sends successfully</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 434c0157 bf/16.0.0-ddata-at-crash</code></li>
+<li>The fix commit 434c0157 is on the branch. Red if the branch is rewritten without it.</li>
+<li><code>[unit]</code> <code>sh -c 'd=$(mktemp -d) &amp;&amp; git -C externals/cgm-remote-monitor-official archive bf/16.0.0-ddata-at-crash | tar -x -C "$d" &amp;&amp; ln -s "$PWD/externals/work/crm-ddata-crash/node_modules" "$d/node_modules" &amp;&amp; cd "$d" &amp;&amp; NODE_ENV=test ./node_modules/.bin/mocha --timeout 15000 --exit tests/data.ddata-at.test.js; r=$?; rm -rf "$d"; exit $r'</code></li>
+<li>Runs the branch's own tree (git archive) and its new test tests/data.ddata-at.test.js: the 400 path, the query bounds for a valid frame, and the loader guard (NaN and both ends of the Date range). 5 passing, measured 2026-10-27. Uses the fix worktree's node_modules.</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
+</ul>
+<p><strong>Notes.</strong> 2026-10-27: found by session -2e's route census on dev 2dc0c1bc and #8863; fixed by its agent on bf/16.0.0-ddata-at-crash 434c0157 (on dev 2dc0c1bc, 3 files, +142). v15.0.9 checked by -2e: not affected (500, process keeps running), so it is a dev-only regression from 26d0908a (callback-tasks replacing async) and goes as an ordinary 16.0.0 fix, no advisory fork. -2e's runs (Node 22.23.4, MongoDB 7.0.43): npm test 4487 passing, 1 failing, 3 pending; test:all 4815 passing, 1 failing, 3 pending; the one failure is the nodemon watch test on the host's inotify limit (ENOSPC), not this change. Red control re-run by session -ee: the new test on dev 2dc0c1bc's tree gives 1 passing, 5 failing (-2e reported 0 passing, 5 failing); on the branch 5 passing. Not pushed; the maintainer pushes and opens the PR (body in -2e's scratchpad, ddata/PR-BODY.md).</p>
 <h3 id="bfq-195--bf-195---a-stale-profile-is-pushed-over-the-socket-after-a-profile-re-send"><code>BFQ-195</code> &mdash; BF-195 - a stale profile is pushed over the socket after a profile re-send<a class="headerlink" href="#bfq-195--bf-195---a-stale-profile-is-pushed-over-the-socket-after-a-profile-re-send" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
