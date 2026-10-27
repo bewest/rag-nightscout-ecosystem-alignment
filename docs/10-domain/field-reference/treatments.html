@@ -8156,7 +8156,7 @@
 
 
 <h1 id="treatments-field-reference"><code>treatments</code> field reference<a class="headerlink" href="#treatments-field-reference" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-09-11 at <code>4d0538709</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>9b6dd8aef</code>.</em></p>
 <!-- GENERATED FILE — do not edit. Regenerate with: make schema-emit -->
 
 <p>Source spec: <code>specs/openapi/aid-treatments-2025.yaml</code><br />
@@ -8686,11 +8686,25 @@ as universal across the ecosystem.</p>
 <td>bolus subtype is written lower-case as <code>normal</code></td>
 </tr>
 <tr>
+<td><code>QUIRK-TREATMENTS-007</code></td>
+<td>id-form</td>
+<td>15.1%</td>
+<td>1</td>
+<td>the client's record id is sent as <code>id</code>, a member Nightscout does not read</td>
+</tr>
+<tr>
 <td><code>QUIRK-TREATMENTS-005</code></td>
 <td>enum-gap</td>
 <td>1.0%</td>
 <td>2</td>
 <td>eventType carries values absent from every declared enum</td>
+</tr>
+<tr>
+<td><code>QUIRK-TREATMENTS-006</code></td>
+<td>id-form</td>
+<td>0.8%</td>
+<td>9</td>
+<td>_id is sent as a string that is not an ObjectId</td>
 </tr>
 </tbody>
 </table>
@@ -8761,6 +8775,10 @@ as universal across the ecosystem.</p>
 <td><code>string</code></td>
 </tr>
 <tr>
+<td><code>sensorCode</code></td>
+<td><code>string</code></td>
+</tr>
+<tr>
 <td><code>srvCreated</code></td>
 <td><code>integer</code></td>
 </tr>
@@ -8775,6 +8793,10 @@ as universal across the ecosystem.</p>
 <tr>
 <td><code>timeshift</code></td>
 <td><code>integer</code></td>
+</tr>
+<tr>
+<td><code>transmitterId</code></td>
+<td><code>string</code></td>
 </tr>
 </tbody>
 </table>

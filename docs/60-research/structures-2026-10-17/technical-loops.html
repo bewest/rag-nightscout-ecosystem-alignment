@@ -7055,17 +7055,17 @@ prompts. The prompts are <strong>questions for analysis, not findings</strong>.<
 <tbody>
 <tr>
 <td>1. Controller loop on the phone</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/94a6abf1ffbdb805968e0ebdce844dedc28bdbe6/tools/structure-diagrams/inputs/3-controller.yaml"><code>3-controller.yaml</code></a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c5e562b7dc3066a9935cd41dfc7ab55498e4bf0b/tools/structure-diagrams/inputs/3-controller.yaml"><code>3-controller.yaml</code></a></td>
 <td><strong>L1a</strong> inside the controller app</td>
 </tr>
 <tr>
 <td>2. Hub-and-spoke sync loop</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/94a6abf1ffbdb805968e0ebdce844dedc28bdbe6/tools/structure-diagrams/inputs/3-hub-sync.yaml"><code>3-hub-sync.yaml</code></a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c5e562b7dc3066a9935cd41dfc7ab55498e4bf0b/tools/structure-diagrams/inputs/3-hub-sync.yaml"><code>3-hub-sync.yaml</code></a></td>
 <td><strong>L2a</strong> per-collection view of the hub</td>
 </tr>
 <tr>
 <td>3. Delegation loop</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/94a6abf1ffbdb805968e0ebdce844dedc28bdbe6/tools/structure-diagrams/inputs/3-delegation.yaml"><code>3-delegation.yaml</code></a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c5e562b7dc3066a9935cd41dfc7ab55498e4bf0b/tools/structure-diagrams/inputs/3-delegation.yaml"><code>3-delegation.yaml</code></a></td>
 <td><strong>L3a</strong> per-controller validation pipeline</td>
 </tr>
 </tbody>
@@ -7139,7 +7139,7 @@ proposals; the drawings no longer carry markers for them.</p>
 <hr />
 <h2 id="1-the-controller-loop-on-the-phone">1. The controller loop on the phone<a class="headerlink" href="#1-the-controller-loop-on-the-phone" title="Permanent link">&para;</a></h2>
 <h3 id="11-drawing">1.1 Drawing<a class="headerlink" href="#11-drawing" title="Permanent link">&para;</a></h3>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/94a6abf1ffbdb805968e0ebdce844dedc28bdbe6/tools/structure-diagrams/inputs/3-controller.yaml"><code>3-controller.yaml</code></a>: six nodes. Person (supervisor) at the top;
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c5e562b7dc3066a9935cd41dfc7ab55498e4bf0b/tools/structure-diagrams/inputs/3-controller.yaml"><code>3-controller.yaml</code></a>: six nodes. Person (supervisor) at the top;
 the controller app; pump (actuator) and CGM (sensor); the body (controlled process). A pointer
 node for the Nightscout hub carries the app's outbound record of applied state and opens into L2.</p>
 <p><strong>Zoom L1a (proposed, not drawn).</strong> The controller box opens into: algorithm; CGM manager; pump
@@ -7250,7 +7250,7 @@ the controller would have chosen.</p>
 <hr />
 <h2 id="2-the-hub-and-spoke-sync-loop">2. The hub-and-spoke sync loop<a class="headerlink" href="#2-the-hub-and-spoke-sync-loop" title="Permanent link">&para;</a></h2>
 <h3 id="21-drawing">2.1 Drawing<a class="headerlink" href="#21-drawing" title="Permanent link">&para;</a></h3>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/94a6abf1ffbdb805968e0ebdce844dedc28bdbe6/tools/structure-diagrams/inputs/3-hub-sync.yaml"><code>3-hub-sync.yaml</code></a>: seven nodes. The hub in the middle;
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c5e562b7dc3066a9935cd41dfc7ab55498e4bf0b/tools/structure-diagrams/inputs/3-hub-sync.yaml"><code>3-hub-sync.yaml</code></a>: seven nodes. The hub in the middle;
 uploaders and the controller below it (writers); followers and the web UI above it (readers and,
 for the web UI, writers of requested state); reports to the side. <strong>Requested state</strong> and
 <strong>applied state</strong> are separate edges: requests flow down to the controller as downloaded
@@ -7370,7 +7370,7 @@ alarm acted on by a caregiver.</strong></p>
 <hr />
 <h2 id="3-the-delegation-loop">3. The delegation loop<a class="headerlink" href="#3-the-delegation-loop" title="Permanent link">&para;</a></h2>
 <h3 id="31-drawing">3.1 Drawing<a class="headerlink" href="#31-drawing" title="Permanent link">&para;</a></h3>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/94a6abf1ffbdb805968e0ebdce844dedc28bdbe6/tools/structure-diagrams/inputs/3-delegation.yaml"><code>3-delegation.yaml</code></a>: seven nodes. The person or primary
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c5e562b7dc3066a9935cd41dfc7ab55498e4bf0b/tools/structure-diagrams/inputs/3-delegation.yaml"><code>3-delegation.yaml</code></a>: seven nodes. The person or primary
 caregiver who grants the credential; the caregiver or automated agent who sends; the remote app;
 the hub; the push or SMS relay; the controller; the pump. Two edges are <code>status: proposed</code>: a
 command record with an id at the hub, and a correlated acknowledgement from the controller. Those
