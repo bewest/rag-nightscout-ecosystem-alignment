@@ -23,7 +23,6 @@ repository.
 |---|---|---|---|
 | [`ADV-CONFIG`](adv-config.md) | #8746 | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) |
 | [`BFQ-ENV`](bfq-env-bf-16-0-0-boot-resilience.md) | #8849 | `needs-decision` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies |
-| [`BFQ-193`](bfq-193-bf-16-0-0-log-privacy.md) | #8856 | `in-flight-upstream` | BF-193 - the realtime socket and other write paths log every record written through them |
 | [`ST-FILTER-READS`](st-filter-reads-feat-storage-filter.md) | #8861 | `in-flight-upstream` | Storage interface, first PR: the filter tree and interface methods under API v3's adapter (ST-FILTER), and API v1 reads through them (ST-READS), with no v1 answer changed |
 | [`PLAT-ENTRY`](plat-entry-feat-nightscout-entrypoint.md) | #8862 | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT and CMD single, no image HEALTHCHECK; no start path changes |
 | [`ST-WRITES`](st-writes-feat-storage-writes.md) | #8863 | `in-flight-upstream` | Storage interface, second PR: API v1, authorization storage and socket writes through the interface, each labelled by source; #8854's boundary check fails a write that skips the interface |
@@ -44,6 +43,7 @@ repository.
 | [`MOD-UNITS-CANONICAL`](mod-units-canonical.md) | &mdash; | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), and the conversion constant |
 | [`MOD-WRITE-VALIDATION-READ`](mod-write-validation-read.md) | &mdash; | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-side flag, R1/R2) |
 | [`P0-C-REMEDIATE`](p0-c-remediate.md) | &mdash; | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling |
+| [`RT-CI-WEBKIT-REPORTS`](rt-ci-webkit-reports-test-16-0-0-reports-ready.md) | &mdash; | `ready-to-push` | WebKit's cached-bundle startup test still fails on dev after bdd569a3: report requests cancelled 'due to access control checks' |
 | [`T30-AUTH`](t30-auth-main.md) | &mdash; | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split |
 | [`T30-RESEARCH`](t30-research.md) | &mdash; | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface |
 | [`WS-LAB`](ws-lab-main.md) | &mdash; | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) |

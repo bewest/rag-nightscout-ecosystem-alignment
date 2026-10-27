@@ -2710,25 +2710,14 @@ controls:
       exits 0 against official/master c6a0d8ed (15.0.9).
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda bf/16.0.0-log-privacy
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda v15.0.9
-    control-kind: static
-    proves: >
-      run 2026-10-26 (BFQ-193): v15.0.9 does not contain dev 47723cda, and the
-      same command exits 1; the gate exits 0 on bf/16.0.0-log-privacy 8ae43eb4.
-
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae43eb4 bf/16.0.0-log-privacy
-    cwd: .
-    control: |-
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae43eb4 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae43eb4 official/master
     control-kind: static
     proves: >
-      run 2026-10-26 (BFQ-193): official/dev 47723cda does not contain the
-      unpushed fix 8ae43eb4, and the same command exits 1; the gate exits 0
-      on the branch.
+      the same check on official/master (c6a0d8ed, v15.0.9), which does not
+      carry the fix, exits non-zero (re-pointed 2026-10-27 after #8856 merged).
 
   - gate: |-
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 246313e4 official/dev
@@ -2784,6 +2773,16 @@ controls:
     proves: >
       the same check on official/master (c6a0d8ed, v15.0.9), which does not
       carry the change, exits non-zero (re-pointed 2026-10-27 after the merge).
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9a44e16f test/16.0.0-reports-ready
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9a44e16f official/dev
+    control-kind: static
+    proves: >
+      the same containment against official/dev eed31dca, which does not
+      carry the change, exits 1 (measured 2026-10-27).
 
   - gate: |-
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c7857735 official/dev

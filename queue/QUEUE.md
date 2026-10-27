@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 305 |
-| runnable gates | 366 |
-| explicit `no-gate:` markers | 342 |
+| items | 306 |
+| runnable gates | 367 |
+| explicit `no-gate:` markers | 343 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 342 of the 708 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 343 of the 710 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -44,10 +44,10 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `not-started` | 63 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-STEP-PATCH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 6 | BFQ-178, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM, LOOP-ID-REPLY |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
-| `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
+| `ready-to-push` | 4 | P0-C-REMEDIATE, RT-CI-WEBKIT-REPORTS, T30-AUTH, WS-LAB |
 | `blocked` | 16 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
-| `in-flight-upstream` | 7 | BFQ-72, BFQ-161, BFQ-193, ST-FILTER-READS, ST-WRITES, PLAT-ENTRY, PLAT-SERVE |
-| `merged-upstream` | 52 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-192, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION |
+| `in-flight-upstream` | 6 | BFQ-72, BFQ-161, ST-FILTER-READS, ST-WRITES, PLAT-ENTRY, PLAT-SERVE |
+| `merged-upstream` | 53 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-192, BFQ-193, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 16 | T30-RESEARCH, ARCH-8854-FAILED, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-194, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
 | `done` | 39 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
@@ -1016,7 +1016,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 ## Modernization release train
 
-`parcel: release-train` &mdash; 49 items
+`parcel: release-train` &mdash; 50 items
 
 The adopted order (maintainer, 2026-09-15): 15.0.9, then cut 1, then cut 2,
 then cuts 3+5 combined, then a deprecation release, then cut 4. The premise of
@@ -1039,6 +1039,7 @@ that costs.
 | `RT-CI-DIAGONAL` | CI runs the Node x MongoDB diagonal, the no-database tiers on their own, a Tests pass check and seeded test-file order | `merged-upstream` | `ci/edge-diagonal-matrix` | n/a | 1 run + 1 no-gate |
 | `RT-16-RELEASE` | Release 16.0.0 | `blocked` | `official/dev` | major | 0 run + 1 no-gate |
 | `RT-16-LIVE-ALARMS` | 16.0.0 pre-tag check: live Pushover and APNs delivery on dev | `not-started` | `-` | n/a | 0 run + 1 no-gate |
+| `RT-CI-WEBKIT-REPORTS` | WebKit's cached-bundle startup test still fails on dev after bdd569a3: report requests cancelled 'due to access control checks' | `ready-to-push` | `test/16.0.0-reports-ready` | n/a | 1 run + 1 no-gate |
 | `RT-CI-FLAKES-8DBB60C2` | dev 8dbb60c2's red CI: a concurrent-writes timestamp collision and the WebKit reports-page race | `merged-upstream` | `test/16.0.0-ci-flakes` | n/a | 3 run + 1 no-gate |
 | `RT-16-RIG-SOAK` | 16.0.0 pre-tag check: a real-rig soak on dev | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `RT-BUNDLE-THEME-SPLIT` | Load the modern theme's client code only when it is chosen (page-bundle budget option B) | `not-started` | `-` | patch | 0 run + 1 no-gate |
@@ -1514,6 +1515,36 @@ that costs.
 
 **Notes.** Required before the tag (maintainer, 2026-10-26, session -66).
 
+### `RT-CI-WEBKIT-REPORTS` &mdash; WebKit's cached-bundle startup test still fails on dev after bdd569a3: report requests cancelled 'due to access control checks'
+
+| | |
+|---|---|
+| state (claimed) | `ready-to-push` |
+| repo | `cgm-remote-monitor` |
+| branch | `test/16.0.0-reports-ready` |
+| base | `official/dev@eed31dca` |
+| worktree | `externals/work/crm-reports-ready` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** tests/browser/page-startup.test.js only (9a44e16f): the first controlled navigation waits for the reports page's first report before the next visit, and the browser-error collector records the page each error came from and prints it with a failure.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** test reliability and diagnostics
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9a44e16f test/16.0.0-reports-ready`
+  - The wait and the error-page diagnostics are on the branch.
+- **NO GATE** &mdash; Not reproduced locally before or after the change, in the Playwright v1.63.0 image on WebKit, even with the fixture delaying entries 1.5 s and a 1 s pause before leaving /report/; Chromium does not report cancelled requests as page errors, so a CPU-throttled Chromium run cannot show it either. The wait closes the one step that left /report/ unguarded, but that this is the cause is not proven: the new "Error pages" line names the document on the next CI failure. After the change page-startup is 28 passing on WebKit, Chromium and Firefox; a forced error on /report/ prints Error pages: [".../report/"].
+
+**Evidence.**
+
+- `releases/cgm-remote-monitor-16.0.0/contents.md`
+
+**Notes.** 2026-10-27: dev b84871d7's push run 40571593504 failed Browser tests (26, webkit) "boots every page from cached bundles and retires the old cache on upgrade" with fifteen report requests "due to access control checks", the failure bdd569a3 was meant to end; that merge published no image. Prepared on test/16.0.0-reports-ready off dev eed31dca, not pushed. A first idea, a page marker for the deferred first report, was measured and dropped: sampling every 5 ms showed no moment where the old readiness check passed before the first report started, even at 8x CPU throttling in Chromium.
+
 ### `RT-CI-FLAKES-8DBB60C2` &mdash; dev 8dbb60c2's red CI: a concurrent-writes timestamp collision and the WebKit reports-page race
 
 | | |
@@ -1546,7 +1577,7 @@ that costs.
 
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 
-**Notes.** 2026-10-27, 19:42:55Z: merged. bewest merged #8866 (head f6884342) into dev as b84871d7 (gh pr view 8866); #8867 was closed at 19:28:02Z in its favour. Gates re-pointed to official/dev, with official/master as the control. 2026-10-27, later: the maintainer merged dev 2dc0c1bc in (ddeeff8c); run 40559261253 then failed WebKit's dashboard round trip with page.goForward: WebKit encountered an internal error, on the reports page (the test went forward from /report while its first report was loading). Fixed as 65632082 (3 of 3 on WebKit, Chromium and Firefox, page-startup 28 passing on each; not reproduced locally). #8867 was merged into the branch as 7a96b912 at the maintainer's request, so #8866 is the one CI pull request; #8867 is to be closed. 2026-10-27: dev 8dbb60c2 (#8860) push run 40424319822 failed Browser tests (26, webkit) and Run Tests (26, 5.0), and pull_request run 40424329138 failed WebKit; #8860's own run on the identical tree passed. Neither failure is #8860's: the suites on 8dbb60c2 pass on Node 22.23.4 with MongoDB 5.0.33 and Node 26.12.1 with 8.0.34 (integration record R17). Branch prepared off official/dev 8dbb60c2 by session d22eceb7 in externals/work/crm-ci-flakes; not pushed. The page-startup change may also explain R14's Chromium "recovers the actual reports page after two failed bundle downloads" timeout, which leaves the same page; not measured.
+**Notes.** 2026-10-27, after the merge: bdd569a3 did not end the cached-bundle WebKit failure. dev b84871d7's push run 40571593504 failed it again (fifteen first- week report requests "due to access control checks"), so that merge published no image; 94899828, 88676086 and eed31dca published. Followed up as RT-CI- WEBKIT-REPORTS. 2026-10-27, 19:42:55Z: merged. bewest merged #8866 (head f6884342) into dev as b84871d7 (gh pr view 8866); #8867 was closed at 19:28:02Z in its favour. Gates re-pointed to official/dev, with official/master as the control. 2026-10-27, later: the maintainer merged dev 2dc0c1bc in (ddeeff8c); run 40559261253 then failed WebKit's dashboard round trip with page.goForward: WebKit encountered an internal error, on the reports page (the test went forward from /report while its first report was loading). Fixed as 65632082 (3 of 3 on WebKit, Chromium and Firefox, page-startup 28 passing on each; not reproduced locally). #8867 was merged into the branch as 7a96b912 at the maintainer's request, so #8866 is the one CI pull request; #8867 is to be closed. 2026-10-27: dev 8dbb60c2 (#8860) push run 40424319822 failed Browser tests (26, webkit) and Run Tests (26, 5.0), and pull_request run 40424329138 failed WebKit; #8860's own run on the identical tree passed. Neither failure is #8860's: the suites on 8dbb60c2 pass on Node 22.23.4 with MongoDB 5.0.33 and Node 26.12.1 with 8.0.34 (integration record R17). Branch prepared off official/dev 8dbb60c2 by session d22eceb7 in externals/work/crm- ci-flakes; not pushed. The page-startup change may also explain R14's Chromium "recovers the actual reports page after two failed bundle downloads" timeout, which leaves the same page; not measured.
 
 ### `RT-16-RIG-SOAK` &mdash; 16.0.0 pre-tag check: a real-rig soak on dev
 
@@ -2786,7 +2817,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-201` | BF-201 - npm run dev's nodemon watches nearly the whole repository (1,502 Linux file watches); watch the paths the server loads | `merged-upstream` | `test/16.0.0-ci-flakes` | n/a | 1 run + 1 no-gate |
 | `BFQ-202` | BF-202 - CI's MongoDB 8.0 jobs fail on hosted runners with Linux 6.19 or newer (MongoDB refuses to start, SERVER-121912) | `merged-upstream` | `test/16.0.0-ci-flakes` | n/a | 2 run + 1 no-gate |
 | `BFQ-192` | BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression) | `merged-upstream` | `-` | n/a | 1 run + 1 no-gate |
-| `BFQ-193` | BF-193 - the realtime socket and other write paths log every record written through them | `in-flight-upstream` | `bf/16.0.0-log-privacy` | patch | 2 run + 1 no-gate |
+| `BFQ-193` | BF-193 - the realtime socket and other write paths log every record written through them | `merged-upstream` | `official/dev` | patch | 2 run + 1 no-gate |
 | `BFQ-194` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL | `needs-decision` | `-` | minor | 0 run + 1 no-gate |
 | `BFQ-200` | BF-200 - on dev, an unusable time on API v2's data-snapshot route stops the server | `merged-upstream` | `bf/16.0.0-ddata-at-crash` | patch | 3 run |
 | `BFQ-195` | BF-195 - a stale profile is pushed over the socket after a profile re-send | `merged-upstream` | `bf/16.0.0-null-removes` | patch | 2 run + 1 no-gate |
@@ -6782,9 +6813,9 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
-| branch | `bf/16.0.0-log-privacy` |
+| branch | `official/dev` |
 | base | `official/dev@47723cda` |
 | worktree | `externals/work/crm-bf193` |
 | semver | `patch` |
@@ -6800,9 +6831,9 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda bf/16.0.0-log-privacy`
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda official/dev`
   - The fix branch contains dev 47723cda. Red if the branch is rebased off dev or deleted.
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae43eb4 bf/16.0.0-log-privacy`
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae43eb4 official/dev`
   - The fix commit 8ae43eb4 is on the branch. Red if the branch is rewritten without it.
 - **NO GATE** &mdash; Behaviour is measured outside the queue (the suite needs MongoDB). 2026-10-26 on 8ae43eb4, Node 22.23.4: npm test 4289 passing, 1 failing, 3 pending, the failure environmental (tests/development-watch.test.js, ENOSPC on file watchers); npm run test:all 4617 / 1 / 3, the same failure. The new test fails 6 of 7 cases with the source reverted. Trial merge with #8854 fa22d573 clean.
 
@@ -6810,7 +6841,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-26, later: the maintainer pushed 6b6ad320; it is PR #8856's head (gh pr view, mergeable). Hosted CI on 6b6ad320: 16 checks passed, 0 failed, 2 skipped (Build Docker image and Publish to Docker Hub, which run on push to dev only), including the browser tests on Node 26 in Chromium, Firefox and WebKit. 2026-10-26, after #8854 merged (dev 7ad3a67f): session -66 merged dev 7ad3a67f into bf/16.0.0-log-privacy locally as 6b6ad320, no conflicts, not pushed (the PR head is still 8ae43eb4; the push is the maintainer's). On 6b6ad320: npm test 4436 passing, 0 failing, 3 pending; test:all 4764 passing, 0 failing, 3 pending. The log lines #8854 adds are console.error(err) on storage errors (the follow-up below: error objects may contain documents) and the validation line, which names rules and fields only. #8856 and #8859 merge with each other cleanly. 2026-10-26, later: draft PR #8856 to dev (bf/16.0.0-log-privacy, head 8ae43eb4), opened by the maintainer. 2026-10-26, later (maintainer): BF-193 stays its own PR, separate from the 16.0.0 re-send and merge bundle. 2026-10-26: decided by the maintainer (session -66): debug- gated payload logging through one gate, the existing DEBUG_LOGGING (env.debug.logging), no new setting, using recordForLog in lib/server/log- privacy.js. The summary (operation, collection, client, ref, eventType or item count) is always logged; the payload only with debug on; refusal lines are bounded (8192 characters) and redacted. Built as bf/16.0.0-log-privacy 8ae43eb4, one commit on dev 47723cda, not pushed. Not a pre-tag requirement for 16.0.0 (maintainer, 2026-10-26). Release note: set DEBUG_LOGGING=true to see the records clients send; debug logs then contain health data. Follow-up, read-derived and unverified, not filed as an id: storage error lines that log whole MongoDB error objects (lib/server/treatments.js:173, 284 and 452, lib/server/entries.js:208 on dev 47723cda) may include the document that failed to write; the branch does not cover them. Filed 2026-10-26 from a read- only compatibility audit of dev 47723cda; the socket's counterpart of BF-186, which #8845 fixed for API v3.
+**Notes.** 2026-10-27, 20:09:35Z: merged. bewest merged #8856 (head 6c9af523) into dev as eed31dca (gh pr view 8856), after #8859, as the release allocation ordered. Gates re-pointed to official/dev, with official/master as the control. 2026-10-26, later: the maintainer pushed 6b6ad320; it is PR #8856's head (gh pr view, mergeable). Hosted CI on 6b6ad320: 16 checks passed, 0 failed, 2 skipped (Build Docker image and Publish to Docker Hub, which run on push to dev only), including the browser tests on Node 26 in Chromium, Firefox and WebKit. 2026-10-26, after #8854 merged (dev 7ad3a67f): session -66 merged dev 7ad3a67f into bf/16.0.0-log-privacy locally as 6b6ad320, no conflicts, not pushed (the PR head is still 8ae43eb4; the push is the maintainer's). On 6b6ad320: npm test 4436 passing, 0 failing, 3 pending; test:all 4764 passing, 0 failing, 3 pending. The log lines #8854 adds are console.error(err) on storage errors (the follow-up below: error objects may contain documents) and the validation line, which names rules and fields only. #8856 and #8859 merge with each other cleanly. 2026-10-26, later: draft PR #8856 to dev (bf/16.0.0-log-privacy, head 8ae43eb4), opened by the maintainer. 2026-10-26, later (maintainer): BF-193 stays its own PR, separate from the 16.0.0 re-send and merge bundle. 2026-10-26: decided by the maintainer (session -66): debug- gated payload logging through one gate, the existing DEBUG_LOGGING (env.debug.logging), no new setting, using recordForLog in lib/server/log- privacy.js. The summary (operation, collection, client, ref, eventType or item count) is always logged; the payload only with debug on; refusal lines are bounded (8192 characters) and redacted. Built as bf/16.0.0-log-privacy 8ae43eb4, one commit on dev 47723cda, not pushed. Not a pre-tag requirement for 16.0.0 (maintainer, 2026-10-26). Release note: set DEBUG_LOGGING=true to see the records clients send; debug logs then contain health data. Follow-up, read-derived and unverified, not filed as an id: storage error lines that log whole MongoDB error objects (lib/server/treatments.js:173, 284 and 452, lib/server/entries.js:208 on dev 47723cda) may include the document that failed to write; the branch does not cover them. Filed 2026-10-26 from a read- only compatibility audit of dev 47723cda; the socket's counterpart of BF-186, which #8845 fixed for API v3.
 
 ### `BFQ-194` &mdash; BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL
 
