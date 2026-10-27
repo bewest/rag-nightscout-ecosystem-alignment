@@ -165,7 +165,9 @@ def _cells(line):
     body = body[1:]
     if body.endswith("|"):
         body = body[:-1]
-    return [c.strip() for c in body.split("|")]
+    # A cell may hold an escaped pipe (`^22.12 \|\| >=24`); only a bare one
+    # separates cells.
+    return [c.strip() for c in re.split(r"(?<!\\)\|", body)]
 
 
 def _plain(cell):
@@ -293,6 +295,16 @@ def resolve_item(item, repo_paths, use_network):
         return out
 
     ok, value = git(absolute, "rev-parse", "--verify", "%s^{commit}" % branch)
+    ref = branch
+    if not ok and "," not in branch:
+        # A branch that was pushed and merged often survives only as the
+        # upstream remote's ref; `official` is the remote this programme
+        # fetches (origin is an older fork). The record names the ref it used.
+        ok_remote, remote_value = git(absolute, "rev-parse", "--verify",
+                                      "official/%s^{commit}" % branch)
+        if ok_remote:
+            ok, value, ref = True, remote_value, "official/%s" % branch
+            out["branch_ref_resolved"] = ref
     if not ok:
         out["problems"].append("branch %s does not resolve in %s: %s"
                                % (branch, relative, value))
@@ -302,6 +314,12 @@ def resolve_item(item, repo_paths, use_network):
     base = (item.get("base") or "").split("@")[0].strip()
     if base:
         ok, base_sha = git(absolute, "rev-parse", "--verify", "%s^{commit}" % base)
+        if not ok and "," not in base:
+            ok_remote, remote_sha = git(absolute, "rev-parse", "--verify",
+                                        "official/%s^{commit}" % base)
+            if ok_remote:
+                ok, base_sha = True, remote_sha
+                out["base_ref_resolved"] = "official/%s" % base
         if ok:
             out["base_sha"] = base_sha
             contains = subprocess.run(
@@ -314,19 +332,32 @@ def resolve_item(item, repo_paths, use_network):
             declared = item.get("base") or ""
             if "@" in declared:
                 pinned = declared.split("@", 1)[1].strip()
-                if pinned and not base_sha.startswith(pinned.replace("^{commit}", "")):
-                    out["problems"].append(
-                        "base declared as %s but %s resolves to %s today"
-                        % (declared, base, base_sha[:12]))
+                pinned = pinned.replace("^{commit}", "")
+                if pinned and not base_sha.startswith(pinned):
+                    # A base that has moved forward past its pin (a merged item on
+                    # a dev that kept going) is not the same as one that no longer
+                    # contains it (rewritten or reverted): only the second is a
+                    # resolution problem. The first is still a gap, because the
+                    # item was measured at the pin, not at today's base.
+                    in_base = subprocess.run(
+                        ("git", "-C", absolute, "merge-base", "--is-ancestor",
+                         pinned, base_sha), capture_output=True, text=True)
+                    if in_base.returncode == 0:
+                        out["base_pin"] = {"declared": pinned,
+                                           "contained_in_base": True}
+                    else:
+                        out["problems"].append(
+                            "base declared as %s but %s resolves to %s today"
+                            % (declared, base, base_sha[:12]))
         else:
             out["problems"].append("base %s does not resolve: %s" % (base, base_sha))
 
-    ok, blob = git(absolute, "show", "%s:package.json" % branch)
+    ok, blob = git(absolute, "show", "%s:package.json" % ref)
     if ok:
         try:
             out["package_version_at_branch"] = json.loads(blob).get("version")
         except ValueError:
-            out["problems"].append("package.json at %s is not valid JSON" % branch)
+            out["problems"].append("package.json at %s is not valid JSON" % ref)
 
     out["published"] = _publication(absolute, branch, use_network)
     return out
@@ -620,7 +651,12 @@ def _closure_state(known, verdicts):
     """
     if known is None:
         return "not-in-register"
-    fixed = known["status_verbatim"].lower().startswith(("fixed", "partly fixed"))
+    # The register's status words since 2026-09-21: `fixed` / `partly fixed` (on
+    # a branch), `merged` / `partly merged` (on dev), `released` / `partly
+    # released` (in a tag). Each is a claim that the repair exists.
+    fixed = known["status_verbatim"].lower().startswith(
+        ("fixed", "partly fixed", "merged", "partly merged", "landed",
+         "released", "partly released"))
     if "FAIL" in verdicts:
         return "claimed-fixed-but-a-gate-failed" if fixed else "open-and-a-gate-failed"
     if "UNMEASURED" in verdicts or "NO-INSTRUMENT" in verdicts:
@@ -659,6 +695,12 @@ def build_gaps(record, register, chosen_ids, doc, enabled):
                     "%s -- NOT RUN in this capture." % (gate["command"] or "?"),
                     "%s This capture enabled kinds %s. A skipped gate is not a pass."
                     % (gate["detail"], ",".join(sorted(enabled))))
+            elif gate["outcome"] == status.FAIL:
+                add("gate-failed", "%s gates[%d]" % (item["id"], gate["index"]),
+                    "%s -- FAILED in this capture (%s)."
+                    % (gate["command"] or "?", gate["detail"]),
+                    "A failing gate is a measured defect or a broken instrument; "
+                    "either way the property it guards is not verified here.")
             elif gate["outcome"] == status.MISSING:
                 add("gate-script-absent", "%s gates[%d]" % (item["id"], gate["index"]),
                     "%s -- the instrument does not exist." % (gate["command"] or "?"),
@@ -680,6 +722,15 @@ def build_gaps(record, register, chosen_ids, doc, enabled):
                 "Could not resolve the work to a commit: %s" % problem,
                 "An item whose branch does not resolve has no SHA in this record, "
                 "so nothing about its content was verified here.")
+        pin = item["resolved"].get("base_pin")
+        if pin:
+            add("base-moved-past-pin", item["id"],
+                "Base declared at %s; %s has moved forward from it and still "
+                "contains it (resolves to %s today)."
+                % (pin["declared"], (item["resolved"].get("base_declared") or "")
+                   .split("@")[0], (item["resolved"].get("base_sha") or "")[:12]),
+                "The item's gates and notes describe the pinned commit. Nothing "
+                "here re-measured the item against the commits added since.")
         published = item["resolved"].get("published") or {}
         if published and not published.get("remote_checked"):
             add("publication-unverified", item["id"],
@@ -1089,8 +1140,15 @@ def _render_item(item):
                                              resolved.get("repo_path")))
     lines.append("| branch | `%s` |" % (resolved.get("branch") or "-"))
     lines.append("| commit | `%s` |" % (resolved.get("branch_sha") or "UNRESOLVED"))
+    if resolved.get("branch_ref_resolved"):
+        lines.append("| resolved through | `%s` |" % resolved["branch_ref_resolved"])
     lines.append("| base declared | `%s` |" % (resolved.get("base_declared") or "-"))
     lines.append("| base resolved | `%s` |" % (resolved.get("base_sha") or "-"))
+    if resolved.get("base_ref_resolved"):
+        lines.append("| base resolved through | `%s` |" % resolved["base_ref_resolved"])
+    if resolved.get("base_pin"):
+        lines.append("| base pin | `%s`, contained in the base resolved; the base "
+                     "has moved past it |" % resolved["base_pin"]["declared"])
     lines.append("| branch contains base | %s |" % _tri(resolved.get("branch_contains_base")))
     lines.append("| commits ahead of base | %s |" % (
         "-" if resolved.get("commits_ahead_of_base") is None

@@ -6,8 +6,8 @@ Measured 2026-10-26 (to 19:10Z) against `official/dev` `47723cda` (the merge of 
 `official/master` `c6a0d8ed` (= `v15.0.9`, the shipping release), in
 `externals/cgm-remote-monitor-official` after `git fetch official`, with `gh pr view`, `gh run view` and
 `gh api` for PR, CI and branch-protection state. Updated at 22:13Z for `dev` `7ad3a67f` (#8854 `c08cbe03`,
-then #8084): the Identity rows for `dev`, the merge list, #8854 and the in-flight rows; the other figures
-are still those of `47723cda`.
+then #8084), and on 2026-10-27 for `dev` `8dbb60c2` (#8860): the Identity rows for `dev`, the merge list,
+#8854, #8860, the in-flight rows and the CI on `8dbb60c2`; the other figures are still those of `47723cda`.
 
 > Complements the generated changelog. The changelog is authoritative for *what merged*; this file
 > records what the release is made of so far, how each figure was measured, and what is unsettled.
@@ -26,10 +26,10 @@ for testers is [testing-notes.md](testing-notes.md) (not written yet).
 | Tag to be cut | `v16.0.0` and `16.0.0`, both forms, as for `15.0.7` to `15.0.9` |
 | Merged part | `official/master..official/dev` |
 | Base (shipping) | `c6a0d8ed` = `v15.0.9` (released 2026-10-21) |
-| `dev` head | `7ad3a67f` (merge of #8084, 2026-10-26 22:13:18Z, by AndyLow91), tree `8469654e`; before it `c08cbe03` (#8854, 21:20:34Z) and `47723cda` (#8605, cut 5, 17:32:44Z, tree `200a1c00`) |
-| Commits on `dev` | 882 — `git rev-list --count official/master..official/dev` (506 without merges, `--no-merges`); 857 at `47723cda` |
-| First-parent commits on `dev` | 37 — `git rev-list --first-parent --count official/master..official/dev`: 36 PR merges and the cycle's version bump `04d435eb` |
-| Diff on `dev` | 847 files, +126813/−15088 — `git diff --shortstat official/master official/dev`; 745 files, +123438/−15023 at `47723cda` |
+| `dev` head | `8dbb60c2` (merge of #8860, 2026-10-27 00:07:13Z, by AndyLow91), tree `342de4bc`, the tree of #8860's head `ad593fce`; before it `7ad3a67f` (merge of #8084, 2026-10-26 22:13:18Z), tree `8469654e`, and `c08cbe03` (#8854, 21:20:34Z) and `47723cda` (#8605, cut 5, 17:32:44Z, tree `200a1c00`) |
+| Commits on `dev` | 890 — `git rev-list --count official/master..official/dev` (513 without merges, `--no-merges`); 882 at `7ad3a67f`, 857 at `47723cda` |
+| First-parent commits on `dev` | 38 — `git rev-list --first-parent --count official/master..official/dev`: 37 PR merges and the cycle's version bump `04d435eb` |
+| Diff on `dev` | 855 files, +127983/−15090 — `git diff --shortstat official/master official/dev`; 847 files, +126813/−15088 at `7ad3a67f`; 745 files, +123438/−15023 at `47723cda` |
 | Merged on 2026-10-26 | 17 PRs, from `b29f1bf7` to `7ad3a67f`: 611 files, +86276/−3996 — `git diff --shortstat b29f1bf7 official/dev`; the thirteen after `207a8352`: `git rev-list --first-parent --count 207a8352..official/dev` = 13 |
 | `package.json` version | `16.0.0` — `git show official/dev:package.json \| grep '"version"'` |
 | `engines.node` | `^22.23.4 \|\| ^24.22.1 \|\| >=26.12.1` (AndyLow91's `6a146a4c`, "require Node Brotli security patches"; supersedes the decided `^22.12 \|\| >=24`) |
@@ -37,7 +37,8 @@ for testers is [testing-notes.md](testing-notes.md) (not written yet).
 | Connector pin | `nightscout-connect` exactly `0.1.0`, as in 15.0.9 (`git show official/dev:package.json`) |
 | MongoDB | driver `mongodb` `^7.6.0` (cut 3); the README states 5.0 through 8.0 as supported and 4.4 and earlier as unsupported (`README.md:157-158` on `dev`); driver 7 starts on 4.4 and refuses 3.6, 4.0 and 4.2, which get the boot error page (BF-182; decisions). Docker Compose starts `mongo:6.0.27` (`docker-compose.yml:12`; 15.0.9: `mongo:5.0.32`) |
 | Web framework | `express` `^5.2.1`, `helmet` `^8.3.0` (cut 5; `package.json` on `dev`); 15.0.9 locks `express` 4.22.2 |
-| Staging PR | #8824 (`dev` → `master`, "new dev branch post 15.0.9 release"): open, head `7ad3a67f` (`BLOCKED`, `REVIEW_REQUIRED`, read after 22:13Z); at `47723cda`: `mergeable` `MERGEABLE`, `mergeStateStatus` `BLOCKED`, `reviewDecision` `REVIEW_REQUIRED`; every check reported on the head passed except the jobs skipped by design (*Publish to Docker Hub* and *Build Docker image* on the `pull_request` run, *Validate Docker image* on the push run) — `gh pr view 8824`, `gh pr checks 8824`. `master`'s branch protection requires `Run Tests (22, 6)`, `Run Tests (22, 4.4)` and `Run Tests (24, 6)` (`gh api repos/nightscout/cgm-remote-monitor/branches/master/protection`, read 2026-10-26); no workflow on `dev` emits `Run Tests (22, 4.4)` since #8833, so #8824 cannot meet `master`'s required checks until that setting changes, and it also needs one approving review |
+| Staging PR | #8824 (`dev` → `master`, "new dev branch post 15.0.9 release"): open, head `8dbb60c2` (`MERGEABLE`, `BLOCKED`, `REVIEW_REQUIRED`, read 2026-10-27); `master`'s protection read again 2026-10-27 is unchanged (the three `Run Tests` contexts, one approval); at `47723cda`: `mergeable` `MERGEABLE`, `mergeStateStatus` `BLOCKED`, `reviewDecision` `REVIEW_REQUIRED`; every check reported on the head passed except the jobs skipped by design (*Publish to Docker Hub* and *Build Docker image* on the `pull_request` run, *Validate Docker image* on the push run) — `gh pr view 8824`, `gh pr checks 8824`. `master`'s branch protection requires `Run Tests (22, 6)`, `Run Tests (22, 4.4)` and `Run Tests (24, 6)` (`gh api repos/nightscout/cgm-remote-monitor/branches/master/protection`, read 2026-10-26); no workflow on `dev` emits `Run Tests (22, 4.4)` since #8833, so #8824 cannot meet `master`'s required checks until that setting changes, and it also needs one approving review |
+| CI on `8dbb60c2` | **red.** `push` run 40424319822: *Browser tests (26, webkit)* (658 passing, 1 failing: "Complete page template startup boots every page from cached bundles and retires the old cache on upgrade", `Uncaught browser errors`, fifteen report-page `entries.json`/`treatments.json` requests "due to access control checks") and *Run Tests (26, 5.0)* (`tests/concurrent-writes.test.js` "all documents have unique _id after concurrent inserts", expected 10, got 9) failed, so *Tests pass* failed and no image was published; `pull_request` run 40424329138: the same WebKit test failed, every other job passed (*Validate Docker image* amd64 and arm64 passed); CodeQL passed on both events (40424319787, 40424329177). #8860's own run 40422840113 on `ad593fce`, the identical tree, passed every job at 23:55Z, before UTC midnight; the merge runs started after 00:07Z. See [Known defects](#known-defects-on-dev-now) — `gh run view <id> --json jobs`, `--log-failed` |
 | CI on `7ad3a67f` | `push` run 40410737772 passed every job and published (*Validate Docker image* skipped by design); `pull_request` run 40410745675 and CodeQL (40410737784, 40410745580) passed; on `c08cbe03`, push 40403541566 and `pull_request` 40403553936 passed — `gh run list --commit`, `gh run view <id> --json jobs` |
 | CI on `47723cda` | `push` run 40369632641 (16 jobs: 15 passed, *Validate Docker image* skipped) published `dev`'s image at 17:42:36Z (`nightscout/cgm-remote-monitor:latest_dev` and `dev_47723cda…`; Docker Hub reports `latest_dev` updated 17:42:32Z); `pull_request` run 40369639616 passed; CodeQL passed on both events (40369632350, 40369639665) — `gh run view <id> --json jobs`; the 2026-10-26 merges' runs are R14 in the [integration record](../../docs/30-design/remedial/rc-16.0.0-integration-record.md) |
 | CI on the 2026-10-25 merges | every `push` and `pull_request` run on `5de8505d`, `fd3792e5`, `eb44a9c2`, `78524be4` and `b29f1bf7` passed on attempt 1 and each push run published an image (integration record R13); `eb72a1d3` and `93f152bd` published, `a20469dc` failed Firefox and skipped publishing (R6, R9, R10) |
@@ -54,8 +55,8 @@ bodies (see the integration record). No live site, vendor account or Docker imag
 
 Merge SHAs: `git log --first-parent --format='%h %ad %an %s' --date=iso official/master..official/dev`;
 merge times are `gh pr view <n> --json mergedAt`. The first nineteen merges below were made on
-2026-10-25 (#8834, #8835 and #8838 by bewest, the others by AndyLow91), the last seventeen on 2026-10-26
-(#8843, #8848 and #8850 by bewest, the others by AndyLow91). Register ids refer to the
+2026-10-25 (#8834, #8835 and #8838 by bewest, the others by AndyLow91), seventeen on 2026-10-26
+(#8843, #8848 and #8850 by bewest, the others by AndyLow91) and #8860 on 2026-10-27, by AndyLow91. Register ids refer to the
 [backfix register](../../docs/30-design/remedial/nightscout-backfix-register.md).
 
 | PR | merged (UTC) | merge | head | author | register | queue | what |
@@ -96,6 +97,7 @@ merge times are `gh pr view <n> --json mergedAt`. The first nineteen merges belo
 | #8605 | 10-26 17:32:44 | `47723cda` | `a77cb146` | AndyLow91 | — | `RT-3` | cut 5: Express 5, Helmet 8, Axios 1, EJS 6, entities 8, `mime-types` 3, Swagger UI 5, APNs 8, a native Pushover client, a maintained notification cache, Flot 4 (204 files, +59400/−1515) |
 | #8854 | 10-26 21:20:34 | `c08cbe03` | `246313e4` | AndyLow91 | — | `ARCH-8854` | shared persistence and stored-data contracts: the persistence boundary `lib/storage/write-step.js`, socket Temporary Target validation under `reject`, the opt-in `Nightscout-Data-Warnings` header (46 files, +2340/−100; below) |
 | #8084 | 10-26 22:13:18 | `7ad3a67f` | `27886bab` | gardenrobot | — | — | Google Fonts replaced by fonts served from the site; the Content-Security-Policy drops the Google font hosts (92 files, +1093/−23); not examined further |
+| #8860 | 10-27 00:07:13 | `8dbb60c2` | `ad593fce` | AndyLow91 | — | — | the glucose pentagon (Comprehensive Glucose Pentagon) and its prognostic glycemic risk (PGR) in the Distribution report, for issue 8809 (20 files, +1178/−10; below) |
 
 Before merging, AndyLow91 merged `dev` into most branches and added commits of his own (read with
 `git log` and `git show`):
@@ -243,6 +245,21 @@ authors'):
   fail (`--fail-zero`). Not asked for: `246313e4` adds a `failed` slot on socket treatment arrays under
   `reject` for an item whose write cannot be confirmed (open item 11). The merged tree's client replay is
   R16 in the integration record: 0 differences from `47723cda` in 201 cells.
+
+**#8860**, the glucose pentagon (read from the PR body and `git diff --stat 7ad3a67f 8dbb60c2`; not run by
+this programme). The Distribution report gains the Comprehensive Glucose Pentagon's five component values,
+a reference polygon, CGM coverage, the reading count and the prognostic glycemic risk (PGR), in both
+glucose units, both report themes and print (`lib/report/pentagon.js`, `pentagon-view.js`, `agp-data.js`,
+`lib/report_plugins/glucosedistribution.js`). Fixed 70–180 mg/dL thresholds; it reads the original CGM
+observations before the report's one-minute filter, time-weights them, collapses exact same-source
+duplicates and withholds the score for conflicting simultaneous readings or indistinguishable alternating
+streams. The score is withheld below 70 % elapsed coverage, below 16 h 48 min of observed data, or when an
+hourly filter excludes part of the day; the PR body calls these "implementation guards, not validated
+clinical PGR thresholds", and says the numerical checks "do not constitute third-party clinical
+validation" and that independent review of the incomplete-data method and clinical presentation remains
+advisable. It adds the Nightscout Reporter licence notices (`docs/third-party/`) and the method in
+`docs/test-specs/glucose-pentagon.md`. The PR's CI on `ad593fce` passed every job; the merge's did not
+([Identity](#identity), CI on `8dbb60c2`).
 
 None of these merged trees was re-run locally by this programme, except the client replay on `7ad3a67f`
 (R16). The merged trees' CI is in
@@ -482,7 +499,29 @@ place and form as the [15.0.9 integration record](../../docs/30-design/remedial/
 No verification record is captured yet: `verification-record.{json,md}` is generated by
 `tools/queue/verification-record.py` once, at release time, from the state being cut
 ([VERIFICATION-RECORDS.md](../VERIFICATION-RECORDS.md)), and is never hand-written, so this directory
-has none until then.
+has none until then. The items it is captured over are listed in
+[verification-selection.txt](verification-selection.txt) (65 queue ids: every item this file or
+[decisions.md](decisions.md) names, and the release items), with the capture command.
+
+**Dry run, 2026-10-27, `dev` `8dbb60c2`** (reproduced; written to a scratch directory, not kept, because a
+record is captured once, at the tag). The generator ran on the selection with its default `static` and
+`unit` gate kinds: 65 items, 49 PASS, 4 FAIL, 12 UNMEASURED; 157 gates run or marked, 72 passed, 5 failed,
+80 are `no-gate` markers. The five failures: BFQ-72's gate (BF-72 still on `dev`; its fix is in the
+advisory fork), BFQ-161's freshness gate (the fork branch owes a merge of `dev`), RT-CONNECT-PIN-CUTS
+(the gate refuses to report because every ref it reads now pins `nightscout-connect` 0.1.0) and
+RT-NODE-FLOOR-TESTED's two gates (they read the old `origin/chore/*` tips). The dry run found four defects
+in the generator and the register, fixed on 2026-10-27 before the tag-time capture (VERIFICATION-RECORDS.md,
+"Changes"): register statuses `merged` and `released` were not read as claims of a fix, so every merged
+entry was listed as not demonstrated; a failing gate added no gap of its own; an item whose `dev` had
+moved past its pinned base was reported as unresolved (35 items); a cell holding an escaped `\|` was split
+in two (BF-58), and three §1b rows carried a sixth cell (BF-177, BF-179, BF-182). RT-NODE-FLOOR-TESTED now
+gates on `official/dev` (merged-upstream; register BF-58 and BF-59 `merged 2026-10-26`), and
+RT-CONNECT-PIN-CUTS gates `dev` and `master` with `v15.0.8` as its bad control (BF-65). Five register
+entries written against the cut branches before they merged were re-graded by measurement on `8dbb60c2`,
+each with a break-it run where one applies: BF-55, BF-65 and BF-88 `merged 2026-10-26`, BF-56 `closed,
+did not occur`, BF-64 `closed, superseded`. **Re-run after the fixes** (same selection and kinds): 65
+items, 51 PASS, 2 FAIL, 12 UNMEASURED; the two failures are BFQ-72 and BFQ-161, both pre-tag
+requirements in the advisory forks.
 
 ## Open items a releaser must settle
 
@@ -634,6 +673,12 @@ candidate is named.
 - Dose labels round correctly on midpoints (#8851).
 - The Bolus Wizard Preview and Careportal Bolus Wizard unit fixes (BF-172, BF-173) and the profile
   picker (BF-174); BF-09 (the socket's duplicate check keeps zero temps, cancels and zero amounts); #8816's snooze; #8812 and #8808's report figures.
+- The glucose pentagon and PGR in the Distribution report (#8860): what the five values and the risk figure
+  are, that the report withholds them when too little of the period has readings, and the PR's own caveats
+  carried verbatim: the withholding rules are "implementation guards, not validated clinical PGR
+  thresholds", PGR is a research metric, and the numerical checks "do not constitute third-party clinical
+  validation". It is a report figure, not a treatment recommendation; talk to the care team before acting
+  on it.
 - One stored-text change from `sanitize-html` 2.18.1 (#8835): a malformed empty
   `<textarea></textarea/>` followed by an image with an event handler is now stored as the image tag
   without its handler (`<img src="x" />`), where 2.17.5 stored nothing (the empty string). The other 34

@@ -2,7 +2,14 @@
 
 **Status: DRAFT tooling. Requires maintainer review before it is relied upon.**
 
-**Current record, 2026-09-22:** `cgm-remote-monitor-15.0.9/verification-record.{json,md}` was
+**16.0.0, 2026-10-27:** no record is captured yet; it is captured once, at the tag, over the items in
+[`cgm-remote-monitor-16.0.0/verification-selection.txt`](cgm-remote-monitor-16.0.0/verification-selection.txt),
+which also holds the command. A dry run on `dev` `8dbb60c2`, written to a scratch directory and not
+kept, is described in the 16.0.0 [contents](cgm-remote-monitor-16.0.0/contents.md#testing-so-far); the
+generator fixes it led to are under [Changes](#changes). 15.0.9 was released without a capture of
+its merged tree, the gap this selection file exists to prevent.
+
+**15.0.9, as of 2026-09-22:** `cgm-remote-monitor-15.0.9/verification-record.{json,md}` was
 captured 2026-09-16 from the Phase 0 branch candidate (queue parcel `phase0`, then unmerged
 `bf/*` branches off `origin/dev` `a8888f0d`). It is **superseded**: 15.0.9 is now
 `official/master..official/dev` `74fc6619` (see
@@ -156,6 +163,26 @@ verdicts, bases and gaps. Do **not** diff them on digests, or on a `last_line` t
 a duration. The digest is there to let a reader bind a full log they hold to *this* capture,
 not to let two captures be compared byte for byte.
 
+## Changes
+
+**2026-10-27**, from the 16.0.0 dry run. Each was reproduced on the 16.0.0 selection, `--self-test`
+passes with `--parcel phase0` and with `--id BFQ-177 --id BFQ-173`, and `--check` on the 15.0.9 record
+still reports only its documented hand-edit drift.
+
+- **Register statuses.** `merged`, `partly merged`, `released`, `partly released` and `landed` now count
+  as claims of a fix, alongside `fixed` and `partly fixed`. Since the register adopted those words
+  (2026-09-21), no merged or released entry could reach `claimed-fixed-gates-pass`, so every one
+  was listed as not demonstrated, and breaking a gate left the gaps section the same size: the
+  self-test's "the gaps section grew" assertion failed on the 16.0.0 selection, on the unmodified
+  generator too.
+- **A failing gate is a gap of its own** (`gate-failed`), whatever the register says.
+- **A base that moved past its pin** (`base: official/dev@<sha>` while `dev` has moved on and still
+  contains `<sha>`) is the gap `base-moved-past-pin`, no longer `branch-unresolved`; a pin that `dev`
+  no longer contains is still unresolved.
+- **A branch or base that exists only on the upstream remote** resolves through `official/<name>`,
+  and the record names the ref it used (`resolved through`).
+- **Register cells holding an escaped `\|`** are one cell (BF-58's status read as `\`).
+
 ## What a record does not do
 
 It does not ship anything, and it does not assert that a defect has reached an operator. A
@@ -167,6 +194,6 @@ cross-section of all three at one instant, with the measurements attached.
 
 ---
 
-*Draft tooling, 2026-09-15; status updated 2026-09-22. Requires maintainer review before it
+*Draft tooling, 2026-09-15; status updated 2026-09-22 and 2026-10-27. Requires maintainer review before it
 is relied upon. Nightscout is not a medical device and
 nothing here is medical advice.*

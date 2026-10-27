@@ -1,0 +1,73 @@
+# The queue items the 16.0.0 verification record is captured over: every item
+# contents.md or decisions.md names, plus the release items. One id per line;
+# keep it sorted and add an id in the same commit that names it in contents.md.
+# Capture (once, at the tag; VERIFICATION-RECORDS.md):
+#   python3 tools/queue/verification-record.py --release cgm-remote-monitor-16.0.0 \
+#     --captured-at "$(date +%Y-%m-%dT%H:%M:%S%:z)" \
+#     $(grep -v '^#' releases/cgm-remote-monitor-16.0.0/verification-selection.txt | sed 's/^/--id /') \
+#     --out-dir releases/cgm-remote-monitor-16.0.0
+ARCH-8854
+ARCH-8854-FAILED
+BFQ-09
+BFQ-137
+BFQ-145
+BFQ-152
+BFQ-156
+BFQ-157
+BFQ-158
+BFQ-159
+BFQ-160
+BFQ-161
+BFQ-163
+BFQ-164
+BFQ-165
+BFQ-166
+BFQ-167
+BFQ-169
+BFQ-170
+BFQ-172
+BFQ-173
+BFQ-174
+BFQ-176
+BFQ-177
+BFQ-179
+BFQ-180
+BFQ-182
+BFQ-183
+BFQ-185
+BFQ-186
+BFQ-190
+BFQ-191
+BFQ-192
+BFQ-193
+BFQ-194
+BFQ-195
+BFQ-46
+BFQ-72
+BFQ-92
+BFQ-93
+BFQ-ENV
+ID-SIMPLE-MATCH
+MOD-WRITE-VALIDATION
+RT-1
+RT-16-LIVE-ALARMS
+RT-16-RELEASE
+RT-16-RIG-SOAK
+RT-2
+RT-3
+RT-5
+RT-BOOT-INDEX-AWAIT
+RT-BUNDLE-THEME-SPLIT
+RT-CI-DIAGONAL
+RT-CONNECT-PIN-CUTS
+RT-CONNECT-TEARDOWN
+RT-D3-SUITE
+RT-JSDOM-REST
+RT-NODE-FLOOR-TESTED
+RT-PR-8730
+RT-PROPAGATION
+RT-REBASE
+RT-TEST-TIERS
+RT-VERSION
+TEST-FLAKE-REPOST-FIND-COUNT
+WRITE-CONTRACT

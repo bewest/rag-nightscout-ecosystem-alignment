@@ -3295,9 +3295,9 @@ items:
     pr: []
     blast_radius: >
       16.0.0 is everything in official/master..official/dev: master c6a0d8ed
-      (v15.0.9) to dev 47723cda (merge of #8605), measured 2026-10-26: 857
-      commits, 35 first-parent commits (34 PR merges and the version bump
-      04d435eb), 745 files, +123438/-15023 (git rev-list --count,
+      (v15.0.9) to dev 8dbb60c2 (merge of #8860), measured 2026-10-27: 890
+      commits, 38 first-parent commits (37 PR merges and the version bump
+      04d435eb), 855 files, +127983/-15090 (git rev-list --count,
       --first-parent --count and git diff --shortstat official/master
       official/dev). The list is
       releases/cgm-remote-monitor-16.0.0/contents.md. The staging PR is #8824
@@ -3323,13 +3323,23 @@ items:
       - releases/cgm-remote-monitor-16.0.0/contents.md
       - releases/cgm-remote-monitor-16.0.0/decisions.md
     notes: >
+      2026-10-27: #8860 merged (dev 8dbb60c2, the glucose pentagon in the
+      Distribution report). dev's CI on 8dbb60c2 is red: the WebKit
+      cached-bundle startup test failed in both runs and a concurrent-write
+      test in the push run, on a tree whose PR run had passed every job
+      (contents.md, Identity and Known defects). The verification record's
+      item list is releases/cgm-remote-monitor-16.0.0/verification-selection.txt;
+      a dry run of the generator over it on 8dbb60c2 fails only BFQ-72 and
+      BFQ-161, after the generator and register fixes it led to
+      (VERIFICATION-RECORDS.md, Changes). blast_radius is re-measured on
+      8dbb60c2.
+
       2026-10-26, later: #8854 merged (ARCH-8854, c08cbe03; dev now
       7ad3a67f). The outcome-B condition, the client replay re-run on the
       merged tree, is done: integration record R16, 0 differences from dev
       47723cda in 201 cells across WRITE_VALIDATION off, log and reject. One
       open decision came out of it, the socket's failed slot
-      (ARCH-8854-FAILED). This item's blast_radius figures are still those
-      measured on 47723cda.
+      (ARCH-8854-FAILED).
 
       2026-10-26, later (maintainer, session -66): BF-193's logging question
       is decided (debug-gated payload logging through DEBUG_LOGGING; BFQ-193,
@@ -9589,10 +9599,10 @@ items:
     title: BF-65 - cuts 1-3 ship the leaking connector to upgraders first
     parcel: release-train
     repo: cgm-remote-monitor
-    branch: chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6
-    base: origin/dev@a8888f0d
+    branch: official/dev
+    base: official/master@c6a0d8ed
     worktree: externals/cgm-remote-monitor-official
-    state: gate-not-met
+    state: merged-upstream
     ships_to_operators_today: false
     blast_radius: One line of package.json on each of three cut tips.
     review: maintainer, plus the security reviewer who takes BFQ-CONNECTOR -
@@ -9609,15 +9619,14 @@ items:
     semver_reason: a dependency pin moves to a newer patch of the same package
     register: [BF-65]
     gates:
-      - run: node tools/queue/gates/connector-pin-exposure.js --refs official/chore/retire-jsdom,official/chore/build-runtime-separation,official/chore/compose-mongodb6,official/dev
+      - run: sh tools/queue/gates/connector-pin-with-control.sh official/dev,official/master
         kind: static
         describe: >
-          FAILS while any of the three cut tips pins the v0.0.13 tag tarball.
-          On 2026-10-21 cut 1 806ff2f0 pins v0.1.0 (ok) and cuts 2 and 3 still
-          pin v0.0.13 (bad); official/dev (pinned to the released connector
-          0.1.0) is the control. Reads official/* since 2026-10-21; origin/*
-          in this checkout is an older fetch. The gate refuses to report when every ref agrees, because a
-          run that distinguishes nothing is not a result.
+          Met when official/dev and official/master pin the released
+          nightscout-connect 0.1.0 and the v15.0.8 tag, read beside them as
+          the built-in bad control, is reported BAD (it pins the v0.0.13
+          tarball). Replaces the cut-tip gate, which refused to report once
+          every cut merged with the 0.1.0 pin and all its refs agreed.
       - no-gate: >
           The pins are measured; the release ordering is quoted from
           release-readiness §5 and was not re-derived. So "ships the leaking
@@ -9628,6 +9637,14 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-27: merged-upstream. Cuts 1-3 merged into dev pinning
+      nightscout-connect 0.1.0 (cut 3 #8844 on 2026-10-26); the five cut
+      heads, dev 8dbb60c2, master and v15.0.9 all pin 0.1.0, and only
+      v15.0.8 and old non-cut branches pin v0.0.13 (measured). The gate
+      is re-pointed at dev and master with v15.0.8 as its bad control
+      (6 checked, 2 failing, both v15.0.8's: met). Register BF-65 merged
+      2026-10-26.
+
       2026-10-25: cut 2's part is met. #8837 merged as eb44a9c2 and
       official/chore/build-runtime-separation af7ba73a pins
       nightscout-connect v0.1.0. Gate on official/* (run 2026-10-25 after
@@ -9657,10 +9674,10 @@ items:
     title: BF-58, BF-59 - the enforced Node floor is not the Node anything exercises
     parcel: release-train
     repo: cgm-remote-monitor
-    branch: chore/compose-mongodb6, chore/mime-exposure-review, chore/nightscout-modernization
-    base: origin/dev@a8888f0d
+    branch: official/dev
+    base: official/master@c6a0d8ed
     worktree: externals/cgm-remote-monitor-official
-    state: gate-not-met
+    state: merged-upstream
     ships_to_operators_today: false
     blast_radius: >
       Dockerfile (builder and runtime FROM lines), the .github/workflows
@@ -9683,38 +9700,37 @@ items:
       itself is classified on RT-1 and this item does not restate it.
     register: [BF-58, BF-59]
     gates:
-      - run: 'git -C externals/cgm-remote-monitor-official show origin/chore/retire-jsdom:.github/workflows/main.yml | grep -q "''22.23.2''" && git -C externals/cgm-remote-monitor-official show origin/chore/retire-jsdom:.github/workflows/main.yml | grep -q "''24.20.0''"'
+      - run: NODE_FLOOR_REF=official/dev node tools/queue/gates/node-floor-tested.js
         kind: static
         describe: >
-          CONTROL, and it PASSES - cut 1's test matrix is
-          ['22.23.2','22','24.20.0','24'], so the two floor versions the runtime
-          policy refuses to start below are exercised. A green here is what
-          makes the red below a fact about cut 3 rather than about the grep.
-      - run: 'git -C externals/cgm-remote-monitor-official show origin/chore/compose-mongodb6:.github/workflows/main.yml | grep -q "''22.23.2''" && git -C externals/cgm-remote-monitor-official show origin/chore/compose-mongodb6:.github/workflows/main.yml | grep -q "''24.20.0''"'
+          BF-59. The lowest Node engines permits (semver minVersion) is named
+          on a node-version line of dev's .github/workflows/main.yml, and so
+          is the newest major engines names (the floor-and-ceiling policy).
+          On dev 8dbb60c2: 22.23.4 and 26, 3 checked, 0 failing. Red on cut
+          3's ebb690cf, where the matrix had dropped 22.23.2.
+      - run: NODE_FLOOR_REF=official/dev node tools/queue/gates/node-floor-consistency.js
         kind: static
         describe: >
-          BF-59. FAILS - from cut 3 onward the matrix is ['22','24'] and the two
-          exact versions the software refuses to start below are exercised by no
-          test job. engines is byte-identical across all five pushed cuts, so
-          this is lost coverage rather than a changed requirement.
+          BF-58. RT-1's instrument on dev: no floating Docker tag under a
+          patch floor, and every file stating a floor agrees with engines. On
+          dev 8dbb60c2: Dockerfile node:24.22.1-alpine, 9 checked, 0 failing.
+          Red on bce12ecc (node:22-alpine under ^22.23.2).
       - no-gate: >
-          BF-58 has no gate: nothing checks a Dockerfile base tag against an
-          engines range, and a gate may not pull or build an image. Measured by
-          hand on 2026-09-21: node:22-alpine resolved to v22.22.0, which violates
-          the pushed cuts' ^22.23.2 floor, and runtime-policy.js refused it inside
-          that image with exit 1. Every pushed cut pins node:22-alpine and
-          enforces ^22.23.2 || ^24.20.0; origin/dev is unaffected at >=20.x.
-      - no-gate: >
-          Partial mitigation already in CI, recorded so the residual is not
-          overstated - from cut 1 the docker-build-pr job builds the image and
-          runs runtime-policy against it plus a start-up smoke test. The gap is
-          narrower: the docker-build job that PUBLISHES to Docker Hub on
-          master/dev has no such step and builds with no-cache, so it
-          re-resolves node:22-alpine at publish time without re-validating.
-    blocks_on: [RT-1]
+          Neither gate pulls or builds an image. Whether node:24.22.1-alpine
+          starts the server is checked by CI's docker-build-pr and Validate
+          Docker image jobs, not here.
+    blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-27: merged-upstream. Every cut is on dev (cuts 2-5 merged
+      2026-10-26), so no published branch carries the old floor pair. The
+      two origin/chore/* gates (and their controls) are replaced by gates
+      on official/dev: node-floor-tested.js, new, for BF-59, and RT-1's
+      node-floor-consistency.js for BF-58, measured on dev 8dbb60c2 with
+      controls ebb690cf and bce12ecc. The default CI run tests Node
+      22.23.4 and 26; 24.22.1 and 26.12.1 run only in the extended matrix.
+
       2026-10-25: cut 1 merged into dev (RT-1, eb72a1d3) with AndyLow91's
       6a146a4c, which makes the floor a patch floor again: engines.node is
       ^22.23.4 || ^24.22.1 || >=26.12.1 ("require Node Brotli security

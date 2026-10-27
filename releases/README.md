@@ -9,7 +9,7 @@ of `cgm-remote-monitor` and `nightscout-connect`, one directory per release.
 | Directory | Describes | Status |
 |---|---|---|
 | [`cgm-remote-monitor-15.0.9/`](cgm-remote-monitor-15.0.9/) | `official/master..official/dev` at `4bca2ac2` (100 merged PRs); **released 2026-10-21** as tag `v15.0.9`, `master` `c6a0d8ed` | released; release-notes.md is the GitHub release body; connector pinned exactly to the released `0.1.0` (#8762); what remains is in [ROADMAP §1](../docs/00-overview/ROADMAP.md#1-1509-is-released-the-next-development-cycle); how it was made: [colophon](cgm-remote-monitor-15.0.9/colophon.md) |
-| [`cgm-remote-monitor-16.0.0/`](cgm-remote-monitor-16.0.0/) | `official/master..official/dev`, at `eb72a1d3` on 2026-10-25 (11 merged PRs, cut 1 among them); the next release (maintainer, 2026-10-21) | in development: contents, decisions and the [integration record](../docs/30-design/remedial/rc-16.0.0-integration-record.md) are living; testing notes, tag message and release notes not written yet |
+| [`cgm-remote-monitor-16.0.0/`](cgm-remote-monitor-16.0.0/) | `official/master..official/dev`, at `8dbb60c2` on 2026-10-27 (37 merged PRs, all five cuts among them); the next release (maintainer, 2026-10-21) | in development: contents, decisions and the [integration record](../docs/30-design/remedial/rc-16.0.0-integration-record.md) are living; the verification record's [selection](cgm-remote-monitor-16.0.0/verification-selection.txt) is set (captured at the tag); testing notes, tag message and release notes are written once a candidate is named |
 | [`nightscout-connect-v0.0.14/`](nightscout-connect-v0.0.14/) | the retired local tag `v0.0.14` (`649a7de`) | **superseded**: no 0.0.14 will be published; the line is `0.1.0` (queue P0-TAG) |
 | [`_template/`](_template/) | copy to start a new release directory | — |
 
@@ -57,6 +57,8 @@ releases/
                         Part 1 user-facing (plain language), part 2 for
                         operators and tool authors. Living until the tag.
     verification-record.{json,md}   optional; see VERIFICATION-RECORDS.md
+    verification-selection.txt      the queue ids the record is captured over,
+                        and the capture command
   _template/            copy this to start a new release directory
 ```
 

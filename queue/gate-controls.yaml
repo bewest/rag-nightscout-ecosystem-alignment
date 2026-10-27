@@ -559,28 +559,6 @@ controls:
       the gate itself exits 0 against official/dev b29f1bf7.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official show origin/chore/compose-mongodb6:.github/workflows/main.yml | grep -q "'22.23.2'" && git -C externals/cgm-remote-monitor-official show origin/chore/compose-mongodb6:.github/workflows/main.yml | grep -q "'24.20.0'"
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official show origin/dev:.github/workflows/main.yml | grep -q "'22.23.2'" && git -C externals/cgm-remote-monitor-official show origin/dev:.github/workflows/main.yml | grep -q "'24.20.0'"
-    control-kind: static
-    proves: >
-      the identical pair of greps against origin/dev's workflow exits 1
-      - measured 0 matches for each version string. The cuts pin the
-      floor in CI and dev does not.
-
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official show origin/chore/retire-jsdom:.github/workflows/main.yml | grep -q "'22.23.2'" && git -C externals/cgm-remote-monitor-official show origin/chore/retire-jsdom:.github/workflows/main.yml | grep -q "'24.20.0'"
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official show origin/dev:.github/workflows/main.yml | grep -q "'22.23.2'" && git -C externals/cgm-remote-monitor-official show origin/dev:.github/workflows/main.yml | grep -q "'24.20.0'"
-    control-kind: static
-    proves: >
-      the identical pair of greps against origin/dev's workflow exits 1
-      - measured 0 matches for each version string. The cuts pin the
-      floor in CI and dev does not.
-
-  - gate: |-
       git -C externals/cgm-remote-monitor-official show origin/dev:lib/authorization/storage.js | grep -qE "console\\.log\\('Loading',[[:space:]]*opts\\)" && exit 1 || exit 0
     cwd: .
     control: |-
@@ -852,19 +830,6 @@ controls:
       control was run by hand the audit says so.
 
   - gate: |-
-      node tools/queue/gates/connector-pin-exposure.js --refs official/chore/retire-jsdom,official/chore/build-runtime-separation,official/chore/compose-mongodb6,official/dev
-    cwd: .
-    control: |-
-      tools/queue/gates/empty-root-control.sh tools/queue/gates/connector-pin-exposure.js --refs official/chore/retire-jsdom,official/chore/build-runtime-separation,official/chore/compose-mongodb6,official/dev
-    control-kind: static
-    proves: >
-      run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of
-      the files it reads exist, the gate does not exit 0. THIS IS THE
-      WEAK FORM: it proves the gate is coupled to its inputs, not that
-      it is coupled to the right property of them. Where a sharper
-      control was run by hand the audit says so.
-
-  - gate: |-
       node tools/queue/gates/connector-pin-exposure.js --refs origin/master,origin/dev
     cwd: .
     control: |-
@@ -928,6 +893,32 @@ controls:
       WEAK FORM: it proves the gate is coupled to its inputs, not that
       it is coupled to the right property of them. Where a sharper
       control was run by hand the audit says so.
+
+  - gate: |-
+      NODE_FLOOR_REF=official/dev node tools/queue/gates/node-floor-tested.js
+    cwd: .
+    control: |-
+      NODE_FLOOR_REF=ebb690cf node tools/queue/gates/node-floor-tested.js
+    control-kind: static
+    proves: >
+      the same assertions against cut 3's ebb690cf, the tip BF-59 was
+      found on: engines ^22.23.2 || ^24.20.0 and a matrix of '22' and '24'
+      only. The gate reports the floor 22.23.2 run by no test job and exits
+      1 (measured 2026-10-27; 3 checked, 1 failing), while official/dev
+      8dbb60c2 is 3 checked, 0 failing. v15.0.9 (>=20.x, no 20 job) also
+      exits 1.
+
+  - gate: |-
+      NODE_FLOOR_REF=official/dev node tools/queue/gates/node-floor-consistency.js
+    cwd: .
+    control: |-
+      NODE_FLOOR_REF=bce12ecc node tools/queue/gates/node-floor-consistency.js
+    control-kind: static
+    proves: >
+      the same instrument against bce12ecc (cut 1 as published before
+      2026-10-21: floating node:22-alpine under the patch floor ^22.23.2)
+      reports that pair BAD and exits 1 (re-measured 2026-10-27: 9 checked,
+      1 failing); official/dev 8dbb60c2 is 9 checked, 0 failing.
 
   - gate: |-
       NODE_FLOOR_REF=official/chore/retire-jsdom node tools/queue/gates/node-floor-consistency.js
@@ -2746,3 +2737,16 @@ controls:
       contain #8854's head 246313e4, and the same command reports it
       not-an-ancestor (exit 1); the gate itself exits 0 against official/dev
       7ad3a67f.
+
+  - gate: |-
+      sh tools/queue/gates/connector-pin-with-control.sh official/dev,official/master
+    cwd: .
+    control: |-
+      sh tools/queue/gates/connector-pin-with-control.sh official/dev,official/master,official/chore/jsdom-30
+    control-kind: static
+    proves: >
+      the same instrument with official/chore/jsdom-30, an old non-cut
+      branch that still pins the v0.0.13 tarball, among the refs that must
+      be clean: it reports that ref BAD and exits 1 (measured 2026-10-27;
+      8 checked, 3 failing), while dev and master with the v15.0.8 control
+      are 6 checked, 2 failing, both v15.0.8's, and exit 0.
