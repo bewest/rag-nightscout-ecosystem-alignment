@@ -17,12 +17,12 @@
   "j",
   "k"
  ],
- "declared_paths": 72,
+ "declared_paths": 70,
  "observed_paths": 66,
  "summary": {
   "undeclared": 0,
   "undeclared_by_tier": {},
-  "unobserved": 3,
+  "unobserved": 1,
   "v3_metadata_absent": 3,
   "type_conflicts": 0,
   "constraint_violations": 0,
@@ -60,22 +60,6 @@
  ],
  "undeclared": [],
  "unobserved": [
-  {
-   "path": "store.{}.insulinCurve",
-   "declared_types": [
-    "string"
-   ],
-   "required": false,
-   "schema_name": null
-  },
-  {
-   "path": "store.{}.insulinPeakTime",
-   "declared_types": [
-    "integer"
-   ],
-   "required": false,
-   "schema_name": null
-  },
   {
    "path": "utcOffset",
    "declared_types": [

@@ -721,6 +721,41 @@ components:
               description: |
                 2026 Extension: System with authority over profile.
               x-aid-2026: true
+            insulinPeakTime:
+              type: integer
+              description: |
+                2026 Extension: insulin activity peak time in minutes, for a
+                named profile in `store`. Moved from `aid-profile-2025.yaml` on
+                2026-10-26; no profile in the 2026-04 corpus carries it.
+
+                Each controller keeps the peak in its own settings, not in the
+                Nightscout profile, with its own limits.
+              x-aid-2026: true
+              x-aid-gap: GAP-INS-003
+              x-aid-controllers:
+                Loop: Fixed by the chosen insulin model preset
+                AAPS: Free-Peak insulin plugin, 35-120 minutes, default 75 (insulin_oref_peak, 3.4.2.3)
+                oref0: With useCustomPeakTime, 50-120 minutes for rapid-acting and 35-100 for ultra-rapid (lib/iob/calculate.js)
+            insulinCurve:
+              type: string
+              description: |
+                2026 Extension: insulin action curve, for a named profile in
+                `store`. Moved from `aid-profile-2025.yaml` on 2026-10-26; no
+                profile in the 2026-04 corpus carries it.
+
+                `rapid-acting`, `ultra-rapid` and `bilinear` are oref0's `curve`
+                preference values: `bilinear` takes only the duration of insulin
+                action, and the other two are exponential curves that also take
+                a peak time (75 and 55 minutes unless a custom peak is set).
+                `exponential` names an exponential curve without an oref0
+                preset.
+              enum:
+                - rapid-acting
+                - ultra-rapid
+                - bilinear
+                - exponential
+              x-aid-2026: true
+              x-aid-gap: GAP-INS-004
 
     # =========================================================================
     # COMPOSITE: FULL ALIGNED TREATMENT

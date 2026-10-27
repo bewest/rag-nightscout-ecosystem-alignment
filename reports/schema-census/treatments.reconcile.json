@@ -17,7 +17,7 @@
   "j",
   "k"
  ],
- "declared_paths": 53,
+ "declared_paths": 55,
  "observed_paths": 41,
  "summary": {
   "undeclared": 6,
@@ -27,7 +27,7 @@
    "common": 1,
    "sparse": 1
   },
-  "unobserved": 11,
+  "unobserved": 13,
   "v3_metadata_absent": 7,
   "type_conflicts": 0,
   "constraint_violations": 0,
@@ -205,9 +205,25 @@
    "schema_name": null
   },
   {
+   "path": "sensorCode",
+   "declared_types": [
+    "string"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
    "path": "timeshift",
    "declared_types": [
     "integer"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
+   "path": "transmitterId",
+   "declared_types": [
+    "string"
    ],
    "required": false,
    "schema_name": null

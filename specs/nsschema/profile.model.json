@@ -1335,42 +1335,6 @@
         "minimum": 2,
         "maximum": 10
        },
-       "insulinCurve": {
-        "path": "store.{}.insulinCurve",
-        "types": [
-         "string"
-        ],
-        "nullable": false,
-        "provenance": "declared",
-        "declared": true,
-        "observed": false,
-        "placement": "core",
-        "sensitivity": "identifying",
-        "data_category": "therapy-setting",
-        "sensitivity_why": "not present in the census; unlabelled defaults to identifying",
-        "description": "Insulin curve model name.\nAll major AID systems use exponential model.",
-        "enum": [
-         "bilinear",
-         "exponential",
-         "rapid-acting",
-         "ultra-rapid"
-        ]
-       },
-       "insulinPeakTime": {
-        "path": "store.{}.insulinPeakTime",
-        "types": [
-         "integer"
-        ],
-        "nullable": false,
-        "provenance": "declared",
-        "declared": true,
-        "observed": false,
-        "placement": "core",
-        "sensitivity": "identifying",
-        "data_category": "temporal",
-        "sensitivity_why": "not present in the census; unlabelled defaults to identifying",
-        "description": "Insulin activity peak time in minutes.\nNot standardized across systems."
-       },
        "sens": {
         "path": "store.{}.sens",
         "types": [

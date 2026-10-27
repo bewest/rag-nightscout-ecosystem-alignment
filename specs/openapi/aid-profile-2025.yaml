@@ -70,7 +70,9 @@ info:
 
     `ProfileExtended` (`intent`, `baseProfile`, `modifiers`, `source`,
     `authority`) was a 2026 proposal; none of its fields appears in the
-    2026-04 corpus. It moved to `aid-alignment-extensions.yaml` on 2026-10-26.
+    2026-04 corpus. It moved to `aid-alignment-extensions.yaml` on 2026-10-26,
+    and so did the insulin-model fields `insulinPeakTime` and `insulinCurve`,
+    which no profile in the corpus carries and cgm-remote-monitor does not read.
 
   contact:
     name: AID Alignment Workspace
@@ -354,30 +356,6 @@ components:
           description: When this named profile becomes effective.
           x-aid-evidence: {doc_frequency: 0.0099, sites: 1}
 
-        # Insulin model (2026 extension candidate)
-        insulinPeakTime:
-          type: integer
-          description: |
-            Insulin activity peak time in minutes.
-            Not standardized across systems.
-          x-aid-gap: GAP-INS-003
-          x-aid-gap-note: Peak time not captured in Nightscout profile
-          x-aid-controllers:
-            Loop: Fixed per insulin type preset
-            AAPS: Free Peak plugin allows 35-120 minutes
-            oref0: Configurable 50-120 min (rapid) or 35-100 min (ultra-rapid)
-        insulinCurve:
-          type: string
-          description: |
-            Insulin curve model name.
-            All major AID systems use exponential model.
-          enum:
-            - rapid-acting
-            - ultra-rapid
-            - bilinear
-            - exponential
-          x-aid-2026: true
-          x-aid-gap: GAP-INS-004
 
     LoopSettings:
       type: object

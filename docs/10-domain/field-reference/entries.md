@@ -77,6 +77,7 @@ Deviations from the schema that enough of the ecosystem exhibits that a reader h
 |---|---|---|---|---|
 | `QUIRK-ENTRIES-003` | undeclared-field | 71.6% | 10 | trend, trendRate and isCalibration are written but were undeclared |
 | `QUIRK-ENTRIES-001` | type-union | 61.5% | 10 | date carries sub-millisecond precision as a fractional number |
+| `QUIRK-ENTRIES-004` | id-form | 9.8% | 2 | _id is sent as a string that is not an ObjectId |
 | `QUIRK-ENTRIES-002` | enum-gap | 0.1% | 5 | direction carries NONE, which no declared enum listed |
 
 ## Declared in the spec, never observed

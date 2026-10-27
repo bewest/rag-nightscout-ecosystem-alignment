@@ -136,7 +136,5 @@ Either the corpus lacks a client that writes them, or the spec documents somethi
 | `identifier` | `string` |
 | `isValid` | `boolean` |
 | `srvCreated` | `integer` |
-| `store.{}.insulinCurve` | `string` |
-| `store.{}.insulinPeakTime` | `integer` |
 | `utcOffset` | `integer` |
 

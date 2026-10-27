@@ -319,6 +319,12 @@
    "x-sensitivity": "identifying",
    "x-data-category": "vocabulary"
   },
+  "sensorCode": {
+   "type": "string",
+   "description": "Sensor code (the Dexcom G6 calibration code) typed into the",
+   "x-sensitivity": "identifying",
+   "x-data-category": "device"
+  },
   "srvCreated": {
    "type": "integer",
    "x-sensitivity": "identifying",
@@ -376,6 +382,12 @@
    "description": "Alternative timestamp to `created_at`.",
    "x-sensitivity": "quasi-identifying",
    "x-data-category": "temporal"
+  },
+  "transmitterId": {
+   "type": "string",
+   "description": "Transmitter ID typed into the cgm-remote-monitor careportal on a",
+   "x-sensitivity": "identifying",
+   "x-data-category": "device"
   },
   "type": {
    "type": "string",

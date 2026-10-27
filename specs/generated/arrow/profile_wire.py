@@ -66,8 +66,6 @@ PROFILE_WIRE_SCHEMA = pa.schema([
             pa.field("carbs_hr", pa.large_string()),  # union of number, string widened to string
             pa.field("delay", pa.large_string()),  # union of integer, string widened to string
             pa.field("dia", pa.float64()),
-            pa.field("insulinCurve", pa.large_string()),
-            pa.field("insulinPeakTime", pa.int64()),
             pa.field("sens", pa.list_(pa.struct([
                     pa.field("time", pa.large_string()),
                     pa.field("timeAsSeconds", pa.int64()),

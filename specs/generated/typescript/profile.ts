@@ -63,8 +63,6 @@ export const ProfileSchema = z.object({
       carbs_hr: z.union([z.number(), z.string()]).optional(),  // 100% of documents, 11 sites, universal
       delay: z.union([z.number().int(), z.string()]).optional(),  // 100% of documents, 11 sites, universal
       dia: z.number().optional(),  // 100% of documents, 11 sites, universal
-      insulinCurve: z.enum(["bilinear", "exponential", "rapid-acting", "ultra-rapid"]).optional(),
-      insulinPeakTime: z.number().int().optional(),
       sens: z.array(z.object({
         time: z.string().optional(),  // 100% of documents, 11 sites, universal
         timeAsSeconds: z.number().int().optional(),  // 100% of documents, 11 sites, universal

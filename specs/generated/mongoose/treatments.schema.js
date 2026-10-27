@@ -66,6 +66,7 @@ const TreatmentsSchema = new Schema({
   rate: { type: Number },  // 55% of documents, 10 sites; core
   reason: { type: String },  // 1% of documents, 10 sites; common
   remoteAddress: { type: String },  // 0% of documents, 3 sites; common
+  sensorCode: { type: String },
   srvCreated: { type: Number },
   srvModified: { type: Number },
   subject: { type: String },
@@ -75,6 +76,7 @@ const TreatmentsSchema = new Schema({
   temp: { type: String, enum: ["absolute", "percent"] },  // 46% of documents, 10 sites; core
   timeshift: { type: Number },
   timestamp: { type: Schema.Types.Mixed },  // 84% of documents, 10 sites; core; union of number, string in live data — not cast
+  transmitterId: { type: String },
   type: { type: String, enum: ["Normal", "Priming", "SMB", "normal"] },  // 35% of documents, 10 sites; core
   unabsorbed: { type: Number },  // 35% of documents, 10 sites; core
   units: { type: String },  // 0% of documents, 1 sites; sparse

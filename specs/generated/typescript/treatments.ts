@@ -64,6 +64,7 @@ export const TreatmentsSchema = z.object({
     rate: z.number().optional(),  // 55% of documents, 10 sites, core
     reason: z.string().optional(),  // 1% of documents, 10 sites, common
     remoteAddress: z.string().optional(),  // 0% of documents, 3 sites, common
+    sensorCode: z.string().optional(),
     srvCreated: z.number().int().optional(),
     srvModified: z.number().int().optional(),
     subject: z.string().optional(),
@@ -73,6 +74,7 @@ export const TreatmentsSchema = z.object({
     temp: z.enum(["absolute", "percent"]).optional(),  // 46% of documents, 10 sites, core
     timeshift: z.number().int().optional(),
     timestamp: z.union([z.number(), z.string()]).optional(),  // 84% of documents, 10 sites, core
+    transmitterId: z.string().optional(),
     type: z.enum(["Normal", "Priming", "SMB", "normal"]).optional(),  // 35% of documents, 10 sites, core
     unabsorbed: z.number().optional(),  // 35% of documents, 10 sites, core
     units: z.string().optional(),  // 0% of documents, 1 sites, sparse

@@ -336,24 +336,6 @@
       "minimum": 2,
       "maximum": 10
      },
-     "insulinCurve": {
-      "type": "string",
-      "description": "Insulin curve model name.",
-      "x-sensitivity": "identifying",
-      "x-data-category": "therapy-setting",
-      "enum": [
-       "bilinear",
-       "exponential",
-       "rapid-acting",
-       "ultra-rapid"
-      ]
-     },
-     "insulinPeakTime": {
-      "type": "integer",
-      "description": "Insulin activity peak time in minutes.",
-      "x-sensitivity": "identifying",
-      "x-data-category": "temporal"
-     },
      "sens": {
       "type": "array",
       "description": "Insulin Sensitivity Factor by time of day.",

@@ -106,7 +106,9 @@ Deviations from the schema that enough of the ecosystem exhibits that a reader h
 | `QUIRK-TREATMENTS-003` | type-union | 84.4% | 10 | timestamp is an ISO 8601 string, not the declared epoch integer |
 | `QUIRK-TREATMENTS-002` | nullability | 60.7% | 11 | insulin is present-but-null on most treatments |
 | `QUIRK-TREATMENTS-004` | case-mismatch | 35.3% | 10 | bolus subtype is written lower-case as `normal` |
+| `QUIRK-TREATMENTS-007` | id-form | 15.1% | 1 | the client's record id is sent as `id`, a member Nightscout does not read |
 | `QUIRK-TREATMENTS-005` | enum-gap | 1.0% | 2 | eventType carries values absent from every declared enum |
+| `QUIRK-TREATMENTS-006` | id-form | 0.8% | 9 | _id is sent as a string that is not an ObjectId |
 
 ## Declared in the spec, never observed
 
@@ -128,8 +130,10 @@ Either the corpus lacks a client that writes them, or the spec documents somethi
 | `pumpId` | `integer` |
 | `pumpSerial` | `string` |
 | `pumpType` | `string` |
+| `sensorCode` | `string` |
 | `srvCreated` | `integer` |
 | `srvModified` | `integer` |
 | `subject` | `string` |
 | `timeshift` | `integer` |
+| `transmitterId` | `string` |
 

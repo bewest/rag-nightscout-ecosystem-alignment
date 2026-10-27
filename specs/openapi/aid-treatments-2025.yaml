@@ -509,6 +509,29 @@ components:
           type: string
           description: Application identifier
 
+        # CGM session (careportal)
+        transmitterId:
+          type: string
+          description: |
+            Transmitter ID typed into the cgm-remote-monitor careportal on a
+            `Sensor Start` or `Sensor Change` treatment. The careportal sends it
+            with the treatment and the chart tooltip shows it.
+          x-aid-evidence:
+            source: cgm-remote-monitor lib/plugins/careportal.js (sensor fields), lib/client/careportal.js, lib/client/renderer.js
+            doc_frequency: 0
+            note: Not in the 2026-04 corpus; declared because the shipping careportal writes it.
+        sensorCode:
+          type: string
+          description: |
+            Sensor code (the Dexcom G6 calibration code) typed into the
+            cgm-remote-monitor careportal on a `Sensor Start` or `Sensor Change`
+            treatment. The careportal sends it with the treatment and the chart
+            tooltip shows it.
+          x-aid-evidence:
+            source: cgm-remote-monitor lib/plugins/careportal.js (sensor fields), lib/client/careportal.js, lib/client/renderer.js
+            doc_frequency: 0
+            note: Not in the 2026-04 corpus; declared because the shipping careportal writes it.
+
         # Pump identity (AAPS composite key)
         pumpId:
           type: integer

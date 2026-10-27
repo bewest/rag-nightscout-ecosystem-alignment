@@ -133,6 +133,9 @@
   "remoteAddress": {
    "kind": "string"
   },
+  "sensorCode": {
+   "kind": "string"
+  },
   "srvCreated": {
    "kind": "integer"
   },
@@ -156,6 +159,9 @@
   },
   "timeshift": {
    "kind": "integer"
+  },
+  "transmitterId": {
+   "kind": "string"
   },
   "type": {
    "kind": "string"
