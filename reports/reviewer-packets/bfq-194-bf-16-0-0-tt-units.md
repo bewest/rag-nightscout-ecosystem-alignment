@@ -20,7 +20,7 @@ mmol/L targets read as mg/dL**
 |---|---|
 | repository | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-tt-units` |
-| base | `official/dev@ca1652d6` |
+| base | `official/dev@dcf20bfb` |
 | claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-194` is the measurement |
 | semver | `minor` |
 | register entries | `BF-194` |
@@ -76,6 +76,8 @@ none a missing module. Needs the worktree's untracked my.test.env (MongoDB on
 
 ## Notes carried on the item
 
+2026-10-27 late: official/dev moved to dcf20bfb (#8871, jsconfig.json only)
+and was merged in as 355b4f14; the four BF-194 test files, 499 passing.
 2026-10-27 evening, verified by session -4f on 7b74110c (rebased on dev
 ca1652d6; d4435f18 was the same commit before an amend that updated
 tests/api.crud-by-id.matrix.test.js only): red control as in the gate; npm

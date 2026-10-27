@@ -17224,7 +17224,7 @@ items:
     parcel: register-open
     repo: cgm-remote-monitor
     branch: bf/16.0.0-tt-units
-    base: official/dev@ca1652d6
+    base: official/dev@dcf20bfb
     worktree: externals/work/crm-tt-units
     state: ready-to-push
     pr: []
@@ -17266,6 +17266,10 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
     notes: >
+      2026-10-27 late: official/dev moved to dcf20bfb (#8871, jsconfig.json
+      only) and was merged in as 355b4f14; the four BF-194 test files, 499
+      passing.
+
       2026-10-27 evening, verified by session -4f on 7b74110c (rebased on dev
       ca1652d6; d4435f18 was the same commit before an amend that updated
       tests/api.crud-by-id.matrix.test.js only): red control as in the gate;
