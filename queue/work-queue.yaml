@@ -16721,6 +16721,54 @@ items:
       preparation on a local branch, to ship in 16.0.0 (maintainer decision
       2026-10-25), via the maintainer's private advisory process.
 
+  - id: BFQ-201
+    title: "BF-201 - npm run dev's nodemon watches nearly the whole repository (1,502 Linux file watches); watch the paths the server loads"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ci/16.0.0-image-publishing
+    base: official/dev@2dc0c1bc
+    worktree: externals/work/crm-ci-publish
+    state: in-flight-upstream
+    pr: [8867]
+    ships_to_operators_today: false
+    blast_radius: >
+      package.json nodemonConfig (ignore list to watch list),
+      tests/development-watch.test.js and tools/probe-development-watch.py
+      (fixture and expectations), docs/test-specs/development-watch.md (M24
+      addendum), docs/audits/development-watch.json and one plan line. npm
+      start and the Docker image never run nodemon.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: developer tooling; no API, page, setting or runtime change
+    register: [BF-201]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official show ci/16.0.0-image-publishing:package.json | node -e "const c=JSON.parse(require('fs').readFileSync(0)).nodemonConfig||{};process.exit(Array.isArray(c.watch)&&c.watch.includes('lib')&&!c.watch.includes('static')&&!c.ignore?0:1)"
+        kind: static
+        describe: >
+          #8867's branch's nodemonConfig is a watch list that includes lib
+          and leaves out static, with no ignore list.
+      - no-gate: >
+          The watch test starts nodemon and native watch in owned fixtures
+          for about 50 s, so it is not a queue gate. Measured 2026-10-27 at
+          dev 2dc0c1bc on Linux, Node 22.23.4, nodemon 3.1.14: inotify watches
+          1,502 before against 385 after (lib and views alone 345; node
+          --watch-path scoped the same way 346). The test passes on the
+          branch and, with the previous configuration and the new
+          expectations, fails at docs/unlisted.js.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      2026-10-27: asked for by the maintainer through session -a7, after
+      tests/development-watch.test.js failed with ENOSPC on 2026-10-26.
+      Measured counts replace -a7's at dev 47723cda (1,396 and 339); the
+      list adds translations, webpack and package.json, which the server
+      reads at startup, so editing them still restarts it. Prepared as
+      426d2835 on chore/16.0.0-nodemon-watch-allowlist; npm test 4483
+      passing, 0 failing, 3 pending (Node 22.23.4, MongoDB 8.0.34). At the
+      maintainer's request, cherry-picked onto #8867 as 5d9f84b5 and pushed
+      2026-10-27 (the CI and tooling PR), not a PR of its own.
   - id: BFQ-192
     title: "BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression)"
     parcel: register-open

@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 303 |
-| runnable gates | 361 |
-| explicit `no-gate:` markers | 340 |
+| items | 304 |
+| runnable gates | 362 |
+| explicit `no-gate:` markers | 341 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 340 of the 701 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 341 of the 703 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -46,7 +46,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, BFQ-200, WS-LAB |
 | `blocked` | 16 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
-| `in-flight-upstream` | 10 | RT-CI-FLAKES-8DBB60C2, ID-SIMPLE-MATCH, BFQ-72, BFQ-161, BFQ-193, BFQ-195, ST-FILTER-READS, ST-WRITES, PLAT-ENTRY, PLAT-SERVE |
+| `in-flight-upstream` | 11 | RT-CI-FLAKES-8DBB60C2, ID-SIMPLE-MATCH, BFQ-72, BFQ-161, BFQ-201, BFQ-193, BFQ-195, ST-FILTER-READS, ST-WRITES, PLAT-ENTRY, PLAT-SERVE |
 | `merged-upstream` | 46 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-192, MOD-WRITE-VALIDATION |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 16 | T30-RESEARCH, ARCH-8854-FAILED, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-194, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
@@ -2655,7 +2655,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 140 items
+`parcel: register-open` &mdash; 141 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2781,6 +2781,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-189` | BF-189 - tests/security.test.js (API_SECRET) fails depending on file order | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `BFQ-190` | BF-190 - an alarm on a page without a current reading cannot be silenced from the page | `merged-upstream` | `bf/16.0.0-client-alarms` | patch | 2 run + 1 no-gate |
 | `BFQ-191` | BF-191 - a stored treatment can stop the server process, and keeps doing so after a restart (mechanism only) | `in-progress` | `-` | n/a | 0 run + 1 no-gate |
+| `BFQ-201` | BF-201 - npm run dev's nodemon watches nearly the whole repository (1,502 Linux file watches); watch the paths the server loads | `in-flight-upstream` | `ci/16.0.0-image-publishing` | n/a | 1 run + 1 no-gate |
 | `BFQ-192` | BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression) | `merged-upstream` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-193` | BF-193 - the realtime socket and other write paths log every record written through them | `in-flight-upstream` | `bf/16.0.0-log-privacy` | patch | 2 run + 1 no-gate |
 | `BFQ-194` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL | `needs-decision` | `-` | minor | 0 run + 1 no-gate |
@@ -6675,6 +6676,38 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** 2026-10-25, later: the fix also refuses such values on write for the second record kind, and tolerates on read a related field that working sites may hold (maintainer decision). 2026-10-25: a second record kind of the same class was found and is covered by the same fix; the fix is prepared on a local branch (private) and API v1's refusal of such a record will answer 400 with its message instead of 500 (maintainer decision 2026-10-25). Filed 2026-10-25 by session f4 from its AndroidAPS-safety lane; reproduced on dev b29f1bf7 and v15.0.9 c6a0d8ed. Availability, high (persistent), needs a credential with treatment write access. Fix in preparation on a local branch, to ship in 16.0.0 (maintainer decision 2026-10-25), via the maintainer's private advisory process.
+
+### `BFQ-201` &mdash; BF-201 - npm run dev's nodemon watches nearly the whole repository (1,502 Linux file watches); watch the paths the server loads
+
+| | |
+|---|---|
+| state (claimed) | `in-flight-upstream` |
+| repo | `cgm-remote-monitor` |
+| branch | `ci/16.0.0-image-publishing` |
+| base | `official/dev@2dc0c1bc` |
+| worktree | `externals/work/crm-ci-publish` |
+| semver | `n/a` |
+| review | maintainer |
+| ships to operators today | no (pre-release) |
+| register | `BF-201` |
+
+**Blast radius.** package.json nodemonConfig (ignore list to watch list), tests/development- watch.test.js and tools/probe-development-watch.py (fixture and expectations), docs/test-specs/development-watch.md (M24 addendum), docs/audits/development- watch.json and one plan line. npm start and the Docker image never run nodemon.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** developer tooling; no API, page, setting or runtime change
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official show ci/16.0.0-image-publishing:package.json | node -e "const c=JSON.parse(require('fs').readFileSync(0)).nodemonConfig||{};process.exit(Array.isArray(c.watch)&&c.watch.includes('lib')&&!c.watch.includes('static')&&!c.ignore?0:1)"`
+  - #8867's branch's nodemonConfig is a watch list that includes lib and leaves out static, with no ignore list.
+- **NO GATE** &mdash; The watch test starts nodemon and native watch in owned fixtures for about 50 s, so it is not a queue gate. Measured 2026-10-27 at dev 2dc0c1bc on Linux, Node 22.23.4, nodemon 3.1.14: inotify watches 1,502 before against 385 after (lib and views alone 345; node --watch-path scoped the same way 346). The test passes on the branch and, with the previous configuration and the new expectations, fails at docs/unlisted.js.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** 2026-10-27: asked for by the maintainer through session -a7, after tests/development-watch.test.js failed with ENOSPC on 2026-10-26. Measured counts replace -a7's at dev 47723cda (1,396 and 339); the list adds translations, webpack and package.json, which the server reads at startup, so editing them still restarts it. Prepared as 426d2835 on chore/16.0.0-nodemon- watch-allowlist; npm test 4483 passing, 0 failing, 3 pending (Node 22.23.4, MongoDB 8.0.34). At the maintainer's request, cherry-picked onto #8867 as 5d9f84b5 and pushed 2026-10-27 (the CI and tooling PR), not a PR of its own.
 
 ### `BFQ-192` &mdash; BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression)
 
