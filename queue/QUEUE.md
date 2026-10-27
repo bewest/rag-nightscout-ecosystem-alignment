@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 306 |
-| runnable gates | 367 |
+| items | 307 |
+| runnable gates | 370 |
 | explicit `no-gate:` markers | 343 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 343 of the 710 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 343 of the 713 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -46,14 +46,14 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 16 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
-| `in-flight-upstream` | 7 | RT-CI-WEBKIT-REPORTS, BFQ-72, BFQ-161, ST-FILTER-READS, ST-WRITES, PLAT-ENTRY, PLAT-SERVE |
-| `merged-upstream` | 53 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-192, BFQ-193, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION |
+| `in-flight-upstream` | 6 | RT-CI-WEBKIT-REPORTS, BFQ-72, BFQ-161, ST-COUNT-ONEPATH, PLAT-ENTRY, PLAT-SERVE |
+| `merged-upstream` | 55 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-192, BFQ-193, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
-| `needs-decision` | 16 | T30-RESEARCH, ARCH-8854-FAILED, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-194, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
+| `needs-decision` | 13 | T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-V3-IMMUTABLE-DECISION, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-194, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
 | `done` | 39 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 4 | BFQ-71, BFQ-41, BFQ-175, BFQ-141 |
-| `answered` | 3 | RT-D3, RT-VERSION, RT-PROPAGATION |
+| `answered` | 6 | RT-D3, RT-VERSION, RT-PROPAGATION, ARCH-8854-FAILED, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION |
 
 ### Reaches an operator on today's release
 
@@ -1054,7 +1054,7 @@ that costs.
 | `RT-5` | Cut 4 - chore/mime-exposure-review, the one to slow down on | `merged-upstream` | `chore/mime-exposure-review` | major | 2 run + 3 no-gate |
 | `ID-SIMPLE-MATCH` | API v1 entries and devicestatus match on identifier like treatments (the simple contract) | `merged-upstream` | `bf/16.0.0-null-removes` | minor | 2 run + 1 no-gate |
 | `ARCH-8854` | #8854 - shared write boundary, read contract and CI gates; merged to dev 2026-10-26 for 16.0.0 (outcome B, four conditions met) | `merged-upstream` | `wip/architecture-data-contracts` | n/a | 1 run + 1 no-gate |
-| `ARCH-8854-FAILED` | Decide: the socket's failed slot that #8854 adds under WRITE_VALIDATION=reject - ship as is, or agree it alongside refused (and on API v1?) | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
+| `ARCH-8854-FAILED` | Decide: the socket's failed slot that #8854 adds under WRITE_VALIDATION=reject - ship as is, or agree it alongside refused (and on API v1?) | `answered` | `-` | n/a | 0 run + 1 no-gate |
 | `RT-CONNECT-PIN-CUTS` | BF-65 - cuts 1-3 ship the leaking connector to upgraders first | `merged-upstream` | `official/dev` | patch | 1 run + 1 no-gate |
 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `merged-upstream` | `official/dev` | n/a | 2 run + 1 no-gate |
 | `RT-BOOTERROR` | BF-63 - the page that reports a boot error crashes on cut 4's boot errors | `gate-not-met` | `-` | patch | 3 run + 1 no-gate |
@@ -2008,7 +2008,7 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `needs-decision` |
+| state (claimed) | `answered` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `official/dev@7ad3a67f` |
@@ -2032,7 +2032,7 @@ that costs.
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 
-**Notes.** Filed 2026-10-26 from session -66's review of the merged #8854 (ARCH-8854's notes). Options: (a) list failed in the 16.0.0 client notes as it is; (b) agree it alongside refused before the tag, and decide whether API v1's batch reply should carry the same member. Not asked for in the four outcome-B points.
+**Notes.** Decided 2026-10-27 (maintainer): option (a), ship the failed slot in 16.0.0 as it is, described in the client notes as experimental under WRITE_VALIDATION=reject; it may need feedback or adjustment as progress continues. The per-item reply shape (stored, refused, failed) for the socket, v1 batch and v3 is settled in ID-BATCH. Filed 2026-10-26 from session -66's review of the merged #8854 (ARCH-8854's notes). Options: (a) list failed in the 16.0.0 client notes as it is; (b) agree it alongside refused before the tag, and decide whether API v1's batch reply should carry the same member. Not asked for in the four outcome-B points.
 
 ### `RT-CONNECT-PIN-CUTS` &mdash; BF-65 - cuts 1-3 ship the leaking connector to upgraders first
 
@@ -6872,7 +6872,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 
-**Notes.** Filed 2026-10-26 from R15. Needs a maintainer decision: keep units on a record with targets when no glucose is given, convert to mg/dL, or refuse under WRITE_VALIDATION=reject. Related to BF-180 (the careportal path through the same lines, merged in #8842) and MOD-UNITS-CANONICAL.
+**Notes.** 2026-10-27 (maintainer): survey the clients first (which apps send or read temp targets in mmol/L, over which API, and whether they read back their own), then likely enforce mg/dL at write: a target labelled mmol is converted to mg/dL and relabelled, so readers that ignore the label (Trio) read it right and Nightscout's read-side conversion (lib/data/ddata.js:476-488, #3549 in 2018) does not convert it twice. History: the units deletion dates from a6182b55 (2015-02-11, 'if there isn't a glucose value, don't store the units'), before temp targets carried units; #3549 (2018) added the read-side mg/dL normalisation, which a v1-written target's missing label defeats only for readers outside Nightscout's own page. Survey running (session -ee). Filed 2026-10-26 from R15. Needs a maintainer decision: keep units on a record with targets when no glucose is given, convert to mg/dL, or refuse under WRITE_VALIDATION=reject. Related to BF-180 (the careportal path through the same lines, merged in #8842) and MOD-UNITS-CANONICAL.
 
 ### `BFQ-200` &mdash; BF-200 - on dev, an unusable time on API v2's data-snapshot route stops the server
 
@@ -7485,7 +7485,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 36 items
+`parcel: tenancy` &mdash; 37 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -7517,8 +7517,8 @@ alarm-readiness items, and the seam branch refresh.
 | `ID-FORMAT-DECISION` | Decide: the client identifier's format (opaque string with limits; UUID not required) | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
 | `ID-CLIENT-OID-DECISION` | Decide: may a client set _id (an ObjectId it creates) over API v1? (API v3 decided: refused, BF-170) | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
 | `ID-ABSENT-DECISION` | Decide: a write that carries no identifier (and no _id) - keep the time-key fallback, deprecate it, or require identifier? | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
-| `ID-DELETE-REUSE-DECISION` | Decide: after a delete, what does a re-send of the same identifier (or _id) do - resurrect, refuse, or create new? | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
-| `ID-SCOPE-DECISION` | Decide: is identifier unique per collection, across collections, and per tenant under TENANCY_MODE=multi? | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
+| `ID-DELETE-REUSE-DECISION` | Decide: after a delete, what does a re-send of the same identifier (or _id) do - resurrect, refuse, or create new? | `answered` | `-` | n/a | 0 run + 1 no-gate |
+| `ID-SCOPE-DECISION` | Decide: is identifier unique per collection, across collections, and per tenant under TENANCY_MODE=multi? | `answered` | `-` | n/a | 0 run + 1 no-gate |
 | `ID-CONVENTIONS` | Identifier conventions: one URL-form identifier template per record kind and source, so apps converge | `in-progress` | `records/loop-identifier-2026-10-17` | n/a | 1 run |
 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection; empty and null mean absent | `blocked` | `-` | minor | 0 run + 1 no-gate |
 | `ID-V1-LOOKUP` | Release 2 (minor): v1 GET and DELETE by any identifier, without the default time window | `blocked` | `-` | minor | 0 run + 1 no-gate |
@@ -7526,8 +7526,9 @@ alarm-readiness items, and the seam branch refresh.
 | `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up safe on existing duplicates | `blocked` | `-` | minor | 0 run + 1 no-gate |
 | `BFQ-66` | BF-66 - the deployment's own tokens fail its own tenant check | `blocked` | `crm-seam` | n/a | 0 run + 2 no-gate |
 | `BFQ-CAP02` | CAP-02 - no importer, and no Mongo to PostgreSQL loader | `not-started` | `crm-seam` | n/a | 0 run + 2 no-gate |
-| `ST-FILTER-READS` | Storage interface, first PR: the filter tree and interface methods under API v3's adapter (ST-FILTER), and API v1 reads through them (ST-READS), with no v1 answer changed | `in-flight-upstream` | `feat/storage-filter` | patch | 0 run + 1 no-gate |
-| `ST-WRITES` | Storage interface, second PR: API v1, authorization storage and socket writes through the interface, each labelled by source; #8854's boundary check fails a write that skips the interface | `in-flight-upstream` | `feat/storage-writes` | patch | 0 run + 1 no-gate |
+| `ST-FILTER-READS` | Storage interface, first PR: the filter tree and interface methods under API v3's adapter (ST-FILTER), and API v1 reads through them (ST-READS), with no v1 answer changed | `merged-upstream` | `feat/storage-filter` | patch | 1 run + 1 no-gate |
+| `ST-WRITES` | Storage interface, second PR: API v1, authorization storage and socket writes through the interface, each labelled by source; #8854's boundary check fails a write that skips the interface | `merged-upstream` | `feat/storage-writes` | patch | 1 run + 1 no-gate |
+| `ST-COUNT-ONEPATH` | API v1 count only through the storage interface: lib/server/aggregate.js loses its constructor pipeline hook and no-store path | `in-flight-upstream` | `feat/storage-count-onepath` | patch | 1 run |
 
 ### `T30-RESEARCH` &mdash; T3.0 part 1 - enumerate the per-tenant configuration surface
 
@@ -8313,7 +8314,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `needs-decision` |
+| state (claimed) | `answered` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `official/dev@fade2299` |
@@ -8337,13 +8338,13 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/10-domain/record-identity-reference.md`
 - `tools/lab/record-identity/results/record-identity-2026-10-18.md`
 
-**Notes.** Choices: resurrect (today's v3 POST), refuse (410, as v3 PUT does today), or create a new record beside the tombstone. A deleted reading that a second uploader still holds is re-sent on its next cycle, so "resurrect" undoes a user's delete. Read at 15.0.8: lib/api3/generic/update/validate.js:36 skips every immutable check when the stored record has isValid false; update/operation.js:62 and patch/operation.js:42 answer 410. On dev, v1 reads hide isValid false records (lib/server/soft-deleted.js) and an entries re-send clears isValid (lib/server/entries.js $unset).
+**Notes.** Decided 2026-10-27 (maintainer): a re-send of a deleted record is acknowledged and the record stays deleted: a 2xx reply naming the stored, deleted record (so the uploader stops retrying), keeping the tombstone. Not resurrect (today's v3 POST and v1 entries), not 410 (today's v3 PUT), not a new record. Also asked: advice for AID controller authors on integrating with Nightscout appropriately (re- send, delete and tombstone handling), in the controller guide (guides/new-controller.md). The code follows in ID-FIRST-MATCH. Choices: resurrect (today's v3 POST), refuse (410, as v3 PUT does today), or create a new record beside the tombstone. A deleted reading that a second uploader still holds is re-sent on its next cycle, so "resurrect" undoes a user's delete. Read at 15.0.8: lib/api3/generic/update/validate.js:36 skips every immutable check when the stored record has isValid false; update/operation.js:62 and patch/operation.js:42 answer 410. On dev, v1 reads hide isValid false records (lib/server/soft-deleted.js) and an entries re-send clears isValid (lib/server/entries.js $unset).
 
 ### `ID-SCOPE-DECISION` &mdash; Decide: is identifier unique per collection, across collections, and per tenant under TENANCY_MODE=multi?
 
 | | |
 |---|---|
-| state (claimed) | `needs-decision` |
+| state (claimed) | `answered` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `official/dev@fade2299` |
@@ -8368,7 +8369,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/60-research/tenancy/identifier-duplicates-2026-10-17.md`
 
-**Notes.** Today no index on identifier is unique (entries.js:224,226, treatments.js:430,432, devicestatus.js:168, api3 mongoCollection/index.js:21 at 15.0.8), and every match is within one collection, so uniqueness is per collection by construction and only by convention. Cross-references: D2 (shared logical storage with a tenant discriminator) and D3 (PostgreSQL with RLS) mean a per-tenant scope is a column in the key, not a separate database; D20 rule 5 ("one identifier names one record") does not say per what. The simple contract (reply.body.md rule 2) says "one identifier names one record" without a scope. 2026-10-18, recommended (not decided): enforcement per collection, values globally unique by convention. The URL form's kind segment (loop://carbs/..., loop://devicestatus/..., or the model in a source scheme) keeps two collections from holding the same value (identifier-conventions.md §1).
+**Notes.** Decided 2026-10-27 (maintainer): identifier uniqueness is enforced per collection (with the tenant in the key under TENANCY_MODE=multi); values are kept globally unique by convention through the URL kind segment (identifier- conventions.md §1). This sets ID-UNIQUE-INDEX's key and the PostgreSQL constraint. Today no index on identifier is unique (entries.js:224,226, treatments.js:430,432, devicestatus.js:168, api3 mongoCollection/index.js:21 at 15.0.8), and every match is within one collection, so uniqueness is per collection by construction and only by convention. Cross-references: D2 (shared logical storage with a tenant discriminator) and D3 (PostgreSQL with RLS) mean a per-tenant scope is a column in the key, not a separate database; D20 rule 5 ("one identifier names one record") does not say per what. The simple contract (reply.body.md rule 2) says "one identifier names one record" without a scope. 2026-10-18, recommended (not decided): enforcement per collection, values globally unique by convention. The URL form's kind segment (loop://carbs/..., loop://devicestatus/..., or the model in a source scheme) keeps two collections from holding the same value (identifier-conventions.md §1).
 
 ### `ID-CONVENTIONS` &mdash; Identifier conventions: one URL-form identifier template per record kind and source, so apps converge
 
@@ -8590,7 +8591,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `feat/storage-filter` |
 | base | `official/dev@7ad3a67f` |
@@ -8606,6 +8607,8 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 84fac457 official/dev`
+  - #8861's merge commit 84fac457 is on official/dev (merged 2026-10-27 20:57:07Z by the maintainer). Red if dev is rewritten without it.
 - **NO GATE** &mdash; Measured by the lab, not re-runnable from this repository alone (needs MongoDB and a dev tree). On feat/storage-filter 48e7e101 (dev 8dbb60c2 merged into b752971c): npm test 4577/0/3, test:all 4905/0/3, check-write-boundary 8/8. On b752971c against dev 7ad3a67f: npm test 4526/0/3 (dev 4429), test:all 4854/0/3 (dev 4757), #8854 matrix 422 = 422, write-contract matrix 0 of 336 cells differ off and reject (red control findFiltered -> []: 186 cells), tools/seam/v1-http-differential.js 700/700 identical, tools/seam/v1-read-differential.js 2954/2954, tools/seam/filter-differential.js 0 mismatches. With QC-MATRIX-TT's Temporary Target cells (360, 823c7c68d): 48e7e101 equals dev 8dbb60c2 cell for cell off and reject.
 
 **Evidence.**
@@ -8615,13 +8618,13 @@ alarm-readiness items, and the seam branch refresh.
 - `tools/qc/write-contract-matrix.js`
 - `tools/seam/DIFFERENTIALS.md`
 
-**Notes.** 2026-10-27: #8861 at 5310a447 is still a draft (gh pr view); hosted CI on it 16 passed, 3 skipped. It must be marked ready for review before it merges, and it merges before #8863. 2026-10-27, final: #8859, #8866, #8868 and #8856 are on dev (eed31dca). The maintainer merged dev into feat/storage-filter on GitHub as 5310a447 (48e7e101 + eed31dca, 20:13:03Z); its tree 884b95ec equals session -2e's re-merge 4fe7085b (checked by -ee), so the B6 measurements and the re- runs apply. No push needed for #8861. npm test on that tree (session -2e, MongoDB 7.0.43, Node 22.23.4): 4685 passing, 0 failing, 3 pending. 2026-10-27 (maintainer, Q12): goes into 16.0.0 through release allocation B6's entry bar. Items 1, 3, 4 and 5 MET on local candidates (session -2e; cand/with d6ba8e18 vs cand/without 2cae64f3: 360-cell matrix equal off and reject, 67-row replay equal, v1 HTTP 700/700, latency inside the noise floor, one- commit revert cf762dd0 restores cand/without's tree). Item 2 (BF-72, BF-161 in their private forks) is with -e4. Maintainer decided #8859 merges to dev first. The PR branch is awaiting #8859: prep/storage-filter df4e5e9d (= 48e7e101 + dev 2dc0c1bc + #8859, clean; tree 402b22d6 equals cand/with's #8861 step 019bdce9, checked by -ee) becomes feat/storage-filter once the real dev with #8859 is merged in. No push commands until -2e sends the final head. 2026-10-26, later: the maintainer pushed 48e7e101 and opened draft #8861. ST- WRITES is being built on top of it (feat/storage-writes). 2026-10-26: the maintainer decided ST-FILTER and ST-READS go up as one PR. ST-FILTER found five defects in the September seam's fromMongo, each of which widens or changes a read ({a: {}} dropped, empty $or and $and matching everything, $exists undefined read as presence, RegExp g and s flags swapped, mongod- refused $regex options coerced); the mingo round trip could not see them, the live-mongod differential did. All five are fixed on the branch and pinned by tests.
+**Notes.** 2026-10-27: MERGED to dev as 84fac457 (20:57:07Z, by the maintainer, head 5310a447; gh pr view 8861). Going into 16.0.0 (release allocation Q12, B6). 2026-10-27: #8861 at 5310a447 is still a draft (gh pr view); hosted CI on it 16 passed, 3 skipped. It must be marked ready for review before it merges, and it merges before #8863. 2026-10-27, final: #8859, #8866, #8868 and #8856 are on dev (eed31dca). The maintainer merged dev into feat/storage-filter on GitHub as 5310a447 (48e7e101 + eed31dca, 20:13:03Z); its tree 884b95ec equals session -2e's re-merge 4fe7085b (checked by -ee), so the B6 measurements and the re- runs apply. No push needed for #8861. npm test on that tree (session -2e, MongoDB 7.0.43, Node 22.23.4): 4685 passing, 0 failing, 3 pending. 2026-10-27 (maintainer, Q12): goes into 16.0.0 through release allocation B6's entry bar. Items 1, 3, 4 and 5 MET on local candidates (session -2e; cand/with d6ba8e18 vs cand/without 2cae64f3: 360-cell matrix equal off and reject, 67-row replay equal, v1 HTTP 700/700, latency inside the noise floor, one- commit revert cf762dd0 restores cand/without's tree). Item 2 (BF-72, BF-161 in their private forks) is with -e4. Maintainer decided #8859 merges to dev first. The PR branch is awaiting #8859: prep/storage-filter df4e5e9d (= 48e7e101 + dev 2dc0c1bc + #8859, clean; tree 402b22d6 equals cand/with's #8861 step 019bdce9, checked by -ee) becomes feat/storage-filter once the real dev with #8859 is merged in. No push commands until -2e sends the final head. 2026-10-26, later: the maintainer pushed 48e7e101 and opened draft #8861. ST- WRITES is being built on top of it (feat/storage-writes). 2026-10-26: the maintainer decided ST-FILTER and ST-READS go up as one PR. ST-FILTER found five defects in the September seam's fromMongo, each of which widens or changes a read ({a: {}} dropped, empty $or and $and matching everything, $exists undefined read as presence, RegExp g and s flags swapped, mongod- refused $regex options coerced); the mingo round trip could not see them, the live-mongod differential did. All five are fixed on the branch and pinned by tests.
 
 ### `ST-WRITES` &mdash; Storage interface, second PR: API v1, authorization storage and socket writes through the interface, each labelled by source; #8854's boundary check fails a write that skips the interface
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `feat/storage-writes` |
 | base | `feat/storage-filter@48e7e101` |
@@ -8638,6 +8641,8 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9668b179 official/dev`
+  - #8863's merge commit 9668b179 is on official/dev (merged 2026-10-27 21:00:16Z by the maintainer). Red if dev is rewritten without it.
 - **NO GATE** &mdash; Measured by the lab, not re-runnable from this repository alone. On feat/storage-writes 38b910d7 against 48e7e101 (Node 22.23.4, MongoDB 8.0.34): npm test 4588/0/3 (base 4577), test:all 4916/0/3 (base 4905), check-write-boundary 9 entry points (red: a raw deleteMany), #8854 matrix 422 (red: socket label dropped, 78 failing), write-contract matrix 0 of 336 cells off and reject (red: deleted alias, 3 cells). With QC-MATRIX-TT's Temporary Target cells (360 in all, 823c7c68d), 0 cells differ from dev 8dbb60c2 off and 0 in reject; off vs reject differ in the same 12 invalid-target cells as dev. v1 GET differential 700/700, write differential 88/88 with 3254 documents (red: alias 11 replies, $unset 11 stored states).
 
 **Evidence.**
@@ -8646,7 +8651,36 @@ alarm-readiness items, and the seam branch refresh.
 - `tools/qc/write-contract-matrix.js`
 - `tools/seam/DIFFERENTIALS.md`
 
-**Notes.** 2026-10-27: the maintainer pushed 42128f3b; feat/storage-writes and refs/pull/8863/head point at it (gh pr view: open, ready for review, CLEAN, base feat/storage-filter). Hosted CI has not run on it: the workflow does not run for a pull request whose base is not dev (the branch's last run is pull_request_target on 38b910d7), so the evidence is the local suites and matrix above. GitHub retargets #8863 to dev when #8861 merges, and CI runs then. Merge order: #8861, then #8863. 2026-10-27, final: ready to push 42128f3b (parents a3f74a08 + 5310a447; contains 38b910d7, 5310a447 and dev eed31dca; tree d4684295; 25 files +896/-245 against 5310a447, 36 files +3124/-248 against dev; checked by -ee). Session -2e on that tree, Node 22.23.4: npm test 4700 passing, 0 failing, 3 pending and test:all 5028/0/3 (MongoDB 7.0.43; +13 over a3f74a08 = BF-200's tests); 360-cell matrix equal to dev eed31dca in off and reject, off vs reject 12 differing on each (MongoDB 5.0.33). Push: git -C externals/cgm-remote-monitor-official push official 42128f3b:refs/heads/feat/storage-writes. Merge order: #8861, then #8863; ST- COUNT-ONEPATH follows before the tag. 2026-10-27 (maintainer, Q12): goes into 16.0.0 through release allocation B6's entry bar. Items 1, 3, 4 and 5 MET on local candidates (session -2e; cand/with d6ba8e18 vs cand/without 2cae64f3: 360-cell matrix equal off and reject, 67-row replay equal, v1 HTTP 700/700, latency inside the noise floor, one-commit revert cf762dd0 restores cand/without's tree). Item 2 (BF-72, BF-161 in their private forks) is with -e4. Maintainer decided #8859 merges to dev first. The PR branch is awaiting #8859: prep/storage-writes b1104d02 (= the count commit 079f20ae for GET /api/v1/count/:storage/where on 38b910d7, + prep/storage-filter, with the five conflict resolutions; tree c5ac59dc equals cand/with d6ba8e18, checked by -ee, so every B6 measurement applies) becomes feat/storage-writes for #8863 once the real dev with #8859 is merged in. No push commands until -2e sends the final head. 2026-10-26: draft #8863, stacked on #8861 (base feat/storage- filter); it retargets to dev when #8861 merges. Labels: v1 modules 'v1/internal', socket 'socket', authorization storage 'internal', default 'v3'; an unknown source is refused; origin has room but is not passed. Open in the PR: commit events for authorization writes, splitting 'v1/internal', insertOne normalize:false setting _id as interface contract, moving the write differential into tools/seam.
+**Notes.** 2026-10-27: MERGED to dev as 9668b179 (21:00:16Z, by the maintainer, head 42128f3b; gh pr view 8863), after #8861. Going into 16.0.0 (Q12, B6). Follow- up ST-COUNT-ONEPATH is #8870. 2026-10-27: the maintainer pushed 42128f3b; feat/storage-writes and refs/pull/8863/head point at it (gh pr view: open, ready for review, CLEAN, base feat/storage-filter). Hosted CI has not run on it: the workflow does not run for a pull request whose base is not dev (the branch's last run is pull_request_target on 38b910d7), so the evidence is the local suites and matrix above. GitHub retargets #8863 to dev when #8861 merges, and CI runs then. Merge order: #8861, then #8863. 2026-10-27, final: ready to push 42128f3b (parents a3f74a08 + 5310a447; contains 38b910d7, 5310a447 and dev eed31dca; tree d4684295; 25 files +896/-245 against 5310a447, 36 files +3124/-248 against dev; checked by -ee). Session -2e on that tree, Node 22.23.4: npm test 4700 passing, 0 failing, 3 pending and test:all 5028/0/3 (MongoDB 7.0.43; +13 over a3f74a08 = BF-200's tests); 360-cell matrix equal to dev eed31dca in off and reject, off vs reject 12 differing on each (MongoDB 5.0.33). Push: git -C externals/cgm-remote-monitor-official push official 42128f3b:refs/heads/feat/storage-writes. Merge order: #8861, then #8863; ST-COUNT-ONEPATH follows before the tag. 2026-10-27 (maintainer, Q12): goes into 16.0.0 through release allocation B6's entry bar. Items 1, 3, 4 and 5 MET on local candidates (session -2e; cand/with d6ba8e18 vs cand/without 2cae64f3: 360-cell matrix equal off and reject, 67-row replay equal, v1 HTTP 700/700, latency inside the noise floor, one-commit revert cf762dd0 restores cand/without's tree). Item 2 (BF-72, BF-161 in their private forks) is with -e4. Maintainer decided #8859 merges to dev first. The PR branch is awaiting #8859: prep/storage-writes b1104d02 (= the count commit 079f20ae for GET /api/v1/count/:storage/where on 38b910d7, + prep/storage-filter, with the five conflict resolutions; tree c5ac59dc equals cand/with d6ba8e18, checked by -ee, so every B6 measurement applies) becomes feat/storage-writes for #8863 once the real dev with #8859 is merged in. No push commands until -2e sends the final head. 2026-10-26: draft #8863, stacked on #8861 (base feat/storage- filter); it retargets to dev when #8861 merges. Labels: v1 modules 'v1/internal', socket 'socket', authorization storage 'internal', default 'v3'; an unknown source is refused; origin has room but is not passed. Open in the PR: commit events for authorization writes, splitting 'v1/internal', insertOne normalize:false setting _id as interface contract, moving the write differential into tools/seam.
+
+### `ST-COUNT-ONEPATH` &mdash; API v1 count only through the storage interface: lib/server/aggregate.js loses its constructor pipeline hook and no-store path
+
+| | |
+|---|---|
+| state (claimed) | `in-flight-upstream` |
+| repo | `cgm-remote-monitor` |
+| branch | `feat/storage-count-onepath` |
+| base | `official/dev@9668b179` |
+| worktree | `externals/work/crm-count-onepath` |
+| semver | `patch` |
+| review | maintainer |
+
+**Blast radius.** lib/server/aggregate.js (create(api, store), store required), its three callers in entries, treatments and devicestatus, a comment in lib/api3 modify.js, and three test files; 8 files, +66/-130.
+
+**What an operator sees.** Nothing changes: no request reached the removed path.
+
+**Why `patch`.** unreachable over HTTP; the API v1 HTTP differential is 700/700 identical, including 219 count requests
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9668b179 feat/storage-count-onepath`
+  - The branch is on dev 9668b179 (both slices merged). Red if it is rebased off dev or deleted.
+
+**Evidence.**
+
+- `docs/30-design/platform/next-gen-platform-plan.md`
+
+**Notes.** 2026-10-27: opened as #8870 (base dev, head 0955f25b, not a draft; 13 checks passed at the time of the report, three still running), by the maintainer from session -2e's branch. Decided 2026-10-27 as a follow-up after the slices, done before the 16.0.0 tag. Session -2e (Node 22.23.4): npm test 4698 passing, 0 failing, 3 pending and test:all 5026/0/3 on MongoDB 7.0 (dev 4700 and 5028: three tests removed with the hook, one added); v1 HTTP differential against dev 9668b179 on MongoDB 5.0 700/700 identical (219 counts). The new construction test fails on dev's code, and fails alone when only the construction check is removed (53 pass, 1 fails).
 
 ---
 

@@ -23,13 +23,11 @@ repository.
 |---|---|---|---|
 | [`ADV-CONFIG`](adv-config.md) | #8746 | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) |
 | [`BFQ-ENV`](bfq-env-bf-16-0-0-boot-resilience.md) | #8849 | `needs-decision` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies |
-| [`ST-FILTER-READS`](st-filter-reads-feat-storage-filter.md) | #8861 | `in-flight-upstream` | Storage interface, first PR: the filter tree and interface methods under API v3's adapter (ST-FILTER), and API v1 reads through them (ST-READS), with no v1 answer changed |
 | [`PLAT-ENTRY`](plat-entry-feat-nightscout-entrypoint.md) | #8862 | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT and CMD single, no image HEALTHCHECK; no start path changes |
-| [`ST-WRITES`](st-writes-feat-storage-writes.md) | #8863 | `in-flight-upstream` | Storage interface, second PR: API v1, authorization storage and socket writes through the interface, each labelled by source; #8854's boundary check fails a write that skips the interface |
 | [`PLAT-SERVE`](plat-serve-feat-nightscout-serve.md) | #8865 | `in-flight-upstream` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a time, `api` first; each listener bound separately |
 | [`RT-CI-WEBKIT-REPORTS`](rt-ci-webkit-reports-test-16-0-0-reports-ready.md) | #8869 | `in-flight-upstream` | WebKit's cached-bundle startup test still fails on dev after bdd569a3: report requests cancelled 'due to access control checks' |
+| [`ST-COUNT-ONEPATH`](st-count-onepath-feat-storage-count-onepath.md) | #8870 | `in-flight-upstream` | API v1 count only through the storage interface: lib/server/aggregate.js loses its constructor pipeline hook and no-store path |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
-| [`ARCH-8854-FAILED`](arch-8854-failed.md) | &mdash; | `needs-decision` | Decide: the socket's failed slot that #8854 adds under WRITE_VALIDATION=reject - ship as is, or agree it alongside refused (and on API v1?) |
 | [`BFQ-161`](bfq-161-adv-phrf-1600.md) | &mdash; | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes |
 | [`BFQ-194`](bfq-194.md) | &mdash; | `needs-decision` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL |
 | [`BFQ-72`](bfq-72-adv-r3gv-1600.md) | &mdash; | `in-flight-upstream` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
@@ -37,9 +35,7 @@ repository.
 | [`DEPENDABOT-CONFIG`](dependabot-config.md) | &mdash; | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev |
 | [`ID-ABSENT-DECISION`](id-absent-decision.md) | &mdash; | `needs-decision` | Decide: a write that carries no identifier (and no _id) - keep the time-key fallback, deprecate it, or require identifier? |
 | [`ID-CLIENT-OID-DECISION`](id-client-oid-decision.md) | &mdash; | `needs-decision` | Decide: may a client set _id (an ObjectId it creates) over API v1? (API v3 decided: refused, BF-170) |
-| [`ID-DELETE-REUSE-DECISION`](id-delete-reuse-decision.md) | &mdash; | `needs-decision` | Decide: after a delete, what does a re-send of the same identifier (or _id) do - resurrect, refuse, or create new? |
 | [`ID-FORMAT-DECISION`](id-format-decision.md) | &mdash; | `needs-decision` | Decide: the client identifier's format (opaque string with limits; UUID not required) |
-| [`ID-SCOPE-DECISION`](id-scope-decision.md) | &mdash; | `needs-decision` | Decide: is identifier unique per collection, across collections, and per tenant under TENANCY_MODE=multi? |
 | [`ID-V3-IMMUTABLE-DECISION`](id-v3-immutable-decision.md) | &mdash; | `needs-decision` | Decide: on an identifier match, may date, device or eventType change? |
 | [`MOD-UNITS-CANONICAL`](mod-units-canonical.md) | &mdash; | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), and the conversion constant |
 | [`MOD-WRITE-VALIDATION-READ`](mod-write-validation-read.md) | &mdash; | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-side flag, R1/R2) |

@@ -30,7 +30,7 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 25 items
+### Maintainer &mdash; 21 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -38,20 +38,16 @@ every item that was `merged-upstream` then is `released`.
 | `PLAT-ENTRY` | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; im | #8862 |
 | `PLAT-SERVE` | `in-flight-upstream` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a ti | #8865 |
 | `RT-CI-WEBKIT-REPORTS` | `in-flight-upstream` | WebKit's cached-bundle startup test still fails on dev after bdd569a3: report re | #8869 |
-| `ST-FILTER-READS` | `in-flight-upstream` | Storage interface, first PR: the filter tree and interface methods under API v3' | #8861 |
-| `ST-WRITES` | `in-flight-upstream` | Storage interface, second PR: API v1, authorization storage and socket writes th | #8863 |
+| `ST-COUNT-ONEPATH` | `in-flight-upstream` | API v1 count only through the storage interface: lib/server/aggregate.js loses i | #8870 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
-| `ARCH-8854-FAILED` | `needs-decision` | Decide: the socket's failed slot that #8854 adds under WRITE_VALIDATION=reject - | &mdash; |
 | `BFQ-194` | `needs-decision` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/ | &mdash; |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
 | `BFQ-ENV` | `needs-decision` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies | #8849 |
 | `DEPENDABOT-CONFIG` | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts co | &mdash; |
 | `ID-ABSENT-DECISION` | `needs-decision` | Decide: a write that carries no identifier (and no _id) - keep the time-key fall | &mdash; |
 | `ID-CLIENT-OID-DECISION` | `needs-decision` | Decide: may a client set _id (an ObjectId it creates) over API v1? (API v3 decid | &mdash; |
-| `ID-DELETE-REUSE-DECISION` | `needs-decision` | Decide: after a delete, what does a re-send of the same identifier (or _id) do - | &mdash; |
 | `ID-FORMAT-DECISION` | `needs-decision` | Decide: the client identifier's format (opaque string with limits; UUID not requ | &mdash; |
-| `ID-SCOPE-DECISION` | `needs-decision` | Decide: is identifier unique per collection, across collections, and per tenant  | &mdash; |
 | `ID-V3-IMMUTABLE-DECISION` | `needs-decision` | Decide: on an identifier match, may date, device or eventType change? | &mdash; |
 | `MOD-UNITS-CANONICAL` | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), an | &mdash; |
 | `MOD-WRITE-VALIDATION-READ` | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | &mdash; |
@@ -84,11 +80,10 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
-| **#8861** | `ST-FILTER-READS` | `feat/storage-filter` | Storage interface, first PR: the filter tree and interface m | Maintainer |
 | **#8862** | `PLAT-ENTRY` | `feat/nightscout-entrypoint` | One executable (D21): bin/nightscout.js with `single` and th | Maintainer |
-| **#8863** | `ST-WRITES` | `feat/storage-writes` | Storage interface, second PR: API v1, authorization storage  | Maintainer |
 | **#8865** | `PLAT-SERVE` | `feat/nightscout-serve` | `nightscout serve <roles>` (D21): hosted roles carved from b | Maintainer |
 | **#8869** | `RT-CI-WEBKIT-REPORTS` | `test/16.0.0-reports-ready` | WebKit's cached-bundle startup test still fails on dev after | Maintainer |
+| **#8870** | `ST-COUNT-ONEPATH` | `feat/storage-count-onepath` | API v1 count only through the storage interface: lib/server/ | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 

@@ -585,13 +585,13 @@ BF-193 is not a pre-tag requirement; its fix shape is decided (debug-gated paylo
 10. **BF-194** (maintainer): API v1 removes `units` from a treatment with no glucose value before
     `WRITE_VALIDATION` runs, so a v1 temp target sent in mmol/L is stored with mmol/L numbers and no
     units and reads as mg/dL, in every mode, on 15.0.9 and `dev` (reproduced, integration record R15):
-    keep the units, convert, or refuse. Queue `BFQ-194`.
+    keep the units, convert, or refuse. Queue `BFQ-194`. *2026-10-27 (maintainer): survey the clients first, then likely enforce mg/dL at write (convert a target labelled mmol and relabel it); survey running.*
 11. **#8854's `failed` slot** (maintainer): under `reject`, a socket treatment array answers an item whose
     write cannot be confirmed (a lookup, similar-record match or insert error, such as a duplicate key) with a
     slot without `_id` carrying `failed: {status: 500, message: "Treatment write could not be confirmed"}`,
     where `47723cda` left the item out of the reply (`lib/server/websocket.js:557-563` on `7ad3a67f`;
     read, not measured). API v1 has no equivalent. List it in the 16.0.0 client notes as it is, or agree it
-    alongside `refused` (and whether API v1 should match). Queue `ARCH-8854-FAILED`.
+    alongside `refused` (and whether API v1 should match). Queue `ARCH-8854-FAILED`. *Decided 2026-10-27 (maintainer): ship it as it is, described in the client notes as experimental under `reject`; the per-item reply for every path is settled in ID-BATCH.*
 
 **Found by R15 (reproduced; no register entry):**
 

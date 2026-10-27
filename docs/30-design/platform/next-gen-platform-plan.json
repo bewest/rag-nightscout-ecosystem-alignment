@@ -1,5 +1,5 @@
 {
- "measured": "2026-10-27 against cgm-remote-monitor dev eed31dca (#8861 5310a447, #8863 42128f3b, #8857, #8862, #8865 read the same day); first measured 2026-10-26 against dev 47723cda and #8854 at fa22d573",
+ "measured": "2026-10-27 against cgm-remote-monitor dev 9668b179 (#8861 and #8863 merged; #8870 open); first measured 2026-10-26 against dev 47723cda and #8854 at fa22d573",
  "tracks": [
   {
    "id": "storage",
@@ -144,20 +144,21 @@
    "id": "ST-EVENT",
    "track": "storage",
    "phase": "boundary",
-   "state": "decision",
+   "state": "progress",
    "short": "Commit event contents",
    "title": "The storage-write-committed event: per call or per driver operation, and whether it carries _id and identifier (internal only)",
    "where": "lib/storage/write-step.js",
    "check": "a test per path that the event names every stored record once",
    "depends": [
     "PR-8854"
-   ]
+   ],
+   "ref": "2026-10-27: maintainer leans to one internal event per write call naming each record by _id and identifier; benchmark against the counts-only event first (latency, payload and listener cost, change-feed usefulness, concurrent writers), session -2e, tools/lab/commit-event-bench"
   },
   {
    "id": "ST-FILTER",
    "track": "storage",
-   "phase": "boundary",
-   "state": "review",
+   "phase": "dev",
+   "state": "done",
    "short": "Filter tree and interface",
    "title": "Slice 1: the backend-neutral filter tree and storage interface methods under the API v3 collection adapter, composed with #8854's boundary; no call site changes",
    "where": "lib/storage/filter.js, lib/api3/storage/mongoCollection/ (from old chain 4f753ab9, b0709c2c, 68ffbd66, c40d37f7, ef89bdb8, c1218d50, d75c1154, plus the type and nottype nodes)",
@@ -165,14 +166,14 @@
    "depends": [
     "PR-8854"
    ],
-   "ref": "#8861 (draft, 5310a447 = 48e7e101 + dev eed31dca): B6 entry bar met; npm test 4685/0/3; going into 16.0.0 (Q12)",
+   "ref": "#8861 merged to dev 2026-10-27 as 84fac457 (head 5310a447); in 16.0.0 (Q12)",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8861"
   },
   {
    "id": "ST-READS",
    "track": "storage",
-   "phase": "boundary",
-   "state": "review",
+   "phase": "dev",
+   "state": "done",
    "short": "v1 reads on the interface",
    "title": "Slice 2: v1 list, get and query reads go through the interface (fromMongo), dev's count rules kept",
    "where": "six v1 modules, about 250 lines",
@@ -180,14 +181,14 @@
    "depends": [
     "ST-FILTER"
    ],
-   "ref": "#8861 (draft, 5310a447 = 48e7e101 + dev eed31dca): B6 entry bar met; npm test 4685/0/3; going into 16.0.0 (Q12)",
+   "ref": "#8861 merged to dev 2026-10-27 as 84fac457 (head 5310a447); in 16.0.0 (Q12)",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8861"
   },
   {
    "id": "ST-WRITES",
    "track": "storage",
-   "phase": "boundary",
-   "state": "review",
+   "phase": "dev",
+   "state": "done",
    "short": "v1 and socket writes",
    "title": "Slice 3: v1 and socket writes go through the interface, each labelled by its source (and later its origin); #8854's boundary check accepts interface acquisition",
    "where": "treatments, entries, devicestatus, profile (incl. mergeInto), food, activity, authorization storage, websocket; about 400 lines",
@@ -195,14 +196,14 @@
    "depends": [
     "ST-READS"
    ],
-   "ref": "#8863 (ready for review, 42128f3b, stacked on #8861; pushed 2026-10-27): B6 entry bar met; npm test 4700/0/3, test:all 5028/0/3, 360-cell matrix equal to dev eed31dca; going into 16.0.0 (Q12)",
+   "ref": "#8863 merged to dev 2026-10-27 as 9668b179 (head 42128f3b); in 16.0.0 (Q12)",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8863"
   },
   {
    "id": "ST-COUNT-ONEPATH",
    "track": "storage",
    "phase": "boundary",
-   "state": "planned",
+   "state": "review",
    "short": "count: one path",
    "title": "API v1 count reaches the database only through the storage interface: lib/server/aggregate.js loses the constructor conf.pipeline hook and the no-store driver path (about 25 lines, including the per-stage JavaScript check), and construction without a store fails. Decided 2026-10-27 (maintainer): a follow-up after the slices land, done before the 16.0.0 tag",
    "where": "lib/server/aggregate.js; tests/api-v1-count-pipeline.test.js, tests/mongo-query-javascript.test.js, tests/mongo-query-modernization.test.js",
@@ -210,7 +211,8 @@
    "depends": [
     "ST-WRITES"
    ],
-   "ref": "session -2e, after #8861 and #8863 merge"
+   "ref": "#8870 (0955f25b, base dev, opened 2026-10-27)",
+   "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8870"
   },
   {
    "id": "ST-V3-DECOUPLE",
@@ -689,7 +691,7 @@
   {
    "id": "D-EVENT",
    "short": "Commit event and socket refusals",
-   "owner": "maintainer with #8854's author (Q-A, Q-G)",
+   "owner": "maintainer; leaning to per call with _id and identifier (2026-10-27), pending a benchmark on four axes",
    "question": "One event per call carrying the stored records, or one per driver operation with counts only; and does a socket refusal acknowledge [] for the whole batch?",
    "holds": [
     "ST-EVENT"

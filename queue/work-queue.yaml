@@ -6793,7 +6793,7 @@ items:
     repo: cgm-remote-monitor
     branch: ""
     base: official/dev@7ad3a67f
-    state: needs-decision
+    state: answered
     pr: []
     blast_radius: >
       lib/server/websocket.js on dev 7ad3a67f (:557-563 unconfirmedTreatmentWrite,
@@ -6823,6 +6823,12 @@ items:
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
       - releases/cgm-remote-monitor-16.0.0/decisions.md
     notes: >
+      Decided 2026-10-27 (maintainer): option (a), ship the failed slot in
+      16.0.0 as it is, described in the client notes as experimental under
+      WRITE_VALIDATION=reject; it may need feedback or adjustment as progress
+      continues. The per-item reply shape (stored, refused, failed) for the
+      socket, v1 batch and v3 is settled in ID-BATCH.
+
       Filed 2026-10-26 from session -66's review of the merged #8854
       (ARCH-8854's notes). Options: (a) list failed in the 16.0.0 client
       notes as it is; (b) agree it alongside refused before the tag, and
@@ -7202,7 +7208,7 @@ items:
     repo: cgm-remote-monitor
     branch: ""
     base: official/dev@fade2299
-    state: needs-decision
+    state: answered
     pr: []
     blast_radius: >
       A decision row, no code. Its answer sets how ID-SIMPLE-MATCH and
@@ -7230,6 +7236,15 @@ items:
       - docs/10-domain/record-identity-reference.md
       - tools/lab/record-identity/results/record-identity-2026-10-18.md
     notes: >
+      Decided 2026-10-27 (maintainer): a re-send of a deleted record is
+      acknowledged and the record stays deleted: a 2xx reply naming the
+      stored, deleted record (so the uploader stops retrying), keeping the
+      tombstone. Not resurrect (today's v3 POST and v1 entries), not 410
+      (today's v3 PUT), not a new record. Also asked: advice for AID
+      controller authors on integrating with Nightscout appropriately (re-
+      send, delete and tombstone handling), in the controller guide
+      (guides/new-controller.md). The code follows in ID-FIRST-MATCH.
+
       Choices: resurrect (today's v3 POST), refuse (410, as v3 PUT does
       today), or create a new record beside the tombstone. A deleted reading
       that a second uploader still holds is re-sent on its next cycle, so
@@ -7246,7 +7261,7 @@ items:
     repo: cgm-remote-monitor
     branch: ""
     base: official/dev@fade2299
-    state: needs-decision
+    state: answered
     pr: []
     blast_radius: >
       A decision row, no code. Its answer sets ID-UNIQUE-INDEX's key (which
@@ -7270,6 +7285,12 @@ items:
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
       - docs/60-research/tenancy/identifier-duplicates-2026-10-17.md
     notes: >
+      Decided 2026-10-27 (maintainer): identifier uniqueness is enforced per
+      collection (with the tenant in the key under TENANCY_MODE=multi); values
+      are kept globally unique by convention through the URL kind segment
+      (identifier-conventions.md §1). This sets ID-UNIQUE-INDEX's key and the
+      PostgreSQL constraint.
+
       Today no index on identifier is unique (entries.js:224,226,
       treatments.js:430,432, devicestatus.js:168, api3
       mongoCollection/index.js:21 at 15.0.8), and every match is within one
@@ -17130,6 +17151,18 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
     notes: >
+      2026-10-27 (maintainer): survey the clients first (which apps send or
+      read temp targets in mmol/L, over which API, and whether they read back
+      their own), then likely enforce mg/dL at write: a target labelled mmol
+      is converted to mg/dL and relabelled, so readers that ignore the label
+      (Trio) read it right and Nightscout's read-side conversion
+      (lib/data/ddata.js:476-488, #3549 in 2018) does not convert it twice.
+      History: the units deletion dates from a6182b55 (2015-02-11, 'if there
+      isn't a glucose value, don't store the units'), before temp targets
+      carried units; #3549 (2018) added the read-side mg/dL normalisation,
+      which a v1-written target's missing label defeats only for readers
+      outside Nightscout's own page. Survey running (session -ee).
+
       Filed 2026-10-26 from R15. Needs a maintainer decision: keep units on a
       record with targets when no glucose is given, convert to mg/dL, or
       refuse under WRITE_VALIDATION=reject. Related to BF-180 (the careportal
@@ -21833,7 +21866,7 @@ items:
     branch: feat/storage-filter
     base: official/dev@7ad3a67f
     worktree: externals/work/crm-stfilter
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8861]
     blast_radius: >
       lib/storage/filter.js (new: the filter tree, fromMongo, the MongoDB
@@ -21853,6 +21886,12 @@ items:
       No client-visible change; the write-contract matrix (336 cells, off
       and reject) and #8854's CRUD matrix are the pins.
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 84fac457 official/dev
+        kind: static
+        describe: >
+          #8861's merge commit 84fac457 is on official/dev (merged
+          2026-10-27 20:57:07Z by the maintainer). Red if dev is rewritten
+          without it.
       - no-gate: >
           Measured by the lab, not re-runnable from this repository alone
           (needs MongoDB and a dev tree). On feat/storage-filter 48e7e101
@@ -21873,6 +21912,10 @@ items:
       - tools/qc/write-contract-matrix.js
       - tools/seam/DIFFERENTIALS.md
     notes: >
+      2026-10-27: MERGED to dev as 84fac457 (20:57:07Z, by the maintainer,
+      head 5310a447; gh pr view 8861). Going into 16.0.0 (release allocation
+      Q12, B6).
+
       2026-10-27: #8861 at 5310a447 is still a draft (gh pr view); hosted CI
       on it 16 passed, 3 skipped. It must be marked ready for review before it
       merges, and it merges before #8863.
@@ -21914,7 +21957,7 @@ items:
     branch: feat/storage-writes
     base: feat/storage-filter@48e7e101
     worktree: externals/work/crm-stwrites
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8863]
     blast_radius: >
       lib/server/{entries, treatments, devicestatus, profile, food,
@@ -21933,6 +21976,12 @@ items:
       No client-visible change; the write-contract matrix, #8854's CRUD
       matrix and an 88-step write differential are the pins.
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9668b179 official/dev
+        kind: static
+        describe: >
+          #8863's merge commit 9668b179 is on official/dev (merged
+          2026-10-27 21:00:16Z by the maintainer). Red if dev is rewritten
+          without it.
       - no-gate: >
           Measured by the lab, not re-runnable from this repository alone.
           On feat/storage-writes 38b910d7 against 48e7e101 (Node 22.23.4,
@@ -21952,6 +22001,10 @@ items:
       - tools/qc/write-contract-matrix.js
       - tools/seam/DIFFERENTIALS.md
     notes: >
+      2026-10-27: MERGED to dev as 9668b179 (21:00:16Z, by the maintainer,
+      head 42128f3b; gh pr view 8863), after #8861. Going into 16.0.0 (Q12,
+      B6). Follow-up ST-COUNT-ONEPATH is #8870.
+
       2026-10-27: the maintainer pushed 42128f3b; feat/storage-writes and
       refs/pull/8863/head point at it (gh pr view: open, ready for review,
       CLEAN, base feat/storage-filter). Hosted CI has not run on it: the
@@ -21993,6 +22046,46 @@ items:
       splitting 'v1/internal', insertOne normalize:false setting _id as
       interface contract, moving the write differential into tools/seam.
 
+  - id: ST-COUNT-ONEPATH
+    title: "API v1 count only through the storage interface: lib/server/aggregate.js loses its constructor pipeline hook and no-store path"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: feat/storage-count-onepath
+    base: official/dev@9668b179
+    worktree: externals/work/crm-count-onepath
+    state: in-flight-upstream
+    pr: [8870]
+    blast_radius: >
+      lib/server/aggregate.js (create(api, store), store required), its
+      three callers in entries, treatments and devicestatus, a comment in
+      lib/api3 modify.js, and three test files; 8 files, +66/-130.
+    review: maintainer
+    operator_visible: >
+      Nothing changes: no request reached the removed path.
+    semver: patch
+    semver_reason: >
+      unreachable over HTTP; the API v1 HTTP differential is 700/700
+      identical, including 219 count requests
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9668b179 feat/storage-count-onepath
+        kind: static
+        describe: >
+          The branch is on dev 9668b179 (both slices merged). Red if it is
+          rebased off dev or deleted.
+    blocks_on: []
+    evidence:
+      - docs/30-design/platform/next-gen-platform-plan.md
+    notes: >
+      2026-10-27: opened as #8870 (base dev, head 0955f25b, not a draft;
+      13 checks passed at the time of the report, three still running), by
+      the maintainer from session -2e's branch. Decided 2026-10-27 as a
+      follow-up after the slices, done before the 16.0.0 tag. Session -2e
+      (Node 22.23.4): npm test 4698 passing, 0 failing, 3 pending and
+      test:all 5026/0/3 on MongoDB 7.0 (dev 4700 and 5028: three tests
+      removed with the hook, one added); v1 HTTP differential against dev
+      9668b179 on MongoDB 5.0 700/700 identical (219 counts). The new
+      construction test fails on dev's code, and fails alone when only the
+      construction check is removed (53 pass, 1 fails).
   - id: PLAT-ENTRY
     title: "One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT and CMD single, no image HEALTHCHECK; no start path changes"
     parcel: platform

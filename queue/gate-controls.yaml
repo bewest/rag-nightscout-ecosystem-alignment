@@ -2876,3 +2876,33 @@ controls:
     proves: >
       the same check on official/master (c6a0d8ed, v15.0.9), which does not
       carry the change, exits non-zero (added 2026-10-27 after the merge).
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 84fac457 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 84fac457 official/master
+    control-kind: static
+    proves: >
+      the same containment against official/master (v15.0.9), which does
+      not carry #8861, exits 1 (measured 2026-10-27).
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9668b179 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9668b179 official/master
+    control-kind: static
+    proves: >
+      the same containment against official/master (v15.0.9), which does
+      not carry #8863, exits 1 (measured 2026-10-27).
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9668b179 feat/storage-count-onepath
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9668b179 official/master
+    control-kind: static
+    proves: >
+      the same containment against official/master, which does not carry
+      the slices, exits 1 (measured 2026-10-27).
