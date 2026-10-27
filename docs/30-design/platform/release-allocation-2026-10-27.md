@@ -199,7 +199,7 @@ Two consequences:
 - **17.0.0 is where identity is enforced, not where it starts.** Identifier matching starts in
   16.0.0 (#8859) and spreads in 16.2.0; the unique index that makes it a guarantee is the major.
 
-**Milestones proposed by session -2e (2026-10-27, not decided).** A finer split of the storage and
+**Milestones proposed by session -2e (2026-10-27); M3 and M4 adopted as plan items the same day (maintainer): `ST-V3-DECOUPLE` and `ST-VIEWS`.** A finer split of the storage and
 tenancy work, from its route census of `dev` `2dc0c1bc` (129 routes and 7 socket events):
 
 | milestone | contents | exit check | release row |
@@ -212,7 +212,7 @@ tenancy work, from its route census of `dev` `2dc0c1bc` (129 routes and 7 socket
 | M5 | backend-selectable harness and PostgreSQL | | 16.3.0 or later |
 | M6 | tenant resolution, per-tenant credentials, realtime, the hosted lab, as a preview | | 16.3.0 or later |
 
-M3 and M4 are not items in the next-gen plan yet.
+M3 is `ST-V3-DECOUPLE` and M4 is `ST-VIEWS` in the [next-gen plan](next-gen-platform-plan.md) (adopted 2026-10-27); the other milestones map onto existing items.
 
 ### 4.4 API v4 and formal schemas across releases
 

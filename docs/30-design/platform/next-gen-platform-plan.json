@@ -213,6 +213,21 @@
    "ref": "session -2e, after #8861 and #8863 merge"
   },
   {
+   "id": "ST-V3-DECOUPLE",
+   "track": "storage",
+   "phase": "boundary",
+   "state": "planned",
+   "short": "v3 on its own",
+   "title": "API v3 runs without API v1's modules, the socket and the in-memory cache: its reads and writes reach storage only through the interface, so `serve api` serves API v3 on its own. Adopted 2026-10-27 (maintainer; milestone M3 of session -2e's proposal)",
+   "where": "lib/api3 (the cached collection and its cache hooks), bootevent's factory chain; about the fixtures the API v3 suites share with v1 and the socket",
+   "check": "`serve api` passes the API v3 suites: at #8865 1dafe2a5, 485 pass and 81 fail on fixtures that need the cache, v1 or the socket; target 0 failing, with `single` unchanged",
+   "depends": [
+    "ST-WRITES",
+    "PLAT-SERVE"
+   ],
+   "ref": "release allocation §4.3 (milestones)"
+  },
+  {
    "id": "WC-STEP-PATCH",
    "track": "storage",
    "phase": "intent",
@@ -244,6 +259,20 @@
    "depends": [
     "WC-STEP-PATCH"
    ]
+  },
+  {
+   "id": "ST-VIEWS",
+   "track": "storage",
+   "phase": "intent",
+   "state": "planned",
+   "short": "views without ddata",
+   "title": "Computed views without a resident ddata: what the page, the socket's dataUpdate, the plugins and the alarms compute comes from bounded queries (newest n of each type within a time bound), materialised, used and discarded, not from the process-wide ddata. Adopted 2026-10-27 (maintainer; milestone M4)",
+   "where": "lib/data/dataloader.js and ddata.js, the socket's dataUpdate, the plugin sandbox, notifications",
+   "check": "each view's output equal to today's ddata-based output on the corpus fixtures; for alarms, the execution plan §7b measurement (32.7 KB and 1.94 ms per tenant per evaluation, the identical alarm, against 852 KB and 27.5 ms for all of ddata)",
+   "depends": [
+    "ST-READS"
+   ],
+   "ref": "execution plan T4.4 and §7b"
   },
   {
    "id": "ST-PG",
@@ -600,7 +629,8 @@
    "depends": [
     "ST-HARNESS",
     "T30-SCHEMA-CONFIG",
-    "PLAT-SERVE"
+    "PLAT-SERVE",
+    "ST-V3-DECOUPLE"
    ]
   },
   {
@@ -623,7 +653,8 @@
    "title": "A Docker Compose lab: two tenants on PostgreSQL, isolation checked with a control, uploaders and a follower app against each",
    "depends": [
     "ST-PG",
-    "T30-WIRING"
+    "T30-WIRING",
+    "ST-VIEWS"
    ]
   }
  ],

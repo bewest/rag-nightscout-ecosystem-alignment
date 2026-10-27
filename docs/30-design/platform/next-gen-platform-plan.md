@@ -76,8 +76,11 @@ The replay trial measured both paths on dev `47723cda`. Branches: `seam/replay-2
 | ST-READS | slice 2: v1 reads through the interface | ST-FILTER | api.* suites; a new end-to-end `$type`/`$exists` test |
 | ST-WRITES | slice 3: v1 and socket writes through the interface, labelled by source | ST-READS | our matrix at 0 cells changed; #8854's per-cell boundary assertions |
 | ST-EVENT | the commit event's granularity and contents | PR-8854, D-EVENT | each stored record named once per write |
+| ST-COUNT-ONEPATH | API v1 count only through the interface: `lib/server/aggregate.js` loses its constructor pipeline hook and no-store path (decided 2026-10-27, before the 16.0.0 tag) | ST-WRITES | no client-visible change; the BF-70 refusal and the find guard keep their tests |
+| ST-V3-DECOUPLE | API v3 without API v1's modules, the socket and the cache, so `serve api` serves it alone (adopted 2026-10-27, M3) | ST-WRITES, PLAT-SERVE | `serve api` passes the API v3 suites (485 pass, 81 fail at #8865 `1dafe2a5`); `single` unchanged |
 | WC-STEP-PATCH | slice 4: `write(intent)` -> WriteResult.items[] above the interface; matching, server dates, the null-removes rule and validation move into it; compare-and-set behind an adapter method | ST-WRITES, ST-EVENT | [write-contract spec](../tenancy/write-contract-spec-2026-10-07.md) G1 |
 | ST-HARNESS | slice 5: backend-selectable harness, backend selection, tenant scope | WC-STEP-PATCH | `NS_TEST_BACKEND` controls |
+| ST-VIEWS | computed views from bounded queries, without a resident `ddata`: page, socket `dataUpdate`, plugins, alarms (adopted 2026-10-27, M4) | ST-READS | each view equal to today's on the corpus fixtures; alarms per the execution plan §7b |
 | ST-PG | PostgreSQL with row-level security, entries first | ST-HARNESS | the backend-selectable suite on both stores |
 
 ### 5.2 Identity
@@ -114,9 +117,9 @@ Slices S0, S1, S2 and S5 need no storage work and go to dev together as one sing
 | PLAT-SERVE | `nightscout serve <roles>`: hosted roles carved from `bootevent`, `api` first, each listener bound separately (D5, D7, D16) | PLAT-ENTRY, ST-READS |
 | T30-RESEARCH | the tenant-owner configuration surface (277 settings classified) | D-T30 |
 | T30-SCHEMA-CONFIG | the per-tenant settings table (D15) | T30-RESEARCH |
-| TEN-RESOLVE | tenant resolution and the platform admin interface (D7, D10, D16) | ST-HARNESS, T30-SCHEMA-CONFIG, PLAT-SERVE |
+| TEN-RESOLVE | tenant resolution and the platform admin interface (D7, D10, D16) | ST-HARNESS, T30-SCHEMA-CONFIG, PLAT-SERVE, ST-V3-DECOUPLE |
 | T30-WIRING | tenant-scoped API keys and per-tenant signing keys (D13, D14) | TEN-RESOLVE |
-| TEN-LAB | two tenants on PostgreSQL in a Docker Compose lab, isolation checked with a control | ST-PG, T30-WIRING |
+| TEN-LAB | two tenants on PostgreSQL in a Docker Compose lab, isolation checked with a control | ST-PG, T30-WIRING, ST-VIEWS |
 
 The decisions D1–D21 are in the [execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md). Single-tenant on MongoDB stays first-class (D1, D4). Every tenancy item ships behind `TENANCY_MODE=multi`.
 
