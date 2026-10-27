@@ -153,7 +153,7 @@ pages:
   api-nightscout-v4-proposed.html:
     kind: living
     sources: [specs/openapi/proposed/nightscout-v4.yaml]
-    source_commit: 595e4f392
+    source_commit: 36487a5dd
     render: tools/site/render_apis.py
     api:
       status: proposed
