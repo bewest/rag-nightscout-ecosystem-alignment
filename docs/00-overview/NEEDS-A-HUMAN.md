@@ -30,7 +30,7 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 21 items
+### Maintainer &mdash; 19 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -38,14 +38,12 @@ every item that was `merged-upstream` then is `released`.
 | `PLAT-ENTRY` | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; im | #8862 |
 | `PLAT-SERVE` | `in-flight-upstream` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a ti | #8865 |
 | `RT-CI-WEBKIT-REPORTS` | `in-flight-upstream` | WebKit's cached-bundle startup test still fails on dev after bdd569a3: report re | #8869 |
-| `ST-COUNT-ONEPATH` | `in-flight-upstream` | API v1 count only through the storage interface: lib/server/aggregate.js loses i | #8870 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-194` | `needs-decision` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/ | &mdash; |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
 | `BFQ-ENV` | `needs-decision` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies | #8849 |
 | `DEPENDABOT-CONFIG` | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts co | &mdash; |
-| `ID-ABSENT-DECISION` | `needs-decision` | Decide: a write that carries no identifier (and no _id) - keep the time-key fall | &mdash; |
 | `ID-CLIENT-OID-DECISION` | `needs-decision` | Decide: may a client set _id (an ObjectId it creates) over API v1? (API v3 decid | &mdash; |
 | `ID-FORMAT-DECISION` | `needs-decision` | Decide: the client identifier's format (opaque string with limits; UUID not requ | &mdash; |
 | `ID-V3-IMMUTABLE-DECISION` | `needs-decision` | Decide: on an identifier match, may date, device or eventType change? | &mdash; |
@@ -83,7 +81,6 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 | **#8862** | `PLAT-ENTRY` | `feat/nightscout-entrypoint` | One executable (D21): bin/nightscout.js with `single` and th | Maintainer |
 | **#8865** | `PLAT-SERVE` | `feat/nightscout-serve` | `nightscout serve <roles>` (D21): hosted roles carved from b | Maintainer |
 | **#8869** | `RT-CI-WEBKIT-REPORTS` | `test/16.0.0-reports-ready` | WebKit's cached-bundle startup test still fails on dev after | Maintainer |
-| **#8870** | `ST-COUNT-ONEPATH` | `feat/storage-count-onepath` | API v1 count only through the storage interface: lib/server/ | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 

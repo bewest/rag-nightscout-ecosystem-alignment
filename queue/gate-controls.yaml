@@ -2906,3 +2906,13 @@ controls:
     proves: >
       the same containment against official/master, which does not carry
       the slices, exits 1 (measured 2026-10-27).
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7abe1cf6 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7abe1cf6 official/master
+    control-kind: static
+    proves: >
+      the same containment against official/master (v15.0.9), which does
+      not carry #8870, exits 1 (measured 2026-10-27).

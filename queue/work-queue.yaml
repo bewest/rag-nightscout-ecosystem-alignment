@@ -3323,6 +3323,15 @@ items:
       - releases/cgm-remote-monitor-16.0.0/contents.md
       - releases/cgm-remote-monitor-16.0.0/decisions.md
     notes: >
+      2026-10-27 (maintainer): done before the tag means (1) live alerts
+      checked: Pushover emergency delivery, acknowledgement and cancellation,
+      and APNs to a phone, on a dev site; (2) cohort confirmations from dev
+      users: AndroidAPS, Loop, Trio, xDrip+, a follower app and an mmol/L
+      site; (3) BF-72 and BF-161 merged through their forks, ready to publish
+      with the release; (4) a short quiet period on dev with the final
+      candidate, days not weeks. The soak is informal: dev users run what is
+      merged.
+
       2026-10-27, later: the suites on 8dbb60c2 pass (R17); the red CI is two
       test faults, fixed on test/16.0.0-ci-flakes (RT-CI-FLAKES-8DBB60C2, #8866
       opened 2026-10-27); BF-72 and BF-161 have dev 8dbb60c2 merged into their
@@ -7151,7 +7160,7 @@ items:
     repo: cgm-remote-monitor
     branch: ""
     base: official/dev@fade2299
-    state: needs-decision
+    state: answered
     pr: []
     blast_radius: >
       A decision row, no code. Its answer sets the simple contract's rule 3
@@ -7177,6 +7186,14 @@ items:
       - reports/consumer-impact-15.0.9/clients-8758.md
       - docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md
     notes: >
+      Decided 2026-10-27 (maintainer), for now: identifier is SHOULD for
+      legacy writers (optional but encouraged; the time-key fallback stays,
+      with no version boundary set) and MUST for registered instances of
+      controllers. Revisited as adoption picks up. Still to build: how a hub
+      recognises a registered instance's write on a legacy path (the
+      credential bound to the registration, REG-S3), so that it can refuse one
+      without an identifier.
+
       Today (tools/lab/record-identity, 2026-10-18, 15.0.8 and fade2299):
       entries without either id merge on sysTime + type; treatments merge on
       created_at + eventType (15.0.8 overwrites a second carb amount at the
@@ -17151,6 +17168,25 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
     notes: >
+      2026-10-27, survey done (session -ee's agent, read from source; AAPS
+      7e1d537d, Trio 0b29cd53, iAPS 642a82cd, oref0 d219baf9, nightguard
+      75404bd, LoopFollow 4a74b781, xDrip 1ed76004, nightscout-reporter
+      518d61f): no surveyed client uploads a Temporary Target labelled mmol.
+      AAPS (API v3) and nightguard send mg/dL labelled mg/dl; Trio and iAPS
+      send mg/dL with no label (v1); Nightscout's careportal converts first;
+      Loop, NightscoutKit, LoopCaregiver, DiaBLE and xDrip+ send none. Readers
+      that ignore the label: Trio, iAPS, oref0, LoopFollow. Read-back by
+      value: none (AAPS matches by identifier and never compares targets). So
+      BF-194's exposure is clients outside the survey (scripts, third-party
+      apps). Convert-at-write changes no surveyed client's records; it must
+      run before v1's units delete, and relabel as mg/dL (AAPS treats any
+      label but 'mmol' as mg/dL; the reporter compares mg/dl case-
+      insensitively; nightguard checks for 'mol'). Separate finding:
+      nightscout-reporter reads an unlabelled target in the site's units, so
+      unlabelled mg/dL targets (Trio, iAPS, careportal via v1) show wrong on
+      mmol sites; writing an mg/dL label on every Temporary Target would fix
+      that. Decision pending.
+
       2026-10-27 (maintainer): survey the clients first (which apps send or
       read temp targets in mmol/L, over which API, and whether they read back
       their own), then likely enforce mg/dL at write: a target labelled mmol
@@ -22053,7 +22089,7 @@ items:
     branch: feat/storage-count-onepath
     base: official/dev@9668b179
     worktree: externals/work/crm-count-onepath
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8870]
     blast_radius: >
       lib/server/aggregate.js (create(api, store), store required), its
@@ -22067,6 +22103,11 @@ items:
       unreachable over HTTP; the API v1 HTTP differential is 700/700
       identical, including 219 count requests
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7abe1cf6 official/dev
+        kind: static
+        describe: >
+          #8870's merge commit 7abe1cf6 is on official/dev (merged
+          2026-10-27 21:33:44Z by the maintainer). Red if dev is rewritten.
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9668b179 feat/storage-count-onepath
         kind: static
         describe: >
@@ -22076,6 +22117,9 @@ items:
     evidence:
       - docs/30-design/platform/next-gen-platform-plan.md
     notes: >
+      2026-10-27: MERGED to dev as 7abe1cf6 (21:33:44Z, by the maintainer; gh
+      pr view 8870); 0955f25b is its only commit beyond 9668b179. In 16.0.0.
+
       2026-10-27: opened as #8870 (base dev, head 0955f25b, not a draft;
       13 checks passed at the time of the report, three still running), by
       the maintainer from session -2e's branch. Decided 2026-10-27 as a

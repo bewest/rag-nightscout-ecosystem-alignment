@@ -178,12 +178,10 @@ Until then, the order below is the order of development, not of release.
 | 1 | `A7A-7` | §7a item 7 - the clock question | `unsettled` | &mdash; |
 | 1 | `ID-CONVENTIONS` | Identifier conventions: one URL-form identifier template per record kind and sou | `in-progress` | &mdash; |
 | 1 | `SEAM-REFRESH` | Refresh the seam chain once after 15.0.9, onto the base the release train leaves | `blocked` | &mdash; |
-| 1 | `ST-COUNT-ONEPATH` | API v1 count only through the storage interface: lib/server/aggregate.js loses i | `in-flight-upstream` | &mdash; |
 | 1 | `T30-AUTH` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | `ready-to-push` | &mdash; |
 | 1 | `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | &mdash; |
 | 1 | `T43` | T4.3 - ns-realtime, LISTEN per served tenant | `not-started` | &mdash; |
 | 1 | `WC-STEP-PATCH` | Release 1 (patch): one write step for every v1, v3 and socket path, today's beha | `not-started` | &mdash; |
-| 2 | `ID-ABSENT-DECISION` | Decide: a write that carries no identifier (and no _id) - keep the time-key fall | `needs-decision` | `LOOP-ID-REPLY` |
 | 2 | `ID-BATCH-RESULTS` | Release 2 (minor): per-item results in v1 batch replies; one bad item no longer  | `blocked` | `WC-STEP-PATCH` |
 | 2 | `ID-CLIENT-OID-DECISION` | Decide: may a client set _id (an ObjectId it creates) over API v1? (API v3 decid | `needs-decision` | `LOOP-ID-REPLY` |
 | 2 | `ID-FIRST-MATCH` | Release 2 (minor): identifier-first matching for entries, devicestatus and socke | `blocked` | `WC-STEP-PATCH` |
