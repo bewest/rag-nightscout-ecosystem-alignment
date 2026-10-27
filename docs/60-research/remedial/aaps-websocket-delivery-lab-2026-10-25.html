@@ -7521,6 +7521,15 @@ client in §1 being right; the drafted note asks the AndroidAPS developers to co
 <p><strong>Why.</strong> The <code>/storage</code> socket announces only writes made through API v3 (BF-164, reproduced
 2026-10-07: 0 of 190 non-v3 write cells produced an event). Since 15.0.9 every write path sets
 <code>srvModified</code>, so API v3 history returns those records; the loss comes from the cursor rule in §1.</p>
+<p><strong>Re-measured 2026-10-27</strong> on <code>dev</code> <code>dcf20bfb</code> (after the seam slices #8861, #8863, #8870 and #8854's write
+boundary; Node v22.23.4, MongoDB 8.0.34), same lab and client model, one run
+(<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5ad2473921c32a9124aad1d0ca4eb0f5b7fc9da3/tools/lab/aaps-ws-delivery/results/2026-10-27-dev-dcf20bfb/results.json"><code>results/2026-10-27-dev-dcf20bfb/</code></a>).
+<strong>[M]</strong> All 11 cells match the table above. v3 controls pushed in 0.01 s. v1, <code>dbAdd</code> and connector writes were not
+pushed in 45 s. They arrived by the catch-up history call on reconnect (47 s, the lab's wait). Each was <strong>not
+received</strong> when a v3 write in the same collection landed first, though the v1 and <code>dbAdd</code> records were in v3
+history. <strong>[R]</strong> The cursor rule the model follows is unchanged on AndroidAPS <code>dev</code> <code>22fb0eeac2</code>
+(2026-10-27): <code>NsFrameHandler.onDataCreateUpdate</code> calls <code>lastLoadedSrvModified.set</code> with the frame's
+<code>srvModified</code>, and <code>LastModified.set</code> assigns it.</p>
 <h2 id="3-bf-152-reading-a-settings-document-by-identifier">3. BF-152: reading a settings document by identifier<a class="headerlink" href="#3-bf-152-reading-a-settings-document-by-identifier" title="Permanent link">&para;</a></h2>
 <p>Read and measured by the same lane:</p>
 <ul>
