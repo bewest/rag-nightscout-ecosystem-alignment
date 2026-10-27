@@ -30,7 +30,7 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 19 items
+### Maintainer &mdash; 18 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -38,7 +38,6 @@ every item that was `merged-upstream` then is `released`.
 | `BFQ-203` | `in-flight-upstream` | BF-203 - an editor opening a cgm-remote-monitor file inside a larger workspace w | #8871 |
 | `PLAT-ENTRY` | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; im | #8862 |
 | `PLAT-SERVE` | `in-flight-upstream` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a ti | #8865 |
-| `RT-CI-WEBKIT-REPORTS` | `in-flight-upstream` | WebKit's cached-bundle startup test still fails on dev after bdd569a3: report re | #8869 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
@@ -80,7 +79,6 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 |---|---|---|---|---|
 | **#8862** | `PLAT-ENTRY` | `feat/nightscout-entrypoint` | One executable (D21): bin/nightscout.js with `single` and th | Maintainer |
 | **#8865** | `PLAT-SERVE` | `feat/nightscout-serve` | `nightscout serve <roles>` (D21): hosted roles carved from b | Maintainer |
-| **#8869** | `RT-CI-WEBKIT-REPORTS` | `test/16.0.0-reports-ready` | WebKit's cached-bundle startup test still fails on dev after | Maintainer |
 | **#8871** | `BFQ-203` | `tooling/jsconfig-watch-scope` | BF-203 - an editor opening a cgm-remote-monitor file inside  | Maintainer |
 
 <!-- END GENERATED: open-prs -->

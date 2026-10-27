@@ -46,8 +46,8 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 16 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
-| `in-flight-upstream` | 6 | RT-CI-WEBKIT-REPORTS, BFQ-72, BFQ-161, BFQ-203, PLAT-ENTRY, PLAT-SERVE |
-| `merged-upstream` | 56 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-192, BFQ-193, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH |
+| `in-flight-upstream` | 5 | BFQ-72, BFQ-161, BFQ-203, PLAT-ENTRY, PLAT-SERVE |
+| `merged-upstream` | 57 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-192, BFQ-193, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 11 | T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-V3-IMMUTABLE-DECISION, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
 | `done` | 40 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-REPLY, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
@@ -1039,7 +1039,7 @@ that costs.
 | `RT-CI-DIAGONAL` | CI runs the Node x MongoDB diagonal, the no-database tiers on their own, a Tests pass check and seeded test-file order | `merged-upstream` | `ci/edge-diagonal-matrix` | n/a | 1 run + 1 no-gate |
 | `RT-16-RELEASE` | Release 16.0.0 | `blocked` | `official/dev` | major | 0 run + 1 no-gate |
 | `RT-16-LIVE-ALARMS` | 16.0.0 pre-tag check: live Pushover and APNs delivery on dev | `not-started` | `-` | n/a | 0 run + 1 no-gate |
-| `RT-CI-WEBKIT-REPORTS` | WebKit's cached-bundle startup test still fails on dev after bdd569a3: report requests cancelled 'due to access control checks' | `in-flight-upstream` | `test/16.0.0-reports-ready` | n/a | 1 run + 1 no-gate |
+| `RT-CI-WEBKIT-REPORTS` | WebKit's cached-bundle startup test still fails on dev after bdd569a3: report requests cancelled 'due to access control checks' | `merged-upstream` | `test/16.0.0-reports-ready` | n/a | 1 run + 1 no-gate |
 | `RT-CI-FLAKES-8DBB60C2` | dev 8dbb60c2's red CI: a concurrent-writes timestamp collision and the WebKit reports-page race | `merged-upstream` | `test/16.0.0-ci-flakes` | n/a | 3 run + 1 no-gate |
 | `RT-16-RIG-SOAK` | 16.0.0 pre-tag check: a real-rig soak on dev | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `RT-BUNDLE-THEME-SPLIT` | Load the modern theme's client code only when it is chosen (page-bundle budget option B) | `not-started` | `-` | patch | 0 run + 1 no-gate |
@@ -1519,7 +1519,7 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `test/16.0.0-reports-ready` |
 | base | `official/dev@eed31dca` |
@@ -1535,7 +1535,7 @@ that costs.
 
 **Gates.**
 
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9a44e16f test/16.0.0-reports-ready`
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9a44e16f official/dev`
   - The wait and the error-page diagnostics are on the branch.
 - **NO GATE** &mdash; Not reproduced locally before or after the change, in the Playwright v1.63.0 image on WebKit, even with the fixture delaying entries 1.5 s and a 1 s pause before leaving /report/; Chromium does not report cancelled requests as page errors, so a CPU-throttled Chromium run cannot show it either. The wait closes the one step that left /report/ unguarded, but that this is the cause is not proven: the new "Error pages" line names the document on the next CI failure. After the change page-startup is 28 passing on WebKit, Chromium and Firefox; a forced error on /report/ prints Error pages: [".../report/"].
 
@@ -1543,7 +1543,7 @@ that costs.
 
 - `releases/cgm-remote-monitor-16.0.0/contents.md`
 
-**Notes.** 2026-10-27: pushed by the maintainer and opened as #8869 into dev (head 9a44e16f). 2026-10-27: dev b84871d7's push run 40571593504 failed Browser tests (26, webkit) "boots every page from cached bundles and retires the old cache on upgrade" with fifteen report requests "due to access control checks", the failure bdd569a3 was meant to end; that merge published no image. Prepared on test/16.0.0-reports-ready off dev eed31dca, not pushed. A first idea, a page marker for the deferred first report, was measured and dropped: sampling every 5 ms showed no moment where the old readiness check passed before the first report started, even at 8x CPU throttling in Chromium.
+**Notes.** 2026-10-27, 22:23:05Z: merged. bewest merged #8869 (head d9fca2de, dev merged in) into dev as b8baf24d (gh pr view 8869). Gate re- pointed to official/dev, with official/master as the control. Whether the wait is the cause stays open: a WebKit failure from now on names the page each error came from. 2026-10-27: pushed by the maintainer and opened as #8869 into dev (head 9a44e16f). 2026-10-27: dev b84871d7's push run 40571593504 failed Browser tests (26, webkit) "boots every page from cached bundles and retires the old cache on upgrade" with fifteen report requests "due to access control checks", the failure bdd569a3 was meant to end; that merge published no image. Prepared on test/16.0.0-reports-ready off dev eed31dca, not pushed. A first idea, a page marker for the deferred first report, was measured and dropped: sampling every 5 ms showed no moment where the old readiness check passed before the first report started, even at 8x CPU throttling in Chromium.
 
 ### `RT-CI-FLAKES-8DBB60C2` &mdash; dev 8dbb60c2's red CI: a concurrent-writes timestamp collision and the WebKit reports-page race
 

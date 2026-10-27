@@ -3417,7 +3417,7 @@ items:
     branch: test/16.0.0-reports-ready
     base: official/dev@eed31dca
     worktree: externals/work/crm-reports-ready
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8869]
     blast_radius: >
       tests/browser/page-startup.test.js only (9a44e16f): the first
@@ -3430,7 +3430,7 @@ items:
     semver_reason: test reliability and diagnostics
     register: []
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9a44e16f test/16.0.0-reports-ready
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9a44e16f official/dev
         kind: static
         describe: >
           The wait and the error-page diagnostics are on the branch.
@@ -3448,6 +3448,12 @@ items:
     evidence:
       - releases/cgm-remote-monitor-16.0.0/contents.md
     notes: >
+      2026-10-27, 22:23:05Z: merged. bewest merged #8869 (head d9fca2de,
+      dev merged in) into dev as b8baf24d (gh pr view 8869). Gate re-
+      pointed to official/dev, with official/master as the control.
+      Whether the wait is the cause stays open: a WebKit failure from now
+      on names the page each error came from.
+
       2026-10-27: pushed by the maintainer and opened as #8869 into dev
       (head 9a44e16f).
       2026-10-27: dev b84871d7's push run 40571593504 failed Browser tests
