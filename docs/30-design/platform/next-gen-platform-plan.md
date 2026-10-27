@@ -141,7 +141,7 @@ Decided 2026-10-26: #8854 lands in 16.0.0 after four alignment conditions (outco
 - **Red controls.** Every new test is shown failing against the code it guards before the change, with the original symptom.
 - **Conformance.** The registration and identity cases in `specs/sync/conformance/` run against a booted server by a harness in this repository (D12), reported case by case as passed, mapped or not applicable.
 - **Agents.** Agents build slices in their own worktrees, run the checks and hand back a branch, a PR body and the push commands. They never push. Maintainers push, open, review and merge.
-- **Releases.** Behaviour-neutral slices do not need a major, so they ship in the minor after the release in progress rather than lengthening its soak; the proposed allocation by release, its open decisions (Q1–Q11) and the scenario briefs are in [release allocation](release-allocation-2026-10-27.md).
+- **Releases.** Decided 2026-10-27 (maintainer): ST-FILTER, ST-READS and ST-WRITES go into 16.0.0 if they meet the entry bar of [release allocation B6](release-allocation-2026-10-27.md#b6-prototypes-in-1600-labelled-alpha-asked-2026-10-27) before the 16.0.0 soak starts, otherwise 16.1.0; components shipped before they are mature are labelled alpha. Behaviour-neutral slices do not need a major, so they ship in the minor after the release in progress rather than lengthening its soak; the proposed allocation by release, its open decisions (Q1–Q11) and the scenario briefs are in [release allocation](release-allocation-2026-10-27.md).
 - **Records.** Each landed slice updates its queue item (`queue/work-queue.yaml`) and this plan's data file, and the page is re-rendered.
 
 ## 8. Sources
