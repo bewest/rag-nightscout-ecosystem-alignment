@@ -199,6 +199,20 @@
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8863"
   },
   {
+   "id": "ST-COUNT-ONEPATH",
+   "track": "storage",
+   "phase": "boundary",
+   "state": "planned",
+   "short": "count: one path",
+   "title": "API v1 count reaches the database only through the storage interface: lib/server/aggregate.js loses the constructor conf.pipeline hook and the no-store driver path (about 25 lines, including the per-stage JavaScript check), and construction without a store fails. Decided 2026-10-27 (maintainer): a follow-up after the slices land, done before the 16.0.0 tag",
+   "where": "lib/server/aggregate.js; tests/api-v1-count-pipeline.test.js, tests/mongo-query-javascript.test.js, tests/mongo-query-modernization.test.js",
+   "check": "no client-visible change (no module builds the count with a pipeline or without a store, so the path is unreachable over HTTP); the BF-70 caller-pipeline refusal and the find guard keep their tests; the hook's three tests are deleted, the once-only refusal and modernization tests use a stub store",
+   "depends": [
+    "ST-WRITES"
+   ],
+   "ref": "session -2e, after #8861 and #8863 merge"
+  },
+  {
    "id": "WC-STEP-PATCH",
    "track": "storage",
    "phase": "intent",
