@@ -78,30 +78,33 @@ maintainer, plus a second human - every v1 read path moves
 
 ## Notes carried on the item
 
-2026-10-27, final: #8859, #8866, #8868 and #8856 are on dev (eed31dca). The
-maintainer merged dev into feat/storage-filter on GitHub as 5310a447 (48e7e101
-+ eed31dca, 20:13:03Z); its tree 884b95ec equals session -2e's re-merge
-4fe7085b (checked by -ee), so the B6 measurements and the re- runs apply. No
-push needed for #8861. npm test on that tree (session -2e, MongoDB 7.0.43,
-Node 22.23.4): 4685 passing, 0 failing, 3 pending. 2026-10-27 (maintainer,
-Q12): goes into 16.0.0 through release allocation B6's entry bar. Items 1, 3,
-4 and 5 MET on local candidates (session -2e; cand/with d6ba8e18 vs
-cand/without 2cae64f3: 360-cell matrix equal off and reject, 67-row replay
-equal, v1 HTTP 700/700, latency inside the noise floor, one-commit revert
-cf762dd0 restores cand/without's tree). Item 2 (BF-72, BF-161 in their private
-forks) is with -e4. Maintainer decided #8859 merges to dev first. The PR
-branch is awaiting #8859: prep/storage-filter df4e5e9d (= 48e7e101 + dev
-2dc0c1bc + #8859, clean; tree 402b22d6 equals cand/with's #8861 step 019bdce9,
-checked by -ee) becomes feat/storage-filter once the real dev with #8859 is
-merged in. No push commands until -2e sends the final head. 2026-10-26, later:
-the maintainer pushed 48e7e101 and opened draft #8861. ST-WRITES is being
-built on top of it (feat/storage-writes). 2026-10-26: the maintainer decided
-ST-FILTER and ST-READS go up as one PR. ST-FILTER found five defects in the
-September seam's fromMongo, each of which widens or changes a read ({a: {}}
-dropped, empty $or and $and matching everything, $exists undefined read as
-presence, RegExp g and s flags swapped, mongod-refused $regex options
-coerced); the mingo round trip could not see them, the live-mongod
-differential did. All five are fixed on the branch and pinned by tests.
+2026-10-27: #8861 at 5310a447 is still a draft (gh pr view); hosted CI on it
+16 passed, 3 skipped. It must be marked ready for review before it merges, and
+it merges before #8863. 2026-10-27, final: #8859, #8866, #8868 and #8856 are
+on dev (eed31dca). The maintainer merged dev into feat/storage-filter on
+GitHub as 5310a447 (48e7e101 + eed31dca, 20:13:03Z); its tree 884b95ec equals
+session -2e's re-merge 4fe7085b (checked by -ee), so the B6 measurements and
+the re- runs apply. No push needed for #8861. npm test on that tree (session
+-2e, MongoDB 7.0.43, Node 22.23.4): 4685 passing, 0 failing, 3 pending.
+2026-10-27 (maintainer, Q12): goes into 16.0.0 through release allocation B6's
+entry bar. Items 1, 3, 4 and 5 MET on local candidates (session -2e; cand/with
+d6ba8e18 vs cand/without 2cae64f3: 360-cell matrix equal off and reject,
+67-row replay equal, v1 HTTP 700/700, latency inside the noise floor, one-
+commit revert cf762dd0 restores cand/without's tree). Item 2 (BF-72, BF-161 in
+their private forks) is with -e4. Maintainer decided #8859 merges to dev
+first. The PR branch is awaiting #8859: prep/storage-filter df4e5e9d (=
+48e7e101 + dev 2dc0c1bc + #8859, clean; tree 402b22d6 equals cand/with's #8861
+step 019bdce9, checked by -ee) becomes feat/storage-filter once the real dev
+with #8859 is merged in. No push commands until -2e sends the final head.
+2026-10-26, later: the maintainer pushed 48e7e101 and opened draft #8861. ST-
+WRITES is being built on top of it (feat/storage-writes). 2026-10-26: the
+maintainer decided ST-FILTER and ST-READS go up as one PR. ST-FILTER found
+five defects in the September seam's fromMongo, each of which widens or
+changes a read ({a: {}} dropped, empty $or and $and matching everything,
+$exists undefined read as presence, RegExp g and s flags swapped, mongod-
+refused $regex options coerced); the mingo round trip could not see them, the
+live-mongod differential did. All five are fixed on the branch and pinned by
+tests.
 
 ---
 

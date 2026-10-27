@@ -1,5 +1,5 @@
 {
- "measured": "2026-10-27 against cgm-remote-monitor dev 8dbb60c2 (open PRs #8857, #8859, #8861, #8862, #8863, #8865 read the same day); first measured 2026-10-26 against dev 47723cda and #8854 at fa22d573",
+ "measured": "2026-10-27 against cgm-remote-monitor dev eed31dca (#8861 5310a447, #8863 42128f3b, #8857, #8862, #8865 read the same day); first measured 2026-10-26 against dev 47723cda and #8854 at fa22d573",
  "tracks": [
   {
    "id": "storage",
@@ -165,7 +165,7 @@
    "depends": [
     "PR-8854"
    ],
-   "ref": "#8861 (draft, 48e7e101, dev 8dbb60c2 merged in; pushed 2026-10-26): one PR with ST-FILTER and ST-READS",
+   "ref": "#8861 (draft, 5310a447 = 48e7e101 + dev eed31dca): B6 entry bar met; npm test 4685/0/3; going into 16.0.0 (Q12)",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8861"
   },
   {
@@ -180,7 +180,7 @@
    "depends": [
     "ST-FILTER"
    ],
-   "ref": "#8861 (draft, 48e7e101, dev 8dbb60c2 merged in; pushed 2026-10-26): one PR with ST-FILTER and ST-READS",
+   "ref": "#8861 (draft, 5310a447 = 48e7e101 + dev eed31dca): B6 entry bar met; npm test 4685/0/3; going into 16.0.0 (Q12)",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8861"
   },
   {
@@ -195,7 +195,7 @@
    "depends": [
     "ST-READS"
    ],
-   "ref": "#8863 (draft, 38b910d7, stacked on #8861; pushed 2026-10-26): write differential 88/88, matrix 0 of 336 cells, #8854 matrix 422",
+   "ref": "#8863 (ready for review, 42128f3b, stacked on #8861; pushed 2026-10-27): B6 entry bar met; npm test 4700/0/3, test:all 5028/0/3, 360-cell matrix equal to dev eed31dca; going into 16.0.0 (Q12)",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8863"
   },
   {
