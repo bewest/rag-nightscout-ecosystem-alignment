@@ -1,5 +1,5 @@
 {
- "measured": "2026-10-27 evening against cgm-remote-monitor dev ca1652d6 (#8859, #8861, #8863 and #8870 merged: M1 on dev); first measured 2026-10-26 against dev 47723cda and #8854 at fa22d573",
+ "measured": "2026-10-27 against cgm-remote-monitor dev ca1652d6",
  "tracks": [
   {
    "id": "storage",
@@ -108,11 +108,11 @@
   {
    "id": "PR-8854",
    "track": "storage",
-   "phase": "now",
+   "phase": "dev",
    "state": "done",
    "short": "Shared write boundary",
-   "title": "Every v1/internal module, the socket and API v3 write through lib/storage/write-step.js; read contract and data diagnostics; zero-test runs fail. Decided 2026-10-26: lands in 16.0.0 after four alignment conditions (outcome B)",
-   "ref": "#8854 (merged to dev 2026-10-26 as c08cbe03 from head 246313e4)",
+   "title": "Every v1/internal module, the socket and API v3 write through lib/storage/write-step.js; read contract and data diagnostics; zero-test runs fail. Merged under four conditions (outcome B): commit event internal and unstable, intent layer separately named",
+   "ref": "#8854, merged to dev 2026-10-26 as c08cbe03",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8854",
    "where": "lib/storage/write-step.js, lib/storage/validated-update.js, lib/storage/read-contract.js, scripts/check-write-boundary.js",
    "check": "0 of 336 write-contract cells changed (re-measured at fa22d573); its own 430 tests and boundary gate",
@@ -129,16 +129,16 @@
   {
    "id": "QC-MATRIX-TT",
    "track": "storage",
-   "phase": "now",
+   "phase": "dev",
    "state": "done",
    "short": "Matrix: validation cells",
-   "title": "Extend the write-contract matrix with Temporary Target records in reject mode, so validated updates are pinned on all four paths (today the matrix never reaches them)",
+   "title": "Temporary Target records in reject mode in the write-contract matrix, so validated updates are pinned on all four paths",
    "where": "tools/qc/write-contract-matrix.js",
    "check": "off and reject differ in the new cells and nowhere else",
    "depends": [
     "PR-8854"
    ],
-   "ref": "823c7c68d (2026-10-26): 24 Temporary Target cells, 360 in all; on dev 8dbb60c2 off and reject differ in the 12 invalid-target cells only; #8861 and #8863 equal dev cell for cell in both modes"
+   "ref": "823c7c68d: 24 Temporary Target cells, 360 in all"
   },
   {
    "id": "ST-EVENT",
@@ -152,7 +152,7 @@
    "depends": [
     "PR-8854"
    ],
-   "ref": "In progress, bench running (session -2e; a post-write variant is being measured, 2026-10-27 evening). Benchmark 2026-10-27 (session -2e; lab/commit-event-bench 54cd8fff7, prototype proto/d-event-per-call 8a396715 off 9668b179, local; Node 22.23.4, MongoDB 8.0.29): nothing in lib/ subscribes to storage-write-committed today (only tests), so option 1 costs nothing until a subscriber is added. With a listener: inserts free; updates, replaces and deletes need a pre-read, +0.4-1.8 ms (outside the noise floor 0.961-1.125 on 10 of 13 shapes); 1,000-record backfill +13% (entries) and +27% (treatments); ~105 B per record vs ~150 B counts-only; change feed exact 100/100 on 20 shapes with no follow-up read (counts-only needs a read every event); concurrent k=1/2/4, 41,118 ops, 0 cross-attributed, throughput -2 to -5%, the pre-read not atomic in a pruner race (3-8 inexact events per round, flagged by records != counts). Next, unbuilt: name upserts from the driver result and read matched records only after the write when matchedCount > 0"
+   "ref": "In progress (session -2e, lab/commit-event-bench, local). First variant measured: free while nothing in lib/ subscribes (today only tests do); with a subscriber, updates and deletes need a pre-read and bulk uploads slow down, and the change feed is exact. A post-write variant is being measured; its results go here when it reports"
   },
   {
    "id": "ST-FILTER",
@@ -166,7 +166,7 @@
    "depends": [
     "PR-8854"
    ],
-   "ref": "#8861 merged to dev 2026-10-27 as 84fac457 (head 5310a447); in 16.0.0 (Q12)",
+   "ref": "#8861, merged to dev 2026-10-27 as 84fac457",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8861"
   },
   {
@@ -181,7 +181,7 @@
    "depends": [
     "ST-FILTER"
    ],
-   "ref": "#8861 merged to dev 2026-10-27 as 84fac457 (head 5310a447); in 16.0.0 (Q12)",
+   "ref": "#8861, merged to dev 2026-10-27 as 84fac457",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8861"
   },
   {
@@ -196,7 +196,7 @@
    "depends": [
     "ST-READS"
    ],
-   "ref": "#8863 merged to dev 2026-10-27 as 9668b179 (head 42128f3b); in 16.0.0 (Q12)",
+   "ref": "#8863, merged to dev 2026-10-27 as 9668b179",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8863"
   },
   {
@@ -205,13 +205,13 @@
    "phase": "dev",
    "state": "done",
    "short": "count: one path",
-   "title": "API v1 count reaches the database only through the storage interface: lib/server/aggregate.js loses the constructor conf.pipeline hook and the no-store driver path (about 25 lines, including the per-stage JavaScript check), and construction without a store fails. Decided 2026-10-27 (maintainer): a follow-up after the slices land, done before the 16.0.0 tag",
+   "title": "API v1 count reaches the database only through the storage interface: lib/server/aggregate.js loses the constructor conf.pipeline hook and the no-store driver path, and construction without a store fails",
    "where": "lib/server/aggregate.js; tests/api-v1-count-pipeline.test.js, tests/mongo-query-javascript.test.js, tests/mongo-query-modernization.test.js",
    "check": "no client-visible change (no module builds the count with a pipeline or without a store, so the path is unreachable over HTTP); the BF-70 caller-pipeline refusal and the find guard keep their tests; the hook's three tests are deleted, the once-only refusal and modernization tests use a stub store",
    "depends": [
     "ST-WRITES"
    ],
-   "ref": "#8870 merged to dev 2026-10-27 as 7abe1cf6 (head 0955f25b); in 16.0.0",
+   "ref": "#8870, merged to dev 2026-10-27 as 7abe1cf6",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8870"
   },
   {
@@ -220,14 +220,14 @@
    "phase": "boundary",
    "state": "planned",
    "short": "v3 on its own",
-   "title": "API v3 runs without API v1's modules, the socket and the in-memory cache: its reads and writes reach storage only through the interface, so `serve api` serves API v3 on its own. Adopted 2026-10-27 (maintainer; milestone M3 of session -2e's proposal)",
+   "title": "API v3 runs without API v1's modules, the socket and the in-memory cache: its reads and writes reach storage only through the interface, so `serve api` serves API v3 on its own (milestone M3)",
    "where": "lib/api3 (the cached collection and its cache hooks), bootevent's factory chain; about the fixtures the API v3 suites share with v1 and the socket",
    "check": "`serve api` passes the API v3 suites: at #8865 1dafe2a5, 485 pass and 81 fail on fixtures that need the cache, v1 or the socket; target 0 failing, with `single` unchanged",
    "depends": [
     "ST-WRITES",
     "PLAT-SERVE"
    ],
-   "ref": "release allocation §4.3 (milestones)"
+   "ref": "release allocation §3.5"
   },
   {
    "id": "WC-STEP-PATCH",
@@ -235,7 +235,7 @@
    "phase": "intent",
    "state": "planned",
    "short": "write(intent)",
-   "title": "Slice 4: write(intent) -> WriteResult.items[] above the interface: id forms, server dates, twin removal and identifier matching move into one step; validation and the commit event move up to it; the compare-and-set that #8854's validated updates do with MongoDB $expr moves behind a backend-neutral adapter method (for example updateIfUnchanged) before PostgreSQL",
+   "title": "write(intent) -> WriteResult.items[] above the interface: id forms, server dates, twin removal and identifier matching move into one step; validation and the commit event move up to it; the compare-and-set that #8854's validated updates do with MongoDB $expr moves behind a backend-neutral adapter method (for example updateIfUnchanged) before PostgreSQL",
    "spec": [
     {
      "label": "write contract spec",
@@ -255,7 +255,7 @@
    "phase": "intent",
    "state": "planned",
    "short": "Backend harness, tenant scope",
-   "title": "Slice 5: backend-selectable test harness, storage backend selection and the tenant-scope binding; no behaviour change in single mode",
+   "title": "Backend-selectable test harness, storage backend selection and the tenant-scope binding; no behaviour change in single mode",
    "where": "tests/support/backends.js, lib/storage/tenant-scope.js (old chain a2690bd4, 136f53e3, 8355c563, a492f2ed)",
    "check": "NS_TEST_BACKEND controls: mongodb runs, postgres pending until ST-PG, an unknown name throws",
    "depends": [
@@ -268,7 +268,7 @@
    "phase": "intent",
    "state": "planned",
    "short": "views without ddata",
-   "title": "Computed views without a resident ddata: what the page, the socket's dataUpdate, the plugins and the alarms compute comes from bounded queries (newest n of each type within a time bound), materialised, used and discarded, not from the process-wide ddata. Adopted 2026-10-27 (maintainer; milestone M4)",
+   "title": "Computed views without a resident ddata: what the page, the socket's dataUpdate, the plugins and the alarms compute comes from bounded queries (newest n of each type within a time bound), materialised, used and discarded (milestone M4)",
    "where": "lib/data/dataloader.js and ddata.js, the socket's dataUpdate, the plugin sandbox, notifications",
    "check": "each view's output equal to today's ddata-based output on the corpus fixtures; for alarms, the execution plan §7b measurement (32.7 KB and 1.94 ms per tenant per evaluation, the identical alarm, against 852 KB and 27.5 ms for all of ddata)",
    "depends": [
@@ -316,8 +316,8 @@
    "phase": "dev",
    "state": "done",
    "short": "v1 identifier match",
-   "title": "API v1 entries and devicestatus match a re-sent record on identifier. Decided 2026-10-26: entries keep the time-key fallback in 16.0.0; a devicestatus re-send with a stored identifier writes nothing and replies with the stored _id (v1 and v3); ships in the 16.0.0 re-send and merge contract PR #8859 with the null-removes rule and BF-195",
-   "ref": "#8859 merged to dev 2026-10-27 as 94899828; in 16.0.0",
+   "title": "API v1 entries and devicestatus match a re-sent record on identifier; entries keep the time-key fallback; a devicestatus re-send with a stored identifier writes nothing and replies with the stored _id (v1 and v3)",
+   "ref": "#8859, merged to dev 2026-10-27 as 94899828",
    "where": "lib/server/entries.js, lib/server/devicestatus.js",
    "check": "lab cell: same identifier twice stored n=2 on dev, n=1 on the branch; 18 cases with red controls",
    "depends": [
@@ -331,7 +331,7 @@
    "phase": "now",
    "state": "planned",
    "short": "Identity spec after #8845",
-   "title": "A conformance case for the mandatory identifier on registered instances; identity I2 and §6 state API v3's refusal of a client _id (BF-170) as of 2026-10-26",
+   "title": "A conformance case for the mandatory identifier on registered instances; identity I2 and §6 state API v3's refusal of a client _id (BF-170)",
    "spec": [
     {
      "label": "identity spec",
@@ -373,7 +373,7 @@
    "phase": "intent",
    "state": "planned",
    "short": "Unique identifier index",
-   "title": "Partial unique index on identifier, retry-as-update on a duplicate key",
+   "title": "Partial unique index on identifier per collection (tenant in the key under multi), retry-as-update on a duplicate key",
    "check": "ID-DUP-MEASURE found 0 duplicates in the 12-site corpus",
    "depends": [
     "ID-FIRST-MATCH",
@@ -406,7 +406,7 @@
    "state": "review",
    "short": "Catalogue, read-only",
    "title": "GET /.well-known/nightscout/sync and /.well-known/nightscout/controllers serving the shipped catalogue, behind CONTROLLER_REGISTRATION, off by default; built, part of the single-tenant registration PR",
-   "ref": "#8857 (draft, 3be98536); #8857 is 64 behind dev ca1652d6 and conflicts with it (mergeStateStatus DIRTY, 2026-10-27 evening)",
+   "ref": "#8857 (draft, f7a43fed; 64 behind dev ca1652d6, conflicts)",
    "spec": [
     {
      "label": "registration §4",
@@ -436,7 +436,7 @@
    "depends": [
     "REG-S0"
    ],
-   "ref": "#8857 (draft, f7a43fed: dev 8dbb60c2 merged in; a devicestatus-upload token may register its controller)",
+   "ref": "#8857 (draft, f7a43fed); a devicestatus-upload token may register its controller",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8857"
   },
   {
@@ -445,7 +445,7 @@
    "phase": "now",
    "state": "review",
    "short": "Instances and leases",
-   "title": "Content-addressed definitions and leased instances; channels, roles and provenance. Instances on one flat root (maintainer, 2026-10-26): PUT and DELETE /api/v4/instances/:instanceId with the product named in the body, GET /api/v4/instances for the owner's listing; the per-product instance routes are removed, not aliased",
+   "title": "Content-addressed definitions and leased instances; channels, roles and provenance. Instances on one flat root: PUT and DELETE /api/v4/instances/:instanceId with the product named in the body, GET /api/v4/instances for the owner's listing",
    "spec": [
     {
      "label": "registration §7–§9",
@@ -456,7 +456,7 @@
    "depends": [
     "REG-S1"
    ],
-   "ref": "#8857 (draft, f7a43fed, dev 8dbb60c2 merged in; earlier 6a5355e2, pushed 2026-10-26 with dev 7ad3a67f merged in; npm test 4472 passing, 0 failing, 3 pending): one holder document per (scope, channel, role); conformance 35 passed, 88 mapped, 0 failed at 3be98536",
+   "ref": "#8857 (draft, f7a43fed): one holder document per (scope, channel, role); conformance 35 passed, 88 mapped, 0 failed at 3be98536",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8857"
   },
   {
@@ -477,7 +477,7 @@
     "REG-S1",
     "REG-S2"
    ],
-   "ref": "#8857 (draft, f7a43fed, dev 8dbb60c2 merged in; earlier 6a5355e2): product and instance halves; the instance listing is GET /api/v4/instances",
+   "ref": "#8857 (draft, f7a43fed)",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8857"
   },
   {
@@ -570,7 +570,7 @@
      "href": "../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#212-d21--one-entrypoint-serve-roles-maintainer-2026-10-26"
     }
    ],
-   "ref": "#8862 (draft, b63d9b7f, on dev 8dbb60c2; pushed 2026-10-26): seven start paths equal to `nightscout single`. 64 commits behind dev ca1652d6 (2026-10-27 evening); in 16.0.0 only if Q2 (a) and Q13 allow it",
+   "ref": "#8862 (draft, b63d9b7f; 64 behind dev ca1652d6): seven start paths equal to `nightscout single`",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8862"
   },
   {
@@ -592,7 +592,7 @@
      "href": "../tenancy/nightscout-deployable-components-2026-09-14.md"
     }
    ],
-   "ref": "#8865 (draft, 1dafe2a5, stacked on #8863 and #8862): `serve api` boots only API v3's pieces; single unchanged (4639/0/3); API v3 suites under serve api 485 pass, 81 fail on cache, v1 and socket fixtures. 2026-10-27 evening: its base feat/storage-writes is merged to dev (9668b179), so it needs retargeting to dev and a dev merge (55 behind) before re-measurement (release allocation Q15)",
+   "ref": "#8865 (draft, 1dafe2a5): `serve api` boots only API v3's pieces; single unchanged (4639/0/3); API v3 suites under serve api 485 pass, 81 fail on cache, v1 and socket fixtures (ST-V3-DECOUPLE). Its base branch is merged, so it needs retargeting to dev and a dev merge before re-measurement",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8865"
   },
   {
@@ -601,11 +601,15 @@
    "phase": "now",
    "state": "decision",
    "short": "Tenant config surface",
-   "title": "Which of 277 settings a tenant owner may change, which the hoster pins, which are secrets",
+   "title": "Which of the 264 settings on dev a tenant owner may change, which the hoster pins, which are secrets (12 contested)",
    "spec": [
     {
      "label": "config surface",
      "href": "../tenancy/tenant-owner-config-surface-2026-09-15.md"
+    },
+    {
+     "label": "census on dev",
+     "href": "../../60-research/tenancy/t30-census-dev-2026-10-27.md"
     }
    ]
   },
@@ -662,36 +666,9 @@
  ],
  "decisions": [
   {
-   "id": "D-SEAM",
-   "short": "How the seam reaches dev",
-   "owner": "maintainer; leaning to build on #8854 (2026-10-26); measured by the replay trial",
-   "question": "Bring the September seam chain to dev by replaying it, by re-deriving it, or by building on #8854's boundary in slices?",
-   "holds": [
-    "ST-FILTER"
-   ],
-   "options": [
-    {
-     "label": "Build on #8854 in slices",
-     "recommended": true,
-     "gains": "#8854 changes 0 of 336 matrix cells; the seam's interface composes above its boundary with 2 conflicting paths and its 367 tests pass; 5 slices, about 2,000 lines of code and 1,000 of tests; fits the merge-dev-in, child-PR workflow",
-     "risks": "the call-site conversions are re-derived rather than reused; #8854's boundary check needs one rule to accept interface acquisition"
-    },
-    {
-     "label": "Replay the old chain",
-     "gains": "it works: S1+S2 replayed onto dev with 0 tests lost (4610 on dev, 4698 on the replay)",
-     "risks": "the conversion commits no longer match their messages because dev rewrote that code; two parallel boundaries to reconcile afterwards; 3 matrix cells changed"
-    },
-    {
-     "label": "Re-derive without #8854",
-     "gains": "a clean design from the specs",
-     "risks": "duplicates #8854's slot and its gate; the most new review"
-    }
-   ]
-  },
-  {
    "id": "D-EVENT",
    "short": "Commit event and socket refusals",
-   "owner": "maintainer; leaning to per call with _id and identifier (2026-10-27), pending a benchmark on four axes",
+   "owner": "maintainer; leaning to per call with _id and identifier; a post-write variant is being benchmarked (session -2e)",
    "question": "One event per call carrying the stored records, or one per driver operation with counts only; and does a socket refusal acknowledge [] for the whole batch?",
    "holds": [
     "ST-EVENT"
@@ -711,23 +688,18 @@
   },
   {
    "id": "D-LOOP-ID",
-   "short": "The Loop identifier reply",
-   "owner": "maintainer (send channel, timing)",
-   "question": "Send the reply to the Loop maintainers, then settle format, client _id, absent identifier, re-send after delete, scope and immutability (six ID-*-DECISION items).",
+   "short": "Loop reply and three identity rules",
+   "owner": "maintainer (the reply's channel; the three rules after the Loop maintainers answer)",
+   "question": "The revised reply to the Loop maintainers is to be sent; its channel is not chosen. Three identity rules are still open: the identifier's format and limits, whether a client may set _id over API v1, and whether date, device or eventType may change on an identifier match. (Absent identifier, scope and re-send after delete are decided, §4.2.)",
    "holds": [
     "ID-FIRST-MATCH"
    ],
    "options": [
     {
-     "label": "Send after ID-SIMPLE-MATCH is a PR",
+     "label": "Send the reply, then settle the three",
      "recommended": true,
-     "gains": "the reply can point at a working change",
-     "risks": "a few days later"
-    },
-    {
-     "label": "Send now",
-     "gains": "earliest answer from Loop",
-     "risks": "asks about behaviour not yet built"
+     "gains": "the answers come with Loop's view; ID-SIMPLE-MATCH is merged, so the reply points at working code",
+     "risks": "ID-FIRST-MATCH waits on another project's answer"
     }
    ]
   },
@@ -761,7 +733,7 @@
      "label": "Walk through the sections",
      "recommended": true,
      "gains": "unblocks the config table and every hosted entrypoint",
-     "risks": "the census was taken on the old chain and is re-measured on dev first"
+     "risks": "the configuration-surface document is partly stale; the census on dev (264 settings, 12 contested) is the current list"
     }
    ]
   },
@@ -784,71 +756,6 @@
      "gains": "no change for Nocturne",
      "risks": "controllers branch per hub"
     }
-   ]
-  }
- ],
- "seam_options": [
-  {
-   "label": "Build on #8854 in slices",
-   "pick": "leaning",
-   "summary": "Take Andy's write boundary as the base; move matching, events and the backend-neutral store behind it one measured slice at a time; the old chain is reference.",
-   "facts": [
-    [
-     "Base",
-     "#8854 (880b7369), decided into 16.0.0"
-    ],
-    [
-     "Measured",
-     "0 of 336 matrix cells changed by #8854; the seam's interface composes above it (2 conflicting paths; its 367 tests pass)"
-    ],
-    [
-     "Slices",
-     "5 PRs, about 2,000 lines of code and 1,000 of tests"
-    ],
-    [
-     "Reused",
-     "filter tree and interface commits; call-site conversions re-derived"
-    ]
-   ]
-  },
-  {
-   "label": "Replay the old chain",
-   "summary": "Cherry-pick the 51 September commits onto dev and split them into a stack.",
-   "facts": [
-    [
-     "Measured",
-     "S1+S2 replayed onto dev: 22 commits, 9 clean, 7 mechanical, 6 semantic; 7 fix-up commits"
-    ],
-    [
-     "Tests",
-     "0 lost; 4610 passing on dev, 4698 on the replay"
-    ],
-    [
-     "Matrix",
-     "3 cells changed (v1 hard-delete reply key order)"
-    ],
-    [
-     "For review",
-     "conversion commits describe code dev has since replaced"
-    ]
-   ]
-  },
-  {
-   "label": "Re-derive without #8854",
-   "summary": "Write the interface and the step fresh from the specs on dev.",
-   "facts": [
-    [
-     "Base",
-     "dev 47723cda"
-    ],
-    [
-     "Overlap",
-     "the same eight adapter files #8854 gates"
-    ],
-    [
-     "Reused",
-     "specs and tests only"
-    ]
    ]
   }
  ]

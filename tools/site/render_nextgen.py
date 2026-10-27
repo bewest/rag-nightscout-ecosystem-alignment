@@ -10,7 +10,7 @@ figures drawn from the JSON:
                                with a table of every item that needs no script
     <!-- chart: decisions -->  one card per open decision, each naming the
                                items it holds up
-    <!-- chart: options -->    the seam options side by side
+    <!-- chart: options -->    the seam options side by side (if the data file has any)
 
     tools/site/.venv/bin/python tools/site/render_nextgen.py
 
@@ -175,7 +175,7 @@ def figures(data):
             f'<button type="button" data-decision="{esc(d["id"])}">Show on the map</button></article>')
     out["decisions"] = f'<div class="dcards">{"".join(cards)}</div>'
     opts = []
-    for o in data["seam_options"]:
+    for o in data.get("seam_options", []):
         dl = "".join(f"<dt>{esc(k)}</dt><dd>{esc(v)}</dd>" for k, v in o["facts"])
         opts.append(f'<article class="opt{" pick" if o.get("pick") else ""}">'
                     f'{"<div class=tag>" + esc(o["pick"]) + "</div>" if o.get("pick") else ""}'

@@ -921,7 +921,7 @@ Rules that follow:
 Work items: PLAT-ENTRY (the dispatcher with `single` and the operator tools, no behaviour
 change) and PLAT-SERVE (the hosted roles, carved one at a time from `bootevent`'s factory chain,
 starting with `api`) in [`queue/work-queue.yaml`](../../../queue/work-queue.yaml) and the
-[next-gen platform plan](../platform/next-gen-platform-plan.md) §5.4.
+[next-gen platform plan](../platform/next-gen-platform-plan.md) §4.4.
 
 ## 3. D8 — the query surface
 
