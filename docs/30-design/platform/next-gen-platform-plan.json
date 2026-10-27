@@ -391,7 +391,7 @@
    "depends": [
     "REG-S0"
    ],
-   "ref": "#8857 (draft, 6a5355e2)",
+   "ref": "#8857 (draft, f7a43fed: dev 8dbb60c2 merged in; a devicestatus-upload token may register its controller)",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8857"
   },
   {
@@ -411,7 +411,7 @@
    "depends": [
     "REG-S1"
    ],
-   "ref": "#8857 (draft, 6a5355e2, pushed 2026-10-26 with dev 7ad3a67f merged in; npm test 4472 passing, 0 failing, 3 pending): one holder document per (scope, channel, role); conformance 35 passed, 88 mapped, 0 failed at 3be98536",
+   "ref": "#8857 (draft, f7a43fed, dev 8dbb60c2 merged in; earlier 6a5355e2, pushed 2026-10-26 with dev 7ad3a67f merged in; npm test 4472 passing, 0 failing, 3 pending): one holder document per (scope, channel, role); conformance 35 passed, 88 mapped, 0 failed at 3be98536",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8857"
   },
   {
@@ -432,7 +432,7 @@
     "REG-S1",
     "REG-S2"
    ],
-   "ref": "#8857 (draft, 6a5355e2): product and instance halves; the instance listing is GET /api/v4/instances",
+   "ref": "#8857 (draft, f7a43fed, dev 8dbb60c2 merged in; earlier 6a5355e2): product and instance halves; the instance listing is GET /api/v4/instances",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8857"
   },
   {
@@ -532,7 +532,7 @@
    "id": "PLAT-SERVE",
    "track": "tenancy",
    "phase": "boundary",
-   "state": "ready",
+   "state": "review",
    "short": "serve <roles>",
    "title": "`nightscout serve <role>[,<role>…]`: hosted roles carved one at a time from bootevent's factory chain, `api` first (API v3 holds no resident state); each listener on its own bind address so `admin` stays off the consumer interface (D5, D7, D16, D21)",
    "where": "bin/nightscout.js, lib/server/bootevent.js, lib/server/server.js",
@@ -547,7 +547,8 @@
      "href": "../tenancy/nightscout-deployable-components-2026-09-14.md"
     }
    ],
-   "ref": "feat/nightscout-serve 1dafe2a5 (on #8863 + #8862, merge 775fd1cb): `serve api` boots only API v3's pieces; single unchanged (4639/0/3); API v3 suites under serve api 485 pass, 81 fail on cache events, v1 and sockets the role leaves out"
+   "ref": "#8865 (draft, 1dafe2a5, stacked on #8863 and #8862): `serve api` boots only API v3's pieces; single unchanged (4639/0/3); API v3 suites under serve api 485 pass, 81 fail on cache, v1 and socket fixtures",
+   "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8865"
   },
   {
    "id": "T30-RESEARCH",

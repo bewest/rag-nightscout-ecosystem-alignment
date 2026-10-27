@@ -29,6 +29,7 @@ repository.
 | [`ST-FILTER-READS`](st-filter-reads-feat-storage-filter.md) | #8861 | `in-flight-upstream` | Storage interface, first PR: the filter tree and interface methods under API v3's adapter (ST-FILTER), and API v1 reads through them (ST-READS), with no v1 answer changed |
 | [`PLAT-ENTRY`](plat-entry-feat-nightscout-entrypoint.md) | #8862 | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT and CMD single, no image HEALTHCHECK; no start path changes |
 | [`ST-WRITES`](st-writes-feat-storage-writes.md) | #8863 | `in-flight-upstream` | Storage interface, second PR: API v1, authorization storage and socket writes through the interface, each labelled by source; #8854's boundary check fails a write that skips the interface |
+| [`PLAT-SERVE`](plat-serve-feat-nightscout-serve.md) | #8865 | `in-flight-upstream` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a time, `api` first; each listener bound separately |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`ARCH-8854-FAILED`](arch-8854-failed.md) | &mdash; | `needs-decision` | Decide: the socket's failed slot that #8854 adds under WRITE_VALIDATION=reject - ship as is, or agree it alongside refused (and on API v1?) |
 | [`BFQ-161`](bfq-161-bf-entries-pattern-limit.md) | &mdash; | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes |
@@ -45,7 +46,6 @@ repository.
 | [`MOD-UNITS-CANONICAL`](mod-units-canonical.md) | &mdash; | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), and the conversion constant |
 | [`MOD-WRITE-VALIDATION-READ`](mod-write-validation-read.md) | &mdash; | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-side flag, R1/R2) |
 | [`P0-C-REMEDIATE`](p0-c-remediate.md) | &mdash; | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling |
-| [`PLAT-SERVE`](plat-serve-feat-nightscout-serve.md) | &mdash; | `ready-to-push` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a time, `api` first; each listener bound separately |
 | [`T30-AUTH`](t30-auth-main.md) | &mdash; | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split |
 | [`T30-RESEARCH`](t30-research.md) | &mdash; | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface |
 | [`WS-LAB`](ws-lab-main.md) | &mdash; | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) |

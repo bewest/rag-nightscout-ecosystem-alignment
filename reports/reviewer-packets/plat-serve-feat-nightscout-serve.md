@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — PLAT-SERVE
+# Review packet — PLAT-SERVE (PR #8865)
 
 **`nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a
 time, `api` first; each listener bound separately**
@@ -21,7 +21,7 @@ time, `api` first; each listener bound separately**
 | repository | `cgm-remote-monitor` |
 | branch | `feat/nightscout-serve` |
 | base | `feat/storage-writes@38b910d7 + feat/nightscout-entrypoint@b63d9b7f (merge 775fd1cb)` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=PLAT-SERVE` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=PLAT-SERVE` is the measurement |
 | semver | `minor` |
 
 ## What this changes
@@ -74,15 +74,16 @@ maintainer, plus a second human - the boot sequence moves
 
 ## Notes carried on the item
 
-2026-10-26, later: built on feat/nightscout-serve (ready to push, draft PR
-stacked on #8863 and #8862). Env per role: <PREFIX>_HOSTNAME / _PORT (API_,
-REALTIME_, TENANT_ADMIN_, ADMIN_); admin defaults to 127.0.0.1:1338 and needs
-ADMIN_INSECURE_BIND_ACKNOWLEDGED for a non-loopback bind. Open: per-tenant
-config after TEN-RESOLVE, ADMIN_BIND vs ADMIN_HOSTNAME, the admin address rule
-on any port, /api/v2/authorization under tenant-admin, migrate owning indexes,
-one context per process. 2026-10-26 (D21). Open: whether a composed `serve` of
-every role is part of the multi target or only a small-hoster convenience.
-TEN-RESOLVE (platform admin on its own interface) depends on this item.
+2026-10-26, later: draft #8865 at 1dafe2a5, stacked on #8863 (base
+feat/storage-writes) with #8862 merged in. Env per role: <PREFIX>_HOSTNAME /
+_PORT (API_, REALTIME_, TENANT_ADMIN_, ADMIN_); admin defaults to
+127.0.0.1:1338 and needs ADMIN_INSECURE_BIND_ACKNOWLEDGED for a non-loopback
+bind. Open: per-tenant config after TEN-RESOLVE, ADMIN_BIND vs ADMIN_HOSTNAME,
+the admin address rule on any port, /api/v2/authorization under tenant-admin,
+migrate owning indexes, one context per process. 2026-10-26 (D21). Open:
+whether a composed `serve` of every role is part of the multi target or only a
+small-hoster convenience. TEN-RESOLVE (platform admin on its own interface)
+depends on this item.
 
 ---
 
