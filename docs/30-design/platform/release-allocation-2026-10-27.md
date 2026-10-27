@@ -321,6 +321,21 @@ release soaks them; and how does that weigh against releasing as soon as the can
   5. A one-step fallback: reverting the slices' merge commits restores the current paths, rehearsed
      once.
   Not met with time on `dev` before the tag → 16.1.0, as in §3.
+- **Results, 2026-10-27: items 1, 3, 4 and 5 met** on local candidates (session -2e's agent;
+  Node 22.23.4, MongoDB 5.0.33; `dev` `2dc0c1bc`, #8859 `5c6ceabb`, #8861 `48e7e101`, #8863
+  `38b910d7`). Item 2 is with session -e4.
+
+  | item | result |
+  |---|---|
+  | 1. merged together | `cand/without` `2cae64f3` = `dev` + #8859 (clean); `cand/with` `d6ba8e18` = that + #8861 (clean) + #8863 (five conflict resolutions, in `profile.js`, `websocket.js` and a test stub; #8859's four direct reads in `entries.js` and `devicestatus.js` moved onto the interface) + the count commit `079f20ae` (clean); 36 files, +3124/−251. Order: #8859 first; seam first was measured and is not cheaper |
+  | 3. behaviour | write-contract matrix, 360 cells: with = without in off and in reject (0 differing; off vs reject differ in 12 on each, so the matrix can see a change). Client replay, 67 rows / 201 cells: equal; its dead-port and wrong-expectation controls fail. v1 HTTP differential: 700 of 700 identical. Suites, passing/failing/pending: without `npm test` 4575/0/3, `test:all` 4903/0/3; with 4687/0/3 and 5015/0/3 |
+  | 4. latency | 16 read and write shapes, 200 runs each, interleaved, on a 90-day synthetic database: with/without median 0.99–1.04 and p95 0.93–1.04, inside the noise floor (median 0.97–1.05). No measurable change. Not measured: concurrent load, larger databases, MongoDB 8, Node 26 |
+  | 5. revert | `cand/with-reverted` `cf762dd0`: one commit reverting the three merges; its tree equals `cand/without`'s (`7a6f5c20`, checked by session -ee) and `npm test` gives 4575/0/3 |
+  | the count operation | `GET /api/v1/count/:storage/where`, the one REST storage call still direct after #8863 (approved by the maintainer 2026-10-27), on `feat/storage-writes-count` `079f20ae`: its test fails 2 of 4 on `38b910d7`; v1 HTTP differential 700 of 700 identical including 219 count requests, and a deliberate break gives 102 differing |
+
+  The candidates are local. Before anything is pushed, the conflict resolutions go onto the PR
+  branches (`dev` and #8859 merged into `feat/storage-filter` and `feat/storage-writes`, the count
+  commit added to #8863), and the maintainer merges #8859 before #8861 and #8863.
 - **Cohort checks to request once the slices are on `dev`** (they move every v1 read and write onto
   the interface):
 
