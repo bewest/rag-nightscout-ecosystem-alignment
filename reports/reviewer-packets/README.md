@@ -28,7 +28,6 @@ repository.
 | [`PLAT-ENTRY`](plat-entry-feat-nightscout-entrypoint.md) | #8862 | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT and CMD single, no image HEALTHCHECK; no start path changes |
 | [`ST-WRITES`](st-writes-feat-storage-writes.md) | #8863 | `in-flight-upstream` | Storage interface, second PR: API v1, authorization storage and socket writes through the interface, each labelled by source; #8854's boundary check fails a write that skips the interface |
 | [`PLAT-SERVE`](plat-serve-feat-nightscout-serve.md) | #8865 | `in-flight-upstream` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a time, `api` first; each listener bound separately |
-| [`BFQ-200`](bfq-200-bf-16-0-0-ddata-at-crash.md) | #8868 | `in-flight-upstream` | BF-200 - on dev, an unusable time on API v2's data-snapshot route stops the server |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`ARCH-8854-FAILED`](arch-8854-failed.md) | &mdash; | `needs-decision` | Decide: the socket's failed slot that #8854 adds under WRITE_VALIDATION=reject - ship as is, or agree it alongside refused (and on API v1?) |
 | [`BFQ-161`](bfq-161-adv-phrf-1600.md) | &mdash; | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes |

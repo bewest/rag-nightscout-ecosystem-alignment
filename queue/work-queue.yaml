@@ -17084,7 +17084,7 @@ items:
     branch: bf/16.0.0-ddata-at-crash
     base: official/dev@2dc0c1bc
     worktree: externals/work/crm-ddata-crash
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8868]
     ships_to_operators_today: false
     blast_radius: >
@@ -17110,18 +17110,18 @@ items:
       client sends successfully
     register: [BF-200]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 434c0157 bf/16.0.0-ddata-at-crash
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 434c0157 official/dev
         kind: static
         describe: >
           The fix commit 434c0157 is on the branch. Red if the branch is
           rewritten without it.
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2564e5dc bf/16.0.0-ddata-at-crash
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2564e5dc official/dev
         kind: static
         describe: >
           The callback-tasks commit 2564e5dc is on the branch (its head,
           2026-10-27). Red if the branch is rewritten without it.
       - run: >-
-          sh -c 'd=$(mktemp -d) && git -C externals/cgm-remote-monitor-official archive bf/16.0.0-ddata-at-crash | tar -x -C "$d" && ln -s "$PWD/externals/work/crm-ddata-crash/node_modules" "$d/node_modules" && cd "$d" && NODE_ENV=test ./node_modules/.bin/mocha --timeout 15000 --exit tests/data.ddata-at.test.js tests/callback-tasks.test.js; r=$?; rm -rf "$d"; exit $r'
+          sh -c 'd=$(mktemp -d) && git -C externals/cgm-remote-monitor-official archive official/dev | tar -x -C "$d" && ln -s "$PWD/externals/work/crm-ddata-crash/node_modules" "$d/node_modules" && cd "$d" && NODE_ENV=test ./node_modules/.bin/mocha --timeout 15000 --exit tests/data.ddata-at.test.js tests/callback-tasks.test.js; r=$?; rm -rf "$d"; exit $r'
         kind: unit
         describe: >
           Runs the branch's own tree (git archive) and its tests
@@ -17134,6 +17134,9 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-27, 20:01:50Z: merged. bewest merged #8868 (head 2ca7dfc8)
+      into dev as 88676086 (gh pr view 8868). Gates re-pointed to
+      official/dev; controls on dev 94899828, the commit before the merge.
       2026-10-27, 19:50:31Z: #8868 opened by bewest into dev, head
       2ca7dfc8 (dev 94899828 merged in on top of 2564e5dc; gh pr view
       8868).

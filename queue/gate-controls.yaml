@@ -2816,35 +2816,37 @@ controls:
       carry the change, exits non-zero (re-pointed 2026-10-27 after the merge).
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 434c0157 bf/16.0.0-ddata-at-crash
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 434c0157 official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 434c0157 official/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 434c0157 94899828
     control-kind: static
     proves: >
-      the same containment against official/dev 2dc0c1bc, which does not
-      carry the BF-200 fix, exits 1 (measured 2026-10-27).
+      the same containment against dev 94899828, the commit before #8868
+      merged, which does not carry the BF-200 fix, exits 1 (re-pointed
+      2026-10-27 after the merge).
 
   - gate: |-
-      sh -c 'd=$(mktemp -d) && git -C externals/cgm-remote-monitor-official archive bf/16.0.0-ddata-at-crash | tar -x -C "$d" && ln -s "$PWD/externals/work/crm-ddata-crash/node_modules" "$d/node_modules" && cd "$d" && NODE_ENV=test ./node_modules/.bin/mocha --timeout 15000 --exit tests/data.ddata-at.test.js tests/callback-tasks.test.js; r=$?; rm -rf "$d"; exit $r'
+      sh -c 'd=$(mktemp -d) && git -C externals/cgm-remote-monitor-official archive official/dev | tar -x -C "$d" && ln -s "$PWD/externals/work/crm-ddata-crash/node_modules" "$d/node_modules" && cd "$d" && NODE_ENV=test ./node_modules/.bin/mocha --timeout 15000 --exit tests/data.ddata-at.test.js tests/callback-tasks.test.js; r=$?; rm -rf "$d"; exit $r'
     cwd: .
     control: |-
-      sh -c 'd=$(mktemp -d) && git -C externals/cgm-remote-monitor-official archive official/dev | tar -x -C "$d" && for t in tests/data.ddata-at.test.js tests/callback-tasks.test.js; do git -C externals/cgm-remote-monitor-official show bf/16.0.0-ddata-at-crash:$t > "$d/$t" || exit 9; done && ln -s "$PWD/externals/work/crm-ddata-crash/node_modules" "$d/node_modules" && cd "$d" && NODE_ENV=test ./node_modules/.bin/mocha --timeout 15000 --exit tests/data.ddata-at.test.js tests/callback-tasks.test.js; r=$?; rm -rf "$d"; exit $r'
+      sh -c 'd=$(mktemp -d) && git -C externals/cgm-remote-monitor-official archive 94899828 | tar -x -C "$d" && for t in tests/data.ddata-at.test.js tests/callback-tasks.test.js; do git -C externals/cgm-remote-monitor-official show official/dev:$t > "$d/$t" || exit 9; done && ln -s "$PWD/externals/work/crm-ddata-crash/node_modules" "$d/node_modules" && cd "$d" && NODE_ENV=test ./node_modules/.bin/mocha --timeout 15000 --exit tests/data.ddata-at.test.js tests/callback-tasks.test.js; r=$?; rm -rf "$d"; exit $r'
     control-kind: unit
     proves: >
-      the branch's two test files run over official/dev 2dc0c1bc's tree
-      (both fixes absent) fail: 9 passing, 6 failing, exit 6 (measured
-      2026-10-27 at branch head 2564e5dc).
+      dev's two test files run over dev 94899828's tree, the commit before
+      #8868 merged (both fixes absent), fail (re-pointed 2026-10-27 after the
+      merge; before it, the same files over 2dc0c1bc: 9 passing, 6 failing).
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2564e5dc bf/16.0.0-ddata-at-crash
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2564e5dc official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2564e5dc official/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2564e5dc 94899828
     control-kind: static
     proves: >
-      the same containment against official/dev 2dc0c1bc, which does not
-      carry the callback-tasks change, exits 1 (measured 2026-10-27).
+      the same containment against dev 94899828, the commit before #8868
+      merged, which does not carry the callback-tasks change, exits 1
+      (re-pointed 2026-10-27 after the merge).
 
   - gate: |-
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 47723cda official/dev

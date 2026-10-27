@@ -30,13 +30,12 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 26 items
+### Maintainer &mdash; 25 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BFQ-161` | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory  | &mdash; |
 | `BFQ-193` | `in-flight-upstream` | BF-193 - the realtime socket and other write paths log every record written thro | #8856 |
-| `BFQ-200` | `in-flight-upstream` | BF-200 - on dev, an unusable time on API v2's data-snapshot route stops the serv | #8868 |
 | `PLAT-ENTRY` | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; im | #8862 |
 | `PLAT-SERVE` | `in-flight-upstream` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a ti | #8865 |
 | `ST-FILTER-READS` | `in-flight-upstream` | Storage interface, first PR: the filter tree and interface methods under API v3' | #8861 |
@@ -90,7 +89,6 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 | **#8862** | `PLAT-ENTRY` | `feat/nightscout-entrypoint` | One executable (D21): bin/nightscout.js with `single` and th | Maintainer |
 | **#8863** | `ST-WRITES` | `feat/storage-writes` | Storage interface, second PR: API v1, authorization storage  | Maintainer |
 | **#8865** | `PLAT-SERVE` | `feat/nightscout-serve` | `nightscout serve <roles>` (D21): hosted roles carved from b | Maintainer |
-| **#8868** | `BFQ-200` | `bf/16.0.0-ddata-at-crash` | BF-200 - on dev, an unusable time on API v2's data-snapshot  | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 
