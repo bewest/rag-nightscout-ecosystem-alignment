@@ -80,16 +80,25 @@ maintainer, plus a second human - every v1 and socket write path moves
 
 ## Notes carried on the item
 
-2026-10-27 (maintainer, Q12): goes into 16.0.0 through release allocation B6's
-entry bar. Items 1, 3, 4 and 5 MET on local candidates (session -2e; cand/with
-d6ba8e18 vs cand/without 2cae64f3: 360-cell matrix equal off and reject,
-67-row replay equal, v1 HTTP 700/700, latency inside the noise floor, one-
-commit revert cf762dd0 restores cand/without's tree). Item 2 (BF-72, BF-161 in
-their private forks) is with -e4. Maintainer decided #8859 merges to dev
-first. The PR branch is awaiting #8859: prep/storage-writes b1104d02 (= the
-count commit 079f20ae for GET /api/v1/count/:storage/where on 38b910d7, +
-prep/storage-filter, with the five conflict resolutions; tree c5ac59dc equals
-cand/with d6ba8e18, checked by -ee, so every B6 measurement applies) becomes
+2026-10-27, final: ready to push 42128f3b (parents a3f74a08 + 5310a447;
+contains 38b910d7, 5310a447 and dev eed31dca; tree d4684295; 25 files
++896/-245 against 5310a447, 36 files +3124/-248 against dev; checked by -ee).
+Session -2e on that tree, Node 22.23.4: npm test 4700 passing, 0 failing, 3
+pending and test:all 5028/0/3 (MongoDB 7.0.43; +13 over a3f74a08 = BF-200's
+tests); 360-cell matrix equal to dev eed31dca in off and reject, off vs reject
+12 differing on each (MongoDB 5.0.33). Push: git -C externals/cgm-remote-
+monitor-official push official 42128f3b:refs/heads/feat/storage-writes. Merge
+order: #8861, then #8863; ST-COUNT-ONEPATH follows before the tag. 2026-10-27
+(maintainer, Q12): goes into 16.0.0 through release allocation B6's entry bar.
+Items 1, 3, 4 and 5 MET on local candidates (session -2e; cand/with d6ba8e18
+vs cand/without 2cae64f3: 360-cell matrix equal off and reject, 67-row replay
+equal, v1 HTTP 700/700, latency inside the noise floor, one-commit revert
+cf762dd0 restores cand/without's tree). Item 2 (BF-72, BF-161 in their private
+forks) is with -e4. Maintainer decided #8859 merges to dev first. The PR
+branch is awaiting #8859: prep/storage-writes b1104d02 (= the count commit
+079f20ae for GET /api/v1/count/:storage/where on 38b910d7, + prep/storage-
+filter, with the five conflict resolutions; tree c5ac59dc equals cand/with
+d6ba8e18, checked by -ee, so every B6 measurement applies) becomes
 feat/storage-writes for #8863 once the real dev with #8859 is merged in. No
 push commands until -2e sends the final head. 2026-10-26: draft #8863, stacked
 on #8861 (base feat/storage-filter); it retargets to dev when #8861 merges.
