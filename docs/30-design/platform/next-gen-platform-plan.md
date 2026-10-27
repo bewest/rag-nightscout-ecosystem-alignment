@@ -121,7 +121,7 @@ Slices S0, S1, S2 and S5 need no storage work and go to dev together as one sing
 | T30-WIRING | tenant-scoped API keys and per-tenant signing keys (D13, D14) | TEN-RESOLVE |
 | TEN-LAB | two tenants on PostgreSQL in a Docker Compose lab, isolation checked with a control | ST-PG, T30-WIRING, ST-VIEWS |
 
-The decisions D1–D21 are in the [execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md). Single-tenant on MongoDB stays first-class (D1, D4). Every tenancy item ships behind `TENANCY_MODE=multi`.
+Which listener and role owns each API, single-tenant and multitenant, is mapped in [interface ownership](interface-ownership-2026-10-27.md) (2026-10-27, with eight open questions); the tenant settings census re-measured on dev is [t30-census-dev](../../60-research/tenancy/t30-census-dev-2026-10-27.md). The decisions D1–D21 are in the [execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md). Single-tenant on MongoDB stays first-class (D1, D4). Every tenancy item ships behind `TENANCY_MODE=multi`.
 
 ## 6. Open decisions
 

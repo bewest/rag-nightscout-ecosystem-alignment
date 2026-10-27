@@ -1,5 +1,7 @@
 # The tenant-owner configuration surface — T3.0's missing schema
 
+> **Re-measured 2026-10-27 on dev `7abe1cf6`: 264 names, not 277**, with twelve contested settings for the maintainer and a list of what is stale here: [t30-census-dev-2026-10-27](../../60-research/tenancy/t30-census-dev-2026-10-27.md).
+
 *Contributor-facing.* **Snapshot, 2026-09-15. Current: the only statement of the tenant-owner
 configuration surface (T3.0's research deliverable).** A specification, not landed work: nothing in it is
 implemented, and the DDL in §A has **not** been executed against PostgreSQL (§G.1). Sections marked
