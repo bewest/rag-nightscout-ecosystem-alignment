@@ -5959,7 +5959,7 @@ items:
     repo: rag-nightscout-ecosystem-alignment
     branch: ""
     base: main
-    state: in-progress
+    state: done
     pr: []
     blast_radius: >
       tools/lab/tenant-config-schema (compare.js and the MongoDB migrator):
@@ -5980,6 +5980,19 @@ items:
     evidence:
       - docs/60-research/tenancy/migration-tooling-plan-2026-10-27.md
     notes: >
+      2026-10-27, done (session -4f's agent; scope and secrets re-checked by
+      -4f): umzug's MongoDB adapter behaved the same on 8.0.34 and on dev's
+      floor 5.0.32, standalone and as three-member replica sets: up/down/up
+      clean; killed mid-migration leaves the step applied but unrecorded
+      unless written to re-run safely; four simultaneous starters 4/4 with
+      each migration applied once; drift refused. A primary step-down during
+      a migration (paused and mid-write) completed with nothing lost or
+      doubled. On a replica set a migration and its ledger record can share a
+      transaction (not applied, not recorded when killed); index builds on a
+      non-empty collection and listCollections cannot. migrate-mongo: stale
+      lock for 36-93 s, lock not exclusive on simultaneous start, drift
+      ignored. Provisional choice holds. Plan §6 (MIG-VV).
+
       2026-10-27, started (maintainer): MongoDB 8.0 as a three-member
       replica set, and 5.0 (dev's floor, CI's oldest lane per
       docs/runtime-upgrade.md at db3b9e4e; 4.4 unsupported) standalone and as
