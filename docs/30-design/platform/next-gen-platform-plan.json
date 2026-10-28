@@ -153,7 +153,7 @@
     "PR-8854",
     "WC-STEP-PATCH"
    ],
-   "ref": "Decision deferred, research continuing (maintainer, 2026-10-27): the event stays counts-only and internal; nothing in lib/ subscribes. Session -2e is building and measuring a post-write variant, with a capped pre-read as the comparison, as input to the decision (lab/commit-event-bench 54cd8fff7 and later). Reopen condition (3) re-measured 2026-10-27, unchanged (BF-164; tools/lab/aaps-ws-delivery results/2026-10-27-dev-dcf20bfb, dev dcf20bfb, MongoDB 8.0.34): all 11 cells match 2026-10-25. API v1, socket dbAdd and connector records are never pushed on /storage; they arrive by catch-up history on reconnect, and are missed when an API v3 write in the same collection lands first, because AndroidAPS sets its cursor from each frame. AndroidAPS taking only API v3 writes over the socket is intended; the timing-dependent history delivery is the open point"
+   "ref": "Decision deferred, research continuing (maintainer, 2026-10-27): the event stays counts-only and internal; nothing in lib/ subscribes. Round 2 bench (session -2e, 2026-10-27; local lab/commit-event-bench 65e8bde04, results/round2; arms proto/d-event-*: pre-read 8a396715, post-write 408c7d03, post-write with counts-only deletes 70e2d218, pre-read capped at 500 8432ea66; each changes only write-step.js and its test, npm test 4703-4706/0/3; MongoDB 8.0.29 replica set, Node 22.23.4, localhost): post-write is free on fresh backfills (treatments 1,000 x1.01, 10,000 x1.00, against the pre-read's x1.28 and x1.27) but a full re-send costs about what the pre-read does (x1.09 and x1.12), it misses updates that move records out of their own filter (0 of 5 exact), and under the pruner race it is inexact 2-4 times as often as the pre-read; the 500 cap is about x1.00 on every backfill over 500 and exact below it, collapsing larger writes to an event with no records, so a listener re-reads; counts-only deletes are free but 0 of 30 delete events are exact; in every arm no event was wrong without being flagged (records != counts; the break-it control gives 75), and at 4 concurrent writers the cost is inside the 17% noise floor with 0 cross-attributed. Not measured: a remote database, other MongoDB versions, other caps, an asynchronous post-read. Reopen condition (3) re-measured 2026-10-27, unchanged (BF-164; tools/lab/aaps-ws-delivery results/2026-10-27-dev-dcf20bfb, dev dcf20bfb, MongoDB 8.0.34): all 11 cells match 2026-10-25. API v1, socket dbAdd and connector records are never pushed on /storage; they arrive by catch-up history on reconnect, and are missed when an API v3 write in the same collection lands first, because AndroidAPS sets its cursor from each frame. AndroidAPS taking only API v3 writes over the socket is intended; the timing-dependent history delivery is the open point"
   },
   {
    "id": "ST-FILTER",
@@ -682,9 +682,14 @@
      "risks": "none until something subscribes"
     },
     {
+     "label": "Read before the write, capped (500 measured)",
+     "gains": "about x1.00 on large backfills, exact below the cap; the shape Nocturne uses",
+     "risks": "writes over the cap give an event with no records, so a listener re-reads"
+    },
+    {
      "label": "Read records after the write",
-     "gains": "exact names without a pre-read; being prototyped and measured (session -2e), with a capped pre-read as the comparison",
-     "risks": "no surveyed system does this; precedents name records from the database log (change streams, Debezium, PostgreSQL logical decoding) or by reading before the write (Nocturne, Sequelize individualHooks, Django delete)"
+     "gains": "free on fresh backfills",
+     "risks": "a full re-send costs about what the pre-read does; misses updates that move records out of their filter (0 of 5 exact); inexact 2-4 times as often under the pruner race; no surveyed system does this"
     }
    ]
   },
