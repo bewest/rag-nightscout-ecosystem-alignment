@@ -1009,7 +1009,13 @@ leave it.
 explanation, until multi-mode alarms pass the gate in §7a. Settings that do nothing on an alarm path
 would invite false trust.
 
-**Not decided.** The secrets backend; the twelve contested settings re-stated under D22 are drafted for
+**Secrets backend, decided 2026-10-27 (maintainer): pluggable.** One interface (encrypt; decrypt for a
+named consumer; sign; verify; reveal, logged), with a cloud key service and Vault's transit engine as the
+first two adapters. Both can sign without exporting a key.
+
+**Not decided.** Whether signing keys stay inside the secrets component from the start (the call-path
+lab's keys-stay arm, [`tools/lab/tenant-config-callpath/`](../../../tools/lab/tenant-config-callpath/README.md)),
+or the tenant-owner listener holds them first and the change comes later. The twelve contested settings re-stated under D22 are drafted for
 review in [census §3a](../../60-research/tenancy/t30-census-dev-2026-10-27.md); row 7 decided the same
 day: the strict settings read (`API3_SETTINGS_STRICT_READ_ENABLED`) is a floor, always on under `multi`.
 
