@@ -1,5 +1,5 @@
 {
- "measured": "2026-10-27 against cgm-remote-monitor dev db3b9e4e; #8865 at f01d67e6",
+ "measured": "2026-10-27 against cgm-remote-monitor dev db3b9e4e; #8865 at 53ba192a",
  "tracks": [
   {
    "id": "storage",
@@ -219,16 +219,17 @@
    "id": "ST-V3-DECOUPLE",
    "track": "storage",
    "phase": "boundary",
-   "state": "planned",
+   "state": "review",
    "short": "v3 on its own",
    "title": "API v3 runs without API v1's modules, the socket and the in-memory cache: its reads and writes reach storage only through the interface, so `serve api` serves API v3 on its own (milestone M3)",
    "where": "lib/api3 (the cached collection and its cache hooks), bootevent's factory chain; about the fixtures the API v3 suites share with v1 and the socket",
-   "check": "`serve api` passes the API v3 suites: at #8865 1dafe2a5, 485 pass and 81 fail on fixtures that need the cache, v1 or the socket; target 0 failing, with `single` unchanged",
+   "check": "`serve api` passes the API v3 suites, with suites whose subject is single-only pending; `single` unchanged",
    "depends": [
     "ST-WRITES",
     "PLAT-SERVE"
    ],
-   "ref": "Second lane after WC-STEP-PATCH (maintainer, 2026-10-27); offered to session -2e. release allocation §3.5"
+   "ref": "In #8865 (head 53ba192a): session -2e's API v3 role harness, folded in by the maintainer at 9f7f84f8. Exit check met as reported by -2e: API v3 suites under serve api 634 passing, 0 failing, 108 pending (single-only subjects: the websocket, the cache, in-process v1), under single 742/0; npm test 4803/0/3 on 9f7f84f8",
+   "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8865"
   },
   {
    "id": "WC-STEP-PATCH",
@@ -593,7 +594,7 @@
      "href": "../tenancy/nightscout-deployable-components-2026-09-14.md"
     }
    ],
-   "ref": "#8865 (open, base dev, head f01d67e6; carries #8862's commits and session -2e's API v3 harness): `serve api` boots only API v3's pieces; the image keeps the base entrypoint with CMD `nightscout single`; SIGTERM and SIGINT exit 0 within 8 s on every start path. The healthcheck checks the server's own certificate (CodeQL alert 138 fixed in f01d67e6). Image start forms unchanged against dev apart from stop and signals (tools/lab/image-start-forms)",
+   "ref": "#8865 (open, base dev, head 53ba192a; carries #8862's commits and session -2e's API v3 harness): `serve api` boots only API v3's pieces; the image keeps the base entrypoint with CMD `nightscout single`; SIGTERM and SIGINT exit 0 within 8 s on every start path. The healthcheck checks the server's own certificate (CodeQL alert 138 fixed in f01d67e6); README and CLI help say \"multitenant roles\" (53ba192a). Image start forms unchanged against dev apart from stop and signals (tools/lab/image-start-forms)",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8865"
   },
   {
