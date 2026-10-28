@@ -1,0 +1,1172 @@
+{
+  "summary": {
+    "when": "2026-10-28T01:21:51.310Z",
+    "server": "PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2) (container cfgschema-pg, postgres:16)",
+    "node": "v22.23.4",
+    "tests": 57,
+    "pass": 57,
+    "controls": 72,
+    "controlsRed": 72
+  },
+  "results": [
+    {
+      "id": "ISO-tenant_members",
+      "group": "isolation",
+      "title": "tenant_members: a role bound to tenant A reads, updates and inserts only A's rows; unbound it reads none",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "RLS disabled on the table",
+          "red": true,
+          "error": "bound to A, ns_api saw tenant B's rows in tenant_members",
+          "obs": []
+        },
+        {
+          "title": "same reads as the container superuser (RLS bypassed)",
+          "red": true,
+          "error": "bound to A, superuser saw tenant B's rows in tenant_members",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "ISO-tenant_policy_override",
+      "group": "isolation",
+      "title": "tenant_policy_override: a role bound to tenant A reads, updates and inserts only A's rows; unbound it reads none",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "RLS disabled on the table",
+          "red": true,
+          "error": "bound to A, ns_api saw tenant B's rows in tenant_policy_override",
+          "obs": []
+        },
+        {
+          "title": "same reads as the container superuser (RLS bypassed)",
+          "red": true,
+          "error": "bound to A, superuser saw tenant B's rows in tenant_policy_override",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "ISO-tenant_setting_value",
+      "group": "isolation",
+      "title": "tenant_setting_value: a role bound to tenant A reads, updates and inserts only A's rows; unbound it reads none",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "RLS disabled on the table",
+          "red": true,
+          "error": "bound to A, ns_api saw tenant B's rows in tenant_setting_value",
+          "obs": []
+        },
+        {
+          "title": "same reads as the container superuser (RLS bypassed)",
+          "red": true,
+          "error": "bound to A, superuser saw tenant B's rows in tenant_setting_value",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "ISO-tenant_alarm_thresholds",
+      "group": "isolation",
+      "title": "tenant_alarm_thresholds: a role bound to tenant A reads, updates and inserts only A's rows; unbound it reads none",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "RLS disabled on the table",
+          "red": true,
+          "error": "bound to A, ns_api saw tenant B's rows in tenant_alarm_thresholds",
+          "obs": []
+        },
+        {
+          "title": "same reads as the container superuser (RLS bypassed)",
+          "red": true,
+          "error": "bound to A, superuser saw tenant B's rows in tenant_alarm_thresholds",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "ISO-tenant_config_version",
+      "group": "isolation",
+      "title": "tenant_config_version: a role bound to tenant A reads, updates and inserts only A's rows; unbound it reads none",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "RLS disabled on the table",
+          "red": true,
+          "error": "bound to A, ns_api saw tenant B's rows in tenant_config_version",
+          "obs": []
+        },
+        {
+          "title": "same reads as the container superuser (RLS bypassed)",
+          "red": true,
+          "error": "bound to A, superuser saw tenant B's rows in tenant_config_version",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "ISO-tenant_integration",
+      "group": "isolation",
+      "title": "tenant_integration: a role bound to tenant A reads, updates and inserts only A's rows; unbound it reads none",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "RLS disabled on the table",
+          "red": true,
+          "error": "bound to A, ns_api saw tenant B's rows in tenant_integration",
+          "obs": []
+        },
+        {
+          "title": "same reads as the container superuser (RLS bypassed)",
+          "red": true,
+          "error": "bound to A, superuser saw tenant B's rows in tenant_integration",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "ISO-tenant_integration_status",
+      "group": "isolation",
+      "title": "tenant_integration_status: a role bound to tenant A reads, updates and inserts only A's rows; unbound it reads none",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "RLS disabled on the table",
+          "red": true,
+          "error": "bound to A, ns_api saw tenant B's rows in tenant_integration_status",
+          "obs": []
+        },
+        {
+          "title": "same reads as the container superuser (RLS bypassed)",
+          "red": true,
+          "error": "bound to A, superuser saw tenant B's rows in tenant_integration_status",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "ISO-roles",
+      "group": "isolation",
+      "title": "the roles the tests use are NOSUPERUSER NOBYPASSRLS, own no table, and RLS is active for each on every tenant table (row_security_active)",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "include the container superuser among the roles",
+          "red": true,
+          "error": "postgres is superuser or bypassrls",
+          "obs": []
+        },
+        {
+          "title": "NO FORCE on one table: the owning migration role escapes RLS",
+          "red": true,
+          "error": "RLS is not active for cfg_owner on tenant_setting_value",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "ISO-complete",
+      "group": "isolation",
+      "title": "every table with a tenant_id column has RLS enabled and forced and a policy on app.current_tenant_id (discovered, not listed); only `tenants` is exempt",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "a new tenant table without RLS",
+          "red": true,
+          "error": "unprotected tenant tables: tenant_notes",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "MERGE-layers",
+      "group": "merge",
+      "title": "code default, operator default, per-tenant override default, owner value and operator pin each win where D22 says",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "merge ignores per-tenant overrides",
+          "red": true,
+          "error": "DISPLAY_UNITS (A's override) {\"value\":\"mg/dl\",\"source\":\"code\"}",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "MERGE-override-narrows",
+      "group": "merge",
+      "title": "an override that narrows tenant B's policy after B's owner set a value: B falls back to the override default and the stale value is reported; A is unaffected",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "merge ignores per-tenant overrides",
+          "red": true,
+          "error": "B AUTH_DEFAULT_ROLES {\"value\":[\"readable\"],\"source\":\"owner\"}",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "MERGE-pin-beats-owner",
+      "group": "merge",
+      "title": "a per-tenant pin on A overrides A's stored owner value; B keeps its own",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "merge applies the pin before the owner value",
+          "red": true,
+          "error": "A {\"value\":true,\"source\":\"owner\"}",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "MERGE-floor-on-effective",
+      "group": "merge",
+      "title": "with no operator row for WRITE_VALIDATION the code default 'off' breaks the floor: the merge reports it so the process refuses",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "floors skipped in the merge",
+          "red": true,
+          "error": "no violation: []",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "MERGE-thresholds-refused-not-rewritten",
+      "group": "merge",
+      "title": "operator threshold defaults that are out of order are reported as a violation and left as written (no silent nudge, contrast BF-67)",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "threshold order check skipped",
+          "red": true,
+          "error": "misordered thresholds not reported",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "MERGE-differential",
+      "group": "merge",
+      "title": "the merge's acceptance rule (JS) and the database's (cfg_value_ok + cfg_satisfies) agree on every case",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": [
+          "30 cases compared"
+        ]
+      },
+      "controls": [
+        {
+          "title": "an off-by-one in the JS ordinal minimum",
+          "red": true,
+          "error": "JS and SQL disagree: [{\"key\":\"WRITE_VALIDATION\",\"cons\":{\"min\":\"log\"},\"v\":\"off\",\"sql\":false,\"js\":true}]",
+          "obs": [
+            "30 cases compared"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "FLOOR-anon-roles-owner",
+      "group": "floors-db",
+      "title": "no anonymous writes: with the operator policy OPEN, an owner still cannot pick careportal or admin as a default role",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "project floor removed from the catalogue row",
+          "red": true,
+          "error": "expected a refusal matching /^floor:/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "FLOOR-anon-roles-policy",
+      "group": "floors-db",
+      "title": "no anonymous writes: the operator cannot offer, default to or pin a write role, at deployment or per tenant",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "project floor removed from the catalogue row",
+          "red": true,
+          "error": "expected a refusal matching /^floor:/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "FLOOR-write-validation",
+      "group": "floors-db",
+      "title": "data safety: WRITE_VALIDATION below 'log' is refused as an owner value (policy open), an operator default and an operator pin",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "project floor removed",
+          "red": true,
+          "error": "expected a refusal matching /^floor:/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "FLOOR-not-offered",
+      "group": "floors-db",
+      "title": "names the floors withdraw under multi cannot appear in any policy or owner row: API_SECRET, API_SECRET_FILE, TREATMENTS_AUTH, IMPORT_CONFIG, TRUST_PROXY, BASE_URL, DEBUG_LOGGING, API3_SECURITY_ENABLE, API3_SETTINGS_STRICT_READ_ENABLED, DBSIZE_MAX, CONNECT_SOURCE_ENDPOINT, WEBHOOK_HOST",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "TREATMENTS_AUTH added to the catalogue",
+          "red": true,
+          "error": "expected a refusal matching /not a hosted setting|foreign key/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "FLOOR-catalogue-no-secret-names",
+      "group": "floors-db",
+      "title": "no deployment secrets, no secrets as settings: even the migration role cannot put a credential-like name in the catalogue",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "name CHECK dropped",
+          "red": true,
+          "error": "expected a refusal matching /config_setting_no_secret_names/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "FLOOR-catalogue-readonly",
+      "group": "floors-db",
+      "title": "no application role can edit the catalogue (and so cannot loosen a floor)",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "UPDATE granted to the operator",
+          "red": true,
+          "error": "expected a refusal matching /permission denied/ (42501), but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "FLOOR-autoprune-confirmation",
+      "group": "floors-db",
+      "title": "data safety: turning on permanent deletion needs a recorded confirmation and export offer",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "needs_confirmation cleared",
+          "red": true,
+          "error": "expected a refusal matching /^floor:.*confirmation/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "FLOOR-alarms-hidden",
+      "group": "floors-db",
+      "title": "alarm settings hidden until the 7a gate: the owner listener cannot write thresholds or alarm keys, and no alarm key can be made owner-settable",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "post-gate GRANT applied",
+          "red": true,
+          "error": "expected a refusal matching /permission denied/ (42501), but it was accepted",
+          "obs": []
+        },
+        {
+          "title": "alarms-hidden CHECK dropped",
+          "red": true,
+          "error": "expected a refusal matching /config_setting_alarms_hidden/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "FLOOR-webhook-public",
+      "group": "floors-db",
+      "title": "network safety: a webhook url must be https, carry no credentials, and not name a private, loopback, link-local or local-only host",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "public-host check replaced by `true`",
+          "red": true,
+          "error": "expected a refusal matching /integration:/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "FLOOR-connector-driver-hosts",
+      "group": "floors-db",
+      "title": "network safety: a connector endpoint may only name a host its driver defines",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "kind's endpoint rule changed from driver to public",
+          "red": true,
+          "error": "expected a refusal matching /^integration: floor:/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "FLOOR-deployment-scope",
+      "group": "floors-db",
+      "title": "a deployment value (API_V3_DATA_WARNINGS) cannot be overridden per tenant or set by an owner, and must be pinned",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "catalogue row re-scoped to tenant and owner-settable",
+          "red": true,
+          "error": "expected a refusal matching /deployment value/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "FLOOR-app-process",
+      "group": "floors-app",
+      "title": "process start under multi refuses API_SECRET(_FILE), API3_SECURITY_ENABLE=false, an empty or non-numeric TRUST_PROXY and DEBUG_LOGGING; IMPORT_CONFIG is ignored with a warning",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "secret check off",
+          "red": true,
+          "error": "not refused: [\"TRUST_PROXY\",\"API_SECRET\"]",
+          "obs": []
+        },
+        {
+          "title": "API3 security check off",
+          "red": true,
+          "error": "not refused: [\"TRUST_PROXY\",\"API3_SECURITY_ENABLE\"]",
+          "obs": []
+        },
+        {
+          "title": "TRUST_PROXY check off",
+          "red": true,
+          "error": "not refused: []",
+          "obs": []
+        },
+        {
+          "title": "DEBUG_LOGGING check off",
+          "red": true,
+          "error": "not refused: [\"TRUST_PROXY\",\"DEBUG_LOGGING\"]",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "FLOOR-app-settings-private",
+      "group": "floors-app",
+      "title": "app settings stay private: under multi, reading a settings record by identifier needs api:settings:admin even when API3_SETTINGS_STRICT_READ_ENABLED=false",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "multi honours the env value",
+          "red": true,
+          "error": "multi honoured the env",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "POLICY-pinned",
+      "group": "policy",
+      "title": "an owner value for a setting the operator has pinned is refused",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "owner-value trigger dropped",
+          "red": true,
+          "error": "expected a refusal matching /pinned/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "POLICY-bounded",
+      "group": "policy",
+      "title": "values outside a bounded list or range are refused; inside are accepted",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "owner-value trigger dropped",
+          "red": true,
+          "error": "expected a refusal matching /outside the operator/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "POLICY-per-tenant-override",
+      "group": "policy",
+      "title": "B's override narrows AUTH_DEFAULT_ROLES to denied: readable is refused for B and accepted for A",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "owner-value trigger dropped",
+          "red": true,
+          "error": "expected a refusal matching /\\(override\\)/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "POLICY-type-and-ownership",
+      "group": "policy",
+      "title": "wrongly typed values and operator-only keys are refused",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "owner-value trigger dropped",
+          "red": true,
+          "error": "expected a refusal matching /must be a boolean/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "POLICY-planes",
+      "group": "policy",
+      "title": "the owner listener cannot write policy; the operator plane cannot write owner values",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "owner listener granted policy writes",
+          "red": true,
+          "error": "expected a refusal matching /permission denied/ (42501), but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "POLICY-webhook-allowlist",
+      "group": "policy",
+      "title": "the operator's optional webhook host allow-list (census row 4) refuses other public hosts",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "policy lookup made blind to INTEGRATION_HOSTS keys",
+          "red": true,
+          "error": "expected a refusal matching /allow-list/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "VERSION-numbered",
+      "group": "versions",
+      "title": "each change is a numbered version with plane, subject, time, kind and the full state after it",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "state snapshot broken: cfg_current_state returns an empty state",
+          "red": true,
+          "error": "states do not record what changed",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "VERSION-unversioned-write-refused",
+      "group": "versions",
+      "title": "a write that skips cfg_apply cannot commit (update, insert or delete; values and integrations)",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "commit-time version guards dropped",
+          "red": true,
+          "error": "expected a refusal matching /without a version/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "VERSION-append-only",
+      "group": "versions",
+      "title": "versions cannot be edited or deleted, even by the owning migration role",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "append-only trigger dropped",
+          "red": true,
+          "error": "expected a refusal matching /append-only/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "VERSION-rollback-restores",
+      "group": "versions",
+      "title": "rollback to v1 writes a new version (kind rollback, rollback_of 1) whose state, and the live state, equal v1: values, thresholds and integrations",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "rollback restores values only",
+          "red": true,
+          "error": "live state differs from v2: {\"values\":{\"SHOW_SECONDS\":true,\"AUTH_DEFAULT_ROLES\":[\"readable\"]},\"thresholds\":{\"bgLow\":60,\"bgHigh\":250,\"bgTargetTop\":170,\"enteredUnits\":\"mg/dl\",\"bgTargetBottom\":90},\"integrations\":[]} vs {\"values\":{\"SHOW_SECONDS\":true,\"AUTH_DEFAULT_ROLES\":[\"readable\"]},\"thresholds\":{\"bgLow\":55,\"bgHigh\":260,\"bgTargetTop\":180,\"enteredUnits\":\"mg/dl\",\"bgTargetBottom\":80},\"integrations\":[{\"id\":\"a1a1a1a1-0000-4000-8000-0000000000a1\",\"kind\":\"webhook\",\"label\":\"\",\"enabled\":true,\"settings\":{\"url\":\"https://hooks.example-receiver.test/ns\",\"events\":\"alarm\"},\"secretRef\":\"sref:v1:builtin:rrrrrrrrrrrrrrrrrrrr0001\"}]}",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "VERSION-rollback-vs-new-pin",
+      "group": "versions",
+      "title": "rollback to a version whose value the operator has since pinned is refused whole, naming the setting; nothing changes and no version is written",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "owner-value trigger dropped",
+          "red": true,
+          "error": "expected a refusal matching /SHOW_SECONDS is pinned/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "VERSION-rollback-needs-fresh-confirmation",
+      "group": "versions",
+      "title": "rolling back to a version that had permanent deletion on needs a fresh confirmation; the old one is not carried forward",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "needs_confirmation cleared",
+          "red": true,
+          "error": "expected a refusal matching /^floor:.*confirmation/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "VERSION-concurrent-writers",
+      "group": "versions",
+      "title": "two owner sessions saving at once get consecutive versions; neither fails",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "advisory lock removed from cfg_apply",
+          "red": true,
+          "error": "23505 duplicate key value violates unique constraint \"tenant_config_version_pkey\"",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "SECRETS-schema-scan",
+      "group": "secrets",
+      "title": "information_schema: no column named like a credential (except *_ref / *_parts), no bytea column, and every *_ref column is CHECKed by cfg_is_secret_ref",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": [
+          "reference columns: deployment_integration.operator_secret_ref, tenant_integration.owner_secret_ref"
+        ]
+      },
+      "controls": [
+        {
+          "title": "a plaintext password column added",
+          "red": true,
+          "error": "credential-like columns: [{\"table_name\":\"tenant_integration\",\"column_name\":\"password\"}]",
+          "obs": []
+        },
+        {
+          "title": "a bytea material column added",
+          "red": true,
+          "error": "credential-like columns: [{\"table_name\":\"tenant_integration\",\"column_name\":\"material_blob\"}]",
+          "obs": []
+        },
+        {
+          "title": "an unconstrained *_ref column added",
+          "red": true,
+          "error": "tenant_integration.backup_ref has no reference-format CHECK",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "SECRETS-not-in-settings",
+      "group": "secrets",
+      "title": "integration settings cannot carry a credential: unknown fields are refused and no kind's schema may declare a credential-like field",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "kind CHECK dropped and a password field added to the webhook schema",
+          "red": true,
+          "error": "expected a refusal matching /unknown field password/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "SECRETS-reference-format",
+      "group": "secrets",
+      "title": "a reference column refuses a value that is not a reference (a pasted plaintext credential)",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "reference CHECKs dropped",
+          "red": true,
+          "error": "expected a refusal matching /tenant_integration_ref_format/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "SECRETS-owner-cannot-see-operator-part",
+      "group": "secrets",
+      "title": "the owner listener can see that the operator's part exists, not its reference",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "whole-table SELECT granted to the owner listener",
+          "red": true,
+          "error": "expected a refusal matching /permission denied/ (42501), but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "MMOL-stored-safely",
+      "group": "mmol",
+      "title": "A.3: a partial mmol override, a full mmol set, an integer mmol-looking set and a misordered set are all refused; a valid mg/dL set is stored exactly",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": [
+          "partial {bgHigh:14}: refused (23514 thresholds: all four are written together; bgLow is missing)",
+          "full mmol {3.1,4.5,10,14}: refused (23514 thresholds: bgLow = 3.1 is not a whole mg/dL value; convert mmol/L at the write boundary)",
+          "integer mmol-looking {3,5,10,14}: refused (23514 new row for relation \"tenant_alarm_thresholds\" violates check constraint \"tenant_alarm_thresholds_plausible_mgdl\")",
+          "misordered {80,55,180,260}: refused (23514 new row for relation \"tenant_alarm_thresholds\" violates check constraint \"tenant_alarm_thresholds_ordered\")",
+          "string threshold {\"x\",...}: refused (23514 thresholds: bgLow must be a number)",
+          "valid mg/dL {56,81,180,252}: accepted"
+        ]
+      },
+      "controls": [
+        {
+          "title": "the OLD shape: tenant_settings as drafted in config-surface §A.2",
+          "red": true,
+          "error": "partial {bgHigh:14} was accepted: {\"bgHigh\":14}",
+          "obs": [
+            "partial {bgHigh:14}: ACCEPTED"
+          ]
+        },
+        {
+          "title": "new shape with the range CHECK dropped and the columns made nullable",
+          "red": true,
+          "error": "partial {bgHigh:14} was accepted: {\"bgHigh\":14}",
+          "obs": [
+            "partial {bgHigh:14}: ACCEPTED"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MMOL-old-shape-profile",
+      "group": "mmol",
+      "title": "the §A.2 draft, measured: its CHECK is live (a complete mmol set is refused) yet a partial mmol override passes on SQL NULL; each input's outcome is recorded",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": [
+          "partial {\"bgHigh\":14}: accepted",
+          "fullMmol {\"bgLow\":3.1,\"bgTargetBottom\":4.5,\"bgTargetTop\":10,\"bgHigh\":14}: refused 23514: new row for relation \"tenant_settings\" violates check constraint \"tenant_settings_thresholds_mgdl\"",
+          "integerMmol {\"bgLow\":3,\"bgTargetBottom\":5,\"bgTargetTop\":10,\"bgHigh\":14}: refused 23514: new row for relation \"tenant_settings\" violates check constraint \"tenant_settings_thresholds_mgdl\"",
+          "misordered {\"bgLow\":80,\"bgTargetBottom\":55,\"bgTargetTop\":180,\"bgHigh\":260}: refused 23514: new row for relation \"tenant_settings\" violates check constraint \"tenant_settings_thresholds_mgdl\"",
+          "string {\"bgLow\":\"x\",\"bgTargetBottom\":80,\"bgTargetTop\":180,\"bgHigh\":260}: refused 23514: new row for relation \"tenant_settings\" violates check constraint \"tenant_settings_thresholds_mgdl\"",
+          "valid {\"bgLow\":56,\"bgTargetBottom\":81,\"bgTargetTop\":180,\"bgHigh\":252}: accepted"
+        ]
+      },
+      "controls": [
+        {
+          "title": "the same inputs against the new shape",
+          "red": true,
+          "error": "the partial mmol override was refused: hazard not reproduced on this shape",
+          "obs": [
+            "partial {\"bgHigh\":14}: refused 23514: thresholds: all four are written together; bgLow is missing",
+            "fullMmol {\"bgLow\":3.1,\"bgTargetBottom\":4.5,\"bgTargetTop\":10,\"bgHigh\":14}: refused 23514: thresholds: bgLow = 3.1 is not a whole mg/dL value; convert mmol/L at the write boundary",
+            "integerMmol {\"bgLow\":3,\"bgTargetBottom\":5,\"bgTargetTop\":10,\"bgHigh\":14}: refused 23514: new row for relation \"tenant_alarm_thresholds\" violates check constraint \"tenant_alarm_thresholds_plausible_mgdl\"",
+            "misordered {\"bgLow\":80,\"bgTargetBottom\":55,\"bgTargetTop\":180,\"bgHigh\":260}: refused 23514: new row for relation \"tenant_alarm_thresholds\" violates check constraint \"tenant_alarm_thresholds_ordered\"",
+            "string {\"bgLow\":\"x\",\"bgTargetBottom\":80,\"bgTargetTop\":180,\"bgHigh\":260}: refused 23514: thresholds: bgLow must be a number",
+            "valid {\"bgLow\":56,\"bgTargetBottom\":81,\"bgTargetTop\":180,\"bgHigh\":252}: accepted"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MMOL-converted-and-echoed",
+      "group": "mmol",
+      "title": "the write boundary converts mmol/L to mg/dL and the stored numbers come back for the owner to see (A.3 defence 2): 3.1/4.5/10/14 -> 56/81/180/252",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "conversion skipped at the write boundary",
+          "red": true,
+          "error": "23514 thresholds: bgLow = 3.1 is not a whole mg/dL value; convert mmol/L at the write boundary",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "INTEGRATION-kind-limits",
+      "group": "integrations",
+      "title": "kinds the operator disabled are refused, and the per-tenant count is held",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "integration trigger dropped",
+          "red": true,
+          "error": "expected a refusal matching /allows 2 per tenant/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "INTEGRATION-settings-schema",
+      "group": "integrations",
+      "title": "settings are validated against the kind's schema: required, unknown, enum, type, length",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "integration trigger dropped",
+          "red": true,
+          "error": "expected a refusal matching /missing field priority/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "INTEGRATION-credential-parts",
+      "group": "integrations",
+      "title": "an owner part needs a reference; a kind with an operator part needs the operator's part configured first; a record's kind is fixed",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "integration trigger dropped",
+          "red": true,
+          "error": "expected a refusal matching /needs a reference/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "MIGRATE-up-down-up",
+      "group": "migrate",
+      "title": "umzug applies 0001-0007, rolls all of them back to an empty schema, and applies them again",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": [
+          "46 schema objects created; 0 left after down; re-applied"
+        ]
+      },
+      "controls": [
+        {
+          "title": "0005's down migration forgets one function",
+          "red": true,
+          "error": "1 objects left after down to 0 (of 46)",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "MIGRATE-crash-mid",
+      "group": "migrate",
+      "title": "a migrate process killed while a migration runs: once the server finishes with the orphaned session, the migration is either applied and recorded or neither; a re-run completes",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": [
+          "orphaned server session ran on for about 5368 ms after the kill; then ledger [\"0001_platform_base\",\"0002_catalogue\",\"0003_catalogue_seed\"], deployment_policy present: false"
+        ]
+      },
+      "controls": [
+        {
+          "title": "umzug's default split: migration and ledger row in separate steps",
+          "red": true,
+          "error": "0004 applied but not recorded (or the reverse): {\"ledger\":[\"0001_platform_base\",\"0002_catalogue\",\"0003_catalogue_seed\"],\"policyTable\":true,\"integrationTable\":false}",
+          "obs": [
+            "orphaned server session ran on for about 5257 ms after the kill; then ledger [\"0001_platform_base\",\"0002_catalogue\",\"0003_catalogue_seed\"], deployment_policy present: true"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MIGRATE-crash-after",
+      "group": "migrate",
+      "title": "a migrate process killed just after a migration returns (before the next starts) leaves the ledger matching the schema; a re-run completes",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": [
+          "after the kill: ledger [\"0001_platform_base\",\"0002_catalogue\",\"0003_catalogue_seed\",\"0004_policy\",\"0005_integrations\"], tenant_integration present: true"
+        ]
+      },
+      "controls": [
+        {
+          "title": "umzug's default split: migration and ledger row in separate steps",
+          "red": true,
+          "error": "0005 applied but not recorded: {\"ledger\":[\"0001_platform_base\",\"0002_catalogue\",\"0003_catalogue_seed\",\"0004_policy\"],\"policyTable\":true,\"integrationTable\":true}",
+          "obs": [
+            "after the kill: ledger [\"0001_platform_base\",\"0002_catalogue\",\"0003_catalogue_seed\",\"0004_policy\"], tenant_integration present: true"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MIGRATE-concurrent",
+      "group": "migrate",
+      "title": "four migrate processes started at once on an empty database: all succeed and each migration is applied once",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": [
+          "applied per process: [0,7,0,0]"
+        ]
+      },
+      "controls": [
+        {
+          "title": "advisory lock off",
+          "red": true,
+          "error": "3 of 4 failed: {\"ok\":false,\"error\":\"duplicate key value violates unique constraint \\\"pg_type_typname_nsp_index\\\"\"} | {\"ok\":false,\"error\":\"duplicate key value violates unique constraint \\\"pg_type_typname_nsp_index\\\"\"} | {\"ok\":false,\"error\":\"duplicate key value violates unique constraint \\\"pg_type_typname_nsp_index\\\"\"}",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "MIGRATE-drift",
+      "group": "migrate",
+      "title": "a migration file edited after it was applied stops the next run",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "drift check off",
+          "red": true,
+          "error": "expected a refusal matching /drift: 0003_catalogue_seed/, but it was accepted",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "MIGRATE-serve-refuses-stale-schema",
+      "group": "migrate",
+      "title": "a hosted role at start refuses a schema with pending migrations instead of migrating it",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "schema fully migrated (the check must not be constant)",
+          "red": true,
+          "error": "expected a refusal matching /pending \\[0006_owner_values_and_versions, 0007_grants\\]/, but it was accepted",
+          "obs": []
+        }
+      ]
+    }
+  ]
+}
