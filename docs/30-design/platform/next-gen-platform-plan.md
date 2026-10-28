@@ -9,7 +9,7 @@ This plan covers the work that follows the 16.0.0 modernization:
 - storage behind one write path;
 - the client and server identifiers Loop asked to separate;
 - controller registration, from a read-only catalogue to typed writes;
-- hosted multitenancy.
+- multitenant Nightscout.
 
 It names each piece of work, what it needs first, where it goes in the code, and the check that pins it.
 
@@ -20,7 +20,7 @@ It names each piece of work, what it needs first, where it goes in the code, and
 | Storage | `WRITE_VALIDATION` (#8841); the write boundary `lib/storage/write-step.js` (#8854); the filter tree and interface with v1 reads (#8861); v1, authorization and socket writes labelled by source (#8863); v1 count only through the interface (#8870). Every REST and socket record read, write and count goes through the storage interface (milestone M1) | — | ST-V3-DECOUPLE, `write(intent)`, ST-EVENT (decision deferred, research continuing), computed views, backend-selectable harness, PostgreSQL |
 | Identity | `identifier` is the client's, `_id` the server's; API v3 refuses a client `_id` (#8845); v1 entries and devicestatus match on `identifier`, and an explicit null removes a field (#8859) | — | identifier-first on every path, unique index |
 | Registration | specifications only; dev also carries an older proposal schema, `docs/proposals/schemas/controller-instance-registration.schema.json` | #8857: S0, S1, S2, S5, off by default (`f7a43fed`, 64 behind dev, conflicts) | typed writes (S3), projected views (S4) |
-| Tenancy | nothing | #8865 PLAT-SERVE (`f01d67e6`, base dev, open), which supersedes #8862 PLAT-ENTRY by carrying its commits | tenant configuration, resolution, tenant-scoped auth, hosted lab |
+| Tenancy | nothing | #8865 PLAT-SERVE (`f01d67e6`, base dev, open), which supersedes #8862 PLAT-ENTRY by carrying its commits | tenant configuration, resolution, tenant-scoped auth, multitenant lab |
 
 ## 2. Why the tracks meet at the write step
 
@@ -105,7 +105,7 @@ S0, S1, S2 and S5 need no storage work and are one single-tenant PR, draft [#885
 | item | builds | needs |
 |---|---|---|
 | PLAT-ENTRY | one executable, `bin/nightscout.js`: `single` (today's server, every old start path unchanged) and the operator tools; image ENTRYPOINT, and no image HEALTHCHECK so a boot-error page is not restarted away (D21) | dev |
-| PLAT-SERVE | `nightscout serve <roles>`: hosted roles carved from `bootevent`, `api` first, each listener bound separately (D5, D7, D16) | PLAT-ENTRY, ST-READS |
+| PLAT-SERVE | `nightscout serve <roles>`: multitenant roles carved from `bootevent`, `api` first, each listener bound separately (D5, D7, D16) | PLAT-ENTRY, ST-READS |
 | T30-RESEARCH | the tenant-owner configuration surface: 264 settings on dev, 12 contested | D-T30 |
 | T30-SCHEMA-CONFIG | the per-tenant settings table (D15) | T30-RESEARCH |
 | TEN-RESOLVE | tenant resolution and the platform admin interface (D7, D10, D16) | ST-HARNESS, T30-SCHEMA-CONFIG, PLAT-SERVE, ST-V3-DECOUPLE |

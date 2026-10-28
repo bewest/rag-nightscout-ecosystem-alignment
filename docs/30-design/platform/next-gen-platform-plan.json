@@ -22,7 +22,7 @@
   {
    "id": "tenancy",
    "label": "Tenancy",
-   "sub": "hosted, many sites",
+   "sub": "multitenant Nightscout",
    "color": "--s4"
   }
  ],
@@ -580,7 +580,7 @@
    "phase": "boundary",
    "state": "review",
    "short": "serve <roles>",
-   "title": "`nightscout serve <role>[,<role>…]`: hosted roles carved one at a time from bootevent's factory chain, `api` first (API v3 holds no resident state); each listener on its own bind address so `admin` stays off the consumer interface (D5, D7, D16, D21)",
+   "title": "`nightscout serve <role>[,<role>…]`: multitenant roles carved one at a time from bootevent's factory chain, `api` first (API v3 holds no resident state); each listener on its own bind address so `admin` stays off the consumer interface (D5, D7, D16, D21)",
    "where": "bin/nightscout.js, lib/server/bootevent.js, lib/server/server.js",
    "check": "`serve api` answers the API v3 suites with no bus or ddata; `admin` refuses the consumer listener's address; every docker run form that started a server on dev starts the same one (image start-forms lab)",
    "depends": [
@@ -620,7 +620,7 @@
    "phase": "boundary",
    "state": "planned",
    "short": "Per-tenant config table",
-   "title": "The per-tenant settings table, read by hosted entrypoints instead of the environment (D15)",
+   "title": "The per-tenant settings table, read by the multitenant entrypoints instead of the environment (D15)",
    "depends": [
     "T30-RESEARCH",
     "T30-DONE"
@@ -739,7 +739,7 @@
     {
      "label": "Walk through the sections",
      "recommended": true,
-     "gains": "unblocks the config table and every hosted entrypoint",
+     "gains": "unblocks the config table and every multitenant entrypoint",
      "risks": "the configuration-surface document is partly stale; the census on dev (264 settings, 12 contested) is the current list"
     }
    ]

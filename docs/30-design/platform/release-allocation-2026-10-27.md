@@ -227,7 +227,7 @@ PLAT-ENTRY → PLAT-SERVE ──────────────────
 | Client identity (ID-FIRST-MATCH, ID-UNIQUE-INDEX) | yes, for the schema | the PostgreSQL key for a client record is (tenant, collection, `identifier`); settling identifier format, scope and immutability before the tables exist avoids migrating them. D-LOOP-ID's six questions are the slowest input, because they wait on another project's answer |
 | Formal record schemas (records spec, `indexedFields`, OpenAPI) | yes, for the columns | D11 emits only declared indexed fields as columns and keeps the rest in JSONB; the declared set comes from these schemas |
 | `WRITE_VALIDATION` rules | partly | WC-STEP-PATCH moves the rules into `write(intent)`; whether they reject by default is a separate, major decision |
-| PLAT-ENTRY, PLAT-SERVE | yes | hosted roles (D5) are `nightscout serve <roles>` |
+| PLAT-ENTRY, PLAT-SERVE | yes | multitenant roles (D5) are `nightscout serve <roles>` |
 | Tenant configuration surface (D-T30) | yes | the per-tenant settings table (D15) cannot be written until the maintainer approves which settings a tenant owns |
 | Registration S0–S5 | no | single-tenant, no storage work; joins tenancy at `HUB-REG-CRM-SEAM`, after ST-PG |
 | Registration S3 (typed writes) | no, but shares WC-STEP-PATCH | applied by the same write step tenancy uses |
@@ -254,7 +254,7 @@ the loudest row's (R3).
 | release | theme | contents | class |
 |---|---|---|---|
 | 16.0.0 | modernization, the write boundary, one read and write path | what is on `dev` `ca1652d6` (M1 included: #8859, #8856, #8861, #8863, #8870, #8864, #8866, #8868, #8869, #8858 merged 2026-10-27), plus BF-72, BF-161 and any release fix found in the quiet period; #8862 only if Q2 (a) and Q13 allow it | major (already) |
-| 16.1.0 | one executable, hosted roles as alpha, registration readable | #8862 and #8865 (one executable, `serve api`) with ST-V3-DECOUPLE; #8857 off by default (D-REG-FLAG); SPEC-ID-AMEND; the OpenAPI description of what 16.1.0 serves, including the registration paths | minor |
+| 16.1.0 | one executable, multitenant roles as alpha, registration readable | #8862 and #8865 (one executable, `serve api`) with ST-V3-DECOUPLE; #8857 off by default (D-REG-FLAG); SPEC-ID-AMEND; the OpenAPI description of what 16.1.0 serves, including the registration paths | minor |
 | 16.2.0 | `write(intent)` and identity on every path | WC-STEP-PATCH, ST-EVENT, ID-BATCH, ID-FIRST-MATCH where it changes no outcome, ST-HARNESS; ST-VIEWS if its alarm checks pass; REG-S3 behind its flag; v4 statistics reads | minor |
 | 16.3.0 or later | multi mode, preview | ST-PG, T30-SCHEMA-CONFIG, TEN-RESOLVE, T30-WIRING behind `TENANCY_MODE=multi`; TEN-LAB passes with its control; single-tenant unchanged | minor for self-hosters |
 | 17.0.0 | contract tightening | ID-UNIQUE-INDEX with a duplicate-cleaning step, ID-FIRST-MATCH where it changes outcomes, `WRITE_VALIDATION` default (if decided), D8 v1 query bounds, any v4 path promoted from unstable | major |
@@ -263,7 +263,7 @@ Two consequences:
 
 - **Multitenancy does not wait for 17.0.0.** Multi mode is a new deployment target behind a setting
   a self-hoster never sets, so for the single-tenant surface it is additive (question 9). Its
-  maturity for hosting is a separate label (preview, then supported), set by TEN-LAB and a hosted
+  maturity for multitenant use is a separate label (preview, then supported), set by TEN-LAB and a multitenant
   soak, not by the version number.
 - **17.0.0 is where identity is enforced, not where it starts.** Identifier matching starts in
   16.0.0 (#8859) and spreads in 16.2.0; the unique index that makes it a guarantee is the major.
@@ -279,7 +279,7 @@ tenancy work, from its route census of `dev` `2dc0c1bc` (129 routes and 7 socket
 | M3 | API v3 decoupled from v1 and the cache (the cause of `serve api`'s 81 failing suites in #8865) | | 16.1.0 or 16.2.0 |
 | M4 | computed views without a resident `ddata` | | before multi |
 | M5 | backend-selectable harness and PostgreSQL | | 16.3.0 or later |
-| M6 | tenant resolution, per-tenant credentials, realtime, the hosted lab, as a preview | | 16.3.0 or later |
+| M6 | tenant resolution, per-tenant credentials, realtime, the multitenant lab, as a preview | | 16.3.0 or later |
 
 M3 is `ST-V3-DECOUPLE` and M4 is `ST-VIEWS` in the [next-gen plan](next-gen-platform-plan.md) (adopted 2026-10-27); the other milestones map onto existing items.
 
@@ -356,7 +356,7 @@ Each brief states what the scenario is, who it reaches, and what to measure befo
 
 - **What happens.** ST-PG and TEN-RESOLVE are built before the identity decisions, with
   `identifier` as an unconstrained column.
-- **Who it reaches.** Hosted tenants only; self-hosters are unaffected.
+- **Who it reaches.** Tenants of a multitenant Nightscout only; single-tenant sites are unaffected.
 - **Risk.** The unique key and the typed record paths are decided later, against tables that hold
   data. It also puts PostgreSQL behind an interface that has had no release under real traffic.
 - **When to choose it.** If a hosting partner needs a dated preview before the identity answers
@@ -488,7 +488,7 @@ release soaks them; and how does that weigh against releasing as soon as the can
 - **Trade.** A cleaner stop for every Docker site in the major, against one more PR in the merge
   list; `serve api` ships labelled alpha.
 
-### B9. Hosted roles in 16.0.0 as alpha
+### B9. Multitenant roles in 16.0.0 as alpha
 
 - **What happens.** ST-V3-DECOUPLE is built and #8865 merged before the tag, `serve api` labelled
   alpha.
