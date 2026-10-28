@@ -27,6 +27,10 @@ repository.
 | [`PLAT-SERVE`](plat-serve-feat-nightscout-serve.md) | #8865 | `in-flight-upstream` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a time, `api` first; each listener bound separately |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`BFQ-161`](bfq-161-adv-phrf-1600-dev.md) | &mdash; | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes |
+| [`BFQ-204`](bfq-204-bf-16-0-0-views-data.md) | &mdash; | `ready-to-push` | BF-204 - API v2 data-snapshot route returns the live 48 hours, not data framed at the requested time |
+| [`BFQ-205`](bfq-205-bf-16-0-0-views-data.md) | &mdash; | `ready-to-push` | BF-205 - same-timestamp records are ordered differently between in-memory loads |
+| [`BFQ-206`](bfq-206-bf-16-0-0-views-data.md) | &mdash; | `ready-to-push` | BF-206 - a device IOB without a timestamp is dated by the server clock |
+| [`BFQ-207`](bfq-207-bf-16-0-0-views-data.md) | &mdash; | `ready-to-push` | BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; the newest is intended |
 | [`BFQ-72`](bfq-72-adv-r3gv-1600-dev.md) | &mdash; | `in-flight-upstream` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | [`BFQ-95`](bfq-95.md) | &mdash; | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
 | [`DEPENDABOT-CONFIG`](dependabot-config.md) | &mdash; | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev |

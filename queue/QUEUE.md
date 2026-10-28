@@ -41,10 +41,10 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 77 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, MIG-VV, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `not-started` | 73 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, MIG-VV, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 7 | BFQ-178, T30-SCHEMA-CONFIG, WC-STEP-PATCH, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
-| `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
+| `ready-to-push` | 7 | P0-C-REMEDIATE, T30-AUTH, BFQ-204, BFQ-205, BFQ-206, BFQ-207, WS-LAB |
 | `blocked` | 16 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
 | `in-flight-upstream` | 4 | BFQ-72, BFQ-161, PLAT-ENTRY, PLAT-SERVE |
 | `merged-upstream` | 59 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH |
@@ -2822,10 +2822,10 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-201` | BF-201 - npm run dev's nodemon watches nearly the whole repository (1,502 Linux file watches); watch the paths the server loads | `merged-upstream` | `test/16.0.0-ci-flakes` | n/a | 1 run + 1 no-gate |
 | `BFQ-202` | BF-202 - CI's MongoDB 8.0 jobs fail on hosted runners with Linux 6.19 or newer (MongoDB refuses to start, SERVER-121912) | `merged-upstream` | `test/16.0.0-ci-flakes` | n/a | 2 run + 1 no-gate |
 | `BFQ-203` | BF-203 - an editor opening a cgm-remote-monitor file inside a larger workspace watches every sibling worktree (450,689 inotify watches); add jsconfig.json | `merged-upstream` | `tooling/jsconfig-watch-scope` | n/a | 2 run + 1 no-gate |
-| `BFQ-204` | BF-204 - API v2 data-snapshot route returns the live 48 hours, not data framed at the requested time | `not-started` | `-` | patch | 0 run + 1 no-gate |
-| `BFQ-205` | BF-205 - same-timestamp records are ordered differently between in-memory loads | `not-started` | `-` | patch | 0 run + 1 no-gate |
-| `BFQ-206` | BF-206 - a device IOB without a timestamp is dated by the server clock | `not-started` | `-` | patch | 0 run + 1 no-gate |
-| `BFQ-207` | BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; the newest is intended | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-204` | BF-204 - API v2 data-snapshot route returns the live 48 hours, not data framed at the requested time | `ready-to-push` | `bf/16.0.0-views-data` | patch | 0 run + 1 no-gate |
+| `BFQ-205` | BF-205 - same-timestamp records are ordered differently between in-memory loads | `ready-to-push` | `bf/16.0.0-views-data` | patch | 0 run + 1 no-gate |
+| `BFQ-206` | BF-206 - a device IOB without a timestamp is dated by the server clock | `ready-to-push` | `bf/16.0.0-views-data` | patch | 0 run + 1 no-gate |
+| `BFQ-207` | BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; the newest is intended | `ready-to-push` | `bf/16.0.0-views-data` | patch | 0 run + 1 no-gate |
 | `BFQ-208` | BF-208 - an API v1 delete by a non-hex _id can answer 200 and announce a removal while nothing is removed | `not-started` | `-` | patch | 1 run |
 | `BFQ-192` | BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression) | `merged-upstream` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-193` | BF-193 - the realtime socket and other write paths log every record written through them | `merged-upstream` | `official/dev` | patch | 2 run + 1 no-gate |
@@ -6826,9 +6826,9 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
+| branch | `bf/16.0.0-views-data` |
 | base | `official/dev@db3b9e4e` |
 | worktree | `-` |
 | semver | `patch` |
@@ -6850,15 +6850,15 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
+**Notes.** 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit 6b47afa9; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
 
 ### `BFQ-205` &mdash; BF-205 - same-timestamp records are ordered differently between in-memory loads
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
+| branch | `bf/16.0.0-views-data` |
 | base | `official/dev@db3b9e4e` |
 | worktree | `-` |
 | semver | `patch` |
@@ -6880,15 +6880,15 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
+**Notes.** 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit df95900f; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
 
 ### `BFQ-206` &mdash; BF-206 - a device IOB without a timestamp is dated by the server clock
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
+| branch | `bf/16.0.0-views-data` |
 | base | `official/dev@db3b9e4e` |
 | worktree | `-` |
 | semver | `patch` |
@@ -6910,25 +6910,25 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
+**Notes.** 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit 675560ab; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
 
 ### `BFQ-207` &mdash; BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; the newest is intended
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
+| branch | `bf/16.0.0-views-data` |
 | base | `official/dev@db3b9e4e` |
 | worktree | `-` |
 | semver | `patch` |
-| review | maintainer; alarm path, checked against the alarm fixtures |
+| review | maintainer |
 | ships to operators today | **yes** |
 | register | `BF-207` |
 
 **Blast radius.** lib/plugins/sensorage.js (:84-100), the event-replacement rule.
 
-**What an operator sees.** If a sensor start is entered several times within a few seconds, the sensor age shown, and the sensor-age warnings, can count from the first entry instead of the last. Check the sensor age shown after restarting a sensor.
+**What an operator sees.** If a sensor start is entered several times within a few seconds, the sensor start date shown can be the first entry instead of the last. The sensor-age alarms are not affected.
 
 **Why `patch`.** the intended value, decided by the maintainer; a sensor-age alarm can move by up to the burst's spread
 
@@ -6940,7 +6940,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Filed 2026-10-27 by session -4f. Intended behaviour ("latest is correct") decided by the maintainer in session -65, relayed. ST-VIEWS' bounded view differs from the resident value here by design.
+**Notes.** 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit 80a414c7; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f. Intended behaviour ("latest is correct") decided by the maintainer in session -65, relayed. ST-VIEWS' bounded view differs from the resident value here by design.
 
 ### `BFQ-208` &mdash; BF-208 - an API v1 delete by a non-hex _id can answer 200 and announce a removal while nothing is removed
 

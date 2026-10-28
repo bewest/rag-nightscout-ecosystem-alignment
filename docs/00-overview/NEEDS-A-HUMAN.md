@@ -30,7 +30,7 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 17 items
+### Maintainer &mdash; 21 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -48,6 +48,10 @@ every item that was `merged-upstream` then is `released`.
 | `MOD-UNITS-CANONICAL` | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), an | &mdash; |
 | `MOD-WRITE-VALIDATION-READ` | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
+| `BFQ-204` | `ready-to-push` | BF-204 - API v2 data-snapshot route returns the live 48 hours, not data framed a | &mdash; |
+| `BFQ-205` | `ready-to-push` | BF-205 - same-timestamp records are ordered differently between in-memory loads | &mdash; |
+| `BFQ-206` | `ready-to-push` | BF-206 - a device IOB without a timestamp is dated by the server clock | &mdash; |
+| `BFQ-207` | `ready-to-push` | BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; th | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |

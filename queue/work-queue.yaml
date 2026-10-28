@@ -17495,9 +17495,9 @@ items:
     title: "BF-204 - API v2 data-snapshot route returns the live 48 hours, not data framed at the requested time"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
+    branch: bf/16.0.0-views-data
     base: official/dev@db3b9e4e
-    state: not-started
+    state: ready-to-push
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -17518,6 +17518,12 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit
+      6b47afa9; branch head 80a414c7, four commits on dev db3b9e4e, not pushed;
+      the maintainer asked for a branch and PR). The four new test files,
+      re-run by session -4f in its own worktree: 39 passing on the branch, 7
+      failing with lib/ at db3b9e4e. Corrections are in the register entry.
+
       Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to
       ST-VIEWS, whose bounded views may be the fix's home.
 
@@ -17525,9 +17531,9 @@ items:
     title: "BF-205 - same-timestamp records are ordered differently between in-memory loads"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
+    branch: bf/16.0.0-views-data
     base: official/dev@db3b9e4e
-    state: not-started
+    state: ready-to-push
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -17547,6 +17553,12 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit
+      df95900f; branch head 80a414c7, four commits on dev db3b9e4e, not pushed;
+      the maintainer asked for a branch and PR). The four new test files,
+      re-run by session -4f in its own worktree: 39 passing on the branch, 7
+      failing with lib/ at db3b9e4e. Corrections are in the register entry.
+
       Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to
       ST-VIEWS, whose bounded views may be the fix's home.
 
@@ -17554,9 +17566,9 @@ items:
     title: "BF-206 - a device IOB without a timestamp is dated by the server clock"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
+    branch: bf/16.0.0-views-data
     base: official/dev@db3b9e4e
-    state: not-started
+    state: ready-to-push
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -17577,6 +17589,12 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit
+      675560ab; branch head 80a414c7, four commits on dev db3b9e4e, not pushed;
+      the maintainer asked for a branch and PR). The four new test files,
+      re-run by session -4f in its own worktree: 39 passing on the branch, 7
+      failing with lib/ at db3b9e4e. Corrections are in the register entry.
+
       Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to
       ST-VIEWS, whose bounded views may be the fix's home.
 
@@ -17584,19 +17602,18 @@ items:
     title: "BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; the newest is intended"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
+    branch: bf/16.0.0-views-data
     base: official/dev@db3b9e4e
-    state: not-started
+    state: ready-to-push
     pr: []
     ships_to_operators_today: true
     blast_radius: >
       lib/plugins/sensorage.js (:84-100), the event-replacement rule.
-    review: maintainer; alarm path, checked against the alarm fixtures
+    review: maintainer
     operator_visible: >
       If a sensor start is entered several times within a few seconds, the
-      sensor age shown, and the sensor-age warnings, can count from the first
-      entry instead of the last. Check the sensor age shown after restarting
-      a sensor.
+      sensor start date shown can be the first entry instead of the last. The
+      sensor-age alarms are not affected.
     semver: patch
     semver_reason: the intended value, decided by the maintainer; a sensor-age alarm can move by up to the burst's spread
     register: [BF-207]
@@ -17610,6 +17627,12 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit
+      80a414c7; branch head 80a414c7, four commits on dev db3b9e4e, not pushed;
+      the maintainer asked for a branch and PR). The four new test files,
+      re-run by session -4f in its own worktree: 39 passing on the branch, 7
+      failing with lib/ at db3b9e4e. Corrections are in the register entry.
+
       Filed 2026-10-27 by session -4f. Intended behaviour ("latest is
       correct") decided by the maintainer in session -65, relayed. ST-VIEWS'
       bounded view differs from the resident value here by design.
