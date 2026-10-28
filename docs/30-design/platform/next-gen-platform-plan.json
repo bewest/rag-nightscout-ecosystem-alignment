@@ -569,7 +569,7 @@
    "id": "PLAT-ENTRY",
    "track": "tenancy",
    "phase": "now",
-   "state": "review",
+   "state": "done",
    "short": "One entrypoint",
    "title": "bin/nightscout.js dispatches subcommands (D21): `single` is today's server, plus operator tools `diagnose data`, `healthcheck`, `version`, `env`; the image gets ENTRYPOINT and CMD single, and no HEALTHCHECK, so a site showing its boot-error page is not restarted in a loop. No behaviour change: Procfile, npm start, server.js, web.config, start.sh and the old CMD all still start the same server",
    "where": "bin/nightscout.js, package.json bin, Dockerfile",
@@ -580,7 +580,7 @@
      "href": "../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#212-d21--one-entrypoint-serve-roles-maintainer-2026-10-26"
     }
    ],
-   "ref": "Superseded by #8865, which carries #8862's four commits in newer form; close #8862 when #8865 merges",
+   "ref": "#8862 closed 2026-10-28 01:12Z as superseded; its four commits are in #8865",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8862"
   },
   {
@@ -602,7 +602,7 @@
      "href": "../tenancy/nightscout-deployable-components-2026-09-14.md"
     }
    ],
-   "ref": "In the 16.0.0 merge list (maintainer, 2026-10-27). #8865 head b01b77c3: the subcommand selects tenancy (`single` single-tenant, every `serve` role multitenant; TENANCY_MODE retires); `serve` refuses every role until it is multitenant; the single-tenant api code runs as scripts/headless-test-server.js for tests and development. Carries #8862's commits; image CMD `nightscout single`; SIGTERM and SIGINT exit 0 within 8 s on every start path; the healthcheck checks the server's own certificate (CodeQL alert 138 fixed). Image start forms unchanged against dev apart from stop and signals (tools/lab/image-start-forms); API v3 suites 751/0 under single, 643/0/108 pending under headless",
+   "ref": "In the 16.0.0 merge list (maintainer, 2026-10-27). #8865 head fcd305ae (b01b77c3 with dev e1f7ac41 merged in): the subcommand selects tenancy (`single` single-tenant, every `serve` role multitenant; TENANCY_MODE retires); `serve` refuses every role until it is multitenant; the single-tenant api code runs as scripts/headless-test-server.js for tests and development. Carries #8862's commits; image CMD `nightscout single`; SIGTERM and SIGINT exit 0 within 8 s on every start path; the healthcheck checks the server's own certificate (CodeQL alert 138 fixed). Image start forms unchanged against dev apart from stop and signals (tools/lab/image-start-forms); API v3 suites 751/0 under single, 643/0/108 pending under headless",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8865"
   },
   {
