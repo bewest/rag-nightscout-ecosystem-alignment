@@ -1013,9 +1013,23 @@ would invite false trust.
 named consumer; sign; verify; reveal, logged), with a cloud key service and Vault's transit engine as the
 first two adapters. Both can sign without exporting a key.
 
-**Not decided.** Whether signing keys stay inside the secrets component from the start (the call-path
-lab's keys-stay arm, [`tools/lab/tenant-config-callpath/`](../../../tools/lab/tenant-config-callpath/README.md)),
-or the tenant-owner listener holds them first and the change comes later. The twelve contested settings re-stated under D22 are drafted for
+**Keys stay inside the secrets component, from the start (maintainer, 2026-10-27).** The secrets
+component signs and verifies per-tenant owner tokens itself; a signing key is used only inside it and is
+never exported, so "decrypted only by the consuming process" means, for a signing key, that the secrets
+component is its only consumer. It sets each token's lifetime. The tenant-owner listener verifies every
+token through it. Evidence: the call-path lab's keys-stay arm
+([`tools/lab/tenant-config-callpath/`](../../../tools/lab/tenant-config-callpath/README.md), 46 controls):
+during a listener compromise the reach is the same as A's, but no key leaves, and once the compromise ends
+and tokens expire the attacker can neither write nor reveal, where under A the stolen keys keep minting
+tokens until every tenant's key is rotated. Cost: one verify call per edit, and edits depend on the secrets
+component being up.
+
+The secrets component is a role of the one executable (D21), `nightscout serve secrets`, from the same
+image. Its first adapter is a **built-in signer**: keys encrypted under a master key supplied only to that
+container, for development and small operators; in Docker Compose it is one more service with one mounted
+secret. Vault transit and a cloud key service are the production adapters, behind the same interface.
+
+**Not decided.** The twelve contested settings re-stated under D22 are drafted for
 review in [census §3a](../../60-research/tenancy/t30-census-dev-2026-10-27.md); row 7 decided the same
 day: the strict settings read (`API3_SETTINGS_STRICT_READ_ENABLED`) is a floor, always on under `multi`.
 
