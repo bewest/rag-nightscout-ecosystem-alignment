@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 317 |
+| items | 320 |
 | runnable gates | 377 |
-| explicit `no-gate:` markers | 352 |
+| explicit `no-gate:` markers | 355 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 352 of the 729 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 355 of the 732 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 70 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `not-started` | 73 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-204, BFQ-205, BFQ-206, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 7 | BFQ-178, T30-SCHEMA-CONFIG, WC-STEP-PATCH, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -138,6 +138,9 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-188** BF-188 - with no client bundle the server exits at boot with an unexplained module error
 - **BFQ-190** BF-190 - an alarm on a page without a current reading cannot be silenced from the page
 - **BFQ-191** BF-191 - a stored treatment can stop the server process, and keeps doing so after a restart (mechanism only)
+- **BFQ-204** BF-204 - API v2 data-snapshot route returns the live 48 hours, not data framed at the requested time
+- **BFQ-205** BF-205 - same-timestamp records are ordered differently between in-memory loads
+- **BFQ-206** BF-206 - a device IOB without a timestamp is dated by the server clock
 - **BFQ-193** BF-193 - the realtime socket and other write paths log every record written through them
 - **BFQ-194** BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL
 - **BFQ-195** BF-195 - a stale profile is pushed over the socket after a profile re-send
@@ -2688,7 +2691,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 143 items
+`parcel: register-open` &mdash; 146 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2817,6 +2820,9 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-201` | BF-201 - npm run dev's nodemon watches nearly the whole repository (1,502 Linux file watches); watch the paths the server loads | `merged-upstream` | `test/16.0.0-ci-flakes` | n/a | 1 run + 1 no-gate |
 | `BFQ-202` | BF-202 - CI's MongoDB 8.0 jobs fail on hosted runners with Linux 6.19 or newer (MongoDB refuses to start, SERVER-121912) | `merged-upstream` | `test/16.0.0-ci-flakes` | n/a | 2 run + 1 no-gate |
 | `BFQ-203` | BF-203 - an editor opening a cgm-remote-monitor file inside a larger workspace watches every sibling worktree (450,689 inotify watches); add jsconfig.json | `merged-upstream` | `tooling/jsconfig-watch-scope` | n/a | 2 run + 1 no-gate |
+| `BFQ-204` | BF-204 - API v2 data-snapshot route returns the live 48 hours, not data framed at the requested time | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-205` | BF-205 - same-timestamp records are ordered differently between in-memory loads | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-206` | BF-206 - a device IOB without a timestamp is dated by the server clock | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-192` | BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression) | `merged-upstream` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-193` | BF-193 - the realtime socket and other write paths log every record written through them | `merged-upstream` | `official/dev` | patch | 2 run + 1 no-gate |
 | `BFQ-194` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL | `merged-upstream` | `bf/16.0.0-tt-units` | minor | 2 run |
@@ -6811,6 +6817,96 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** 2026-10-27 22:51:12Z: #8871 MERGED to dev by the maintainer as dcf20bfb (head 57f1d37c). Developer tooling only; nothing an operator sees. Recorded by session -4f. 2026-10-27, 22:21:20Z: #8871 opened by the maintainer into dev, head f28d40bb. 2026-10-27: draft e737d310 by the maintainer through session -a7 (437,239 against 5,616 watches in its probe), re-measured by session -e4 and dev 7abe1cf6 merged in as f28d40bb. tsc -p jsconfig.json --listFilesOnly lists lib/server/app.js; test:tiers 401 files ok; npm test on dev 9668b179 plus the file 4700 passing, 0 failing, 3 pending. No tooling PR is open, so it starts the next one. The editor-side companion of BF-201.
+
+### `BFQ-204` &mdash; BF-204 - API v2 data-snapshot route returns the live 48 hours, not data framed at the requested time
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@db3b9e4e` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-204` |
+
+**Blast radius.** lib/data/endpoints.js and the cache merge in lib/data/dataloader.js (insertDataRef).
+
+**What an operator sees.** A report or tool asking Nightscout for how things looked at an earlier time gets the current last two days instead, with no warning.
+
+**Why `patch`.** a read endpoint starts answering what it documents
+
+**Gates.**
+
+- **NO GATE** &mdash; Reproduced 2026-10-27 by session -65's ST-VIEWS census (branch lab/views-census, docs/60-research/platform/st-views-census-2026-10-27.md §4) on dev db3b9e4e. A queue gate is written with the fix, with dev db3b9e4e as its failing control.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
+
+### `BFQ-205` &mdash; BF-205 - same-timestamp records are ordered differently between in-memory loads
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@db3b9e4e` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-205` |
+
+**Blast radius.** lib/data/dataloader.js sort (:116-121); processDurations first-per-mills (lib/data/ddata.js:237-241).
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `patch`.** a deterministic order for ties; no documented order changes
+
+**Gates.**
+
+- **NO GATE** &mdash; Reproduced 2026-10-27 by session -65's ST-VIEWS census (branch lab/views-census, docs/60-research/platform/st-views-census-2026-10-27.md §4) on dev db3b9e4e. A queue gate is written with the fix, with dev db3b9e4e as its failing control.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
+
+### `BFQ-206` &mdash; BF-206 - a device IOB without a timestamp is dated by the server clock
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@db3b9e4e` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-206` |
+
+**Blast radius.** lib/plugins/iob.js fromDeviceStatus (:124,131).
+
+**What an operator sees.** If an uploader sends insulin-on-board without its own time, Nightscout may treat an old value as current. Talk to your care team before relying on IOB shown by Nightscout for decisions.
+
+**Why `patch`.** an undated IOB is dated by its device status instead of the server clock
+
+**Gates.**
+
+- **NO GATE** &mdash; Reproduced 2026-10-27 by session -65's ST-VIEWS census (branch lab/views-census, docs/60-research/platform/st-views-census-2026-10-27.md §4) on dev db3b9e4e. A queue gate is written with the fix, with dev db3b9e4e as its failing control.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
 
 ### `BFQ-192` &mdash; BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression)
 

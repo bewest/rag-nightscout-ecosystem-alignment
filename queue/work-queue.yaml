@@ -17424,6 +17424,95 @@ items:
       test on dev 9668b179 plus the file 4700 passing, 0 failing, 3 pending.
       No tooling PR is open, so it starts the next one. The editor-side
       companion of BF-201.
+  - id: BFQ-204
+    title: "BF-204 - API v2 data-snapshot route returns the live 48 hours, not data framed at the requested time"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@db3b9e4e
+    state: not-started
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/data/endpoints.js and the cache merge in lib/data/dataloader.js (insertDataRef).
+    review: maintainer
+    operator_visible: >
+      A report or tool asking Nightscout for how things looked at an earlier time gets the current last two days instead, with no warning.
+    semver: patch
+    semver_reason: a read endpoint starts answering what it documents
+    register: [BF-204]
+    gates:
+      - no-gate: >
+          Reproduced 2026-10-27 by session -65's ST-VIEWS census (branch
+          lab/views-census, docs/60-research/platform/st-views-census-2026-10-27.md
+          §4) on dev db3b9e4e. A queue gate is written with the fix, with dev
+          db3b9e4e as its failing control.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to
+      ST-VIEWS, whose bounded views may be the fix's home.
+
+  - id: BFQ-205
+    title: "BF-205 - same-timestamp records are ordered differently between in-memory loads"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@db3b9e4e
+    state: not-started
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/data/dataloader.js sort (:116-121); processDurations first-per-mills (lib/data/ddata.js:237-241).
+    review: maintainer
+    operator_visible: ""
+    semver: patch
+    semver_reason: a deterministic order for ties; no documented order changes
+    register: [BF-205]
+    gates:
+      - no-gate: >
+          Reproduced 2026-10-27 by session -65's ST-VIEWS census (branch
+          lab/views-census, docs/60-research/platform/st-views-census-2026-10-27.md
+          §4) on dev db3b9e4e. A queue gate is written with the fix, with dev
+          db3b9e4e as its failing control.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to
+      ST-VIEWS, whose bounded views may be the fix's home.
+
+  - id: BFQ-206
+    title: "BF-206 - a device IOB without a timestamp is dated by the server clock"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@db3b9e4e
+    state: not-started
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/plugins/iob.js fromDeviceStatus (:124,131).
+    review: maintainer
+    operator_visible: >
+      If an uploader sends insulin-on-board without its own time, Nightscout may treat an old value as current. Talk to your care team before relying on IOB shown by Nightscout for decisions.
+    semver: patch
+    semver_reason: an undated IOB is dated by its device status instead of the server clock
+    register: [BF-206]
+    gates:
+      - no-gate: >
+          Reproduced 2026-10-27 by session -65's ST-VIEWS census (branch
+          lab/views-census, docs/60-research/platform/st-views-census-2026-10-27.md
+          §4) on dev db3b9e4e. A queue gate is written with the fix, with dev
+          db3b9e4e as its failing control.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to
+      ST-VIEWS, whose bounded views may be the fix's home.
+
   - id: BFQ-192
     title: "BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression)"
     parcel: register-open
