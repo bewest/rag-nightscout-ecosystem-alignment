@@ -3,7 +3,7 @@
 *Contributor-facing. A draft of 2026-10-27, asked for by the maintainer. It covers how
 cgm-remote-monitor could adopt migration tooling for **both** of its storage backends: MongoDB,
 which stays permanent for single-tenant sites (D4), and PostgreSQL, the multitenant service
-(D3). The facts are in §1 to §3. The recommendation, kept separate, is in §4. Nothing has been
+(D3). The facts are in §1 to §3 and §6.1-§6.4. The recommendations, kept separate, are in §4 and §6.5. Nothing has been
 added to cgm-remote-monitor.*
 
 *Revised the same day. The maintainer asked for the alternative to be measured against the
@@ -233,7 +233,154 @@ MongoDB half without project work on its lock, its stale-lock recovery and drift
    decides whether a baseline migration is needed or whether the platform schema is young
    enough to recreate (config-surface §I.1, J10).
 3. Is a production `down` ever run, or are `down` files for development only?
-4. The MongoDB arms were measured on a standalone 8.0.34 server only. Should they be repeated
-   on a replica set, and on dev's oldest supported MongoDB, before adoption?
+4. *(Answered by MIG-VV, §6.)* The MongoDB arms were first measured on a standalone 8.0.34
+   server only. They have now been repeated on an 8.0 replica set, and on 5.0.32 (dev's
+   floor) standalone and as a replica set. Not yet measured: a killed (rather than stepped
+   down) primary, a network partition, and a sharded cluster.
 5. Should migration files carry a signature or checksum list in the release, so that the drift
    check also catches a tampered image, not only an edited file?
+
+## 6. MIG-VV: the MongoDB adapter verified on replica sets and on dev's floor
+
+*Added 2026-10-27. The maintainer adopted umzug for both stores provisionally (execution plan
+§2.13) and asked for verification first (queue `MIG-VV`). This section holds the facts. The
+verdict on the provisional choice, kept separate, is §6.5.*
+
+### 6.1 Setup [M]
+
+Four MongoDB servers:
+
+| target | image, version | how it runs |
+|---|---|---|
+| 8.0 standalone | `mongo:8.0`, 8.0.34 | container `cfgschema-mongo`, `127.0.0.1:27747` (round 2's server) |
+| 8.0 replica set | `mongo:8.0`, 8.0.34 | container `cfgschema-mongo8-rs`: **one container running three `mongod` processes**, replica set `rs0` on `127.0.0.1:27750-27752`, host network, keyfile auth (`mongo-rs/start-rs.sh`) |
+| 5.0 standalone | `mongo:5.0.32`, 5.0.32 | container `cfgschema-mongo5`, `127.0.0.1:27748` |
+| 5.0 replica set | `mongo:5.0.32`, 5.0.32 | container `cfgschema-mongo5-rs`, as the 8.0 set, on `127.0.0.1:27753-27755` |
+
+- 5.0.32 is dev's floor: `docs/runtime-upgrade.md:34,46` at `db3b9e4e` (CI's oldest lane; 4.4
+  is unsupported).
+- Every container was started with `--ulimit nofile=64000:64000`. `mig-vv.js` asserts, before
+  every row, that the container is running with that limit and on its address, and that each
+  replica set has three members.
+- Software: Node 22.23.4, mongodb driver 6.21.0, umzug 3.8.3, migrate-mongo 14.0.7.
+- Record: `tools/lab/tenant-config-schema/mig-vv-results.json`, with all rows valid.
+
+**The rows** are the same as round 2's §3.1, with three additions (P7, P2t, P6/P6w):
+
+| row | what it does |
+|---|---|
+| P1 | up, down to zero, up again |
+| P2 | runner killed mid-migration, after a non-idempotent seed insert |
+| P3 | four runners started at once, lock on and off |
+| P3b | one runner, plus three started during it |
+| P4 | an applied file edited |
+| P7 | the adapter running each migration and its ledger record in one transaction |
+| P2t | P2 in that mode |
+| P6 / P6w | a primary step-down (`replSetStepDown`) while migration 3 is running: idle in a pause (P6), or writing in a loop (P6w) |
+
+Two checks guard P6/P6w against being vacuous:
+
+- the step-down must return while migration 3 is still paused or looping;
+- a new primary must be observed.
+
+**Migration 3 was reordered for this round:** create the collection, build its index, insert
+the seed, then a final write. Inside a transaction, an index can only be built on a collection
+that is still empty (§6.3). The MongoDB rows in `compare-results.json` (round 2) ran on the
+earlier order. This round's `8.0-standalone` rows repeat them on the current files.
+
+### 6.2 Results per version and topology [M]
+
+**umzug + the project adapter (ledger + lease):**
+
+| row | 8.0 standalone | 8.0 replica set | 5.0 standalone | 5.0 replica set |
+|---|---|---|---|---|
+| P1 up / down / up | 3/3/3, clean | 3/3/3, clean | 3/3/3, clean | 3/3/3, clean |
+| P2 killed mid-migration | seed applied, not recorded; re-run as written fails `E11000` after the 5 s lease; idempotent re-run completes | same | same | same |
+| P3 four at once, lock on | 4/4 ok, applied once | 4/4, once | 4/4, once | 4/4, once |
+| P3 lock off | 1/4 ok (the ledger's unique `_id` refuses duplicates) | 1/4 | 1/4 | 1/4 |
+| P3b one running + three | 3/3 wait, then ok | 3/3 | 3/3 | 3/3 |
+| P4 drift | detected (refused) | detected | detected | detected |
+| P7 transactions | **refused**: "Transaction numbers are only allowed on a replica set member or mongos" | **completes**: 2 of 3 ledger records written inside their migration's transaction (migration 1, an index on an existing collection, runs outside) | refused, same message | completes, 2 of 3 |
+| P7, every migration forced into a transaction | refused | refused at migration 1: "Cannot create new indexes on existing collection … in a multi-document transaction" | refused | refused at migration 1, same |
+| P2t killed mid-migration, with transactions | — | **seed not applied, migration not recorded; re-run as written completes** (about 4 s, the lease) | — | same as 8.0 |
+| P6 step-down, runner idle in migration 3 | — | new primary in about 0.5 s; runner completes; ledger 3, seed 1, index present, no lock left | — | same |
+| P6, with transactions | — | completes; migration 3's transaction was **retried** (it ran twice), and the result is the same | — | same |
+| P6w step-down during a write loop | — | completes; the runner counted 1815 increments and the server holds 1815, so none was lost or doubled | — | completes; 1221 = 1221 |
+| P6w, with transactions | — | completes after one transaction retry; 36451 = 36451 (the aborted attempt's writes are gone) | — | completes; 34069 = 34069 |
+
+**migrate-mongo 14.0.7:**
+
+| row | 8.0 standalone | 8.0 replica set | 5.0 standalone | 5.0 replica set |
+|---|---|---|---|---|
+| P1 up / down / up | 3/3/3, clean | 3/3/3, clean | 3/3/3, clean | 3/3/3, clean |
+| P2 killed mid-migration | seed applied, not recorded; **stale lock refused re-runs for about 93 s**, then `E11000`; idempotent re-run completes | same, about 36 s | same, about 52 s | same, about 36 s |
+| P3 four at once, lock on | **1/4 ok, 6 duplicate ledger rows**: the lock did not exclude simultaneous starters | same | same | same |
+| P3 lock off | 1/4 ok, 6 duplicate ledger rows | same | same | same |
+| P3b one running + three | 0/3, refused ("a lock is in place") | same | same | same |
+| P4 drift, `useFileHash` off / on | ignored / re-run (ledger 3 to 4) | same | same | same |
+| P6 step-down, idle | — | completes; ledger 3, seed 1, index, no lock left | — | same |
+| P6w step-down during writes | — | completes; 2081 = 2081 | — | completes; 1217 = 1217 |
+
+The stale-lock wait varies between about 36 and 93 s. That is consistent with `lockTtl` 30 s
+plus the server's TTL sweep, which runs about every 60 s. [R]
+
+### 6.3 Transactions on a replica set [M]
+
+**Yes: the adapter can write a migration and its ledger record in one transaction, on 8.0 and
+on 5.0.32 replica sets.** With it, a runner killed mid-migration leaves the migration neither
+applied nor recorded, and the non-idempotent migration then re-runs cleanly (P2t). That is
+the property a standalone server lacks (P2). On a standalone server, starting a transaction
+is refused (P7).
+
+Measured limits on what a transactional migration may do:
+
+- **No index on an existing collection.** An index can be built inside a transaction only on a
+  collection that is still empty: migration 1, and migration 3 before its reordering, were
+  refused.
+- **No `listCollections` inside the transaction.** It is not allowed there, so migration 3
+  reads it outside.
+- **The callback may run more than once.** `withTransaction` re-runs it after a transient
+  error, as in the P6 step-down, so work outside the transaction (logs, external calls) must
+  tolerate a second attempt.
+
+### 6.4 The failover result [M]
+
+On both replica sets the primary was stepped down while migration 3 was running. The cases:
+
+- the runner paused (P6);
+- the runner writing continuously (P6w);
+- with and without transactions;
+- for both tools.
+
+In every case:
+
+- a new primary was elected in about 0.5 s;
+- the runner **completed** without operator action;
+- the ledger held all 3 migrations, and the data was complete (seed present, index built);
+- no lease or lock document was left behind;
+- no write was lost or doubled.
+
+With transactions, the step-down aborted the open transaction and the driver's retry ran the
+whole migration again, committing once. A re-run was not needed in any failover case. (Not
+measured: a primary that is killed rather than stepped down, a network partition, a member
+that loses data on rollback, and writes with a write concern weaker than the driver's
+default.)
+
+### 6.5 Verdict on the provisional choice
+
+*This is a recommendation, not a measurement.*
+
+- **The provisional choice holds.** umzug with the project MongoDB adapter behaved the same on
+  8.0 and on dev's 5.0.32 floor, standalone and as a replica set. It serialised simultaneous
+  starters, detected drift, left no lock behind after a crash or a failover, and completed
+  through a primary step-down. migrate-mongo repeated round 2's weaknesses on every target:
+  a lock that races, a stale lock after a crash, and drift either ignored or re-run.
+- **The adapter should use a transaction when the server supports one**, for migrations that
+  declare `transactional: true`. It should detect support from the topology (a replica set or
+  `mongos`), and fall back to the non-transactional path on a standalone server, which P7 shows
+  refuses transactions outright.
+- **The idempotence rule stays.** Standalone servers, which self-hosters run, and
+  non-transactional steps (index builds on existing collections) still depend on it.
+- **Review rules for transactional migrations:** build indexes before writing to a new
+  collection; do not call `listCollections` inside the transaction; tolerate a second attempt
+  of the callback.

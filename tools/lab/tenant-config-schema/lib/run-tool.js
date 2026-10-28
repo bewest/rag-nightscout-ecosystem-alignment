@@ -9,6 +9,7 @@
 //     --file-hash 1      migrate-mongo useFileHash
 //     --lease-ms N       umzug-mongo lease length
 //     --checkdrift 0     disable the umzug arms' checksum check
+//     --txn 1            umzug-mongo: run transactional migrations in a transaction with their ledger record
 // Connection details arrive in CFGLAB_PG / CFGLAB_MONGO (JSON) from the
 // harness, never from a file.
 
@@ -56,7 +57,8 @@ async function main () {
   try {
     if (tool === 'umzug-mongo') {
       const m = require('./mongo-migrator');
-      const o = { dir: opt('dir'), lock: lock !== '0', leaseMs: Number(opt('lease-ms', '30000')), checkDrift: opt('checkdrift', '1') !== '0', afterUp };
+      const o = { dir: opt('dir'), lock: lock !== '0', leaseMs: Number(opt('lease-ms', '30000')), checkDrift: opt('checkdrift', '1') !== '0', afterUp,
+        txn: opt('txn', '0') === '1', txnAll: process.env.CFGLAB_TXN_ALL === '1' };
       return cmd === 'down' ? await m.mongoDown(db, client, o) : await m.mongoUp(db, client, o);
     }
     const mm = (await import('migrate-mongo')).default;

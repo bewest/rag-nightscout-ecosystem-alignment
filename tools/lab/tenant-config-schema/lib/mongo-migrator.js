@@ -10,8 +10,15 @@
 //     lease behind; anyone may take it over once it has expired.
 //  3. DRIFT: a file whose checksum differs from the ledger stops the run.
 //
-// There is no atomicity between a step and its ledger entry: a standalone
-// server has no multi-document transactions. Steps must be idempotent.
+// There is no atomicity between a step and its ledger entry on a standalone
+// server, which has no multi-document transactions: steps must be idempotent.
+//
+//  4. TRANSACTIONS (opts.txn, MIG-VV): on a replica set, a migration that
+//     exports `transactional: true` runs inside session.withTransaction(),
+//     together with its ledger record, receiving the session as opts.session.
+//     A migration that is not transactional (an index on an existing
+//     collection) runs as before. CFGLAB_TXN_ALL=1 (opts.txnAll) forces every
+//     migration into a transaction, to measure which are refused.
 
 const fs = require('node:fs');
 const path = require('node:path');
@@ -59,11 +66,24 @@ async function acquireLease (db, opts) {
 function makeUmzug (db, client, opts) {
   const files = listMongoMigrations(opts.dir);
   const ledger = db.collection('schema_migrations');
+  const loggedInTxn = new Set();
   return new Umzug({
     migrations: files.map((m) => ({
       name: m.name,
       up: async () => {
-        await require(m.file).up(db, client);
+        const mod = require(m.file);
+        if (opts.txn && (mod.transactional === true || opts.txnAll)) {
+          const session = client.startSession();
+          try {
+            await session.withTransaction(async () => {
+              await mod.up(db, client, { session });
+              await ledger.insertOne({ _id: m.name, checksum: m.checksum, appliedAt: new Date(), txn: true }, { session });
+            });
+          } finally { await session.endSession(); }
+          loggedInTxn.add(m.name);
+        } else {
+          await mod.up(db, client, {});
+        }
         if (opts.afterUp) await opts.afterUp(m.name);
       },
       down: async () => require(m.file).down(db, client)
@@ -73,6 +93,7 @@ function makeUmzug (db, client, opts) {
     storage: {
       executed: async () => (await ledger.find({}).sort({ _id: 1 }).toArray()).map((d) => d._id),
       logMigration: async ({ name }) => {
+        if (loggedInTxn.has(name)) return; // recorded inside the migration's transaction
         const m = files.find((f) => f.name === name);
         await ledger.insertOne({ _id: name, checksum: m.checksum, appliedAt: new Date() });
       },

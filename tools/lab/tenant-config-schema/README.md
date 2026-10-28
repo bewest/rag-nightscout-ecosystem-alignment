@@ -43,6 +43,14 @@ The lab has three parts:
   against migrate-mongo on MongoDB, for the same five properties. Results are in
   `compare-results.json`; the side-by-side table is in the
   [migration-tooling plan](../../../docs/60-research/tenancy/migration-tooling-plan-2026-10-27.md) §3.
+- **MIG-VV**, `mig-vv.js`, which repeats the MongoDB rows on four servers:
+  - MongoDB 8.0 standalone and as a three-member replica set;
+  - MongoDB 5.0.32 (dev's floor) standalone and as a replica set.
+
+  It adds a primary step-down during a migration, and the adapter running a migration and
+  its ledger record in one transaction (`--txn 1`). Results are in `mig-vv-results.json`; the
+  table is in the plan's MIG-VV section. Each replica set is **one container running three
+  `mongod` processes** on the host network, bound to 127.0.0.1 (`mongo-rs/start-rs.sh`).
 
 ## Roles, and why the isolation tests are not vacuous
 
@@ -86,11 +94,24 @@ node harness.js --secrets "$S" --only isolation   # one group, or test ids; resu
 docker run -d --name cfgschema-mongo --ulimit nofile=64000:64000 -p 127.0.0.1:27747:27017 \
   -e MONGO_INITDB_ROOT_USERNAME=labroot -e MONGO_INITDB_ROOT_PASSWORD="$(cat "$S/mongo-root-password")" mongo:8.0
 node compare.js --secrets "$S"                    # about 2.5 min; writes compare-results.json
+
+# MIG-VV: a replica-set keyfile, then 8.0 and 5.0 replica sets and a 5.0 standalone
+(umask 077; openssl rand -base64 756 > "$S/rs-keyfile"); chmod 644 "$S/rs-keyfile"   # inside a 700 directory
+for spec in "cfgschema-mongo8-rs mongo:8.0 27750 27751 27752" "cfgschema-mongo5-rs mongo:5.0.32 27753 27754 27755"; do
+  set -- $spec
+  docker run -d --name $1 --network host --ulimit nofile=64000:64000 \
+    -e MONGO_ROOT_PW="$(cat "$S/mongo-root-password")" -v "$S/rs-keyfile:/run/lab/keyfile:ro" \
+    -v "$PWD/mongo-rs/start-rs.sh:/run/lab/start-rs.sh:ro" --entrypoint sh $2 /run/lab/start-rs.sh $3 $4 $5
+done
+docker run -d --name cfgschema-mongo5 --ulimit nofile=64000:64000 -p 127.0.0.1:27748:27017 \
+  -e MONGO_INITDB_ROOT_USERNAME=labroot -e MONGO_INITDB_ROOT_PASSWORD="$(cat "$S/mongo-root-password")" mongo:5.0.32
+node mig-vv.js --secrets "$S"                     # about 15 min; writes mig-vv-results.json
 ```
 
 Before every run, the harness asserts that `cfgschema-pg` is running and is published on
 `127.0.0.1:<port>`. `compare.js` also asserts that `cfgschema-mongo` is running on
-`127.0.0.1:27747` with the 64000 `nofile` limit. It refuses a `--secrets` directory inside the repository.
+`127.0.0.1:27747` with the 64000 `nofile` limit. `mig-vv.js` asserts the same for each of
+its four servers before every row, and checks that each replica set has three members. It refuses a `--secrets` directory inside the repository.
 
 ## Results
 
@@ -216,7 +237,12 @@ is in `results.json`. [M]
 | `lib/migrator.js`, `lib/run-migrate.js` | the umzug runner and a child-process wrapper for crash and concurrency tests |
 | `lib/db.js` | connections; the container assertion |
 | `harness.js`, `results.json` | tests and the last full run |
-| `compare.js`, `compare-results.json`, `lib/run-tool.js`, `lib/mongo-migrator.js` | the tool comparison, one child process per run, and the umzug MongoDB adapter |
+| `compare.js`, `compare-results.json`, `lib/run-tool.js`, `lib/mongo-migrator.js` | the tool comparison, one child process per run, and the umzug MongoDB adapter (with optional transactions) |
+| `mig-vv.js`, `mig-vv-results.json`, `mongo-rs/start-rs.sh` | MIG-VV: MongoDB rows on 8.0 and 5.0, standalone and replica set, failover, transactions |
 
-The containers `cfgschema-pg` and `cfgschema-mongo` are left running after a run so that
-results can be re-checked. Stop them by name: `docker rm -f cfgschema-pg cfgschema-mongo`.
+The containers are left running after a run so that results can be re-checked. Stop them by
+name: `docker rm -f cfgschema-pg cfgschema-mongo cfgschema-mongo8-rs cfgschema-mongo5-rs cfgschema-mongo5`.
+
+`compare-results.json` is round 2's record. MongoDB migration 3 was reordered for MIG-VV
+(index before seed, plus a final write), so the MongoDB rows on the current files are
+`mig-vv-results.json`'s `8.0-standalone` rows.

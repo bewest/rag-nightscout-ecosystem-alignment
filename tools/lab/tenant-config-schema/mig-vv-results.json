@@ -1,0 +1,588 @@
+{
+  "when": "2026-10-28T04:19:51.569Z",
+  "node": "v22.23.4",
+  "servers": {
+    "8.0-standalone": {
+      "version": "8.0.34",
+      "topology": "standalone",
+      "primary": null
+    },
+    "8.0-rs": {
+      "version": "8.0.34",
+      "topology": "replica set rs0, 3 members",
+      "primary": "127.0.0.1:27750"
+    },
+    "5.0-standalone": {
+      "version": "5.0.32",
+      "topology": "standalone",
+      "primary": null
+    },
+    "5.0-rs": {
+      "version": "5.0.32",
+      "topology": "replica set rs0, 3 members",
+      "primary": "127.0.0.1:27753"
+    }
+  },
+  "rows": [
+    {
+      "target": "8.0-standalone",
+      "row": "P1",
+      "tool": "umzug-mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "up 3; down 3; after down equals the start; up again 3"
+    },
+    {
+      "target": "8.0-standalone",
+      "row": "P2",
+      "tool": "umzug-mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "after the kill: seed APPLIED, migration NOT recorded, lock docs 1; re-run as written: FAILS: Migration 20261027000003-config-versions-collection (up) failed: Original error: E11000 duplicate key error collection: ….config_versions index: _id_ dup key: { _id: \"see (took ~4 s); re-run with the step idempotent: completes; final ledger 3, seed 1"
+    },
+    {
+      "target": "8.0-standalone",
+      "row": "P3",
+      "tool": "umzug-mongo",
+      "variant": "lock on",
+      "valid": true,
+      "outcome": "4/4 ok; ledger 3; applied [0,0,3,0]"
+    },
+    {
+      "target": "8.0-standalone",
+      "row": "P3",
+      "tool": "umzug-mongo",
+      "variant": "lock off",
+      "valid": true,
+      "outcome": "1/4 ok; ledger 3; applied [0,0,3,0]; E11000 duplicate key error collection: ….schema_migrations index: _id_ dup key: { _id: \"20261027000001-entries"
+    },
+    {
+      "target": "8.0-standalone",
+      "row": "P3b",
+      "tool": "umzug-mongo",
+      "variant": "lock on",
+      "valid": true,
+      "outcome": "later: 3/3 ok, applied [0,0,0]; ledger 3"
+    },
+    {
+      "target": "8.0-standalone",
+      "row": "P4",
+      "tool": "umzug-mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "DETECTED (refused)"
+    },
+    {
+      "target": "8.0-standalone",
+      "row": "P1",
+      "tool": "migrate-mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "up 3; down 3; after down equals the start; up again 3"
+    },
+    {
+      "target": "8.0-standalone",
+      "row": "P2",
+      "tool": "migrate-mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "after the kill: seed APPLIED, migration NOT recorded, lock docs 1; re-run as written: FAILS: Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: ….config_versions index: _id_ dup key: { _id: \"seed\" } (first 18 attempt(s) refused, ~93 s); re-run with the step idempotent: completes; final ledger 3, seed 1"
+    },
+    {
+      "target": "8.0-standalone",
+      "row": "P3",
+      "tool": "migrate-mongo",
+      "variant": "lock on",
+      "valid": true,
+      "outcome": "1/4 ok; ledger 9 (6 DUPLICATE); applied [0,0,3,0]; Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: ….co"
+    },
+    {
+      "target": "8.0-standalone",
+      "row": "P3",
+      "tool": "migrate-mongo",
+      "variant": "lock off",
+      "valid": true,
+      "outcome": "1/4 ok; ledger 9 (6 DUPLICATE); applied [3,0,0,0]; Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: ….co"
+    },
+    {
+      "target": "8.0-standalone",
+      "row": "P3b",
+      "tool": "migrate-mongo",
+      "variant": "lock on",
+      "valid": true,
+      "outcome": "later: 0/3 ok, applied [0,0,0]; ledger 3; Could not migrate up, a lock is in place."
+    },
+    {
+      "target": "8.0-standalone",
+      "row": "P4",
+      "tool": "migrate-mongo",
+      "variant": "useFileHash off",
+      "valid": true,
+      "outcome": "IGNORED"
+    },
+    {
+      "target": "8.0-standalone",
+      "row": "P4",
+      "tool": "migrate-mongo",
+      "variant": "useFileHash on",
+      "valid": true,
+      "outcome": "RE-RUN (ledger 3 -> 4)"
+    },
+    {
+      "target": "8.0-standalone",
+      "row": "P7",
+      "tool": "umzug-mongo",
+      "variant": "transactions",
+      "valid": true,
+      "outcome": "transactional migrations only: FAILS: Migration 20261027000002-profile-units-backfill (up) failed: Original error: Transaction numbers are only allowed on a replica set member or mongos; every migration forced into a transaction: FAILS: Migration 20261027000001-entries-indexes (up) failed: Original error: Transaction numbers are only allowed on a replica set member or mongos"
+    },
+    {
+      "target": "8.0-rs",
+      "row": "P1",
+      "tool": "umzug-mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "up 3; down 3; after down equals the start; up again 3"
+    },
+    {
+      "target": "8.0-rs",
+      "row": "P2",
+      "tool": "umzug-mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "after the kill: seed APPLIED, migration NOT recorded, lock docs 1; re-run as written: FAILS: Migration 20261027000003-config-versions-collection (up) failed: Original error: E11000 duplicate key error collection: ….config_versions index: _id_ dup key: { _id: \"see (took ~4 s); re-run with the step idempotent: completes; final ledger 3, seed 1"
+    },
+    {
+      "target": "8.0-rs",
+      "row": "P3",
+      "tool": "umzug-mongo",
+      "variant": "lock on",
+      "valid": true,
+      "outcome": "4/4 ok; ledger 3; applied [0,0,0,3]"
+    },
+    {
+      "target": "8.0-rs",
+      "row": "P3",
+      "tool": "umzug-mongo",
+      "variant": "lock off",
+      "valid": true,
+      "outcome": "1/4 ok; ledger 3; applied [3,0,0,0]; E11000 duplicate key error collection: ….schema_migrations index: _id_ dup key: { _id: \"20261027000001-entries"
+    },
+    {
+      "target": "8.0-rs",
+      "row": "P3b",
+      "tool": "umzug-mongo",
+      "variant": "lock on",
+      "valid": true,
+      "outcome": "later: 3/3 ok, applied [0,0,0]; ledger 3"
+    },
+    {
+      "target": "8.0-rs",
+      "row": "P4",
+      "tool": "umzug-mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "DETECTED (refused)"
+    },
+    {
+      "target": "8.0-rs",
+      "row": "P1",
+      "tool": "migrate-mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "up 3; down 3; after down equals the start; up again 3"
+    },
+    {
+      "target": "8.0-rs",
+      "row": "P2",
+      "tool": "migrate-mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "after the kill: seed APPLIED, migration NOT recorded, lock docs 1; re-run as written: FAILS: Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: ….config_versions index: _id_ dup key: { _id: \"seed\" } (first 7 attempt(s) refused, ~36 s); re-run with the step idempotent: completes; final ledger 3, seed 1"
+    },
+    {
+      "target": "8.0-rs",
+      "row": "P3",
+      "tool": "migrate-mongo",
+      "variant": "lock on",
+      "valid": true,
+      "outcome": "1/4 ok; ledger 9 (6 DUPLICATE); applied [0,0,0,3]; Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: ….co"
+    },
+    {
+      "target": "8.0-rs",
+      "row": "P3",
+      "tool": "migrate-mongo",
+      "variant": "lock off",
+      "valid": true,
+      "outcome": "1/4 ok; ledger 9 (6 DUPLICATE); applied [3,0,0,0]; Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: ….co"
+    },
+    {
+      "target": "8.0-rs",
+      "row": "P3b",
+      "tool": "migrate-mongo",
+      "variant": "lock on",
+      "valid": true,
+      "outcome": "later: 0/3 ok, applied [0,0,0]; ledger 3; Could not migrate up, a lock is in place."
+    },
+    {
+      "target": "8.0-rs",
+      "row": "P4",
+      "tool": "migrate-mongo",
+      "variant": "useFileHash off",
+      "valid": true,
+      "outcome": "IGNORED"
+    },
+    {
+      "target": "8.0-rs",
+      "row": "P4",
+      "tool": "migrate-mongo",
+      "variant": "useFileHash on",
+      "valid": true,
+      "outcome": "RE-RUN (ledger 3 -> 4)"
+    },
+    {
+      "target": "8.0-rs",
+      "row": "P7",
+      "tool": "umzug-mongo",
+      "variant": "transactions",
+      "valid": true,
+      "outcome": "transactional migrations only: completes; 2 of 3 ledger records written inside the migration's transaction; every migration forced into a transaction: FAILS: Migration 20261027000001-entries-indexes (up) failed: Original error: Cannot create new indexes on existing collection ….entries in a multi-document transaction."
+    },
+    {
+      "target": "8.0-rs",
+      "row": "P2t",
+      "tool": "umzug-mongo",
+      "variant": "transactions",
+      "valid": true,
+      "outcome": "after the kill: seed not applied, migration NOT recorded, lock docs 1; re-run as written: completes (took ~4 s); final ledger 3, seed 1"
+    },
+    {
+      "target": "8.0-rs",
+      "row": "P6",
+      "tool": "umzug-mongo",
+      "variant": "idle, no txn",
+      "valid": true,
+      "outcome": "primary 127.0.0.1:27750 -> 127.0.0.1:27751 (stepDown ok; new primary seen after ~0.5 s); runner COMPLETED (3 applied); then: ledger 3 (with migration 3), seed 1, index lab_tenant_version, lock docs 0; final ledger 3, seed 1"
+    },
+    {
+      "target": "8.0-rs",
+      "row": "P6",
+      "tool": "umzug-mongo",
+      "variant": "idle, txn",
+      "valid": true,
+      "outcome": "primary 127.0.0.1:27750 -> 127.0.0.1:27751 (stepDown ok; new primary seen after ~0.5 s); runner COMPLETED (3 applied; migration 3 ran 2 times: the transaction was retried); then: ledger 3 (with migration 3), seed 1, index lab_tenant_version, lock docs 0; final ledger 3, seed 1"
+    },
+    {
+      "target": "8.0-rs",
+      "row": "P6",
+      "tool": "migrate-mongo",
+      "variant": "idle",
+      "valid": true,
+      "outcome": "primary 127.0.0.1:27750 -> 127.0.0.1:27751 (stepDown ok; new primary seen after ~0.5 s); runner COMPLETED (3 applied); then: ledger 3 (with migration 3), seed 1, index lab_tenant_version, lock docs 0; final ledger 3, seed 1"
+    },
+    {
+      "target": "8.0-rs",
+      "row": "P6w",
+      "tool": "umzug-mongo",
+      "variant": "writes, no txn",
+      "valid": true,
+      "outcome": "primary 127.0.0.1:27750 -> 127.0.0.1:27751 (stepDown ok; new primary seen after ~0.5 s); runner COMPLETED (3 applied); writes in flight: runner counted [1815] successful increments, the server holds n = 1815 (equal: none lost or doubled); then: ledger 3 (with migration 3), seed 1, index lab_tenant_version, lock docs 0; final ledger 3, seed 1"
+    },
+    {
+      "target": "8.0-rs",
+      "row": "P6w",
+      "tool": "umzug-mongo",
+      "variant": "writes, txn",
+      "valid": true,
+      "outcome": "primary 127.0.0.1:27750 -> 127.0.0.1:27751 (stepDown ok; new primary seen after ~0.5 s); runner COMPLETED (3 applied; migration 3 ran 2 times: the transaction was retried); writes in flight: runner counted [36451] successful increments, the server holds n = 36451 (equal: none lost or doubled); then: ledger 3 (with migration 3), seed 1, index lab_tenant_version, lock docs 0; final ledger 3, seed 1"
+    },
+    {
+      "target": "8.0-rs",
+      "row": "P6w",
+      "tool": "migrate-mongo",
+      "variant": "writes",
+      "valid": true,
+      "outcome": "primary 127.0.0.1:27750 -> 127.0.0.1:27751 (stepDown ok; new primary seen after ~0.5 s); runner COMPLETED (3 applied); writes in flight: runner counted [2081] successful increments, the server holds n = 2081 (equal: none lost or doubled); then: ledger 3 (with migration 3), seed 1, index lab_tenant_version, lock docs 0; final ledger 3, seed 1"
+    },
+    {
+      "target": "5.0-standalone",
+      "row": "P1",
+      "tool": "umzug-mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "up 3; down 3; after down equals the start; up again 3"
+    },
+    {
+      "target": "5.0-standalone",
+      "row": "P2",
+      "tool": "umzug-mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "after the kill: seed APPLIED, migration NOT recorded, lock docs 1; re-run as written: FAILS: Migration 20261027000003-config-versions-collection (up) failed: Original error: E11000 duplicate key error collection: ….config_versions index: _id_ dup key: { _id: \"see (took ~4 s); re-run with the step idempotent: completes; final ledger 3, seed 1"
+    },
+    {
+      "target": "5.0-standalone",
+      "row": "P3",
+      "tool": "umzug-mongo",
+      "variant": "lock on",
+      "valid": true,
+      "outcome": "4/4 ok; ledger 3; applied [0,3,0,0]"
+    },
+    {
+      "target": "5.0-standalone",
+      "row": "P3",
+      "tool": "umzug-mongo",
+      "variant": "lock off",
+      "valid": true,
+      "outcome": "1/4 ok; ledger 3; applied [0,0,3,0]; E11000 duplicate key error collection: ….schema_migrations index: _id_ dup key: { _id: \"20261027000001-entries"
+    },
+    {
+      "target": "5.0-standalone",
+      "row": "P3b",
+      "tool": "umzug-mongo",
+      "variant": "lock on",
+      "valid": true,
+      "outcome": "later: 3/3 ok, applied [0,0,0]; ledger 3"
+    },
+    {
+      "target": "5.0-standalone",
+      "row": "P4",
+      "tool": "umzug-mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "DETECTED (refused)"
+    },
+    {
+      "target": "5.0-standalone",
+      "row": "P1",
+      "tool": "migrate-mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "up 3; down 3; after down equals the start; up again 3"
+    },
+    {
+      "target": "5.0-standalone",
+      "row": "P2",
+      "tool": "migrate-mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "after the kill: seed APPLIED, migration NOT recorded, lock docs 1; re-run as written: FAILS: Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: ….config_versions index: _id_ dup key: { _id: \"seed\" } (first 10 attempt(s) refused, ~52 s); re-run with the step idempotent: completes; final ledger 3, seed 1"
+    },
+    {
+      "target": "5.0-standalone",
+      "row": "P3",
+      "tool": "migrate-mongo",
+      "variant": "lock on",
+      "valid": true,
+      "outcome": "1/4 ok; ledger 9 (6 DUPLICATE); applied [0,0,0,3]; Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: ….co"
+    },
+    {
+      "target": "5.0-standalone",
+      "row": "P3",
+      "tool": "migrate-mongo",
+      "variant": "lock off",
+      "valid": true,
+      "outcome": "1/4 ok; ledger 9 (6 DUPLICATE); applied [0,3,0,0]; Could not migrate up 20261027000003-config-versions-collection.js: Collection already exists. NS: ….config_ver | Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: ….co"
+    },
+    {
+      "target": "5.0-standalone",
+      "row": "P3b",
+      "tool": "migrate-mongo",
+      "variant": "lock on",
+      "valid": true,
+      "outcome": "later: 0/3 ok, applied [0,0,0]; ledger 3; Could not migrate up, a lock is in place."
+    },
+    {
+      "target": "5.0-standalone",
+      "row": "P4",
+      "tool": "migrate-mongo",
+      "variant": "useFileHash off",
+      "valid": true,
+      "outcome": "IGNORED"
+    },
+    {
+      "target": "5.0-standalone",
+      "row": "P4",
+      "tool": "migrate-mongo",
+      "variant": "useFileHash on",
+      "valid": true,
+      "outcome": "RE-RUN (ledger 3 -> 4)"
+    },
+    {
+      "target": "5.0-standalone",
+      "row": "P7",
+      "tool": "umzug-mongo",
+      "variant": "transactions",
+      "valid": true,
+      "outcome": "transactional migrations only: FAILS: Migration 20261027000002-profile-units-backfill (up) failed: Original error: Transaction numbers are only allowed on a replica set member or mongos; every migration forced into a transaction: FAILS: Migration 20261027000001-entries-indexes (up) failed: Original error: Transaction numbers are only allowed on a replica set member or mongos"
+    },
+    {
+      "target": "5.0-rs",
+      "row": "P1",
+      "tool": "umzug-mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "up 3; down 3; after down equals the start; up again 3"
+    },
+    {
+      "target": "5.0-rs",
+      "row": "P2",
+      "tool": "umzug-mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "after the kill: seed APPLIED, migration NOT recorded, lock docs 1; re-run as written: FAILS: Migration 20261027000003-config-versions-collection (up) failed: Original error: E11000 duplicate key error collection: ….config_versions index: _id_ dup key: { _id: \"see (took ~4 s); re-run with the step idempotent: completes; final ledger 3, seed 1"
+    },
+    {
+      "target": "5.0-rs",
+      "row": "P3",
+      "tool": "umzug-mongo",
+      "variant": "lock on",
+      "valid": true,
+      "outcome": "4/4 ok; ledger 3; applied [0,3,0,0]"
+    },
+    {
+      "target": "5.0-rs",
+      "row": "P3",
+      "tool": "umzug-mongo",
+      "variant": "lock off",
+      "valid": true,
+      "outcome": "1/4 ok; ledger 3; applied [0,0,0,3]; E11000 duplicate key error collection: ….schema_migrations index: _id_ dup key: { _id: \"20261027000001-entries"
+    },
+    {
+      "target": "5.0-rs",
+      "row": "P3b",
+      "tool": "umzug-mongo",
+      "variant": "lock on",
+      "valid": true,
+      "outcome": "later: 3/3 ok, applied [0,0,0]; ledger 3"
+    },
+    {
+      "target": "5.0-rs",
+      "row": "P4",
+      "tool": "umzug-mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "DETECTED (refused)"
+    },
+    {
+      "target": "5.0-rs",
+      "row": "P1",
+      "tool": "migrate-mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "up 3; down 3; after down equals the start; up again 3"
+    },
+    {
+      "target": "5.0-rs",
+      "row": "P2",
+      "tool": "migrate-mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "after the kill: seed APPLIED, migration NOT recorded, lock docs 1; re-run as written: FAILS: Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: ….config_versions index: _id_ dup key: { _id: \"seed\" } (first 7 attempt(s) refused, ~36 s); re-run with the step idempotent: completes; final ledger 3, seed 1"
+    },
+    {
+      "target": "5.0-rs",
+      "row": "P3",
+      "tool": "migrate-mongo",
+      "variant": "lock on",
+      "valid": true,
+      "outcome": "1/4 ok; ledger 9 (6 DUPLICATE); applied [0,0,0,3]; Could not migrate up 20261027000003-config-versions-collection.js: Collection already exists. NS: ….config_ver | Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: ….co"
+    },
+    {
+      "target": "5.0-rs",
+      "row": "P3",
+      "tool": "migrate-mongo",
+      "variant": "lock off",
+      "valid": true,
+      "outcome": "1/4 ok; ledger 9 (6 DUPLICATE); applied [3,0,0,0]; Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: ….co | Could not migrate up 20261027000003-config-versions-collection.js: Collection already exists. NS: ….config_ver"
+    },
+    {
+      "target": "5.0-rs",
+      "row": "P3b",
+      "tool": "migrate-mongo",
+      "variant": "lock on",
+      "valid": true,
+      "outcome": "later: 0/3 ok, applied [0,0,0]; ledger 3; Could not migrate up, a lock is in place."
+    },
+    {
+      "target": "5.0-rs",
+      "row": "P4",
+      "tool": "migrate-mongo",
+      "variant": "useFileHash off",
+      "valid": true,
+      "outcome": "IGNORED"
+    },
+    {
+      "target": "5.0-rs",
+      "row": "P4",
+      "tool": "migrate-mongo",
+      "variant": "useFileHash on",
+      "valid": true,
+      "outcome": "RE-RUN (ledger 3 -> 4)"
+    },
+    {
+      "target": "5.0-rs",
+      "row": "P7",
+      "tool": "umzug-mongo",
+      "variant": "transactions",
+      "valid": true,
+      "outcome": "transactional migrations only: completes; 2 of 3 ledger records written inside the migration's transaction; every migration forced into a transaction: FAILS: Migration 20261027000001-entries-indexes (up) failed: Original error: Cannot create new indexes on existing collection ….entries in a multi-document transaction."
+    },
+    {
+      "target": "5.0-rs",
+      "row": "P2t",
+      "tool": "umzug-mongo",
+      "variant": "transactions",
+      "valid": true,
+      "outcome": "after the kill: seed not applied, migration NOT recorded, lock docs 1; re-run as written: completes (took ~4 s); final ledger 3, seed 1"
+    },
+    {
+      "target": "5.0-rs",
+      "row": "P6",
+      "tool": "umzug-mongo",
+      "variant": "idle, no txn",
+      "valid": true,
+      "outcome": "primary 127.0.0.1:27753 -> 127.0.0.1:27754 (stepDown ok; new primary seen after ~0.5 s); runner COMPLETED (3 applied); then: ledger 3 (with migration 3), seed 1, index lab_tenant_version, lock docs 0; final ledger 3, seed 1"
+    },
+    {
+      "target": "5.0-rs",
+      "row": "P6",
+      "tool": "umzug-mongo",
+      "variant": "idle, txn",
+      "valid": true,
+      "outcome": "primary 127.0.0.1:27753 -> 127.0.0.1:27754 (stepDown ok; new primary seen after ~0.5 s); runner COMPLETED (3 applied; migration 3 ran 2 times: the transaction was retried); then: ledger 3 (with migration 3), seed 1, index lab_tenant_version, lock docs 0; final ledger 3, seed 1"
+    },
+    {
+      "target": "5.0-rs",
+      "row": "P6",
+      "tool": "migrate-mongo",
+      "variant": "idle",
+      "valid": true,
+      "outcome": "primary 127.0.0.1:27753 -> 127.0.0.1:27755 (stepDown ok; new primary seen after ~0.5 s); runner COMPLETED (3 applied); then: ledger 3 (with migration 3), seed 1, index lab_tenant_version, lock docs 0; final ledger 3, seed 1"
+    },
+    {
+      "target": "5.0-rs",
+      "row": "P6w",
+      "tool": "umzug-mongo",
+      "variant": "writes, no txn",
+      "valid": true,
+      "outcome": "primary 127.0.0.1:27753 -> 127.0.0.1:27754 (stepDown ok; new primary seen after ~0.5 s); runner COMPLETED (3 applied); writes in flight: runner counted [1221] successful increments, the server holds n = 1221 (equal: none lost or doubled); then: ledger 3 (with migration 3), seed 1, index lab_tenant_version, lock docs 0; final ledger 3, seed 1"
+    },
+    {
+      "target": "5.0-rs",
+      "row": "P6w",
+      "tool": "umzug-mongo",
+      "variant": "writes, txn",
+      "valid": true,
+      "outcome": "primary 127.0.0.1:27753 -> 127.0.0.1:27754 (stepDown ok; new primary seen after ~0.5 s); runner COMPLETED (3 applied; migration 3 ran 2 times: the transaction was retried); writes in flight: runner counted [34069] successful increments, the server holds n = 34069 (equal: none lost or doubled); then: ledger 3 (with migration 3), seed 1, index lab_tenant_version, lock docs 0; final ledger 3, seed 1"
+    },
+    {
+      "target": "5.0-rs",
+      "row": "P6w",
+      "tool": "migrate-mongo",
+      "variant": "writes",
+      "valid": true,
+      "outcome": "primary 127.0.0.1:27753 -> 127.0.0.1:27754 (stepDown ok; new primary seen after ~0.5 s); runner COMPLETED (3 applied); writes in flight: runner counted [1217] successful increments, the server holds n = 1217 (equal: none lost or doubled); then: ledger 3 (with migration 3), seed 1, index lab_tenant_version, lock docs 0; final ledger 3, seed 1"
+    }
+  ]
+}
