@@ -88,50 +88,51 @@ unhealthy. Tests: green for the configured certificate on loopback; red for
 another certificate on the port (tests/fixtures/ healthcheck-other.*), an
 unreadable SSL_CERT and a self-signed --url, the three failing on 9f7f84f8's
 healthcheck.js (19/3) and passing with the fix (22/0). start-paths + CLI 35
-passing on MongoDB 8.0; unit tier 1585/0. Whether the alert closes is CodeQL's
-next run on the PR. Image start forms measured the same night
-(tools/lab/image-start-forms, 8dd7c563c; dev dcf20bfb against 9bb1f0b4): every
-form that started a server on dev starts the same server (status.json
-identical apart from server time, one node process, same entrypoint, user,
-workdir, no HEALTHCHECK); differences are stop and signals (docker stop 10.1
-s/137 to 0.13 s/0; SIGINT and SIGTERM, ignored by node as PID 1 on dev, exit
-0), and `nightscout single` and `nightscout healthcheck` working as commands.
-Not covered: restart: on-failure after an outside SIGTERM (the site used to
-keep running; it now exits 0 and stays down), and tooling matching PID 1's
-command line. #8862 is superseded: its four commits are in #8865. 2026-10-27
-(maintainer, recorded by session -4f): serve api's scope is v1 + v3 + the v2
-summary and authorization + tenant resolution (interface-ownership §4 item 4);
-v1 joins once its storage paths run without the cache. Session -2e's
-ST-V3-DECOUPLE harness (feat/v3-role-harness 88f37427, three test-only commits
-on 9bb1f0b4; single 742/0, serve-api 634/0/108 pending, npm test 4757/0/3, as
-reported by -2e) is to be folded into #8865, not stacked. The 15 v3 tests on
-v1-created records keep running under serve-api. 2026-10-27 late (from session
--2e; not re-run by the recording session): #8865 head 9bb1f0b4 on official, a
-fast-forward of 4d243590 pushed by the maintainer; open, not draft, base dev,
-mergeable. Two commits. 9f4bd874: the image keeps the node base entrypoint
-with CMD ["nightscout","single"]; an explicit `docker run` command replaces
-CMD and is exec'd by docker-entrypoint.sh, so the image no longer routes
-explicit commands through the dispatcher (one process, as on dev; env
-unchanged; image 52 MB smaller). The dispatcher's passthrough itself stays:
-lib/cli/index.js still runs a non-subcommand first argument as a program
-(`nightscout node lib/server/server.js`, covered by start-paths). Only the
-`version` shorthand without `nightscout` is lost; `nightscout version` works.
-9bb1f0b4: lib/server/server.js handles SIGTERM and SIGINT through the bus
-teardown and exits 0, bounded at 8 s (exit 1 past it), so every start path
-(Procfile, npm start, server.js, the image) gets it. Measured on the image
-with MongoDB 7.0: docker stop 10.2 s force-killed (137) on dev, 0.16-0.20 s
-exit 0 on 9bb1f0b4, in every start case, with or without a connected websocket
-client. npm test 4757/0/3; start-paths 13 passing; the 2 new SIGTERM tests
-fail on the parent (death by signal). 2026-10-26, later: draft #8865 at
-1dafe2a5, stacked on #8863 (base feat/storage-writes) with #8862 merged in.
-Env per role: <PREFIX>_HOSTNAME / _PORT (API_, REALTIME_, TENANT_ADMIN_,
-ADMIN_); admin defaults to 127.0.0.1:1338 and needs
-ADMIN_INSECURE_BIND_ACKNOWLEDGED for a non-loopback bind. Open: per-tenant
-config after TEN-RESOLVE, ADMIN_BIND vs ADMIN_HOSTNAME, the admin address rule
-on any port, /api/v2/authorization under tenant-admin, migrate owning indexes,
-one context per process. 2026-10-26 (D21). Open: whether a composed `serve` of
-every role is part of the multi target or only a small-hoster convenience.
-TEN-RESOLVE (platform admin on its own interface) depends on this item.
+passing on MongoDB 8.0; unit tier 1585/0. CodeQL then marked alert 138 fixed
+on the PR's merge ref (0 open alerts; the CodeQL check passes). Image start
+forms measured the same night (tools/lab/image-start-forms, 8dd7c563c; dev
+dcf20bfb against 9bb1f0b4): every form that started a server on dev starts the
+same server (status.json identical apart from server time, one node process,
+same entrypoint, user, workdir, no HEALTHCHECK); differences are stop and
+signals (docker stop 10.1 s/137 to 0.13 s/0; SIGINT and SIGTERM, ignored by
+node as PID 1 on dev, exit 0), and `nightscout single` and `nightscout
+healthcheck` working as commands. Not covered: restart: on-failure after an
+outside SIGTERM (the site used to keep running; it now exits 0 and stays
+down), and tooling matching PID 1's command line. #8862 is superseded: its
+four commits are in #8865. 2026-10-27 (maintainer, recorded by session -4f):
+serve api's scope is v1 + v3 + the v2 summary and authorization + tenant
+resolution (interface-ownership §4 item 4); v1 joins once its storage paths
+run without the cache. Session -2e's ST-V3-DECOUPLE harness (feat/v3-role-
+harness 88f37427, three test-only commits on 9bb1f0b4; single 742/0, serve-api
+634/0/108 pending, npm test 4757/0/3, as reported by -2e) is to be folded into
+#8865, not stacked. The 15 v3 tests on v1-created records keep running under
+serve-api. 2026-10-27 late (from session -2e; not re-run by the recording
+session): #8865 head 9bb1f0b4 on official, a fast-forward of 4d243590 pushed
+by the maintainer; open, not draft, base dev, mergeable. Two commits.
+9f4bd874: the image keeps the node base entrypoint with CMD
+["nightscout","single"]; an explicit `docker run` command replaces CMD and is
+exec'd by docker-entrypoint.sh, so the image no longer routes explicit
+commands through the dispatcher (one process, as on dev; env unchanged; image
+52 MB smaller). The dispatcher's passthrough itself stays: lib/cli/index.js
+still runs a non-subcommand first argument as a program (`nightscout node
+lib/server/server.js`, covered by start-paths). Only the `version` shorthand
+without `nightscout` is lost; `nightscout version` works. 9bb1f0b4:
+lib/server/server.js handles SIGTERM and SIGINT through the bus teardown and
+exits 0, bounded at 8 s (exit 1 past it), so every start path (Procfile, npm
+start, server.js, the image) gets it. Measured on the image with MongoDB 7.0:
+docker stop 10.2 s force-killed (137) on dev, 0.16-0.20 s exit 0 on 9bb1f0b4,
+in every start case, with or without a connected websocket client. npm test
+4757/0/3; start-paths 13 passing; the 2 new SIGTERM tests fail on the parent
+(death by signal). 2026-10-26, later: draft #8865 at 1dafe2a5, stacked on
+#8863 (base feat/storage-writes) with #8862 merged in. Env per role:
+<PREFIX>_HOSTNAME / _PORT (API_, REALTIME_, TENANT_ADMIN_, ADMIN_); admin
+defaults to 127.0.0.1:1338 and needs ADMIN_INSECURE_BIND_ACKNOWLEDGED for a
+non-loopback bind. Open: per-tenant config after TEN-RESOLVE, ADMIN_BIND vs
+ADMIN_HOSTNAME, the admin address rule on any port, /api/v2/authorization
+under tenant-admin, migrate owning indexes, one context per process.
+2026-10-26 (D21). Open: whether a composed `serve` of every role is part of
+the multi target or only a small-hoster convenience. TEN-RESOLVE (platform
+admin on its own interface) depends on this item.
 
 ---
 

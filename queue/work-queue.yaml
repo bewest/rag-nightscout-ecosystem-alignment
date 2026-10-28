@@ -22471,7 +22471,8 @@ items:
       healthcheck-other.*), an unreadable SSL_CERT and a self-signed --url,
       the three failing on 9f7f84f8's healthcheck.js (19/3) and passing with
       the fix (22/0). start-paths + CLI 35 passing on MongoDB 8.0; unit tier
-      1585/0. Whether the alert closes is CodeQL's next run on the PR.
+      1585/0. CodeQL then marked alert 138 fixed on the PR's merge ref
+      (0 open alerts; the CodeQL check passes).
       Image start forms measured the same night (tools/lab/image-start-forms,
       8dd7c563c; dev dcf20bfb against 9bb1f0b4): every form that started a
       server on dev starts the same server (status.json identical apart from
