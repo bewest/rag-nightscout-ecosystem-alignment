@@ -943,7 +943,7 @@ model.
 
 **The layers.**
 
-1. **Project floors**, in code, under `TENANCY_MODE=multi` only. The server refuses to start, or refuses to
+1. **Project floors**, in code, in every `nightscout serve` role only (multitenant; `TENANCY_MODE` retired by the D21 amendment). The server refuses to start, or refuses to
    save a policy or a value, that breaks one. Decided as five groups (the fifth added the same day):
    - **no deployment secrets**: `API_SECRET` and `API_SECRET_FILE` refused (D13 as a check);
      `API3_SECURITY_ENABLE=false` refused;
