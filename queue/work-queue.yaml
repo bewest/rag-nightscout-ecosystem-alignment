@@ -5953,6 +5953,66 @@ items:
       origin check on writes and WebSocket upgrades, every path to a tenant
       going through the edge, and the compliance question having an owner.
 
+  - id: MIG-VV
+    title: "Verify the migration runner choice: umzug's MongoDB adapter on a replica set and on dev's oldest supported MongoDB"
+    parcel: tenancy
+    repo: rag-nightscout-ecosystem-alignment
+    branch: ""
+    base: main
+    state: not-started
+    pr: []
+    blast_radius: >
+      tools/lab/tenant-config-schema (compare.js and the MongoDB migrator):
+      repeat the comparison's MongoDB rows (restart mid-migration,
+      simultaneous starters, a starter during a run, drift) on a replica set
+      and on the oldest MongoDB dev's runtime policy supports, plus a
+      replica-set failover during a migration.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: verification
+    gates:
+      - no-gate: >
+          The lab's compare.js is the instrument; each row carries its own
+          check that it exercised the case. A queue gate re-runs it against
+          a container named by the item when built.
+    blocks_on: []
+    evidence:
+      - docs/60-research/tenancy/migration-tooling-plan-2026-10-27.md
+    notes: >
+      The maintainer adopted umzug for both stores provisionally on
+      2026-10-27 and asked for this verification before it is confirmed.
+      The standalone MongoDB 8.0.34 measurements are in the plan's table.
+
+  - id: MIG-RUNNER
+    title: "`nightscout migrate`: one runner (umzug) with the project's PostgreSQL and MongoDB adapters"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev
+    state: not-started
+    pr: []
+    blast_radius: >
+      A new `migrate` subcommand of bin/nightscout.js (D21), lib/storage
+      migration adapters, a ledger per store; single sites migrate at boot
+      under the lock; serving roles refuse a stale schema.
+    review: maintainer, plus a second human - it changes boot
+    operator_visible: >
+      Database changes would be applied by a recorded, locked step, either
+      at start-up (self-hosted) or by a command the hoster runs.
+    semver: minor
+    semver_reason: a new subcommand and a boot step
+    gates:
+      - no-gate: >
+          Written with the build: the lab's restart, concurrency and drift
+          rows run against the shipping runner, each with its control.
+    blocks_on: [MIG-VV]
+    evidence:
+      - docs/60-research/tenancy/migration-tooling-plan-2026-10-27.md
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
+    notes: >
+      Adopted provisionally by the maintainer, 2026-10-27, pending MIG-VV.
+
   - id: T30-ORY-PROOF
     title: Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants
     parcel: tenancy

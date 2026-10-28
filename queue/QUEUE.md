@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 321 |
+| items | 323 |
 | runnable gates | 377 |
-| explicit `no-gate:` markers | 356 |
+| explicit `no-gate:` markers | 358 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 356 of the 733 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 358 of the 735 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 74 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-204, BFQ-205, BFQ-206, BFQ-207, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `not-started` | 76 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, MIG-VV, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-204, BFQ-205, BFQ-206, BFQ-207, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 7 | BFQ-178, T30-SCHEMA-CONFIG, WC-STEP-PATCH, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -7651,7 +7651,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 46 items
+`parcel: tenancy` &mdash; 48 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -7662,6 +7662,8 @@ alarm-readiness items, and the seam branch refresh.
 | `T30-AUTH` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split | `ready-to-push` | `main` | n/a | 2 run + 4 no-gate |
 | `T30-SCHEMA-CRED` | T3.0 part 2a - device and data-path credential storage in platform.sql | `done` | `seam/t30-schema-cred` | n/a | 2 run + 2 no-gate |
 | `T30-SCHEMA-CONFIG` | T3.0 part 2b - per-tenant configuration table, and where human identity lives | `in-progress` | `-` | n/a | 1 run + 2 no-gate |
+| `MIG-VV` | Verify the migration runner choice: umzug's MongoDB adapter on a replica set and on dev's oldest supported MongoDB | `not-started` | `-` | n/a | 0 run + 1 no-gate |
+| `MIG-RUNNER` | `nightscout migrate`: one runner (umzug) with the project's PostgreSQL and MongoDB adapters | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `T30-ORY-PROOF` | Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants | `done` | `ory/proof-2026-10-07` | n/a | 1 run + 3 no-gate |
 | `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `T30-TENANT-ADMIN` | cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside ns-api (D16) | `not-started` | `-` | minor | 0 run + 1 no-gate |
@@ -7844,6 +7846,64 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/60-research/tenancy/auth-plane-ory-vs-inhouse-2026-09-16.md`
 
 **Notes.** 2026-10-27 (session -4f's agent; scope and secrets re-checked by -4f): built as a spec plus PostgreSQL lab in this repository, to port to dev with ST- PG/TEN-RESOLVE (maintainer: this repo or the seam line). Spec docs/30-design/tenancy/tenant-config-schema-2026-10-27.md; lab tools/lab/tenant-config-schema/ (migrations 0001-0007, 0001 = the seam's platform.sql at 81a1f6ce unchanged); 57 tests green, 72 of 72 controls red, PostgreSQL 16.15, as a non-superuser application role. The §A.2 partial-mmol hazard reproduced on the old shape and is refused by the new one. Migration tooling plan (both stores): docs/60-research/tenancy/migration-tooling- plan-2026-10-27.md, umzug measured (needs one transaction per migration plus ledger row, and an advisory lock). Eight mismatches (spec §10b; M1 fixed) and 17 open questions (spec §11) for the maintainer. Two different blockers. T30-RESEARCH blocks the configuration table, because the settings surface is what that item enumerates and what a tenant may override versus what the hoster pins is a decision it still defers. T30-ORY-PROOF blocks the human- identity columns, because D17 row 2 is direction of travel and not adopted: if one cohort-wide Kratos pool lands, human identity lives in Kratos with only a subject reference here; if it does not, these tables carry credentials, recovery and MFA. Those are different schemas. If this item is claimed before T30-ORY-PROOF resolves, do the configuration table and stop at the identity columns. 2026-10-07: T30-ORY-PROOF is done and its condition held. The identity half still waits on two maintainer decisions: adopting D17 row 2, and the cookie scope (apex cookie, or a per-tenant OAuth client, which adds tenants.oauth_client_id). Under row 2, tenant_members.subject_id holds the Kratos identity UUID with no foreign key, and no credential, recovery or MFA columns are ours (docs/60-research/tenancy/ory-proof-2026-10-07.md §7). D17 row 2 adopted in principle, gated, and its cookie scope decided (maintainer, 2026-10-12): E, the apex cookie behind a hardened edge (docs/60-research/tenancy/ory-cookie-variants-2026-10-12.md). Hydra stays deferred, so the identity half needs no per-tenant OAuth client column. The edge passes a short-lived assertion bound to the tenant, which the exchange verifies. Before real identities exist, four things must be measured over https behind the production edge: the cookie strip, the origin check on writes and WebSocket upgrades, every path to a tenant going through the edge, and the compliance question having an owner.
+
+### `MIG-VV` &mdash; Verify the migration runner choice: umzug's MongoDB adapter on a replica set and on dev's oldest supported MongoDB
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `-` |
+| base | `main` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** tools/lab/tenant-config-schema (compare.js and the MongoDB migrator): repeat the comparison's MongoDB rows (restart mid-migration, simultaneous starters, a starter during a run, drift) on a replica set and on the oldest MongoDB dev's runtime policy supports, plus a replica-set failover during a migration.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** verification
+
+**Gates.**
+
+- **NO GATE** &mdash; The lab's compare.js is the instrument; each row carries its own check that it exercised the case. A queue gate re-runs it against a container named by the item when built.
+
+**Evidence.**
+
+- `docs/60-research/tenancy/migration-tooling-plan-2026-10-27.md`
+
+**Notes.** The maintainer adopted umzug for both stores provisionally on 2026-10-27 and asked for this verification before it is confirmed. The standalone MongoDB 8.0.34 measurements are in the plan's table.
+
+### `MIG-RUNNER` &mdash; `nightscout migrate`: one runner (umzug) with the project's PostgreSQL and MongoDB adapters
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer, plus a second human - it changes boot |
+| blocks on | `MIG-VV` |
+
+**Blast radius.** A new `migrate` subcommand of bin/nightscout.js (D21), lib/storage migration adapters, a ledger per store; single sites migrate at boot under the lock; serving roles refuse a stale schema.
+
+**What an operator sees.** Database changes would be applied by a recorded, locked step, either at start-up (self-hosted) or by a command the hoster runs.
+
+**Why `minor`.** a new subcommand and a boot step
+
+**Gates.**
+
+- **NO GATE** &mdash; Written with the build: the lab's restart, concurrency and drift rows run against the shipping runner, each with its control.
+
+**Evidence.**
+
+- `docs/60-research/tenancy/migration-tooling-plan-2026-10-27.md`
+- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+
+**Notes.** Adopted provisionally by the maintainer, 2026-10-27, pending MIG-VV.
 
 ### `T30-ORY-PROOF` &mdash; Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants
 

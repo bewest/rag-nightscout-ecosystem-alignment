@@ -1045,6 +1045,17 @@ secret. Vault transit and a cloud key service are the production adapters, behin
   setting and the operator rule behind it; nothing is applied in part. A "version" here is a version of
   the tenant's configuration (D22's numbered changes), not of the software. (Schema spec Q3; the lab's
   working choice confirmed.)
+- **Members are unique per tenant**: `(provider, subject_id)` is unique within one tenant, so one person can
+  belong to several tenants; the column keeps the seam's name `subject_id`. (Schema spec Q19.)
+- **A hosted role refuses to start when a deployment value it needs from its environment is missing**,
+  naming each missing value (extends the `TRUST_PROXY` floor to every class D value a role cannot run
+  safely without). (Schema spec Q20.)
+- **Migration tooling, adopted provisionally (maintainer, 2026-10-27):** umzug 3.8.3 behind `nightscout
+  migrate`, with the project's PostgreSQL adapter (ledger, advisory lock, one transaction per migration
+  with its ledger row) and MongoDB adapter (ledger, lease lock, every step safe to re-run); single sites
+  migrate at boot under the lock, hosted operators run `nightscout migrate up` before the roles start.
+  Confirmed only after the verification item `MIG-VV` (queue) measures MongoDB on a replica set and on
+  the oldest MongoDB dev supports. Evidence: [migration-tooling plan](../../60-research/tenancy/migration-tooling-plan-2026-10-27.md).
 
 **Not decided.** The twelve contested settings re-stated under D22 are drafted for
 review in [census §3a](../../60-research/tenancy/t30-census-dev-2026-10-27.md); row 7 decided the same
