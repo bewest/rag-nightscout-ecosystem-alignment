@@ -228,7 +228,7 @@
     "ST-WRITES",
     "PLAT-SERVE"
    ],
-   "ref": "In #8865 (head 53ba192a): session -2e's API v3 role harness, folded in by the maintainer at 9f7f84f8. Exit check met as reported by -2e: API v3 suites under serve api 634 passing, 0 failing, 108 pending (single-only subjects: the websocket, the cache, in-process v1), under single 742/0; npm test 4803/0/3 on 9f7f84f8",
+   "ref": "In #8865 (head 53ba192a): session -2e's API v3 role harness, folded in by the maintainer at 9f7f84f8. Exit check met as reported by -2e: API v3 suites under the api profile 634 passing, 0 failing, 108 pending (now the headless target: 643/0/108 at b01b77c3) (single-only subjects: the websocket, the cache, in-process v1), under single 742/0; npm test 4803/0/3 on 9f7f84f8",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8865"
   },
   {
@@ -587,7 +587,7 @@
    "phase": "boundary",
    "state": "review",
    "short": "serve <roles>",
-   "title": "`nightscout serve <role>[,<role>…]`: multitenant roles carved one at a time from bootevent's factory chain, `api` first (API v3 holds no resident state); each listener on its own bind address so `admin` stays off the consumer interface (D5, D7, D16, D21)",
+   "title": "`nightscout serve <role>[,<role>…]` for a multitenant Nightscout (D21): roles carved one at a time from bootevent's factory chain, `api` first; each listener on its own bind address so `admin` stays off the consumer interface (D5, D7, D16). The subcommand selects tenancy",
    "where": "bin/nightscout.js, lib/server/bootevent.js, lib/server/server.js",
    "check": "`serve api` answers the API v3 suites with no bus or ddata; `admin` refuses the consumer listener's address; every docker run form that started a server on dev starts the same one (image start-forms lab)",
    "depends": [
@@ -600,7 +600,7 @@
      "href": "../tenancy/nightscout-deployable-components-2026-09-14.md"
     }
    ],
-   "ref": "In the 16.0.0 merge list (maintainer, 2026-10-27); only `single` is supported, `serve api` is alpha, the other roles exit 64 as not yet available. #8865 (open, base dev, head 53ba192a; carries #8862's commits and session -2e's API v3 harness): `serve api` boots only API v3's pieces; the image keeps the base entrypoint with CMD `nightscout single`; SIGTERM and SIGINT exit 0 within 8 s on every start path. The healthcheck checks the server's own certificate (CodeQL alert 138 fixed in f01d67e6); README and CLI help say \"multitenant roles\" (53ba192a). Image start forms unchanged against dev apart from stop and signals (tools/lab/image-start-forms)",
+   "ref": "In the 16.0.0 merge list (maintainer, 2026-10-27). #8865 head b01b77c3: the subcommand selects tenancy (`single` single-tenant, every `serve` role multitenant; TENANCY_MODE retires); `serve` refuses every role until it is multitenant; the single-tenant api code runs as scripts/headless-test-server.js for tests and development. Carries #8862's commits; image CMD `nightscout single`; SIGTERM and SIGINT exit 0 within 8 s on every start path; the healthcheck checks the server's own certificate (CodeQL alert 138 fixed). Image start forms unchanged against dev apart from stop and signals (tools/lab/image-start-forms); API v3 suites 751/0 under single, 643/0/108 pending under headless",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8865"
   },
   {

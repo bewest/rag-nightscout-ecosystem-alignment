@@ -253,10 +253,10 @@ the loudest row's (R3).
 
 | release | theme | contents | class |
 |---|---|---|---|
-| 16.0.0 | modernization, the write boundary, one read and write path | what is on `dev` `ca1652d6` (M1 included: #8859, #8856, #8861, #8863, #8870, #8864, #8866, #8868, #8869, #8858 merged 2026-10-27), plus BF-72, BF-161, #8865 (decided 2026-10-27 night; `single` supported, `serve api` alpha) and any release fix found in the quiet period | major (already) |
+| 16.0.0 | modernization, the write boundary, one read and write path | what is on `dev` `ca1652d6` (M1 included: #8859, #8856, #8861, #8863, #8870, #8864, #8866, #8868, #8869, #8858 merged 2026-10-27), plus BF-72, BF-161, #8865 (decided 2026-10-27 night; `single` supported, `serve` reserved for a multitenant Nightscout) and any release fix found in the quiet period | major (already) |
 | 16.1.0 | registration readable | #8857 off by default (D-REG-FLAG); SPEC-ID-AMEND; the OpenAPI description of what 16.1.0 serves, including the registration paths | minor |
 | 16.2.0 | `write(intent)` and identity on every path | WC-STEP-PATCH, ST-EVENT, ID-BATCH, ID-FIRST-MATCH where it changes no outcome, ST-HARNESS; ST-VIEWS if its alarm checks pass; REG-S3 behind its flag; v4 statistics reads | minor |
-| 16.3.0 or later | multi mode, preview | ST-PG, T30-SCHEMA-CONFIG, TEN-RESOLVE, T30-WIRING behind `TENANCY_MODE=multi`; TEN-LAB passes with its control; single-tenant unchanged | minor for self-hosters |
+| 16.3.0 or later | multi mode, preview | ST-PG, T30-SCHEMA-CONFIG, TEN-RESOLVE, T30-WIRING behind `nightscout serve` (the subcommand selects tenancy, 2026-10-27; formerly `TENANCY_MODE=multi`); TEN-LAB passes with its control; single-tenant unchanged | minor for self-hosters |
 | 17.0.0 | contract tightening | ID-UNIQUE-INDEX with a duplicate-cleaning step, ID-FIRST-MATCH where it changes outcomes, `WRITE_VALIDATION` default (if decided), D8 v1 query bounds, any v4 path promoted from unstable | major |
 
 Two consequences:
@@ -304,7 +304,7 @@ M3 is `ST-V3-DECOUPLE` and M4 is `ST-VIEWS` in the [next-gen plan](next-gen-plat
 | Q3 | The seam slices in 16.0.0? | (a) hold to 16.1.0; (b) merge now | *Superseded by Q12 (decided 2026-10-27):* in, through B6's entry bar, merged to `dev` once its measured items pass (§2.1); otherwise 16.1.0 | tenancy start date by the time the soak takes |
 | Q4 | #8857 in 16.1.0, off by default? | keep `CONTROLLER_REGISTRATION` on/off, or a staged mode (D-REG-FLAG) | 16.1.0 with whichever flag the PR review settles | REG-S3 |
 | Q5 | Is ID-UNIQUE-INDEX (with duplicate cleaning) 17.0.0 material? | (a) yes; (b) add the index as opt-in in a minor, enforce in 17.0.0 | (b): an opt-in index lets operators measure their duplicates first | ID-UNIQUE-INDEX, the PostgreSQL key |
-| Q6 | Does multi mode ship in 16.x minors behind `TENANCY_MODE=multi`? | (a) yes, labelled preview; (b) wait for 17.0.0 | (a), §4.3 | TEN-LAB's release |
+| Q6 | Does multi mode ship in 16.x minors behind `TENANCY_MODE=multi`? *(Since 2026-10-27 the gate is `nightscout serve`, not a setting.)* | (a) yes, labelled preview; (b) wait for 17.0.0 | (a), §4.3 | TEN-LAB's release |
 | Q7 | How is v4's stability declared? | (a) per path in the capability document; (b) a `/api/v4-unstable` prefix; (c) no marker | (a): the capability document is already the place a client reads what the hub serves | REG-PROPOSE |
 | Q8 | `WRITE_VALIDATION` default | (a) stays `off`; (b) `log` in a minor; (c) `reject` in 17.0.0 | (b) then (c), after #8841's open items (contents, item 7) | 17.0.0 contents |
 | Q9 | D-EVENT: commit event per call or per driver operation | per the plan's decision card | *Deferred, maintainer 2026-10-27:* no shape adopted; the event stays counts-only and internal; reopened when WC-STEP-PATCH's WriteResult.items[], a named first subscriber, the BF-164 websocket cursor re-measure and a count of replica-set sites are in hand. Research continues as input: a post-write variant, with a capped pre-read as the comparison (session -2e) | ST-EVENT, the change feed |
@@ -486,7 +486,8 @@ release soaks them; and how does that weigh against releasing as soon as the can
   lab cannot reach: a supervisor that sends SIGTERM itself under `restart: on-failure` (the site used
   to keep running; it now exits 0 and stays down), and tooling that matches PID 1's command line.
 - **Trade.** A cleaner stop for every Docker site in the major, against one more PR in the merge
-  list; `serve api` ships labelled alpha.
+  list; `serve` is reserved for a multitenant Nightscout and refuses every role until one is
+  multitenant (maintainer, 2026-10-27 night).
 
 ### B9. Multitenant roles in 16.0.0 as alpha
 

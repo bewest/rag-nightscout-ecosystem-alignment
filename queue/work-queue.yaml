@@ -22971,9 +22971,15 @@ items:
       - tools/lab/image-start-forms/README.md
     notes: >
       2026-10-27 night (maintainer): #8865 joins the 16.0.0 merge list.
-      Only `single` is supported; `serve api` ships labelled alpha; the other
-      roles (evaluator, realtime, vcpool, tenant-admin, admin) exit 64 as not
-      yet available. #8862 is superseded. Head 53ba192a (README and CLI help
+      Only `single` is supported. Then (maintainer, same night): the
+      subcommand selects tenancy, so TENANCY_MODE retires; `serve` is reserved
+      for a multitenant Nightscout and every role, api included, exits 64 until
+      it is multitenant; the single-tenant api code runs as
+      scripts/headless-test-server.js for tests and development (not in the
+      image); API3_TEST_TARGET serve-api is renamed headless. Head b01b77c3
+      (pushed by the maintainer): API v3 suites 751/0 under single with and
+      without the change, 643/0/108 pending under headless (MongoDB 7.0.43
+      with nofile 64000). PR title and body rewritten to match. #8862 is superseded. Head 53ba192a (README and CLI help
       say "multitenant roles"); every check passing; no human review yet.
 
       2026-10-27 night (session -00): #8865 head f01d67e6, pushed by the

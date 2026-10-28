@@ -924,6 +924,13 @@ change) and PLAT-SERVE (the hosted roles, carved one at a time from `bootevent`'
 starting with `api`) in [`queue/work-queue.yaml`](../../../queue/work-queue.yaml) and the
 [next-gen platform plan](../platform/next-gen-platform-plan.md) §4.4.
 
+**Amended 2026-10-27 (maintainer): the subcommand selects tenancy.** `nightscout single` is
+single-tenant and every `nightscout serve` role is multitenant, so no separate tenancy setting is
+needed: where this plan says `TENANCY_MODE=multi`, read "a `serve` role". `serve` refuses every
+role until that role is multitenant; the single-tenant code of the `api` profile runs as
+`scripts/headless-test-server.js` for tests and development, outside the operator CLI (rule 3).
+Built on #8865 at `b01b77c3`.
+
 ### 2.13 D22 — per-setting policy, project floors and secrets (maintainer, 2026-10-27)
 
 The census ([re-measured on dev](../../60-research/tenancy/t30-census-dev-2026-10-27.md)) classes each of
