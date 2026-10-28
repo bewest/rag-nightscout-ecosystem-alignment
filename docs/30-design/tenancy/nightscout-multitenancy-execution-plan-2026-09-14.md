@@ -2047,6 +2047,14 @@ already issue two as `count: 1`); **`ns-evaluator` needs no resident `ddata`**, 
 - `devicestatus` (478 KB), because `iob.js` prefers device-reported IOB — but only its newest document
   is needed.
 
+  *Superseded for device statuses (maintainer, 2026-10-27; ST-VIEWS):* the newest document, or the
+  10 newest the bounded view first took, is not enough. When a second uploader floods device statuses,
+  today's code raises two URGENT alarms (OpenAPS not looping, pump data stale) and a 10-newest window
+  raises none (reproduced by session -65). The window keeps the 10 newest plus the newest status of
+  each kind the alarm plugins read (loop, openaps, pump, uploader and the rest), looking back as far as
+  today's resident device-status load (24 hours, or 2 days by setting). The same crowding question for
+  entries (a duplicate uploader against the 12 newest readings) is open.
+
 The top-down spike reported a field split with raw `treatments` as display-only; that is wrong
 (`treatmentnotify` withholds on treatments) and the spike's corpus armed 6 of 17 alarm producers. The
 bottom-up result is the one to use.
