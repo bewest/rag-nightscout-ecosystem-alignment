@@ -2060,6 +2060,11 @@ already issue two as `count: 1`); **`ns-evaluator` needs no resident `ddata`**, 
   each kind the alarm plugins read (loop, openaps, pump, uploader and the rest), looking back as far as
   today's resident device-status load (24 hours, or 2 days by setting). The same crowding question for
   entries (a duplicate uploader against the 12 newest readings) is open.
+  *Then (2026-10-28, maintainer approved):* newest-of-kind still missed alarms, because Loop and AAPS
+  keep uploading while their loop fails. The bound adds the newest status passing each test the
+  "isn't looping" alarms count from (Loop without `failureReason`, OpenAPS with `suggested`, OpenAPS
+  with a received `enacted`, within 6 hours), every status from the last 30 minutes, and every pump
+  status within twice `urgentClock` (#8875, `a0470a72`).
 
 The top-down spike reported a field split with raw `treatments` as display-only; that is wrong
 (`treatmentnotify` withholds on treatments) and the spike's corpus armed 6 of 17 alarm producers. The
