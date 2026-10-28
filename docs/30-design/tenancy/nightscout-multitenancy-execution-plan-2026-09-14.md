@@ -945,6 +945,9 @@ model.
    - **network safety**: `TRUST_PROXY` must be a hop count or CIDR, never empty; outbound webhooks to public
      addresses only; connector endpoints only the hosts a driver defines; `BASE_URL` derived from the tenant
      slug;
+   - **app settings stay private**: reading an app's settings record by identifier needs
+     `api:settings:admin`, as search and history do (`API3_SETTINGS_STRICT_READ_ENABLED` always on; added
+     2026-10-27);
    - **data and log safety**: `WRITE_VALIDATION` at least `log` (an owner may tighten it); `DEBUG_LOGGING`
      off; `IMPORT_CONFIG` ignored; a permanent autoprune needs an explicit confirmation and an export offered
      first.
@@ -1007,8 +1010,8 @@ explanation, until multi-mode alarms pass the gate in §7a. Settings that do not
 would invite false trust.
 
 **Not decided.** The secrets backend; the twelve contested settings re-stated under D22 are drafted for
-review in [census §3a](../../60-research/tenancy/t30-census-dev-2026-10-27.md), with one choice open
-(row 7: whether the strict settings read is a floor).
+review in [census §3a](../../60-research/tenancy/t30-census-dev-2026-10-27.md); row 7 decided the same
+day: the strict settings read (`API3_SETTINGS_STRICT_READ_ENABLED`) is a floor, always on under `multi`.
 
 ## 3. D8 — the query surface
 
