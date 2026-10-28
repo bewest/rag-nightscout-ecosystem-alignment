@@ -70,7 +70,7 @@ NOT MET; the official clone's older node_modules reports UNMEASURED.
 
 2026-10-28 02:26Z: PR #8873 opened by the maintainer for bf/16.0.0-views-data
 (head 80a414c7). Three CI jobs failed on the AndroidAPS IOB pill golden, which
-had recorded BF-206; the golden is regenerated in 650a8ca1 (local, not
+had recorded BF-206; the golden is regenerated in 1c50c29a (local, not
 pushed). 2026-10-27: fixed on local bf/16.0.0-views-data by session -65
 (commit 6b47afa9; branch head 80a414c7, four commits on dev db3b9e4e, not
 pushed; the maintainer asked for a branch and PR). The four new test files,

@@ -6851,7 +6851,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-28 02:26Z: PR #8873 opened by the maintainer for bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the AndroidAPS IOB pill golden, which had recorded BF-206; the golden is regenerated in 650a8ca1 (local, not pushed). 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit 6b47afa9; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
+**Notes.** 2026-10-28 02:26Z: PR #8873 opened by the maintainer for bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the AndroidAPS IOB pill golden, which had recorded BF-206; the golden is regenerated in 1c50c29a (local, not pushed). 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit 6b47afa9; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
 
 ### `BFQ-205` &mdash; BF-205 - same-timestamp records are ordered differently between in-memory loads
 
@@ -6882,7 +6882,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-28 02:26Z: PR #8873 opened by the maintainer for bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the AndroidAPS IOB pill golden, which had recorded BF-206; the golden is regenerated in 650a8ca1 (local, not pushed). 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit df95900f; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
+**Notes.** 2026-10-28 02:26Z: PR #8873 opened by the maintainer for bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the AndroidAPS IOB pill golden, which had recorded BF-206; the golden is regenerated in 1c50c29a (local, not pushed). 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit df95900f; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
 
 ### `BFQ-206` &mdash; BF-206 - a device IOB without a timestamp is dated by the server clock
 
@@ -6913,7 +6913,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-28 02:26Z: PR #8873 opened by the maintainer for bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the AndroidAPS IOB pill golden, which had recorded BF-206; the golden is regenerated in 650a8ca1 (local, not pushed). 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit 675560ab; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
+**Notes.** 2026-10-28 02:26Z: PR #8873 opened by the maintainer for bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the AndroidAPS IOB pill golden, which had recorded BF-206; the golden is regenerated in 1c50c29a (local, not pushed). 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit 675560ab; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
 
 ### `BFQ-207` &mdash; BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; the newest is intended
 
@@ -6944,7 +6944,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-28 02:26Z: PR #8873 opened by the maintainer for bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the AndroidAPS IOB pill golden, which had recorded BF-206; the golden is regenerated in 650a8ca1 (local, not pushed). 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit 80a414c7; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f. Intended behaviour ("latest is correct") decided by the maintainer in session -65, relayed. ST-VIEWS' bounded view differs from the resident value here by design.
+**Notes.** 2026-10-28 02:26Z: PR #8873 opened by the maintainer for bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the AndroidAPS IOB pill golden, which had recorded BF-206; the golden is regenerated in 1c50c29a (local, not pushed). 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit 80a414c7; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f. Intended behaviour ("latest is correct") decided by the maintainer in session -65, relayed. ST-VIEWS' bounded view differs from the resident value here by design.
 
 ### `BFQ-208` &mdash; BF-208 - an API v1 delete by a non-hex _id can answer 200 and announce a removal while nothing is removed
 
