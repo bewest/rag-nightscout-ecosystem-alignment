@@ -33,7 +33,7 @@ function matrix (design, breaks) {
     secrets: [],
     harness: Object.keys(PORTS) // health checks and the lab-only state probe
   };
-  if (design === 'A' || design === 'C') {
+  if (design === 'A' || design === 'AK' || design === 'C') {
     m.internet.push('ta_public', 'sec_public');
     m.dashboard.push('ta_public', 'sec_public');
   }

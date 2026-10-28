@@ -19,6 +19,7 @@ The *operator* runs the host.
 | **B0**, trusted orchestrator, no identity | The dashboard forwards the owner's login to an internal *orchestrator*. The orchestrator checks ownership itself, then writes the tenant's configuration through an internal API. Internal calls carry no identity and name the site in the URL. |
 | **B1**, trusted orchestrator, service tokens | As B0, but every internal call carries a *service token* (a credential that names a component, not a person): dashboard to orchestrator, operator console to orchestrator, orchestrator to listener and to the secrets service. |
 | **C**, split by audience | Owner edits travel as in A. Provisioning and suspension go through an orchestrator that lives only on the operator plane (D7) and that the dashboard cannot reach. |
+| **AK**, A with keys kept in the secrets service ("A-keys-stay", added 2026-10-27) | As A, but tenant signing keys never leave the secrets service. The token exchange asks the secrets service to sign; the listener asks it to verify each token. The secrets service takes the tenant from the address, sets the claims and the token lifetime itself, and refuses to hand a signing key to anyone. |
 
 ## What runs
 
@@ -31,8 +32,8 @@ were free when the lab was built (checked with `ss -ltn`).
 | `roles/dashboard.js` | 47411 | owner dashboard backend |
 | `roles/tenant-admin.js` | 47412 public, 47413 internal | `ns-tenant-admin`: token exchange, owner API (A, C), service API (B); policy and floors |
 | `roles/ns-admin.js` | 47414 | platform operator plane (D7): no credential; tenants, suspension, operator policy |
-| `roles/orchestrator.js` | 47415 | B: owner and operator routes. C: operator routes only. Not started in A |
-| `roles/secrets.js` | 47416 public, 47417 internal, 47418 operator | secrets: AES-256-GCM at rest, consume, logged reveal; the operator port provisions and never reveals |
+| `roles/orchestrator.js` | 47415 | B: owner and operator routes. C: operator routes only. Not started in A or AK |
+| `roles/secrets.js` | 47416 public, 47417 internal, 47418 operator | secrets: AES-256-GCM at rest, consume, logged reveal; the operator port provisions and never reveals; in AK also sign and verify for the listener, and no key leaves |
 
 `lib/policy.js` implements D22 over seven census names: `AUTH_DEFAULT_ROLES` (bounded list),
 `WRITE_VALIDATION` (floor `log`, owner may tighten), `CONNECT_SOURCE_ENDPOINT` (driver host
@@ -52,8 +53,8 @@ matrix is doing the work.
 ## How to run
 
 ```sh
-node harness.js --scratch /some/dir/outside/the/repo   # about 2 minutes; writes results.json
-node harness.js --scratch DIR --only A,C                # a subset
+node harness.js --scratch /some/dir/outside/the/repo   # about 5 minutes; writes results.json
+node harness.js --scratch DIR --only A,C,AK             # a subset (A, B0, B1, C, AK)
 ```
 
 Each run makes throwaway keys under `DIR/runs/<n>-<design>-<label>/keys`, starts every process with
@@ -73,10 +74,13 @@ password or revealed value.
 3. **Policy.** Where the policy and floors are enforced, and whether a crafted request gets round
    them.
 4. **Cross-tenant confusion.** Whether tenant 1's owner can change tenant 2, and what stops it.
-5. **Effort.** Calls and credentials per edit, and what the owner sees.
+5. **Effort.** Calls and credentials per edit, latency, and what the owner sees.
+6. **Persistence** (A, C, AK). What a compromised tenant-owner listener can do while the
+   compromise lasts, and what it keeps after it ends: stolen keys, or tokens minted while it had a
+   live signing service to ask. Run with a 3-second token lifetime so expiry can be observed.
 
 Every check has a **control**: the same deployment with one protection removed. A control
-*reports* when the check it targets changes. All 33 controls reported, and the liveness check
+*reports* when the check it targets changes. All 46 controls reported, and the liveness check
 failed when one process was killed by its PID [M].
 
 ## Results
@@ -86,14 +90,15 @@ failed when one process was killed by its PID [M].
 Cells: tenants affected, as read / write / operator action / reveal. "all" is t1, t2 and t3.
 Only owner-1 had a live dashboard session during the compromise.
 
-| compromised | A | B0 | B1 | C |
-|---|---|---|---|---|
-| dashboard backend | t1 / t1 / none / t1 | t1 / t1 / **all** / t1 | t1 / t1 / none / t1 | t1 / t1 / none / t1 |
-| orchestrator | (none exists) | **all / all / all / all** | **all / all / all / all** | all / none / all / none |
-| tenant 1's owner credential | t1 / t1 / none / t1 | t1 / t1 / none / t1 | t1 / t1 / none / t1 | t1 / t1 / none / t1 |
-| secrets API caller | all / all / none / all | all / all / all / all | all / all / all / all | all / all / none / all |
-| operator plane | all / none / all / none | all / none / all / none | all / none / all / none | all / none / all / none |
-| identity provider | all / all / none / all | all / all / none / all | all / all / none / all | all / all / none / all |
+| compromised | A | AK | B0 | B1 | C |
+|---|---|---|---|---|---|
+| dashboard backend | t1 / t1 / none / t1 | t1 / t1 / none / t1 | t1 / t1 / **all** / t1 | t1 / t1 / none / t1 | t1 / t1 / none / t1 |
+| orchestrator | (none exists) | (none exists) | **all / all / all / all** | **all / all / all / all** | all / none / all / none |
+| tenant 1's owner credential | t1 / t1 / none / t1 | t1 / t1 / none / t1 | t1 / t1 / none / t1 | t1 / t1 / none / t1 | t1 / t1 / none / t1 |
+| tenant-owner listener | all / all / none / all | all / all / none / all | none / none / none / **all** [M]; all read and write through its database access [R] | none / none / none / none [M]; database access as B0 [R] | all / all / none / all |
+| secrets API caller | all / all / none / all | all / all / none / all | all / all / all / all | all / all / all / all | all / all / none / all |
+| operator plane | all / none / all / none | all / none / all / none | all / none / all / none | all / none / all / none | all / none / all / none |
+| identity provider | all / all / none / all | all / all / none / all | all / all / none / all | all / all / none / all | all / all / none / all |
 
 - *Tenant 1's owner credential* is the per-tenant owner token in A and C. B issues nothing
   tenant-scoped, so the owner's identity-provider assertion stands in.
@@ -101,6 +106,15 @@ Only owner-1 had a live dashboard session during the compromise.
   secrets. In A and C that is the tenant-owner listener's credential for fetching signing keys:
   with every tenant's key, an attacker mints owner tokens for every tenant. In B0 and B1 it is the
   orchestrator (B0: its network position; B1: its service token).
+- In A, C and AK the *tenant-owner listener* and the *secrets API caller* are the same credential
+  (the listener's service token, used from the listener's network position), so the two rows are
+  equal by construction. In A and C it fetches every tenant's key; in AK it asks the secrets
+  service to sign a token for every tenant. Either way the reach is all tenants *during* the
+  compromise. What differs is what is left afterwards: see §6.
+- In B the listener's service API carries no owner token, so a stolen key buys nothing over the
+  APIs. In B0 the listener can still reveal every tenant's secret, because it reaches the secrets
+  service's internal API, which takes no identity; in B1 that API wants the orchestrator's token.
+  The listener's own database access reaches every tenant in both [R, no database modelled].
 - B0's dashboard reaches every tenant through the orchestrator's operator routes, which take no
   identity.
 - The operator plane can pin any setting for any tenant within the floors, and reveals nothing.
@@ -116,18 +130,18 @@ all tenants' secrets. `reveal-no-auth` (A, C) let tenant 1's token reveal every 
 
 ### 2. Audit [M]
 
-| edit | A, C | B0 | B1 |
+| edit | A, C, AK | B0 | B1 |
 |---|---|---|---|
 | owner's edit | names owner-1, verified by the tenant key's signature | no identity; owner-1 only as the orchestrator asserts it | the orchestrator, plus owner-1 as it asserts |
 | attacker's edit | stolen t1 token, body claims `owner-9`: log names owner-1, verified. It names the credential's owner, so theft looks like the owner | compromised orchestrator writes t2 naming owner-2: no identity, plus a human the attacker chose | the orchestrator, plus a human the attacker chose |
 | operator edit | the operator plane, no identity (all designs; D7 has no credential) | same | same |
 
-Control: `actor-from-body` (A, C) made the listener take the name from the request body; the
+Control: `actor-from-body` (A, C, AK) made the listener take the name from the request body; the
 attacker's edit was then logged as `owner-9`.
 
 ### 3. Policy [M]
 
-Policy and floors are enforced in `ns-tenant-admin` for every owner write, in all four designs.
+Policy and floors are enforced in `ns-tenant-admin` for every owner write, in all five arms (AK's results equal A's).
 Floors are enforced again in `ns-admin` for every operator policy write. The dashboard's own check
 (hidden keys) is a convenience; every crafted request below skipped it.
 
@@ -153,32 +167,68 @@ provisioning [M, policy engine]. The `WRITE_VALIDATION` default is read from a d
 
 ### 4. Cross-tenant confusion [M]
 
-| attempt against t2 | A, C | B0, B1 |
-|---|---|---|
-| t1's token replayed | refused, **signature** | n/a: no tenant-scoped token |
-| forged claim (tenant t2), t1's signature kept | refused, **signature** | n/a |
-| t2 token signed with t1's key | refused, **signature** | n/a |
-| owner-1's session edits t2 | n/a | refused, **membership**: the orchestrator's claim check |
+| attempt against t2 | A, C | AK | B0, B1 |
+|---|---|---|---|
+| t1's token replayed | refused, **signature** | refused, **signature** (secrets service's verify) | n/a: no tenant-scoped token |
+| forged claim (tenant t2), t1's signature kept | refused, **signature** | refused, **signature** | n/a |
+| t2 token signed with t1's key | refused, **signature** | refused, **signature** | n/a |
+| owner-1's session edits t2 | n/a | n/a | refused, **membership**: the orchestrator's claim check |
 
 Controls: `install-wide-key` (one key for every tenant, as C.4 row 2) turned the replay into a
 *claim* refusal and let the t1-key-signed t2 token through. `no-sig-verify` let the forged claim
-through. `no-ownership-check` let owner-1 edit t2 in B0 and B1.
+through. `no-ownership-check` let owner-1 edit t2 in B0 and B1. In AK, `verify-skips-tenant` (a
+verify endpoint that accepts a token valid under *any* tenant's key) turned the replay into a
+claim refusal and let the t1-key-signed t2 token through.
 
 ### 5. Effort for the dashboard [M, except where marked]
 
-| | A, C | B0 | B1 |
-|---|---|---|---|
-| dashboard calls, first edit to a tenant | 2 (token exchange, write) | 1 | 1 |
-| dashboard calls, later edits | 1 | 1 | 1 |
-| calls in the whole system, later edit | 1 | 3 | 3 |
-| credentials the dashboard handles [R] | 2: assertion, plus one owner token per tenant | 1: assertion | 2: assertion, service token |
-| reveal, session policy (D22's initial policy) | no owner step | no owner step | no owner step |
-| reveal, fresh re-authentication (D22's target) | owner re-enters password once; 5 dashboard calls | once; 3 calls | once; 3 calls |
+| | A, C | AK | B0 | B1 |
+|---|---|---|---|---|
+| dashboard calls, first edit to a tenant | 2 (token exchange, write) | 2 | 1 | 1 |
+| dashboard calls, later edits | 1 | 1 | 1 | 1 |
+| calls in the whole system, first edit | 2 | 4 (adds sign and verify) | 3 | 3 |
+| calls in the whole system, later edit | 1 | 2 (adds one verify per edit) | 3 | 3 |
+| later edit, median / p90 latency, ms (loopback, 40 edits, one run) | A 1.03 / 1.50; C 0.96 / 2.03 | 1.42 / 2.54 | 1.98 / 2.63 | 2.03 / 2.46 |
+| credentials the dashboard handles [R] | 2: assertion, plus one owner token per tenant | 2, as A | 1: assertion | 2: assertion, service token |
+| reveal, session policy (D22's initial policy) | no owner step | no owner step | no owner step | no owner step |
+| reveal, fresh re-authentication (D22's target) | owner re-enters password once; 5 dashboard calls | once; 5 calls | once; 3 calls | once; 3 calls |
 
 In B the secrets service never sees the human, so the freshness check is the orchestrator's alone
 [M: the compromised orchestrator revealed every tenant's secret without any login].
 
-Control: `no-token-cache` (A, C) raised later edits from 1 dashboard call to 2.
+Latency is wall clock at the harness over loopback, from one run. It is not compared between
+runs and says nothing about a real network, where AK's extra verify call per edit is one more
+round trip to the secrets service [R].
+
+Control: `no-token-cache` (A, C, AK) raised later edits from 1 dashboard call to 2.
+
+### 6. Persistence: during the compromise, and after it [M]
+
+The attacker controls the tenant-owner listener (its network position and its service token),
+writes, collects what it can carry, then loses both. Token lifetime is 3 seconds in this run.
+
+| | A, C | AK |
+|---|---|---|
+| writes during the compromise | all | all (through the signing service) |
+| signing keys carried out | 3 | **0** (the secrets service refuses to hand a key out) |
+| tokens carried out, longest lifetime | 3, 900 s (the attacker set it, holding the keys) | 3, **3 s** (the secrets service set it; the attacker asked for a day) |
+| writes after the compromise, before the tokens expire | all | all |
+| writes after expiry | **all** (mints fresh tokens with the stolen keys) | **none** (`expired`, and `signature` for forgeries) |
+| reveals after expiry | all | none |
+
+So AK changes what is *kept*, not what is reachable *during* the compromise. In A and C,
+recovery means rotating every tenant's signing key; until then the stolen keys mint tokens for
+every tenant. In AK the attacker keeps only tokens that live as long as the secrets service
+allows, and recovery means ending the compromise and waiting out that lifetime [R].
+
+Controls (AK):
+- `consume-allowed` (the secrets service hands the key out, as in A): 3 keys carried out; writes
+  and reveals after expiry went from none to all.
+- `sign-accepts-exp` (the sign endpoint honours the caller's expiry): writes and reveals after
+  expiry went from none to all.
+- `sign-any-caller` (a sign endpoint on the public port with no caller check, any tenant): tenant
+  1's owner credential, the dashboard and the operator plane each wrote and revealed every tenant.
+- `verify-skips-tenant`: see §4.
 
 ## What the lab does not model
 
@@ -202,3 +252,6 @@ Some controls changed more than their target. These side effects are expected, a
   file beside the listener, not in the secrets service. This is an artifact of the control, not a
   protection.
 - `no-ownership-check` also cut one call from B's edit, because it skips the membership lookup.
+- `install-wide-key` (A, C) also emptied the "tenant-owner listener" row, for the same reason.
+- `no-sig-verify` in AK also cut the verify call from each edit.
+- Controls that do not target §6 do not re-run it; their §6 values are copied from the baseline.

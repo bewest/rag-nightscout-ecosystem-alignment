@@ -15,6 +15,8 @@ const { loadRun, key, load, save, audit } = require('../lib/store');
 const run = loadRun(process.argv[2]);
 const mx = matrix(run.design, run.breaks);
 const B = run.design === 'B0' || run.design === 'B1';
+const AK = run.design === 'AK';
+const ttl = run.tokenTtl || 900;
 const idpPub = key(run.runDir, 'idp.pub'); // public key, to verify assertions
 const svcSelf = key(run.runDir, 'svc-tenant-admin').toString(); // to consume signing keys
 const svcOrchestrator = key(run.runDir, 'svc-orchestrator').toString(); // B1: to recognise the orchestrator
@@ -44,6 +46,9 @@ async function verifyOwner (req, slug, t, ctx) {
   let v;
   if (run.has('no-sig-verify')) {
     const d = c.decode(tok); v = d ? { ok: true, payload: d.payload } : { ok: false, reason: 'malformed' };
+  } else if (AK) {
+    const r = await call(mx, 'tenant-admin', 'sec_internal', 'POST', `/t/${slug}/verify`, { token: tok }, { authorization: 'Service ' + svcSelf }, ctx);
+    v = r.status === 200 ? r.body : { ok: false, reason: 'verify-unavailable' };
   } else {
     const k = await tenantKey(slug, ctx);
     if (!k) return { ok: false, reason: 'no-key' };
@@ -94,9 +99,16 @@ if (!B) {
       const a = c.verifyEd(b.assertion, idpPub);
       if (!a.ok || a.payload.aud !== 'nightscout-lab' || a.payload.exp < c.now()) return [401, { error: 'assertion' }];
       if (!r.t.members.includes(a.payload.sub)) return [403, { error: 'not-an-owner' }];
-      const k = await tenantKey(m[1], ctx); if (!k) return [500, { error: 'no-key' }];
-      const t = c.now();
-      const token = c.signHS256({ sub: a.payload.sub, tenant: m[1], scope: 'owner', auth_time: a.payload.auth_time, iat: t, exp: t + 900 }, k);
+      let token;
+      if (AK) {
+        const r = await call(mx, 'tenant-admin', 'sec_internal', 'POST', `/t/${m[1]}/sign`, { sub: a.payload.sub, auth_time: a.payload.auth_time }, { authorization: 'Service ' + svcSelf }, ctx);
+        if (r.status !== 200) return [500, { error: 'sign' }];
+        token = r.body.token;
+      } else {
+        const k = await tenantKey(m[1], ctx); if (!k) return [500, { error: 'no-key' }];
+        const t = c.now();
+        token = c.signHS256({ sub: a.payload.sub, tenant: m[1], scope: 'owner', auth_time: a.payload.auth_time, iat: t, exp: t + ttl }, k);
+      }
       audit(run.runDir, 'tenant-admin', { action: 'token-minted', tenant: m[1], actor: { kind: 'human', id: a.payload.sub, verifiedBy: 'idp-assertion' } });
       return [200, { token }];
     }],

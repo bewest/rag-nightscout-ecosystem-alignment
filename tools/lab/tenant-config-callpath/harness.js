@@ -23,7 +23,7 @@ const LAB = __dirname;
 const args = process.argv.slice(2);
 const arg = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const SCRATCH = arg('--scratch', process.env.LAB_SCRATCH);
-const ONLY = (arg('--only', 'A,B0,B1,C')).split(',');
+const ONLY = (arg('--only', 'A,B0,B1,C,AK')).split(',');
 const OUT = arg('--out', path.join(LAB, 'results.json'));
 if (!SCRATCH) { console.error('--scratch DIR is required (outside the git tree)'); process.exit(2); }
 const gitTop = execSync('git rev-parse --show-toplevel', { cwd: LAB }).toString().trim();
@@ -48,7 +48,7 @@ function portsFree () {
 async function startRun (design, breaks, opt) {
   const busy = portsFree();
   if (busy.length) throw new Error('ports busy before start: ' + busy.join(','));
-  const label = breaks.length ? breaks.join('+') : (opt.revealPolicy === 'fresh' ? 'fresh' : 'baseline');
+  const label = (breaks.length ? breaks.join('+') : (opt.revealPolicy === 'fresh' ? 'fresh' : 'baseline')) + (opt.tokenTtl ? '-ttl' + opt.tokenTtl : '');
   const runDir = path.join(SCRATCH, 'runs', `${String(++runSeq).padStart(2, '0')}-${design}-${label}`);
   fs.mkdirSync(path.join(runDir, 'keys'), { recursive: true, mode: 0o700 });
   fs.mkdirSync(path.join(runDir, 'logs'), { recursive: true });
@@ -63,7 +63,7 @@ async function startRun (design, breaks, opt) {
   const users = {}; for (const t of TENANTS) users[OWNER[t]] = { password: c.random(12) };
   wk('users.json', JSON.stringify(users));
   fs.writeFileSync(path.join(runDir, 'run.json'), JSON.stringify({
-    design, breaks, revealPolicy: opt.revealPolicy || 'session', freshSeconds: opt.freshSeconds || 2
+    design, breaks, revealPolicy: opt.revealPolicy || 'session', freshSeconds: opt.freshSeconds || 2, tokenTtl: opt.tokenTtl || 900
   }));
   const roles = ['idp', 'secrets', 'tenant-admin', 'ns-admin', 'dashboard'].concat(isB(design) || design === 'C' ? ['orchestrator'] : []);
   const pids = {};
@@ -116,6 +116,14 @@ function resetDisplay (run, t) {
   store.save(run.runDir, s);
 }
 
+// A tenant's signing key, read by the harness from the secrets store with the
+// run's key-encryption key. Used only to build the cross-tenant probe x3.
+function harnessKey (run, t) {
+  const kek = fs.readFileSync(path.join(run.runDir, 'keys', 'kek'));
+  const rec = JSON.parse(fs.readFileSync(path.join(run.runDir, 'secrets.enc.json'), 'utf8'))[t].jwt;
+  return Buffer.from(c.decrypt(kek, rec), 'base64url');
+}
+
 async function login (run, user) {
   const r = await as(run, 'internet', 'dashboard', 'POST', '/session/login', { user, password: run.users[user].password });
   if (r.status !== 200) throw new Error('login failed ' + user);
@@ -128,7 +136,7 @@ async function idpAssertion (run, user) {
 }
 
 async function setup (run) {
-  const op = run.design === 'A' ? null : run.design === 'B1' ? { authorization: 'Service ' + svcKey(run, 'svc-operator') } : {};
+  const op = (run.design === 'A' || run.design === 'AK') ? null : run.design === 'B1' ? { authorization: 'Service ' + svcKey(run, 'svc-operator') } : {};
   for (const t of TENANTS) {
     const r = op === null
       ? await as(run, 'operator', 'ns_admin', 'POST', '/tenants', { slug: t, owner: OWNER[t] })
@@ -186,6 +194,16 @@ class Attacker {
     for (const tok of this.creds.ownerTokens) {
       out.push(['held-token', tok]);
       out.push(['forged-claim', c.forgeClaim(tok, { tenant: t, sub: OWNER[t] })]);
+    }
+    const tk = this.creds.serviceTokens.tenantAdmin;
+    const longExp = c.now() + 86400; // an attacker asks for a long life; the oracle should refuse to grant it
+    if (tk) {
+      const r = await this.req('sec_internal', 'POST', `/t/${t}/sign`, { sub: OWNER[t], exp: longExp }, { authorization: 'Service ' + tk });
+      if (r.status === 200) out.push(['sign oracle (listener credential)', r.body.token]);
+    }
+    {
+      const r = await this.req('sec_public', 'POST', `/t/${t}/sign`, { sub: OWNER[t], exp: longExp });
+      if (r.status === 200) out.push(['public sign endpoint', r.body.token]);
     }
     if (this.creds.signingKeys[t]) {
       const n = c.now();
@@ -298,6 +316,7 @@ async function m1BlastRadius (run) {
   comps['secrets API caller'] = isB(d)
     ? new Attacker(run, ['orchestrator'], { serviceTokens: d === 'B1' ? { orchestrator: svcKey(run, 'svc-orchestrator') } : {} })
     : new Attacker(run, ['tenant-admin'], { serviceTokens: { tenantAdmin: svcKey(run, 'svc-tenant-admin') } });
+  comps['tenant-owner listener'] = new Attacker(run, ['tenant-admin'], { serviceTokens: { tenantAdmin: svcKey(run, 'svc-tenant-admin') } });
   comps['operator plane'] = new Attacker(run, ['ns-admin', 'operator'], { serviceTokens: d === 'B1' ? { operator: svcKey(run, 'svc-operator') } : {} });
   comps['identity provider'] = new Attacker(run, [], { idpKey: fs.readFileSync(path.join(run.runDir, 'keys', 'idp.key')) });
 
@@ -440,7 +459,7 @@ async function m4CrossTenant (run) {
   // t1's signing key: what signs t1's tokens in this run.
   const k1 = run.breaks.includes('install-wide-key')
     ? fs.readFileSync(path.join(run.runDir, 'keys', 'installwide.key'))
-    : Buffer.from((await as(run, 'tenant-admin', 'sec_internal', 'POST', '/t/t1/consume', { kind: 'jwt' }, { authorization: 'Service ' + svcKey(run, 'svc-tenant-admin') })).body.key, 'base64url');
+    : harnessKey(run, 't1');
   const n = c.now();
   const rows = {
     'x1 t1 token replayed at t2': tok,
@@ -466,6 +485,16 @@ async function m5Effort (run) {
     const r = await as(run, 'internet', 'dashboard', 'POST', '/edit', { session, tenant: 't1', key: 'DISPLAY_UNITS', value: i % 2 ? 'mg/dl' : 'mmol' });
     out.edits.push({ status: r.status, dashboardCalls: r.body._lab.direct, totalCalls: r.body._lab.total, credentialsHandled: r.body.credentialsHandled });
   }
+  // Latency of a later edit, wall clock at the harness, loopback only. Not a
+  // check: timings vary run to run, so they are reported, never compared.
+  const ms = [];
+  for (let i = 0; i < 40; i++) {
+    const t0 = process.hrtime.bigint();
+    await as(run, 'internet', 'dashboard', 'POST', '/edit', { session, tenant: 't1', key: 'DISPLAY_UNITS', value: i % 2 ? 'mg/dl' : 'mmol' });
+    ms.push(Number(process.hrtime.bigint() - t0) / 1e6);
+  }
+  ms.sort((a, b) => a - b);
+  out.latencyMs = { n: ms.length, median: +ms[Math.floor(ms.length / 2)].toFixed(3), p90: +ms[Math.floor(ms.length * 0.9)].toFixed(3) };
   const rv = await as(run, 'internet', 'dashboard', 'POST', '/reveal', { session, tenant: 't1', kind: 'plugin:connect' });
   out.reveal = { ok: rv.body.value === run.conn.t1, dashboardCalls: rv.body._lab.direct, totalCalls: rv.body._lab.total, ownerVisible: rv.status === 200 ? 'none' : rv.body.error };
   put('m5.first edit dashboard calls', out.edits[0].dashboardCalls);
@@ -491,6 +520,48 @@ async function m5Fresh (run) {
   const o = { firstAttempt: outcome(r1), ownerSteps: steps, revealed: r2.body.value === run.conn.t1, dashboardCallsTotal: calls };
   put('m5.fresh owner steps', steps.length);
   return o;
+}
+
+// Persistence: what a compromised tenant-owner listener gets while the
+// compromise lasts, and what it keeps afterwards. Run with a short token
+// lifetime (opt.tokenTtl) so expiry can be observed.
+async function m6Persistence (run) {
+  const out = {};
+  const during = new Attacker(run, ['tenant-admin'], { serviceTokens: { tenantAdmin: svcKey(run, 'svc-tenant-admin') } });
+  await during.prepare();
+  const hit = (o) => Object.entries(o).filter(([, v]) => v.ok).map(([t]) => t).join(',') || 'none';
+  const dw = {};
+  for (const t of TENANTS) dw[t] = await during.attempt(t, 'write');
+  out.duringWrite = hit(dw);
+  // What the attacker carries out: stolen keys, and tokens minted while it could.
+  const carried = { signingKeys: Object.assign({}, during.creds.signingKeys), ownerTokens: [] };
+  for (const t of TENANTS) {
+    for (const [via, tok] of await during.tokensFor(t)) {
+      if (via === 'sign oracle (listener credential)' || via === 'minted-with-harvested-key') { carried.ownerTokens.push(tok); break; }
+    }
+  }
+  const lifetimes = carried.ownerTokens.map((tok) => { const d = c.decode(tok).payload; return d.exp - d.iat; });
+  out.keysCarried = Object.keys(carried.signingKeys).length;
+  out.tokensCarried = carried.ownerTokens.length;
+  out.carriedTokenLifetimeS = lifetimes.length ? Math.max(...lifetimes) : null;
+  // The compromise ends: no network position, no service credential.
+  const after = new Attacker(run, [], carried);
+  const aw = {}; const ar = {};
+  for (const t of TENANTS) aw[t] = await after.attempt(t, 'write');
+  out.afterBeforeExpiryWrite = hit(aw);
+  await sleep((run.opt.tokenTtl + 1.5) * 1000);
+  // Fresh tokens: what the carried keys can still mint now.
+  after.creds.ownerTokens = carried.ownerTokens;
+  for (const t of TENANTS) { aw[t] = await after.attempt(t, 'write'); ar[t] = await after.attempt(t, 'reveal'); }
+  out.afterExpiryWrite = hit(aw);
+  out.afterExpiryReveal = hit(ar);
+  out.afterExpiryRefusals = Object.fromEntries(Object.entries(aw).filter(([, v]) => !v.ok).map(([t, v]) => [t, v.tried]));
+  put('m6.during.write', out.duringWrite);
+  put('m6.after, before expiry.write', out.afterBeforeExpiryWrite);
+  put('m6.after expiry.write', out.afterExpiryWrite);
+  put('m6.after expiry.reveal', out.afterExpiryReveal);
+  put('m6.signing keys carried out', out.keysCarried);
+  return out;
 }
 
 // ---------------------------------------------------------------- plan
@@ -526,7 +597,15 @@ const CONTROLS = {
     ['no-confirmation', ['m3.07 confirmation: API3_AUTOPRUNE_ENTRIES=90 without confirmation']]
   ]
 };
-CONTROLS.C = CONTROLS.A; // C's owner path is A's; the same protections are removed
+CONTROLS.C = CONTROLS.A;
+CONTROLS.AK = CONTROLS.A.filter(([b]) => b !== 'install-wide-key').concat([
+  ['verify-skips-tenant', ['m4.x1 t1 token replayed at t2 is a signature failure', 'm4.x3 t2 token signed with t1\'s key']],
+  ['sign-any-caller', ['m1.owner-1 credential.write', 'm1.dashboard.write']],
+  ['consume-allowed', ['m6.signing keys carried out', 'm6.after expiry.write']],
+  ['sign-accepts-exp', ['m6.after expiry.write']]
+]);
+const PERSIST = (d) => !isB(d);
+const TTL = 3; // C's owner path is A's; the same protections are removed
 
 async function measured (design, breaks, opt, fn) {
   const run = await startRun(design, breaks, opt || {});
@@ -579,12 +658,25 @@ async function full (run) {
   for (const d of ONLY) {
     console.log(`== ${d} baseline`);
     const base = await measured(d, [], {}, full);
+    if (PERSIST(d)) {
+      console.log(`== ${d} persistence (token lifetime ${TTL} s)`);
+      const pr = await measured(d, [], { tokenTtl: TTL }, m6Persistence);
+      base.persistence = pr.result; Object.assign(base.checks, pr.checks);
+    }
     console.log(`== ${d} fresh re-authentication variant`);
     const fresh = await measured(d, [], { revealPolicy: 'fresh', freshSeconds: 2 }, m5Fresh);
     const controls = [];
     for (const [brk, expect] of CONTROLS[d]) {
       console.log(`== ${d} control ${brk}`);
       const r = await measured(d, [brk], {}, full);
+      if (PERSIST(d)) {
+        if (expect.some((k) => k.startsWith('m6.'))) {
+          const pr = await measured(d, [brk], { tokenTtl: TTL }, m6Persistence);
+          Object.assign(r.checks, pr.checks);
+        } else {
+          for (const k of Object.keys(base.checks)) if (k.startsWith('m6.')) r.checks[k] = base.checks[k]; // not re-run
+        }
+      }
       const changed = {};
       for (const k of new Set(Object.keys(base.checks).concat(Object.keys(r.checks)))) {
         if (JSON.stringify(base.checks[k]) !== JSON.stringify(r.checks[k])) changed[k] = { baseline: base.checks[k], control: r.checks[k] };
@@ -594,7 +686,7 @@ async function full (run) {
       controls.push({ break: brk, expectedToFlip: expect, flipped, missingKeys, reported: flipped.length === expect.length && !missingKeys.length, changed });
       console.log(`   reported=${flipped.length === expect.length && !missingKeys.length} flipped=${flipped.length}/${expect.length}${missingKeys.length ? ' MISSING ' + missingKeys.join(' | ') : ''}`);
     }
-    results.designs[d] = { baseline: base.result, checks: base.checks, freshVariant: fresh.result, controls };
+    results.designs[d] = { baseline: base.result, persistence: base.persistence || null, checks: base.checks, freshVariant: fresh.result, controls };
   }
   fs.writeFileSync(OUT, JSON.stringify(results, null, 2) + '\n');
   console.log('wrote ' + OUT);

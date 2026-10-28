@@ -18,6 +18,8 @@ const { loadRun, key, audit } = require('../lib/store');
 const run = loadRun(process.argv[2]);
 const mx = matrix(run.design, run.breaks);
 const B = run.design === 'B0' || run.design === 'B1';
+const AK = run.design === 'AK'; // A-keys-stay: signing keys never leave this process
+const ttl = run.tokenTtl || 900;
 const kek = key(run.runDir, 'kek'); // held by this process only
 const svcTenantAdmin = key(run.runDir, 'svc-tenant-admin').toString(); // to recognise the consumer
 const svcOrchestrator = key(run.runDir, 'svc-orchestrator').toString(); // B1: to recognise the orchestrator
@@ -61,11 +63,49 @@ const internalRoutes = [
   ['POST', /^\/t\/([a-z0-9-]+)\/consume$/, async (req, m, b) => {
     // Only the tenant-owner listener consumes, and only signing keys.
     if (svc(req) !== svcTenantAdmin) return [401, { error: 'not-a-consumer' }];
+    if (AK && !run.has('consume-allowed')) return [403, { error: 'keys-stay' }]; // the break is a CONTROL
     if (b.kind !== 'jwt') return [403, { error: 'kind-not-consumable-by-caller' }];
     const v = get(m[1], 'jwt');
     return v ? [200, { key: v }] : [404, { error: 'no-secret' }];
   }]
 ];
+
+// AK: sign and verify on behalf of the tenant-owner listener. The tenant is
+// the one named by the ADDRESS; this process sets the claims and lifetime.
+function signFor (slug, b) {
+  const k = get(slug, 'jwt');
+  if (!k) return [404, { error: 'unknown-tenant' }];
+  if (typeof b.sub !== 'string') return [400, { error: 'sub' }];
+  const t = c.now();
+  const exp = run.has('sign-accepts-exp') && b.exp ? b.exp : t + ttl; // the break is a CONTROL
+  return [200, { token: c.signHS256({ sub: b.sub, tenant: slug, scope: 'owner', auth_time: b.auth_time || t, iat: t, exp }, Buffer.from(k, 'base64url')) }];
+}
+if (AK) {
+  internalRoutes.push(
+    ['POST', /^\/t\/([a-z0-9-]+)\/sign$/, async (req, m, b) => {
+      if (svc(req) !== svcTenantAdmin) return [401, { error: 'not-the-listener' }];
+      return signFor(m[1], b);
+    }],
+    ['POST', /^\/t\/([a-z0-9-]+)\/verify$/, async (req, m, b) => {
+      if (svc(req) !== svcTenantAdmin) return [401, { error: 'not-the-listener' }];
+      if (run.has('verify-skips-tenant')) {
+        // CONTROL: accept a token that verifies under ANY tenant's key.
+        for (const slug of Object.keys(db())) {
+          const v = c.verifyHS256(b.token, Buffer.from(get(slug, 'jwt'), 'base64url'));
+          if (v.ok) return [200, v];
+        }
+        return [200, { ok: false, reason: 'signature' }];
+      }
+      const k = get(m[1], 'jwt');
+      if (!k) return [404, { error: 'unknown-tenant' }];
+      return [200, c.verifyHS256(b.token, Buffer.from(k, 'base64url'))];
+    }]
+  );
+  if (run.has('sign-any-caller')) {
+    // CONTROL: a sign endpoint reachable by owners and the dashboard, with no caller check.
+    publicRoutes.push(['POST', /^\/t\/([a-z0-9-]+)\/sign$/, async (req, m, b) => signFor(m[1], b)]);
+  }
+}
 
 if (!B) {
   publicRoutes.push(

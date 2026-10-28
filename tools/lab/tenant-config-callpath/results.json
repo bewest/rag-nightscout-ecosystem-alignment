@@ -1,6 +1,6 @@
 {
   "lab": "tenant-config-callpath",
-  "generated": "2026-10-28T00:28:36.768Z",
+  "generated": "2026-10-28T00:40:36.739Z",
   "node": "v22.23.4",
   "ports": {
     "idp": 47410,
@@ -309,6 +309,65 @@
               "refused": {}
             }
           },
+          "tenant-owner listener": {
+            "read": {
+              "tenants": [
+                "t1",
+                "t2",
+                "t3"
+              ],
+              "via": {
+                "t1": "minted-with-harvested-key",
+                "t2": "minted-with-harvested-key",
+                "t3": "minted-with-harvested-key"
+              },
+              "refused": {}
+            },
+            "write": {
+              "tenants": [
+                "t1",
+                "t2",
+                "t3"
+              ],
+              "via": {
+                "t1": "minted-with-harvested-key",
+                "t2": "minted-with-harvested-key",
+                "t3": "minted-with-harvested-key"
+              },
+              "refused": {}
+            },
+            "operator": {
+              "tenants": [],
+              "via": {},
+              "refused": {
+                "t1": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ],
+                "t2": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ],
+                "t3": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ]
+              }
+            },
+            "reveal": {
+              "tenants": [
+                "t1",
+                "t2",
+                "t3"
+              ],
+              "via": {
+                "t1": "minted-with-harvested-key",
+                "t2": "minted-with-harvested-key",
+                "t3": "minted-with-harvested-key"
+              },
+              "refused": {}
+            }
+          },
           "operator plane": {
             "read": {
               "tenants": [
@@ -451,6 +510,11 @@
               "credentialsHandled": 2
             }
           ],
+          "latencyMs": {
+            "n": 40,
+            "median": 1.032,
+            "p90": 1.499
+          },
           "reveal": {
             "ok": true,
             "dashboardCalls": 1,
@@ -458,6 +522,16 @@
             "ownerVisible": "none"
           }
         }
+      },
+      "persistence": {
+        "duringWrite": "t1,t2,t3",
+        "keysCarried": 3,
+        "tokensCarried": 3,
+        "carriedTokenLifetimeS": 900,
+        "afterBeforeExpiryWrite": "t1,t2,t3",
+        "afterExpiryWrite": "t1,t2,t3",
+        "afterExpiryReveal": "t1,t2,t3",
+        "afterExpiryRefusals": {}
       },
       "checks": {
         "m4.x1 t1 token replayed at t2": "refused 401 signature",
@@ -496,6 +570,10 @@
         "m1.secrets API caller.write": "t1,t2,t3",
         "m1.secrets API caller.operator": "none",
         "m1.secrets API caller.reveal": "t1,t2,t3",
+        "m1.tenant-owner listener.read": "t1,t2,t3",
+        "m1.tenant-owner listener.write": "t1,t2,t3",
+        "m1.tenant-owner listener.operator": "none",
+        "m1.tenant-owner listener.reveal": "t1,t2,t3",
         "m1.operator plane.read": "t1,t2,t3",
         "m1.operator plane.write": "none",
         "m1.operator plane.operator": "t1,t2,t3",
@@ -507,7 +585,12 @@
         "m5.first edit dashboard calls": 2,
         "m5.later edit dashboard calls": 1,
         "m5.later edit total calls": 1,
-        "m5.reveal owner-visible": "none"
+        "m5.reveal owner-visible": "none",
+        "m6.during.write": "t1,t2,t3",
+        "m6.after, before expiry.write": "t1,t2,t3",
+        "m6.after expiry.write": "t1,t2,t3",
+        "m6.after expiry.reveal": "t1,t2,t3",
+        "m6.signing keys carried out": 3
       },
       "freshVariant": {
         "firstAttempt": "refused 401 reauth-required",
@@ -623,6 +706,18 @@
               "control": "none"
             },
             "m1.secrets API caller.reveal": {
+              "baseline": "t1,t2,t3",
+              "control": "none"
+            },
+            "m1.tenant-owner listener.read": {
+              "baseline": "t1,t2,t3",
+              "control": "none"
+            },
+            "m1.tenant-owner listener.write": {
+              "baseline": "t1,t2,t3",
+              "control": "none"
+            },
+            "m1.tenant-owner listener.reveal": {
               "baseline": "t1,t2,t3",
               "control": "none"
             }
@@ -1140,6 +1235,78 @@
               "refused": {}
             }
           },
+          "tenant-owner listener": {
+            "read": {
+              "tenants": [],
+              "via": {},
+              "refused": {
+                "t1": [
+                  "minted-with-harvested-key: blocked-by-matrix",
+                  "internal API (no token): blocked-by-matrix",
+                  "ns-admin export: blocked-by-matrix"
+                ],
+                "t2": [
+                  "minted-with-harvested-key: blocked-by-matrix",
+                  "internal API (no token): blocked-by-matrix",
+                  "ns-admin export: blocked-by-matrix"
+                ],
+                "t3": [
+                  "minted-with-harvested-key: blocked-by-matrix",
+                  "internal API (no token): blocked-by-matrix",
+                  "ns-admin export: blocked-by-matrix"
+                ]
+              }
+            },
+            "write": {
+              "tenants": [],
+              "via": {},
+              "refused": {
+                "t1": [
+                  "minted-with-harvested-key: blocked-by-matrix",
+                  "internal API (no token): blocked-by-matrix"
+                ],
+                "t2": [
+                  "minted-with-harvested-key: blocked-by-matrix",
+                  "internal API (no token): blocked-by-matrix"
+                ],
+                "t3": [
+                  "minted-with-harvested-key: blocked-by-matrix",
+                  "internal API (no token): blocked-by-matrix"
+                ]
+              }
+            },
+            "operator": {
+              "tenants": [],
+              "via": {},
+              "refused": {
+                "t1": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ],
+                "t2": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ],
+                "t3": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ]
+              }
+            },
+            "reveal": {
+              "tenants": [
+                "t1",
+                "t2",
+                "t3"
+              ],
+              "via": {
+                "t1": "internal API (no token)",
+                "t2": "internal API (no token)",
+                "t3": "internal API (no token)"
+              },
+              "refused": {}
+            }
+          },
           "operator plane": {
             "read": {
               "tenants": [
@@ -1282,6 +1449,11 @@
               "credentialsHandled": 1
             }
           ],
+          "latencyMs": {
+            "n": 40,
+            "median": 1.982,
+            "p90": 2.633
+          },
           "reveal": {
             "ok": true,
             "dashboardCalls": 1,
@@ -1290,6 +1462,7 @@
           }
         }
       },
+      "persistence": null,
       "checks": {
         "m4.owner-1 edits t2": "refused 403 membership",
         "m3.00 pinned key via dashboard (TRUST_PROXY=2)": "refused 422 ui-refused",
@@ -1326,6 +1499,10 @@
         "m1.secrets API caller.write": "t1,t2,t3",
         "m1.secrets API caller.operator": "t1,t2,t3",
         "m1.secrets API caller.reveal": "t1,t2,t3",
+        "m1.tenant-owner listener.read": "none",
+        "m1.tenant-owner listener.write": "none",
+        "m1.tenant-owner listener.operator": "none",
+        "m1.tenant-owner listener.reveal": "t1,t2,t3",
         "m1.operator plane.read": "t1,t2,t3",
         "m1.operator plane.write": "none",
         "m1.operator plane.operator": "t1,t2,t3",
@@ -1862,6 +2039,86 @@
               "refused": {}
             }
           },
+          "tenant-owner listener": {
+            "read": {
+              "tenants": [],
+              "via": {},
+              "refused": {
+                "t1": [
+                  "minted-with-harvested-key: blocked-by-matrix",
+                  "internal API (no token): blocked-by-matrix",
+                  "ns-admin export: blocked-by-matrix"
+                ],
+                "t2": [
+                  "minted-with-harvested-key: blocked-by-matrix",
+                  "internal API (no token): blocked-by-matrix",
+                  "ns-admin export: blocked-by-matrix"
+                ],
+                "t3": [
+                  "minted-with-harvested-key: blocked-by-matrix",
+                  "internal API (no token): blocked-by-matrix",
+                  "ns-admin export: blocked-by-matrix"
+                ]
+              }
+            },
+            "write": {
+              "tenants": [],
+              "via": {},
+              "refused": {
+                "t1": [
+                  "minted-with-harvested-key: blocked-by-matrix",
+                  "internal API (no token): blocked-by-matrix"
+                ],
+                "t2": [
+                  "minted-with-harvested-key: blocked-by-matrix",
+                  "internal API (no token): blocked-by-matrix"
+                ],
+                "t3": [
+                  "minted-with-harvested-key: blocked-by-matrix",
+                  "internal API (no token): blocked-by-matrix"
+                ]
+              }
+            },
+            "operator": {
+              "tenants": [],
+              "via": {},
+              "refused": {
+                "t1": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ],
+                "t2": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ],
+                "t3": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ]
+              }
+            },
+            "reveal": {
+              "tenants": [],
+              "via": {},
+              "refused": {
+                "t1": [
+                  "minted-with-harvested-key: blocked-by-matrix",
+                  "internal API (no token): service-token",
+                  "secrets operator port: blocked-by-matrix"
+                ],
+                "t2": [
+                  "minted-with-harvested-key: blocked-by-matrix",
+                  "internal API (no token): service-token",
+                  "secrets operator port: blocked-by-matrix"
+                ],
+                "t3": [
+                  "minted-with-harvested-key: blocked-by-matrix",
+                  "internal API (no token): service-token",
+                  "secrets operator port: blocked-by-matrix"
+                ]
+              }
+            }
+          },
           "operator plane": {
             "read": {
               "tenants": [
@@ -2004,6 +2261,11 @@
               "credentialsHandled": 2
             }
           ],
+          "latencyMs": {
+            "n": 40,
+            "median": 2.027,
+            "p90": 2.46
+          },
           "reveal": {
             "ok": true,
             "dashboardCalls": 1,
@@ -2012,6 +2274,7 @@
           }
         }
       },
+      "persistence": null,
       "checks": {
         "m4.owner-1 edits t2": "refused 403 membership",
         "m3.00 pinned key via dashboard (TRUST_PROXY=2)": "refused 422 ui-refused",
@@ -2048,6 +2311,10 @@
         "m1.secrets API caller.write": "t1,t2,t3",
         "m1.secrets API caller.operator": "t1,t2,t3",
         "m1.secrets API caller.reveal": "t1,t2,t3",
+        "m1.tenant-owner listener.read": "none",
+        "m1.tenant-owner listener.write": "none",
+        "m1.tenant-owner listener.operator": "none",
+        "m1.tenant-owner listener.reveal": "none",
         "m1.operator plane.read": "t1,t2,t3",
         "m1.operator plane.write": "none",
         "m1.operator plane.operator": "t1,t2,t3",
@@ -2088,6 +2355,10 @@
               "control": "accepted"
             },
             "m1.dashboard.operator": {
+              "baseline": "none",
+              "control": "t1,t2,t3"
+            },
+            "m1.tenant-owner listener.reveal": {
               "baseline": "none",
               "control": "t1,t2,t3"
             }
@@ -2615,6 +2886,65 @@
               "refused": {}
             }
           },
+          "tenant-owner listener": {
+            "read": {
+              "tenants": [
+                "t1",
+                "t2",
+                "t3"
+              ],
+              "via": {
+                "t1": "minted-with-harvested-key",
+                "t2": "minted-with-harvested-key",
+                "t3": "minted-with-harvested-key"
+              },
+              "refused": {}
+            },
+            "write": {
+              "tenants": [
+                "t1",
+                "t2",
+                "t3"
+              ],
+              "via": {
+                "t1": "minted-with-harvested-key",
+                "t2": "minted-with-harvested-key",
+                "t3": "minted-with-harvested-key"
+              },
+              "refused": {}
+            },
+            "operator": {
+              "tenants": [],
+              "via": {},
+              "refused": {
+                "t1": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ],
+                "t2": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ],
+                "t3": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ]
+              }
+            },
+            "reveal": {
+              "tenants": [
+                "t1",
+                "t2",
+                "t3"
+              ],
+              "via": {
+                "t1": "minted-with-harvested-key",
+                "t2": "minted-with-harvested-key",
+                "t3": "minted-with-harvested-key"
+              },
+              "refused": {}
+            }
+          },
           "operator plane": {
             "read": {
               "tenants": [
@@ -2757,6 +3087,11 @@
               "credentialsHandled": 2
             }
           ],
+          "latencyMs": {
+            "n": 40,
+            "median": 0.964,
+            "p90": 2.026
+          },
           "reveal": {
             "ok": true,
             "dashboardCalls": 1,
@@ -2764,6 +3099,16 @@
             "ownerVisible": "none"
           }
         }
+      },
+      "persistence": {
+        "duringWrite": "t1,t2,t3",
+        "keysCarried": 3,
+        "tokensCarried": 3,
+        "carriedTokenLifetimeS": 900,
+        "afterBeforeExpiryWrite": "t1,t2,t3",
+        "afterExpiryWrite": "t1,t2,t3",
+        "afterExpiryReveal": "t1,t2,t3",
+        "afterExpiryRefusals": {}
       },
       "checks": {
         "m4.x1 t1 token replayed at t2": "refused 401 signature",
@@ -2806,6 +3151,10 @@
         "m1.secrets API caller.write": "t1,t2,t3",
         "m1.secrets API caller.operator": "none",
         "m1.secrets API caller.reveal": "t1,t2,t3",
+        "m1.tenant-owner listener.read": "t1,t2,t3",
+        "m1.tenant-owner listener.write": "t1,t2,t3",
+        "m1.tenant-owner listener.operator": "none",
+        "m1.tenant-owner listener.reveal": "t1,t2,t3",
         "m1.operator plane.read": "t1,t2,t3",
         "m1.operator plane.write": "none",
         "m1.operator plane.operator": "t1,t2,t3",
@@ -2817,7 +3166,12 @@
         "m5.first edit dashboard calls": 2,
         "m5.later edit dashboard calls": 1,
         "m5.later edit total calls": 1,
-        "m5.reveal owner-visible": "none"
+        "m5.reveal owner-visible": "none",
+        "m6.during.write": "t1,t2,t3",
+        "m6.after, before expiry.write": "t1,t2,t3",
+        "m6.after expiry.write": "t1,t2,t3",
+        "m6.after expiry.reveal": "t1,t2,t3",
+        "m6.signing keys carried out": 3
       },
       "freshVariant": {
         "firstAttempt": "refused 401 reauth-required",
@@ -2933,6 +3287,18 @@
               "control": "none"
             },
             "m1.secrets API caller.reveal": {
+              "baseline": "t1,t2,t3",
+              "control": "none"
+            },
+            "m1.tenant-owner listener.read": {
+              "baseline": "t1,t2,t3",
+              "control": "none"
+            },
+            "m1.tenant-owner listener.write": {
+              "baseline": "t1,t2,t3",
+              "control": "none"
+            },
+            "m1.tenant-owner listener.reveal": {
               "baseline": "t1,t2,t3",
               "control": "none"
             }
@@ -3121,6 +3487,1002 @@
             "m3.07 confirmation: API3_AUTOPRUNE_ENTRIES=90 without confirmation": {
               "baseline": "refused 409 confirmation-required",
               "control": "accepted"
+            }
+          }
+        }
+      ]
+    },
+    "AK": {
+      "baseline": {
+        "m4": {
+          "x1 t1 token replayed at t2": "refused 401 signature",
+          "x2 forged claim (tenant t2, sub owner-2), t1 signature kept": "refused 401 signature",
+          "x3 t2 token signed with t1's key": "refused 401 signature"
+        },
+        "m3": {
+          "pinned key via dashboard (TRUST_PROXY=2)": "refused 422 ui-refused",
+          "pinned key, crafted request skipping the dashboard (TRUST_PROXY=2)": "refused 422 pinned",
+          "floor: WRITE_VALIDATION=off, crafted": "refused 422 floor: WRITE_VALIDATION at least log",
+          "floor: AUTH_DEFAULT_ROLES=\"readable careportal\", crafted": "refused 422 floor: no anonymous writes",
+          "floor: CONNECT_SOURCE_ENDPOINT to a link-local host, crafted": "refused 422 floor: connector endpoints only the hosts a driver defines",
+          "bounded: AUTH_DEFAULT_ROLES=status-only (floor-safe, outside the operator list), crafted": "refused 422 constraint",
+          "bounded: API3_AUTOPRUNE_ENTRIES=7 (below operator minimum 30)": "refused 422 constraint",
+          "confirmation: API3_AUTOPRUNE_ENTRIES=90 without confirmation": "refused 409 confirmation-required",
+          "confirmation: API3_AUTOPRUNE_ENTRIES=90 with the phrase, after the export offer": "accepted",
+          "open: DISPLAY_UNITS=mmol": "accepted",
+          "tighten: WRITE_VALIDATION=reject": "accepted",
+          "pinned key re-pinned from the dashboard (TRUST_PROXY pin 3)": "unreachable (matrix)",
+          "operator plane pins AUTH_DEFAULT_ROLES=\"readable careportal\"": "refused 422 floor: no anonymous writes",
+          "operator plane pins CONNECT_SOURCE_ENDPOINT to a link-local host": "refused 422 floor: connector endpoints only the hosts a driver defines",
+          "operator plane pins WRITE_VALIDATION=off": "refused 422 floor: WRITE_VALIDATION at least log"
+        },
+        "m2": {
+          "ownerEdit": {
+            "actor": {
+              "kind": "human",
+              "id": "owner-1",
+              "verifiedBy": "tenant-key-signature"
+            },
+            "verdict": "names the human, verified"
+          },
+          "attackerEdit": {
+            "scenario": "stolen t1 owner token, body claims owner-9",
+            "actor": {
+              "kind": "human",
+              "id": "owner-1",
+              "verifiedBy": "tenant-key-signature"
+            },
+            "verdict": "names the human, verified"
+          },
+          "operatorEdit": {
+            "actor": {
+              "kind": "operator-plane",
+              "id": null,
+              "verifiedBy": null
+            },
+            "verdict": "names the operator plane, no identity"
+          }
+        },
+        "m1": {
+          "dashboard": {
+            "read": {
+              "tenants": [
+                "t1"
+              ],
+              "via": {
+                "t1": "held-token"
+              },
+              "refused": {
+                "t2": [
+                  "held-token: signature",
+                  "forged-claim: signature",
+                  "dashboard API with an assertion: no-owner-token",
+                  "orchestrator owner route (no token): blocked-by-matrix",
+                  "internal API (no token): blocked-by-matrix",
+                  "ns-admin export: blocked-by-matrix"
+                ],
+                "t3": [
+                  "held-token: signature",
+                  "forged-claim: signature",
+                  "dashboard API with an assertion: no-owner-token",
+                  "orchestrator owner route (no token): blocked-by-matrix",
+                  "internal API (no token): blocked-by-matrix",
+                  "ns-admin export: blocked-by-matrix"
+                ]
+              }
+            },
+            "write": {
+              "tenants": [
+                "t1"
+              ],
+              "via": {
+                "t1": "held-token"
+              },
+              "refused": {
+                "t2": [
+                  "held-token: signature",
+                  "forged-claim: signature",
+                  "dashboard API with an assertion: no-owner-token",
+                  "orchestrator owner route (no token): blocked-by-matrix",
+                  "internal API (no token): blocked-by-matrix"
+                ],
+                "t3": [
+                  "held-token: signature",
+                  "forged-claim: signature",
+                  "dashboard API with an assertion: no-owner-token",
+                  "orchestrator owner route (no token): blocked-by-matrix",
+                  "internal API (no token): blocked-by-matrix"
+                ]
+              }
+            },
+            "operator": {
+              "tenants": [],
+              "via": {},
+              "refused": {
+                "t1": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ],
+                "t2": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ],
+                "t3": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ]
+              }
+            },
+            "reveal": {
+              "tenants": [
+                "t1"
+              ],
+              "via": {
+                "t1": "held-token"
+              },
+              "refused": {
+                "t2": [
+                  "held-token: signature",
+                  "forged-claim: signature",
+                  "dashboard API with an assertion: no-owner-token",
+                  "orchestrator owner route (no token): blocked-by-matrix",
+                  "internal API (no token): blocked-by-matrix",
+                  "secrets operator port: blocked-by-matrix"
+                ],
+                "t3": [
+                  "held-token: signature",
+                  "forged-claim: signature",
+                  "dashboard API with an assertion: no-owner-token",
+                  "orchestrator owner route (no token): blocked-by-matrix",
+                  "internal API (no token): blocked-by-matrix",
+                  "secrets operator port: blocked-by-matrix"
+                ]
+              }
+            }
+          },
+          "owner-1 credential": {
+            "read": {
+              "tenants": [
+                "t1"
+              ],
+              "via": {
+                "t1": "held-token"
+              },
+              "refused": {
+                "t2": [
+                  "held-token: signature",
+                  "forged-claim: signature",
+                  "internal API (no token): blocked-by-matrix",
+                  "ns-admin export: blocked-by-matrix"
+                ],
+                "t3": [
+                  "held-token: signature",
+                  "forged-claim: signature",
+                  "internal API (no token): blocked-by-matrix",
+                  "ns-admin export: blocked-by-matrix"
+                ]
+              }
+            },
+            "write": {
+              "tenants": [
+                "t1"
+              ],
+              "via": {
+                "t1": "held-token"
+              },
+              "refused": {
+                "t2": [
+                  "held-token: signature",
+                  "forged-claim: signature",
+                  "internal API (no token): blocked-by-matrix"
+                ],
+                "t3": [
+                  "held-token: signature",
+                  "forged-claim: signature",
+                  "internal API (no token): blocked-by-matrix"
+                ]
+              }
+            },
+            "operator": {
+              "tenants": [],
+              "via": {},
+              "refused": {
+                "t1": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ],
+                "t2": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ],
+                "t3": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ]
+              }
+            },
+            "reveal": {
+              "tenants": [
+                "t1"
+              ],
+              "via": {
+                "t1": "held-token"
+              },
+              "refused": {
+                "t2": [
+                  "held-token: signature",
+                  "forged-claim: signature",
+                  "internal API (no token): blocked-by-matrix",
+                  "secrets operator port: blocked-by-matrix"
+                ],
+                "t3": [
+                  "held-token: signature",
+                  "forged-claim: signature",
+                  "internal API (no token): blocked-by-matrix",
+                  "secrets operator port: blocked-by-matrix"
+                ]
+              }
+            }
+          },
+          "secrets API caller": {
+            "read": {
+              "tenants": [
+                "t1",
+                "t2",
+                "t3"
+              ],
+              "via": {
+                "t1": "sign oracle (listener credential)",
+                "t2": "sign oracle (listener credential)",
+                "t3": "sign oracle (listener credential)"
+              },
+              "refused": {}
+            },
+            "write": {
+              "tenants": [
+                "t1",
+                "t2",
+                "t3"
+              ],
+              "via": {
+                "t1": "sign oracle (listener credential)",
+                "t2": "sign oracle (listener credential)",
+                "t3": "sign oracle (listener credential)"
+              },
+              "refused": {}
+            },
+            "operator": {
+              "tenants": [],
+              "via": {},
+              "refused": {
+                "t1": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ],
+                "t2": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ],
+                "t3": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ]
+              }
+            },
+            "reveal": {
+              "tenants": [
+                "t1",
+                "t2",
+                "t3"
+              ],
+              "via": {
+                "t1": "sign oracle (listener credential)",
+                "t2": "sign oracle (listener credential)",
+                "t3": "sign oracle (listener credential)"
+              },
+              "refused": {}
+            }
+          },
+          "tenant-owner listener": {
+            "read": {
+              "tenants": [
+                "t1",
+                "t2",
+                "t3"
+              ],
+              "via": {
+                "t1": "sign oracle (listener credential)",
+                "t2": "sign oracle (listener credential)",
+                "t3": "sign oracle (listener credential)"
+              },
+              "refused": {}
+            },
+            "write": {
+              "tenants": [
+                "t1",
+                "t2",
+                "t3"
+              ],
+              "via": {
+                "t1": "sign oracle (listener credential)",
+                "t2": "sign oracle (listener credential)",
+                "t3": "sign oracle (listener credential)"
+              },
+              "refused": {}
+            },
+            "operator": {
+              "tenants": [],
+              "via": {},
+              "refused": {
+                "t1": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ],
+                "t2": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ],
+                "t3": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ]
+              }
+            },
+            "reveal": {
+              "tenants": [
+                "t1",
+                "t2",
+                "t3"
+              ],
+              "via": {
+                "t1": "sign oracle (listener credential)",
+                "t2": "sign oracle (listener credential)",
+                "t3": "sign oracle (listener credential)"
+              },
+              "refused": {}
+            }
+          },
+          "operator plane": {
+            "read": {
+              "tenants": [
+                "t1",
+                "t2",
+                "t3"
+              ],
+              "via": {
+                "t1": "ns-admin export",
+                "t2": "ns-admin export",
+                "t3": "ns-admin export"
+              },
+              "refused": {}
+            },
+            "write": {
+              "tenants": [],
+              "via": {},
+              "refused": {
+                "t1": [
+                  "internal API (no token): blocked-by-matrix"
+                ],
+                "t2": [
+                  "internal API (no token): blocked-by-matrix"
+                ],
+                "t3": [
+                  "internal API (no token): blocked-by-matrix"
+                ]
+              }
+            },
+            "operator": {
+              "tenants": [
+                "t1",
+                "t2",
+                "t3"
+              ],
+              "via": {
+                "t1": "ns-admin direct",
+                "t2": "ns-admin direct",
+                "t3": "ns-admin direct"
+              },
+              "refused": {}
+            },
+            "reveal": {
+              "tenants": [],
+              "via": {},
+              "refused": {
+                "t1": [
+                  "internal API (no token): blocked-by-matrix",
+                  "secrets operator port: no-route"
+                ],
+                "t2": [
+                  "internal API (no token): blocked-by-matrix",
+                  "secrets operator port: no-route"
+                ],
+                "t3": [
+                  "internal API (no token): blocked-by-matrix",
+                  "secrets operator port: no-route"
+                ]
+              }
+            }
+          },
+          "identity provider": {
+            "read": {
+              "tenants": [
+                "t1",
+                "t2",
+                "t3"
+              ],
+              "via": {
+                "t1": "token-exchange",
+                "t2": "token-exchange",
+                "t3": "token-exchange"
+              },
+              "refused": {}
+            },
+            "write": {
+              "tenants": [
+                "t1",
+                "t2",
+                "t3"
+              ],
+              "via": {
+                "t1": "token-exchange",
+                "t2": "token-exchange",
+                "t3": "token-exchange"
+              },
+              "refused": {}
+            },
+            "operator": {
+              "tenants": [],
+              "via": {},
+              "refused": {
+                "t1": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ],
+                "t2": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ],
+                "t3": [
+                  "ns-admin direct: blocked-by-matrix",
+                  "orchestrator operator route (no token): blocked-by-matrix"
+                ]
+              }
+            },
+            "reveal": {
+              "tenants": [
+                "t1",
+                "t2",
+                "t3"
+              ],
+              "via": {
+                "t1": "token-exchange",
+                "t2": "token-exchange",
+                "t3": "token-exchange"
+              },
+              "refused": {}
+            }
+          }
+        },
+        "m5": {
+          "edits": [
+            {
+              "status": 200,
+              "dashboardCalls": 2,
+              "totalCalls": 4,
+              "credentialsHandled": 2
+            },
+            {
+              "status": 200,
+              "dashboardCalls": 1,
+              "totalCalls": 2,
+              "credentialsHandled": 2
+            },
+            {
+              "status": 200,
+              "dashboardCalls": 1,
+              "totalCalls": 2,
+              "credentialsHandled": 2
+            }
+          ],
+          "latencyMs": {
+            "n": 40,
+            "median": 1.424,
+            "p90": 2.535
+          },
+          "reveal": {
+            "ok": true,
+            "dashboardCalls": 1,
+            "totalCalls": 1,
+            "ownerVisible": "none"
+          }
+        }
+      },
+      "persistence": {
+        "duringWrite": "t1,t2,t3",
+        "keysCarried": 0,
+        "tokensCarried": 3,
+        "carriedTokenLifetimeS": 3,
+        "afterBeforeExpiryWrite": "t1,t2,t3",
+        "afterExpiryWrite": "none",
+        "afterExpiryReveal": "none",
+        "afterExpiryRefusals": {
+          "t1": [
+            "held-token: expired",
+            "forged-claim: expired",
+            "held-token: signature",
+            "forged-claim: signature",
+            "held-token: signature",
+            "forged-claim: signature",
+            "internal API (no token): blocked-by-matrix"
+          ],
+          "t2": [
+            "held-token: signature",
+            "forged-claim: signature",
+            "held-token: expired",
+            "forged-claim: expired",
+            "held-token: signature",
+            "forged-claim: signature",
+            "internal API (no token): blocked-by-matrix"
+          ],
+          "t3": [
+            "held-token: signature",
+            "forged-claim: signature",
+            "held-token: signature",
+            "forged-claim: signature",
+            "held-token: expired",
+            "forged-claim: expired",
+            "internal API (no token): blocked-by-matrix"
+          ]
+        }
+      },
+      "checks": {
+        "m4.x1 t1 token replayed at t2": "refused 401 signature",
+        "m4.x1 t1 token replayed at t2 is a signature failure": true,
+        "m4.x2 forged claim (tenant t2, sub owner-2), t1 signature kept": "refused 401 signature",
+        "m4.x2 forged claim (tenant t2, sub owner-2), t1 signature kept is a signature failure": true,
+        "m4.x3 t2 token signed with t1's key": "refused 401 signature",
+        "m4.x3 t2 token signed with t1's key is a signature failure": true,
+        "m3.00 pinned key via dashboard (TRUST_PROXY=2)": "refused 422 ui-refused",
+        "m3.01 pinned key, crafted request skipping the dashboard (TRUST_PROXY=2)": "refused 422 pinned",
+        "m3.02 floor: WRITE_VALIDATION=off, crafted": "refused 422 floor: WRITE_VALIDATION at least log",
+        "m3.03 floor: AUTH_DEFAULT_ROLES=\"readable careportal\", crafted": "refused 422 floor: no anonymous writes",
+        "m3.04 floor: CONNECT_SOURCE_ENDPOINT to a link-local host, crafted": "refused 422 floor: connector endpoints only the hosts a driver defines",
+        "m3.05 bounded: AUTH_DEFAULT_ROLES=status-only (floor-safe, outside the operator list), crafted": "refused 422 constraint",
+        "m3.06 bounded: API3_AUTOPRUNE_ENTRIES=7 (below operator minimum 30)": "refused 422 constraint",
+        "m3.07 confirmation: API3_AUTOPRUNE_ENTRIES=90 without confirmation": "refused 409 confirmation-required",
+        "m3.08 confirmation: API3_AUTOPRUNE_ENTRIES=90 with the phrase, after the export offer": "accepted",
+        "m3.09 open: DISPLAY_UNITS=mmol": "accepted",
+        "m3.10 tighten: WRITE_VALIDATION=reject": "accepted",
+        "m3.11 pinned key re-pinned from the dashboard (TRUST_PROXY pin 3)": "unreachable (matrix)",
+        "m3.12 operator plane pins AUTH_DEFAULT_ROLES=\"readable careportal\"": "refused 422 floor: no anonymous writes",
+        "m3.13 operator plane pins CONNECT_SOURCE_ENDPOINT to a link-local host": "refused 422 floor: connector endpoints only the hosts a driver defines",
+        "m3.14 operator plane pins WRITE_VALIDATION=off": "refused 422 floor: WRITE_VALIDATION at least log",
+        "m2.owner": "names the human, verified",
+        "m2.attacker": "names the human, verified",
+        "m2.operator": "names the operator plane, no identity",
+        "m1.dashboard.read": "t1",
+        "m1.dashboard.write": "t1",
+        "m1.dashboard.operator": "none",
+        "m1.dashboard.reveal": "t1",
+        "m1.owner-1 credential.read": "t1",
+        "m1.owner-1 credential.write": "t1",
+        "m1.owner-1 credential.operator": "none",
+        "m1.owner-1 credential.reveal": "t1",
+        "m1.secrets API caller.read": "t1,t2,t3",
+        "m1.secrets API caller.write": "t1,t2,t3",
+        "m1.secrets API caller.operator": "none",
+        "m1.secrets API caller.reveal": "t1,t2,t3",
+        "m1.tenant-owner listener.read": "t1,t2,t3",
+        "m1.tenant-owner listener.write": "t1,t2,t3",
+        "m1.tenant-owner listener.operator": "none",
+        "m1.tenant-owner listener.reveal": "t1,t2,t3",
+        "m1.operator plane.read": "t1,t2,t3",
+        "m1.operator plane.write": "none",
+        "m1.operator plane.operator": "t1,t2,t3",
+        "m1.operator plane.reveal": "none",
+        "m1.identity provider.read": "t1,t2,t3",
+        "m1.identity provider.write": "t1,t2,t3",
+        "m1.identity provider.operator": "none",
+        "m1.identity provider.reveal": "t1,t2,t3",
+        "m5.first edit dashboard calls": 2,
+        "m5.later edit dashboard calls": 1,
+        "m5.later edit total calls": 2,
+        "m5.reveal owner-visible": "none",
+        "m6.during.write": "t1,t2,t3",
+        "m6.after, before expiry.write": "t1,t2,t3",
+        "m6.after expiry.write": "none",
+        "m6.after expiry.reveal": "none",
+        "m6.signing keys carried out": 0
+      },
+      "freshVariant": {
+        "firstAttempt": "refused 401 reauth-required",
+        "ownerSteps": [
+          "owner re-enters password"
+        ],
+        "revealed": true,
+        "dashboardCallsTotal": 5
+      },
+      "controls": [
+        {
+          "break": "no-sig-verify",
+          "expectedToFlip": [
+            "m1.dashboard.write",
+            "m1.owner-1 credential.write",
+            "m1.owner-1 credential.reveal",
+            "m4.x2 forged claim (tenant t2, sub owner-2), t1 signature kept"
+          ],
+          "flipped": [
+            "m1.dashboard.write",
+            "m1.owner-1 credential.write",
+            "m1.owner-1 credential.reveal",
+            "m4.x2 forged claim (tenant t2, sub owner-2), t1 signature kept"
+          ],
+          "missingKeys": [],
+          "reported": true,
+          "changed": {
+            "m4.x1 t1 token replayed at t2": {
+              "baseline": "refused 401 signature",
+              "control": "refused 401 claim"
+            },
+            "m4.x1 t1 token replayed at t2 is a signature failure": {
+              "baseline": true,
+              "control": false
+            },
+            "m4.x2 forged claim (tenant t2, sub owner-2), t1 signature kept": {
+              "baseline": "refused 401 signature",
+              "control": "accepted"
+            },
+            "m4.x2 forged claim (tenant t2, sub owner-2), t1 signature kept is a signature failure": {
+              "baseline": true,
+              "control": false
+            },
+            "m4.x3 t2 token signed with t1's key": {
+              "baseline": "refused 401 signature",
+              "control": "accepted"
+            },
+            "m4.x3 t2 token signed with t1's key is a signature failure": {
+              "baseline": true,
+              "control": false
+            },
+            "m1.dashboard.read": {
+              "baseline": "t1",
+              "control": "t1,t2,t3"
+            },
+            "m1.dashboard.write": {
+              "baseline": "t1",
+              "control": "t1,t2,t3"
+            },
+            "m1.dashboard.reveal": {
+              "baseline": "t1",
+              "control": "t1,t2,t3"
+            },
+            "m1.owner-1 credential.read": {
+              "baseline": "t1",
+              "control": "t1,t2,t3"
+            },
+            "m1.owner-1 credential.write": {
+              "baseline": "t1",
+              "control": "t1,t2,t3"
+            },
+            "m1.owner-1 credential.reveal": {
+              "baseline": "t1",
+              "control": "t1,t2,t3"
+            },
+            "m5.later edit total calls": {
+              "baseline": 2,
+              "control": 1
+            }
+          }
+        },
+        {
+          "break": "actor-from-body",
+          "expectedToFlip": [
+            "m2.attacker"
+          ],
+          "flipped": [
+            "m2.attacker"
+          ],
+          "missingKeys": [],
+          "reported": true,
+          "changed": {
+            "m2.attacker": {
+              "baseline": "names the human, verified",
+              "control": "names a human the caller chose"
+            }
+          }
+        },
+        {
+          "break": "no-policy",
+          "expectedToFlip": [
+            "m3.01 pinned key, crafted request skipping the dashboard (TRUST_PROXY=2)",
+            "m3.05 bounded: AUTH_DEFAULT_ROLES=status-only (floor-safe, outside the operator list), crafted"
+          ],
+          "flipped": [
+            "m3.01 pinned key, crafted request skipping the dashboard (TRUST_PROXY=2)",
+            "m3.05 bounded: AUTH_DEFAULT_ROLES=status-only (floor-safe, outside the operator list), crafted"
+          ],
+          "missingKeys": [],
+          "reported": true,
+          "changed": {
+            "m3.01 pinned key, crafted request skipping the dashboard (TRUST_PROXY=2)": {
+              "baseline": "refused 422 pinned",
+              "control": "accepted"
+            },
+            "m3.05 bounded: AUTH_DEFAULT_ROLES=status-only (floor-safe, outside the operator list), crafted": {
+              "baseline": "refused 422 constraint",
+              "control": "accepted"
+            },
+            "m3.06 bounded: API3_AUTOPRUNE_ENTRIES=7 (below operator minimum 30)": {
+              "baseline": "refused 422 constraint",
+              "control": "refused 409 confirmation-required"
+            }
+          }
+        },
+        {
+          "break": "no-floors",
+          "expectedToFlip": [
+            "m3.02 floor: WRITE_VALIDATION=off, crafted",
+            "m3.12 operator plane pins AUTH_DEFAULT_ROLES=\"readable careportal\""
+          ],
+          "flipped": [
+            "m3.02 floor: WRITE_VALIDATION=off, crafted",
+            "m3.12 operator plane pins AUTH_DEFAULT_ROLES=\"readable careportal\""
+          ],
+          "missingKeys": [],
+          "reported": true,
+          "changed": {
+            "m3.02 floor: WRITE_VALIDATION=off, crafted": {
+              "baseline": "refused 422 floor: WRITE_VALIDATION at least log",
+              "control": "refused 422 constraint"
+            },
+            "m3.03 floor: AUTH_DEFAULT_ROLES=\"readable careportal\", crafted": {
+              "baseline": "refused 422 floor: no anonymous writes",
+              "control": "refused 422 constraint"
+            },
+            "m3.04 floor: CONNECT_SOURCE_ENDPOINT to a link-local host, crafted": {
+              "baseline": "refused 422 floor: connector endpoints only the hosts a driver defines",
+              "control": "refused 422 constraint"
+            },
+            "m3.12 operator plane pins AUTH_DEFAULT_ROLES=\"readable careportal\"": {
+              "baseline": "refused 422 floor: no anonymous writes",
+              "control": "accepted"
+            },
+            "m3.13 operator plane pins CONNECT_SOURCE_ENDPOINT to a link-local host": {
+              "baseline": "refused 422 floor: connector endpoints only the hosts a driver defines",
+              "control": "accepted"
+            },
+            "m3.14 operator plane pins WRITE_VALIDATION=off": {
+              "baseline": "refused 422 floor: WRITE_VALIDATION at least log",
+              "control": "accepted"
+            }
+          }
+        },
+        {
+          "break": "open-matrix",
+          "expectedToFlip": [
+            "m1.dashboard.operator",
+            "m3.11 pinned key re-pinned from the dashboard (TRUST_PROXY pin 3)"
+          ],
+          "flipped": [
+            "m1.dashboard.operator",
+            "m3.11 pinned key re-pinned from the dashboard (TRUST_PROXY pin 3)"
+          ],
+          "missingKeys": [],
+          "reported": true,
+          "changed": {
+            "m3.11 pinned key re-pinned from the dashboard (TRUST_PROXY pin 3)": {
+              "baseline": "unreachable (matrix)",
+              "control": "accepted"
+            },
+            "m1.dashboard.read": {
+              "baseline": "t1",
+              "control": "t1,t2,t3"
+            },
+            "m1.dashboard.operator": {
+              "baseline": "none",
+              "control": "t1,t2,t3"
+            }
+          }
+        },
+        {
+          "break": "operator-reveal",
+          "expectedToFlip": [
+            "m1.operator plane.reveal"
+          ],
+          "flipped": [
+            "m1.operator plane.reveal"
+          ],
+          "missingKeys": [],
+          "reported": true,
+          "changed": {
+            "m1.operator plane.reveal": {
+              "baseline": "none",
+              "control": "t1,t2,t3"
+            }
+          }
+        },
+        {
+          "break": "reveal-no-auth",
+          "expectedToFlip": [
+            "m1.owner-1 credential.reveal"
+          ],
+          "flipped": [
+            "m1.owner-1 credential.reveal"
+          ],
+          "missingKeys": [],
+          "reported": true,
+          "changed": {
+            "m1.dashboard.reveal": {
+              "baseline": "t1",
+              "control": "t1,t2,t3"
+            },
+            "m1.owner-1 credential.reveal": {
+              "baseline": "t1",
+              "control": "t1,t2,t3"
+            }
+          }
+        },
+        {
+          "break": "no-token-cache",
+          "expectedToFlip": [
+            "m5.later edit dashboard calls"
+          ],
+          "flipped": [
+            "m5.later edit dashboard calls"
+          ],
+          "missingKeys": [],
+          "reported": true,
+          "changed": {
+            "m5.later edit dashboard calls": {
+              "baseline": 1,
+              "control": 2
+            },
+            "m5.later edit total calls": {
+              "baseline": 2,
+              "control": 4
+            }
+          }
+        },
+        {
+          "break": "no-confirmation",
+          "expectedToFlip": [
+            "m3.07 confirmation: API3_AUTOPRUNE_ENTRIES=90 without confirmation"
+          ],
+          "flipped": [
+            "m3.07 confirmation: API3_AUTOPRUNE_ENTRIES=90 without confirmation"
+          ],
+          "missingKeys": [],
+          "reported": true,
+          "changed": {
+            "m3.07 confirmation: API3_AUTOPRUNE_ENTRIES=90 without confirmation": {
+              "baseline": "refused 409 confirmation-required",
+              "control": "accepted"
+            }
+          }
+        },
+        {
+          "break": "verify-skips-tenant",
+          "expectedToFlip": [
+            "m4.x1 t1 token replayed at t2 is a signature failure",
+            "m4.x3 t2 token signed with t1's key"
+          ],
+          "flipped": [
+            "m4.x1 t1 token replayed at t2 is a signature failure",
+            "m4.x3 t2 token signed with t1's key"
+          ],
+          "missingKeys": [],
+          "reported": true,
+          "changed": {
+            "m4.x1 t1 token replayed at t2": {
+              "baseline": "refused 401 signature",
+              "control": "refused 401 claim"
+            },
+            "m4.x1 t1 token replayed at t2 is a signature failure": {
+              "baseline": true,
+              "control": false
+            },
+            "m4.x3 t2 token signed with t1's key": {
+              "baseline": "refused 401 signature",
+              "control": "accepted"
+            },
+            "m4.x3 t2 token signed with t1's key is a signature failure": {
+              "baseline": true,
+              "control": false
+            }
+          }
+        },
+        {
+          "break": "sign-any-caller",
+          "expectedToFlip": [
+            "m1.owner-1 credential.write",
+            "m1.dashboard.write"
+          ],
+          "flipped": [
+            "m1.owner-1 credential.write",
+            "m1.dashboard.write"
+          ],
+          "missingKeys": [],
+          "reported": true,
+          "changed": {
+            "m1.dashboard.read": {
+              "baseline": "t1",
+              "control": "t1,t2,t3"
+            },
+            "m1.dashboard.write": {
+              "baseline": "t1",
+              "control": "t1,t2,t3"
+            },
+            "m1.dashboard.reveal": {
+              "baseline": "t1",
+              "control": "t1,t2,t3"
+            },
+            "m1.owner-1 credential.read": {
+              "baseline": "t1",
+              "control": "t1,t2,t3"
+            },
+            "m1.owner-1 credential.write": {
+              "baseline": "t1",
+              "control": "t1,t2,t3"
+            },
+            "m1.owner-1 credential.reveal": {
+              "baseline": "t1",
+              "control": "t1,t2,t3"
+            },
+            "m1.operator plane.write": {
+              "baseline": "none",
+              "control": "t1,t2,t3"
+            },
+            "m1.operator plane.reveal": {
+              "baseline": "none",
+              "control": "t1,t2,t3"
+            }
+          }
+        },
+        {
+          "break": "consume-allowed",
+          "expectedToFlip": [
+            "m6.signing keys carried out",
+            "m6.after expiry.write"
+          ],
+          "flipped": [
+            "m6.signing keys carried out",
+            "m6.after expiry.write"
+          ],
+          "missingKeys": [],
+          "reported": true,
+          "changed": {
+            "m6.after expiry.write": {
+              "baseline": "none",
+              "control": "t1,t2,t3"
+            },
+            "m6.after expiry.reveal": {
+              "baseline": "none",
+              "control": "t1,t2,t3"
+            },
+            "m6.signing keys carried out": {
+              "baseline": 0,
+              "control": 3
+            }
+          }
+        },
+        {
+          "break": "sign-accepts-exp",
+          "expectedToFlip": [
+            "m6.after expiry.write"
+          ],
+          "flipped": [
+            "m6.after expiry.write"
+          ],
+          "missingKeys": [],
+          "reported": true,
+          "changed": {
+            "m6.after expiry.write": {
+              "baseline": "none",
+              "control": "t1,t2,t3"
+            },
+            "m6.after expiry.reveal": {
+              "baseline": "none",
+              "control": "t1,t2,t3"
             }
           }
         }
