@@ -17607,6 +17607,37 @@ items:
       correct") decided by the maintainer in session -65, relayed. ST-VIEWS'
       bounded view differs from the resident value here by design.
 
+  - id: BFQ-208
+    title: "BF-208 - an API v1 delete by a non-hex _id can answer 200 and announce a removal while nothing is removed"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@db3b9e4e
+    state: not-started
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/api/entries/index.js and lib/api/treatments/index.js delete handlers.
+    review: maintainer
+    operator_visible: ""
+    semver: patch
+    semver_reason: a delete that removed nothing stops answering as if it did
+    register: [BF-208]
+    gates:
+      - run: node -e "const p=require('./tools/qc/results/write-contract-matrix/dev-db3b9e4e-v2.json');const c=p.cells||p;process.exit(Object.keys(c).some(k=>/harddelete-(custom|num)/.test(k))?0:1)"
+        kind: static
+        describe: >
+          The pin dev-db3b9e4e-v2.json carries the harddelete-custom and
+          harddelete-num cells this entry is measured from. A presence check;
+          the behaviour gate is the matrix compare once a fix exists.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - tools/qc/results/write-contract-matrix/dev-db3b9e4e-v2.json
+    notes: >
+      Filed 2026-10-27 by session -4f from the matrix forms added for
+      WC-STEP-PATCH's coverage gaps (lab/matrix-forms-v2 de721074b).
+
   - id: BFQ-192
     title: "BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression)"
     parcel: register-open
