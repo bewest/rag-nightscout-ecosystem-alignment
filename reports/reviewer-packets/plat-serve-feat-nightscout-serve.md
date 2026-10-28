@@ -75,9 +75,14 @@ maintainer, plus a second human - the boot sequence moves
 
 ## Notes carried on the item
 
-2026-10-27 night (session -00): #8865 head f01d67e6, pushed by the maintainer,
-a fast-forward of 9f7f84f8 (-2e's three API v3 test commits and a dev merge,
-folding in the harness above). f01d67e6 fixes CodeQL alert 138 (js/disabling-
+2026-10-27 night (maintainer): #8865 joins the 16.0.0 merge list. Only
+`single` is supported; `serve api` ships labelled alpha; the other roles
+(evaluator, realtime, vcpool, tenant-admin, admin) exit 64 as not yet
+available. #8862 is superseded. Head 53ba192a (README and CLI help say
+"multitenant roles"); every check passing; no human review yet. 2026-10-27
+night (session -00): #8865 head f01d67e6, pushed by the maintainer, a fast-
+forward of 9f7f84f8 (-2e's three API v3 test commits and a dev merge, folding
+in the harness above). f01d67e6 fixes CodeQL alert 138 (js/disabling-
 certificate-validation, high) in lib/cli/commands/healthcheck.js, present
 since #8862's commits: the probe set rejectUnauthorized: false, for its
 loopback target and for --url alike. Now its own target requires the

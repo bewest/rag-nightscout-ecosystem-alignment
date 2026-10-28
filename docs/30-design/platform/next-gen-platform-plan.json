@@ -594,7 +594,7 @@
      "href": "../tenancy/nightscout-deployable-components-2026-09-14.md"
     }
    ],
-   "ref": "#8865 (open, base dev, head 53ba192a; carries #8862's commits and session -2e's API v3 harness): `serve api` boots only API v3's pieces; the image keeps the base entrypoint with CMD `nightscout single`; SIGTERM and SIGINT exit 0 within 8 s on every start path. The healthcheck checks the server's own certificate (CodeQL alert 138 fixed in f01d67e6); README and CLI help say \"multitenant roles\" (53ba192a). Image start forms unchanged against dev apart from stop and signals (tools/lab/image-start-forms)",
+   "ref": "In the 16.0.0 merge list (maintainer, 2026-10-27); only `single` is supported, `serve api` is alpha, the other roles exit 64 as not yet available. #8865 (open, base dev, head 53ba192a; carries #8862's commits and session -2e's API v3 harness): `serve api` boots only API v3's pieces; the image keeps the base entrypoint with CMD `nightscout single`; SIGTERM and SIGINT exit 0 within 8 s on every start path. The healthcheck checks the server's own certificate (CodeQL alert 138 fixed in f01d67e6); README and CLI help say \"multitenant roles\" (53ba192a). Image start forms unchanged against dev apart from stop and signals (tools/lab/image-start-forms)",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8865"
   },
   {
