@@ -5620,14 +5620,14 @@
 
 
 <h1 id="multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs">Multitenancy execution plan: decisions, tasks, and the context each one needs<a class="headerlink" href="#multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-27 at <code>b27548649</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>0c9ee69a4</code>.</em></p>
 <p><em>Contributor- and maintainer-facing.</em></p>
 <p><strong>Status: living document — the decision record.</strong> Decisions D1–D21 are the maintainer's
 (2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16, D21 on 2026-10-26) and are all <strong>adopted</strong>, except <strong>D17 row 2</strong>
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is <strong>adopted in principle,
 gated</strong> on the edge's production conditions and the compliance question (<code>T30-ORY-PROOF</code> held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. <strong>Item state lives
-in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f4cda86f60c02fa154cb122e21778f899a37ffda/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
+in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/afff0c4717ecf0b6fb33dc9be61bfd7824f34c31/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
 <a href="../../../queue/QUEUE.html"><code>queue/QUEUE.md</code></a>, measured by <code>make queue-status</code>); defect facts live
 in the <a href="../remedial/nightscout-backfix-register.html">backfix register</a>. Measured facts below name
 their date and commit.</p>
@@ -7096,7 +7096,7 @@ and Ory uses to turn its public and admin listeners on and off (<code>serve publ
 </ol>
 <p>Work items: PLAT-ENTRY (the dispatcher with <code>single</code> and the operator tools, no behaviour
 change) and PLAT-SERVE (the hosted roles, carved one at a time from <code>bootevent</code>'s factory chain,
-starting with <code>api</code>) in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f4cda86f60c02fa154cb122e21778f899a37ffda/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> and the
+starting with <code>api</code>) in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/afff0c4717ecf0b6fb33dc9be61bfd7824f34c31/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> and the
 <a href="../platform/next-gen-platform-plan.html">next-gen platform plan</a> §4.4.</p>
 <h3 id="213-d22--per-setting-policy-project-floors-and-secrets-maintainer-2026-10-27">2.13 D22 — per-setting policy, project floors and secrets (maintainer, 2026-10-27)<a class="headerlink" href="#213-d22--per-setting-policy-project-floors-and-secrets-maintainer-2026-10-27" title="Permanent link">&para;</a></h3>
 <p>The census (<a href="../../60-research/tenancy/t30-census-dev-2026-10-27.html">re-measured on dev</a>) classes each of
@@ -7176,7 +7176,24 @@ leave it.</p>
 <p><strong>Alarm settings, decided 2026-10-27 (maintainer):</strong> hidden from the owner, with a plain-language
 explanation, until multi-mode alarms pass the gate in §7a. Settings that do nothing on an alarm path
 would invite false trust.</p>
-<p><strong>Not decided.</strong> The secrets backend; the twelve contested settings re-stated under D22 are drafted for
+<p><strong>Secrets backend, decided 2026-10-27 (maintainer): pluggable.</strong> One interface (encrypt; decrypt for a
+named consumer; sign; verify; reveal, logged), with a cloud key service and Vault's transit engine as the
+first two adapters. Both can sign without exporting a key.</p>
+<p><strong>Keys stay inside the secrets component, from the start (maintainer, 2026-10-27).</strong> The secrets
+component signs and verifies per-tenant owner tokens itself; a signing key is used only inside it and is
+never exported, so "decrypted only by the consuming process" means, for a signing key, that the secrets
+component is its only consumer. It sets each token's lifetime. The tenant-owner listener verifies every
+token through it. Evidence: the call-path lab's keys-stay arm
+(<a href="../../../tools/lab/tenant-config-callpath/index.html"><code>tools/lab/tenant-config-callpath/</code></a>, 46 controls):
+during a listener compromise the reach is the same as A's, but no key leaves, and once the compromise ends
+and tokens expire the attacker can neither write nor reveal, where under A the stolen keys keep minting
+tokens until every tenant's key is rotated. Cost: one verify call per edit, and edits depend on the secrets
+component being up.</p>
+<p>The secrets component is a role of the one executable (D21), <code>nightscout serve secrets</code>, from the same
+image. Its first adapter is a <strong>built-in signer</strong>: keys encrypted under a master key supplied only to that
+container, for development and small operators; in Docker Compose it is one more service with one mounted
+secret. Vault transit and a cloud key service are the production adapters, behind the same interface.</p>
+<p><strong>Not decided.</strong> The twelve contested settings re-stated under D22 are drafted for
 review in <a href="../../60-research/tenancy/t30-census-dev-2026-10-27.html">census §3a</a>; row 7 decided the same
 day: the strict settings read (<code>API3_SETTINGS_STRICT_READ_ENABLED</code>) is a floor, always on under <code>multi</code>.</p>
 <h2 id="3-d8--the-query-surface">3. D8 — the query surface<a class="headerlink" href="#3-d8--the-query-surface" title="Permanent link">&para;</a></h2>
