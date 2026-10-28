@@ -1002,8 +1002,13 @@ all-tenant components: the tenant-owner listener (it fetches every signing key),
 and the operator plane. Next: a lab arm in which the secrets component signs and verifies, so keys never
 leave it.
 
-**Not decided.** Each of the twelve contested settings re-stated under D22, which most of them follow
-from; the secrets backend; alarm settings while multi-mode alarms are off.
+**Alarm settings, decided 2026-10-27 (maintainer):** hidden from the owner, with a plain-language
+explanation, until multi-mode alarms pass the gate in §7a. Settings that do nothing on an alarm path
+would invite false trust.
+
+**Not decided.** The secrets backend; the twelve contested settings re-stated under D22 are drafted for
+review in [census §3a](../../60-research/tenancy/t30-census-dev-2026-10-27.md), with one choice open
+(row 7: whether the strict settings read is a floor).
 
 ## 3. D8 — the query surface
 
