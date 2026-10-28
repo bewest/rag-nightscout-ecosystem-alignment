@@ -93,8 +93,17 @@ the enumeration is complete or correct.
 
 ## Notes carried on the item
 
-T3.0 is the largest correction owed in the programme. It does not block T3.3,
-which landed first; it AMENDS T3.1, T3.2 and T3.3, all marked DONE-EXCEPT. The
+2026-10-27 (maintainer, recorded by session -4f): D22 decided. Tenant
+configuration is a per-setting operator policy (default, mode open / bounded /
+pinned, constraint) over owner values, under project floors enforced in code
+under multi (four groups: no deployment secrets, no anonymous writes, network
+safety, data and log safety). Secrets are a component: encrypted at rest,
+decrypted only by the consuming process, a logged reveal operation (initial
+policy: an owner session; target: re-authentication). Open: policy by plan or
+cohort; the dashboard call path (lab of three designs briefed); the twelve
+contested settings re-stated under D22. Execution plan §2.13; census §3. T3.0
+is the largest correction owed in the programme. It does not block T3.3, which
+landed first; it AMENDS T3.1, T3.2 and T3.3, all marked DONE-EXCEPT. The
 enumeration was written and adversarially reviewed on 2026-09-15; the surface
 total is 277. What remains is not enumeration: it is the maintainer decisions
 the document defers, and the harnesses that would turn its numbers into

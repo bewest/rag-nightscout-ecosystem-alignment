@@ -147,6 +147,7 @@ preference.
 | **D19** | **A registration separates the definition from the instance.** A *definition* says what a controller's data means; it is immutable, identified by the hash of its content, and many coexist under one `(vendor, product)`. An *instance* is one connected copy of a controller (phone, simulator, lab rig, agent): it names the definition it runs, holds a lease, declares a provenance (`device` or `simulated`) on each channel role it plays, and carries typed labels. Among `device`-provenance instances each channel role has one source of record, handed off by release, lease lapse or owner transfer; an overlapping writer is flagged, never silently resolved, and a command has one destination. Registered instances write typed records only for accepted elements; older readers get a declared, read-only view in today's shapes. The hub still decides nothing about dosing. *(corrected 2026-10-15: reverse-DNS, `dev.nightscout/` — the well-known label prefix of rule 7; specified 2026-10-15, `SPEC-REG-INSTANCE`, hub-sync design §3.6)* | maintainer, 2026-10-14 — §2.6.2 |
 | **D20** | **Quirks are scoped to the versions that produce them, and identity has two fields under one rule.** A quirk names the `(vendor, product, versions)` it affects, for stored documents and for declarations alike; versions released before registration get their mapping from the catalogue, newer versions declare it themselves, the hub records each mapping it applies, and a quirk moves to historical and then retired as measurement shows the affected versions gone. `identifier` is the sync identity the client assigns; `_id` is the storage key the hub assigns and returns; in single-tenant legacy mode `_id` is an ObjectId. *(amended 2026-10-16: every legacy surface serves 24-hex `_id` values; the opaque option is dropped — §2.6.3 walk-through)* | maintainer, 2026-10-16 — §2.6.3 |
 | **D21** | **One executable, and roles are served by `nightscout serve <roles>`.** `bin/nightscout.js` (Node, not a shell script) is the container `ENTRYPOINT` and dispatches subcommands, as Consul and node-multienv's `start_container.sh` do. `nightscout single` is today's server, and every existing way of starting it (`Procfile`, `npm start`, `server.js`, iisnode's `web.config`, `start.sh`, the image's `CMD`) stays equal to it (D1). Hosted roles — D5's `api`, `evaluator`, `realtime`, `vcpool` and D16's `tenant-admin` and `admin` — are started as `nightscout serve <role>[,<role>…]`; several roles may share one process, and each listener has its own bind address, so `admin` stays off the consumer interface (D7), as Ory's `serve public|admin|all` does. Subcommands an operator runs against a deployed site (`diagnose data`, `healthcheck`, `version`, `env`, later `migrate`) live in the same dispatcher; developer tooling stays in `scripts/`. The dispatcher selects the bootstrap and keeps D15's split. Reorganising the repository into packages ({C} §3) is a separate, later track. **Open:** whether a composed `serve` of every role is part of the multi target or only a small-hoster convenience | maintainer, 2026-10-26 — §2.12 |
+| **D22** | **Tenant configuration is a per-setting policy over owner values, under project floors.** The effective value of a setting is the code default, then the operator's default, then the owner's value where the operator's policy allows it; an operator pin overrides the owner. The operator's policy, written on the operator plane (D7), gives each setting a default, a mode (open, bounded or pinned) and a constraint (an allowed list, a range, a floor or a host allow-list). Above the policy, a short list of **project floors** is enforced in code under `multi`, and no operator can loosen them. Secrets are a component of their own: encrypted at rest, decrypted only by the process that uses them | maintainer, 2026-10-27 — §2.13 |
 
 **Amendment carried with D13, true however D17 row 2 lands:** *credentials are per-tenant,
 identity is per-cohort, authorization is per-tenant.* Isolation rests on the authorization layer
@@ -922,6 +923,56 @@ Work items: PLAT-ENTRY (the dispatcher with `single` and the operator tools, no 
 change) and PLAT-SERVE (the hosted roles, carved one at a time from `bootevent`'s factory chain,
 starting with `api`) in [`queue/work-queue.yaml`](../../../queue/work-queue.yaml) and the
 [next-gen platform plan](../platform/next-gen-platform-plan.md) §4.4.
+
+### 2.13 D22 — per-setting policy, project floors and secrets (maintainer, 2026-10-27)
+
+The census ([re-measured on dev](../../60-research/tenancy/t30-census-dev-2026-10-27.md)) classes each of
+dev's 264 settings as T, TS, D, B or X. Twelve resisted the classes (§3 there). Eight of the twelve were "the
+owner sets it, within a constraint the operator chooses", and the other four were rules that multi mode itself
+must hold. The hosted setups used for comparison (read 2026-10-27) keep one flat set of environment variables
+per tenant, which the owner's dashboard may change key by key, and they hold operator control in
+infrastructure, driver code and database rules rather than in a settings model. D22 makes that control one
+model.
+
+**The layers.**
+
+1. **Project floors**, in code, under `TENANCY_MODE=multi` only. The server refuses to start, or refuses to
+   save a policy or a value, that breaks one. Decided as four groups:
+   - **no deployment secrets**: `API_SECRET` and `API_SECRET_FILE` refused (D13 as a check);
+     `API3_SECURITY_ENABLE=false` refused;
+   - **no anonymous writes**: default roles only from `denied`, `readable` and `status-only`;
+     `TREATMENTS_AUTH=off` and any anonymous write role not offered;
+   - **network safety**: `TRUST_PROXY` must be a hop count or CIDR, never empty; outbound webhooks to public
+     addresses only; connector endpoints only the hosts a driver defines; `BASE_URL` derived from the tenant
+     slug;
+   - **data and log safety**: `WRITE_VALIDATION` at least `log` (an owner may tighten it); `DEBUG_LOGGING`
+     off; `IMPORT_CONFIG` ignored; a permanent autoprune needs an explicit confirmation and an export offered
+     first.
+2. **Operator policy**, per setting, keyed by the census's setting names: a default, a mode (`open`,
+   `bounded`, `pinned`) and a constraint. Written on the operator plane (D7).
+3. **Owner values**, written on the tenant-owner listener (D16) and accepted only within the policy.
+
+Effective value: code default → operator default → owner value (if the mode allows it and the constraint
+accepts it) → operator pin.
+
+**Legacy names.** Policy rows use the names the census already maps, so `single` is unchanged: it reads
+the environment as today, with no policy layer (D15). A hosted operator moving from a per-tenant launcher
+maps the launch environment to operator defaults and each tenant's environment file to owner values; a key
+the owner may no longer set goes to a review list, never dropped silently.
+
+**Secrets.** A secrets component holds each tenant's root credential (D13), token-signing key (D14),
+connector logins, push keys and webhook signing secrets. Each is encrypted at rest. A pluggable backend
+(a cloud key service, Vault, or an encrypted column whose key is held outside the database) follows D17's
+"bring your own" shape. Only the process that uses a secret decrypts it. The owner dashboard never holds a
+decryption key: it calls a separate, logged **reveal** operation. Initial policy: a valid owner session may
+reveal the owner's own credential. Target: reveal also needs a fresh re-authentication. Moving from the first
+to the second changes one operation's policy, with no data migration or re-keying. The operator plane never
+reveals. This answers the config-surface document's open §C.5 in direction; the backend is not chosen.
+
+**Not decided.** Whether operator policy can vary by plan or cohort within one deployment; how the owner
+dashboard reaches the tenant-owner listener (owner token end to end, an orchestrator with a service
+identity, or split by audience), which a lab will compare first; and each of the twelve contested settings
+re-stated under D22, which most of them follow from.
 
 ## 3. D8 — the query surface
 
