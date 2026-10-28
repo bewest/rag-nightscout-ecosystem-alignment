@@ -6870,10 +6870,10 @@ items:
     title: "Release 1 (patch): one write step for every v1, v3 and socket path, today's behaviour pinned; BF-165's _id in every reply"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: ""
-    base: official/dev@7ad3a67f
-    worktree: externals/work/crm-seam
-    state: not-started
+    branch: feat/write-intent
+    base: official/dev@db3b9e4e
+    worktree: externals/work/crm-wc-step
+    state: in-progress
     pr: []
     blast_radius: >
       As WRITE-CONTRACT: lib/storage gains the write step (spec section 2.3,
@@ -6908,6 +6908,20 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/qc/write-contract-matrix.js
     notes: >
+      2026-10-27, milestone 1 (session -4f's agent; heads, unit tests, G2
+      and the G1 compare re-checked by -4f): local feat/write-intent
+      2b9d3687 + 84e21a66 on dev db3b9e4e, not pushed. Slice 1: food writes
+      from API v1 and in-process go through write(intent)
+      (lib/storage/write-intent.js, 5 files +530/-77). G1: 0 of 360 cells
+      differ from the pin tools/qc/results/write-contract-matrix/dev-db3b9e4e.json
+      (two baseline runs identical; the six ablations all red, two report
+      MISMATCH only because their expected lists predate the Temporary
+      Target cells). npm test 4761/0/3 (baseline 4750 + 11); test:all
+      passes. Step ablations red only in enrolled cells; unit tests and G2
+      (scripts/check-write-intent.js) shown to fail when broken. Design
+      note: docs/30-design/platform/wc-step-design-note-2026-10-27.md, with
+      slices 2-8 proposed and questions Q-A..Q-H for the maintainer.
+
       2026-10-26, later: ARCH-8854 is merged (#8854, dev c08cbe03, head
       246313e4; dev now 7ad3a67f), so this item can start on dev, building
       on the persistence boundary lib/storage/write-step.js; its write(intent)
