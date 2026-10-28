@@ -31,6 +31,14 @@ Two gates hold it:
   `object-id-forms` copies are gone. The count can only go down; the baseline is re-written after a
   slice moves a copy into the step, never to make a failure pass.
 
+**Progress, 2026-10-27 late.** Slices 1-3 are built on local `feat/write-intent` (`2b9d3687`, `84e21a66`,
+`f0d51ee7`, `a0e7fcac`), each with G1 at 0 of 360 cells. The slice list below is revised: slice 3 covers
+the socket's generic `dbAdd` (entries, food, activity) and `dbRemove` (all six); a new slice 6 takes the
+socket's `dbAdd` for treatments, devicestatus and profile (the `near` match, WRITE_VALIDATION, BF-194, the
+`refused`/`failed` slots) plus `dbUpdate`/`dbUpdateUnset`, retiring `idMatch` (new question **Q-I**: until
+then the step's `id-match` duplicates it). Matrix gaps found: no form PUTs over a stored string twin, reads
+an `_id` that fails, or removes by a custom or numeric `_id`; those are covered by unit tests only.
+
 ## 1. Placement: two layers, not one
 
 The spec (§2.1) puts `write(intent)` in `lib/storage/write-step.js`, "applied in `collectionFor`

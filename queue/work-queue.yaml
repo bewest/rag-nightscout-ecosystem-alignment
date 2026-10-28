@@ -6943,6 +6943,22 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/qc/write-contract-matrix.js
     notes: >
+      2026-10-27 late, slices 2 and 3 (session -4f's agent; heads, unit tests,
+      G2, the copies gate and the G1 compare outputs re-checked by -4f): local
+      feat/write-intent f0d51ee7 (activity, v1 and in-process) and a0e7fcac
+      (the socket's generic dbAdd for entries, food and activity, and dbRemove
+      for all six collections). G1 0 of 360 cells after each, commit events
+      included; every step ablation red only in enrolled cells, one (activity
+      save-twin) red only in the suite because no matrix form PUTs over a
+      string twin; G2 enrols function by function in websocket.js. npm test
+      4821/0/3; test:all passes. Write-rule copies on the branch: five fewer
+      than the dev baseline, none new. No dev test expectation changed. New
+      question Q-I: the step's id-match duplicates websocket.js idMatch until
+      the dbUpdate slice. Slices left: 4 v3 (after Q-A); 5 v1/in-process
+      treatments, entries, devicestatus, profile; 6 socket dbAdd for
+      treatments/devicestatus/profile plus dbUpdate/dbUpdateUnset; 7 the event,
+      after D-EVENT.
+
       2026-10-27, milestone 1 (session -4f's agent; heads, unit tests, G2
       and the G1 compare re-checked by -4f): local feat/write-intent
       2b9d3687 + 84e21a66 on dev db3b9e4e, not pushed. Slice 1: food writes
