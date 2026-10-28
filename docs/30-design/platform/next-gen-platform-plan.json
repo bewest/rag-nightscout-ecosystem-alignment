@@ -268,7 +268,7 @@
    "id": "ST-VIEWS",
    "track": "storage",
    "phase": "intent",
-   "state": "planned",
+   "state": "progress",
    "short": "views without ddata",
    "title": "Computed views without a resident ddata: what the page, the socket's dataUpdate, the plugins and the alarms compute comes from bounded queries (newest n of each type within a time bound), materialised, used and discarded (milestone M4)",
    "where": "lib/data/dataloader.js and ddata.js, the socket's dataUpdate, the plugin sandbox, notifications",
@@ -276,7 +276,7 @@
    "depends": [
     "ST-READS"
    ],
-   "ref": "execution plan T4.4 and §7b"
+   "ref": "In progress (maintainer, 2026-10-27: session -65's lane). Step 1: a read-only census of ddata's consumers and a re-measure of the September alarm-slice and evaluator harnesses on dev db3b9e4e (local alignment branch lab/views-census). Step 2: the equality harness as code (local crm branch feat/views-equality). Any difference on an alarm path is stop-and-report (execution plan §7b). Execution plan T4.4 and §7b"
   },
   {
    "id": "ST-PG",
