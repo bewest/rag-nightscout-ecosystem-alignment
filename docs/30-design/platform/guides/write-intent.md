@@ -71,10 +71,10 @@ From the alignment repository, with a MongoDB the worktree's tests use:
 ```sh
 WC_WORKTREE=<your worktree> WC_MONGO=mongodb://127.0.0.1:<port> \
   node tools/qc/write-contract-matrix.js --out after.json
-node tools/qc/write-contract-matrix.js --compare tools/qc/results/write-contract-matrix/dev-db3b9e4e.json after.json
+node tools/qc/write-contract-matrix.js --compare tools/qc/results/write-contract-matrix/dev-db3b9e4e-v2.json after.json
 ```
 
-**G1** must report 0 differing cells. A differing cell is a behaviour change: stop and find out why,
+**G1** must report 0 differing cells, setting aside the `cache` field, which is racy (more so for records seeded straight into MongoDB). The v2 pin (456 cells) adds forms for an update over a stored string twin, a failed `_id` read on the socket, and deletes by a custom or numeric `_id`; its 360 older cells equal the first pin. A differing cell is a behaviour change: stop and find out why,
 and never edit the pin to make it pass. Then:
 
 - break each rule you moved and show the matrix (or, where no matrix form reaches it, a test) goes red
