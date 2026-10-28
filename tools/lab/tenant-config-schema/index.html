@@ -3957,7 +3957,7 @@
 
 
 <h1 id="tenant-configuration-schema-lab-t30-schema-config">Tenant configuration schema lab (T30-SCHEMA-CONFIG)<a class="headerlink" href="#tenant-configuration-schema-lab-t30-schema-config" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-27 at <code>d9c41fd05</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>1670247de</code>.</em></p>
 <p><em>Contributor-facing. Built 2026-10-27 to support
 <a href="../../../docs/30-design/tenancy/tenant-config-schema-2026-10-27.html">the tenant configuration schema spec</a>
 (queue <code>T30-SCHEMA-CONFIG</code>) and
@@ -3997,7 +3997,14 @@ it is read or reasoned, not measured.</p>
   PostgreSQL, and umzug (with a project ledger and lease lock, <code>lib/mongo-migrator.js</code>)
   against migrate-mongo on MongoDB, for the same five properties. Results are in
   <code>compare-results.json</code>; the side-by-side table is in the
-  <a href="../../../docs/60-research/tenancy/migration-tooling-plan-2026-10-27.html">migration-tooling plan</a> §3.</p>
+  <a href="../../../docs/60-research/tenancy/migration-tooling-plan-2026-10-27.html">migration-tooling plan</a> §3.
+- <strong>MIG-VV</strong>, <code>mig-vv.js</code>, which repeats the MongoDB rows on four servers:
+  - MongoDB 8.0 standalone and as a three-member replica set;
+  - MongoDB 5.0.32 (dev's floor) standalone and as a replica set.</p>
+<p>It adds a primary step-down during a migration, and the adapter running a migration and
+  its ledger record in one transaction (<code>--txn 1</code>). Results are in <code>mig-vv-results.json</code>; the
+  table is in the plan's MIG-VV section. Each replica set is <strong>one container running three
+  <code>mongod</code> processes</strong> on the host network, bound to 127.0.0.1 (<code>mongo-rs/start-rs.sh</code>).</p>
 <h2 id="roles-and-why-the-isolation-tests-are-not-vacuous">Roles, and why the isolation tests are not vacuous<a class="headerlink" href="#roles-and-why-the-isolation-tests-are-not-vacuous" title="Permanent link">&para;</a></h2>
 <p><code>bootstrap/roles.sql</code> creates four roles. The harness gives each one a random password per run
 and keeps it in memory only.</p>
@@ -4059,10 +4066,23 @@ this three ways:</p>
 <a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>cfgschema-mongo<span class="w"> </span>--ulimit<span class="w"> </span><span class="nv">nofile</span><span class="o">=</span><span class="m">64000</span>:64000<span class="w"> </span>-p<span class="w"> </span><span class="m">127</span>.0.0.1:27747:27017<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">  </span>-e<span class="w"> </span><span class="nv">MONGO_INITDB_ROOT_USERNAME</span><span class="o">=</span>labroot<span class="w"> </span>-e<span class="w"> </span><span class="nv">MONGO_INITDB_ROOT_PASSWORD</span><span class="o">=</span><span class="s2">"</span><span class="k">$(</span>cat<span class="w"> </span><span class="s2">"</span><span class="nv">$S</span><span class="s2">/mongo-root-password"</span><span class="k">)</span><span class="s2">"</span><span class="w"> </span>mongo:8.0
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>node<span class="w"> </span>compare.js<span class="w"> </span>--secrets<span class="w"> </span><span class="s2">"</span><span class="nv">$S</span><span class="s2">"</span><span class="w">                    </span><span class="c1"># about 2.5 min; writes compare-results.json</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="c1"># MIG-VV: a replica-set keyfile, then 8.0 and 5.0 replica sets and a 5.0 standalone</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="o">(</span><span class="nb">umask</span><span class="w"> </span><span class="m">077</span><span class="p">;</span><span class="w"> </span>openssl<span class="w"> </span>rand<span class="w"> </span>-base64<span class="w"> </span><span class="m">756</span><span class="w"> </span>&gt;<span class="w"> </span><span class="s2">"</span><span class="nv">$S</span><span class="s2">/rs-keyfile"</span><span class="o">)</span><span class="p">;</span><span class="w"> </span>chmod<span class="w"> </span><span class="m">644</span><span class="w"> </span><span class="s2">"</span><span class="nv">$S</span><span class="s2">/rs-keyfile"</span><span class="w">   </span><span class="c1"># inside a 700 directory</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="k">for</span><span class="w"> </span>spec<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="s2">"cfgschema-mongo8-rs mongo:8.0 27750 27751 27752"</span><span class="w"> </span><span class="s2">"cfgschema-mongo5-rs mongo:5.0.32 27753 27754 27755"</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">  </span><span class="nb">set</span><span class="w"> </span>--<span class="w"> </span><span class="nv">$spec</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="w">  </span>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span><span class="nv">$1</span><span class="w"> </span>--network<span class="w"> </span>host<span class="w"> </span>--ulimit<span class="w"> </span><span class="nv">nofile</span><span class="o">=</span><span class="m">64000</span>:64000<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="w">    </span>-e<span class="w"> </span><span class="nv">MONGO_ROOT_PW</span><span class="o">=</span><span class="s2">"</span><span class="k">$(</span>cat<span class="w"> </span><span class="s2">"</span><span class="nv">$S</span><span class="s2">/mongo-root-password"</span><span class="k">)</span><span class="s2">"</span><span class="w"> </span>-v<span class="w"> </span><span class="s2">"</span><span class="nv">$S</span><span class="s2">/rs-keyfile:/run/lab/keyfile:ro"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="w">    </span>-v<span class="w"> </span><span class="s2">"</span><span class="nv">$PWD</span><span class="s2">/mongo-rs/start-rs.sh:/run/lab/start-rs.sh:ro"</span><span class="w"> </span>--entrypoint<span class="w"> </span>sh<span class="w"> </span><span class="nv">$2</span><span class="w"> </span>/run/lab/start-rs.sh<span class="w"> </span><span class="nv">$3</span><span class="w"> </span><span class="nv">$4</span><span class="w"> </span><span class="nv">$5</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="k">done</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>cfgschema-mongo5<span class="w"> </span>--ulimit<span class="w"> </span><span class="nv">nofile</span><span class="o">=</span><span class="m">64000</span>:64000<span class="w"> </span>-p<span class="w"> </span><span class="m">127</span>.0.0.1:27748:27017<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="w">  </span>-e<span class="w"> </span><span class="nv">MONGO_INITDB_ROOT_USERNAME</span><span class="o">=</span>labroot<span class="w"> </span>-e<span class="w"> </span><span class="nv">MONGO_INITDB_ROOT_PASSWORD</span><span class="o">=</span><span class="s2">"</span><span class="k">$(</span>cat<span class="w"> </span><span class="s2">"</span><span class="nv">$S</span><span class="s2">/mongo-root-password"</span><span class="k">)</span><span class="s2">"</span><span class="w"> </span>mongo:5.0.32
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>node<span class="w"> </span>mig-vv.js<span class="w"> </span>--secrets<span class="w"> </span><span class="s2">"</span><span class="nv">$S</span><span class="s2">"</span><span class="w">                     </span><span class="c1"># about 15 min; writes mig-vv-results.json</span>
 </code></pre></div>
 <p>Before every run, the harness asserts that <code>cfgschema-pg</code> is running and is published on
 <code>127.0.0.1:&lt;port&gt;</code>. <code>compare.js</code> also asserts that <code>cfgschema-mongo</code> is running on
-<code>127.0.0.1:27747</code> with the 64000 <code>nofile</code> limit. It refuses a <code>--secrets</code> directory inside the repository.</p>
+<code>127.0.0.1:27747</code> with the 64000 <code>nofile</code> limit. <code>mig-vv.js</code> asserts the same for each of
+its four servers before every row, and checks that each replica set has three members. It refuses a <code>--secrets</code> directory inside the repository.</p>
 <h2 id="results">Results<a class="headerlink" href="#results" title="Permanent link">&para;</a></h2>
 <p>Run of 2026-10-27 (second round, after the maintainer's answers on class D values, member
 identity and rollback), on PostgreSQL 16.15 (<code>postgres:16</code>), Node v22.23.4 and umzug 3.8.3:
@@ -4519,12 +4539,19 @@ is in <code>results.json</code>. [M]</p>
 </tr>
 <tr>
 <td><code>compare.js</code>, <code>compare-results.json</code>, <code>lib/run-tool.js</code>, <code>lib/mongo-migrator.js</code></td>
-<td>the tool comparison, one child process per run, and the umzug MongoDB adapter</td>
+<td>the tool comparison, one child process per run, and the umzug MongoDB adapter (with optional transactions)</td>
+</tr>
+<tr>
+<td><code>mig-vv.js</code>, <code>mig-vv-results.json</code>, <code>mongo-rs/start-rs.sh</code></td>
+<td>MIG-VV: MongoDB rows on 8.0 and 5.0, standalone and replica set, failover, transactions</td>
 </tr>
 </tbody>
 </table>
-<p>The containers <code>cfgschema-pg</code> and <code>cfgschema-mongo</code> are left running after a run so that
-results can be re-checked. Stop them by name: <code>docker rm -f cfgschema-pg cfgschema-mongo</code>.</p>
+<p>The containers are left running after a run so that results can be re-checked. Stop them by
+name: <code>docker rm -f cfgschema-pg cfgschema-mongo cfgschema-mongo8-rs cfgschema-mongo5-rs cfgschema-mongo5</code>.</p>
+<p><code>compare-results.json</code> is round 2's record. MongoDB migration 3 was reordered for MIG-VV
+(index before seed, plus a final write), so the MongoDB rows on the current files are
+<code>mig-vv-results.json</code>'s <code>8.0-standalone</code> rows.</p>
 
 
 

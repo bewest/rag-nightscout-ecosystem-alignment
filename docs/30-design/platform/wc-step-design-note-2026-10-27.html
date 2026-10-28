@@ -5724,6 +5724,16 @@ are answered "keep today's behaviour, unify in release 2": the step encodes each
 data, and G1 proves nothing moved. Each becomes a deliberate change, with its own decision, in release 2.
 Slice 5 proceeds; slices 4 (v3) and 6 (the socket's treatment handling and updates) are held until the
 maintainer has reviewed the explanation of the questions.</p>
+<p><strong>Progress, 2026-10-28.</strong> Slice 5 is built: treatments, entries, devicestatus and profile on API v1 and
+in-process (<code>5d97fb59</code>, <code>869a7de1</code>, <code>6115c755</code>, <code>daaa3db9</code>), plus <code>0671b430</code> marking every release-2 variant
+in the rule table. G1 holds on both pins (on v2, only the two racy <code>cache</code> cells differ). The step gained
+<code>plan()</code> (synchronous rules at the moment the module ran them, so a bad <code>eventTime</code> still throws) and
+<code>check()</code> (WRITE_VALIDATION); treatments create has three forms (<code>batch</code>, <code>one</code>, <code>prebolus</code>); entries and
+treatments share one <code>_id</code> rule (they were identical). New questions for release 2: <strong>Q-J</strong> (a re-send not
+written is <code>refused</code> for devicestatus, <code>unchanged</code> for profile), <strong>Q-K</strong> (keep <code>plan()</code>'s synchronous throws, or
+make every rule error an asynchronous refusal), <strong>Q-L</strong> (devicestatus on v1 has no natural key), <strong>Q-M</strong> (the
+treatments fallback key reads <code>created_at</code> two ways), <strong>Q-N</strong> (the shared <code>_id</code> rule), <strong>Q-O</strong> (devicestatus
+inserts unordered, profile ordered), <strong>Q-P</strong> (does an authorization input, <code>canUpdate</code>, belong in an intent).</p>
 <h2 id="1-placement-two-layers-not-one">1. Placement: two layers, not one<a class="headerlink" href="#1-placement-two-layers-not-one" title="Permanent link">&para;</a></h2>
 <p>The spec (§2.1) puts <code>write(intent)</code> in <code>lib/storage/write-step.js</code>, "applied in <code>collectionFor</code>
 above both adapters". On <code>db3b9e4e</code> that file name is taken by a different layer, and
@@ -6000,7 +6010,7 @@ Results in this scratch directory.</p>
   <code>--dry-run</code> counts 4,753 tests, consistent. A dry run at <code>ca1652d6</code> counts 4,707, so the brief's
   "4,750 at ca1652d6" figure must have been taken at a later tree; BF-194 added 46 tests in two
   new files (<code>api.treatments-tt-units</code> 34, <code>websocket.tt-units</code> 12).</li>
-<li>Write matrix, two runs on untouched <code>db3b9e4e</code> (the first is committed as <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/585530d67d158cedefa490887784ce0758e42e07/tools/qc/results/write-contract-matrix/dev-db3b9e4e.json"><code>tools/qc/results/write-contract-matrix/dev-db3b9e4e.json</code></a>, the G1 pin): 360 cells
+<li>Write matrix, two runs on untouched <code>db3b9e4e</code> (the first is committed as <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/cd351db6eefa47a7c44092069d57a32be763f406/tools/qc/results/write-contract-matrix/dev-db3b9e4e.json"><code>tools/qc/results/write-contract-matrix/dev-db3b9e4e.json</code></a>, the G1 pin): 360 cells
   (336 + 24 Temporary Target), 0 INVALID, 20 n/a, <code>write_validation</code> off. <code>--compare</code>: <strong>0
   differing cells</strong>, the known racy <code>cache</code> field included. Two more runs of a scratch copy of the
   harness that also records <code>storage-write-committed</code> per cell (<code>tools/wc-matrix-commit.js</code>,
