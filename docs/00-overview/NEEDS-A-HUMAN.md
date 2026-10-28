@@ -30,17 +30,14 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 21 items
+### Maintainer &mdash; 18 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BFQ-161` | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory  | &mdash; |
-| `BFQ-204` | `in-flight-upstream` | BF-204 - API v2 data-snapshot route returns the live 48 hours, not data framed a | #8873 |
-| `BFQ-205` | `in-flight-upstream` | BF-205 - same-timestamp records are ordered differently between in-memory loads | #8873 |
-| `BFQ-206` | `in-flight-upstream` | BF-206 - a device IOB without a timestamp is dated by the server clock | #8873 |
-| `BFQ-207` | `in-flight-upstream` | BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; th | #8873 |
 | `PLAT-ENTRY` | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; im | #8862 |
 | `PLAT-SERVE` | `in-flight-upstream` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a ti | #8865 |
+| `WC-STEP-PATCH` | `in-flight-upstream` | Release 1 (patch): one write step for every v1, v3 and socket path, today's beha | #8874 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
@@ -82,10 +79,7 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 |---|---|---|---|---|
 | **#8862** | `PLAT-ENTRY` | `feat/nightscout-entrypoint` | One executable (D21): bin/nightscout.js with `single` and th | Maintainer |
 | **#8865** | `PLAT-SERVE` | `feat/nightscout-serve` | `nightscout serve <roles>` (D21): hosted roles carved from b | Maintainer |
-| **#8873** | `BFQ-204` | `bf/16.0.0-views-data` | BF-204 - API v2 data-snapshot route returns the live 48 hour | Maintainer |
-| **#8873** | `BFQ-205` | `bf/16.0.0-views-data` | BF-205 - same-timestamp records are ordered differently betw | Maintainer |
-| **#8873** | `BFQ-206` | `bf/16.0.0-views-data` | BF-206 - a device IOB without a timestamp is dated by the se | Maintainer |
-| **#8873** | `BFQ-207` | `bf/16.0.0-views-data` | BF-207 - sensor age keeps the earliest of a same-hour burst  | Maintainer |
+| **#8874** | `WC-STEP-PATCH` | `feat/write-intent` | Release 1 (patch): one write step for every v1, v3 and socke | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 

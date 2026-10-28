@@ -32,22 +32,22 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 324 |
-| runnable gates | 382 |
+| runnable gates | 386 |
 | explicit `no-gate:` markers | 354 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 354 of the 736 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 354 of the 740 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 72 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
-| `in-progress` | 7 | BFQ-178, T30-SCHEMA-CONFIG, WC-STEP-PATCH, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM |
+| `in-progress` | 6 | BFQ-178, T30-SCHEMA-CONFIG, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 16 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
-| `in-flight-upstream` | 8 | BFQ-72, BFQ-161, BFQ-204, BFQ-205, BFQ-206, BFQ-207, PLAT-ENTRY, PLAT-SERVE |
-| `merged-upstream` | 59 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH |
+| `in-flight-upstream` | 5 | WC-STEP-PATCH, BFQ-72, BFQ-161, PLAT-ENTRY, PLAT-SERVE |
+| `merged-upstream` | 63 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 11 | T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-V3-IMMUTABLE-DECISION, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
 | `done` | 41 | P0-TAG, T30-SCHEMA-CRED, MIG-VV, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-REPLY, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
@@ -2822,10 +2822,10 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-201` | BF-201 - npm run dev's nodemon watches nearly the whole repository (1,502 Linux file watches); watch the paths the server loads | `merged-upstream` | `test/16.0.0-ci-flakes` | n/a | 1 run + 1 no-gate |
 | `BFQ-202` | BF-202 - CI's MongoDB 8.0 jobs fail on hosted runners with Linux 6.19 or newer (MongoDB refuses to start, SERVER-121912) | `merged-upstream` | `test/16.0.0-ci-flakes` | n/a | 2 run + 1 no-gate |
 | `BFQ-203` | BF-203 - an editor opening a cgm-remote-monitor file inside a larger workspace watches every sibling worktree (450,689 inotify watches); add jsconfig.json | `merged-upstream` | `tooling/jsconfig-watch-scope` | n/a | 2 run + 1 no-gate |
-| `BFQ-204` | BF-204 - API v2 data-snapshot route returns the live 48 hours, not data framed at the requested time | `in-flight-upstream` | `bf/16.0.0-views-data` | patch | 1 run |
-| `BFQ-205` | BF-205 - same-timestamp records are ordered differently between in-memory loads | `in-flight-upstream` | `bf/16.0.0-views-data` | patch | 1 run |
-| `BFQ-206` | BF-206 - a device IOB without a timestamp is dated by the server clock | `in-flight-upstream` | `bf/16.0.0-views-data` | patch | 1 run |
-| `BFQ-207` | BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; the newest is intended | `in-flight-upstream` | `bf/16.0.0-views-data` | patch | 1 run |
+| `BFQ-204` | BF-204 - API v2 data-snapshot route returns the live 48 hours, not data framed at the requested time | `merged-upstream` | `bf/16.0.0-views-data` | patch | 2 run |
+| `BFQ-205` | BF-205 - same-timestamp records are ordered differently between in-memory loads | `merged-upstream` | `bf/16.0.0-views-data` | patch | 2 run |
+| `BFQ-206` | BF-206 - a device IOB without a timestamp is dated by the server clock | `merged-upstream` | `bf/16.0.0-views-data` | patch | 2 run |
+| `BFQ-207` | BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; the newest is intended | `merged-upstream` | `bf/16.0.0-views-data` | patch | 2 run |
 | `BFQ-208` | BF-208 - an API v1 delete by a non-hex _id can answer 200 and announce a removal while nothing is removed | `not-started` | `-` | patch | 1 run |
 | `BFQ-192` | BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression) | `merged-upstream` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-193` | BF-193 - the realtime socket and other write paths log every record written through them | `merged-upstream` | `official/dev` | patch | 2 run + 1 no-gate |
@@ -6826,7 +6826,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-views-data` |
 | base | `official/dev@db3b9e4e` |
@@ -6844,6 +6844,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 6b47afa9 official/dev`
+  - official/dev contains BF-204's fix 6b47afa9 (merged 2026-10-28 as e1f7ac41, #8873); red if dev is rewritten or the merge is reverted
 - `[unit]` `sh tools/queue/gates/bf204-207-views-data.sh tests/data.ddata-at.test.js`
   - Runs tests/data.ddata-at.test.js from bf/16.0.0-views-data (git archive) twice: as it is, where it must pass, and with lib/ at dev db3b9e4e, where it must fail on assertions only. It checks a past frame with a populated live cache: nothing in the answer newer than the requested time, and the cache unchanged; with dev's lib/ it fails with readings dated after that time (1 of 6). Needs node_modules installed at the fix ref (default the externals/work/crm-bf-views worktree); otherwise UNMEASURED. Measured 2026-10-27 by session -65: met. Controls: the same lib/ on both sides reports NOT MET; the official clone's older node_modules reports UNMEASURED.
 
@@ -6851,13 +6853,13 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-28 02:26Z: PR #8873 opened by the maintainer for bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the AndroidAPS IOB pill golden, which had recorded BF-206; the golden is regenerated in 1c50c29a (local, not pushed). 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit 6b47afa9; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
+**Notes.** 2026-10-28 05:20:32Z: #8873 MERGED to dev by the maintainer as e1f7ac41 (head 1c50c29a). Released in no version yet. 2026-10-28 02:26Z: PR #8873 opened by the maintainer for bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the AndroidAPS IOB pill golden, which had recorded BF-206; the golden is regenerated in 1c50c29a (local, not pushed). 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit 6b47afa9; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
 
 ### `BFQ-205` &mdash; BF-205 - same-timestamp records are ordered differently between in-memory loads
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-views-data` |
 | base | `official/dev@db3b9e4e` |
@@ -6875,6 +6877,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor df95900f official/dev`
+  - official/dev contains BF-205's fix df95900f (merged 2026-10-28 as e1f7ac41, #8873); red if dev is rewritten or the merge is reverted
 - `[unit]` `sh tools/queue/gates/bf204-207-views-data.sh tests/dataloader.test.js`
   - Runs tests/dataloader.test.js from bf/16.0.0-views-data (git archive) twice: as it is, where it must pass, and with lib/ at dev db3b9e4e, where it must fail on assertions only. It checks the same documents in two query orders: the same order, and the same one of two temp basals at one time kept; with dev's lib/ both fail (2 of 5). Needs node_modules installed at the fix ref (default the externals/work/crm-bf-views worktree); otherwise UNMEASURED. Measured 2026-10-27 by session -65: met. Controls: the same lib/ on both sides reports NOT MET; the official clone's older node_modules reports UNMEASURED.
 
@@ -6882,13 +6886,13 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-28 02:26Z: PR #8873 opened by the maintainer for bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the AndroidAPS IOB pill golden, which had recorded BF-206; the golden is regenerated in 1c50c29a (local, not pushed). 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit df95900f; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
+**Notes.** 2026-10-28 05:20:32Z: #8873 MERGED to dev by the maintainer as e1f7ac41 (head 1c50c29a). Released in no version yet. 2026-10-28 02:26Z: PR #8873 opened by the maintainer for bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the AndroidAPS IOB pill golden, which had recorded BF-206; the golden is regenerated in 1c50c29a (local, not pushed). 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit df95900f; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
 
 ### `BFQ-206` &mdash; BF-206 - a device IOB without a timestamp is dated by the server clock
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-views-data` |
 | base | `official/dev@db3b9e4e` |
@@ -6906,6 +6910,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 675560ab official/dev`
+  - official/dev contains BF-206's fix 675560ab (merged 2026-10-28 as e1f7ac41, #8873); red if dev is rewritten or the merge is reverted
 - `[unit]` `sh tools/queue/gates/bf204-207-views-data.sh tests/iob.test.js`
   - Runs tests/iob.test.js from bf/16.0.0-views-data (git archive) twice: as it is, where it must pass, and with lib/ at dev db3b9e4e, where it must fail on assertions only. It checks an untimestamped IOB 20 minutes old against a timestamped one 1 minute old, OpenAPS and Loop: the newer is current; with dev's lib/ the older wins (3 of 17). Needs node_modules installed at the fix ref (default the externals/work/crm-bf-views worktree); otherwise UNMEASURED. Measured 2026-10-27 by session -65: met. Controls: the same lib/ on both sides reports NOT MET; the official clone's older node_modules reports UNMEASURED.
 
@@ -6913,13 +6919,13 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-28 02:26Z: PR #8873 opened by the maintainer for bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the AndroidAPS IOB pill golden, which had recorded BF-206; the golden is regenerated in 1c50c29a (local, not pushed). 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit 675560ab; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
+**Notes.** 2026-10-28 05:20:32Z: #8873 MERGED to dev by the maintainer as e1f7ac41 (head 1c50c29a). Released in no version yet. 2026-10-28 02:26Z: PR #8873 opened by the maintainer for bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the AndroidAPS IOB pill golden, which had recorded BF-206; the golden is regenerated in 1c50c29a (local, not pushed). 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit 675560ab; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
 
 ### `BFQ-207` &mdash; BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; the newest is intended
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-views-data` |
 | base | `official/dev@db3b9e4e` |
@@ -6937,6 +6943,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 80a414c7 official/dev`
+  - official/dev contains BF-207's fix 80a414c7 (merged 2026-10-28 as e1f7ac41, #8873); red if dev is rewritten or the merge is reverted
 - `[unit]` `sh tools/queue/gates/bf204-207-views-data.sh tests/sensorage.test.js`
   - Runs tests/sensorage.test.js from bf/16.0.0-views-data (git archive) twice: as it is, where it must pass, and with lib/ at dev db3b9e4e, where it must fail on assertions only. It checks a same-hour burst in either order and the hour boundary: the newest start is kept; with dev's lib/ the oldest-first burst keeps the older start (1 of 11). Needs node_modules installed at the fix ref (default the externals/work/crm-bf-views worktree); otherwise UNMEASURED. Measured 2026-10-27 by session -65: met. Controls: the same lib/ on both sides reports NOT MET; the official clone's older node_modules reports UNMEASURED.
 
@@ -6944,7 +6952,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-28 02:26Z: PR #8873 opened by the maintainer for bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the AndroidAPS IOB pill golden, which had recorded BF-206; the golden is regenerated in 1c50c29a (local, not pushed). 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit 80a414c7; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f. Intended behaviour ("latest is correct") decided by the maintainer in session -65, relayed. ST-VIEWS' bounded view differs from the resident value here by design.
+**Notes.** 2026-10-28 05:20:32Z: #8873 MERGED to dev by the maintainer as e1f7ac41 (head 1c50c29a). Released in no version yet. 2026-10-28 02:26Z: PR #8873 opened by the maintainer for bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the AndroidAPS IOB pill golden, which had recorded BF-206; the golden is regenerated in 1c50c29a (local, not pushed). 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit 80a414c7; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f. Intended behaviour ("latest is correct") decided by the maintainer in session -65, relayed. ST- VIEWS' bounded view differs from the resident value here by design.
 
 ### `BFQ-208` &mdash; BF-208 - an API v1 delete by a non-hex _id can answer 200 and announce a removal while nothing is removed
 
@@ -7717,7 +7725,7 @@ alarm-readiness items, and the seam branch refresh.
 | `SEAM-REFRESH` | Refresh the seam chain once after 15.0.9, onto the base the release train leaves | `blocked` | `seam/t1-2-storage-interface` | n/a | 2 run + 1 no-gate |
 | `WRITE-CONTRACT` | One write step behind the storage interface: _id form, srv dates, soft delete, re-send identity, one change event | `blocked` | `-` | minor | 0 run + 1 no-gate |
 | `ID-DUP-MEASURE` | Measure duplicate identifier values across the 12-site ns-data corpus | `done` | `records/loop-identifier-2026-10-17` | n/a | 1 run |
-| `WC-STEP-PATCH` | Release 1 (patch): one write step for every v1, v3 and socket path, today's behaviour pinned; BF-165's _id in every reply | `in-progress` | `feat/write-intent` | patch | 2 run + 1 no-gate |
+| `WC-STEP-PATCH` | Release 1 (patch): one write step for every v1, v3 and socket path, today's behaviour pinned; BF-165's _id in every reply | `in-flight-upstream` | `feat/write-intent` | patch | 2 run + 1 no-gate |
 | `WC-R2-QA` | Release 2: Re-express API v3 writes as filter writes under the step, or keep two adapter-method families | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `WC-R2-QB` | Release 2: One timing for removing a stored string-form _id twin on every path | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `WC-R2-QC` | Release 2: Separate source labels for API v1 and in-process callers | `not-started` | `-` | patch | 0 run + 1 no-gate |
@@ -8401,7 +8409,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `feat/write-intent` |
 | base | `official/dev@db3b9e4e` |
@@ -8431,7 +8439,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/qc/write-contract-matrix.js`
 
-**Notes.** 2026-10-28, slice 5 (session -4f's agent; heads, the two write-intent test files (169 passing), G2 and the copies gate re-checked by -4f, and G1 re-run by -4f against the v2 pin): local feat/write-intent 5d97fb59 (treatments), 869a7de1 (entries), 6115c755 (devicestatus), daaa3db9 (profile), 0671b430 (release-2 comments). G1 on the 360-cell pin: 0 cells and 0 commit events per collection; on the v2 pin (456 cells): 2 cells differ in the racy cache field only, the same two that vary between runs of untouched dev. WRITE_VALIDATION=reject: matrix 0 cells, suites 608/0 before and after. npm test 4919/0/3; test:all passes. Write-rule copies 37 (baseline 47). G2 enrols 7 entries. A new test file runs the db3b9e4e modules and the step side by side over a recording driver (calls, events, emissions, log lines, replies), the only check on preBolus, UUID_HANDLING, the profile permission and log lines. New questions Q-J..Q-P (design note). Slices left: 4 (v3) and 6 (socket treatments, devicestatus, profile adds and updates), held for the maintainer's review. 2026-10-27: G1's pin is now dev-db3b9e4e-v2.json (456 cells: the 360 of the first pin, identical, plus update-twin, idread-fail, harddelete-custom and harddelete-num; b6c19bc5a). Slices 1-3 (a0e7fcac) equal it in every cell, setting aside the racy cache field. The activity save-twin break the first pin could not see turns activity update-twin red on both v1 and in-process. Transition target (maintainer, 2026-10-27): every write path enrolled in the step before 16.2.0, measured by G2's enrolled set covering every writer and by the write-rule copies gate falling toward zero (47 at dev db3b9e4e). The mixed state (some paths through the step, some not) is the riskiest one, so it is kept short. Release-2 questions are queue items WC-R2-QA..WC-R2-QH; WC-R1-QG and WC-R1-QI stay in release 1. Contributor guide: docs/30-design/platform/guides/write-intent.md. 2026-10-27 late, slices 2 and 3 (session -4f's agent; heads, unit tests, G2, the copies gate and the G1 compare outputs re-checked by -4f): local feat/write-intent f0d51ee7 (activity, v1 and in-process) and a0e7fcac (the socket's generic dbAdd for entries, food and activity, and dbRemove for all six collections). G1 0 of 360 cells after each, commit events included; every step ablation red only in enrolled cells, one (activity save-twin) red only in the suite because no matrix form PUTs over a string twin; G2 enrols function by function in websocket.js. npm test 4821/0/3; test:all passes. Write-rule copies on the branch: five fewer than the dev baseline, none new. No dev test expectation changed. New question Q-I: the step's id-match duplicates websocket.js idMatch until the dbUpdate slice. Slices left: 4 v3 (after Q-A); 5 v1/in-process treatments, entries, devicestatus, profile; 6 socket dbAdd for treatments/devicestatus/profile plus dbUpdate/dbUpdateUnset; 7 the event, after D-EVENT. 2026-10-27, milestone 1 (session -4f's agent; heads, unit tests, G2 and the G1 compare re-checked by -4f): local feat/write-intent 2b9d3687 + 84e21a66 on dev db3b9e4e, not pushed. Slice 1: food writes from API v1 and in-process go through write(intent) (lib/storage/write-intent.js, 5 files +530/-77). G1: 0 of 360 cells differ from the pin tools/qc/results/write-contract-matrix/dev-db3b9e4e.json (two baseline runs identical; the six ablations all red, two report MISMATCH only because their expected lists predate the Temporary Target cells). npm test 4761/0/3 (baseline 4750 + 11); test:all passes. Step ablations red only in enrolled cells; unit tests and G2 (scripts/check-write-intent.js) shown to fail when broken. Design note: docs/30-design/platform/wc-step-design- note-2026-10-27.md, with slices 2-8 proposed and questions Q-A..Q-H for the maintainer. 2026-10-26, later: ARCH-8854 is merged (#8854, dev c08cbe03, head 246313e4; dev now 7ad3a67f), so this item can start on dev, building on the persistence boundary lib/storage/write-step.js; its write(intent) layer takes a separate name such as write-intent.js, as #8854's data-contracts.md (its architecture docs) says. State moves from blocked to not-started. The September chain stays reference only. 2026-10-26: blocks on ARCH-8854 instead of SEAM-REFRESH. The maintainer leans to building the seam on #8854's write boundary (next-gen plan D-SEAM), and #8854 is decided into 16.0.0 (outcome B); its condition 4 gives this item's write(intent) layer its own name, layered on the boundary. The September chain is reference for the filter AST and bulkUpsert modes. WRITE-CONTRACT has no sub-items: it is one item covering both releases of spec Q6 (a). This item is its first release, split out so the identifier items can block on it; WRITE-CONTRACT stays the umbrella and is not duplicated. BFQ-165 (BF-165) can still land on dev first as a narrow fix; if it does, this item keeps it pinned rather than re-making it. BFQ-169 (the v3 swagger text about identifier) is documentation only and independent; it is linked because the identifier items below make the corrected text a promise.
+**Notes.** 2026-10-28: draft PR #8874 to dev opened by the maintainer (head 0671b430); not for 16.0.0. Slices 4 and 6 still to come. 2026-10-28, slice 5 (session -4f's agent; heads, the two write-intent test files (169 passing), G2 and the copies gate re-checked by -4f, and G1 re-run by -4f against the v2 pin): local feat/write-intent 5d97fb59 (treatments), 869a7de1 (entries), 6115c755 (devicestatus), daaa3db9 (profile), 0671b430 (release-2 comments). G1 on the 360-cell pin: 0 cells and 0 commit events per collection; on the v2 pin (456 cells): 2 cells differ in the racy cache field only, the same two that vary between runs of untouched dev. WRITE_VALIDATION=reject: matrix 0 cells, suites 608/0 before and after. npm test 4919/0/3; test:all passes. Write-rule copies 37 (baseline 47). G2 enrols 7 entries. A new test file runs the db3b9e4e modules and the step side by side over a recording driver (calls, events, emissions, log lines, replies), the only check on preBolus, UUID_HANDLING, the profile permission and log lines. New questions Q-J..Q-P (design note). Slices left: 4 (v3) and 6 (socket treatments, devicestatus, profile adds and updates), held for the maintainer's review. 2026-10-27: G1's pin is now dev- db3b9e4e-v2.json (456 cells: the 360 of the first pin, identical, plus update- twin, idread-fail, harddelete-custom and harddelete-num; b6c19bc5a). Slices 1-3 (a0e7fcac) equal it in every cell, setting aside the racy cache field. The activity save-twin break the first pin could not see turns activity update- twin red on both v1 and in-process. Transition target (maintainer, 2026-10-27): every write path enrolled in the step before 16.2.0, measured by G2's enrolled set covering every writer and by the write-rule copies gate falling toward zero (47 at dev db3b9e4e). The mixed state (some paths through the step, some not) is the riskiest one, so it is kept short. Release-2 questions are queue items WC-R2-QA..WC-R2-QH; WC-R1-QG and WC-R1-QI stay in release 1. Contributor guide: docs/30-design/platform/guides/write-intent.md. 2026-10-27 late, slices 2 and 3 (session -4f's agent; heads, unit tests, G2, the copies gate and the G1 compare outputs re-checked by -4f): local feat/write-intent f0d51ee7 (activity, v1 and in-process) and a0e7fcac (the socket's generic dbAdd for entries, food and activity, and dbRemove for all six collections). G1 0 of 360 cells after each, commit events included; every step ablation red only in enrolled cells, one (activity save-twin) red only in the suite because no matrix form PUTs over a string twin; G2 enrols function by function in websocket.js. npm test 4821/0/3; test:all passes. Write-rule copies on the branch: five fewer than the dev baseline, none new. No dev test expectation changed. New question Q-I: the step's id-match duplicates websocket.js idMatch until the dbUpdate slice. Slices left: 4 v3 (after Q-A); 5 v1/in-process treatments, entries, devicestatus, profile; 6 socket dbAdd for treatments/devicestatus/profile plus dbUpdate/dbUpdateUnset; 7 the event, after D-EVENT. 2026-10-27, milestone 1 (session -4f's agent; heads, unit tests, G2 and the G1 compare re-checked by -4f): local feat/write-intent 2b9d3687 + 84e21a66 on dev db3b9e4e, not pushed. Slice 1: food writes from API v1 and in-process go through write(intent) (lib/storage/write-intent.js, 5 files +530/-77). G1: 0 of 360 cells differ from the pin tools/qc/results/write-contract-matrix/dev-db3b9e4e.json (two baseline runs identical; the six ablations all red, two report MISMATCH only because their expected lists predate the Temporary Target cells). npm test 4761/0/3 (baseline 4750 + 11); test:all passes. Step ablations red only in enrolled cells; unit tests and G2 (scripts/check-write-intent.js) shown to fail when broken. Design note: docs/30-design/platform/wc-step-design- note-2026-10-27.md, with slices 2-8 proposed and questions Q-A..Q-H for the maintainer. 2026-10-26, later: ARCH-8854 is merged (#8854, dev c08cbe03, head 246313e4; dev now 7ad3a67f), so this item can start on dev, building on the persistence boundary lib/storage/write-step.js; its write(intent) layer takes a separate name such as write-intent.js, as #8854's data-contracts.md (its architecture docs) says. State moves from blocked to not-started. The September chain stays reference only. 2026-10-26: blocks on ARCH-8854 instead of SEAM-REFRESH. The maintainer leans to building the seam on #8854's write boundary (next-gen plan D-SEAM), and #8854 is decided into 16.0.0 (outcome B); its condition 4 gives this item's write(intent) layer its own name, layered on the boundary. The September chain is reference for the filter AST and bulkUpsert modes. WRITE-CONTRACT has no sub-items: it is one item covering both releases of spec Q6 (a). This item is its first release, split out so the identifier items can block on it; WRITE-CONTRACT stays the umbrella and is not duplicated. BFQ-165 (BF-165) can still land on dev first as a narrow fix; if it does, this item keeps it pinned rather than re-making it. BFQ-169 (the v3 swagger text about identifier) is documentation only and independent; it is linked because the identifier items below make the corrected text a promise.
 
 ### `WC-R2-QA` &mdash; Release 2: Re-express API v3 writes as filter writes under the step, or keep two adapter-method families
 

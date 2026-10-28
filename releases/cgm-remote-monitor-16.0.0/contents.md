@@ -111,6 +111,7 @@ merge times are `gh pr view <n> --json mergedAt`. The first nineteen merges belo
 | #8858 | 10-27 22:29:46 | `ca1652d6` | `debf4a14` | bewest | — | — | the API v1 and v3 documents describe what 16.0.0 serves, and a contract test holds them to the routes (includes #8381 by arfaomar); the alignment site's API pages re-rendered from it as current |
 | #8871 | 10-27 22:51:12 | `dcf20bfb` | `57f1d37c` | bewest | BF-203 | `BFQ-203` | tooling: a `jsconfig.json` scoped by `exclude`, so an editor stops watching sibling worktrees (1 file, +8) |
 | #8872 | 10-27 23:45:05 | `db3b9e4e` | `355b4f14` | bewest | BF-194 | `BFQ-194` | a Temporary Target is stored in mg/dL labelled `mg/dl` on API v1, API v3 and the socket (11 files, +742/−43); owes a release-note line |
+| #8873 | 10-28 05:20:32 | `e1f7ac41` | `1c50c29a` | bewest | BF-204, BF-205, BF-206, BF-207 | `BFQ-204`..`BFQ-207` | the data-snapshot route answers a past time from its own query; same-time records ordered by `_id`; an undated device IOB takes its status's time (the AAPS IOB pill golden regenerated); sensor age keeps the newest start within an hour (built by session -65) |
 
 Before merging, AndyLow91 merged `dev` into most branches and added commits of his own (read with
 `git log` and `git show`):

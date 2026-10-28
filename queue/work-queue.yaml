@@ -6977,8 +6977,8 @@ items:
     branch: feat/write-intent
     base: official/dev@db3b9e4e
     worktree: externals/work/crm-wc-step
-    state: in-progress
-    pr: []
+    state: in-flight-upstream
+    pr: [8874]
     blast_radius: >
       As WRITE-CONTRACT: lib/storage gains the write step (spec section 2.3,
       lib/storage/write-step.js inside collectionFor); the v1 server modules
@@ -7028,6 +7028,9 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/qc/write-contract-matrix.js
     notes: >
+      2026-10-28: draft PR #8874 to dev opened by the maintainer (head
+      0671b430); not for 16.0.0. Slices 4 and 6 still to come.
+
       2026-10-28, slice 5 (session -4f's agent; heads, the two write-intent
       test files (169 passing), G2 and the copies gate re-checked by -4f, and
       G1 re-run by -4f against the v2 pin): local feat/write-intent 5d97fb59
@@ -17539,7 +17542,7 @@ items:
     repo: cgm-remote-monitor
     branch: bf/16.0.0-views-data
     base: official/dev@db3b9e4e
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8873]
     ships_to_operators_today: true
     blast_radius: >
@@ -17551,6 +17554,11 @@ items:
     semver_reason: a read endpoint starts answering what it documents
     register: [BF-204]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 6b47afa9 official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-204's fix 6b47afa9 (merged 2026-10-28 as
+          e1f7ac41, #8873); red if dev is rewritten or the merge is reverted
       - run: sh tools/queue/gates/bf204-207-views-data.sh tests/data.ddata-at.test.js
         kind: unit
         describe: >
@@ -17566,6 +17574,9 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-28 05:20:32Z: #8873 MERGED to dev by the maintainer as
+      e1f7ac41 (head 1c50c29a). Released in no version yet.
+
       2026-10-28 02:26Z: PR #8873 opened by the maintainer for
       bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the
       AndroidAPS IOB pill golden, which had recorded BF-206; the golden is
@@ -17586,7 +17597,7 @@ items:
     repo: cgm-remote-monitor
     branch: bf/16.0.0-views-data
     base: official/dev@db3b9e4e
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8873]
     ships_to_operators_today: true
     blast_radius: >
@@ -17597,6 +17608,11 @@ items:
     semver_reason: a deterministic order for ties; no documented order changes
     register: [BF-205]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor df95900f official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-205's fix df95900f (merged 2026-10-28 as
+          e1f7ac41, #8873); red if dev is rewritten or the merge is reverted
       - run: sh tools/queue/gates/bf204-207-views-data.sh tests/dataloader.test.js
         kind: unit
         describe: >
@@ -17612,6 +17628,9 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-28 05:20:32Z: #8873 MERGED to dev by the maintainer as
+      e1f7ac41 (head 1c50c29a). Released in no version yet.
+
       2026-10-28 02:26Z: PR #8873 opened by the maintainer for
       bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the
       AndroidAPS IOB pill golden, which had recorded BF-206; the golden is
@@ -17632,7 +17651,7 @@ items:
     repo: cgm-remote-monitor
     branch: bf/16.0.0-views-data
     base: official/dev@db3b9e4e
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8873]
     ships_to_operators_today: true
     blast_radius: >
@@ -17644,6 +17663,11 @@ items:
     semver_reason: an undated IOB is dated by its device status instead of the server clock
     register: [BF-206]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 675560ab official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-206's fix 675560ab (merged 2026-10-28 as
+          e1f7ac41, #8873); red if dev is rewritten or the merge is reverted
       - run: sh tools/queue/gates/bf204-207-views-data.sh tests/iob.test.js
         kind: unit
         describe: >
@@ -17659,6 +17683,9 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-28 05:20:32Z: #8873 MERGED to dev by the maintainer as
+      e1f7ac41 (head 1c50c29a). Released in no version yet.
+
       2026-10-28 02:26Z: PR #8873 opened by the maintainer for
       bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the
       AndroidAPS IOB pill golden, which had recorded BF-206; the golden is
@@ -17679,7 +17706,7 @@ items:
     repo: cgm-remote-monitor
     branch: bf/16.0.0-views-data
     base: official/dev@db3b9e4e
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8873]
     ships_to_operators_today: true
     blast_radius: >
@@ -17693,6 +17720,11 @@ items:
     semver_reason: the intended value, decided by the maintainer; a sensor-age alarm can move by up to the burst's spread
     register: [BF-207]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 80a414c7 official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-207's fix 80a414c7 (merged 2026-10-28 as
+          e1f7ac41, #8873); red if dev is rewritten or the merge is reverted
       - run: sh tools/queue/gates/bf204-207-views-data.sh tests/sensorage.test.js
         kind: unit
         describe: >
@@ -17708,6 +17740,9 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-28 05:20:32Z: #8873 MERGED to dev by the maintainer as
+      e1f7ac41 (head 1c50c29a). Released in no version yet.
+
       2026-10-28 02:26Z: PR #8873 opened by the maintainer for
       bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the
       AndroidAPS IOB pill golden, which had recorded BF-206; the golden is
