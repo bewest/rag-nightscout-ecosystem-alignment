@@ -11,6 +11,15 @@
 # revert must match the clean run. An ablation whose substitution changes no
 # file stops with ABLATION-NO-OP instead of reporting a green break.
 #
+# The Temporary Target cells (QC-MATRIX-TT) run whenever treatments is in
+# --only, whatever --forms says, so `derive` and `wire` list their tt-* cells:
+# red for the same rule (no `mills` on the cache copy; no `ss:create`).
+# `derive` also runs update-twin (QC-MATRIX-V2): a v3 PATCH over a record stored
+# under a string _id reaches the same cache derivation. The other V2 forms
+# (idread-fail, harddelete-custom, harddelete-num) sit under none of these six
+# rules; their break-it controls were run against the write step of
+# feat/write-intent a0e7fcac (see write-contract-matrix.js, QC-MATRIX-V2).
+#
 # Exit 0 when every break changed exactly its expected cells and every revert
 # matched; 1 otherwise; 2 when the worktree is dirty before a run.
 set -u
@@ -27,8 +36,8 @@ ABLATIONS=(
   "srv|lib/server/websocket.js|s/if (servedByV3(data.collection)) srvDates.stampCreated(data.data);/;/|--paths ws --only food,entries --forms create|food_ws_create entries_ws_create"
   "soft|lib/server/treatments.js|s/return softDeleted.visible(stored_query_for(opts), opts);/return stored_query_for(opts);/|--only treatments --forms softdelete|treatments_v1_softdelete treatments_v3_softdelete treatments_ws_softdelete treatments_inproc_softdelete"
   "key|lib/server/treatments.js|s/return fallbackKey.fallbackQuery(obj, results.created_at, { withAmounts: true });/return Object.assign(fallbackKey.fallbackQuery(obj, results.created_at, { withAmounts: true }), { wcNever: { \$eq: true } });/|--only treatments --forms resend-identity|treatments_v1_resend-identity treatments_inproc_resend-identity"
-  "derive|lib/api3/storage/mongoCachedCollection/index.js|s/const DERIVE_FOR_CACHE = { treatments: true, devicestatus: true };/const DERIVE_FOR_CACHE = {};/|--paths v3 --only treatments,devicestatus --forms create,update|treatments_v3_create treatments_v3_update devicestatus_v3_create devicestatus_v3_update"
-  "wire|lib/api3/generic/create/insert.js|s/ctx.bus.emit('storage-socket-create', { colName: col.colName, doc });/;/|--paths v1,v3 --only treatments --forms create|treatments_v3_create"
+  "derive|lib/api3/storage/mongoCachedCollection/index.js|s/const DERIVE_FOR_CACHE = { treatments: true, devicestatus: true };/const DERIVE_FOR_CACHE = {};/|--paths v3 --only treatments,devicestatus --forms create,update,update-twin|treatments_v3_create treatments_v3_update devicestatus_v3_create devicestatus_v3_update treatments_v3_update-twin devicestatus_v3_update-twin treatments_v3_tt-create-ok treatments_v3_tt-create-order treatments_v3_tt-create-units treatments_v3_tt-update-ok treatments_v3_tt-update-order treatments_v3_tt-put-ok treatments_v3_tt-put-order"
+  "wire|lib/api3/generic/create/insert.js|s/ctx.bus.emit('storage-socket-create', { colName: col.colName, doc });/;/|--paths v1,v3 --only treatments --forms create|treatments_v3_create treatments_v3_tt-create-ok treatments_v3_tt-create-order treatments_v3_tt-create-units"
 )
 
 run () { # tag name args...

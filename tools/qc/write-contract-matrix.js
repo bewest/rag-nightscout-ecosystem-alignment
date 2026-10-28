@@ -51,6 +51,33 @@
 // should differ, and no earlier cell should change. --no-tt leaves them out;
 // --tt-only runs only them. The ids and results of the earlier cells do not
 // depend on these: they run first, in the same order as before.
+//
+// Forms added 2026-10-27 (QC-MATRIX-V2), for gaps the WC-STEP-PATCH slices
+// found. They run last, after the Temporary Target cells, so every earlier cell
+// keeps its order and its result; --forms selects them like any other form.
+//   update-twin        a record stored straight to MongoDB under a 24-hex _id
+//                      as a STRING (seed `mongo str`, as legacy-lower), then the
+//                      path's update with that _id: v1 PUT, v3 PATCH, socket
+//                      dbUpdate, in-process save. A save that stores the
+//                      ObjectId form must remove the string twin it replaces.
+//   idread-fail        socket dbAdd with a 24-hex _id while the read that
+//                      chooses the stored _id form fails. The failure is
+//                      injected in this process: storage-reads.findOne throws
+//                      for a { _id: { $in: [...] } } read projected to { _id: 1 },
+//                      armed only for the measured dbAdd. The cell's `inj`
+//                      field says how many reads it failed, so a cell where the
+//                      injection never fired cannot pass for one where it did.
+//                      Socket only; n/a on the other paths.
+//   harddelete-custom  a record stored straight to MongoDB under a custom
+//                      non-hex string _id (seed `mongo str*`), then the path's
+//                      hard delete (v1 DELETE, v3 permanent DELETE, socket
+//                      dbRemove, in-process remove) by that _id.
+//   harddelete-num     the same with a numeric _id (seed `mongo number`).
+// The pin with these forms is results/write-contract-matrix/dev-db3b9e4e-v2.json
+// (456 cells: the 360 of dev-db3b9e4e.json, byte-identical, and 96 new, 25 of
+// them n/a). As before, `cache` is racy; it is more so on cells seeded straight
+// to MongoDB, which the cache learns of only at its next reload. Compare with
+// `cache` set aside before calling a difference there a finding.
 
 const fs = require('fs');
 const path = require('path');
@@ -74,7 +101,7 @@ if (flag('--compare')) {
 
 if (flag('--table')) {
   const r = JSON.parse(fs.readFileSync(argv[argv.indexOf('--table') + 1], 'utf8'));
-  const cols = ['st', 'store', 'tt', 'srv', 'hist', 'ev', 'wire', 'cache', 'v1read'];
+  const cols = ['st', 'store', 'tt', 'srv', 'hist', 'ev', 'wire', 'cache', 'v1read', 'inj'];
   for (const coll of r.collections) {
     console.log('\n#### ' + coll + '\n');
     console.log('| path | form | ' + cols.join(' | ') + ' |');
@@ -198,7 +225,9 @@ const dirty = execFileSync('git', ['-C', WT, 'status', '--porcelain', '--', 'lib
 
 const COLLS = (opt('--only', 'entries,treatments,devicestatus,profile,food,activity')).split(',');
 const PATHS = (opt('--paths', 'v1,v3,ws,inproc')).split(',');
-const FORMS = (opt('--forms', 'create,resend-hex,resend-upper,resend-oid,resend-identity,resend-near,legacy-lower,legacy-upper,update,update-put,softdelete,harddelete')).split(',');
+const FORMS = (opt('--forms', 'create,resend-hex,resend-upper,resend-oid,resend-identity,resend-near,legacy-lower,legacy-upper,update,update-put,softdelete,harddelete,update-twin,idread-fail,harddelete-custom,harddelete-num')).split(',');
+// QC-MATRIX-V2 forms: run after the Temporary Target cells (see the header).
+const V2_FORMS = ['update-twin', 'idread-fail', 'harddelete-custom', 'harddelete-num'];
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const hex = () => crypto.randomBytes(12).toString('hex');
 const iso = t => new Date(t).toISOString();
@@ -236,6 +265,20 @@ function body (coll, t, cell, extra) {
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   R('lib/server/websocket')(env, ctx, server);
   const BASE = 'http://127.0.0.1:' + server.address().port;
+
+  // ---- the idread-fail injection (see the header): the socket's _id-form read,
+  // { _id: { $in: [...] } } projected to { _id: 1 }, fails while armed.
+  const storageReads = R('lib/server/storage-reads');
+  const realFindOne = storageReads.findOne;
+  const inject = { armed: false, fired: 0 };
+  storageReads.findOne = function (storage, query, projection) {
+    if (inject.armed && query && query._id && Array.isArray(query._id.$in)
+      && JSON.stringify(projection) === JSON.stringify({ _id: 1 })) {
+      inject.fired++;
+      return Promise.reject(new Error('wc-lab injected _id read failure'));
+    }
+    return realFindOne.apply(this, arguments);
+  };
 
   // ---- bus taps
   let events = [];
@@ -449,6 +492,23 @@ function body (coll, t, cell, extra) {
       await col(c).insertOne(Object.assign(body(c, t, cellId, { _id: h }), c === 'entries' ? { sysTime: iso(t) } : {}));
       out.seed = 'mongo str';
       measured = () => createVia(c, body(c, t, cellId, { _id: f === 'legacy-lower' ? h : h.toUpperCase() }));
+    } else if (f === 'update-twin' || f === 'harddelete-custom' || f === 'harddelete-num') {
+      // Seeded straight to MongoDB, as the legacy forms, so every path starts
+      // from the same stored record; then the path's own update or hard delete.
+      const fn = path_[f === 'update-twin' ? 'update' : 'harddelete'];
+      if (!fn) { cells[key] = { st: 'n/a' }; return; }
+      const id = f === 'update-twin' ? hex() : f === 'harddelete-custom' ? 'wc-custom-' + hex().slice(0, 10) : t;
+      await col(c).insertOne(Object.assign(body(c, t, cellId, { _id: id }), c === 'entries' ? { sysTime: iso(t) } : {}));
+      out.seed = 'mongo ' + idForm(id);
+      const tg = await target();
+      measured = () => fn(c, tg.doc, tg.ident);
+    } else if (f === 'idread-fail') {
+      if (p !== 'ws') { cells[key] = { st: 'n/a' }; return; }
+      const h = hex();
+      measured = async () => {
+        inject.armed = true; inject.fired = 0;
+        try { return await createVia(c, body(c, t, cellId, { _id: h })); } finally { inject.armed = false; }
+      };
     } else if (f === 'resend-identity') {
       seedReply = await seedOnce();
       measured = () => createVia(c, body(c, t, cellId));
@@ -484,6 +544,7 @@ function body (coll, t, cell, extra) {
     out.wire = wired.length ? wired.join(',') : 'none';
     out.cache = cacheOf(c, cellId);
     out.v1read = await v1readOf(c, cellId);
+    if (f === 'idread-fail') out.inj = 'reads failed: ' + inject.fired;
     if (!(await alive())) { cells[key] = { st: 'INVALID liveness after' }; return; }
     cells[key] = out;
   }
@@ -493,6 +554,7 @@ function body (coll, t, cell, extra) {
     for (const p of PATHS) {
       for (const f of FORMS) {
         if (f === 'update-put' && p !== 'v3') continue;
+        if (V2_FORMS.includes(f)) continue;
         await cell(c, p, f);
       }
     }
@@ -592,11 +654,16 @@ function body (coll, t, cell, extra) {
     }
   }
 
+  // ---- QC-MATRIX-V2 forms (see the header), after every earlier cell
+  if (!TT_ONLY) for (const c of COLLS) for (const p of PATHS) for (const f of FORMS) {
+    if (V2_FORMS.includes(f)) await cell(c, p, f);
+  }
+
   const result = {
     head, dirty_lib: dirty || '', node: process.version, mongod: serverVersion, db: DBNAME
     , write_validation: env.writeValidation === undefined ? '(not read by this build)' : env.writeValidation
     , date: new Date().toISOString(), collections: COLLS, paths: PATHS
-    , forms: TT_ONLY ? TT_FORMS : FORMS.concat(TT_FORMS), cells
+    , forms: TT_ONLY ? TT_FORMS : FORMS.filter(f => !V2_FORMS.includes(f)).concat(TT_FORMS, FORMS.filter(f => V2_FORMS.includes(f))), cells
   };
   if (OUT) fs.writeFileSync(OUT, JSON.stringify(result, null, 1));
   else console.log(JSON.stringify(result, null, 1));
