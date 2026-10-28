@@ -71,12 +71,37 @@ maintainer, plus a second human - the boot sequence moves
 ## Evidence
 
 - [`docs/30-design/tenancy/nightscout-deployable-components-2026-09-14.md`](../../docs/30-design/tenancy/nightscout-deployable-components-2026-09-14.md)
+- [`tools/lab/image-start-forms/README.md`](../../tools/lab/image-start-forms/README.md)
 
 ## Notes carried on the item
 
-2026-10-27 (maintainer, recorded by session -4f): serve api's scope is v1 + v3
-+ the v2 summary and authorization + tenant resolution (interface-ownership §4
-item 4); v1 joins once its storage paths run without the cache. Session -2e's
+2026-10-27 night (session -00): #8865 head f01d67e6, pushed by the maintainer,
+a fast-forward of 9f7f84f8 (-2e's three API v3 test commits and a dev merge,
+folding in the harness above). f01d67e6 fixes CodeQL alert 138 (js/disabling-
+certificate-validation, high) in lib/cli/commands/healthcheck.js, present
+since #8862's commits: the probe set rejectUnauthorized: false, for its
+loopback target and for --url alike. Now its own target requires the
+certificate SSL_CERT names (the chain verifies against SSL_CERT, SSL_CA and
+the system roots; the peer's fingerprint replaces the hostname check), and
+--url is checked as any client checks it; an unreadable SSL_CERT or SSL_CA is
+unhealthy. Tests: green for the configured certificate on loopback; red for
+another certificate on the port (tests/fixtures/ healthcheck-other.*), an
+unreadable SSL_CERT and a self-signed --url, the three failing on 9f7f84f8's
+healthcheck.js (19/3) and passing with the fix (22/0). start-paths + CLI 35
+passing on MongoDB 8.0; unit tier 1585/0. Whether the alert closes is CodeQL's
+next run on the PR. Image start forms measured the same night
+(tools/lab/image-start-forms, 8dd7c563c; dev dcf20bfb against 9bb1f0b4): every
+form that started a server on dev starts the same server (status.json
+identical apart from server time, one node process, same entrypoint, user,
+workdir, no HEALTHCHECK); differences are stop and signals (docker stop 10.1
+s/137 to 0.13 s/0; SIGINT and SIGTERM, ignored by node as PID 1 on dev, exit
+0), and `nightscout single` and `nightscout healthcheck` working as commands.
+Not covered: restart: on-failure after an outside SIGTERM (the site used to
+keep running; it now exits 0 and stays down), and tooling matching PID 1's
+command line. #8862 is superseded: its four commits are in #8865. 2026-10-27
+(maintainer, recorded by session -4f): serve api's scope is v1 + v3 + the v2
+summary and authorization + tenant resolution (interface-ownership §4 item 4);
+v1 joins once its storage paths run without the cache. Session -2e's
 ST-V3-DECOUPLE harness (feat/v3-role-harness 88f37427, three test-only commits
 on 9bb1f0b4; single 742/0, serve-api 634/0/108 pending, npm test 4757/0/3, as
 reported by -2e) is to be folded into #8865, not stacked. The 15 v3 tests on

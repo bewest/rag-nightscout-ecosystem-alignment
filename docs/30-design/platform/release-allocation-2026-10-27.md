@@ -198,8 +198,8 @@ order, and ship them in 16.1.0. This needs one rule for `dev` between now and th
 |---|---|---|---|---|
 | ST-EVENT (D-EVENT) | deferred, research continuing (maintainer, 2026-10-27): counts-only and internal; reopened when WriteResult.items[], a first subscriber, the BF-164 re-measure and a replica-set site count are in hand | none while nothing in `lib/` subscribes; the commit event is internal and unstable (#8854 condition) | nobody | 16.2.0, with WC-STEP-PATCH |
 | ST-V3-DECOUPLE (M3) | planned; it is the cause of `serve api`'s 81 failing API v3 suites at #8865 `1dafe2a5` | patch-class if `single` is unchanged | every site, for no gain under `single` | 16.1.0, with PLAT-SERVE |
-| PLAT-ENTRY (#8862) | draft `b63d9b7f`, 64 commits behind `dev` | minor-class (question 9); the image start changes form | every Docker site | 16.1.0, unless Q2 (a) is still wanted: then merged before the quiet period starts, with a Docker-host cohort check |
-| PLAT-SERVE (#8865) | draft `1dafe2a5` on base `feat/storage-writes`, which is merged; needs retargeting to `dev` and a `dev` merge (55 behind) before any re-measurement | minor-class | nobody under `single` | 16.1.0, labelled alpha (Q12a) |
+| PLAT-ENTRY (#8862) | superseded by #8865, which carries its four commits (2026-10-27 night) | minor-class (question 9) | — | lands with #8865 |
+| PLAT-SERVE (#8865) | open, base `dev`, head `f01d67e6` (2026-10-27 night): CodeQL alert 138 fixed; image start forms measured unchanged against `dev` apart from stop and signals (`tools/lab/image-start-forms`) | minor-class | every Docker site: same start, clean stop; `serve api` nobody under `single` | 16.0.0 if it joins the merge list (Q13), otherwise 16.1.0; `serve` labelled alpha |
 | WC-STEP-PATCH, ID-BATCH (M2) | planned | minor-class (question 10: reply shape, per-item results) | every uploader | 16.2.0 |
 | ST-VIEWS (M4) | planned | patch-class only if every view equals today's; the alarms are safety-relevant (execution plan §7b) | every page and alarm | 16.2.0 or later, with alarm cohort checks; before multi |
 | ST-HARNESS, ST-PG (M5) | planned | none for `single` | nobody | 16.3.0 or later (multi preview) |
@@ -471,16 +471,22 @@ release soaks them; and how does that weigh against releasing as soon as the can
 - **Effect on tenancy.** 16.1.0 work (ST-V3-DECOUPLE, registration, and PLAT-SERVE unless it joins
   the merge list) builds on branches and merges when `dev` reopens.
 
-### B8. Take #8862 into 16.0.0 first
+### B8. Take #8865 into 16.0.0 (it supersedes #8862)
 
-- **What happens.** #8862 is brought up to `dev` (64 behind), reviewed and merged; the quiet period
-  starts after it.
-- **Who it reaches.** Every Docker site: the image gains an ENTRYPOINT and the `single` command.
-  Its seven measured start paths are equal to `nightscout single` at `b63d9b7f`; they are not
-  re-measured on `ca1652d6`.
-- **Measure first.** The start paths on the merged tree, and a Docker-host cohort (a hosting
-  provider or a self-hoster running the image) starting the new image with their own command.
-- **Trade.** One less change of start form in 16.1.0, against a later quiet period.
+- **What happens.** #8865 joins the 16.0.0 merge list (Q13) and merges before the list closes;
+  #8862 is closed as superseded.
+- **Who it reaches.** Every Docker site. Measured 2026-10-27 night on images built from `dev`
+  `dcf20bfb` and #8865 `9bb1f0b4` (`tools/lab/image-start-forms`): every `docker run` form that
+  started a server on `dev` starts the same server, with the same entrypoint, user, workdir and
+  environment, one node process and no HEALTHCHECK; `status.json` is identical apart from the server
+  time. What changes: `docker stop` takes 0.13 s and exits 0 instead of 10.1 s and 137; SIGINT and
+  SIGTERM, ignored by node as PID 1 on `dev`, now shut the server down; `nightscout single` and
+  `nightscout healthcheck` work as commands.
+- **Measure first.** Nothing left to measure on the image. The release notes name the one case the
+  lab cannot reach: a supervisor that sends SIGTERM itself under `restart: on-failure` (the site used
+  to keep running; it now exits 0 and stays down), and tooling that matches PID 1's command line.
+- **Trade.** A cleaner stop for every Docker site in the major, against one more PR in the merge
+  list; `serve api` ships labelled alpha.
 
 ### B9. Hosted roles in 16.0.0 as alpha
 

@@ -1,5 +1,5 @@
 {
- "measured": "2026-10-27 against cgm-remote-monitor dev db3b9e4e (#8872 merged)",
+ "measured": "2026-10-27 against cgm-remote-monitor dev db3b9e4e; #8865 at f01d67e6",
  "tracks": [
   {
    "id": "storage",
@@ -571,7 +571,7 @@
      "href": "../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#212-d21--one-entrypoint-serve-roles-maintainer-2026-10-26"
     }
    ],
-   "ref": "#8862 (draft, 32c3f5a5): its four commits are also in #8865, so merging #8865 lands it; seven start paths equal to `nightscout single`",
+   "ref": "Superseded by #8865, which carries #8862's four commits in newer form; close #8862 when #8865 merges",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8862"
   },
   {
@@ -582,7 +582,7 @@
    "short": "serve <roles>",
    "title": "`nightscout serve <role>[,<role>…]`: hosted roles carved one at a time from bootevent's factory chain, `api` first (API v3 holds no resident state); each listener on its own bind address so `admin` stays off the consumer interface (D5, D7, D16, D21)",
    "where": "bin/nightscout.js, lib/server/bootevent.js, lib/server/server.js",
-   "check": "`serve api` answers the API v3 suites with no bus or ddata; `admin` refuses the consumer listener's address",
+   "check": "`serve api` answers the API v3 suites with no bus or ddata; `admin` refuses the consumer listener's address; every docker run form that started a server on dev starts the same one (image start-forms lab)",
    "depends": [
     "PLAT-ENTRY",
     "ST-READS"
@@ -593,7 +593,7 @@
      "href": "../tenancy/nightscout-deployable-components-2026-09-14.md"
     }
    ],
-   "ref": "#8865 (open, base dev, 0 behind dcf20bfb, head 9bb1f0b4; carries #8862's four commits): `serve api` boots only API v3's pieces; the image keeps the base entrypoint with CMD `nightscout single` (9f4bd874); SIGTERM and SIGINT close and exit 0 within 8 s on every start path (9bb1f0b4). npm test 4757/0/3 (session -2e). API v3 suites under serve api: 485 pass, 81 fail at 1dafe2a5, the ST-V3-DECOUPLE work",
+   "ref": "#8865 (open, base dev, head f01d67e6; carries #8862's commits and session -2e's API v3 harness): `serve api` boots only API v3's pieces; the image keeps the base entrypoint with CMD `nightscout single`; SIGTERM and SIGINT exit 0 within 8 s on every start path. The healthcheck checks the server's own certificate (CodeQL alert 138 fixed in f01d67e6). Image start forms unchanged against dev apart from stop and signals (tools/lab/image-start-forms)",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8865"
   },
   {
